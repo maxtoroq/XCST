@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:template name='c:initial-template'>
+      <foo>
+         <c:for-each name='c' in='"hello".ToCharArray()' xml:space='preserve'>&#x20;&#xD;&#xA;&#x9;<c:sort/>x</c:for-each>
+      </foo>
+   </c:template>
+
+</c:module>

@@ -1,0 +1,11 @@
+.vs/
+packages/
+
+[Bb]in
+[Oo]bj
+[Tt]est[Rr]esults
+[Nn]u[Gg]et.exe
+*.user
+*.generated.cs
+node_modules
+bower_components

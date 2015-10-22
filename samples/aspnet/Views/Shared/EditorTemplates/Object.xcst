@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<c:module version='1.0' language='C#'
+   xmlns:c='http://maxtoroq.github.io/XCST'
+   xmlns:a='http://maxtoroq.github.io/XCST/application'
+   extension-element-prefixes='a'>
+
+   <c:use-functions in='System'/>
+   <c:use-functions in='System.Linq'/>
+   <c:use-functions in='System.Web.Mvc'/>
+
+   <c:param name='includeComplexProperties' value='false' as='bool'/>
+   <c:param name='recurseComplexProperties' value='false' as='bool'/>
+   <c:param name='__xcst_html_label_column_class' value='"col-md-3"' as='string'/>
+   <c:param name='__xcst_html_field_column_class' value='"col-md-9"' as='string'/>
+   <c:param name='__xcst_row_template' as='Action&lt;ModelMetadata, Xcst.Runtime.DynamicContext>'/>
+
+   <c:function name='ShouldShowProperty' as='bool'>
+      <c:param name='prop' as='ModelMetadata'/>
+
+      <c:script>
+         <![CDATA[
+         return prop.ShowForEdit
+            && (includeComplexProperties || !prop.IsComplexType || prop.TemplateHint != null || prop.DataTypeName != null)
+            && !ViewData.TemplateInfo.Visited(prop);
+         ]]>
+      </c:script>
+   </c:function>
+
+   <c:template name='c:initial-template'>
+
+      <c:variable name='renderDisplayText' value='!recurseComplexProperties
+         &amp;&amp; ViewData.TemplateInfo.TemplateDepth > 1'/>
+
+      <c:choose>
+         <c:when test='renderDisplayText'>
+            <c:value-of value='(Model == null) ? ViewData.ModelMetadata.NullDisplayText : ViewData.ModelMetadata.SimpleDisplayText'/>
+         </c:when>
+         <c:otherwise>
+            <c:for-each name='prop' in='ViewData.ModelMetadata.Properties.Where(x => ShouldShowProperty(x))'>
+               <c:variable name='editorTemplate' value='prop.TemplateHint ?? prop.DataTypeName'/>
+               <c:choose>
+                  <c:when test='prop.HideSurroundingHtml'>
+                     <a:editor name='{prop.PropertyName}' template='{editorTemplate}'/>
+                  </c:when>
+                  <c:when test='__xcst_row_template != null'>
+                     <c:evaluate-delegate value='__xcst_row_template'>
+                        <c:with-param value='prop'/>
+                     </c:evaluate-delegate>
+                  </c:when>
+                  <c:otherwise>
+                     <div class="form-group">
+                        <!--
+                           Setting text explicitly because of ModelMetadata issue when an entry with same 
+                           name exists in ViewData (e.g. SelectList).
+
+                           ValidationMessage has similar issue with unobtrusive validation attributes.
+                        -->
+                        <a:label name="{prop.PropertyName}" text="{prop.DisplayName ?? prop.PropertyName}"
+                           html-class="control-label {__xcst_html_label_column_class}"/>
+                        
+                        <div class="{__xcst_html_field_column_class}">
+                           <a:editor name='{prop.PropertyName}' template='{editorTemplate}'/>
+                           <a:validation-message name='{prop.PropertyName}'/>
+                        </div>
+                     </div>
+                  </c:otherwise>
+               </c:choose>
+            </c:for-each>
+         </c:otherwise>
+      </c:choose>
+   </c:template>
+
+</c:module>

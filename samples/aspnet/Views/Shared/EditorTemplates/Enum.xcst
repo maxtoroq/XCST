@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<?model System.Enum?>
+<c:module version='1.0' language='C#'
+   xmlns:c='http://maxtoroq.github.io/XCST'
+   xmlns:a='http://maxtoroq.github.io/XCST/application'
+   extension-element-prefixes='a'>
+
+   <c:use-functions in='System.Collections.Generic'/>
+   <c:use-functions in='System.Web.Mvc'/>
+   <c:use-functions in='System.Web.Mvc.Html.EnumHelper' static-only='yes'/>
+
+   <c:param name='htmlAttributes' as='object'/>
+
+   <c:template name='c:initial-template'>
+      <c:variable name='selectList' value='(IEnumerable&lt;SelectListItem>)ViewData[ViewData.TemplateInfo.HtmlFieldPrefix]
+         ?? GetSelectList(ViewData.ModelMetadata.ModelType, Model)'/>
+      <a:drop-down-list options='selectList' html-class='form-control' html-attributes='htmlAttributes'/>
+   </c:template>
+
+</c:module>

@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<c:module version='1.0' language='C#'
+   xmlns:c='http://maxtoroq.github.io/XCST'
+   xmlns:a='http://maxtoroq.github.io/XCST/application'
+   extension-element-prefixes='a'>
+
+   <c:use-functions in='System'/>
+   <c:use-functions in='System.Globalization'/>
+
+   <c:param name='htmlAttributes' as='object'/>
+
+   <c:variable name='modelValue' value='(ViewData.ModelMetadata.Model != null) ?
+      Convert.ToBoolean(ViewData.ModelMetadata.Model, CultureInfo.InvariantCulture)
+      : default(bool?)' as='bool?'/>
+
+   <c:template name='c:initial-template'>
+      <c:choose>
+         <c:when test='ViewData.ModelMetadata.IsNullableValueType'>
+            <a:drop-down-list html-class='form-control' html-attributes='htmlAttributes'>
+               <a:option value='""' selected='!modelValue.HasValue'/>
+               <a:option value='"true"' selected='modelValue.HasValue &amp;&amp; modelValue.Value'>Yes</a:option>
+               <a:option value='"false"' selected='modelValue.HasValue &amp;&amp; !modelValue.Value'>No</a:option>
+            </a:drop-down-list>
+         </c:when>
+         <c:otherwise>
+            <div class='checkbox'>
+               <label>
+                  <a:check-box checked='modelValue.GetValueOrDefault()' html-class='check-box' html-attributes='htmlAttributes'/>
+               </label>
+            </div>
+         </c:otherwise>
+      </c:choose>
+   </c:template>
+
+</c:module>

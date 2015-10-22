@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:template name='c:initial-template'>
+      <foo>
+         <c:try xml:space='preserve'>x<c:catch exception='System.Exception'/>&#x20;&#xD;&#xA;&#x9;<c:finally/>&#x20;&#xD;&#xA;&#x9;</c:try>
+      </foo>
+   </c:template>
+
+</c:module>
