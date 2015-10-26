@@ -1,0 +1,1344 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+ Copyright 2015 Max Toro Q.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<grammar xmlns="http://relaxng.org/ns/structure/1.0"
+   xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"
+   xmlns:c="http://maxtoroq.github.io/XCST"
+   ns="http://maxtoroq.github.io/XCST"
+   datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+
+   <start>
+      <choice>
+         <ref name="module"/>
+         <ref name="simplified-module-element"/>
+      </choice>
+   </start>
+
+   <define name="declaration-element">
+      <choice>
+         <ref name="function"/>
+         <ref name="output"/>
+         <ref name="param"/>
+         <ref name="template"/>
+         <ref name="type"/>
+         <ref name="variable"/>
+      </choice>
+   </define>
+
+   <define name="instruction-element">
+      <choice>
+         <ref name="assert"/>
+         <ref name="attribute"/>
+         <ref name="break"/>
+         <ref name="call-template"/>
+         <ref name="choose"/>
+         <ref name="comment"/>
+         <ref name="delegate"/>
+         <ref name="element"/>
+         <ref name="evaluate-delegate"/>
+         <ref name="fallback"/>
+         <ref name="for-each"/>
+         <ref name="if"/>
+         <ref name="iterate"/>
+         <ref name="message"/>
+         <ref name="namespace"/>
+         <ref name="next-iteration"/>
+         <ref name="next-function"/>
+         <ref name="next-template"/>
+         <ref name="object"/>
+         <ref name="processing-instruction"/>
+         <ref name="result-document"/>
+         <ref name="return"/>
+         <ref name="script"/>
+         <ref name="serialize"/>
+         <ref name="set"/>
+         <ref name="text"/>
+         <ref name="try"/>
+         <ref name="using"/>
+         <ref name="value-of"/>
+         <ref name="variable"/>
+         <ref name="void"/>
+      </choice>
+   </define>
+
+   <define name="standard-attributes">
+      <ref name="standard-attributes-except-version"/>
+      <optional>
+         <attribute name="version">
+            <ref name="Version"/>
+         </attribute>
+      </optional>
+   </define>
+
+   <define name="standard-attributes-except-version">
+      <zeroOrMore>
+         <choice>
+            <attribute name="expand-text">
+               <ref name="Boolean"/>
+            </attribute>
+            <attribute name="extension-element-prefixes">
+               <list>
+                  <zeroOrMore>
+                     <ref name="Prefix"/>
+                  </zeroOrMore>
+               </list>
+            </attribute>
+         </choice>
+      </zeroOrMore>
+   </define>
+
+   <define name="literal-result-element">
+      <element>
+         <anyName>
+            <except>
+               <nsName/>
+            </except>
+         </anyName>
+         <ref name="literal-result-element-attributes-except-version"/>
+         <optional>
+            <attribute name="c:version">
+               <ref name="Version"/>
+            </attribute>
+         </optional>
+         <ref name="sequence-constructor"/>
+      </element>
+   </define>
+
+   <define name="literal-result-element-attributes-except-version">
+      <zeroOrMore>
+         <choice>
+            <attribute>
+               <anyName>
+                  <except>
+                     <nsName/>
+                  </except>
+               </anyName>
+               <choice>
+                  <ref name="String"/>
+                  <ref name="AttributeValueTemplate"/>
+               </choice>
+            </attribute>
+            <attribute name="c:expand-text">
+               <ref name="Boolean"/>
+            </attribute>
+            <attribute name="c:extension-element-prefixes">
+               <list>
+                  <zeroOrMore>
+                     <ref name="Prefix"/>
+                  </zeroOrMore>
+               </list>
+            </attribute>
+         </choice>
+      </zeroOrMore>
+   </define>
+
+   <define name="sequence-constructor">
+      <zeroOrMore>
+         <choice>
+            <ref name="instruction-element"/>
+            <ref name="literal-result-element"/>
+            <text/>
+         </choice>
+      </zeroOrMore>
+   </define>
+
+   <define name="value-attribute-or-content">
+      <choice>
+         <attribute name="value">
+            <ref name="Expression"/>
+         </attribute>
+         <!-- TODO: Works? -->
+         <oneOrMore>
+            <ref name="sequence-constructor"/>
+         </oneOrMore>
+      </choice>
+   </define>
+
+   <define name="user-defined-data-element">
+      <element>
+         <anyName>
+            <except>
+               <nsName/>
+               <nsName ns=""/>
+            </except>
+         </anyName>
+         <ref name="any-nodes"/>
+      </element>
+   </define>
+
+   <define name="any-nodes">
+      <zeroOrMore>
+         <choice>
+            <attribute>
+               <anyName/>
+            </attribute>
+            <text/>
+            <element>
+               <anyName/>
+               <ref name="any-nodes"/>
+            </element>
+         </choice>
+      </zeroOrMore>
+   </define>
+
+   <define name="simplified-module-element">
+      <element>
+         <anyName>
+            <except>
+               <nsName/>
+            </except>
+         </anyName>
+         <attribute name="c:version">
+            <ref name="Version"/>
+         </attribute>
+         <attribute name="c:language">
+            <ref name="Language"/>
+         </attribute>
+         <ref name="literal-result-element-attributes-except-version"/>
+         <ref name="sequence-constructor"/>
+      </element>
+   </define>
+
+   <define name="module">
+      <element name="module">
+         <attribute name="version">
+            <ref name="Version"/>
+         </attribute>
+         <attribute name="language">
+            <ref name="Language"/>
+         </attribute>
+         <ref name="standard-attributes-except-version"/>
+         <zeroOrMore>
+            <ref name="use-functions"/>
+         </zeroOrMore>
+         <zeroOrMore>
+            <ref name="import"/>
+         </zeroOrMore>
+         <zeroOrMore>
+            <choice>
+               <ref name="declaration-element"/>
+               <ref name="user-defined-data-element"/>
+            </choice>
+         </zeroOrMore>
+      </element>
+   </define>
+
+   <define name="use-functions">
+      <element name="use-functions">
+         <attribute name="in">
+            <ref name="Type"/>
+         </attribute>
+         <zeroOrMore>
+            <choice>
+               <attribute name="alias">
+                  <ref name="Type"/>
+               </attribute>
+               <attribute name="static-only">
+                  <ref name="Boolean"/>
+               </attribute>
+            </choice>
+         </zeroOrMore>
+         <ref name="standard-attributes"/>
+      </element>
+   </define>
+
+   <define name="import">
+      <element name="import">
+         <attribute name="href">
+            <ref name="URI"/>
+         </attribute>
+         <ref name="standard-attributes"/>
+      </element>
+   </define>
+
+   <define name="template">
+      <element name="template">
+         <attribute name="name">
+            <ref name="QName"/>
+         </attribute>
+         <ref name="standard-attributes"/>
+         <zeroOrMore>
+            <ref name="param"/>
+         </zeroOrMore>
+         <ref name="sequence-constructor"/>
+      </element>
+   </define>
+
+   <define name="function">
+      <element name="function">
+         <attribute name="name">
+            <ref name="Name"/>
+         </attribute>
+         <optional>
+            <attribute name="as">
+               <ref name="Type"/>
+            </attribute>
+         </optional>
+         <ref name="standard-attributes"/>
+         <zeroOrMore>
+            <ref name="param"/>
+         </zeroOrMore>
+         <ref name="sequence-constructor"/>
+      </element>
+   </define>
+
+   <define name="param">
+      <element name="param">
+         <attribute name="name">
+            <ref name="Name"/>
+         </attribute>
+         <zeroOrMore>
+            <choice>
+               <attribute name="as">
+                  <ref name="Type"/>
+               </attribute>
+               <attribute name="required">
+                  <ref name="Boolean"/>
+               </attribute>
+               <attribute name="tunnel">
+                  <ref name="Boolean"/>
+               </attribute>
+            </choice>
+         </zeroOrMore>
+         <ref name="standard-attributes"/>
+         <ref name="value-attribute-or-content"/>
+      </element>
+   </define>
+
+   <define name="type">
+      <element name="type">
+         <attribute name="name">
+            <ref name="Name"/>
+         </attribute>
+         <ref name="standard-attributes"/>
+         <ref name="type-or-member-attributes"/>
+         <zeroOrMore>
+            <ref name="metadata"/>
+         </zeroOrMore>
+         <zeroOrMore>
+            <ref name="member"/>
+         </zeroOrMore>
+      </element>
+   </define>
+
+   <define name="member">
+      <element name="member">
+         <attribute name="name">
+            <ref name="Name"/>
+         </attribute>
+         <optional>
+            <attribute name="value">
+               <ref name="Expression"/>
+            </attribute>
+         </optional>
+         <ref name="standard-attributes"/>
+         <ref name="type-or-member-attributes"/>
+         <ref name="member-attributes"/>
+         <zeroOrMore>
+            <ref name="metadata"/>
+         </zeroOrMore>
+         <choice>
+            <attribute name="as">
+               <ref name="Type"/>
+            </attribute>
+            <oneOrMore>
+               <ref name="member"/>
+            </oneOrMore>
+         </choice>
+      </element>
+   </define>
+
+   <define name="metadata">
+      <element name="metadata">
+         <attribute name="value">
+            <ref name="Expression"/>
+         </attribute>
+      </element>
+   </define>
+
+   <define name="type-or-member-attributes">
+      <zeroOrMore>
+         <choice>
+            <attribute name="resource-type">
+               <ref name="Type"/>
+            </attribute>
+            <attribute name="error-resource-type">
+               <ref name="Type"/>
+            </attribute>
+            <attribute name="data-type-error-message">
+               <ref name="Type"/>
+            </attribute>
+            <attribute name="data-type-error-resource">
+               <ref name="String"/>
+            </attribute>
+            <attribute name="required-error-message">
+               <ref name="Type"/>
+            </attribute>
+            <attribute name="required-error-resource">
+               <ref name="String"/>
+            </attribute>
+            <attribute name="length-error-message">
+               <ref name="Type"/>
+            </attribute>
+            <attribute name="length-error-resource">
+               <ref name="String"/>
+            </attribute>
+            <attribute name="pattern-error-message">
+               <ref name="Type"/>
+            </attribute>
+            <attribute name="pattern-error-resource">
+               <ref name="String"/>
+            </attribute>
+            <attribute name="range-error-message">
+               <ref name="Type"/>
+            </attribute>
+            <attribute name="range-error-resource">
+               <ref name="String"/>
+            </attribute>
+            <attribute name="equal-to-error-message">
+               <ref name="Type"/>
+            </attribute>
+            <attribute name="equal-to-error-resource">
+               <ref name="String"/>
+            </attribute>
+         </choice>
+      </zeroOrMore>
+   </define>
+
+   <define name="member-attributes">
+      <zeroOrMore>
+         <choice>
+            <attribute name="display-name">
+               <ref name="String"/>
+            </attribute>
+            <attribute name="description">
+               <ref name="String"/>
+            </attribute>
+            <attribute name="short-name">
+               <ref name="String"/>
+            </attribute>
+            <attribute name="placeholder">
+               <ref name="String"/>
+            </attribute>
+            <attribute name="order">
+               <ref name="Integer"/>
+            </attribute>
+            <attribute name="group">
+               <ref name="String"/>
+            </attribute>
+            <attribute name="display-format">
+               <ref name="String"/>
+            </attribute>
+            <attribute name="apply-format-in-edit-mode">
+               <ref name="Boolean"/>
+            </attribute>
+            <attribute name="convert-empty-string-to-null">
+               <ref name="Boolean"/>
+            </attribute>
+            <attribute name="html-encode">
+               <ref name="Boolean"/>
+            </attribute>
+            <attribute name="null-display-text">
+               <ref name="String"/>
+            </attribute>
+            <attribute name="template">
+               <ref name="String"/>
+            </attribute>
+            <attribute name="hidden">
+               <ref name="Boolean"/>
+            </attribute>
+            <attribute name="readonly">
+               <ref name="Boolean"/>
+            </attribute>
+            <attribute name="data-type">
+               <choice>
+                  <value>CreditCard</value>
+                  <value>Currency</value>
+                  <value>Date</value>
+                  <value>DateTime</value>
+                  <value>Duration</value>
+                  <value>EmailAddress</value>
+                  <value>Html</value>
+                  <value>ImageUrl</value>
+                  <value>MultilineText</value>
+                  <value>Password</value>
+                  <value>PhoneNumber</value>
+                  <value>PostalCode</value>
+                  <value>Text</value>
+                  <value>Time</value>
+                  <value>Upload</value>
+                  <value>Url</value>
+               </choice>
+            </attribute>
+            <attribute name="required">
+               <ref name="Boolean"/>
+            </attribute>
+            <attribute name="allow-empty-string">
+               <ref name="Boolean"/>
+            </attribute>
+            <attribute name="max-length">
+               <ref name="Integer"/>
+            </attribute>
+            <attribute name="min-length">
+               <ref name="Integer"/>
+            </attribute>
+            <attribute name="pattern">
+               <ref name="String"/>
+            </attribute>
+            <attribute name="min">
+               <ref name="String"/>
+            </attribute>
+            <attribute name="max">
+               <ref name="String"/>
+            </attribute>
+            <attribute name="equal-to">
+               <ref name="Name"/>
+            </attribute>
+         </choice>
+      </zeroOrMore>
+   </define>
+
+   <define name="output">
+      <element name="output">
+         <zeroOrMore>
+            <choice>
+               <attribute name="name">
+                  <ref name="QName"/>
+               </attribute>
+               <attribute name="method">
+                  <ref name="OutputMethod"/>
+               </attribute>
+               <attribute name="byte-order-mark">
+                  <ref name="Boolean"/>
+               </attribute>
+               <attribute name="cdata-section-elements">
+                  <list>
+                     <zeroOrMore>
+                        <ref name="QName"/>
+                     </zeroOrMore>
+                  </list>
+               </attribute>
+               <attribute name="doctype-public">
+                  <ref name="String"/>
+               </attribute>
+               <attribute name="doctype-system">
+                  <ref name="String"/>
+               </attribute>
+               <attribute name="encoding">
+                  <ref name="String"/>
+               </attribute>
+               <attribute name="escape-uri-attributes">
+                  <ref name="Boolean"/>
+               </attribute>
+               <attribute name="html-version">
+                  <ref name="Decimal"/>
+               </attribute>
+               <attribute name="include-content-type">
+                  <ref name="Boolean"/>
+               </attribute>
+               <attribute name="indent">
+                  <ref name="Boolean"/>
+               </attribute>
+               <attribute name="item-separator">
+                  <ref name="String"/>
+               </attribute>
+               <attribute name="media-type">
+                  <ref name="String"/>
+               </attribute>
+               <attribute name="omit-xml-declaration">
+                  <ref name="Boolean"/>
+               </attribute>
+               <attribute name="parameter-document">
+                  <ref name="URI"/>
+               </attribute>
+               <attribute name="standalone">
+                  <ref name="OutputStandalone"/>
+               </attribute>
+               <attribute name="suppress-indentation">
+                  <list>
+                     <zeroOrMore>
+                        <ref name="QName"/>
+                     </zeroOrMore>
+                  </list>
+               </attribute>
+               <attribute name="undeclare-prefixes">
+                  <ref name="Boolean"/>
+               </attribute>
+               <attribute name="version">
+                  <ref name="OutputVersion"/>
+               </attribute>
+               <ref name="standard-attributes-except-version"/>
+            </choice>
+         </zeroOrMore>
+      </element>
+   </define>
+
+   <!--
+      ## Instructions
+   -->
+
+   <define name="assert">
+      <element name="assert">
+         <attribute name="test">
+            <ref name="Expression"/>
+         </attribute>
+         <optional>
+            <attribute name="error-code">
+               <choice>
+                  <ref name="QName"/>
+                  <ref name="AttributeValueTemplate"/>
+               </choice>
+            </attribute>
+         </optional>
+         <ref name="standard-attributes"/>
+         <ref name="value-attribute-or-content"/>
+      </element>
+   </define>
+
+   <define name="attribute">
+      <element name="attribute">
+         <attribute name="name">
+            <choice>
+               <ref name="QName"/>
+               <ref name="AttributeValueTemplate"/>
+            </choice>
+         </attribute>
+         <zeroOrMore>
+            <choice>
+               <attribute name="namespace">
+                  <choice>
+                     <ref name="URI"/>
+                     <ref name="AttributeValueTemplate"/>
+                  </choice>
+               </attribute>
+               <attribute name="separator">
+                  <choice>
+                     <ref name="String"/>
+                     <ref name="AttributeValueTemplate"/>
+                  </choice>
+               </attribute>
+            </choice>
+         </zeroOrMore>
+         <ref name="standard-attributes"/>
+         <ref name="value-attribute-or-content"/>
+      </element>
+   </define>
+
+   <define name="break">
+      <element name="break">
+         <ref name="standard-attributes"/>
+         <ref name="value-attribute-or-content"/>
+      </element>
+   </define>
+
+   <define name="call-template">
+      <element name="call-template">
+         <attribute name="name">
+            <ref name="QName"/>
+         </attribute>
+         <ref name="standard-attributes"/>
+         <zeroOrMore>
+            <ref name="with-param-for-templates"/>
+         </zeroOrMore>
+      </element>
+   </define>
+
+   <define name="catch">
+      <element name="catch">
+         <zeroOrMore>
+            <choice>
+               <attribute name="exception">
+                  <ref name="Expression"/>
+               </attribute>
+               <attribute name="when">
+                  <ref name="Expression"/>
+               </attribute>
+            </choice>
+         </zeroOrMore>
+         <ref name="standard-attributes"/>
+         <ref name="value-attribute-or-content"/>
+      </element>
+   </define>
+
+   <define name="choose">
+      <element name="choose">
+         <ref name="standard-attributes"/>
+         <oneOrMore>
+            <element name="when">
+               <attribute name="test">
+                  <ref name="Expression"/>
+               </attribute>
+               <ref name="standard-attributes"/>
+               <ref name="sequence-constructor"/>
+            </element>
+         </oneOrMore>
+         <optional>
+            <element name="otherwise">
+               <ref name="standard-attributes"/>
+               <ref name="sequence-constructor"/>
+            </element>
+         </optional>
+      </element>
+   </define>
+
+   <define name="comment">
+      <element name="comment">
+         <ref name="standard-attributes"/>
+         <ref name="value-attribute-or-content"/>
+      </element>
+   </define>
+
+   <define name="delegate">
+      <element name="delegate">
+         <attribute name="name">
+            <ref name="Name"/>
+         </attribute>
+         <optional>
+            <attribute name="as">
+               <ref name="Type"/>
+            </attribute>
+         </optional>
+         <ref name="standard-attributes"/>
+         <zeroOrMore>
+            <ref name="param"/>
+         </zeroOrMore>
+         <ref name="sequence-constructor"/>
+      </element>
+   </define>
+
+   <define name="element">
+      <element name="element">
+         <attribute name="name">
+            <choice>
+               <ref name="QName"/>
+               <ref name="AttributeValueTemplate"/>
+            </choice>
+         </attribute>
+         <optional>
+            <attribute name="namespace">
+               <choice>
+                  <ref name="URI"/>
+                  <ref name="AttributeValueTemplate"/>
+               </choice>
+            </attribute>
+         </optional>
+         <ref name="standard-attributes"/>
+         <ref name="sequence-constructor"/>
+      </element>
+   </define>
+
+   <define name="evaluate-delegate">
+      <element name="evaluate-delegate">
+         <attribute name="value">
+            <ref name="Expression"/>
+         </attribute>
+         <ref name="standard-attributes"/>
+         <zeroOrMore>
+            <ref name="with-param-for-functions"/>
+         </zeroOrMore>
+      </element>
+   </define>
+
+   <define name="fallback">
+      <element name="fallback">
+         <ref name="standard-attributes"/>
+         <ref name="sequence-constructor"/>
+      </element>
+   </define>
+
+   <define name="finally">
+      <element name="finally">
+         <ref name="standard-attributes"/>
+         <ref name="value-attribute-or-content"/>
+      </element>
+   </define>
+
+   <define name="for-each">
+      <element name="for-each">
+         <attribute name="name">
+            <ref name="Name"/>
+         </attribute>
+         <attribute name="in">
+            <ref name="Expression"/>
+         </attribute>
+         <optional>
+            <attribute name="as">
+               <ref name="Type"/>
+            </attribute>
+         </optional>
+         <ref name="standard-attributes"/>
+         <zeroOrMore>
+            <element name="sort">
+               <zeroOrMore>
+                  <choice>
+                     <attribute name="value">
+                        <ref name="Expression"/>
+                     </attribute>
+                     <attribute name="order">
+                        <choice>
+                           <ref name="SortOrder"/>
+                           <ref name="AttributeValueTemplate"/>
+                        </choice>
+                     </attribute>
+                  </choice>
+               </zeroOrMore>
+            </element>
+         </zeroOrMore>
+         <ref name="sequence-constructor"/>
+      </element>
+   </define>
+
+   <define name="if">
+      <element name="if">
+         <attribute name="test">
+            <ref name="Expression"/>
+         </attribute>
+         <ref name="standard-attributes"/>
+         <ref name="sequence-constructor"/>
+      </element>
+   </define>
+
+   <define name="iterate">
+      <element name="iterate">
+         <attribute name="name">
+            <ref name="Name"/>
+         </attribute>
+         <attribute name="in">
+            <ref name="Expression"/>
+         </attribute>
+         <optional>
+            <attribute name="as">
+               <ref name="Type"/>
+            </attribute>
+         </optional>
+         <ref name="standard-attributes"/>
+         <zeroOrMore>
+            <ref name="param"/>
+         </zeroOrMore>
+         <optional>
+            <element name="on-completion">
+               <ref name="standard-attributes"/>
+               <ref name="value-attribute-or-content"/>
+            </element>
+         </optional>
+         <ref name="sequence-constructor"/>
+      </element>
+   </define>
+
+   <define name="message">
+      <element name="message">
+         <zeroOrMore>
+            <choice>
+               <attribute name="terminate">
+                  <choice>
+                     <ref name="Boolean"/>
+                     <ref name="AttributeValueTemplate"/>
+                  </choice>
+               </attribute>
+               <attribute name="error-code">
+                  <choice>
+                     <ref name="QName"/>
+                     <ref name="AttributeValueTemplate"/>
+                  </choice>
+               </attribute>
+            </choice>
+         </zeroOrMore>
+         <ref name="standard-attributes"/>
+         <ref name="value-attribute-or-content"/>
+      </element>
+   </define>
+
+   <define name="namespace">
+      <element name="namespace">
+         <attribute name="name">
+            <choice>
+               <ref name="Name"/>
+               <ref name="AttributeValueTemplate"/>
+            </choice>
+         </attribute>
+         <ref name="standard-attributes"/>
+         <ref name="value-attribute-or-content"/>
+      </element>
+   </define>
+
+   <define name="next-iteration">
+      <element name="next-iteration">
+         <ref name="standard-attributes"/>
+         <zeroOrMore>
+            <ref name="with-param-for-templates"/>
+         </zeroOrMore>
+      </element>
+   </define>
+
+   <define name="next-function">
+      <element name="next-function">
+         <ref name="standard-attributes"/>
+         <zeroOrMore>
+            <ref name="with-param-for-functions"/>
+         </zeroOrMore>
+      </element>
+   </define>
+
+   <define name="next-template">
+      <element name="next-template">
+         <ref name="standard-attributes"/>
+         <zeroOrMore>
+            <ref name="with-param-for-templates"/>
+         </zeroOrMore>
+      </element>
+   </define>
+
+   <define name="object">
+      <element name="object">
+         <ref name="standard-attributes"/>
+         <ref name="value-attribute-or-content"/>
+      </element>
+   </define>
+
+   <define name="processing-instruction">
+      <element name="processing-instruction">
+         <attribute name="name">
+            <choice>
+               <ref name="Name"/>
+               <ref name="AttributeValueTemplate"/>
+            </choice>
+         </attribute>
+         <ref name="standard-attributes"/>
+         <ref name="value-attribute-or-content"/>
+      </element>
+   </define>
+
+   <define name="result-document">
+      <element name="result-document">
+         <attribute name="href">
+            <choice>
+               <ref name="URI"/>
+               <ref name="AttributeValueTemplate"/>
+            </choice>
+         </attribute>
+         <ref name="output-avt-attributes"/>
+         <ref name="standard-attributes"/>
+      </element>
+   </define>
+
+   <define name="return">
+      <element name="return">
+         <ref name="standard-attributes"/>
+         <ref name="value-attribute-or-content"/>
+      </element>
+   </define>
+
+   <define name="script">
+      <element name="script">
+         <ref name="standard-attributes"/>
+         <text/>
+      </element>
+   </define>
+
+   <define name="serialize">
+      <element name="serialize">
+         <ref name="output-avt-attributes"/>
+         <ref name="standard-attributes"/>
+         <ref name="sequence-constructor"/>
+      </element>
+   </define>
+
+   <define name="set">
+      <element name="set">
+         <attribute name="member">
+            <ref name="Expression"/>
+         </attribute>
+         <ref name="standard-attributes"/>
+         <ref name="value-attribute-or-content"/>
+      </element>
+   </define>
+
+   <define name="text">
+      <element name="text">
+         <optional>
+            <attribute name="disable-output-escaping">
+               <ref name="Boolean"/>
+            </attribute>
+         </optional>
+         <ref name="standard-attributes"/>
+         <text/>
+      </element>
+   </define>
+
+   <define name="try">
+      <element name="try">
+         <optional>
+            <attribute name="rollback-output">
+               <ref name="Boolean"/>
+            </attribute>
+         </optional>
+         <ref name="standard-attributes"/>
+         <ref name="value-attribute-or-content"/>
+         <choice>
+            <group>
+               <oneOrMore>
+                  <ref name="catch"/>
+               </oneOrMore>
+               <optional>
+                  <ref name="finally"/>
+               </optional>
+            </group>
+            <ref name="finally"/>
+         </choice>
+      </element>
+   </define>
+
+   <define name="using">
+      <element name="using">
+         <attribute name="name">
+            <ref name="Name"/>
+         </attribute>
+         <attribute name="value">
+            <ref name="Expression"/>
+         </attribute>
+         <optional>
+            <attribute name="as">
+               <ref name="Type"/>
+            </attribute>
+         </optional>
+         <ref name="standard-attributes"/>
+         <ref name="sequence-constructor"/>
+      </element>
+   </define>
+
+   <define name="value-of">
+      <element name="value-of">
+         <zeroOrMore>
+            <choice>
+               <attribute name="disable-output-escaping">
+                  <ref name="Boolean"/>
+               </attribute>
+               <attribute name="separator">
+                  <choice>
+                     <ref name="String"/>
+                     <ref name="AttributeValueTemplate"/>
+                  </choice>
+               </attribute>
+            </choice>
+         </zeroOrMore>
+         <ref name="standard-attributes"/>
+         <ref name="value-attribute-or-content"/>
+      </element>
+   </define>
+
+   <define name="variable">
+      <element name="variable">
+         <attribute name="name">
+            <ref name="Name"/>
+         </attribute>
+         <optional>
+            <attribute name="as">
+               <ref name="Type"/>
+            </attribute>
+         </optional>
+         <ref name="standard-attributes"/>
+         <ref name="value-attribute-or-content"/>
+      </element>
+   </define>
+
+   <define name="void">
+      <element name="void">
+         <ref name="standard-attributes"/>
+         <ref name="value-attribute-or-content"/>
+      </element>
+   </define>
+
+   <define name="with-param-for-templates">
+      <element name="with-param">
+         <attribute name="name">
+            <ref name="Name"/>
+         </attribute>
+         <zeroOrMore>
+            <choice>
+               <attribute name="as">
+                  <ref name="Type"/>
+               </attribute>
+               <attribute name="tunnel">
+                  <ref name="Boolean"/>
+               </attribute>
+            </choice>
+         </zeroOrMore>
+         <ref name="standard-attributes"/>
+         <ref name="value-attribute-or-content"/>
+      </element>
+   </define>
+
+   <define name="with-param-for-functions">
+      <element name="with-param">
+         <zeroOrMore>
+            <choice>
+               <attribute name="name">
+                  <ref name="Name"/>
+               </attribute>
+               <attribute name="as">
+                  <ref name="Type"/>
+               </attribute>
+            </choice>
+         </zeroOrMore>
+         <ref name="standard-attributes"/>
+         <ref name="value-attribute-or-content"/>
+      </element>
+   </define>
+
+   <define name="output-avt-attributes">
+      <zeroOrMore>
+         <choice>
+            <attribute name="format">
+               <choice>
+                  <ref name="QName"/>
+                  <ref name="AttributeValueTemplate"/>
+               </choice>
+            </attribute>
+            <attribute name="method">
+               <choice>
+                  <ref name="OutputMethod"/>
+                  <ref name="AttributeValueTemplate"/>
+               </choice>
+            </attribute>
+            <attribute name="byte-order-mark">
+               <choice>
+                  <ref name="Boolean"/>
+                  <ref name="AttributeValueTemplate"/>
+               </choice>
+            </attribute>
+            <attribute name="cdata-section-elements">
+               <choice>
+                  <list>
+                     <zeroOrMore>
+                        <ref name="QName"/>
+                     </zeroOrMore>
+                  </list>
+                  <ref name="AttributeValueTemplate"/>
+               </choice>
+            </attribute>
+            <attribute name="doctype-public">
+               <choice>
+                  <ref name="String"/>
+                  <ref name="AttributeValueTemplate"/>
+               </choice>
+            </attribute>
+            <attribute name="doctype-system">
+               <choice>
+                  <ref name="String"/>
+                  <ref name="AttributeValueTemplate"/>
+               </choice>
+            </attribute>
+            <attribute name="encoding">
+               <choice>
+                  <ref name="String"/>
+                  <ref name="AttributeValueTemplate"/>
+               </choice>
+            </attribute>
+            <attribute name="escape-uri-attributes">
+               <choice>
+                  <ref name="Boolean"/>
+                  <ref name="AttributeValueTemplate"/>
+               </choice>
+            </attribute>
+            <attribute name="html-version">
+               <choice>
+                  <ref name="Decimal"/>
+                  <ref name="AttributeValueTemplate"/>
+               </choice>
+            </attribute>
+            <attribute name="include-content-type">
+               <choice>
+                  <ref name="Boolean"/>
+                  <ref name="AttributeValueTemplate"/>
+               </choice>
+            </attribute>
+            <attribute name="indent">
+               <choice>
+                  <ref name="Boolean"/>
+                  <ref name="AttributeValueTemplate"/>
+               </choice>
+            </attribute>
+            <attribute name="item-separator">
+               <choice>
+                  <ref name="String"/>
+                  <ref name="AttributeValueTemplate"/>
+               </choice>
+            </attribute>
+            <attribute name="media-type">
+               <choice>
+                  <ref name="String"/>
+                  <ref name="AttributeValueTemplate"/>
+               </choice>
+            </attribute>
+            <attribute name="omit-xml-declaration">
+               <choice>
+                  <ref name="Boolean"/>
+                  <ref name="AttributeValueTemplate"/>
+               </choice>
+            </attribute>
+            <attribute name="parameter-document">
+               <choice>
+                  <ref name="URI"/>
+                  <ref name="AttributeValueTemplate"/>
+               </choice>
+            </attribute>
+            <attribute name="standalone">
+               <choice>
+                  <ref name="OutputStandalone"/>
+                  <ref name="AttributeValueTemplate"/>
+               </choice>
+            </attribute>
+            <attribute name="suppress-indentation">
+               <choice>
+                  <list>
+                     <zeroOrMore>
+                        <ref name="QName"/>
+                     </zeroOrMore>
+                  </list>
+                  <ref name="AttributeValueTemplate"/>
+               </choice>
+            </attribute>
+            <attribute name="undeclare-prefixes">
+               <choice>
+                  <ref name="Boolean"/>
+                  <ref name="AttributeValueTemplate"/>
+               </choice>
+            </attribute>
+            <attribute name="output-version">
+               <choice>
+                  <ref name="OutputVersion"/>
+                  <ref name="AttributeValueTemplate"/>
+               </choice>
+            </attribute>
+         </choice>
+      </zeroOrMore>
+   </define>
+
+   <!--
+      ## Data Types
+   -->
+
+   <define name="String">
+      <data type="string"/>
+   </define>
+
+   <define name="Decimal">
+      <data type="decimal"/>
+   </define>
+
+   <define name="Integer">
+      <data type="int"/>
+   </define>
+
+   <define name="Boolean">
+      <a:documentation>One of the values "yes", "no", "true", "false", "1" or "0".</a:documentation>
+      <choice>
+         <value>yes</value>
+         <value>no</value>
+         <value>true</value>
+         <value>false</value>
+         <value>1</value>
+         <value>0</value>
+      </choice>
+   </define>
+
+   <define name="QName">
+      <!--
+         See <http://www.w3.org/TR/xslt20/#schema-for-xslt>
+      -->
+      <a:documentation>
+         A QName.
+         This schema does not use the built-in type xs:QName, but rather defines its own
+         QName type. Although xs:QName would define the correct validation on these attributes,
+         a schema processor would expand unprefixed QNames incorrectly when constructing the PSVI,
+         because (as defined in XML Schema errata) an unprefixed xs:QName is assumed to be in
+         the default namespace, which is not the correct assumption for XCST.
+         The data type is defined as a restriction of the built-in type Name, restricted
+         so that it can only contain one colon which must not be the first or last character.
+      </a:documentation>
+      <data type="Name">
+         <param name="pattern">([^:]+:)?[^:]+</param>
+      </data>
+   </define>
+
+   <define name="Name">
+      <data type="NCName"/>
+   </define>
+
+   <define name="Prefix">
+      <data type="NCName"/>
+   </define>
+
+   <define name="URI">
+      <data type="anyURI"/>
+   </define>
+
+   <define name="Version">
+      <data type="decimal"/>
+   </define>
+
+   <define name="Language">
+      <data type="token"/>
+   </define>
+
+   <define name="SortOrder">
+      <a:documentation>One of the values "ascending" or "descending".</a:documentation>
+      <choice>
+         <value>ascending</value>
+         <value>descending</value>
+      </choice>
+   </define>
+
+   <define name="AttributeValueTemplate">
+      <data type="string">
+         <param name="pattern">.*\{.+\}.*</param>
+      </data>
+   </define>
+
+   <define name="OutputMethod">
+      <choice>
+         <value>xml</value>
+         <value>html</value>
+         <value>xhtml</value>
+         <value>text</value>
+         <data type="QName">
+            <param name="pattern">.+:.+</param>
+         </data>
+      </choice>
+   </define>
+
+   <define name="OutputVersion">
+      <data type="NMTOKEN"/>
+   </define>
+
+   <define name="OutputStandalone">
+      <choice>
+         <ref name="Boolean"/>
+         <value>omit</value>
+      </choice>
+   </define>
+
+   <define name="Type">
+      <data type="token"/>
+   </define>
+
+   <define name="Expression">
+      <data type="string">
+         <param name="minLength">1</param>
+      </data>
+   </define>
+
+</grammar>

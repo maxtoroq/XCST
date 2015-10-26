@@ -41,6 +41,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xcst.Compiler.Tests", "test
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{3D9FCA40-C58E-428A-AE3C-480DF5724451}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "schemas", "schemas", "{A0812B4C-159C-4387-94AE-BEEC87FFFF86}"
+	ProjectSection(SolutionItems) = preProject
+		schemas\xcst.rng = schemas\xcst.rng
+		schemas\xcst.xsd = schemas\xcst.xsd
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
