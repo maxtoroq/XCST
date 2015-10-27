@@ -1257,7 +1257,7 @@
    <template match="c:void" mode="src:statement">
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
-      <value-of select="@value"/>
+      <call-template name="src:value"/>
       <value-of select="$src:statement-delimiter"/>
       <call-template name="src:line-default"/>
    </template>
