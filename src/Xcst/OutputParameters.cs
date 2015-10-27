@@ -243,6 +243,9 @@ namespace Xcst {
                case "omit-xml-declaration":
                   return OmitXmlDeclaration;
 
+               case "output-version":
+                  return Version;
+
                case "standalone":
                   return Standalone;
 

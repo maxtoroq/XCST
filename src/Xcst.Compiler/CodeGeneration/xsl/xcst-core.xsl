@@ -504,6 +504,7 @@
       <call-template name="src:new-line-indented"/>
       <text>try</text>
       <call-template name="src:apply-children">
+         <with-param name="value" select="@value"/>
          <with-param name="children" select="
             node()[not(self::c:catch
                or preceding-sibling::c:catch
@@ -529,6 +530,7 @@
          <text>)</text>
       </if>
       <call-template name="src:apply-children">
+         <with-param name="value" select="@value"/>
          <with-param name="ensure-block" select="true()"/>
       </call-template>
    </template>
@@ -538,6 +540,7 @@
       <call-template name="src:new-line-indented"/>
       <text>finally</text>
       <call-template name="src:apply-children">
+         <with-param name="value" select="@value"/>
          <with-param name="ensure-block" select="true()"/>
       </call-template>
    </template>
@@ -990,7 +993,7 @@
       <text>, new </text>
       <value-of select="src:global-identifier('Xcst.OutputParameters')"/>
       <call-template name="src:open-brace"/>
-      <for-each select="@* except (@format, @href, @validation, @type)">
+      <for-each select="@* except (@format, @href, @validation, @type, @version)">
          <variable name="setter" as="item()*">
             <apply-templates select="." mode="src:output-parameter-setter"/>
          </variable>
@@ -1030,7 +1033,7 @@
       <text>, new </text>
       <value-of select="src:global-identifier('Xcst.OutputParameters')"/>
       <call-template name="src:open-brace"/>
-      <for-each select="@* except (@format)">
+      <for-each select="@* except (@format, @version)">
          <variable name="setter" as="item()*">
             <apply-templates select="." mode="src:output-parameter-setter"/>
          </variable>
@@ -1142,7 +1145,7 @@
       </choose>
    </template>
 
-   <template match="@version" mode="src:output-parameter-setter">
+   <template match="@version | @output-version" mode="src:output-parameter-setter">
       <value-of select="src:output-parameter-property(.)"/>
       <text> = </text>
       <value-of select="src:string(xcst:string(.))"/>
@@ -1167,6 +1170,7 @@
             <method>Method</method>
             <normalization-form>NormalizationForm</normalization-form>
             <omit-xml-declaration>OmitXmlDeclaration</omit-xml-declaration>
+            <output-version>Version</output-version>
             <standalone>Standalone</standalone>
             <suppress-indentation>SuppressIndentation</suppress-indentation>
             <undeclare-prefixes>UndeclarePrefixes</undeclare-prefixes>
