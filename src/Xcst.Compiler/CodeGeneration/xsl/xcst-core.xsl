@@ -498,7 +498,8 @@
    <template match="c:try" mode="src:statement">
       <variable name="rollback" select="(@rollback-output/xcst:boolean(.), true())[1]"/>
       <if test="$rollback">
-         <!-- TODO: Buffering not implemented, throw error if creating nodes -->
+         <!-- TODO: Buffering -->
+         <sequence select="error((), 'Buffering not supported yet. Use @rollback-output=''no''.', src:error-object(.))"/>
       </if>
       <value-of select="$src:new-line"/>
       <call-template name="src:new-line-indented"/>
