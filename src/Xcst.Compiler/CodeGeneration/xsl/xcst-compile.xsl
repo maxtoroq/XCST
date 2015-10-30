@@ -417,6 +417,7 @@
 
       <if test="$current-index eq 1">
          <value-of select="$src:new-line"/>
+         <apply-templates select="c:metadata" mode="src:attribute"/>
          <call-template name="src:line-number"/>
          <call-template name="src:new-line-indented"/>
          <text>public class </text>
