@@ -21,7 +21,7 @@ namespace Xcst.Runtime {
    /// <exclude/>
    public static class SimpleContent {
 
-      public static string Join(IEnumerable value, string separator) {
+      public static string Join(string separator, IEnumerable value) {
 
          if (value == null) {
             return String.Empty;
@@ -30,7 +30,7 @@ namespace Xcst.Runtime {
          return String.Join(separator, value.Cast<object>().Where(v => v != null));
       }
 
-      public static string Join(object[] value, string separator) {
+      public static string Join(string separator, params object[] value) {
 
          if (value == null) {
             return String.Empty;
@@ -39,7 +39,7 @@ namespace Xcst.Runtime {
          return String.Join(separator, value.Where(v => v != null));
       }
 
-      public static string Join(string[] value, string separator) {
+      public static string Join(string separator, params string[] value) {
 
          if (value == null) {
             return String.Empty;
@@ -48,11 +48,11 @@ namespace Xcst.Runtime {
          return String.Join(separator, value.Where(v => v != null));
       }
 
-      public static string Join(string value, string separator) {
+      public static string Join(string separator, string value) {
          return value ?? String.Empty;
       }
 
-      public static string Join(object value, string separator) {
+      public static string Join(string separator, object value) {
          return Convert.ToString(value);
       }
    }

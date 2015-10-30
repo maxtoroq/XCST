@@ -1521,26 +1521,21 @@
       <param name="attribute" as="attribute()?"/>
       <param name="separator" select="()"/>
 
-      <if test="$attribute or *">
+      <variable name="join" select="$attribute or *"/>
+
+      <if test="$join">
          <value-of select="src:fully-qualified-helper('SimpleContent')"/>
          <text>.Join(</text>
+         <value-of select="if ($attribute) then ($separator, src:string(' '))[1] else src:string('')"/>
+         <text>, </text>
       </if>
       <call-template name="src:value">
          <with-param name="attribute" select="$attribute"/>
          <with-param name="fallback" select="src:string('')"/>
       </call-template>
-      <choose>
-         <when test="$attribute">
-            <text>, </text>
-            <value-of select="($separator, src:string(' '))[1]"/>
-            <text>)</text>
-         </when>
-         <when test="*">
-            <text>, </text>
-            <value-of select="src:string('')"/>
-            <text>)</text>
-         </when>
-      </choose>
+      <if test="$join">
+         <text>)</text>
+      </if>
    </template>
 
    <template name="src:value">

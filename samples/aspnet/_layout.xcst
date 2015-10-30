@@ -13,7 +13,7 @@
       <html>
          <head>
             <title>
-               <c:value-of value='new[] { title, siteTitle }' separator=' — '/>
+               <c:value-of value='title, siteTitle' separator=' — '/>
             </title>
             <link href='/css/bootstrap.min.css' rel='stylesheet'/>
             <link href='/css/site.min.css' rel='stylesheet'/>
