@@ -5,6 +5,8 @@ var rename = require('gulp-rename');
 var less = require('gulp-less');
 var minifyCSS = require('gulp-minify-css');
 
+gulp.task('all-js-css', ['copy-css', 'less-and-minify', 'copy-js']);
+
 gulp.task('copy-css', function () {
 
    var source = 'bower_components/';
@@ -32,7 +34,6 @@ gulp.task('less-and-minify', function () {
       .pipe(rename({ extname: '.min.css' }))
       .pipe(gulp.dest(dest));
 });
-
 
 gulp.task('copy-js', function () {
 
