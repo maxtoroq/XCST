@@ -302,9 +302,9 @@
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
       <text>foreach (</text>
-      <value-of select="(@as/xcst:string(.), 'var')[1]"/>
+      <value-of select="(@as/xcst:type(.), 'var')[1]"/>
       <text> </text>
-      <value-of select="xcst:string(@name)"/>
+      <value-of select="xcst:name(@name)"/>
       <text> in </text>
       <choose>
          <when test="c:sort">
@@ -350,9 +350,9 @@
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
       <text>foreach (</text>
-      <value-of select="(@as/xcst:string(.), 'var')[1]"/>
+      <value-of select="(@as/xcst:type(.), 'var')[1]"/>
       <text> </text>
-      <value-of select="xcst:string(@name)"/>
+      <value-of select="xcst:name(@name)"/>
       <text> in </text>
       <value-of select="@in"/>
       <text>)</text>
@@ -402,7 +402,7 @@
       <for-each select="c:with-param">
          <call-template name="src:line-number"/>
          <call-template name="src:new-line-indented"/>
-         <value-of select="xcst:string(@name)"/>
+         <value-of select="xcst:name(@name)"/>
          <text> = </text>
          <call-template name="src:value"/>
          <value-of select="$src:statement-delimiter"/>
@@ -553,10 +553,10 @@
    <template match="c:module/c:param | c:template/c:param" mode="src:statement">
       <param name="context-param" tunnel="yes"/>
 
-      <variable name="name" select="xcst:string(@name)"/>
+      <variable name="name" select="xcst:name(@name)"/>
       <variable name="text" select="xcst:text(.)"/>
       <variable name="has-default-value" select="xcst:has-value(., $text)"/>
-      <variable name="type" select="(@as/xcst:string(.), 'object')[1]"/>
+      <variable name="type" select="(@as/xcst:type(.), 'object')[1]"/>
       <variable name="required" select="(@required/xcst:boolean(.), false())[1]"/>
 
       <if test="$has-default-value and $required">
@@ -573,7 +573,7 @@
          <otherwise>
             <choose>
                <when test="@as">
-                  <value-of select="xcst:string(@as)"/>
+                  <value-of select="xcst:type(@as)"/>
                </when>
                <otherwise>var</otherwise>
             </choose>
@@ -637,13 +637,13 @@
       <variable name="text" select="xcst:text(.)"/>
       <choose>
          <when test="@as">
-            <value-of select="xcst:string(@as)"/>
+            <value-of select="xcst:type(@as)"/>
          </when>
          <when test="not(@value) and $text">string</when>
          <otherwise>var</otherwise>
       </choose>
       <text> </text>
-      <value-of select="xcst:string(@name)"/>
+      <value-of select="xcst:name(@name)"/>
       <if test="xcst:has-value(., $text)">
          <text> = </text>
          <call-template name="src:value">
@@ -660,7 +660,7 @@
          <call-template name="src:line-number"/>
          <call-template name="src:new-line-indented"/>
          <text>this.</text>
-         <value-of select="xcst:string(@name)"/>
+         <value-of select="xcst:name(@name)"/>
          <text> = </text>
          <call-template name="src:value">
             <with-param name="text" select="$text"/>
@@ -743,7 +743,7 @@
    <template match="c:with-param" mode="src:template-context">
       <call-template name="src:new-line-indented"/>
       <text>.WithParam(</text>
-      <value-of select="src:string(xcst:string(@name))"/>
+      <value-of select="src:string(xcst:name(@name))"/>
       <text>, </text>
       <call-template name="src:value"/>
       <if test="@tunnel">
@@ -769,7 +769,7 @@
       <for-each select="c:with-param">
          <if test="position() gt 1">, </if>
          <if test="@name">
-            <value-of select="xcst:string(@name)"/>
+            <value-of select="xcst:name(@name)"/>
             <text>: </text>
          </if>
          <call-template name="src:value"/>
@@ -1106,7 +1106,7 @@
       <text> = </text>
       <value-of select="src:global-identifier('System.Text.Encoding')"/>
       <text>.GetEncoding(</text>
-      <value-of select="src:verbatim-string(xcst:string(.))"/>
+      <value-of select="src:verbatim-string(string())"/>
       <text>)</text>
    </template>
 
@@ -1119,7 +1119,7 @@
    <template match="@method" mode="src:output-parameter-setter">
       <value-of select="src:output-parameter-property(.)"/>
       <text> = </text>
-      <variable name="string" select="xcst:string(.)"/>
+      <variable name="string" select="xcst:non-string(.)"/>
       <choose>
          <when test="$string = ('xml', 'html', 'xhtml', 'text')">
             <value-of select="src:QName(QName('', $string))"/>
@@ -1140,7 +1140,7 @@
       <value-of select="src:global-identifier('Xcst.XmlStandalone')"/>
       <text>.</text>
       <choose>
-         <when test="xcst:string(.) eq 'omit'">Omit</when>
+         <when test="xcst:non-string(.) eq 'omit'">Omit</when>
          <when test="xcst:boolean(.)">Yes</when>
          <otherwise>No</otherwise>
       </choose>
@@ -1149,7 +1149,7 @@
    <template match="@version | @output-version" mode="src:output-parameter-setter">
       <value-of select="src:output-parameter-property(.)"/>
       <text> = </text>
-      <value-of select="src:string(xcst:string(.))"/>
+      <value-of select="src:string(xcst:non-string(.))"/>
    </template>
 
    <function name="src:output-parameter-property" as="xs:string">
@@ -1191,10 +1191,10 @@
       <text>new </text>
       <value-of select="src:global-identifier(concat('System.', if (@as) then 'Func' else 'Action'))"/>
       <text>&lt;</text>
-      <value-of select="c:param/((@as/xcst:string(.), 'object')[1]), src:fully-qualified-helper('DynamicContext'), @as/xcst:string(.)" separator=", "/>
+      <value-of select="c:param/((@as/xcst:type(.), 'object')[1]), src:fully-qualified-helper('DynamicContext'), @as/xcst:type(.)" separator=", "/>
       <text>>(</text>
       <text>(</text>
-      <value-of select="c:param/xcst:string(@name), $new-context" separator=", "/>
+      <value-of select="c:param/xcst:name(@name), $new-context" separator=", "/>
       <text>) => </text>
       <call-template name="src:apply-children">
          <with-param name="children" select="node()[not(self::c:param or following-sibling::c:param)]"/>
@@ -1268,9 +1268,9 @@
       <call-template name="src:new-line-indented"/>
       <text>using (</text>
       <if test="@name">
-         <value-of select="(@as/xcst:string(.), 'var')[1]"/>
+         <value-of select="(@as/xcst:type(.), 'var')[1]"/>
          <text> </text>
-         <value-of select="xcst:string(@name)"/>
+         <value-of select="xcst:name(@name)"/>
          <text> = </text>
       </if>
       <value-of select="@value"/>
@@ -1326,7 +1326,7 @@
       </if>
    </function>
 
-   <function name="xcst:string" as="xs:string">
+   <function name="xcst:non-string" as="xs:string">
       <param name="node" as="node()"/>
 
       <sequence select="replace($node, '^\s*(.+?)\s*$', '$1')"/>
@@ -1349,7 +1349,7 @@
    <function name="xcst:avt-boolean" as="xs:boolean?">
       <param name="node" as="node()"/>
 
-      <variable name="string" select="xcst:string($node)"/>
+      <variable name="string" select="xcst:non-string($node)"/>
       <sequence select="
          if ($string = ('yes', 'true', '1')) then 
             true()
@@ -1365,14 +1365,14 @@
    <function name="xcst:decimal" as="xs:decimal">
       <param name="node" as="node()"/>
 
-      <variable name="string" select="xcst:string($node)"/>
+      <variable name="string" select="xcst:non-string($node)"/>
       <sequence select="xs:decimal($string)"/>
    </function>
 
    <function name="xcst:integer" as="xs:integer">
       <param name="node" as="node()"/>
 
-      <variable name="string" select="xcst:string($node)"/>
+      <variable name="string" select="xcst:non-string($node)"/>
       <sequence select="xs:integer($string)"/>
    </function>
 
@@ -1393,7 +1393,7 @@
    <function name="xcst:avt-sort-order-descending" as="xs:boolean?">
       <param name="node" as="node()"/>
 
-      <variable name="string" select="xcst:string($node)"/>
+      <variable name="string" select="xcst:non-string($node)"/>
       <sequence select="
          if ($string = ('ascending')) then 
             false()
@@ -1406,6 +1406,20 @@
       "/>
    </function>
 
+   <function name="xcst:type" as="xs:string">
+      <param name="node" as="node()"/>
+      
+      <variable name="string" select="xcst:non-string($node)"/>
+      <sequence select="$string"/>
+   </function>
+
+   <function name="xcst:name" as="xs:string">
+      <param name="node" as="node()"/>
+
+      <variable name="string" select="xcst:non-string($node)"/>
+      <sequence select="$string"/>
+   </function>
+   
    <function name="xcst:is-avt" as="xs:boolean">
       <param name="node" as="node()"/>
 
@@ -1592,7 +1606,7 @@
    <function name="src:overriden-function-method-name" as="xs:string">
       <param name="function" as="element(c:function)"/>
 
-      <sequence select="concat($function/xcst:string(@name), '_', generate-id($function))"/>
+      <sequence select="concat($function/xcst:name(@name), '_', generate-id($function))"/>
    </function>
 
    <function name="src:expand-text" as="xs:string">

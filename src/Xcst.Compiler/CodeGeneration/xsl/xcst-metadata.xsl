@@ -97,7 +97,7 @@
    </template>
 
    <template match="@resource-type" mode="src:display-setter">
-      <value-of select="'ResourceType', concat('typeof(', xcst:string(.), ')')" separator=" = "/>
+      <value-of select="'ResourceType', concat('typeof(', xcst:type(.), ')')" separator=" = "/>
    </template>
 
    <!--
@@ -205,7 +205,7 @@
 
    <template name="src:data-type-attribute">
       <if test="@data-type">
-         <variable name="data-type" select="xcst:string(@data-type)"/>
+         <variable name="data-type" select="xcst:non-string(@data-type)"/>
          <variable name="setters" as="text()*">
             <call-template name="src:validation-setters">
                <with-param name="name" select="name(@data-type)"/>
@@ -358,7 +358,7 @@
          <text>[</text>
          <value-of select="src:global-identifier('System.ComponentModel.DataAnnotations.Range')"/>
          <text>(</text>
-         <value-of select="concat('typeof(', xcst:string(@as), ')')
+         <value-of select="concat('typeof(', xcst:type(@as), ')')
             , src:verbatim-string(@min)
             , src:verbatim-string(@max)
             , $setters/string()" separator=", "/>
@@ -391,7 +391,7 @@
    </template>
 
    <template match="@equal-to" mode="src:compare-setter">
-      <value-of select="concat('nameof(', xcst:string(.), ')')"/>
+      <value-of select="concat('nameof(', xcst:non-string(.), ')')"/>
    </template>
 
    <!--
@@ -438,7 +438,7 @@
    </template>
 
    <template match="@error-resource-type" mode="src:validation-setter">
-      <value-of select="'ErrorMessageResourceType', concat('typeof(', xcst:string(.), ')')" separator=" = "/>
+      <value-of select="'ErrorMessageResourceType', concat('typeof(', xcst:type(.), ')')" separator=" = "/>
    </template>
 
 </stylesheet>

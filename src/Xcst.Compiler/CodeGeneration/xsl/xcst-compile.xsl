@@ -52,7 +52,7 @@
          <for-each select="$modules[position() lt last()]">
             <src:import href="{document-uri(root())}"/>
          </for-each>
-         <for-each-group select="for $m in reverse($modules) return $m/c:param" group-by="@name/xcst:string(.)">
+         <for-each-group select="for $m in reverse($modules) return $m/c:param" group-by="@name/xcst:name(.)">
             <src:param>
                <copy-of select="namespace::*, @* except @value"/>
             </src:param>
@@ -67,7 +67,7 @@
                </for-each>
             </src:template>
          </for-each-group>
-         <for-each-group select="for $m in reverse($modules) return $m/c:type" group-by="@name/xcst:string(.)">
+         <for-each-group select="for $m in reverse($modules) return $m/c:type" group-by="@name/xcst:name(.)">
             <src:type>
                <copy-of select="@name"/>
             </src:type>
@@ -224,7 +224,7 @@
             <choose>
                <when test="$src:alternate-first-base-type
                   and $src:alternate-first-base-type-if-exists-type
-                  and $modules/c:type[@name/xcst:string(.) = $src:alternate-first-base-type-if-exists-type]">
+                  and $modules/c:type[@name/xcst:name(.) = $src:alternate-first-base-type-if-exists-type]">
                   <sequence select="$src:alternate-first-base-type, $src:base-types[position() gt 1]"/>
                </when>
                <otherwise>
@@ -237,7 +237,7 @@
       </if>
       <call-template name="src:open-brace"/>
       <for-each select="c:param | c:variable">
-         <if test="not($modules[position() gt $module-pos]/c:*[local-name() eq current()/local-name() and @name/xcst:string(.) = current()/@name/xcst:string(.)])">
+         <if test="not($modules[position() gt $module-pos]/c:*[local-name() eq current()/local-name() and @name/xcst:name(.) = current()/@name/xcst:name(.)])">
             <apply-templates select="." mode="src:member">
                <with-param name="indent" select="$indent + 1" tunnel="yes"/>
             </apply-templates>
@@ -280,7 +280,7 @@
 
    <template match="c:param | c:variable" mode="src:member">
 
-      <if test="preceding-sibling::*[node-name(.) eq node-name(current()) and @name/xcst:string(.) = current()/@name/xcst:string(.)]">
+      <if test="preceding-sibling::*[node-name(.) eq node-name(current()) and @name/xcst:name(.) = current()/@name/xcst:name(.)]">
          <sequence select="error(xs:QName('err:XTSE0630'), 'Duplicate global variable declaration.', src:error-object(.))"/>
       </if>
 
@@ -289,13 +289,13 @@
       <variable name="text" select="xcst:text(.)"/>
       <choose>
          <when test="@as">
-            <value-of select="xcst:string(@as)"/>
+            <value-of select="xcst:type(@as)"/>
          </when>
          <when test="not(@value) and $text">string</when>
          <otherwise>object</otherwise>
       </choose>
       <text> </text>
-      <value-of select="xcst:string(@name)"/>
+      <value-of select="xcst:name(@name)"/>
       <value-of select="$src:statement-delimiter"/>
       <call-template name="src:line-default"/>
    </template>
@@ -355,7 +355,7 @@
       <variable name="current-function" select="."/>
       <variable name="functions" select="
          for $m in reverse($modules) 
-         return $m/c:function[@name/xcst:string(.) eq current()/@name/xcst:string(.) and count(c:param) eq count(current()/c:param)]"/>
+         return $m/c:function[@name/xcst:name(.) eq current()/@name/xcst:name(.) and count(c:param) eq count(current()/c:param)]"/>
       <variable name="current-index" select="
          for $pos in (1 to count($functions)) 
          return (if ($functions[$pos] is current()) then $pos else ())"/>
@@ -370,23 +370,23 @@
          <text>)]</text>
       </if>
       <call-template name="src:new-line-indented"/>
-      <value-of select="(@as/xcst:string(.), 'void')[1]"/>
+      <value-of select="(@as/xcst:type(.), 'void')[1]"/>
       <text> </text>
       <value-of select="if ($current-index gt 1) then 
          src:overriden-function-method-name(.)
-         else xcst:string(@name)"/>
+         else xcst:name(@name)"/>
       <text>(</text>
       <for-each select="c:param">
          <variable name="text" select="xcst:text(.)"/>
          <variable name="type" select="
-            if (@as) then @as/xcst:string(.)
+            if (@as) then @as/xcst:type(.)
             else if (not(@value) and $text) then 'string'
             else 'object'
          "/>
          <if test="position() gt 1">, </if>
          <value-of select="$type"/>
          <text> </text>
-         <value-of select="xcst:string(@name)"/>
+         <value-of select="xcst:name(@name)"/>
          <if test="xcst:has-value(., $text)">
             <text> = </text>
             <call-template name="src:value">
@@ -410,7 +410,7 @@
       <variable name="current-type" select="."/>
       <variable name="types" select="
          for $m in reverse($modules) 
-         return $m/c:type[@name/xcst:string(.) eq current()/@name/xcst:string(.)]"/>
+         return $m/c:type[@name/xcst:name(.) eq current()/@name/xcst:name(.)]"/>
       <variable name="current-index" select="
          for $pos in (1 to count($types)) 
          return (if ($types[$pos] is current()) then $pos else ())"/>
@@ -421,7 +421,7 @@
          <call-template name="src:line-number"/>
          <call-template name="src:new-line-indented"/>
          <text>public class </text>
-         <value-of select="xcst:string(@name)"/>
+         <value-of select="xcst:name(@name)"/>
          <call-template name="src:open-brace"/>
          <call-template name="src:line-default">
             <with-param name="indent" select="$indent + 1" tunnel="yes"/>
@@ -443,9 +443,9 @@
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
       <text>public </text>
-      <value-of select="(@as/xcst:string(.), src:anonymous-type-name(.))[1]"/>
+      <value-of select="(@as/xcst:type(.), src:anonymous-type-name(.))[1]"/>
       <text> </text>
-      <value-of select="xcst:string(@name)"/>
+      <value-of select="xcst:name(@name)"/>
       <text> { get; set; }</text>
       <if test="@value">
          <text> = </text>
@@ -477,7 +477,7 @@
    <function name="src:anonymous-type-name" as="xs:string">
       <param name="member" as="element(c:member)"/>
 
-      <sequence select="concat($member/@name/xcst:string(.), '_', generate-id($member))"/>
+      <sequence select="concat($member/@name/xcst:name(.), '_', generate-id($member))"/>
    </function>
 
    <!--
@@ -564,7 +564,7 @@
          </for-each>
       </if>
       <for-each select="c:param | c:variable">
-         <if test="not($modules[position() gt $module-pos]/c:*[local-name() eq current()/local-name() and @name/xcst:string(.) = current()/@name/xcst:string(.)])">
+         <if test="not($modules[position() gt $module-pos]/c:*[local-name() eq current()/local-name() and @name/xcst:name(.) = current()/@name/xcst:name(.)])">
             <apply-templates select="." mode="src:statement">
                <with-param name="indent" select="$indent + 1" tunnel="yes"/>
                <with-param name="context-param" select="$context-param" tunnel="yes"/>
