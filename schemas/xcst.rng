@@ -126,10 +126,7 @@
                      <nsName/>
                   </except>
                </anyName>
-               <choice>
-                  <ref name="String"/>
-                  <ref name="AttributeValueTemplate"/>
-               </choice>
+               <ref name="AVT"/>
             </attribute>
             <attribute name="c:expand-text">
                <ref name="Boolean"/>
@@ -599,7 +596,7 @@
             <attribute name="error-code">
                <choice>
                   <ref name="QName"/>
-                  <ref name="AttributeValueTemplate"/>
+                  <ref name="AVTExpr"/>
                </choice>
             </attribute>
          </optional>
@@ -613,7 +610,7 @@
          <attribute name="name">
             <choice>
                <ref name="QName"/>
-               <ref name="AttributeValueTemplate"/>
+               <ref name="AVTExpr"/>
             </choice>
          </attribute>
          <zeroOrMore>
@@ -621,14 +618,11 @@
                <attribute name="namespace">
                   <choice>
                      <ref name="URI"/>
-                     <ref name="AttributeValueTemplate"/>
+                     <ref name="AVTExpr"/>
                   </choice>
                </attribute>
                <attribute name="separator">
-                  <choice>
-                     <ref name="String"/>
-                     <ref name="AttributeValueTemplate"/>
-                  </choice>
+                  <ref name="AVT"/>
                </attribute>
             </choice>
          </zeroOrMore>
@@ -724,14 +718,14 @@
          <attribute name="name">
             <choice>
                <ref name="QName"/>
-               <ref name="AttributeValueTemplate"/>
+               <ref name="AVTExpr"/>
             </choice>
          </attribute>
          <optional>
             <attribute name="namespace">
                <choice>
                   <ref name="URI"/>
-                  <ref name="AttributeValueTemplate"/>
+                  <ref name="AVTExpr"/>
                </choice>
             </attribute>
          </optional>
@@ -790,7 +784,7 @@
                      <attribute name="order">
                         <choice>
                            <ref name="SortOrder"/>
-                           <ref name="AttributeValueTemplate"/>
+                           <ref name="AVTExpr"/>
                         </choice>
                      </attribute>
                   </choice>
@@ -845,13 +839,13 @@
                <attribute name="terminate">
                   <choice>
                      <ref name="Boolean"/>
-                     <ref name="AttributeValueTemplate"/>
+                     <ref name="AVTExpr"/>
                   </choice>
                </attribute>
                <attribute name="error-code">
                   <choice>
                      <ref name="QName"/>
-                     <ref name="AttributeValueTemplate"/>
+                     <ref name="AVTExpr"/>
                   </choice>
                </attribute>
             </choice>
@@ -866,7 +860,7 @@
          <attribute name="name">
             <choice>
                <ref name="Name"/>
-               <ref name="AttributeValueTemplate"/>
+               <ref name="AVTExpr"/>
             </choice>
          </attribute>
          <ref name="standard-attributes"/>
@@ -913,7 +907,7 @@
          <attribute name="name">
             <choice>
                <ref name="Name"/>
-               <ref name="AttributeValueTemplate"/>
+               <ref name="AVTExpr"/>
             </choice>
          </attribute>
          <ref name="standard-attributes"/>
@@ -926,7 +920,7 @@
          <attribute name="href">
             <choice>
                <ref name="URI"/>
-               <ref name="AttributeValueTemplate"/>
+               <ref name="AVTExpr"/>
             </choice>
          </attribute>
          <ref name="output-avt-attributes"/>
@@ -1027,10 +1021,7 @@
                   <ref name="Boolean"/>
                </attribute>
                <attribute name="separator">
-                  <choice>
-                     <ref name="String"/>
-                     <ref name="AttributeValueTemplate"/>
-                  </choice>
+                  <ref name="AVT"/>
                </attribute>
             </choice>
          </zeroOrMore>
@@ -1104,19 +1095,19 @@
             <attribute name="format">
                <choice>
                   <ref name="QName"/>
-                  <ref name="AttributeValueTemplate"/>
+                  <ref name="AVTExpr"/>
                </choice>
             </attribute>
             <attribute name="method">
                <choice>
                   <ref name="OutputMethod"/>
-                  <ref name="AttributeValueTemplate"/>
+                  <ref name="AVTExpr"/>
                </choice>
             </attribute>
             <attribute name="byte-order-mark">
                <choice>
                   <ref name="Boolean"/>
-                  <ref name="AttributeValueTemplate"/>
+                  <ref name="AVTExpr"/>
                </choice>
             </attribute>
             <attribute name="cdata-section-elements">
@@ -1126,79 +1117,64 @@
                         <ref name="QName"/>
                      </zeroOrMore>
                   </list>
-                  <ref name="AttributeValueTemplate"/>
+                  <ref name="AVTExpr"/>
                </choice>
             </attribute>
             <attribute name="doctype-public">
-               <choice>
-                  <ref name="String"/>
-                  <ref name="AttributeValueTemplate"/>
-               </choice>
+               <ref name="AVT"/>
             </attribute>
             <attribute name="doctype-system">
-               <choice>
-                  <ref name="String"/>
-                  <ref name="AttributeValueTemplate"/>
-               </choice>
+               <ref name="AVT"/>
             </attribute>
             <attribute name="encoding">
-               <choice>
-                  <ref name="String"/>
-                  <ref name="AttributeValueTemplate"/>
-               </choice>
+               <ref name="AVT"/>
             </attribute>
             <attribute name="escape-uri-attributes">
                <choice>
                   <ref name="Boolean"/>
-                  <ref name="AttributeValueTemplate"/>
+                  <ref name="AVTExpr"/>
                </choice>
             </attribute>
             <attribute name="html-version">
                <choice>
                   <ref name="Decimal"/>
-                  <ref name="AttributeValueTemplate"/>
+                  <ref name="AVTExpr"/>
                </choice>
             </attribute>
             <attribute name="include-content-type">
                <choice>
                   <ref name="Boolean"/>
-                  <ref name="AttributeValueTemplate"/>
+                  <ref name="AVTExpr"/>
                </choice>
             </attribute>
             <attribute name="indent">
                <choice>
                   <ref name="Boolean"/>
-                  <ref name="AttributeValueTemplate"/>
+                  <ref name="AVTExpr"/>
                </choice>
             </attribute>
             <attribute name="item-separator">
-               <choice>
-                  <ref name="String"/>
-                  <ref name="AttributeValueTemplate"/>
-               </choice>
+               <ref name="AVT"/>
             </attribute>
             <attribute name="media-type">
-               <choice>
-                  <ref name="String"/>
-                  <ref name="AttributeValueTemplate"/>
-               </choice>
+               <ref name="AVT"/>
             </attribute>
             <attribute name="omit-xml-declaration">
                <choice>
                   <ref name="Boolean"/>
-                  <ref name="AttributeValueTemplate"/>
+                  <ref name="AVTExpr"/>
                </choice>
             </attribute>
             <attribute name="parameter-document">
                <choice>
                   <ref name="URI"/>
-                  <ref name="AttributeValueTemplate"/>
+                  <ref name="AVTExpr"/>
                </choice>
             </attribute>
             <attribute name="standalone">
                <choice>
                   <ref name="OutputStandalone"/>
-                  <ref name="AttributeValueTemplate"/>
+                  <ref name="AVTExpr"/>
                </choice>
             </attribute>
             <attribute name="suppress-indentation">
@@ -1208,19 +1184,19 @@
                         <ref name="QName"/>
                      </zeroOrMore>
                   </list>
-                  <ref name="AttributeValueTemplate"/>
+                  <ref name="AVTExpr"/>
                </choice>
             </attribute>
             <attribute name="undeclare-prefixes">
                <choice>
                   <ref name="Boolean"/>
-                  <ref name="AttributeValueTemplate"/>
+                  <ref name="AVTExpr"/>
                </choice>
             </attribute>
             <attribute name="output-version">
                <choice>
                   <ref name="OutputVersion"/>
-                  <ref name="AttributeValueTemplate"/>
+                  <ref name="AVTExpr"/>
                </choice>
             </attribute>
          </choice>
@@ -1302,7 +1278,11 @@
       </choice>
    </define>
 
-   <define name="AttributeValueTemplate">
+   <define name="AVT">
+      <ref name="String"/>
+   </define>
+   
+   <define name="AVTExpr">
       <data type="string">
          <param name="pattern">.*\{.+\}.*</param>
       </data>
