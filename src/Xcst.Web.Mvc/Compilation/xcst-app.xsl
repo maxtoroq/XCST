@@ -40,8 +40,7 @@
                <variable name="param" select="src:aux-variable(generate-id())"/>
                <value-of select="$param"/>
                <text> => </text>
-               <value-of select="$param"/>
-               <value-of select="@for"/>
+               <value-of select="$param, @for" separator="."/>
             </when>
             <otherwise>
                <value-of select="(@name/src:expand-attribute(.), src:string(''))[1]"/>
@@ -78,8 +77,7 @@
                <variable name="param" select="src:aux-variable(generate-id())"/>
                <value-of select="$param"/>
                <text> => </text>
-               <value-of select="$param"/>
-               <value-of select="@for"/>
+               <value-of select="$param, @for" separator="."/>
             </when>
             <otherwise>
                <value-of select="(@name/src:expand-attribute(.), src:string(''))[1]"/>
@@ -112,8 +110,7 @@
                <variable name="param" select="src:aux-variable(generate-id())"/>
                <value-of select="$param"/>
                <text> => </text>
-               <value-of select="$param"/>
-               <value-of select="@for"/>
+               <value-of select="$param, @for" separator="."/>
             </when>
             <otherwise>
                <value-of select="(@name/src:expand-attribute(.), src:string(''))[1]"/>
@@ -146,8 +143,7 @@
                <variable name="param" select="src:aux-variable(generate-id())"/>
                <value-of select="$param"/>
                <text> => </text>
-               <value-of select="$param"/>
-               <value-of select="@for"/>
+               <value-of select="$param, @for" separator="."/>
             </when>
             <otherwise>
                <value-of select="(@name/src:expand-attribute(.), src:string(''))[1]"/>
@@ -186,8 +182,7 @@
                <variable name="param" select="src:aux-variable(generate-id())"/>
                <value-of select="$param"/>
                <text> => </text>
-               <value-of select="$param"/>
-               <value-of select="@for"/>
+               <value-of select="$param, @for" separator="."/>
             </when>
             <otherwise>
                <value-of select="(@name/src:expand-attribute(.), src:string(''))[1]"/>
@@ -222,8 +217,7 @@
                <variable name="param" select="src:aux-variable(generate-id())"/>
                <value-of select="$param"/>
                <text> => </text>
-               <value-of select="$param"/>
-               <value-of select="@for"/>
+               <value-of select="$param, @for" separator="."/>
             </when>
             <otherwise>
                <value-of select="(@name/src:expand-attribute(.), src:string(''))[1]"/>
@@ -262,8 +256,7 @@
                <variable name="param" select="src:aux-variable(generate-id())"/>
                <value-of select="$param"/>
                <text> => </text>
-               <value-of select="$param"/>
-               <value-of select="@for"/>
+               <value-of select="$param, @for" separator="."/>
             </when>
             <otherwise>
                <value-of select="(@name/src:expand-attribute(.), src:string(''))[1]"/>
@@ -332,8 +325,7 @@
                <variable name="param" select="src:aux-variable(generate-id())"/>
                <value-of select="$param"/>
                <text> => </text>
-               <value-of select="$param"/>
-               <value-of select="@for"/>
+               <value-of select="$param, @for" separator="."/>
             </when>
             <when test="$a:model-metadata">
                <value-of select="concat($a:model-metadata, '.PropertyName')"/>
@@ -413,9 +405,7 @@
                <variable name="param" select="src:aux-variable(generate-id())"/>
                <value-of select="$param"/>
                <text> => </text>
-               <value-of select="$param"/>
-               <text>.</text>
-               <value-of select="@for"/>
+               <value-of select="$param, @for" separator="."/>
             </when>
             <when test="$a:model-metadata">
                <value-of select="concat($a:model-metadata, '.PropertyName')"/>
@@ -559,8 +549,7 @@
                <variable name="param" select="src:aux-variable(generate-id())"/>
                <value-of select="$param"/>
                <text> => </text>
-               <value-of select="$param"/>
-               <value-of select="@for"/>
+               <value-of select="$param, @for" separator="."/>
             </when>
             <when test="@name">
                <value-of select="src:expand-attribute(@name)"/>
@@ -603,9 +592,7 @@
                <variable name="param" select="src:aux-variable(generate-id())"/>
                <value-of select="$param"/>
                <text> => </text>
-               <value-of select="$param"/>
-               <text>.</text>
-               <value-of select="@for"/>
+               <value-of select="$param, @for" separator="."/>
             </when>
             <otherwise>
                <value-of select="src:expand-attribute(@name)"/>
@@ -641,9 +628,7 @@
                <variable name="param" select="src:aux-variable(generate-id())"/>
                <value-of select="$param"/>
                <text> => </text>
-               <value-of select="$param"/>
-               <text>.</text>
-               <value-of select="@for"/>
+               <value-of select="$param, @for" separator="."/>
             </when>
             <otherwise>
                <value-of select="src:expand-attribute(@name)"/>
