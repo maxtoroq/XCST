@@ -97,27 +97,26 @@
    <c:template name='content' expand-text='yes'>
       <c:param name='contact' value='new Contact()'/>
 
-      <c:if test='IsPost'>
-         <a:anti-forgery-validate/>
-         <a:try-update value='contact'>
-            <a:success>
-               <c:if test='SendMail(contact)'>
-                  <a:clear-model-state/>
-                  <c:set member='contact' value='null'/>
-                  <div class='alert alert-success alert-dismissable'>
-                     <button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&#215;</button>
-                     <c:text>Thanks for contacting us. We'll get back to you shortly.</c:text>
-                  </div>
-               </c:if>
-            </a:success>
-         </a:try-update>
-      </c:if>
-
-      <h1>{title}</h1>
-      <div class='row'>
-         <div class='col-md-8'>
-            <form method='post' class='form-horizontal'>
-               <a:model value='contact'>
+      <a:model value='contact'>
+         <c:if test='IsPost'>
+            <a:anti-forgery-validate/>
+            <a:try-update-model>
+               <a:success>
+                  <c:if test='SendMail(contact)'>
+                     <a:clear-model-state/>
+                     <a:set-model value='null'/>
+                     <div class='alert alert-success alert-dismissable'>
+                        <button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&#215;</button>
+                        <c:text>Thanks for contacting us. We'll get back to you shortly.</c:text>
+                     </div>
+                  </c:if>
+               </a:success>
+            </a:try-update-model>
+         </c:if>
+         <h1>{title}</h1>
+         <div class='row'>
+            <div class='col-md-8'>
+               <form method='post' class='form-horizontal'>
                   <a:anti-forgery-token/>
                   <a:validation-summary exclude-member-errors='true'/>
                   <a:editor-for-model html-label-column-class='col-md-3' html-field-column-class='col-md-9'/>
@@ -126,10 +125,10 @@
                         <button type='submit' class='btn btn-primary'>Send</button>
                      </div>
                   </div>
-               </a:model>
-            </form>
+               </form>
+            </div>
          </div>
-      </div>
+      </a:model>
    </c:template>
 
 </c:module>

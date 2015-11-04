@@ -613,7 +613,7 @@
          </choose>
          <text>)</text>
       </variable>
-      <c:object value="this.Server.HtmlDecode({$expr}.ToString())"/>
+      <c:object value="{src:global-identifier('System.Web.HttpUtility')}.HtmlDecode({$expr}.ToString())"/>
    </template>
 
    <template match="a:display-name-for-model" mode="src:extension-instruction">
@@ -623,7 +623,7 @@
          <call-template name="a:html-helper"/>
          <text>)</text>
       </variable>
-      <c:object value="this.Server.HtmlDecode({$expr}.ToString())"/>
+      <c:object value="{src:global-identifier('System.Web.HttpUtility')}.HtmlDecode({$expr}.ToString())"/>
    </template>
 
    <template match="a:display-text" mode="src:extension-instruction">
@@ -659,7 +659,11 @@
    -->
 
    <template match="a:clear-model-state" mode="src:extension-instruction">
-      <c:void value="this.ModelState.Clear()"/>
+      <variable name="expr">
+         <call-template name="a:html-helper"/>
+         <text>.ViewDataContainer.ViewData.ModelState.Clear()</text>
+      </variable>
+      <c:void value="{$expr}"/>
    </template>
 
    <!--
@@ -669,11 +673,15 @@
    <template match="a:try-update | a:try-update-model" mode="src:extension-instruction">
       <variable name="update-model" select="self::a:try-update-model"/>
       <variable name="expr">
-         <text>this.TryUpdate</text>
+         <value-of select="a:fully-qualified-helper('ModelUpdater')"/>
+         <text>.Create(</text>
+         <call-template name="a:html-helper"/>
+         <if test="$update-model">, createModelIfNull: true</if>
+         <text>)</text>
+         <text>.TryUpdate</text>
          <if test="$update-model">Model</if>
          <text>(</text>
          <if test="not($update-model)">
-            <text>value: </text>
             <value-of select="@value"/>
          </if>
          <for-each select="@type, @prefix">
@@ -740,6 +748,13 @@
       </call-template>
    </template>
 
+   <template match="a:set-model" mode="src:extension-instruction">
+      <variable name="html-helper">
+         <call-template name="a:html-helper"/>
+      </variable>
+      <c:void value="{a:fully-qualified-helper('ModelUpdater')}.SetModel({$html-helper}, {@value})"/>
+   </template>
+      
    <template match="a:anti-forgery-token" mode="src:extension-instruction">
       <variable name="expr">
          <call-template name="a:html-helper"/>

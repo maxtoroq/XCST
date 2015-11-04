@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System;
-using System.ComponentModel;
 using System.Web.Mvc;
 
 namespace Xcst.Web.Mvc {
@@ -33,17 +32,7 @@ namespace Xcst.Web.Mvc {
          set { SetViewData(value); }
       }
 
-      public new TModel Model {
-         get { return ViewData.Model; }
-         set {
-            // setting ViewDataDictionary.Model resets ModelMetadata back to null
-            // ViewDataDictionary<TModel>.Model doesn't, that's why we call base
-            base.Model = value;
-
-            // HtmlHelper<TModel> creates a copy of ViewData
-            Html = null;
-         }
-      }
+      public new TModel Model => ViewData.Model;
 
       public new HtmlHelper<TModel> Html {
          get {
@@ -56,7 +45,6 @@ namespace Xcst.Web.Mvc {
          set { _Html = value; }
       }
 
-      [EditorBrowsable(EditorBrowsableState.Never)]
       internal override void SetViewData(ViewDataDictionary viewData) {
 
          _ViewData = new ViewDataDictionary<TModel>(viewData);
@@ -65,18 +53,6 @@ namespace Xcst.Web.Mvc {
          this.Html = null;
 
          base.SetViewData(_ViewData);
-      }
-
-      internal override Type EnsureModel() {
-
-         TModel model = this.Model;
-
-         if (model == null) {
-            this.Model = Activator.CreateInstance<TModel>();
-            return typeof(TModel);
-         }
-
-         return base.EnsureModel();
       }
    }
 }
