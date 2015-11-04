@@ -144,12 +144,16 @@
 
    <define name="sequence-constructor">
       <zeroOrMore>
-         <choice>
-            <ref name="instruction-element"/>
-            <ref name="literal-result-element"/>
-            <text/>
-         </choice>
+         <ref name="sequence-constructor-node"/>
       </zeroOrMore>
+   </define>
+
+   <define name="sequence-constructor-node">
+      <choice>
+         <ref name="instruction-element"/>
+         <ref name="literal-result-element"/>
+         <text/>
+      </choice>
    </define>
 
    <define name="value-attribute-or-content">
@@ -157,9 +161,8 @@
          <attribute name="value">
             <ref name="Expression"/>
          </attribute>
-         <!-- TODO: Works? -->
          <oneOrMore>
-            <ref name="sequence-constructor"/>
+            <ref name="sequence-constructor-node"/>
          </oneOrMore>
       </choice>
    </define>
@@ -1279,9 +1282,9 @@
    </define>
 
    <define name="AVT">
-      <ref name="String"/>
+      <data type="string"/>
    </define>
-   
+
    <define name="AVTExpr">
       <data type="string">
          <param name="pattern">.*\{.+\}.*</param>
