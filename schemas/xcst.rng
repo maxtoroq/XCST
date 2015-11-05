@@ -161,9 +161,7 @@
          <attribute name="value">
             <ref name="Expression"/>
          </attribute>
-         <oneOrMore>
-            <ref name="sequence-constructor-node"/>
-         </oneOrMore>
+         <ref name="sequence-constructor"/>
       </choice>
    </define>
 
