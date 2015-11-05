@@ -961,6 +961,16 @@
       </choose>
    </template>
 
+   <template match="*" mode="src:extension-instruction">
+      <param name="src:extension-recurse" select="false()"/>
+
+      <if test="not($src:extension-recurse)">
+         <apply-imports>
+            <with-param name="src:extension-recurse" select="true()"/>
+         </apply-imports>
+      </if>
+   </template>
+
    <template match="text()" mode="src:extension-instruction"/>
 
    <!--
@@ -1408,7 +1418,7 @@
 
    <function name="xcst:type" as="xs:string">
       <param name="node" as="node()"/>
-      
+
       <variable name="string" select="xcst:non-string($node)"/>
       <sequence select="$string"/>
    </function>
@@ -1419,7 +1429,7 @@
       <variable name="string" select="xcst:non-string($node)"/>
       <sequence select="$string"/>
    </function>
-   
+
    <function name="xcst:is-avt" as="xs:boolean">
       <param name="node" as="node()"/>
 
