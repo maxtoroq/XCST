@@ -22,16 +22,14 @@
    xmlns:src="http://maxtoroq.github.io/XCST/compiled">
 
    <!--
-      ## Form controls
+      ## Forms
    -->
 
    <template match="a:text-box" mode="src:extension-instruction">
       <variable name="expr">
          <value-of select="src:global-identifier('System.Web.Mvc.Html.InputExtensions')"/>
          <text>.TextBox</text>
-         <if test="@for">
-            <text>For</text>
-         </if>
+         <if test="@for">For</if>
          <text>(</text>
          <call-template name="a:html-helper"/>
          <text>, </text>
@@ -66,9 +64,7 @@
       <variable name="expr">
          <value-of select="src:global-identifier('System.Web.Mvc.Html.InputExtensions')"/>
          <text>.Password</text>
-         <if test="@for">
-            <text>For</text>
-         </if>
+         <if test="@for">For</if>
          <text>(</text>
          <call-template name="a:html-helper"/>
          <text>, </text>
@@ -99,9 +95,7 @@
       <variable name="expr">
          <value-of select="src:global-identifier('System.Web.Mvc.Html.InputExtensions')"/>
          <text>.Hidden</text>
-         <if test="@for">
-            <text>For</text>
-         </if>
+         <if test="@for">For</if>
          <text>(</text>
          <call-template name="a:html-helper"/>
          <text>, </text>
@@ -132,9 +126,7 @@
       <variable name="expr">
          <value-of select="src:global-identifier('System.Web.Mvc.Html.TextAreaExtensions')"/>
          <text>.TextArea</text>
-         <if test="@for">
-            <text>For</text>
-         </if>
+         <if test="@for">For</if>
          <text>(</text>
          <call-template name="a:html-helper"/>
          <text>, </text>
@@ -171,9 +163,7 @@
       <variable name="expr">
          <value-of select="src:global-identifier('System.Web.Mvc.Html.InputExtensions')"/>
          <text>.CheckBox</text>
-         <if test="@for">
-            <text>For</text>
-         </if>
+         <if test="@for">For</if>
          <text>(</text>
          <call-template name="a:html-helper"/>
          <text>, </text>
@@ -206,9 +196,7 @@
       <variable name="expr">
          <value-of select="src:global-identifier('System.Web.Mvc.Html.InputExtensions')"/>
          <text>.RadioButton</text>
-         <if test="@for">
-            <text>For</text>
-         </if>
+         <if test="@for">For</if>
          <text>(</text>
          <call-template name="a:html-helper"/>
          <text>, </text>
@@ -239,15 +227,31 @@
       <c:value-of value="{$expr}" disable-output-escaping="yes"/>
    </template>
 
+   <template match="a:anti-forgery-token" mode="src:extension-instruction">
+      <variable name="expr">
+         <call-template name="a:html-helper"/>
+         <text>.AntiForgeryToken()</text>
+      </variable>
+      <c:value-of value="{$expr}" disable-output-escaping="yes"/>
+   </template>
+
+   <template match="a:http-method-override" mode="src:extension-instruction">
+      <variable name="expr">
+         <call-template name="a:html-helper"/>
+         <text>.HttpMethodOverride(</text>
+         <value-of select="src:expand-attribute(@method)"/>
+         <text>)</text>
+      </variable>
+      <c:value-of value="{$expr}" disable-output-escaping="yes"/>
+   </template>
+
    <template match="a:drop-down-list | a:list-box" mode="src:extension-instruction">
       <variable name="ddl" select="self::a:drop-down-list"/>
       <variable name="expr">
          <value-of select="src:global-identifier('System.Web.Mvc.Html.SelectExtensions')"/>
          <text>.</text>
          <value-of select="if ($ddl) then 'DropDownList' else 'ListBox'"/>
-         <if test="@for">
-            <text>For</text>
-         </if>
+         <if test="@for">For</if>
          <text>(</text>
          <call-template name="a:html-helper"/>
          <text>, </text>
@@ -304,36 +308,34 @@
       <c:value-of value="{$expr}" disable-output-escaping="yes"/>
    </template>
 
-   <!--
-      ## Labels
-   -->
-
    <template match="a:label" mode="src:extension-instruction">
-      <param name="a:model-metadata" tunnel="yes"/>
+      <param name="a:model-metadata" as="xs:string?" tunnel="yes"/>
 
+      <variable name="for-model" select="empty((@for, @name, $a:model-metadata))"/>
       <variable name="expr">
          <value-of select="src:global-identifier('System.Web.Mvc.Html.LabelExtensions')"/>
          <text>.Label</text>
-         <if test="@for">
-            <text>For</text>
-         </if>
+         <if test="@for or $for-model">For</if>
+         <if test="$for-model">Model</if>
          <text>(</text>
          <call-template name="a:html-helper"/>
-         <text>, </text>
-         <choose>
-            <when test="@for">
-               <variable name="param" select="src:aux-variable(generate-id())"/>
-               <value-of select="$param"/>
-               <text> => </text>
-               <value-of select="$param, @for" separator="."/>
-            </when>
-            <when test="$a:model-metadata">
-               <value-of select="concat($a:model-metadata, '.PropertyName')"/>
-            </when>
-            <otherwise>
-               <value-of select="(@name/src:expand-attribute(.), src:string(''))[1]"/>
-            </otherwise>
-         </choose>
+         <if test="not($for-model)">
+            <text>, </text>
+            <choose>
+               <when test="@for">
+                  <variable name="param" select="src:aux-variable(generate-id())"/>
+                  <value-of select="$param"/>
+                  <text> => </text>
+                  <value-of select="$param, @for" separator="."/>
+               </when>
+               <when test="@name">
+                  <value-of select="src:expand-attribute(@name)"/>
+               </when>
+               <when test="$a:model-metadata">
+                  <value-of select="concat($a:model-metadata, '.PropertyName')"/>
+               </when>
+            </choose>
+         </if>
          <if test="@label or $a:model-metadata">
             <text>, labelText: </text>
             <choose>
@@ -363,15 +365,56 @@
       <c:value-of value="{$expr}" disable-output-escaping="yes"/>
    </template>
 
-   <template match="a:label-for-model" mode="src:extension-instruction">
+   <template match="a:validation-summary" mode="src:extension-instruction">
       <variable name="expr">
-         <value-of select="src:global-identifier('System.Web.Mvc.Html.LabelExtensions')"/>
-         <text>.LabelForModel(</text>
+         <value-of select="src:global-identifier('System.Web.Mvc.Html.ValidationExtensions')"/>
+         <text>.ValidationSummary(</text>
          <call-template name="a:html-helper"/>
-         <if test="@label">
-            <text>, labelText: </text>
-            <value-of select="src:expand-attribute(@label)"/>
+         <if test="@exclude-member-errors">
+            <text>, excludePropertyErrors: </text>
+            <value-of select="@exclude-member-errors"/>
          </if>
+         <text>, message: </text>
+         <value-of select="(@message/src:expand-attribute(.), 'default(string)')[1]"/>
+         <variable name="merge-attributes" select="()"/>
+         <if test="not(empty((@html-attributes, @html-class, $merge-attributes)))">
+            <text>, htmlAttributes: </text>
+            <value-of select="a:html-attributes(@html-attributes, @html-class, $merge-attributes)"/>
+         </if>
+         <text>)</text>
+      </variable>
+      <c:value-of value="{$expr}" disable-output-escaping="yes"/>
+   </template>
+
+   <template match="a:validation-message" mode="src:extension-instruction">
+      <param name="a:model-metadata" as="xs:string?" tunnel="yes"/>
+
+      <variable name="expr">
+         <value-of select="src:global-identifier('System.Web.Mvc.Html.ValidationExtensions')"/>
+         <text>.ValidationMessage</text>
+         <if test="@for">For</if>
+         <text>(</text>
+         <call-template name="a:html-helper"/>
+         <text>, </text>
+         <choose>
+            <when test="@for">
+               <variable name="param" select="src:aux-variable(generate-id())"/>
+               <value-of select="$param"/>
+               <text> => </text>
+               <value-of select="$param, @for" separator="."/>
+            </when>
+            <when test="@name">
+               <value-of select="src:expand-attribute(@name)"/>
+            </when>
+            <when test="$a:model-metadata">
+               <value-of select="concat($a:model-metadata, '.PropertyName')"/>
+            </when>
+            <otherwise>
+               <value-of select="src:string('')"/>
+            </otherwise>
+         </choose>
+         <text>, </text>
+         <value-of select="(@message/src:expand-attribute(.), 'default(string)')[1]"/>
          <variable name="merge-attributes" select="()"/>
          <if test="not(empty((@html-attributes, @html-class, $merge-attributes)))">
             <text>, htmlAttributes: </text>
@@ -383,37 +426,39 @@
    </template>
 
    <!--
-      ## Editor/Display templates
+      ## Templates
    -->
 
    <template match="a:editor | a:display" mode="src:extension-instruction">
-      <param name="a:model-metadata" tunnel="yes"/>
+      <param name="a:model-metadata" as="xs:string?" tunnel="yes"/>
 
       <variable name="editor" select="self::a:editor"/>
+      <variable name="for-model" select="empty((@for, @name, $a:model-metadata))"/>
       <variable name="expr">
          <value-of select="src:global-identifier(concat('System.Web.Mvc.Html.', (if ($editor) then 'Editor' else 'Display'), 'Extensions'))"/>
          <text>.</text>
          <value-of select="if ($editor) then 'Editor' else 'Display'"/>
-         <if test="@for">
-            <text>For</text>
-         </if>
+         <if test="@for or $for-model">For</if>
+         <if test="$for-model">Model</if>
          <text>(</text>
          <call-template name="a:html-helper"/>
-         <text>, </text>
-         <choose>
-            <when test="@for">
-               <variable name="param" select="src:aux-variable(generate-id())"/>
-               <value-of select="$param"/>
-               <text> => </text>
-               <value-of select="$param, @for" separator="."/>
-            </when>
-            <when test="$a:model-metadata">
-               <value-of select="concat($a:model-metadata, '.PropertyName')"/>
-            </when>
-            <otherwise>
-               <value-of select="(@name/src:expand-attribute(.), src:string(''))[1]"/>
-            </otherwise>
-         </choose>
+         <if test="not($for-model)">
+            <text>, </text>
+            <choose>
+               <when test="@for">
+                  <variable name="param" select="src:aux-variable(generate-id())"/>
+                  <value-of select="$param"/>
+                  <text> => </text>
+                  <value-of select="$param, @for" separator="."/>
+               </when>
+               <when test="@name">
+                  <value-of select="src:expand-attribute(@name)"/>
+               </when>
+               <when test="$a:model-metadata">
+                  <value-of select="concat($a:model-metadata, '.PropertyName')"/>
+               </when>
+            </choose>
+         </if>
          <text>, templateName: </text>
          <choose>
             <when test="@template">
@@ -426,26 +471,6 @@
             </when>
             <otherwise>null</otherwise>
          </choose>
-         <if test="@html-field-name">
-            <text>, htmlFieldName: </text>
-            <value-of select="src:expand-attribute(@html-field-name)"/>
-         </if>
-         <call-template name="a:editor-additional-view-data"/>
-         <text>)</text>
-      </variable>
-      <c:value-of value="{$expr}" disable-output-escaping="yes"/>
-   </template>
-
-   <template match="a:editor-for-model | a:display-for-model" mode="src:extension-instruction">
-      <variable name="editor" select="self::a:editor-for-model"/>
-      <variable name="expr">
-         <value-of select="src:global-identifier(concat('System.Web.Mvc.Html.', (if ($editor) then 'Editor' else 'Display'), 'Extensions'))"/>
-         <text>.</text>
-         <value-of select="if ($editor) then 'Editor' else 'Display'"/>
-         <text>ForModel(</text>
-         <call-template name="a:html-helper"/>
-         <text>, templateName: </text>
-         <value-of select="(@template/src:expand-attribute(.), 'null')[1]"/>
          <if test="@html-field-name">
             <text>, htmlFieldName: </text>
             <value-of select="src:expand-attribute(@html-field-name)"/>
@@ -508,39 +533,49 @@
    </template>
 
    <!--
-      ## Validation
+      ## Metadata
    -->
 
-   <template match="a:validation-summary" mode="src:extension-instruction">
+   <template match="a:display-name" mode="src:extension-instruction">
+      <param name="a:model-metadata" as="xs:string?" tunnel="yes"/>
+
+      <variable name="for-model" select="empty((@for, @name, $a:model-metadata))"/>
       <variable name="expr">
-         <value-of select="src:global-identifier('System.Web.Mvc.Html.ValidationExtensions')"/>
-         <text>.ValidationSummary(</text>
+         <value-of select="src:global-identifier('System.Web.Mvc.Html.DisplayNameExtensions')"/>
+         <text>.DisplayName</text>
+         <if test="@for or $for-model">For</if>
+         <if test="$for-model">Model</if>
+         <text>(</text>
          <call-template name="a:html-helper"/>
-         <if test="@exclude-member-errors">
-            <text>, excludePropertyErrors: </text>
-            <value-of select="@exclude-member-errors"/>
-         </if>
-         <text>, message: </text>
-         <value-of select="(@message/src:expand-attribute(.), 'default(string)')[1]"/>
-         <variable name="merge-attributes" select="()"/>
-         <if test="not(empty((@html-attributes, @html-class, $merge-attributes)))">
-            <text>, htmlAttributes: </text>
-            <value-of select="a:html-attributes(@html-attributes, @html-class, $merge-attributes)"/>
+         <if test="not($for-model)">
+            <text>, </text>
+            <choose>
+               <when test="@for">
+                  <variable name="param" select="src:aux-variable(generate-id())"/>
+                  <value-of select="$param"/>
+                  <text> => </text>
+                  <value-of select="$param, @for" separator="."/>
+               </when>
+               <when test="@name">
+                  <value-of select="src:expand-attribute(@name)"/>
+               </when>
+               <when test="$a:model-metadata">
+                  <value-of select="concat($a:model-metadata, '.PropertyName')"/>
+               </when>
+            </choose>
          </if>
          <text>)</text>
       </variable>
-      <c:value-of value="{$expr}" disable-output-escaping="yes"/>
+      <c:object value="{src:global-identifier('System.Web.HttpUtility')}.HtmlDecode({$expr}.ToString())"/>
    </template>
 
-   <template match="a:validation-message" mode="src:extension-instruction">
-      <param name="a:model-metadata" tunnel="yes"/>
+   <template match="a:display-text" mode="src:extension-instruction">
+      <param name="a:model-metadata" as="xs:string?" tunnel="yes"/>
 
       <variable name="expr">
-         <value-of select="src:global-identifier('System.Web.Mvc.Html.ValidationExtensions')"/>
-         <text>.ValidationMessage</text>
-         <if test="@for">
-            <text>For</text>
-         </if>
+         <value-of select="src:global-identifier('System.Web.Mvc.Html.DisplayTextExtensions')"/>
+         <text>.DisplayText</text>
+         <if test="@for">For</if>
          <text>(</text>
          <call-template name="a:html-helper"/>
          <text>, </text>
@@ -558,80 +593,7 @@
                <value-of select="concat($a:model-metadata, '.PropertyName')"/>
             </when>
             <otherwise>
-               <sequence select="error((), '@name attribute is required.', src:error-object(.))"/>
-            </otherwise>
-         </choose>
-         <text>, </text>
-         <value-of select="(@message/src:expand-attribute(.), 'default(string)')[1]"/>
-         <variable name="merge-attributes" select="()"/>
-         <if test="not(empty((@html-attributes, @html-class, $merge-attributes)))">
-            <text>, htmlAttributes: </text>
-            <value-of select="a:html-attributes(@html-attributes, @html-class, $merge-attributes)"/>
-         </if>
-         <text>)</text>
-      </variable>
-      <c:value-of value="{$expr}" disable-output-escaping="yes"/>
-   </template>
-
-   <!--
-      ## Metadata
-   -->
-
-   <template match="a:display-name" mode="src:extension-instruction">
-      <variable name="expr">
-         <value-of select="src:global-identifier('System.Web.Mvc.Html.DisplayNameExtensions')"/>
-         <text>.DisplayName</text>
-         <if test="@for">
-            <text>For</text>
-         </if>
-         <text>(</text>
-         <call-template name="a:html-helper"/>
-         <text>, </text>
-         <choose>
-            <when test="@for">
-               <variable name="param" select="src:aux-variable(generate-id())"/>
-               <value-of select="$param"/>
-               <text> => </text>
-               <value-of select="$param, @for" separator="."/>
-            </when>
-            <otherwise>
-               <value-of select="src:expand-attribute(@name)"/>
-            </otherwise>
-         </choose>
-         <text>)</text>
-      </variable>
-      <c:object value="{src:global-identifier('System.Web.HttpUtility')}.HtmlDecode({$expr}.ToString())"/>
-   </template>
-
-   <template match="a:display-name-for-model" mode="src:extension-instruction">
-      <variable name="expr">
-         <value-of select="src:global-identifier('System.Web.Mvc.Html.DisplayNameExtensions')"/>
-         <text>.DisplayNameForModel(</text>
-         <call-template name="a:html-helper"/>
-         <text>)</text>
-      </variable>
-      <c:object value="{src:global-identifier('System.Web.HttpUtility')}.HtmlDecode({$expr}.ToString())"/>
-   </template>
-
-   <template match="a:display-text" mode="src:extension-instruction">
-      <variable name="expr">
-         <value-of select="src:global-identifier('System.Web.Mvc.Html.DisplayTextExtensions')"/>
-         <text>.DisplayText</text>
-         <if test="@for">
-            <text>For</text>
-         </if>
-         <text>(</text>
-         <call-template name="a:html-helper"/>
-         <text>, </text>
-         <choose>
-            <when test="@for">
-               <variable name="param" select="src:aux-variable(generate-id())"/>
-               <value-of select="$param"/>
-               <text> => </text>
-               <value-of select="$param, @for" separator="."/>
-            </when>
-            <otherwise>
-               <value-of select="src:expand-attribute(@name)"/>
+               <value-of select="src:string('')"/>
             </otherwise>
          </choose>
          <text>)</text>
@@ -640,37 +602,51 @@
    </template>
 
    <!--
-      ## ModelState
+      ## Models
    -->
 
-   <template match="a:clear-model-state" mode="src:extension-instruction">
-      <variable name="expr">
-         <call-template name="a:html-helper"/>
-         <text>.ViewDataContainer.ViewData.ModelState.Clear()</text>
-      </variable>
-      <c:void value="{$expr}"/>
+   <template match="a:model" mode="src:extension-instruction">
+      <variable name="new-helper" select="concat(src:aux-variable('html_helper'), '_', generate-id())"/>
+      <call-template name="src:new-line-indented"/>
+      <text>var </text>
+      <value-of select="$new-helper"/>
+      <text> = </text>
+      <value-of select="a:fully-qualified-helper('HtmlHelperFactory')"/>
+      <text>.HtmlHelperFor(</text>
+      <call-template name="a:html-helper"/>
+      <text>, </text>
+      <value-of select="(@value, 'default(object)')[1]"/>
+      <if test="@html-field-prefix">
+         <text>, htmlFieldPrefix: </text>
+         <value-of select="src:expand-attribute(@html-field-prefix)"/>
+      </if>
+      <text>)</text>
+      <value-of select="$src:statement-delimiter"/>
+      <call-template name="src:apply-children">
+         <with-param name="ensure-block" select="true()"/>
+         <with-param name="mode" select="'statement'"/>
+         <with-param name="a:html-helper" select="$new-helper" tunnel="yes"/>
+      </call-template>
    </template>
 
-   <!--
-      ## TryUpdate[Model]
-   -->
-
-   <template match="a:try-update | a:try-update-model" mode="src:extension-instruction">
-      <variable name="update-model" select="self::a:try-update-model"/>
+   <template match="a:try-update" mode="src:extension-instruction">
       <variable name="expr">
          <value-of select="a:fully-qualified-helper('ModelUpdater')"/>
          <text>.Create(</text>
          <call-template name="a:html-helper"/>
-         <if test="$update-model">, createModelIfNull: true</if>
-         <text>)</text>
-         <text>.TryUpdate</text>
-         <if test="$update-model">Model</if>
-         <text>(</text>
-         <if test="not($update-model)">
-            <value-of select="@value"/>
-         </if>
+         <if test="not(@value)">, createModelIfNull: true</if>
+         <text>).TryUpdate(</text>
+         <choose>
+            <when test="@value">
+               <value-of select="@value"/>
+            </when>
+            <otherwise>
+               <call-template name="a:html-helper"/>
+               <text>.ViewData.Model</text>
+            </otherwise>
+         </choose>
          <for-each select="@type, @prefix">
-            <if test="not($update-model) or position() gt 1">, </if>
+            <text>, </text>
             <value-of select="name()"/>
             <text>: </text>
             <apply-templates select="." mode="a:try-update"/>
@@ -705,48 +681,24 @@
       <value-of select="src:expand-attribute(.)"/>
    </template>
 
-   <!--
-      ## Other
-   -->
-
-   <template match="a:model" mode="src:extension-instruction">
-      <variable name="new-helper" select="concat(src:aux-variable('html_helper'), '_', generate-id())"/>
-      <call-template name="src:new-line-indented"/>
-      <text>var </text>
-      <value-of select="$new-helper"/>
-      <text> = </text>
-      <value-of select="a:fully-qualified-helper('HtmlHelperFactory')"/>
-      <text>.HtmlHelperFor(</text>
-      <call-template name="a:html-helper"/>
-      <text>, </text>
-      <value-of select="(@value, 'default(object)')[1]"/>
-      <if test="@html-field-prefix">
-         <text>, htmlFieldPrefix: </text>
-         <value-of select="src:expand-attribute(@html-field-prefix)"/>
-      </if>
-      <text>)</text>
-      <value-of select="$src:statement-delimiter"/>
-      <call-template name="src:apply-children">
-         <with-param name="ensure-block" select="true()"/>
-         <with-param name="mode" select="'statement'"/>
-         <with-param name="a:html-helper" select="$new-helper" tunnel="yes"/>
-      </call-template>
-   </template>
-
    <template match="a:set-model" mode="src:extension-instruction">
       <variable name="html-helper">
          <call-template name="a:html-helper"/>
       </variable>
       <c:void value="{a:fully-qualified-helper('ModelUpdater')}.SetModel({$html-helper}, {@value})"/>
    </template>
-      
-   <template match="a:anti-forgery-token" mode="src:extension-instruction">
+
+   <template match="a:clear-model-state" mode="src:extension-instruction">
       <variable name="expr">
          <call-template name="a:html-helper"/>
-         <text>.AntiForgeryToken()</text>
+         <text>.ViewDataContainer.ViewData.ModelState.Clear()</text>
       </variable>
-      <c:value-of value="{$expr}" disable-output-escaping="yes"/>
+      <c:void value="{$expr}"/>
    </template>
+
+   <!--
+      ## Other
+   -->
 
    <template match="a:anti-forgery-validate" mode="src:extension-instruction">
       <variable name="expr">
@@ -754,16 +706,6 @@
          <text>.Validate()</text>
       </variable>
       <c:void value="{$expr}"/>
-   </template>
-
-   <template match="a:http-method-override" mode="src:extension-instruction">
-      <variable name="expr">
-         <call-template name="a:html-helper"/>
-         <text>.HttpMethodOverride(</text>
-         <value-of select="src:expand-attribute(@method)"/>
-         <text>)</text>
-      </variable>
-      <c:value-of value="{$expr}" disable-output-escaping="yes"/>
    </template>
 
    <!--

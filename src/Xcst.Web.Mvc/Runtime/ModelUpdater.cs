@@ -23,9 +23,7 @@ namespace Xcst.Web.Mvc.Runtime {
       readonly ControllerContext controllerContext;
       readonly IViewDataContainer viewDataContainer;
 
-      private ViewDataDictionary ViewData => viewDataContainer.ViewData;
-
-      private ModelStateDictionary ModelState => ViewData.ModelState;
+      private ModelStateDictionary ModelState => viewDataContainer.ViewData.ModelState;
 
       public static ModelUpdater Create<TModel>(HtmlHelper<TModel> htmlHelper, bool createModelIfNull = false) {
 
@@ -91,20 +89,6 @@ namespace Xcst.Web.Mvc.Runtime {
          return this.ModelState.IsValid;
       }
 
-      public bool TryUpdateModel(Type type = null, string prefix = null, string[] includeProperties = null, string[] excludeProperties = null, IValueProvider valueProvider = null) {
-
-         EnsureModel();
-
-         return TryUpdate(
-            this.ViewData.Model,
-            type: type,
-            prefix: prefix,
-            includeProperties: includeProperties,
-            excludeProperties: excludeProperties,
-            valueProvider: valueProvider
-         );
-      }
-
       public bool TryValidate(object value, string prefix = null) {
 
          if (value == null) throw new ArgumentNullException(nameof(value));
@@ -116,20 +100,6 @@ namespace Xcst.Web.Mvc.Runtime {
          }
 
          return this.ModelState.IsValid;
-      }
-
-      public bool TryValidateModel(string prefix = null) {
-
-         EnsureModel();
-
-         return TryValidate(this.ViewData.Model, prefix: prefix);
-      }
-
-      void EnsureModel() {
-
-         if (this.ViewData.Model == null) {
-            throw new InvalidOperationException("ViewData.Model cannot be null.");
-         }
       }
 
       static bool IsPropertyAllowed(string propertyName, string[] includeProperties, string[] excludeProperties) {
