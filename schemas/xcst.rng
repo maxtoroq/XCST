@@ -15,7 +15,7 @@
  limitations under the License.
 -->
 <grammar xmlns="http://relaxng.org/ns/structure/1.0"
-   xmlns:a="http://relaxng.org/ns/compatibility/annotations/1.0"
+   xmlns:ann="http://relaxng.org/ns/compatibility/annotations/1.0"
    xmlns:c="http://maxtoroq.github.io/XCST"
    ns="http://maxtoroq.github.io/XCST"
    datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
@@ -1221,7 +1221,7 @@
    </define>
 
    <define name="Boolean">
-      <a:documentation>One of the values "yes", "no", "true", "false", "1" or "0".</a:documentation>
+      <ann:documentation>One of the values "yes", "no", "true", "false", "1" or "0".</ann:documentation>
       <choice>
          <value>yes</value>
          <value>no</value>
@@ -1236,7 +1236,7 @@
       <!--
          See <http://www.w3.org/TR/xslt20/#schema-for-xslt>
       -->
-      <a:documentation>
+      <ann:documentation>
          A QName.
          This schema does not use the built-in type xs:QName, but rather defines its own
          QName type. Although xs:QName would define the correct validation on these attributes,
@@ -1245,7 +1245,7 @@
          the default namespace, which is not the correct assumption for XCST.
          The data type is defined as a restriction of the built-in type Name, restricted
          so that it can only contain one colon which must not be the first or last character.
-      </a:documentation>
+      </ann:documentation>
       <data type="Name">
          <param name="pattern">([^:]+:)?[^:]+</param>
       </data>
@@ -1272,7 +1272,7 @@
    </define>
 
    <define name="SortOrder">
-      <a:documentation>One of the values "ascending" or "descending".</a:documentation>
+      <ann:documentation>One of the values "ascending" or "descending".</ann:documentation>
       <choice>
          <value>ascending</value>
          <value>descending</value>
