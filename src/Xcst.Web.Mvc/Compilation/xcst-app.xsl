@@ -336,11 +336,11 @@
                </when>
             </choose>
          </if>
-         <if test="@label or $a:model-metadata">
+         <if test="@text or $a:model-metadata">
             <text>, labelText: </text>
             <choose>
-               <when test="@label">
-                  <value-of select="src:expand-attribute(@label)"/>
+               <when test="@text">
+                  <value-of select="src:expand-attribute(@text)"/>
                </when>
                <otherwise>
                   <!--
