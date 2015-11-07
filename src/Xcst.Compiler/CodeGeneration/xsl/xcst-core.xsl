@@ -951,7 +951,7 @@
                   </for-each>
                </when>
                <otherwise>
-                  <sequence select="error(xs:QName('err:XTDE1450'), concat('&lt;', name(), '> extension instruction is not supported.'), src:error-object(.))"/>
+                  <sequence select="error(xs:QName('err:XTDE1450'), 'Unknown extension instruction.', src:error-object(.))"/>
                </otherwise>
             </choose>
          </when>
