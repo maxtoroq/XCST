@@ -42,7 +42,7 @@
             <ref name="radio-button"/>
             <ref name="text-area"/>
             <ref name="text-box"/>
-            <ref name="try-update"/>
+            <ref name="update"/>
          </choice>
       </define>
 
@@ -456,8 +456,8 @@
          </element>
       </define>
 
-      <define name="try-update">
-         <element name="try-update">
+      <define name="update">
+         <element name="update">
             <zeroOrMore>
                <choice>
                   <attribute name="value">
