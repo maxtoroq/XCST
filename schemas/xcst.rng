@@ -34,6 +34,7 @@
          <ref name="param"/>
          <ref name="template"/>
          <ref name="type"/>
+         <ref name="validation"/>
          <ref name="variable"/>
       </choice>
    </define>
@@ -368,52 +369,12 @@
    </define>
 
    <define name="type-or-member-attributes">
-      <zeroOrMore>
-         <choice>
-            <attribute name="resource-type">
-               <ref name="Type"/>
-            </attribute>
-            <attribute name="error-resource-type">
-               <ref name="Type"/>
-            </attribute>
-            <attribute name="data-type-error-message">
-               <ref name="Type"/>
-            </attribute>
-            <attribute name="data-type-error-resource">
-               <ref name="String"/>
-            </attribute>
-            <attribute name="required-error-message">
-               <ref name="Type"/>
-            </attribute>
-            <attribute name="required-error-resource">
-               <ref name="String"/>
-            </attribute>
-            <attribute name="length-error-message">
-               <ref name="Type"/>
-            </attribute>
-            <attribute name="length-error-resource">
-               <ref name="String"/>
-            </attribute>
-            <attribute name="pattern-error-message">
-               <ref name="Type"/>
-            </attribute>
-            <attribute name="pattern-error-resource">
-               <ref name="String"/>
-            </attribute>
-            <attribute name="range-error-message">
-               <ref name="Type"/>
-            </attribute>
-            <attribute name="range-error-resource">
-               <ref name="String"/>
-            </attribute>
-            <attribute name="equal-to-error-message">
-               <ref name="Type"/>
-            </attribute>
-            <attribute name="equal-to-error-resource">
-               <ref name="String"/>
-            </attribute>
-         </choice>
-      </zeroOrMore>
+      <optional>
+         <attribute name="resource-type">
+            <ref name="Type"/>
+         </attribute>
+      </optional>
+      <ref name="validation-attributes"/>
    </define>
 
    <define name="member-attributes">
@@ -582,6 +543,58 @@
             </choice>
          </zeroOrMore>
       </element>
+   </define>
+
+   <define name="validation">
+      <element name="validation">
+         <ref name="validation-attributes"/>
+      </element>
+   </define>
+
+   <define name="validation-attributes">
+      <zeroOrMore>
+         <choice>
+            <attribute name="error-resource-type">
+               <ref name="Type"/>
+            </attribute>
+            <attribute name="data-type-error-message">
+               <ref name="Type"/>
+            </attribute>
+            <attribute name="data-type-error-resource">
+               <ref name="String"/>
+            </attribute>
+            <attribute name="required-error-message">
+               <ref name="Type"/>
+            </attribute>
+            <attribute name="required-error-resource">
+               <ref name="String"/>
+            </attribute>
+            <attribute name="length-error-message">
+               <ref name="Type"/>
+            </attribute>
+            <attribute name="length-error-resource">
+               <ref name="String"/>
+            </attribute>
+            <attribute name="pattern-error-message">
+               <ref name="Type"/>
+            </attribute>
+            <attribute name="pattern-error-resource">
+               <ref name="String"/>
+            </attribute>
+            <attribute name="range-error-message">
+               <ref name="Type"/>
+            </attribute>
+            <attribute name="range-error-resource">
+               <ref name="String"/>
+            </attribute>
+            <attribute name="equal-to-error-message">
+               <ref name="Type"/>
+            </attribute>
+            <attribute name="equal-to-error-resource">
+               <ref name="String"/>
+            </attribute>
+         </choice>
+      </zeroOrMore>
    </define>
 
    <!--

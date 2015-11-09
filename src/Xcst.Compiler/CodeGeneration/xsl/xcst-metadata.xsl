@@ -400,6 +400,7 @@
 
    <template name="src:validation-setters">
       <param name="name" as="xs:string"/>
+      <param name="src:validation-attributes" as="attribute()*" tunnel="yes"/>
 
       <!--
          ErrorMessage and ErrorMessageResource(Name|Type) are mutually exclusive.
@@ -410,14 +411,20 @@
          @*-error-message wins. Otherwise, the one closest to the member wins.
       -->
 
-      <variable name="error-message" select="(ancestor-or-self::c:*[self::c:member or self::c:type]
-         /attribute()[name() eq concat($name, '-error-message')])[last()]"/>
+      <variable name="error-message" select="(
+         (ancestor-or-self::c:*[self::c:member or self::c:type]
+            /attribute()[name() eq concat($name, '-error-message')])[last()]
+         , $src:validation-attributes[name() eq concat($name, '-error-message')])[1]"/>
 
-      <variable name="error-resource" select="(ancestor-or-self::c:*[self::c:member or self::c:type]
-         /attribute()[name() eq concat($name, '-error-resource')])[last()]"/>
+      <variable name="error-resource" select="(
+         (ancestor-or-self::c:*[self::c:member or self::c:type]
+            /attribute()[name() eq concat($name, '-error-resource')])[last()]
+         , $src:validation-attributes[name() eq concat($name, '-error-resource')])[1]"/>
 
-      <variable name="error-resource-type" select="(ancestor-or-self::c:*[self::c:member or self::c:type]
-         /@error-resource-type)[last()]"/>
+      <variable name="error-resource-type" select="(
+         (ancestor-or-self::c:*[self::c:member or self::c:type]
+            /@error-resource-type)[last()]
+         , $src:validation-attributes[self::attribute(error-resource-type)])[1]"/>
 
       <choose>
          <when test="$error-resource and (not($error-message) or $error-resource/parent::* >> $error-message/parent::*)">

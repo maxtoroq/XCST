@@ -7,13 +7,13 @@
    <c:use-functions in='System'/>
    <c:use-functions in='System.Net.Mail'/>
 
-   <c:import href='_layout.xcst'/>
+   <c:import href='_common.xcst'/>
 
    <c:variable name='title'>Contact Us</c:variable>
    <c:variable name='contactTo'>sales@example.com</c:variable>
    <c:variable name='contactSubject'>Web Contact</c:variable>
 
-   <c:type name='Contact' required-error-message='Required field cannot be left blank.'>
+   <c:type name='Contact'>
       <c:member name='Name' as='string' required='yes' min-length='2' max-length='50'/>
       <c:member name='Email' as='string' required='yes' max-length='255' data-type='EmailAddress' display-name='E-mail'/>
       <c:member name='Telephone' as='string' required='yes' min-length='8' max-length='20' data-type='PhoneNumber'/>

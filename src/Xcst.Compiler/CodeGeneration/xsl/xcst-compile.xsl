@@ -153,7 +153,7 @@
       </if>
    </template>
 
-   <template match="c:use-functions | c:import | c:param | c:variable | c:output | c:template | c:function | c:type" mode="xcst:check-top-level"/>
+   <template match="c:use-functions | c:import | c:param | c:variable | c:output | c:validation | c:template | c:function | c:type" mode="xcst:check-top-level"/>
 
    <template match="c:*" mode="xcst:check-top-level">
       <sequence select="error(xs:QName('err:XTSE0010'), concat('Unknown XCST element: ', local-name(), '.'), src:error-object(.))"/>
@@ -416,6 +416,14 @@
          return (if ($types[$pos] is current()) then $pos else ())"/>
 
       <if test="$current-index eq 1">
+         <variable name="validation-definitions" select="
+            for $m in reverse($modules) 
+            return reverse($m/c:validation)"/>
+         <variable name="validation-attributes" as="attribute()*">
+            <for-each-group select="for $v in $validation-definitions return $v/@*[not(namespace-uri())]" group-by="node-name(.)">
+               <sequence select="."/>
+            </for-each-group>
+         </variable>
          <value-of select="$src:new-line"/>
          <apply-templates select="c:metadata" mode="src:attribute"/>
          <call-template name="src:line-number"/>
@@ -428,9 +436,11 @@
          </call-template>
          <apply-templates select="c:member" mode="#current">
             <with-param name="indent" select="$indent + 1" tunnel="yes"/>
+            <with-param name="src:validation-attributes" select="$validation-attributes" tunnel="yes"/>
          </apply-templates>
          <apply-templates select="c:member[not(@as)]" mode="src:anonymous-type">
             <with-param name="indent" select="$indent + 1" tunnel="yes"/>
+            <with-param name="src:validation-attributes" select="$validation-attributes" tunnel="yes"/>
          </apply-templates>
          <call-template name="src:close-brace"/>
       </if>
