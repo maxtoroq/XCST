@@ -4,7 +4,7 @@
 
    <c:use-functions in='System'/>
 
-   <c:import href='_layout.xcst'/>
+   <c:import href='_common.xcst'/>
 
    <c:template name='content' expand-text='yes'>
       <h1>Index</h1>

@@ -46,11 +46,31 @@ namespace Xcst.Xml {
 
          XmlWriter writer = CreateWriter(defaultParameters);
 
-         if (defaultParameters.Method == OutputParameters.StandardMethods.XHtml) {
-            writer = new XHtmlWriter(writer);
+         return WrapHtmlWriter(writer, defaultParameters)
+            ?? WrapXHtmlWriter(writer, defaultParameters)
+            ?? writer;
+      }
+
+      XmlWriter WrapHtmlWriter(XmlWriter writer, OutputParameters parameters) {
+
+         if (parameters.Method == OutputParameters.StandardMethods.Html
+            && parameters.DoctypePublic == null
+            && parameters.DoctypeSystem == null
+            && parameters.RequestedHtmlVersion() >= 5m) {
+
+            return new HtmlWriter(writer, outputHtml5Doctype: true);
          }
 
-         return writer;
+         return null;
+      }
+
+      XmlWriter WrapXHtmlWriter(XmlWriter writer, OutputParameters parameters) {
+
+         if (parameters.Method == OutputParameters.StandardMethods.XHtml) {
+            return new XHtmlWriter(writer);
+         }
+
+         return null;
       }
 
       protected abstract XmlWriter CreateWriter(OutputParameters finalParameters);

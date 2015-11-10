@@ -174,6 +174,21 @@ namespace Xcst {
          }
       }
 
+      internal decimal? RequestedHtmlVersion() {
+
+         decimal? value = this.HtmlVersion;
+         decimal versionValue;
+
+         if (value != null
+            || this.Version == null
+            || !Decimal.TryParse(this.Version, out versionValue)) {
+
+            return value;
+         }
+
+         return versionValue;
+      }
+
       static class StandardParameters {
 
          public static readonly QualifiedName ByteOrderMark = new QualifiedName("byte-order-mark");

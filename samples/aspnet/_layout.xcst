@@ -7,7 +7,7 @@
    <c:variable name='title' value='null' as='string'/>
    <c:variable name='siteTitle'>XCST on ASP.NET</c:variable>
 
-   <c:output method='html'/>
+   <c:output method='html' version='5'/>
 
    <c:template name='c:initial-template' expand-text='yes'>
       <html>
