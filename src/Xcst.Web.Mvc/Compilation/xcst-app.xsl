@@ -685,7 +685,10 @@
       <variable name="html-helper">
          <call-template name="a:html-helper"/>
       </variable>
-      <c:void value="{a:fully-qualified-helper('ModelUpdater')}.SetModel({$html-helper}, {@value})"/>
+      <variable name="value">
+         <call-template name="src:value"/>
+      </variable>
+      <c:void value="{a:fully-qualified-helper('ModelUpdater')}.SetModel({$html-helper}, {$value})"/>
    </template>
 
    <template match="a:clear-model-state" mode="src:extension-instruction">

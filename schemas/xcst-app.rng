@@ -79,6 +79,15 @@
             <ref name="sequence-constructor"/>
          </element>
       </define>
+
+      <define name="value-attribute-or-content">
+         <choice>
+            <attribute name="value">
+               <ref name="Expression"/>
+            </attribute>
+            <ref name="sequence-constructor"/>
+         </choice>
+      </define>
    </div>
 
    <div>
@@ -484,9 +493,7 @@
 
       <define name="set-model">
          <element name="set-model">
-            <attribute name="value">
-               <ref name="Expression"/>
-            </attribute>
+            <ref name="value-attribute-or-content"/>
          </element>
       </define>
 
