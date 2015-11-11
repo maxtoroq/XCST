@@ -99,7 +99,7 @@
 
       <a:model value='contact'>
          <c:if test='IsPost'>
-            <a:anti-forgery-validate/>
+            <a:validate-anti-forgery/>
             <a:update>
                <a:success>
                   <c:if test='SendMail(contact)'>

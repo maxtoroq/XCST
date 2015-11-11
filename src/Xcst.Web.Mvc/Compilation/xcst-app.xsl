@@ -700,10 +700,10 @@
    </template>
 
    <!--
-      ## Other
+      ## Request
    -->
 
-   <template match="a:anti-forgery-validate" mode="src:extension-instruction">
+   <template match="a:validate-anti-forgery" mode="src:extension-instruction">
       <variable name="expr">
          <value-of select="src:global-identifier('System.Web.Helpers.AntiForgery')"/>
          <text>.Validate()</text>

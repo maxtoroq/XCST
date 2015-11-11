@@ -26,7 +26,6 @@
       <define name="instruction-element">
          <choice>
             <ref name="anti-forgery-token"/>
-            <ref name="anti-forgery-validate"/>
             <ref name="check-box"/>
             <ref name="clear-model-state"/>
             <ref name="display"/>
@@ -43,6 +42,7 @@
             <ref name="text-area"/>
             <ref name="text-box"/>
             <ref name="update"/>
+            <ref name="validate-anti-forgery"/>
          </choice>
       </define>
 
@@ -505,10 +505,10 @@
    </div>
 
    <div>
-      <ann:documentation>Other</ann:documentation>
+      <ann:documentation>Request</ann:documentation>
 
-      <define name="anti-forgery-validate">
-         <element name="anti-forgery-validate">
+      <define name="validate-anti-forgery">
+         <element name="validate-anti-forgery">
             <empty/>
          </element>
       </define>
