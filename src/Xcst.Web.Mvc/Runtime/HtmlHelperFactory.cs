@@ -17,6 +17,7 @@ using System.Web.Mvc;
 
 namespace Xcst.Web.Mvc.Runtime {
 
+   /// <exclude/>
    public static class HtmlHelperFactory {
 
       public static HtmlHelper<TModel> HtmlHelperFor<TModel>(this HtmlHelper htmlHelper, TModel model, string htmlFieldPrefix = null) {
