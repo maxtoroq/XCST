@@ -712,6 +712,103 @@
    </template>
 
    <!--
+      ## Response
+   -->
+
+   <template match="a:redirect" mode="src:extension-instruction">
+      <variable name="expr">
+         <value-of select="a:fully-qualified-helper('HttpRedirector')"/>
+         <text>.Redirect(this.Response, this.Url, </text>
+         <value-of select="src:expand-attribute(@href)"/>
+         <if test="@status-code or @permanent">
+            <text>, statusCode: </text>
+            <value-of select="(@status-code, @permanent/concat('(', string(), ') ? 301 : 302'))[1]"/>
+         </if>
+         <if test="@terminate">
+            <text>, terminate: </text>
+            <value-of select="@terminate"/>
+         </if>
+         <text>, tempData: this.TempData)</text>
+      </variable>
+      <c:void value="{$expr}"/>
+   </template>
+
+   <template match="a:remove-cookie" mode="src:extension-instruction">
+      <c:void value="this.Response.Cookies.Remove({src:expand-attribute(@name)})"/>
+   </template>
+
+   <template match="a:set-content-type" mode="src:extension-instruction">
+      <variable name="expr">
+         <text>this.Response.ContentType = </text>
+         <call-template name="src:value"/>
+      </variable>
+      <c:void value="{$expr}"/>
+   </template>
+
+   <template match="a:set-cookie" mode="src:extension-instruction">
+      <variable name="expr">
+         <text>this.Response.Cookies.Set(new </text>
+         <value-of select="src:global-identifier('System.Web.HttpCookie')"/>
+         <text>(</text>
+         <value-of select="src:expand-attribute(@name)"/>
+         <text>)</text>
+         <variable name="setters" as="text()*">
+            <apply-templates select="@domain | @expires | @http-only | @path | @secure | @shareable" mode="a:set-cookie-setter"/>
+         </variable>
+         <text> { Value = </text>
+         <call-template name="src:value"/>
+         <if test="$setters">
+            <text>, </text>
+            <value-of select="string-join($setters, ', ')"/>   
+         </if>
+         <text> })</text>
+      </variable>
+      <c:void value="{$expr}"/>
+   </template>
+
+   <template match="@domain" mode="a:set-cookie-setter">
+      <value-of select="'Domain', src:expand-attribute(.)" separator=" = "/>
+   </template>
+
+   <template match="@expires" mode="a:set-cookie-setter">
+      <value-of select="'Expires', string()" separator=" = "/>
+   </template>
+
+   <template match="@http-only" mode="a:set-cookie-setter">
+      <value-of select="'HttpOnly', string()" separator=" = "/>
+   </template>
+
+   <template match="@path" mode="a:set-cookie-setter">
+      <value-of select="'Path', src:expand-attribute(.)" separator=" = "/>
+   </template>
+
+   <template match="@secure" mode="a:set-cookie-setter">
+      <value-of select="'Secure', string()" separator=" = "/>
+   </template>
+
+   <template match="@shareable" mode="a:set-cookie-setter">
+      <value-of select="'Shareable', string()" separator=" = "/>
+   </template>
+
+   <template match="a:set-header" mode="src:extension-instruction">
+      <variable name="expr">
+         <text>this.Response.Headers.Set(</text>
+         <value-of select="src:expand-attribute(@name)"/>
+         <text>, </text>
+         <call-template name="src:value"/>
+         <text>)</text>
+      </variable>
+      <c:void value="{$expr}"/>
+   </template>
+
+   <template match="a:set-status" mode="src:extension-instruction">
+      <c:void value="this.Response.StatusCode = {@code}"/>
+      <if test="@description">
+         <c:void value="this.Response.StatusDescription = {src:expand-attribute(@description)}"/>
+      </if>
+   </template>
+
+   <!--
       ## Helpers
    -->
 

@@ -39,6 +39,12 @@
             <ref name="list-box"/>
             <ref name="password"/>
             <ref name="radio-button"/>
+            <ref name="redirect"/>
+            <ref name="remove-cookie"/>
+            <ref name="set-content-type"/>
+            <ref name="set-cookie"/>
+            <ref name="set-header"/>
+            <ref name="set-status"/>
             <ref name="text-area"/>
             <ref name="text-box"/>
             <ref name="update"/>
@@ -510,6 +516,100 @@
       <define name="validate-anti-forgery">
          <element name="validate-anti-forgery">
             <empty/>
+         </element>
+      </define>
+   </div>
+
+   <div>
+      <ann:documentation>Response</ann:documentation>
+
+      <define name="redirect">
+         <element name="redirect">
+            <attribute name="href">
+               <ref name="AVT"/>
+            </attribute>
+            <optional>
+               <choice>
+                  <attribute name="permanent">
+                     <ref name="Expression"/>
+                  </attribute>
+                  <attribute name="status-code">
+                     <ref name="Expression"/>
+                  </attribute>
+               </choice>
+            </optional>
+            <optional>
+               <attribute name="terminate">
+                  <ref name="Expression"/>
+               </attribute>
+            </optional>
+         </element>
+      </define>
+
+      <define name="remove-cookie">
+         <element name="remove-cookie">
+            <attribute name="name">
+               <ref name="AVT"/>
+            </attribute>
+         </element>
+      </define>
+
+      <define name="set-content-type">
+         <element name="set-content-type">
+            <ref name="value-attribute-or-content"/>
+         </element>
+      </define>
+
+      <define name="set-cookie">
+         <element name="set-cookie">
+            <attribute name="name">
+               <ref name="AVT"/>
+            </attribute>
+            <zeroOrMore>
+               <choice>
+                  <attribute name="domain">
+                     <ref name="AVT"/>
+                  </attribute>
+                  <attribute name="expires">
+                     <ref name="Expression"/>
+                  </attribute>
+                  <attribute name="http-only">
+                     <ref name="Expression"/>
+                  </attribute>
+                  <attribute name="path">
+                     <ref name="AVT"/>
+                  </attribute>
+                  <attribute name="secure">
+                     <ref name="Expression"/>
+                  </attribute>
+                  <attribute name="shareable">
+                     <ref name="Expression"/>
+                  </attribute>
+               </choice>
+            </zeroOrMore>
+            <ref name="value-attribute-or-content"/>
+         </element>
+      </define>
+
+      <define name="set-header">
+         <element name="set-header">
+            <attribute name="name">
+               <ref name="AVT"/>
+            </attribute>
+            <ref name="value-attribute-or-content"/>
+         </element>
+      </define>
+
+      <define name="set-status">
+         <element name="set-status">
+            <attribute name="code">
+               <ref name="Expression"/>
+            </attribute>
+            <optional>
+               <attribute name="description">
+                  <ref name="AVT"/>
+               </attribute>
+            </optional>
          </element>
       </define>
    </div>
