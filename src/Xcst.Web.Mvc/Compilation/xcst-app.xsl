@@ -19,7 +19,151 @@
    xmlns:xs="http://www.w3.org/2001/XMLSchema"
    xmlns:c="http://maxtoroq.github.io/XCST"
    xmlns:a="http://maxtoroq.github.io/XCST/application"
-   xmlns:src="http://maxtoroq.github.io/XCST/compiled">
+   xmlns:src="http://maxtoroq.github.io/XCST/compiled"
+   xmlns:xcst="http://maxtoroq.github.io/XCST/syntax">
+
+   <!--
+      ## Repetition
+   -->
+
+   <template match="a:for-each-row" mode="src:extension-instruction">
+      <param name="indent" tunnel="yes"/>
+
+      <variable name="iter" select="concat(src:aux-variable('iter'), '_', generate-id())"/>
+
+      <value-of select="$src:new-line"/>
+      <call-template name="src:line-number"/>
+      <call-template name="src:new-line-indented"/>
+      <text>using (var </text>
+      <value-of select="$iter"/>
+      <text> = (</text>
+      <choose>
+         <when test="a:sort">
+            <for-each select="a:sort">
+               <choose>
+                  <when test="position() eq 1">
+                     <value-of select="src:fully-qualified-helper('Sorting')"/>
+                     <text>.SortBy(</text>
+                     <value-of select="../@in"/>
+                     <text>, </text>
+                  </when>
+                  <otherwise>.CreateOrderedEnumerable(</otherwise>
+               </choose>
+               <variable name="param" select="src:aux-variable(generate-id())"/>
+               <value-of select="$param, '=>', $param"/>
+               <if test="@value">.</if>
+               <value-of select="@value"/>
+               <if test="position() gt 1">, null</if>
+               <text>, </text>
+               <variable name="descending-expr" select="
+                  if (@order) then
+                     src:sort-order-descending(xcst:avt-sort-order-descending(@order), src:expand-attribute(@order))
+                  else
+                     src:sort-order-descending(false())"/>
+               <value-of select="$descending-expr"/>
+               <text>)</text>
+            </for-each>
+         </when>
+         <otherwise>
+            <value-of select="@in"/>
+         </otherwise>
+      </choose>
+      <text>).GetEnumerator())</text>
+      <call-template name="src:open-brace"/>
+      <call-template name="a:for-each-row-using">
+         <with-param name="iter" select="$iter"/>
+         <with-param name="indent" select="$indent + 1" tunnel="yes"/>
+      </call-template>
+      <call-template name="src:close-brace"/>
+   </template>
+
+   <template name="a:for-each-row-using">
+      <param name="iter" required="yes"/>
+      <param name="indent" tunnel="yes"/>
+
+      <variable name="cols" select="concat(src:aux-variable('cols'), '_', generate-id())"/>
+      <variable name="row" select="@name"/>
+      <variable name="eof" select="concat(src:aux-variable('eof'), '_', generate-id())"/>
+
+      <call-template name="src:new-line-indented"/>
+      <value-of select="'int', $cols, '=', @columns"/>
+      <value-of select="$src:statement-delimiter"/>
+
+      <call-template name="src:new-line-indented"/>
+      <value-of select="'var', $row, '=', concat(a:fully-qualified-helper('ListFactory'), '.CreateList(', $iter, ', ', $cols, ')')"/>
+      <value-of select="$src:statement-delimiter"/>
+
+      <call-template name="src:new-line-indented"/>
+      <value-of select="'bool', $eof, '= false'"/>
+      <value-of select="$src:statement-delimiter"/>
+
+      <value-of select="$src:new-line"/>
+      <call-template name="src:new-line-indented"/>
+      <text>while (!</text>
+      <value-of select="$eof"/>
+      <text>)</text>
+      <call-template name="src:open-brace"/>
+      <call-template name="a:for-each-row-while">
+         <with-param name="iter" select="$iter"/>
+         <with-param name="cols" select="$cols"/>
+         <with-param name="row" select="$row"/>
+         <with-param name="eof" select="$eof"/>
+         <with-param name="indent" select="$indent + 1" tunnel="yes"/>
+      </call-template>
+      <call-template name="src:close-brace"/>
+   </template>
+
+   <template name="a:for-each-row-while">
+      <param name="iter" required="yes"/>
+      <param name="cols" required="yes"/>
+      <param name="row" required="yes"/>
+      <param name="eof" required="yes"/>
+      <param name="indent" tunnel="yes"/>
+
+      <call-template name="src:new-line-indented"/>
+      <text>if (!(</text>
+      <value-of select="$eof"/>
+      <text> = !</text>
+      <value-of select="$iter"/>
+      <text>.MoveNext()))</text>
+      <call-template name="src:open-brace"/>
+      <call-template name="src:new-line-indented">
+         <with-param name="increase" select="1"/>
+      </call-template>
+      <value-of select="$row, '.Add(', $iter, '.Current)'" separator=""/>
+      <value-of select="$src:statement-delimiter"/>
+      <call-template name="src:close-brace"/>
+
+      <call-template name="src:new-line-indented"/>
+      <text>if (</text>
+      <value-of select="$row"/>
+      <text>.Count == </text>
+      <value-of select="$cols"/>
+      <text> || </text>
+      <value-of select="$eof"/>
+      <text>)</text>
+      <call-template name="src:apply-children">
+         <with-param name="children" select="node()[not(self::a:sort or following-sibling::a:sort)]"/>
+         <with-param name="ensure-block" select="true()"/>
+         <with-param name="mode" select="'statement'"/>
+      </call-template>
+   
+      <call-template name="src:new-line-indented"/>
+      <text>if (</text>
+      <value-of select="$row"/>
+      <text>.Count == </text>
+      <value-of select="$cols"/>
+      <text> || </text>
+      <value-of select="$eof"/>
+      <text>)</text>
+      <call-template name="src:open-brace"/>
+      <call-template name="src:new-line-indented">
+         <with-param name="increase" select="1"/>
+      </call-template>
+      <value-of select="$row, '.Clear()'" separator=""/>
+      <value-of select="$src:statement-delimiter"/>
+      <call-template name="src:close-brace"/>
+   </template>
 
    <!--
       ## Forms
@@ -759,7 +903,7 @@
          <call-template name="src:value"/>
          <if test="$setters">
             <text>, </text>
-            <value-of select="string-join($setters, ', ')"/>   
+            <value-of select="string-join($setters, ', ')"/>
          </if>
          <text> })</text>
       </variable>

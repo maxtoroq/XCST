@@ -33,6 +33,7 @@
             <ref name="display-text"/>
             <ref name="drop-down-list"/>
             <ref name="editor"/>
+            <ref name="for-each-row"/>
             <ref name="hidden"/>
             <ref name="http-method-override"/>
             <ref name="label"/>
@@ -93,6 +94,42 @@
             </attribute>
             <ref name="sequence-constructor"/>
          </choice>
+      </define>
+   </div>
+
+   <div>
+      <ann:documentation>Repetition</ann:documentation>
+
+      <define name="for-each-row">
+         <element name="for-each-row">
+            <attribute name="name">
+               <ref name="Name"/>
+            </attribute>
+            <attribute name="in">
+               <ref name="Expression"/>
+            </attribute>
+            <attribute name="columns">
+               <ref name="Expression"/>
+            </attribute>
+            <zeroOrMore>
+               <element name="sort">
+                  <zeroOrMore>
+                     <choice>
+                        <attribute name="value">
+                           <ref name="Expression"/>
+                        </attribute>
+                        <attribute name="order">
+                           <choice>
+                              <ref name="SortOrder"/>
+                              <ref name="AVTExpr"/>
+                           </choice>
+                        </attribute>
+                     </choice>
+                  </zeroOrMore>
+               </element>
+            </zeroOrMore>
+            <ref name="sequence-constructor"/>
+         </element>
       </define>
    </div>
 
@@ -622,11 +659,33 @@
          <data type="string"/>
       </define>
 
+      <define name="AVTExpr">
+         <data type="string">
+            <param name="pattern">.*\{.+\}.*</param>
+         </data>
+      </define>
+
       <define name="Expression">
          <ann:documentation>Expression.</ann:documentation>
          <data type="string">
             <param name="minLength">1</param>
          </data>
+      </define>
+
+      <define name="Name">
+         <data type="NCName"/>
+      </define>
+
+      <define name="SortOrder">
+         <ann:documentation>One of the values "ascending" or "descending".</ann:documentation>
+         <choice>
+            <value>ascending</value>
+            <value>descending</value>
+         </choice>
+      </define>
+
+      <define name="Type">
+         <data type="token"/>
       </define>
    </div>
 </grammar>
