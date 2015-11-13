@@ -318,7 +318,8 @@
                   </when>
                   <otherwise>.CreateOrderedEnumerable(</otherwise>
                </choose>
-               <text>_ => _</text>
+               <variable name="param" select="src:aux-variable(generate-id())"/>
+               <value-of select="$param, '=>', $param"/>
                <if test="@value">.</if>
                <value-of select="@value"/>
                <if test="position() gt 1">, null</if>
