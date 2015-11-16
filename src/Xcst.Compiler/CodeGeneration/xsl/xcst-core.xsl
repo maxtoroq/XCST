@@ -229,6 +229,23 @@
       </call-template>
    </template>
 
+   <template match="c:normalize-space" mode="src:expression">
+      <choose>
+         <when test="@value or * or xcst:tvt-enabled(.)">
+            <value-of select="src:fully-qualified-helper('SimpleContent')"/>
+            <text>.NormalizeSpace(</text>
+            <call-template name="src:simple-content">
+               <with-param name="attribute" select="@value"/>
+            </call-template>
+            <text>)</text>
+         </when>
+         <otherwise>
+            <variable name="text" select="xcst:text(.)"/>
+            <value-of select="src:string(normalize-space($text))"/>
+         </otherwise>
+      </choose>
+   </template>
+
    <template match="text()" mode="src:statement">
       <param name="output" tunnel="yes"/>
 
@@ -1575,6 +1592,7 @@
          <when test="$text">
             <value-of select="src:expand-text(., $text)"/>
          </when>
+         <!-- TODO: Mixed content -->
          <when test="*">
             <apply-templates select="*" mode="src:expression"/>
          </when>

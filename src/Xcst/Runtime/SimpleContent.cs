@@ -15,6 +15,7 @@
 using System;
 using System.Collections;
 using System.Linq;
+using XsltFunctions = System.Xml.Xsl.Runtime.XsltFunctions;
 
 namespace Xcst.Runtime {
 
@@ -54,6 +55,15 @@ namespace Xcst.Runtime {
 
       public static string Join(string separator, object value) {
          return Convert.ToString(value);
+      }
+
+      public static string NormalizeSpace(string value) {
+
+         if (String.IsNullOrEmpty(value)) {
+            return String.Empty;
+         }
+
+         return XsltFunctions.NormalizeSpace(value);
       }
    }
 }

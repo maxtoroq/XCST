@@ -59,6 +59,7 @@
          <ref name="next-iteration"/>
          <ref name="next-function"/>
          <ref name="next-template"/>
+         <ref name="normalize-space"/>
          <ref name="object"/>
          <ref name="processing-instruction"/>
          <ref name="result-document"/>
@@ -906,6 +907,13 @@
          <zeroOrMore>
             <ref name="with-param-for-templates"/>
          </zeroOrMore>
+      </element>
+   </define>
+
+   <define name="normalize-space">
+      <element name="normalize-space">
+         <ref name="standard-attributes"/>
+         <ref name="value-attribute-or-content"/>
       </element>
    </define>
 
