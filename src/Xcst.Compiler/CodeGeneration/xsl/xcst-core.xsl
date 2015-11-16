@@ -804,9 +804,9 @@
          <value-of select="$src:new-line"/>
          <call-template name="src:line-number"/>
          <call-template name="src:new-line-indented"/>
-         <text>if (!</text>
+         <text>if (!(</text>
          <value-of select="@test"/>
-         <text>)</text>
+         <text>))</text>
          <call-template name="src:open-brace"/>
          <call-template name="src:line-default"/>
          <call-template name="src:new-line-indented">
