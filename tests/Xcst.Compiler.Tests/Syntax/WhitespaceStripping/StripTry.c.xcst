@@ -3,7 +3,7 @@
 
    <c:template name='c:initial-template'>
       <foo>
-         <c:try xml:space='preserve'>x<c:catch exception='System.Exception'/>&#x20;&#xD;&#xA;&#x9;<c:finally/>&#x20;&#xD;&#xA;&#x9;</c:try>
+         <c:try rollback-output='no' xml:space='preserve'>x<c:catch exception='System.Exception'/>&#x20;&#xD;&#xA;&#x9;<c:finally/>&#x20;&#xD;&#xA;&#x9;</c:try>
       </foo>
    </c:template>
 
