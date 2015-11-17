@@ -241,7 +241,7 @@
          </when>
          <otherwise>
             <variable name="text" select="xcst:text(.)"/>
-            <value-of select="src:string(normalize-space($text))"/>
+            <value-of select="src:verbatim-string(normalize-space($text))"/>
          </otherwise>
       </choose>
    </template>
