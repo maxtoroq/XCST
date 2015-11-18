@@ -874,7 +874,7 @@
       <element name="namespace">
          <attribute name="name">
             <choice>
-               <ref name="Name"/>
+               <ref name="NCName"/>
                <ref name="AVTExpr"/>
             </choice>
          </attribute>
@@ -928,7 +928,7 @@
       <element name="processing-instruction">
          <attribute name="name">
             <choice>
-               <ref name="Name"/>
+               <ref name="NCName"/>
                <ref name="AVTExpr"/>
             </choice>
          </attribute>
@@ -1272,7 +1272,7 @@
       </data>
    </define>
 
-   <define name="Name">
+   <define name="NCName">
       <data type="NCName"/>
    </define>
 
@@ -1331,6 +1331,10 @@
          <ref name="Boolean"/>
          <value>omit</value>
       </choice>
+   </define>
+
+   <define name="Name">
+      <data type="token"/>
    </define>
 
    <define name="Type">

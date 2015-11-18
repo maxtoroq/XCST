@@ -665,17 +665,6 @@
          </data>
       </define>
 
-      <define name="Expression">
-         <ann:documentation>Expression.</ann:documentation>
-         <data type="string">
-            <param name="minLength">1</param>
-         </data>
-      </define>
-
-      <define name="Name">
-         <data type="NCName"/>
-      </define>
-
       <define name="SortOrder">
          <ann:documentation>One of the values "ascending" or "descending".</ann:documentation>
          <choice>
@@ -684,8 +673,19 @@
          </choice>
       </define>
 
+      <define name="Name">
+         <data type="token"/>
+      </define>
+
       <define name="Type">
          <data type="token"/>
+      </define>
+
+      <define name="Expression">
+         <ann:documentation>Expression.</ann:documentation>
+         <data type="string">
+            <param name="minLength">1</param>
+         </data>
       </define>
    </div>
 </grammar>
