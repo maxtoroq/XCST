@@ -81,12 +81,16 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Syntax\CallableComponents\VerbatimParameterName.c.xcst" />
     <None Include="Syntax\Declarations\ReservedNamespaces\CoreTemplate.c.xcst" />
     <None Include="Syntax\Declarations\ReservedNamespaces\CoreOutput.i.xcst" />
     <None Include="Syntax\SyntaxTests.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>SyntaxTests.generated.cs</LastGenOutput>
     </None>
+    <Content Include="Syntax\CallableComponents\VerbatimParameterName.p.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Syntax\WhitespaceStripping\PreserveText.p.xml">
       <SubType>Designer</SubType>
     </Content>

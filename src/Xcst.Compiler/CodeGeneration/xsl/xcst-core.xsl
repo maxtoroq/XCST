@@ -608,7 +608,7 @@
          <text>></text>
       </if>
       <text>(</text>
-      <value-of select="src:string($name)"/>
+      <value-of select="src:string(src:strip-verbatim-prefix($name))"/>
       <text>, () => </text>
       <choose>
          <when test="$required and not($has-default-value)">
@@ -1748,6 +1748,12 @@
          string-join((src:verbatim-string(namespace-uri-from-QName($qname)), src:string(local-name-from-QName($qname))), ', '),
          ')'
       )"/>
+   </function>
+
+   <function name="src:strip-verbatim-prefix" as="xs:string">
+      <param name="name" as="xs:string"/>
+
+      <sequence select="if (starts-with($name, '@')) then substring($name, 2) else $name"/>
    </function>
 
    <function name="src:sort-order-descending" as="xs:string">
