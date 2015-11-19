@@ -100,12 +100,15 @@
       </if>
       <text>)</text>
       <value-of select="$src:statement-delimiter"/>
-      <call-template name="src:line-default"/>
       <if test="not($simple-content)">
          <call-template name="src:apply-children"/>
+         <call-template name="src:new-line-indented"/>
+         <value-of select="$output"/>
+         <text>.</text>
          <text>WriteEndAttribute()</text>
          <value-of select="$src:statement-delimiter"/>
       </if>
+      <call-template name="src:line-default"/>
    </template>
 
    <template match="c:comment" mode="src:statement">
@@ -142,11 +145,13 @@
       <value-of select="src:verbatim-string(namespace-uri-from-QName($name))"/>
       <text>)</text>
       <value-of select="$src:statement-delimiter"/>
-      <call-template name="src:line-default"/>
       <call-template name="src:apply-children"/>
       <call-template name="src:new-line-indented"/>
+      <value-of select="$output"/>
+      <text>.</text>
       <text>WriteEndElement()</text>
       <value-of select="$src:statement-delimiter"/>
+      <call-template name="src:line-default"/>
    </template>
 
    <template match="c:namespace" mode="src:statement">
@@ -172,12 +177,15 @@
       </if>
       <text>)</text>
       <value-of select="$src:statement-delimiter"/>
-      <call-template name="src:line-default"/>
       <if test="not($simple-content)">
          <call-template name="src:apply-children"/>
+         <call-template name="src:new-line-indented"/>
+         <value-of select="$output"/>
+         <text>.</text>
          <text>WriteEndAttribute()</text>
          <value-of select="$src:statement-delimiter"/>
       </if>
+      <call-template name="src:line-default"/>
    </template>
 
    <template match="c:processing-instruction" mode="src:statement">
