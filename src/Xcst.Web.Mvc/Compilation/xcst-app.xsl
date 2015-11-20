@@ -413,6 +413,11 @@
          <text>, </text>
          <choose>
             <when test="a:option">
+               <if test="$ddl and @value">
+                  <text>new </text>
+                  <value-of select="src:global-identifier('System.Web.Mvc.SelectList')"/>
+                  <text>(</text>
+               </if>
                <text>new[] { </text>
                <for-each select="a:option">
                   <if test="position() gt 1">, </if>
@@ -430,6 +435,11 @@
                   <text>}</text>
                </for-each>
                <text> }</text>
+               <if test="$ddl and @value">
+                  <text>, "Value", "Text", </text>
+                  <value-of select="@value"/>
+                  <text>)</text>
+               </if>
             </when>
             <when test="@options">
                <value-of select="@options"/>

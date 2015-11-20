@@ -271,16 +271,7 @@
       </define>
 
       <define name="select-common">
-         <choice>
-            <attribute name="for">
-               <ref name="Expression"/>
-            </attribute>
-            <optional>
-               <attribute name="name">
-                  <ref name="AVT"/>
-               </attribute>
-            </optional>
-         </choice>
+         <ref name="input-attributes"/>
          <choice>
             <attribute name="options">
                <ref name="Expression"/>
@@ -303,7 +294,6 @@
                </element>
             </zeroOrMore>
          </choice>
-         <ref name="html-attributes"/>
       </define>
 
       <define name="input-attributes">
