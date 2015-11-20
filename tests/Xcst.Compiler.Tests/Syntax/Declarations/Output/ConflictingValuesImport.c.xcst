@@ -2,7 +2,7 @@
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
    <c:import href='_ConflictingValuesImport.xcst'/>
-   
+
    <c:output method='html'/>
 
 </c:module>

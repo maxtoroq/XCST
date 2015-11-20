@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:import href='_TunnelParameter.xcst'/>
+
+   <c:function name='foo'>
+      <c:param name='a'/>
+
+      <c:next-function>
+         <c:with-param name='a' tunnel='yes'>a</c:with-param>
+      </c:next-function>
+   </c:function>
+
+</c:module>

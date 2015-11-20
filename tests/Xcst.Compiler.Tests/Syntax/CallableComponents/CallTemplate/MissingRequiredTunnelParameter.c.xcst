@@ -4,7 +4,7 @@
    <c:template name='foo'>
       <c:call-template name='bar'/>
    </c:template>
-   
+
    <c:template name='bar'>
       <c:param name='b' required='yes' tunnel='yes'/>
    </c:template>

@@ -2,5 +2,5 @@
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
    <c:param name='foo' value='""' as='string' required='yes'/>
-   
+
 </c:module>

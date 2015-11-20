@@ -3,7 +3,7 @@
 
    <c:template name='c:initial-template'>
       <c:iterate name='c' in='"hello".ToCharArray()'>
-         <c:param name='foo' required='no'>foo</c:param>
+         <c:param name='a' required='no'>a</c:param>
       </c:iterate>
    </c:template>
 

@@ -3,5 +3,5 @@
 
    <c:variable name='foo' as='string'/>
    <c:variable name='foo' as='string'/>
-   
+
 </c:module>

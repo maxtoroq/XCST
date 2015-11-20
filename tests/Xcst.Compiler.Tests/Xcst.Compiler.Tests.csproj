@@ -81,9 +81,23 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Syntax\CallableComponents\CallTemplate\DuplicateParameter.i.xcst" />
     <None Include="Syntax\CallableComponents\CallTemplate\VerbatimParameterName.c.xcst" />
+    <None Include="Syntax\CallableComponents\NextFunction\TunnelParameter.c.xcst" />
+    <None Include="Syntax\CallableComponents\NextFunction\TunnelParameter.i.xcst" />
+    <None Include="Syntax\CallableComponents\NextFunction\DuplicateParameter.i.xcst" />
+    <None Include="Syntax\CallableComponents\NextFunction\_TunnelParameter.xcst" />
+    <None Include="Syntax\CallableComponents\NextFunction\_DuplicateParameter.xcst" />
+    <None Include="Syntax\CallableComponents\NextIteration\TunnelParameter.c.xcst" />
+    <None Include="Syntax\CallableComponents\NextIteration\TunnelParameter.i.xcst" />
+    <None Include="Syntax\CallableComponents\NextIteration\DuplicateParameter.i.xcst" />
+    <None Include="Syntax\CallableComponents\NextTemplate\_DuplicateParameter.xcst" />
+    <None Include="Syntax\CallableComponents\NextTemplate\DuplicateParameter.i.xcst" />
+    <None Include="Syntax\VariablesAndParameters\Function\RequiredParameter.i.xcst" />
+    <None Include="Syntax\VariablesAndParameters\Function\RequiredParameter.c.xcst" />
     <None Include="Syntax\VariablesAndParameters\Function\DefaultValueAndRequired.c.xcst" />
     <None Include="Syntax\VariablesAndParameters\Function\DefaultValueAndRequired.i.xcst" />
+    <None Include="Syntax\VariablesAndParameters\Function\DuplicateParameter.i.xcst" />
     <None Include="Syntax\VariablesAndParameters\Function\TunnelParameter.c.xcst" />
     <None Include="Syntax\VariablesAndParameters\Function\TunnelParameter.i.xcst" />
     <None Include="Syntax\VariablesAndParameters\Global\DefaultValueAndRequired.c.xcst" />
@@ -140,6 +154,7 @@
     <None Include="Syntax\VariablesAndParameters\Global\DefaultValueAndRequired.i.xcst" />
     <None Include="Syntax\VariablesAndParameters\Global\DuplicateParameter.i.xcst" />
     <None Include="Syntax\VariablesAndParameters\Global\DuplicateVariable.i.xcst" />
+    <None Include="Syntax\VariablesAndParameters\Template\DuplicateParameter.i.xcst" />
     <None Include="Syntax\WhitespaceStripping\PreserveText.c.xcst">
       <SubType>Designer</SubType>
     </None>

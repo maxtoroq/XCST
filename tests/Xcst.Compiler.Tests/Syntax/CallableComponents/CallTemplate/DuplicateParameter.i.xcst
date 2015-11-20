@@ -3,10 +3,13 @@
 
    <c:template name='foo'>
       <c:call-template name='bar'>
-         <c:with-param name='a' value='""'/>
+         <c:with-param name='a'>a</c:with-param>
+         <c:with-param name='a'>a</c:with-param>
       </c:call-template>
    </c:template>
 
-   <c:template name='bar'/>
+   <c:template name='bar'>
+      <c:param name='a'/>
+   </c:template>
 
 </c:module>
