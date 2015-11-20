@@ -33,6 +33,9 @@
             <ref name="display-text"/>
             <ref name="drop-down-list"/>
             <ref name="editor"/>
+            <ref name="field-id"/>
+            <ref name="field-name"/>
+            <ref name="field-value"/>
             <ref name="for-each-row"/>
             <ref name="hidden"/>
             <ref name="http-method-override"/>
@@ -391,6 +394,56 @@
                </attribute>
             </choice>
          </zeroOrMore>
+      </define>
+
+      <define name="field-name">
+         <element name="field-name">
+            <choice>
+               <attribute name="for">
+                  <ref name="Expression"/>
+               </attribute>
+               <optional>
+                  <attribute name="name">
+                     <ref name="AVT"/>
+                  </attribute>
+               </optional>
+            </choice>
+         </element>
+      </define>
+
+      <define name="field-id">
+         <element name="field-id">
+            <choice>
+               <attribute name="for">
+                  <ref name="Expression"/>
+               </attribute>
+               <optional>
+                  <attribute name="name">
+                     <ref name="AVT"/>
+                  </attribute>
+               </optional>
+            </choice>
+         </element>
+      </define>
+
+      <define name="field-value">
+         <element name="field-value">
+            <choice>
+               <attribute name="for">
+                  <ref name="Expression"/>
+               </attribute>
+               <optional>
+                  <attribute name="name">
+                     <ref name="AVT"/>
+                  </attribute>
+               </optional>
+            </choice>
+            <optional>
+               <attribute name="format">
+                  <ref name="AVT"/>
+               </attribute>
+            </optional>
+         </element>
       </define>
    </div>
 

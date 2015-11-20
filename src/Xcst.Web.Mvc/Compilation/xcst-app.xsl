@@ -147,7 +147,7 @@
          <with-param name="ensure-block" select="true()"/>
          <with-param name="mode" select="'statement'"/>
       </call-template>
-   
+
       <call-template name="src:new-line-indented"/>
       <text>if (</text>
       <value-of select="$row"/>
@@ -567,6 +567,115 @@
          <text>)</text>
       </variable>
       <c:value-of value="{$expr}" disable-output-escaping="yes"/>
+   </template>
+
+   <template match="a:field-name | a:field-id" mode="src:extension-instruction">
+      <param name="a:model-metadata" as="xs:string?" tunnel="yes"/>
+
+      <variable name="for-model" select="empty((@for, @name, $a:model-metadata))"/>
+      <variable name="expr">
+         <value-of select="src:global-identifier('System.Web.Mvc.Html.NameExtensions')"/>
+         <text>.</text>
+         <value-of select="if (self::a:field-name) then 'Name' else 'Id'"/>
+         <if test="@for or $for-model">For</if>
+         <if test="$for-model">Model</if>
+         <text>(</text>
+         <call-template name="a:html-helper"/>
+         <if test="not($for-model)">
+            <text>, </text>
+            <choose>
+               <when test="@for">
+                  <variable name="param" select="src:aux-variable(generate-id())"/>
+                  <value-of select="$param"/>
+                  <text> => </text>
+                  <value-of select="$param, @for" separator="."/>
+               </when>
+               <when test="@name">
+                  <value-of select="src:expand-attribute(@name)"/>
+               </when>
+               <when test="$a:model-metadata">
+                  <value-of select="concat($a:model-metadata, '.PropertyName')"/>
+               </when>
+            </choose>
+         </if>
+         <text>)</text>
+      </variable>
+      <c:object value="{src:global-identifier('System.Web.HttpUtility')}.HtmlDecode({$expr}.ToString())"/>
+   </template>
+
+   <template match="a:field-value" mode="src:extension-instruction">
+      <param name="a:model-metadata" as="xs:string?" tunnel="yes"/>
+
+      <variable name="html-helper">
+         <call-template name="a:html-helper"/>
+      </variable>
+      <variable name="for-model" select="empty((@for, @name, $a:model-metadata))"/>
+      <variable name="expr">
+         <value-of select="src:global-identifier('System.Web.Mvc.Html.ValueExtensions')"/>
+         <text>.Value</text>
+         <if test="@for or $for-model">For</if>
+         <if test="$for-model">Model</if>
+         <text>(</text>
+         <value-of select="$html-helper"/>
+         <if test="not($for-model)">
+            <text>, </text>
+            <choose>
+               <when test="@for">
+                  <variable name="param" select="src:aux-variable(generate-id(@for))"/>
+                  <value-of select="$param"/>
+                  <text> => </text>
+                  <value-of select="$param, @for" separator="."/>
+               </when>
+               <when test="@name">
+                  <value-of select="src:expand-attribute(@name)"/>
+               </when>
+               <when test="$a:model-metadata">
+                  <value-of select="concat($a:model-metadata, '.PropertyName')"/>
+               </when>
+            </choose>
+         </if>
+         <text>, format: </text>
+         <choose>
+            <when test="@format">
+               <value-of select="src:expand-attribute(@format)"/>
+            </when>
+            <otherwise>
+               <choose>
+                  <when test="$a:model-metadata">
+                     <value-of select="$a:model-metadata"/>
+                  </when>
+                  <when test="$for-model">
+                     <value-of select="$html-helper"/>
+                     <text>.ViewData.ModelMetadata</text>
+                  </when>
+                  <when test="@for">
+                     <value-of select="src:global-identifier('System.Web.Mvc.ModelMetadata')"/>
+                     <text>.FromLambdaExpression(</text>
+                     <variable name="param" select="src:aux-variable(generate-id(@format))"/>
+                     <value-of select="$param"/>
+                     <text> => </text>
+                     <value-of select="$param, @for" separator="."/>
+                     <text>, </text>
+                     <value-of select="$html-helper"/>
+                     <text>.ViewData</text>
+                     <text>)</text>
+                  </when>
+                  <otherwise>
+                     <value-of select="src:global-identifier('System.Web.Mvc.ModelMetadata')"/>
+                     <text>.FromStringExpression(</text>
+                     <value-of select="src:expand-attribute(@name)"/>
+                     <text>, </text>
+                     <value-of select="$html-helper"/>
+                     <text>.ViewData</text>
+                     <text>)</text>
+                  </otherwise>
+               </choose>
+               <text>.EditFormatString</text>
+            </otherwise>
+         </choose>
+         <text>)</text>
+      </variable>
+      <c:object value="{src:global-identifier('System.Web.HttpUtility')}.HtmlDecode({$expr}.ToString())"/>
    </template>
 
    <!--
