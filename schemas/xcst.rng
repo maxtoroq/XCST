@@ -712,9 +712,6 @@
 
    <define name="delegate">
       <element name="delegate">
-         <attribute name="name">
-            <ref name="Name"/>
-         </attribute>
          <optional>
             <attribute name="as">
                <ref name="Type"/>
