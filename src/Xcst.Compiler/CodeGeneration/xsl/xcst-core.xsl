@@ -779,6 +779,14 @@
       <text>)</text>
    </template>
 
+   <template match="c:next-function" mode="src:statement">
+      <call-template name="src:line-number"/>
+      <call-template name="src:new-line-indented"/>
+      <apply-templates select="." mode="src:expression"/>
+      <value-of select="$src:statement-delimiter"/>
+      <call-template name="src:line-default"/>
+   </template>
+
    <template match="c:next-function" mode="src:expression">
       <param name="modules" tunnel="yes"/>
       <param name="next-function" tunnel="yes"/>
