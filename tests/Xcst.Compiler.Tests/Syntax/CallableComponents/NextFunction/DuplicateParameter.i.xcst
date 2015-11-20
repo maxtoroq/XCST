@@ -4,6 +4,9 @@
    <c:import href='_DuplicateParameter.xcst'/>
 
    <c:function name='foo'>
+      <c:param name='a'/>
+      <c:param name='b'/>
+
       <c:next-function>
          <c:with-param name='a'>a</c:with-param>
          <c:with-param name='a'>a</c:with-param>

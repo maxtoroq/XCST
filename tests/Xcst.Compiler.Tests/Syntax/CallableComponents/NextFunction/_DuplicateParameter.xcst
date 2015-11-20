@@ -3,6 +3,7 @@
 
    <c:function name='foo'>
       <c:param name='a'/>
+      <c:param name='b'/>
    </c:function>
 
 </c:module>
