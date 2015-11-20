@@ -1101,6 +1101,9 @@
                <attribute name="as">
                   <ref name="Type"/>
                </attribute>
+               <attribute name="tunnel">
+                  <ref name="Boolean"/>
+               </attribute>
             </choice>
          </zeroOrMore>
          <ref name="standard-attributes"/>
