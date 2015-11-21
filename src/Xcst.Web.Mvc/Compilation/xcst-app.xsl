@@ -892,7 +892,7 @@
       </call-template>
    </template>
 
-   <template match="a:update" mode="src:extension-instruction">
+   <template match="a:update-model" mode="src:extension-instruction">
       <variable name="expr">
          <value-of select="a:fully-qualified-helper('ModelUpdater')"/>
          <text>.Create(</text>

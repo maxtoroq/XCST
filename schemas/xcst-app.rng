@@ -53,7 +53,7 @@
             <ref name="set-status"/>
             <ref name="text-area"/>
             <ref name="text-box"/>
-            <ref name="update"/>
+            <ref name="update-model"/>
             <ref name="validate-anti-forgery"/>
             <ref name="validation-summary"/>
             <ref name="validation-message"/>
@@ -555,8 +555,8 @@
          </element>
       </define>
 
-      <define name="update">
-         <element name="update">
+      <define name="update-model">
+         <element name="update-model">
             <zeroOrMore>
                <choice>
                   <attribute name="value">

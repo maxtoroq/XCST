@@ -100,7 +100,7 @@
       <a:model value='contact'>
          <c:if test='IsPost'>
             <a:validate-anti-forgery/>
-            <a:update>
+            <a:update-model>
                <a:success>
                   <c:if test='SendMail(contact)'>
                      <a:clear-model-state/>
@@ -111,7 +111,7 @@
                      </div>
                   </c:if>
                </a:success>
-            </a:update>
+            </a:update-model>
          </c:if>
          <h1>{title}</h1>
          <div class='row'>
