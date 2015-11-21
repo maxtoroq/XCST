@@ -41,6 +41,7 @@
             <ref name="http-method-override"/>
             <ref name="label"/>
             <ref name="list-box"/>
+            <ref name="model"/>
             <ref name="password"/>
             <ref name="radio-button"/>
             <ref name="redirect"/>
@@ -48,11 +49,14 @@
             <ref name="set-content-type"/>
             <ref name="set-cookie"/>
             <ref name="set-header"/>
+            <ref name="set-model"/>
             <ref name="set-status"/>
             <ref name="text-area"/>
             <ref name="text-box"/>
             <ref name="update"/>
             <ref name="validate-anti-forgery"/>
+            <ref name="validation-summary"/>
+            <ref name="validation-message"/>
          </choice>
       </define>
 
