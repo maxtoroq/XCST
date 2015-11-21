@@ -426,6 +426,12 @@
 
    <template match="c:iterate//c:next-iteration" mode="src:statement">
       <for-each select="c:with-param">
+         <if test="preceding-sibling::c:with-param[@name/xcst:name(.) = current()/@name/xcst:name(.)]">
+            <sequence select="error(xs:QName('err:XTSE0670'), 'Duplicate parameter name.', src:error-object(.))"/>
+         </if>
+         <if test="@tunnel/xcst:boolean(.)">
+            <sequence select="error(xs:QName('err:XTSE0020'), 'For attribute ''tunnel'' on c:next-iteration/c:with-param, the only permitted values are: ''no'', ''false'', ''0''.', src:error-object(.))"/>
+         </if>
          <call-template name="src:line-number"/>
          <call-template name="src:new-line-indented"/>
          <value-of select="xcst:name(@name)"/>
@@ -579,6 +585,10 @@
    <template match="c:module/c:param | c:template/c:param" mode="src:statement">
       <param name="context-param" tunnel="yes"/>
 
+      <if test="preceding-sibling::c:param[@name/xcst:name(.) = current()/@name/xcst:name(.)]">
+         <sequence select="error(xs:QName('err:XTSE0580'), 'The name of the parameter is not unique.', src:error-object(.))"/>
+      </if>
+
       <variable name="name" select="xcst:name(@name)"/>
       <variable name="text" select="xcst:text(.)"/>
       <variable name="has-default-value" select="xcst:has-value(., $text)"/>
@@ -586,7 +596,7 @@
       <variable name="required" select="(@required/xcst:boolean(.), false())[1]"/>
 
       <if test="$has-default-value and $required">
-         <sequence select="error(xs:QName('err:XTSE0010'), 'The value attribute or child element/text should be omitted when required=''yes''.', src:error-object(.))"/>
+         <sequence select="error(xs:QName('err:XTSE0010'), 'The ''value'' attribute or child element/text should be omitted when required=''yes''.', src:error-object(.))"/>
       </if>
 
       <call-template name="src:line-number"/>
@@ -648,9 +658,9 @@
             <text>)</text>
          </otherwise>
       </choose>
-      <if test="@tunnel">
+      <if test="@tunnel/xcst:boolean(.)">
          <text>, tunnel: </text>
-         <value-of select="src:boolean(xcst:boolean(@tunnel))"/>
+         <value-of select="src:boolean(true())"/>
       </if>
       <text>)</text>
       <value-of select="$src:statement-delimiter"/>
@@ -658,9 +668,27 @@
    </template>
 
    <template match="c:variable | c:iterate/c:param" mode="src:statement">
+
+      <variable name="text" select="xcst:text(.)"/>
+      <variable name="has-value" select="xcst:has-value(., $text)"/>
+         
+      <if test="parent::c:iterate">
+         <if test="preceding-sibling::c:param[@name/xcst:name(.) = current()/@name/xcst:name(.)]">
+            <sequence select="error(xs:QName('err:XTSE0580'), 'The name of the parameter is not unique.', src:error-object(.))"/>
+         </if>
+         <if test="not($has-value)">
+            <sequence select="error(xs:QName('err:XTSE3520'), 'A c:iterate parameter must be initialized with a default value.', src:error-object(.))"/>
+         </if>
+         <if test="@required/xcst:boolean(.)">
+            <sequence select="error(xs:QName('err:XTSE0020'), 'For attribute ''required'' within a c:iterate parameter, the only permitted values are: ''no'', ''false'', ''0''.', src:error-object(.))"/>
+         </if>
+         <if test="@tunnel/xcst:boolean(.)">
+            <sequence select="error(xs:QName('err:XTSE0020'), 'For attribute ''tunnel'' within a c:iterate parameter, the only permitted values are: ''no'', ''false'', ''0''.', src:error-object(.))"/>
+         </if>
+      </if>
+
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
-      <variable name="text" select="xcst:text(.)"/>
       <choose>
          <when test="@as">
             <value-of select="xcst:type(@as)"/>
@@ -670,7 +698,7 @@
       </choose>
       <text> </text>
       <value-of select="xcst:name(@name)"/>
-      <if test="xcst:has-value(., $text)">
+      <if test="$has-value">
          <text> = </text>
          <call-template name="src:value">
             <with-param name="text" select="$text"/>
@@ -767,6 +795,11 @@
    </template>
 
    <template match="c:with-param" mode="src:template-context">
+
+      <if test="preceding-sibling::c:with-param[@name/xcst:name(.) = current()/@name/xcst:name(.)]">
+         <sequence select="error(xs:QName('err:XTSE0670'), 'Duplicate parameter name.', src:error-object(.))"/>
+      </if>
+
       <call-template name="src:new-line-indented"/>
       <text>.WithParam(</text>
       <value-of select="src:string(xcst:name(@name))"/>
@@ -801,6 +834,12 @@
       <value-of select="src:overriden-function-method-name($next-function)"/>
       <text>(</text>
       <for-each select="c:with-param">
+         <if test="preceding-sibling::c:with-param[@name/xcst:name(.) = current()/@name/xcst:name(.)]">
+            <sequence select="error(xs:QName('err:XTSE0670'), 'Duplicate parameter name.', src:error-object(.))"/>
+         </if>
+         <if test="@tunnel/xcst:boolean(.)">
+            <sequence select="error(xs:QName('err:XTSE0020'), 'For attribute ''tunnel'' on c:next-function/c:with-param, the only permitted values are: ''no'', ''false'', ''0''.', src:error-object(.))"/>
+         </if>
          <if test="position() gt 1">, </if>
          <if test="@name">
             <value-of select="xcst:name(@name)"/>
@@ -1238,7 +1277,23 @@
       <value-of select="c:param/((@as/xcst:type(.), 'object')[1]), src:fully-qualified-helper('DynamicContext'), @as/xcst:type(.)" separator=", "/>
       <text>>(</text>
       <text>(</text>
-      <value-of select="c:param/xcst:name(@name), $new-context" separator=", "/>
+      <for-each select="c:param">
+         <if test="preceding-sibling::c:param[@name/xcst:name(.) = current()/@name/xcst:name(.)]">
+            <sequence select="error(xs:QName('err:XTSE0580'), 'The name of the parameter is not unique.', src:error-object(.))"/>
+         </if>
+         <if test="@tunnel/xcst:boolean(.)">
+            <sequence select="error(xs:QName('err:XTSE0020'), 'For attribute ''tunnel'' within a c:delegate parameter, the only permitted values are: ''no'', ''false'', ''0''.', src:error-object(.))"/>
+         </if>
+         <if test="@required/not(xcst:boolean(.))">
+            <sequence select="error(xs:QName('err:XTSE0020'), 'For attribute ''required'' within a c:delegate parameter, the only permitted values are: ''no'', ''false'', ''0''.', src:error-object(.))"/>
+         </if>
+         <if test="xcst:has-value(., xcst:text(.))">
+            <sequence select="error(xs:QName('err:XTSE0760'), 'Delegate parameters cannot have a default value.', src:error-object(.))"/>
+         </if>
+         <value-of select="xcst:name(@name)"/>
+         <text>, </text>
+      </for-each>
+      <value-of select="$new-context"/>
       <text>) => </text>
       <call-template name="src:apply-children">
          <with-param name="children" select="node()[not(self::c:param or following-sibling::c:param)]"/>
@@ -1263,6 +1318,12 @@
       <value-of select="@value"/>
       <text>(</text>
       <for-each select="c:with-param">
+         <if test="@name">
+            <sequence select="error(xs:QName('err:XTSE0760'), 'The ''name'' attribute is not permitted on c:evaluate-delegate/c:with-param.', src:error-object(.))"/>
+         </if>
+         <if test="@tunnel/xcst:boolean(.)">
+            <sequence select="error(xs:QName('err:XTSE0020'), 'For attribute ''tunnel'' on c:evaluate-delegate/c:with-param, the only permitted values are: ''no'', ''false'', ''0''.', src:error-object(.))"/>
+         </if>
          <call-template name="src:value"/>
          <text>, </text>
       </for-each>

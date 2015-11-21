@@ -284,6 +284,10 @@
          <sequence select="error(xs:QName('err:XTSE0630'), 'Duplicate global variable declaration.', src:error-object(.))"/>
       </if>
 
+      <if test="self::c:param and @tunnel/xcst:boolean(.)">
+         <sequence select="error(xs:QName('err:XTSE0020'), 'For attribute ''tunnel'' within a c:module parameter, the only permitted values are: ''no'', ''false'', ''0''.', src:error-object(.))"/>
+      </if>
+
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
       <variable name="text" select="xcst:text(.)"/>
@@ -377,17 +381,36 @@
          else xcst:name(@name)"/>
       <text>(</text>
       <for-each select="c:param">
+         <if test="preceding-sibling::c:param[@name/xcst:name(.) = current()/@name/xcst:name(.)]">
+            <sequence select="error(xs:QName('err:XTSE0580'), 'The name of the parameter is not unique.', src:error-object(.))"/>
+         </if>
+         <if test="@tunnel/xcst:boolean(.)">
+            <sequence select="error(xs:QName('err:XTSE0020'), 'For attribute ''tunnel'' within a c:function parameter, the only permitted values are: ''no'', ''false'', ''0''.', src:error-object(.))"/>
+         </if>
          <variable name="text" select="xcst:text(.)"/>
+         <variable name="has-value" select="xcst:has-value(., $text)"/>
          <variable name="type" select="
             if (@as) then @as/xcst:type(.)
             else if (not(@value) and $text) then 'string'
             else 'object'
          "/>
+         <choose>
+            <when test="$has-value">
+               <if test="@required/xcst:boolean(.)">
+                  <sequence select="error(xs:QName('err:XTSE0020'), 'For attribute ''required'' within a c:function parameter that has either a ''value'' attribute or child element/text, the only permitted values are: ''no'', ''false'', ''0''.', src:error-object(.))"/>
+               </if>
+            </when>
+            <otherwise>
+               <if test="@required/not(xcst:boolean(.))">
+                  <sequence select="error(xs:QName('err:XTSE0020'), 'For attribute ''required'' within a c:function parameter that does not have either a ''value'' attribute or child element/text, the only permitted values are: ''yes'', ''true'', ''1''.', src:error-object(.))"/>
+               </if>
+            </otherwise>
+         </choose>
          <if test="position() gt 1">, </if>
          <value-of select="$type"/>
          <text> </text>
          <value-of select="xcst:name(@name)"/>
-         <if test="xcst:has-value(., $text)">
+         <if test="$has-value">
             <text> = </text>
             <call-template name="src:value">
                <with-param name="text" select="$text"/>
