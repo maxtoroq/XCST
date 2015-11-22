@@ -48,18 +48,18 @@
                      </c:evaluate-delegate>
                   </c:when>
                   <c:otherwise>
-                     <div class="form-group">
+                     <div class='form-group'>
                         <!--
                            Setting text explicitly because of ModelMetadata issue when an entry with same 
                            name exists in ViewData (e.g. SelectList).
 
                            ValidationMessage has similar issue with unobtrusive validation attributes.
                         -->
-                        <a:label name="{prop.PropertyName}" text="{prop.DisplayName ?? prop.PropertyName}"
-                           html-class="control-label {__xcst_html_label_column_class}"/>
-                        
-                        <div class="{__xcst_html_field_column_class}">
-                           <p class="form-control-static">
+                        <a:label name='{prop.PropertyName}' text='{prop.DisplayName ?? prop.PropertyName}'
+                           html-class='control-label {__xcst_html_label_column_class}'/>
+
+                        <div class='{__xcst_html_field_column_class}'>
+                           <p class='form-control-static'>
                               <a:display name='{prop.PropertyName}' template='{displayTemplate}'/>
                            </p>
                         </div>

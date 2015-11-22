@@ -59,37 +59,17 @@
 
       <a:model value='contact'>
          <dl>
-            <dt>
-               <a:display-name for='Name'/>
-               <c:text>:</c:text>
-            </dt>
-            <dd>
-               <a:display for='Name'/>
-            </dd>
-
-            <dt>
-               <a:display-name for='Email'/>
-               <c:text>:</c:text>
-            </dt>
-            <dd>
-               <a:display for='Email'/>
-            </dd>
-
-            <dt>
-               <a:display-name for='Telephone'/>
-               <c:text>:</c:text>
-            </dt>
-            <dd>
-               <a:display for='Telephone'/>
-            </dd>
-
-            <dt>
-               <a:display-name for='Message'/>
-               <c:text>:</c:text>
-            </dt>
-            <dd>
-               <a:display for='Message'/>
-            </dd>
+            <a:display>
+               <a:row-template>
+                  <dt>
+                     <a:display-name/>
+                     <c:text>:</c:text>
+                  </dt>
+                  <dd>
+                     <a:display/>
+                  </dd>
+               </a:row-template>
+            </a:display>
          </dl>
       </a:model>
    </c:template>
