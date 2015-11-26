@@ -753,7 +753,7 @@
          </attribute>
          <ref name="standard-attributes"/>
          <zeroOrMore>
-            <ref name="with-param-for-functions"/>
+            <ref name="with-param-for-templates"/>
          </zeroOrMore>
       </element>
    </define>

@@ -12,7 +12,7 @@
    <c:param name='recurseComplexProperties' value='false' as='bool'/>
    <c:param name='__xcst_html_label_column_class' value='"col-md-3"' as='string'/>
    <c:param name='__xcst_html_field_column_class' value='"col-md-9"' as='string'/>
-   <c:param name='__xcst_row_template' as='Action&lt;ModelMetadata, Xcst.Runtime.DynamicContext>'/>
+   <c:param name='__xcst_row_template' as='Action&lt;Xcst.Runtime.DynamicContext>'/>
 
    <c:function name='ShouldShowProperty' as='bool'>
       <c:param name='prop' as='ModelMetadata'/>
@@ -44,7 +44,7 @@
                   </c:when>
                   <c:when test='__xcst_row_template != null'>
                      <c:evaluate-delegate value='__xcst_row_template'>
-                        <c:with-param value='prop'/>
+                        <c:with-param name='member' value='prop'/>
                      </c:evaluate-delegate>
                   </c:when>
                   <c:otherwise>

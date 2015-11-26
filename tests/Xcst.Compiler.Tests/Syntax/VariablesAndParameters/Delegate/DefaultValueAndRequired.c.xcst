@@ -4,7 +4,7 @@
    <c:template name='foo'>
       <c:variable name='bar'>
          <c:delegate>
-            <c:param name='a' required='yes'/>
+            <c:param name='a' value='""' required='no'/>
          </c:delegate>
       </c:variable>
    </c:template>

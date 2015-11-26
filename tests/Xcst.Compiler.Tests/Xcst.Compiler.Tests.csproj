@@ -83,9 +83,7 @@
   <ItemGroup>
     <None Include="Syntax\CallableComponents\CallTemplate\DuplicateParameter.i.xcst" />
     <None Include="Syntax\CallableComponents\CallTemplate\VerbatimParameterName.c.xcst" />
-    <None Include="Syntax\CallableComponents\EvaluateDelegate\TunnelParameter.c.xcst" />
-    <None Include="Syntax\CallableComponents\EvaluateDelegate\TunnelParameter.i.xcst" />
-    <None Include="Syntax\CallableComponents\EvaluateDelegate\NamedParameter.i.xcst" />
+    <None Include="Syntax\CallableComponents\EvaluateDelegate\DuplicateParameter.i.xcst" />
     <None Include="Syntax\CallableComponents\NextFunction\TunnelParameter.c.xcst" />
     <None Include="Syntax\CallableComponents\NextFunction\TunnelParameter.i.xcst" />
     <None Include="Syntax\CallableComponents\NextFunction\DuplicateParameter.i.xcst" />
@@ -96,11 +94,8 @@
     <None Include="Syntax\CallableComponents\NextIteration\DuplicateParameter.i.xcst" />
     <None Include="Syntax\CallableComponents\NextTemplate\_DuplicateParameter.xcst" />
     <None Include="Syntax\CallableComponents\NextTemplate\DuplicateParameter.i.xcst" />
-    <None Include="Syntax\VariablesAndParameters\Delegate\RequiredParameter.i.xcst" />
-    <None Include="Syntax\VariablesAndParameters\Delegate\RequiredParameter.c.xcst" />
-    <None Include="Syntax\VariablesAndParameters\Delegate\TunnelParameter.c.xcst" />
-    <None Include="Syntax\VariablesAndParameters\Delegate\DefaultValue.i.xcst" />
-    <None Include="Syntax\VariablesAndParameters\Delegate\TunnelParameter.i.xcst" />
+    <None Include="Syntax\VariablesAndParameters\Delegate\DefaultValueAndRequired.c.xcst" />
+    <None Include="Syntax\VariablesAndParameters\Delegate\DefaultValueAndRequired.i.xcst" />
     <None Include="Syntax\VariablesAndParameters\Delegate\DuplicateParameter.i.xcst" />
     <None Include="Syntax\VariablesAndParameters\Function\RequiredParameter.i.xcst" />
     <None Include="Syntax\VariablesAndParameters\Function\RequiredParameter.c.xcst" />

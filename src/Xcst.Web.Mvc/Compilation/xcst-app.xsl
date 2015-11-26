@@ -776,22 +776,39 @@
    </template>
 
    <template match="a:row-template" mode="a:editor-additional-view-data">
-      <value-of select="src:aux-variable('row_template')"/>
-      <text> = </text>
+      <param name="indent" tunnel="yes"/>
+
       <variable name="prop" select="concat(src:aux-variable('prop'), '_', generate-id())"/>
       <variable name="new-context" select="concat(src:aux-variable('context'), '_', generate-id())"/>
-      <text>new </text>
-      <value-of select="src:global-identifier(concat('System.Action&lt;', src:global-identifier('System.Web.Mvc.ModelMetadata'), ', ', src:fully-qualified-helper('DynamicContext'), '>'))"/>
+
+      <value-of select="src:aux-variable('row_template')"/>
+      <text> = new </text>
+      <value-of select="src:global-identifier(concat('System.Action&lt;', src:fully-qualified-helper('DynamicContext'), '>'))"/>
       <text>((</text>
-      <value-of select="$prop, $new-context" separator=", "/>
+      <value-of select="$new-context"/>
       <text>) => </text>
+      <call-template name="src:open-brace"/>
+      <call-template name="src:new-line-indented">
+         <with-param name="increase" select="1"/>
+      </call-template>
+      <text>var </text>
+      <value-of select="$prop"/>
+      <text> = </text>
+      <value-of select="$new-context"/>
+      <text>.Param&lt;</text>
+      <value-of select="src:global-identifier('System.Web.Mvc.ModelMetadata')"/>
+      <text>>(</text>
+      <value-of select="src:string('member')"/>
+      <text>, null)</text>
+      <value-of select="$src:statement-delimiter"/>
       <call-template name="src:apply-children">
-         <with-param name="ensure-block" select="true()"/>
          <with-param name="mode" select="'statement'"/>
+         <with-param name="omit-block" select="true()"/>
          <with-param name="context-param" select="$new-context" tunnel="yes"/>
          <with-param name="output" select="concat($new-context, '.Output')" tunnel="yes"/>
          <with-param name="a:model-metadata" select="$prop" tunnel="yes"/>
       </call-template>
+      <call-template name="src:close-brace"/>
       <text>)</text>
    </template>
 

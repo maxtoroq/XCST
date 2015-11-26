@@ -4,12 +4,9 @@
    <c:template name='foo'>
       <c:variable name='bar'>
          <c:delegate>
-            <c:param name='a'/>
+            <c:param name='a' value='""' required='yes'/>
          </c:delegate>
       </c:variable>
-      <c:evaluate-delegate value='bar'>
-         <c:with-param value='""' tunnel='yes'/>
-      </c:evaluate-delegate>
    </c:template>
 
 </c:module>

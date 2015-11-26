@@ -582,7 +582,7 @@
       ## Variables and Parameters
    -->
 
-   <template match="c:module/c:param | c:template/c:param" mode="src:statement">
+   <template match="c:module/c:param | c:template/c:param | c:delegate/c:param" mode="src:statement">
       <param name="context-param" tunnel="yes"/>
 
       <if test="preceding-sibling::c:param[@name/xcst:name(.) = current()/@name/xcst:name(.)]">
@@ -671,7 +671,7 @@
 
       <variable name="text" select="xcst:text(.)"/>
       <variable name="has-value" select="xcst:has-value(., $text)"/>
-         
+
       <if test="parent::c:iterate">
          <if test="preceding-sibling::c:param[@name/xcst:name(.) = current()/@name/xcst:name(.)]">
             <sequence select="error(xs:QName('err:XTSE0580'), 'The name of the parameter is not unique.', src:error-object(.))"/>
@@ -1270,38 +1270,30 @@
    -->
 
    <template match="c:delegate" mode="src:expression">
+      <param name="indent" tunnel="yes"/>
+
       <variable name="new-context" select="concat(src:aux-variable('context'), '_', generate-id())"/>
       <text>new </text>
       <value-of select="src:global-identifier(concat('System.', if (@as) then 'Func' else 'Action'))"/>
       <text>&lt;</text>
-      <value-of select="c:param/((@as/xcst:type(.), 'object')[1]), src:fully-qualified-helper('DynamicContext'), @as/xcst:type(.)" separator=", "/>
-      <text>>(</text>
-      <text>(</text>
-      <for-each select="c:param">
-         <if test="preceding-sibling::c:param[@name/xcst:name(.) = current()/@name/xcst:name(.)]">
-            <sequence select="error(xs:QName('err:XTSE0580'), 'The name of the parameter is not unique.', src:error-object(.))"/>
-         </if>
-         <if test="@tunnel/xcst:boolean(.)">
-            <sequence select="error(xs:QName('err:XTSE0020'), 'For attribute ''tunnel'' within a c:delegate parameter, the only permitted values are: ''no'', ''false'', ''0''.', src:error-object(.))"/>
-         </if>
-         <if test="@required/not(xcst:boolean(.))">
-            <sequence select="error(xs:QName('err:XTSE0020'), 'For attribute ''required'' within a c:delegate parameter, the only permitted values are: ''no'', ''false'', ''0''.', src:error-object(.))"/>
-         </if>
-         <if test="xcst:has-value(., xcst:text(.))">
-            <sequence select="error(xs:QName('err:XTSE0760'), 'Delegate parameters cannot have a default value.', src:error-object(.))"/>
-         </if>
-         <value-of select="xcst:name(@name)"/>
-         <text>, </text>
-      </for-each>
+      <value-of select="src:fully-qualified-helper('DynamicContext'), @as/xcst:type(.)" separator=", "/>
+      <text>>((</text>
       <value-of select="$new-context"/>
       <text>) => </text>
+      <call-template name="src:open-brace"/>
+      <apply-templates select="c:param" mode="src:statement">
+         <with-param name="indent" select="$indent + 1" tunnel="yes"/>
+         <with-param name="context-param" select="$new-context" tunnel="yes"/>
+      </apply-templates>
       <call-template name="src:apply-children">
          <with-param name="children" select="node()[not(self::c:param or following-sibling::c:param)]"/>
-         <with-param name="ensure-block" select="true()"/>
          <with-param name="mode" select="'statement'"/>
+         <with-param name="omit-block" select="true()"/>
+         <with-param name="indent" select="$indent + 1" tunnel="yes"/>
          <with-param name="context-param" select="$new-context" tunnel="yes"/>
          <with-param name="output" select="concat($new-context, '.Output')" tunnel="yes"/>
       </call-template>
+      <call-template name="src:close-brace"/>
       <text>)</text>
    </template>
 
@@ -1313,21 +1305,18 @@
    </template>
 
    <template match="c:evaluate-delegate" mode="src:expression">
+      <param name="indent" tunnel="yes"/>
       <param name="context-param" as="xs:string?" tunnel="yes"/>
 
       <value-of select="@value"/>
+      <text>(new </text>
+      <value-of select="src:fully-qualified-helper('DynamicContext')"/>
       <text>(</text>
-      <for-each select="c:with-param">
-         <if test="@name">
-            <sequence select="error(xs:QName('err:XTSE0760'), 'The ''name'' attribute is not permitted on c:evaluate-delegate/c:with-param.', src:error-object(.))"/>
-         </if>
-         <if test="@tunnel/xcst:boolean(.)">
-            <sequence select="error(xs:QName('err:XTSE0020'), 'For attribute ''tunnel'' on c:evaluate-delegate/c:with-param, the only permitted values are: ''no'', ''false'', ''0''.', src:error-object(.))"/>
-         </if>
-         <call-template name="src:value"/>
-         <text>, </text>
-      </for-each>
       <value-of select="($context-param, 'null')[1]"/>
+      <text>)</text>
+      <apply-templates select="c:with-param" mode="src:template-context">
+         <with-param name="indent" select="$indent + 1" tunnel="yes"/>
+      </apply-templates>
       <text>)</text>
    </template>
 
