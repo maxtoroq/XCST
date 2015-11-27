@@ -80,18 +80,15 @@
       <a:model value='contact'>
          <c:if test='IsPost'>
             <a:validate-anti-forgery/>
-            <a:update-model>
-               <a:success>
-                  <c:if test='SendMail(contact)'>
-                     <a:clear-model-state/>
-                     <a:set-model value='null'/>
-                     <div class='alert alert-success alert-dismissable'>
-                        <button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&#215;</button>
-                        <c:text>Thanks for contacting us. We'll get back to you shortly.</c:text>
-                     </div>
-                  </c:if>
-               </a:success>
-            </a:update-model>
+            <c:if test='TryUpdate(contact)
+               &amp;&amp; SendMail(contact)'>
+               <a:clear-model-state/>
+               <a:set-model value='null'/>
+               <div class='alert alert-success alert-dismissable'>
+                  <button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&#215;</button>
+                  <c:text>Thanks for contacting us. We'll get back to you shortly.</c:text>
+               </div>
+            </c:if>
          </c:if>
          <h1>{title}</h1>
          <div class='row'>

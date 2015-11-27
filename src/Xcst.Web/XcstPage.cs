@@ -28,6 +28,7 @@ namespace Xcst.Web {
       HttpServerUtilityBase _Server;
 
       IList<string> _UrlData;
+      IPrincipal _User;
 
       public virtual string VirtualPath { get; set; }
 
@@ -67,13 +68,6 @@ namespace Xcst.Web {
          }
       }
 
-      public HttpServerUtilityBase Server {
-         get {
-            return _Server
-               ?? (_Server = Context?.Server);
-         }
-      }
-
       public virtual IList<string> UrlData {
          get {
             if (_UrlData == null
@@ -83,11 +77,22 @@ namespace Xcst.Web {
             }
             return _UrlData;
          }
+         set { _UrlData = value; }
       }
 
-      public virtual IPrincipal User => Context?.User;
+      public virtual IPrincipal User {
+         get {
+            return _User
+               ?? (_User = Context?.User);
+         }
+         set { _User = value; }
+      }
 
-      public virtual bool IsPost => Request?.HttpMethod == "POST";
+      public virtual bool IsPost {
+         get {
+            return Request?.HttpMethod == "POST";
+         }
+      }
 
       public virtual bool IsAjax {
          get {

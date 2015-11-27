@@ -909,58 +909,6 @@
       </call-template>
    </template>
 
-   <template match="a:update-model" mode="src:extension-instruction">
-      <variable name="expr">
-         <value-of select="a:fully-qualified-helper('ModelUpdater')"/>
-         <text>.Create(</text>
-         <call-template name="a:html-helper"/>
-         <if test="not(@value)">, createModelIfNull: true</if>
-         <text>).TryUpdate(</text>
-         <choose>
-            <when test="@value">
-               <value-of select="@value"/>
-            </when>
-            <otherwise>
-               <call-template name="a:html-helper"/>
-               <text>.ViewData.Model</text>
-            </otherwise>
-         </choose>
-         <for-each select="@type, @prefix">
-            <text>, </text>
-            <value-of select="name()"/>
-            <text>: </text>
-            <apply-templates select="." mode="a:try-update"/>
-         </for-each>
-         <text>)</text>
-      </variable>
-      <value-of select="$src:new-line"/>
-      <call-template name="src:line-number"/>
-      <call-template name="src:new-line-indented"/>
-      <text>if (</text>
-      <value-of select="$expr"/>
-      <text>)</text>
-      <apply-templates select="a:success" mode="a:try-update"/>
-      <if test="a:failure">
-         <text> else</text>
-         <apply-templates select="a:failure" mode="a:try-update"/>
-      </if>
-   </template>
-
-   <template match="a:success | a:failure" mode="a:try-update">
-      <call-template name="src:apply-children">
-         <with-param name="ensure-block" select="true()"/>
-         <with-param name="mode" select="'statement'"/>
-      </call-template>
-   </template>
-
-   <template match="@type" mode="a:try-update">
-      <value-of select="string()"/>
-   </template>
-
-   <template match="@prefix" mode="a:try-update">
-      <value-of select="src:expand-attribute(.)"/>
-   </template>
-
    <template match="a:set-model" mode="src:extension-instruction">
       <variable name="html-helper">
          <call-template name="a:html-helper"/>
