@@ -14,6 +14,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Principal;
 using System.Web;
 
@@ -109,6 +110,59 @@ namespace Xcst.Web {
 
       public virtual string Href(string path, params object[] pathParts) {
          return UrlUtil.GenerateClientUrl(this.Context, this.VirtualPath, path, pathParts);
+      }
+
+      public virtual bool Authorize(string[] users = null, string[] roles = null) {
+
+         if (IsAuthorized(this.User, users, roles)) {
+
+            // see System.Web.Mvc.AuthorizeAttribute
+
+            HttpCachePolicyBase cachePolicy = this.Response.Cache;
+            cachePolicy.SetProxyMaxAge(new TimeSpan(0));
+            cachePolicy.AddValidationCallback(CacheValidateHandler, new object[2] { users, roles });
+
+            return true;
+
+         } else {
+
+            this.Response.StatusCode = 401;
+            return false;
+         }
+      }
+
+      void CacheValidateHandler(HttpContext context, object data, ref HttpValidationStatus validationStatus) {
+
+         object[] dataArr = data as object[];
+
+         bool isAuthorized = IsAuthorized(context.User, dataArr?[0] as string[], dataArr?[1] as string[]);
+
+         validationStatus = (isAuthorized) ? HttpValidationStatus.Valid : HttpValidationStatus.IgnoreThisRequest;
+      }
+
+      static bool IsAuthorized(IPrincipal user, string[] users, string[] roles) {
+
+         if (user == null
+            || !user.Identity.IsAuthenticated) {
+
+            return false;
+         }
+
+         if (users != null
+            && users.Length > 0
+            && !users.Contains(user.Identity.Name, StringComparer.OrdinalIgnoreCase)) {
+
+            return false;
+         }
+
+         if (roles != null
+            && roles.Length > 0
+            && !roles.Any(user.IsInRole)) {
+
+            return false;
+         }
+
+         return true;
       }
    }
 }
