@@ -132,7 +132,7 @@ namespace Xcst.Web.Mvc.Html {
 
          output.WriteStartElement("a");
          output.WriteAttributeString("href", "mailto:" + Convert.ToString(html.ViewContext.ViewData.Model, CultureInfo.InvariantCulture));
-         output.WriteString(Convert.ToString(html.ViewContext.ViewData.TemplateInfo.FormattedModelValue, CultureInfo.InvariantCulture));
+         output.WriteString(Convert.ToString(html.ViewContext.ViewData.TemplateInfo.FormattedModelValue, CultureInfo.CurrentCulture));
          output.WriteEndElement();
       }
 
@@ -209,14 +209,14 @@ namespace Xcst.Web.Mvc.Html {
       }
 
       public static void StringTemplate(HtmlHelper html, XmlWriter output) {
-         output.WriteString(Convert.ToString(html.ViewContext.ViewData.TemplateInfo.FormattedModelValue, CultureInfo.InvariantCulture));
+         output.WriteString(Convert.ToString(html.ViewContext.ViewData.TemplateInfo.FormattedModelValue, CultureInfo.CurrentCulture));
       }
 
       public static void UrlTemplate(HtmlHelper html, XmlWriter output) {
 
          output.WriteStartElement("a");
          output.WriteAttributeString("href", Convert.ToString(html.ViewContext.ViewData.Model, CultureInfo.InvariantCulture));
-         output.WriteString(Convert.ToString(html.ViewContext.ViewData.TemplateInfo.FormattedModelValue, CultureInfo.InvariantCulture));
+         output.WriteString(Convert.ToString(html.ViewContext.ViewData.TemplateInfo.FormattedModelValue, CultureInfo.CurrentCulture));
          output.WriteEndElement();
       }
    }

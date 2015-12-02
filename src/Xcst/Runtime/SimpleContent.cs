@@ -14,6 +14,7 @@
 
 using System;
 using System.Collections;
+using System.Globalization;
 using System.Linq;
 using XsltFunctions = System.Xml.Xsl.Runtime.XsltFunctions;
 
@@ -54,7 +55,7 @@ namespace Xcst.Runtime {
       }
 
       public static string Join(string separator, object value) {
-         return Convert.ToString(value);
+         return Convert.ToString(value, CultureInfo.CurrentCulture);
       }
 
       public static string NormalizeSpace(string value) {
