@@ -16,6 +16,8 @@ using System;
 using System.IO;
 using System.Web;
 using System.Web.Mvc;
+using System.Xml;
+using BuildManager = System.Web.Compilation.BuildManager;
 
 namespace Xcst.Web.Mvc {
 
@@ -26,8 +28,31 @@ namespace Xcst.Web.Mvc {
 
       protected override void RenderView(ViewContext viewContext, TextWriter writer, object instance) {
 
-         if (viewContext == null) throw new ArgumentNullException(nameof(viewContext));
          if (writer == null) throw new ArgumentNullException(nameof(writer));
+
+         RenderViewImpl(viewContext, t => t.OutputTo(writer), instance);
+      }
+
+      internal void RenderXcstView(ViewContext viewContext, XmlWriter writer) {
+
+         object instance = null;
+
+         Type type = BuildManager.GetCompiledType(this.ViewPath);
+
+         if (type != null) {
+            instance = Activator.CreateInstance(type);
+         }
+
+         if (instance == null) {
+            throw new InvalidOperationException($"The view found at '{this.ViewPath}' was not created.");
+         }
+
+         RenderViewImpl(viewContext, t => t.OutputTo(writer), instance);
+      }
+
+      void RenderViewImpl(ViewContext viewContext, Func<XcstTemplateEvaluator, XcstOutputter> getOutputter, object instance) {
+
+         if (viewContext == null) throw new ArgumentNullException(nameof(viewContext));
          if (instance == null) throw new ArgumentNullException(nameof(instance));
 
          XcstViewPage viewPage = instance as XcstViewPage;
@@ -39,10 +64,15 @@ namespace Xcst.Web.Mvc {
          viewPage.ViewContext = viewContext;
 
          AddFileDependencies(instance, viewContext.HttpContext.Response);
-         RenderPage(viewPage, viewContext, writer);
+
+         RenderImpl(viewContext, getOutputter, viewPage);
       }
 
-      internal static void RenderPage(XcstViewPage viewPage, ViewContext viewContext, TextWriter writer) {
+      internal static void RenderPage(ViewContext viewContext, TextWriter writer, XcstViewPage viewPage) {
+         RenderImpl(viewContext, t => t.OutputTo(writer), viewPage);
+      }
+
+      static void RenderImpl(ViewContext viewContext, Func<XcstTemplateEvaluator, XcstOutputter> getOutputter, XcstViewPage viewPage) {
 
          XcstEvaluator evaluator = XcstEvaluator.Using(viewPage);
 
@@ -50,8 +80,7 @@ namespace Xcst.Web.Mvc {
             evaluator.WithParam(item.Key, item.Value);
          }
 
-         evaluator.CallInitialTemplate()
-            .OutputTo(writer)
+         getOutputter(evaluator.CallInitialTemplate())
             .Run();
       }
 

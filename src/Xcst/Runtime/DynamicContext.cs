@@ -23,20 +23,21 @@ namespace Xcst.Runtime {
    public class DynamicContext : IDisposable {
 
       readonly IDictionary<string, ParameterArgument> parameters = new Dictionary<string, ParameterArgument>();
+      readonly bool keepWriterOpen;
       bool disposed;
 
       public Uri CurrentOutputUri { get; }
 
       public XmlWriter Output { get; }
 
-      internal DynamicContext(Uri outputUri, XmlWriter output, DynamicContext currentContext = null)
+      internal DynamicContext(IWriterFactory writerFactory, OutputParameters defaultOutputParams, DynamicContext currentContext = null)
          : this(currentContext, false) {
 
-         if (outputUri == null) throw new ArgumentNullException(nameof(outputUri));
-         if (output == null) throw new ArgumentNullException(nameof(output));
+         if (writerFactory == null) throw new ArgumentNullException(nameof(writerFactory));
 
-         this.CurrentOutputUri = outputUri;
-         this.Output = output;
+         this.CurrentOutputUri = writerFactory.OutputUri;
+         this.Output = writerFactory.Create(defaultOutputParams);
+         this.keepWriterOpen = writerFactory.KeepWriterOpen;
       }
 
       public DynamicContext(DynamicContext currentContext)
@@ -50,6 +51,7 @@ namespace Xcst.Runtime {
 
             this.CurrentOutputUri = currentContext.CurrentOutputUri;
             this.Output = currentContext.Output;
+            this.keepWriterOpen = currentContext.keepWriterOpen;
 
             foreach (var item in currentContext.parameters.Where(p => p.Value.Tunnel)) {
                this.parameters.Add(item);
@@ -114,7 +116,9 @@ namespace Xcst.Runtime {
             return;
          }
 
-         if (disposing) {
+         if (disposing
+            && !this.keepWriterOpen) {
+
             this.Output.Dispose();
          }
 

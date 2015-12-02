@@ -26,12 +26,15 @@ namespace Xcst.Xml {
 
       public Uri OutputUri { get; }
 
-      protected XmlWriterFactory(Uri outputUri, OutputParameters overrideParameters = null) {
+      public bool KeepWriterOpen { get; }
+
+      protected XmlWriterFactory(Uri outputUri, OutputParameters overrideParameters = null, bool keepWriterOpen = false) {
 
          if (outputUri == null) throw new ArgumentNullException(nameof(outputUri));
 
          this.OutputUri = outputUri;
          this.overrideParameters = overrideParameters;
+         this.KeepWriterOpen = keepWriterOpen;
       }
 
       public XmlWriter Create(OutputParameters defaultParameters) {
@@ -96,7 +99,7 @@ namespace Xcst.Xml {
       readonly Stream output;
       readonly bool autoClose;
 
-      public StreamXmlWriterFactory(Stream output, Uri outputUri, OutputParameters overrideParameters = null, bool autoClose = false)
+      public StreamXmlWriterFactory(Stream output, Uri outputUri, OutputParameters overrideParameters, bool autoClose)
          : base(outputUri, overrideParameters) {
 
          if (output == null) throw new ArgumentNullException(nameof(output));
@@ -130,7 +133,7 @@ namespace Xcst.Xml {
       readonly TextWriter output;
       readonly bool autoClose;
 
-      public TextXmlWriterFactory(TextWriter output, Uri outputUri, OutputParameters overrideParameters = null, bool autoClose = false)
+      public TextXmlWriterFactory(TextWriter output, Uri outputUri, OutputParameters overrideParameters, bool autoClose)
          : base(outputUri, overrideParameters) {
 
          if (output == null) throw new ArgumentNullException(nameof(output));
@@ -163,7 +166,7 @@ namespace Xcst.Xml {
 
       readonly StringBuilder output;
 
-      public StringXmlWriterFactory(StringBuilder output, OutputParameters overrideParameters = null)
+      public StringXmlWriterFactory(StringBuilder output, OutputParameters overrideParameters)
          : base(new Uri("", UriKind.Relative), overrideParameters) {
 
          if (output == null) throw new ArgumentNullException(nameof(output));
@@ -181,7 +184,7 @@ namespace Xcst.Xml {
 
    class FileUriXmlWriterFactory : XmlWriterFactory {
 
-      public FileUriXmlWriterFactory(Uri file, OutputParameters overrideParameters = null)
+      public FileUriXmlWriterFactory(Uri file, OutputParameters overrideParameters)
          : base(file, overrideParameters) { }
 
       protected override XmlWriter CreateWriter(OutputParameters finalParameters) {
@@ -197,8 +200,8 @@ namespace Xcst.Xml {
 
       readonly XmlWriter output;
 
-      public InstanceXmlWriterFactory(XmlWriter output, Uri outputUri)
-         : base(outputUri) {
+      public InstanceXmlWriterFactory(XmlWriter output, Uri outputUri, bool autoClose)
+         : base(outputUri, keepWriterOpen: !autoClose) {
 
          if (output == null) throw new ArgumentNullException(nameof(output));
 

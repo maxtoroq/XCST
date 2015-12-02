@@ -24,6 +24,8 @@ namespace Xcst {
 
       Uri OutputUri { get; }
 
+      bool KeepWriterOpen { get; }
+
       /// <param name="defaultParameters">Output definition (Usually the default definition, but can be a named definition when using <code>&lt;c:result-document format="name"></code>).</param>
       XmlWriter Create(OutputParameters defaultParameters);
    }
@@ -46,8 +48,8 @@ namespace Xcst {
          return new FileUriXmlWriterFactory(file, overrideParameters);
       }
 
-      public static IWriterFactory CreateFactory(XmlWriter output, Uri outputUri) {
-         return new InstanceXmlWriterFactory(output, outputUri);
+      public static IWriterFactory CreateFactory(XmlWriter output, Uri outputUri, bool autoClose = false) {
+         return new InstanceXmlWriterFactory(output, outputUri, autoClose);
       }
    }
 }

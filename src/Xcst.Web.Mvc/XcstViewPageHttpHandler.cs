@@ -105,7 +105,7 @@ namespace Xcst.Web.Mvc {
          this.page.ViewContext = viewContext;
 
          try {
-            XcstView.RenderPage(this.page, viewContext, writer);
+            XcstView.RenderPage(viewContext, writer, this.page);
 
          } finally {
             this.page.ViewContext = oldViewContext;

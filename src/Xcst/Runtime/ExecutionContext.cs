@@ -41,7 +41,7 @@ namespace Xcst.Runtime {
          var outputParams = new OutputParameters();
          this.executable.ReadOutputDefinition(outputName, outputParams);
 
-         return new DynamicContext(writerFactory.OutputUri, writerFactory.Create(outputParams), currentContext);
+         return new DynamicContext(writerFactory, outputParams, currentContext);
       }
 
       public DynamicContext ChangeOutput(Uri outputUri, QualifiedName outputName, OutputParameters parameters, DynamicContext currentContext) {
@@ -83,10 +83,10 @@ namespace Xcst.Runtime {
             this.executable.ReadOutputDefinition(outputName, defaultParameters); 
          }
 
-         IWriterFactory writerFactory = WriterFactory.CreateFactory(sb, parameters);
-
-         using (var newContext = new DynamicContext(writerFactory.OutputUri, writerFactory.Create(defaultParameters), currentContext)) {
-            action(newContext);
+         using (IWriterFactory writerFactory = WriterFactory.CreateFactory(sb, parameters)) {
+            using (var newContext = new DynamicContext(writerFactory, defaultParameters, currentContext)) {
+               action(newContext);
+            }
          }
 
          return sb.ToString();

@@ -14,9 +14,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Web.Mvc;
+using System.Xml;
 
-namespace Xcst.Web.Mvc.Runtime {
+namespace Xcst.Web.Mvc.Html {
 
    /// <exclude/>
    public class HtmlAttributesMerger {
@@ -89,6 +91,51 @@ namespace Xcst.Web.Mvc.Runtime {
          }
 
          return this;
+      }
+
+      public HtmlAttributesMerger MergeAttribute(string key, string value, bool replaceExisting) {
+
+         if (String.IsNullOrEmpty(key)) throw new ArgumentNullException(nameof(key));
+
+         if (replaceExisting || !this.Attributes.ContainsKey(key)) {
+            this.Attributes[key] = value;
+         }
+
+         return this;
+      }
+
+      public HtmlAttributesMerger MergeAttributes<TKey, TValue>(IDictionary<TKey, TValue> attributes, bool replaceExisting) {
+
+         if (attributes != null) {
+            foreach (var entry in attributes) {
+               string key = Convert.ToString(entry.Key, CultureInfo.InvariantCulture);
+               string value = Convert.ToString(entry.Value, CultureInfo.InvariantCulture);
+               MergeAttribute(key, value, replaceExisting);
+            }
+         }
+
+         return this;
+      }
+
+      internal HtmlAttributesMerger GenerateId(string name) {
+
+         if (!this.Attributes.ContainsKey("id")) {
+
+            string sanitizedId = TagBuilder.CreateSanitizedId(name);
+
+            if (!String.IsNullOrEmpty(sanitizedId)) {
+               Attributes["id"] = sanitizedId;
+            }
+         }
+
+         return this;
+      }
+
+      internal void WriteTo(XmlWriter output) {
+
+         foreach (var item in this.Attributes) {
+            output.WriteAttributeString(item.Key, Convert.ToString(item.Value, CultureInfo.InvariantCulture));
+         }
       }
    }
 }

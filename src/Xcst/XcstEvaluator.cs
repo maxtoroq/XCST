@@ -170,12 +170,12 @@ namespace Xcst {
          return new XcstOutputter(this.executable, writerFn, ExecuteTemplate);
       }
 
-      public XcstOutputter OutputTo(XmlWriter output, Uri outputUri = null) {
+      public XcstOutputter OutputTo(XmlWriter output, Uri outputUri = null, bool autoClose = false) {
 
          if (output == null) throw new ArgumentNullException(nameof(output));
 
          Func<OutputParameters, IWriterFactory> writerFn = @params =>
-            WriterFactory.CreateFactory(output, outputUri ?? DefaultOuputUri);
+            WriterFactory.CreateFactory(output, outputUri ?? DefaultOuputUri, autoClose);
 
          return new XcstOutputter(this.executable, writerFn, ExecuteTemplate);
       }
