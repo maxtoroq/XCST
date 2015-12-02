@@ -408,7 +408,7 @@
             <attribute name="convert-empty-string-to-null">
                <ref name="Boolean"/>
             </attribute>
-            <attribute name="html-encode">
+            <attribute name="disable-output-escaping">
                <ref name="Boolean"/>
             </attribute>
             <attribute name="null-display-text">

@@ -109,7 +109,7 @@
          <apply-templates select="@display-format
             | @apply-format-in-edit-mode
             | @convert-empty-string-to-null
-            | @html-encode
+            | @disable-output-escaping
             | @null-display-text"
             mode="src:display-format-setter"/>
       </variable>
@@ -137,8 +137,8 @@
       <value-of select="'ConvertEmptyStringToNull', src:boolean(xcst:boolean(.))" separator=" = "/>
    </template>
 
-   <template match="@html-encode" mode="src:display-format-setter">
-      <value-of select="'HtmlEncode', src:boolean(xcst:boolean(.))" separator=" = "/>
+   <template match="@disable-output-escaping" mode="src:display-format-setter">
+      <value-of select="'HtmlEncode', src:boolean(not(xcst:boolean(.)))" separator=" = "/>
    </template>
 
    <template match="@null-display-text" mode="src:display-format-setter">
