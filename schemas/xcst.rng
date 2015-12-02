@@ -420,7 +420,7 @@
             <attribute name="hidden">
                <ref name="Boolean"/>
             </attribute>
-            <attribute name="readonly">
+            <attribute name="read-only">
                <ref name="Boolean"/>
             </attribute>
             <attribute name="data-type">
