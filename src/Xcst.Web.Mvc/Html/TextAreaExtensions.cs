@@ -61,7 +61,7 @@ namespace Xcst.Web.Mvc.Html {
       public static void TextArea(this HtmlHelper htmlHelper,
                                   XmlWriter output,
                                   string name,
-                                  string value = null,
+                                  object value = null,
                                   IDictionary<string, object> htmlAttributes = null) {
 
          ModelMetadata metadata = ModelMetadata.FromStringExpression(name, htmlHelper.ViewContext.ViewData);
@@ -76,7 +76,7 @@ namespace Xcst.Web.Mvc.Html {
       public static void TextArea(this HtmlHelper htmlHelper,
                                   XmlWriter output,
                                   string name,
-                                  string value,
+                                  object value,
                                   int rows, int columns,
                                   IDictionary<string, object> htmlAttributes = null) {
 

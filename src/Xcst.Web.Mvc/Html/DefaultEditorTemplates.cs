@@ -151,7 +151,7 @@ namespace Xcst.Web.Mvc.Html {
 
       public static void MultilineTextTemplate(HtmlHelper html, XmlWriter output) {
 
-         string value = html.ViewContext.ViewData.TemplateInfo.FormattedModelValue.ToString();
+         object value = html.ViewContext.ViewData.TemplateInfo.FormattedModelValue;
          IDictionary<string, object> htmlAttributes = CreateHtmlAttributes(html, "text-box multi-line");
 
          AddInputAttributes(html, htmlAttributes);

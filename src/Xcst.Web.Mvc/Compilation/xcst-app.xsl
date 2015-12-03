@@ -300,7 +300,7 @@
             <otherwise>
                <value-of select="(@name/src:expand-attribute(.), src:string(''))[1]"/>
                <text>, </text>
-               <value-of select="(@value/concat('((object)', string(), ')?.ToString()'), 'null')[1]"/>
+               <value-of select="(@value, 'default(object)')[1]"/>
             </otherwise>
          </choose>
          <if test="@rows or @cols">
