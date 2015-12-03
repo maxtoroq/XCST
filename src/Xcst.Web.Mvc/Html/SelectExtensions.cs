@@ -25,7 +25,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Web.Mvc;
-using System.Xml;
 using EnumHelper = System.Web.Mvc.Html.EnumHelper;
 
 namespace Xcst.Web.Mvc.Html {
@@ -36,7 +35,7 @@ namespace Xcst.Web.Mvc.Html {
       // DropDownList
 
       public static void DropDownList(this HtmlHelper htmlHelper,
-                                      XmlWriter output,
+                                      XcstWriter output,
                                       string name,
                                       IEnumerable<SelectListItem> selectList = null,
                                       string optionLabel = null,
@@ -48,7 +47,7 @@ namespace Xcst.Web.Mvc.Html {
       [SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters", Justification = "Users cannot use anonymous methods with the LambdaExpression type")]
       [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "This is an appropriate nesting of generic types")]
       public static void DropDownListFor<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper,
-                                                            XmlWriter output,
+                                                            XcstWriter output,
                                                             Expression<Func<TModel, TProperty>> expression,
                                                             IEnumerable<SelectListItem> selectList = null,
                                                             string optionLabel = null,
@@ -69,7 +68,7 @@ namespace Xcst.Web.Mvc.Html {
 
       [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "This is an appropriate nesting of generic types")]
       public static void EnumDropDownListFor<TModel, TEnum>(this HtmlHelper<TModel> htmlHelper,
-                                                            XmlWriter output,
+                                                            XcstWriter output,
                                                             Expression<Func<TModel, TEnum>> expression,
                                                             string optionLabel = null,
                                                             IDictionary<string, object> htmlAttributes = null) {
@@ -146,7 +145,7 @@ namespace Xcst.Web.Mvc.Html {
       }
 
       static void DropDownListHelper(HtmlHelper htmlHelper,
-                                     XmlWriter output,
+                                     XcstWriter output,
                                      ModelMetadata metadata,
                                      string expression,
                                      IEnumerable<SelectListItem> selectList,
@@ -159,7 +158,7 @@ namespace Xcst.Web.Mvc.Html {
       // ListBox
 
       public static void ListBox(this HtmlHelper htmlHelper,
-                                 XmlWriter output,
+                                 XcstWriter output,
                                  string name,
                                  IEnumerable<SelectListItem> selectList = null,
                                  IDictionary<string, object> htmlAttributes = null) {
@@ -170,7 +169,7 @@ namespace Xcst.Web.Mvc.Html {
       [SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters", Justification = "Users cannot use anonymous methods with the LambdaExpression type")]
       [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "This is an appropriate nesting of generic types")]
       public static void ListBoxFor<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper,
-                                                       XmlWriter output,
+                                                       XcstWriter output,
                                                        Expression<Func<TModel, TProperty>> expression,
                                                        IEnumerable<SelectListItem> selectList,
                                                        IDictionary<string, object> htmlAttributes) {
@@ -184,7 +183,7 @@ namespace Xcst.Web.Mvc.Html {
       }
 
       static void ListBoxHelper(HtmlHelper htmlHelper,
-                                XmlWriter output,
+                                XcstWriter output,
                                 ModelMetadata metadata,
                                 string name,
                                 IEnumerable<SelectListItem> selectList,
@@ -252,7 +251,7 @@ namespace Xcst.Web.Mvc.Html {
       }
 
       static void SelectInternal(this HtmlHelper htmlHelper,
-                                 XmlWriter output,
+                                 XcstWriter output,
                                  ModelMetadata metadata,
                                  string optionLabel,
                                  string name,
@@ -323,7 +322,7 @@ namespace Xcst.Web.Mvc.Html {
          output.WriteEndElement(); // </select>
       }
 
-      static void BuildItems(XmlWriter output, string optionLabel, IEnumerable<SelectListItem> selectList) {
+      static void BuildItems(XcstWriter output, string optionLabel, IEnumerable<SelectListItem> selectList) {
 
          // Make optionLabel the first item that gets rendered.
          if (optionLabel != null) {
@@ -367,7 +366,7 @@ namespace Xcst.Web.Mvc.Html {
          }
       }
 
-      internal static void ListItemToOption(XmlWriter output, SelectListItem item) {
+      internal static void ListItemToOption(XcstWriter output, SelectListItem item) {
 
          output.WriteStartElement("option");
          output.WriteAttributeString("value", item.Value);

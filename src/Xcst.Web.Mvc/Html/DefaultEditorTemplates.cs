@@ -27,7 +27,6 @@ using System.Linq;
 using System.Web.Mvc;
 using System.Web.Routing;
 using System.Web.UI.WebControls;
-using System.Xml;
 
 namespace Xcst.Web.Mvc.Html {
 
@@ -35,7 +34,7 @@ namespace Xcst.Web.Mvc.Html {
 
       const string HtmlAttributeKey = "htmlAttributes";
 
-      public static void BooleanTemplate(HtmlHelper html, XmlWriter output) {
+      public static void BooleanTemplate(HtmlHelper html, XcstWriter output) {
 
          bool? value = null;
 
@@ -50,11 +49,11 @@ namespace Xcst.Web.Mvc.Html {
          }
       }
 
-      public static void CollectionTemplate(HtmlHelper html, XmlWriter output) {
+      public static void CollectionTemplate(HtmlHelper html, XcstWriter output) {
          CollectionTemplate(html, output, TemplateHelpers.TemplateHelper);
       }
 
-      internal static void CollectionTemplate(HtmlHelper html, XmlWriter output, TemplateHelpers.TemplateHelperDelegate templateHelper) {
+      internal static void CollectionTemplate(HtmlHelper html, XcstWriter output, TemplateHelpers.TemplateHelperDelegate templateHelper) {
 
          ViewDataDictionary viewData = html.ViewContext.ViewData;
          object model = viewData.ModelMetadata.Model;
@@ -105,7 +104,7 @@ namespace Xcst.Web.Mvc.Html {
          }
       }
 
-      public static void DecimalTemplate(HtmlHelper html, XmlWriter output) {
+      public static void DecimalTemplate(HtmlHelper html, XcstWriter output) {
 
          if (html.ViewContext.ViewData.TemplateInfo.FormattedModelValue == html.ViewContext.ViewData.ModelMetadata.Model) {
             html.ViewContext.ViewData.TemplateInfo.FormattedModelValue = String.Format(CultureInfo.CurrentCulture, "{0:0.00}", html.ViewContext.ViewData.ModelMetadata.Model);
@@ -114,7 +113,7 @@ namespace Xcst.Web.Mvc.Html {
          StringTemplate(html, output);
       }
 
-      public static void HiddenInputTemplate(HtmlHelper html, XmlWriter output) {
+      public static void HiddenInputTemplate(HtmlHelper html, XcstWriter output) {
 
          ViewDataDictionary viewData = html.ViewContext.ViewData;
 
@@ -149,7 +148,7 @@ namespace Xcst.Web.Mvc.Html {
          InputExtensions.Hidden(html, output, String.Empty, model, htmlAttributesDict);
       }
 
-      public static void MultilineTextTemplate(HtmlHelper html, XmlWriter output) {
+      public static void MultilineTextTemplate(HtmlHelper html, XcstWriter output) {
 
          object value = html.ViewContext.ViewData.TemplateInfo.FormattedModelValue;
          IDictionary<string, object> htmlAttributes = CreateHtmlAttributes(html, "text-box multi-line");
@@ -202,11 +201,11 @@ namespace Xcst.Web.Mvc.Html {
          return htmlAttributes;
       }
 
-      public static void ObjectTemplate(HtmlHelper html, XmlWriter output) {
+      public static void ObjectTemplate(HtmlHelper html, XcstWriter output) {
          ObjectTemplate(html, output, TemplateHelpers.TemplateHelper);
       }
 
-      internal static void ObjectTemplate(HtmlHelper html, XmlWriter output, TemplateHelpers.TemplateHelperDelegate templateHelper) {
+      internal static void ObjectTemplate(HtmlHelper html, XcstWriter output, TemplateHelpers.TemplateHelperDelegate templateHelper) {
 
          ViewDataDictionary viewData = html.ViewContext.ViewData;
          TemplateInfo templateInfo = viewData.TemplateInfo;
@@ -254,7 +253,7 @@ namespace Xcst.Web.Mvc.Html {
          }
       }
 
-      public static void PasswordTemplate(HtmlHelper html, XmlWriter output) {
+      public static void PasswordTemplate(HtmlHelper html, XcstWriter output) {
 
          object value = html.ViewContext.ViewData.TemplateInfo.FormattedModelValue;
          IDictionary<string, object> htmlAttributes = CreateHtmlAttributes(html, "text-box single-line password");
@@ -270,51 +269,51 @@ namespace Xcst.Web.Mvc.Html {
              && !templateInfo.Visited(metadata);
       }
 
-      public static void StringTemplate(HtmlHelper html, XmlWriter output) {
+      public static void StringTemplate(HtmlHelper html, XcstWriter output) {
          HtmlInputTemplateHelper(html, output);
       }
 
-      public static void PhoneNumberInputTemplate(HtmlHelper html, XmlWriter output) {
+      public static void PhoneNumberInputTemplate(HtmlHelper html, XcstWriter output) {
          HtmlInputTemplateHelper(html, output, inputType: "tel");
       }
 
-      public static void UrlInputTemplate(HtmlHelper html, XmlWriter output) {
+      public static void UrlInputTemplate(HtmlHelper html, XcstWriter output) {
          HtmlInputTemplateHelper(html, output, inputType: "url");
       }
 
-      public static void EmailAddressInputTemplate(HtmlHelper html, XmlWriter output) {
+      public static void EmailAddressInputTemplate(HtmlHelper html, XcstWriter output) {
          HtmlInputTemplateHelper(html, output, inputType: "email");
       }
 
-      public static void DateTimeInputTemplate(HtmlHelper html, XmlWriter output) {
+      public static void DateTimeInputTemplate(HtmlHelper html, XcstWriter output) {
 
          ApplyRfc3339DateFormattingIfNeeded(html, "{0:yyyy-MM-ddTHH:mm:ss.fffK}");
          HtmlInputTemplateHelper(html, output, inputType: "datetime");
       }
 
-      public static void DateTimeLocalInputTemplate(HtmlHelper html, XmlWriter output) {
+      public static void DateTimeLocalInputTemplate(HtmlHelper html, XcstWriter output) {
 
          ApplyRfc3339DateFormattingIfNeeded(html, "{0:yyyy-MM-ddTHH:mm:ss.fff}");
          HtmlInputTemplateHelper(html, output, inputType: "datetime-local");
       }
 
-      public static void DateInputTemplate(HtmlHelper html, XmlWriter output) {
+      public static void DateInputTemplate(HtmlHelper html, XcstWriter output) {
 
          ApplyRfc3339DateFormattingIfNeeded(html, "{0:yyyy-MM-dd}");
          HtmlInputTemplateHelper(html, output, inputType: "date");
       }
 
-      public static void TimeInputTemplate(HtmlHelper html, XmlWriter output) {
+      public static void TimeInputTemplate(HtmlHelper html, XcstWriter output) {
 
          ApplyRfc3339DateFormattingIfNeeded(html, "{0:HH:mm:ss.fff}");
          HtmlInputTemplateHelper(html, output, inputType: "time");
       }
 
-      public static void NumberInputTemplate(HtmlHelper html, XmlWriter output) {
+      public static void NumberInputTemplate(HtmlHelper html, XcstWriter output) {
          HtmlInputTemplateHelper(html, output, inputType: "number");
       }
 
-      public static void ColorInputTemplate(HtmlHelper html, XmlWriter output) {
+      public static void ColorInputTemplate(HtmlHelper html, XcstWriter output) {
 
          string value = null;
 
@@ -353,11 +352,11 @@ namespace Xcst.Web.Mvc.Html {
          }
       }
 
-      static void HtmlInputTemplateHelper(HtmlHelper html, XmlWriter output, string inputType = null) {
+      static void HtmlInputTemplateHelper(HtmlHelper html, XcstWriter output, string inputType = null) {
          HtmlInputTemplateHelper(html, output, inputType, html.ViewContext.ViewData.TemplateInfo.FormattedModelValue);
       }
 
-      static void HtmlInputTemplateHelper(HtmlHelper html, XmlWriter output, string inputType, object value) {
+      static void HtmlInputTemplateHelper(HtmlHelper html, XcstWriter output, string inputType, object value) {
 
          IDictionary<string, object> htmlAttributes = CreateHtmlAttributes(html, "text-box single-line", inputType: inputType);
 

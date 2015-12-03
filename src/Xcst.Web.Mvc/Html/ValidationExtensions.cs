@@ -24,7 +24,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Web;
 using System.Web.Mvc;
-using System.Xml;
 
 namespace Xcst.Web.Mvc.Html {
 
@@ -126,7 +125,7 @@ namespace Xcst.Web.Mvc.Html {
       /// Otherwise, a <paramref name="tag"/> element that contains an error message.</returns>
       [SuppressMessage("Microsoft.Naming", "CA1719:ParameterNamesShouldNotMatchMemberNames", Justification = "'validationMessage' refers to the message that will be rendered by the ValidationMessage helper.")]
       public static void ValidationMessage(this HtmlHelper htmlHelper,
-                                           XmlWriter output,
+                                           XcstWriter output,
                                            string modelName,
                                            string validationMessage = null,
                                            IDictionary<string, object> htmlAttributes = null,
@@ -155,7 +154,7 @@ namespace Xcst.Web.Mvc.Html {
       /// Otherwise, a <paramref name="tag"/> element that contains an error message.</returns>
       [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "This is an appropriate nesting of generic types")]
       public static void ValidationMessageFor<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper,
-                                                                 XmlWriter output,
+                                                                 XcstWriter output,
                                                                  Expression<Func<TModel, TProperty>> expression,
                                                                  string validationMessage = null,
                                                                  IDictionary<string, object> htmlAttributes = null,
@@ -169,7 +168,7 @@ namespace Xcst.Web.Mvc.Html {
 
       [SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase", Justification = "Normalization to lowercase is a common requirement for JavaScript and HTML values")]
       static void ValidationMessageHelper(this HtmlHelper htmlHelper,
-                                          XmlWriter output,
+                                          XcstWriter output,
                                           ModelMetadata modelMetadata,
                                           string expression,
                                           string validationMessage,
@@ -234,7 +233,7 @@ namespace Xcst.Web.Mvc.Html {
       }
 
       public static void ValidationSummary(this HtmlHelper htmlHelper,
-                                           XmlWriter output,
+                                           XcstWriter output,
                                            bool excludePropertyErrors = false,
                                            string message = null,
                                            IDictionary<string, object> htmlAttributes = null,

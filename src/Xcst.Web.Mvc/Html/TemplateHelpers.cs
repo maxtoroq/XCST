@@ -27,7 +27,6 @@ using System.Linq.Expressions;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.UI.WebControls;
-using System.Xml;
 
 namespace Xcst.Web.Mvc.Html {
 
@@ -39,8 +38,8 @@ namespace Xcst.Web.Mvc.Html {
             { DataBoundControlMode.Edit, "EditorTemplates" }
          };
 
-      static readonly Dictionary<string, Action<HtmlHelper, XmlWriter>> _defaultDisplayActions =
-         new Dictionary<string, Action<HtmlHelper, XmlWriter>>(StringComparer.OrdinalIgnoreCase) {
+      static readonly Dictionary<string, Action<HtmlHelper, XcstWriter>> _defaultDisplayActions =
+         new Dictionary<string, Action<HtmlHelper, XcstWriter>>(StringComparer.OrdinalIgnoreCase) {
             { "EmailAddress", DefaultDisplayTemplates.EmailAddressTemplate },
             { "HiddenInput", DefaultDisplayTemplates.HiddenInputTemplate },
             { "Html", DefaultDisplayTemplates.HtmlTemplate },
@@ -53,8 +52,8 @@ namespace Xcst.Web.Mvc.Html {
             { typeof(object).Name, DefaultDisplayTemplates.ObjectTemplate },
          };
 
-      static readonly Dictionary<string, Action<HtmlHelper, XmlWriter>> _defaultEditorActions =
-         new Dictionary<string, Action<HtmlHelper, XmlWriter>>(StringComparer.OrdinalIgnoreCase) {
+      static readonly Dictionary<string, Action<HtmlHelper, XcstWriter>> _defaultEditorActions =
+         new Dictionary<string, Action<HtmlHelper, XcstWriter>>(StringComparer.OrdinalIgnoreCase) {
             { "HiddenInput", DefaultEditorTemplates.HiddenInputTemplate },
             { "MultilineText", DefaultEditorTemplates.MultilineTextTemplate },
             { "Password", DefaultEditorTemplates.PasswordTemplate },
@@ -82,21 +81,21 @@ namespace Xcst.Web.Mvc.Html {
 
       static string CacheItemId = Guid.NewGuid().ToString();
 
-      internal delegate void ExecuteTemplateDelegate(HtmlHelper html, XmlWriter output, ViewDataDictionary viewData, string templateName,
+      internal delegate void ExecuteTemplateDelegate(HtmlHelper html, XcstWriter output, ViewDataDictionary viewData, string templateName,
                                                      DataBoundControlMode mode, GetViewNamesDelegate getViewNames,
                                                      GetDefaultActionsDelegate getDefaultActions);
 
-      internal delegate Dictionary<string, Action<HtmlHelper, XmlWriter>> GetDefaultActionsDelegate(DataBoundControlMode mode);
+      internal delegate Dictionary<string, Action<HtmlHelper, XcstWriter>> GetDefaultActionsDelegate(DataBoundControlMode mode);
 
       internal delegate IEnumerable<string> GetViewNamesDelegate(ModelMetadata metadata, params string[] templateHints);
 
-      internal delegate void TemplateHelperDelegate(HtmlHelper html, XmlWriter output, ModelMetadata metadata, string htmlFieldName,
+      internal delegate void TemplateHelperDelegate(HtmlHelper html, XcstWriter output, ModelMetadata metadata, string htmlFieldName,
                                                     string templateName, DataBoundControlMode mode, object additionalViewData);
 
-      static void ExecuteTemplate(HtmlHelper html, XmlWriter output, ViewDataDictionary viewData, string templateName, DataBoundControlMode mode, GetViewNamesDelegate getViewNames, GetDefaultActionsDelegate getDefaultActions) {
+      static void ExecuteTemplate(HtmlHelper html, XcstWriter output, ViewDataDictionary viewData, string templateName, DataBoundControlMode mode, GetViewNamesDelegate getViewNames, GetDefaultActionsDelegate getDefaultActions) {
 
          Dictionary<string, ActionCacheItem> actionCache = GetActionCache(html);
-         Dictionary<string, Action<HtmlHelper, XmlWriter>> defaultActions = getDefaultActions(mode);
+         Dictionary<string, Action<HtmlHelper, XcstWriter>> defaultActions = getDefaultActions(mode);
          string modeViewPath = _modeViewPaths[mode];
 
          foreach (string viewName in getViewNames(viewData.ModelMetadata, templateName, viewData.ModelMetadata.TemplateHint, viewData.ModelMetadata.DataTypeName)) {
@@ -123,7 +122,7 @@ namespace Xcst.Web.Mvc.Html {
                   return;
                }
 
-               Action<HtmlHelper, XmlWriter> defaultAction;
+               Action<HtmlHelper, XcstWriter> defaultAction;
 
                if (defaultActions.TryGetValue(viewName, out defaultAction)) {
 
@@ -155,7 +154,7 @@ namespace Xcst.Web.Mvc.Html {
          return result;
       }
 
-      static Dictionary<string, Action<HtmlHelper, XmlWriter>> GetDefaultActions(DataBoundControlMode mode) {
+      static Dictionary<string, Action<HtmlHelper, XcstWriter>> GetDefaultActions(DataBoundControlMode mode) {
          return mode == DataBoundControlMode.ReadOnly ? _defaultDisplayActions : _defaultEditorActions;
       }
 
@@ -217,11 +216,11 @@ namespace Xcst.Web.Mvc.Html {
          }
       }
 
-      public static void Template(HtmlHelper html, XmlWriter output, string expression, string templateName, string htmlFieldName, DataBoundControlMode mode, object additionalViewData) {
+      public static void Template(HtmlHelper html, XcstWriter output, string expression, string templateName, string htmlFieldName, DataBoundControlMode mode, object additionalViewData) {
          Template(html, output, expression, templateName, htmlFieldName, mode, additionalViewData, TemplateHelper);
       }
 
-      internal static void Template(HtmlHelper html, XmlWriter output, string expression, string templateName, string htmlFieldName,
+      internal static void Template(HtmlHelper html, XcstWriter output, string expression, string templateName, string htmlFieldName,
                                     DataBoundControlMode mode, object additionalViewData, TemplateHelperDelegate templateHelper) {
 
          ModelMetadata metadata = ModelMetadata.FromStringExpression(expression, html.ViewData);
@@ -233,14 +232,14 @@ namespace Xcst.Web.Mvc.Html {
          templateHelper(html, output, metadata, htmlFieldName, templateName, mode, additionalViewData);
       }
 
-      public static void TemplateFor<TContainer, TValue>(this HtmlHelper<TContainer> html, XmlWriter output, Expression<Func<TContainer, TValue>> expression,
+      public static void TemplateFor<TContainer, TValue>(this HtmlHelper<TContainer> html, XcstWriter output, Expression<Func<TContainer, TValue>> expression,
                                                          string templateName, string htmlFieldName, DataBoundControlMode mode,
                                                          object additionalViewData) {
 
          TemplateFor(html, output, expression, templateName, htmlFieldName, mode, additionalViewData, TemplateHelper);
       }
 
-      internal static void TemplateFor<TContainer, TValue>(this HtmlHelper<TContainer> html, XmlWriter output, Expression<Func<TContainer, TValue>> expression,
+      internal static void TemplateFor<TContainer, TValue>(this HtmlHelper<TContainer> html, XcstWriter output, Expression<Func<TContainer, TValue>> expression,
                                                            string templateName, string htmlFieldName, DataBoundControlMode mode,
                                                            object additionalViewData, TemplateHelperDelegate templateHelper) {
 
@@ -253,11 +252,11 @@ namespace Xcst.Web.Mvc.Html {
          templateHelper(html, output, metadata, htmlFieldName, templateName, mode, additionalViewData);
       }
 
-      public static void TemplateHelper(HtmlHelper html, XmlWriter output, ModelMetadata metadata, string htmlFieldName, string templateName, DataBoundControlMode mode, object additionalViewData) {
+      public static void TemplateHelper(HtmlHelper html, XcstWriter output, ModelMetadata metadata, string htmlFieldName, string templateName, DataBoundControlMode mode, object additionalViewData) {
          TemplateHelper(html, output, metadata, htmlFieldName, templateName, mode, additionalViewData, ExecuteTemplate);
       }
 
-      internal static void TemplateHelper(HtmlHelper html, XmlWriter output, ModelMetadata metadata, string htmlFieldName, string templateName, DataBoundControlMode mode, object additionalViewData, ExecuteTemplateDelegate executeTemplate) {
+      internal static void TemplateHelper(HtmlHelper html, XcstWriter output, ModelMetadata metadata, string htmlFieldName, string templateName, DataBoundControlMode mode, object additionalViewData, ExecuteTemplateDelegate executeTemplate) {
 
          // TODO: Convert Editor into Display if model.IsReadOnly is true? Need to be careful about this because
          // the Model property on the ViewPage/ViewUserControl is get-only, so the type descriptor automatically
@@ -323,7 +322,7 @@ namespace Xcst.Web.Mvc.Html {
          return newHelper;
       }
 
-      static void RenderView(HtmlHelper html, XmlWriter output, ViewDataDictionary viewData, ViewEngineResult viewEngineResult) {
+      static void RenderView(HtmlHelper html, XcstWriter output, ViewDataDictionary viewData, ViewEngineResult viewEngineResult) {
 
          IView view = viewEngineResult.View;
          XcstView xcstView = view as XcstView;
@@ -343,14 +342,14 @@ namespace Xcst.Web.Mvc.Html {
       }
 
       abstract class ActionCacheItem {
-         public abstract void Execute(HtmlHelper html, XmlWriter output, ViewDataDictionary viewData);
+         public abstract void Execute(HtmlHelper html, XcstWriter output, ViewDataDictionary viewData);
       }
 
       class ActionCacheCodeItem : ActionCacheItem {
 
-         public Action<HtmlHelper, XmlWriter> Action { get; set; }
+         public Action<HtmlHelper, XcstWriter> Action { get; set; }
 
-         public override void Execute(HtmlHelper html, XmlWriter output, ViewDataDictionary viewData) {
+         public override void Execute(HtmlHelper html, XcstWriter output, ViewDataDictionary viewData) {
             Action(MakeHtmlHelper(html, viewData), output);
          }
       }
@@ -359,7 +358,7 @@ namespace Xcst.Web.Mvc.Html {
 
          public string ViewName { get; set; }
 
-         public override void Execute(HtmlHelper html, XmlWriter output, ViewDataDictionary viewData) {
+         public override void Execute(HtmlHelper html, XcstWriter output, ViewDataDictionary viewData) {
 
             ViewEngineResult viewEngineResult = ViewEngines.Engines.FindPartialView(html.ViewContext, this.ViewName);
 

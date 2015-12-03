@@ -27,7 +27,7 @@ namespace Xcst {
       bool KeepWriterOpen { get; }
 
       /// <param name="defaultParameters">Output definition (Usually the default definition, but can be a named definition when using <code>&lt;c:result-document format="name"></code>).</param>
-      XmlWriter Create(OutputParameters defaultParameters);
+      XcstWriter Create(OutputParameters defaultParameters);
    }
 
    static class WriterFactory {
@@ -50,6 +50,42 @@ namespace Xcst {
 
       public static IWriterFactory CreateFactory(XmlWriter output, Uri outputUri, bool autoClose = false) {
          return new InstanceXmlWriterFactory(output, outputUri, autoClose);
+      }
+
+      public static IWriterFactory CreateFactory(XcstWriter output, Uri outputUri, bool autoClose = false) {
+         return new InstanceWriterFactory(output, outputUri, autoClose);
+      }
+   }
+
+   class InstanceWriterFactory : IWriterFactory {
+
+      readonly XcstWriter output;
+      bool disposed;
+
+      public Uri OutputUri { get; }
+
+      public bool KeepWriterOpen { get; }
+
+      public InstanceWriterFactory(XcstWriter output, Uri outputUri, bool autoClose) {
+
+         this.output = output;
+         this.OutputUri = outputUri;
+         this.KeepWriterOpen = !autoClose;
+      }
+
+      public XcstWriter Create(OutputParameters defaultParameters) {
+         return this.output;
+      }
+
+      public void Dispose() {
+
+         if (this.disposed) {
+            return;
+         }
+
+         this.disposed = true;
+
+         GC.SuppressFinalize(this);
       }
    }
 }

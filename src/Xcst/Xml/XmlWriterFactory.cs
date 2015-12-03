@@ -37,7 +37,7 @@ namespace Xcst.Xml {
          this.KeepWriterOpen = keepWriterOpen;
       }
 
-      public XmlWriter Create(OutputParameters defaultParameters) {
+      public XcstWriter Create(OutputParameters defaultParameters) {
 
          if (this.disposed) {
             throw new ObjectDisposedException(GetType().FullName);
@@ -49,9 +49,11 @@ namespace Xcst.Xml {
 
          XmlWriter writer = CreateWriter(defaultParameters);
 
-         return WrapHtmlWriter(writer, defaultParameters)
+         XmlWriter finalWriter = WrapHtmlWriter(writer, defaultParameters)
             ?? WrapXHtmlWriter(writer, defaultParameters)
             ?? writer;
+
+         return new XcstXmlWriter(finalWriter);
       }
 
       XmlWriter WrapHtmlWriter(XmlWriter writer, OutputParameters parameters) {
@@ -209,7 +211,7 @@ namespace Xcst.Xml {
       }
 
       protected override XmlWriter CreateWriter(OutputParameters finalParameters) {
-         return output;
+         return this.output;
       }
    }
 }

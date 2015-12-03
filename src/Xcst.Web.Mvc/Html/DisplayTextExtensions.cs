@@ -20,23 +20,22 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Web.Mvc;
-using System.Xml;
 
 namespace Xcst.Web.Mvc.Html {
 
    /// <exclude/>
    public static class DisplayTextExtensions {
 
-      public static void DisplayText(this HtmlHelper html, XmlWriter output, string name) {
+      public static void DisplayText(this HtmlHelper html, XcstWriter output, string name) {
          DisplayTextHelper(html, output, ModelMetadata.FromStringExpression(name, html.ViewContext.ViewData));
       }
 
       [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "This is an appropriate nesting of generic types")]
-      public static void DisplayTextFor<TModel, TResult>(this HtmlHelper<TModel> html, XmlWriter output, Expression<Func<TModel, TResult>> expression) {
+      public static void DisplayTextFor<TModel, TResult>(this HtmlHelper<TModel> html, XcstWriter output, Expression<Func<TModel, TResult>> expression) {
          DisplayTextHelper(html, output, ModelMetadata.FromLambdaExpression(expression, html.ViewData));
       }
 
-      internal static void DisplayTextHelper(HtmlHelper html, XmlWriter output, ModelMetadata metadata) {
+      internal static void DisplayTextHelper(HtmlHelper html, XcstWriter output, ModelMetadata metadata) {
 
          string text = metadata.SimpleDisplayText;
 

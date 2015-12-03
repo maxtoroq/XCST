@@ -22,7 +22,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq.Expressions;
 using System.Web.Mvc;
-using System.Xml;
 
 namespace Xcst.Web.Mvc.Html {
 
@@ -59,7 +58,7 @@ namespace Xcst.Web.Mvc.Html {
       }
 
       public static void TextArea(this HtmlHelper htmlHelper,
-                                  XmlWriter output,
+                                  XcstWriter output,
                                   string name,
                                   object value = null,
                                   IDictionary<string, object> htmlAttributes = null) {
@@ -74,7 +73,7 @@ namespace Xcst.Web.Mvc.Html {
       }
 
       public static void TextArea(this HtmlHelper htmlHelper,
-                                  XmlWriter output,
+                                  XcstWriter output,
                                   string name,
                                   object value,
                                   int rows, int columns,
@@ -93,7 +92,7 @@ namespace Xcst.Web.Mvc.Html {
 
       [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "This is an appropriate nesting of generic types")]
       public static void TextAreaFor<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper,
-                                                        XmlWriter output,
+                                                        XcstWriter output,
                                                         Expression<Func<TModel, TProperty>> expression,
                                                         IDictionary<string, object> htmlAttributes = null) {
 
@@ -107,7 +106,7 @@ namespace Xcst.Web.Mvc.Html {
 
       [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "This is an appropriate nesting of generic types")]
       public static void TextAreaFor<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper,
-                                                        XmlWriter output,
+                                                        XcstWriter output,
                                                         Expression<Func<TModel, TProperty>> expression,
                                                         int rows, int columns,
                                                         IDictionary<string, object> htmlAttributes = null) {
@@ -123,7 +122,7 @@ namespace Xcst.Web.Mvc.Html {
 
       [SuppressMessage("Microsoft.Usage", "CA2208:InstantiateArgumentExceptionsCorrectly", Justification = "If this fails, it is because the string-based version had an empty 'name' parameter")]
       internal static void TextAreaHelper(HtmlHelper htmlHelper,
-                                          XmlWriter output,
+                                          XcstWriter output,
                                           ModelMetadata modelMetadata,
                                           string name,
                                           IDictionary<string, object> rowsAndColumns,

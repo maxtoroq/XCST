@@ -21,7 +21,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Web.UI.WebControls;
 using System.Web.Mvc;
-using System.Xml;
 
 namespace Xcst.Web.Mvc.Html {
 
@@ -29,7 +28,7 @@ namespace Xcst.Web.Mvc.Html {
    public static class DisplayExtensions {
 
       public static void Display(this HtmlHelper html,
-                                 XmlWriter output,
+                                 XcstWriter output,
                                  string expression,
                                  string templateName = null,
                                  string htmlFieldName = null,
@@ -40,7 +39,7 @@ namespace Xcst.Web.Mvc.Html {
 
       [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "This is an appropriate nesting of generic types")]
       public static void DisplayFor<TModel, TValue>(this HtmlHelper<TModel> html,
-                                                    XmlWriter output,
+                                                    XcstWriter output,
                                                     Expression<Func<TModel, TValue>> expression,
                                                     string templateName = null,
                                                     string htmlFieldName = null,
@@ -50,7 +49,7 @@ namespace Xcst.Web.Mvc.Html {
       }
 
       public static void DisplayForModel(this HtmlHelper html,
-                                         XmlWriter output,
+                                         XcstWriter output,
                                          string templateName = null,
                                          string htmlFieldName = null,
                                          object additionalViewData = null) {

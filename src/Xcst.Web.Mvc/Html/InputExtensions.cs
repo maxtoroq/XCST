@@ -24,7 +24,6 @@ using System.Globalization;
 using System.Linq.Expressions;
 using System.Web.Mvc;
 using System.Web.Routing;
-using System.Xml;
 
 namespace Xcst.Web.Mvc.Html {
 
@@ -34,7 +33,7 @@ namespace Xcst.Web.Mvc.Html {
       // CheckBox
 
       public static void CheckBox(this HtmlHelper htmlHelper,
-                                  XmlWriter output,
+                                  XcstWriter output,
                                   string name,
                                   IDictionary<string, object> htmlAttributes = null) {
 
@@ -42,7 +41,7 @@ namespace Xcst.Web.Mvc.Html {
       }
 
       public static void CheckBox(this HtmlHelper htmlHelper,
-                                  XmlWriter output,
+                                  XcstWriter output,
                                   string name,
                                   bool isChecked,
                                   IDictionary<string, object> htmlAttributes = null) {
@@ -52,7 +51,7 @@ namespace Xcst.Web.Mvc.Html {
 
       [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "This is an appropriate nesting of generic types")]
       public static void CheckBoxFor<TModel>(this HtmlHelper<TModel> htmlHelper,
-                                             XmlWriter output,
+                                             XcstWriter output,
                                              Expression<Func<TModel, bool>> expression,
                                              IDictionary<string, object> htmlAttributes = null) {
 
@@ -76,7 +75,7 @@ namespace Xcst.Web.Mvc.Html {
       }
 
       static void CheckBoxHelper(HtmlHelper htmlHelper,
-                                 XmlWriter output,
+                                 XcstWriter output,
                                  ModelMetadata metadata,
                                  string name,
                                  bool? isChecked,
@@ -107,7 +106,7 @@ namespace Xcst.Web.Mvc.Html {
       // Hidden
 
       public static void Hidden(this HtmlHelper htmlHelper,
-                                XmlWriter output,
+                                XcstWriter output,
                                 string name,
                                 object value = null,
                                 IDictionary<string, object> htmlAttributes = null) {
@@ -117,7 +116,7 @@ namespace Xcst.Web.Mvc.Html {
 
       [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "This is an appropriate nesting of generic types")]
       public static void HiddenFor<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper,
-                                                      XmlWriter output, Expression<Func<TModel, TProperty>> expression,
+                                                      XcstWriter output, Expression<Func<TModel, TProperty>> expression,
                                                       IDictionary<string, object> htmlAttributes = null) {
 
          ModelMetadata metadata = ModelMetadata.FromLambdaExpression(expression, htmlHelper.ViewData);
@@ -127,7 +126,7 @@ namespace Xcst.Web.Mvc.Html {
       }
 
       static void HiddenHelper(HtmlHelper htmlHelper,
-                               XmlWriter output,
+                               XcstWriter output,
                                ModelMetadata metadata,
                                object value,
                                bool useViewData,
@@ -160,7 +159,7 @@ namespace Xcst.Web.Mvc.Html {
                      htmlAttributes: htmlAttributes);
       }
 
-      public static void HttpMethodOverride(HtmlHelper htmlHelper, XmlWriter output, string httpMethod) {
+      public static void HttpMethodOverride(HtmlHelper htmlHelper, XcstWriter output, string httpMethod) {
 
          if (String.IsNullOrEmpty(httpMethod)) throw new ArgumentNullException(nameof(httpMethod));
 
@@ -179,13 +178,13 @@ namespace Xcst.Web.Mvc.Html {
 
       // Password
 
-      public static void Password(this HtmlHelper htmlHelper, XmlWriter output, string name, object value = null, IDictionary<string, object> htmlAttributes = null) {
+      public static void Password(this HtmlHelper htmlHelper, XcstWriter output, string name, object value = null, IDictionary<string, object> htmlAttributes = null) {
          PasswordHelper(htmlHelper, output, default(ModelMetadata), name, value, htmlAttributes);
       }
 
       [SuppressMessage("Microsoft.Design", "CA1011:ConsiderPassingBaseTypesAsParameters", Justification = "Users cannot use anonymous methods with the LambdaExpression type")]
       [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "This is an appropriate nesting of generic types")]
-      public static void PasswordFor<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, XmlWriter output, Expression<Func<TModel, TProperty>> expression, IDictionary<string, object> htmlAttributes = null) {
+      public static void PasswordFor<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, XcstWriter output, Expression<Func<TModel, TProperty>> expression, IDictionary<string, object> htmlAttributes = null) {
 
          if (expression == null) throw new ArgumentNullException(nameof(expression));
 
@@ -196,7 +195,7 @@ namespace Xcst.Web.Mvc.Html {
       }
 
       static void PasswordHelper(HtmlHelper htmlHelper,
-                                 XmlWriter output,
+                                 XcstWriter output,
                                  ModelMetadata metadata,
                                  string name,
                                  object value,
@@ -219,7 +218,7 @@ namespace Xcst.Web.Mvc.Html {
       // RadioButton
 
       public static void RadioButton(this HtmlHelper htmlHelper,
-                                     XmlWriter output,
+                                     XcstWriter output,
                                      string name,
                                      object value,
                                      IDictionary<string, object> htmlAttributes = null) {
@@ -251,7 +250,7 @@ namespace Xcst.Web.Mvc.Html {
       }
 
       public static void RadioButton(this HtmlHelper htmlHelper,
-                                     XmlWriter output,
+                                     XcstWriter output,
                                      string name,
                                      object value,
                                      bool isChecked,
@@ -279,7 +278,7 @@ namespace Xcst.Web.Mvc.Html {
 
       [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "This is an appropriate nesting of generic types")]
       public static void RadioButtonFor<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper,
-                                                           XmlWriter output,
+                                                           XcstWriter output,
                                                            Expression<Func<TModel, TProperty>> expression,
                                                            object value,
                                                            IDictionary<string, object> htmlAttributes = null) {
@@ -291,7 +290,7 @@ namespace Xcst.Web.Mvc.Html {
       }
 
       static void RadioButtonHelper(HtmlHelper htmlHelper,
-                                    XmlWriter output,
+                                    XcstWriter output,
                                     ModelMetadata metadata,
                                     object model,
                                     string name,
@@ -333,7 +332,7 @@ namespace Xcst.Web.Mvc.Html {
       // TextBox
 
       public static void TextBox(this HtmlHelper htmlHelper,
-                                 XmlWriter output,
+                                 XcstWriter output,
                                  string name,
                                  object value = null,
                                  string format = null,
@@ -355,7 +354,7 @@ namespace Xcst.Web.Mvc.Html {
 
       [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "This is an appropriate nesting of generic types")]
       public static void TextBoxFor<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper,
-                                                       XmlWriter output,
+                                                       XcstWriter output,
                                                        Expression<Func<TModel, TProperty>> expression,
                                                        string format = null,
                                                        IDictionary<string, object> htmlAttributes = null) {
@@ -367,7 +366,7 @@ namespace Xcst.Web.Mvc.Html {
       }
 
       static void TextBoxHelper(this HtmlHelper htmlHelper,
-                                XmlWriter output,
+                                XcstWriter output,
                                 ModelMetadata metadata,
                                 object model,
                                 string expression,
@@ -391,7 +390,7 @@ namespace Xcst.Web.Mvc.Html {
       // Helper methods
 
       static void InputHelper(HtmlHelper htmlHelper,
-                              XmlWriter output,
+                              XcstWriter output,
                               InputType inputType,
                               ModelMetadata metadata,
                               string name,

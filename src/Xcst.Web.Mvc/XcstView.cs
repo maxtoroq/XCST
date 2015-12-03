@@ -16,7 +16,6 @@ using System;
 using System.IO;
 using System.Web;
 using System.Web.Mvc;
-using System.Xml;
 using BuildManager = System.Web.Compilation.BuildManager;
 
 namespace Xcst.Web.Mvc {
@@ -33,7 +32,7 @@ namespace Xcst.Web.Mvc {
          RenderViewImpl(viewContext, t => t.OutputTo(writer), instance);
       }
 
-      internal void RenderXcstView(ViewContext viewContext, XmlWriter writer) {
+      internal void RenderXcstView(ViewContext viewContext, XcstWriter writer) {
 
          object instance = null;
 

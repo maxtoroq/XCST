@@ -131,7 +131,7 @@ namespace Xcst.Web.Mvc.Html {
          return this;
       }
 
-      internal void WriteTo(XmlWriter output) {
+      internal void WriteTo(XcstWriter output) {
 
          foreach (var item in this.Attributes) {
             output.WriteAttributeString(item.Key, Convert.ToString(item.Value, CultureInfo.InvariantCulture));

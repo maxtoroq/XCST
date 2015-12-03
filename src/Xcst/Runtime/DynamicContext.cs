@@ -15,7 +15,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml;
 
 namespace Xcst.Runtime {
 
@@ -28,7 +27,7 @@ namespace Xcst.Runtime {
 
       public Uri CurrentOutputUri { get; }
 
-      public XmlWriter Output { get; }
+      public XcstWriter Output { get; }
 
       internal DynamicContext(IWriterFactory writerFactory, OutputParameters defaultOutputParams, DynamicContext currentContext = null)
          : this(currentContext, false) {

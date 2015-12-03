@@ -24,13 +24,12 @@ using System.Globalization;
 using System.Linq;
 using System.Web.Mvc;
 using System.Web.UI.WebControls;
-using System.Xml;
 
 namespace Xcst.Web.Mvc.Html {
 
    static class DefaultDisplayTemplates {
 
-      public static void BooleanTemplate(HtmlHelper html, XmlWriter output) {
+      public static void BooleanTemplate(HtmlHelper html, XcstWriter output) {
 
          bool? value = null;
 
@@ -65,11 +64,11 @@ namespace Xcst.Web.Mvc.Html {
          }
       }
 
-      public static void CollectionTemplate(HtmlHelper html, XmlWriter output) {
+      public static void CollectionTemplate(HtmlHelper html, XcstWriter output) {
          CollectionTemplate(html, output, TemplateHelpers.TemplateHelper);
       }
 
-      internal static void CollectionTemplate(HtmlHelper html, XmlWriter output, TemplateHelpers.TemplateHelperDelegate templateHelper) {
+      internal static void CollectionTemplate(HtmlHelper html, XcstWriter output, TemplateHelpers.TemplateHelperDelegate templateHelper) {
 
          object model = html.ViewContext.ViewData.ModelMetadata.Model;
 
@@ -119,7 +118,7 @@ namespace Xcst.Web.Mvc.Html {
          }
       }
 
-      public static void DecimalTemplate(HtmlHelper html, XmlWriter output) {
+      public static void DecimalTemplate(HtmlHelper html, XcstWriter output) {
 
          if (html.ViewContext.ViewData.TemplateInfo.FormattedModelValue == html.ViewContext.ViewData.ModelMetadata.Model) {
             html.ViewContext.ViewData.TemplateInfo.FormattedModelValue = String.Format(CultureInfo.CurrentCulture, "{0:0.00}", html.ViewContext.ViewData.ModelMetadata.Model);
@@ -128,7 +127,7 @@ namespace Xcst.Web.Mvc.Html {
          StringTemplate(html, output);
       }
 
-      public static void EmailAddressTemplate(HtmlHelper html, XmlWriter output) {
+      public static void EmailAddressTemplate(HtmlHelper html, XcstWriter output) {
 
          output.WriteStartElement("a");
          output.WriteAttributeString("href", "mailto:" + Convert.ToString(html.ViewContext.ViewData.Model, CultureInfo.InvariantCulture));
@@ -136,7 +135,7 @@ namespace Xcst.Web.Mvc.Html {
          output.WriteEndElement();
       }
 
-      public static void HiddenInputTemplate(HtmlHelper html, XmlWriter output) {
+      public static void HiddenInputTemplate(HtmlHelper html, XcstWriter output) {
 
          if (html.ViewContext.ViewData.ModelMetadata.HideSurroundingHtml) {
             return;
@@ -145,15 +144,15 @@ namespace Xcst.Web.Mvc.Html {
          StringTemplate(html, output);
       }
 
-      public static void HtmlTemplate(HtmlHelper html, XmlWriter output) {
+      public static void HtmlTemplate(HtmlHelper html, XcstWriter output) {
          output.WriteRaw(html.ViewContext.ViewData.TemplateInfo.FormattedModelValue.ToString());
       }
 
-      public static void ObjectTemplate(HtmlHelper html, XmlWriter output) {
+      public static void ObjectTemplate(HtmlHelper html, XcstWriter output) {
          ObjectTemplate(html, output, TemplateHelpers.TemplateHelper);
       }
 
-      internal static void ObjectTemplate(HtmlHelper html, XmlWriter output, TemplateHelpers.TemplateHelperDelegate templateHelper) {
+      internal static void ObjectTemplate(HtmlHelper html, XcstWriter output, TemplateHelpers.TemplateHelperDelegate templateHelper) {
 
          ViewDataDictionary viewData = html.ViewContext.ViewData;
          TemplateInfo templateInfo = viewData.TemplateInfo;
@@ -208,11 +207,11 @@ namespace Xcst.Web.Mvc.Html {
             && !templateInfo.Visited(metadata);
       }
 
-      public static void StringTemplate(HtmlHelper html, XmlWriter output) {
+      public static void StringTemplate(HtmlHelper html, XcstWriter output) {
          output.WriteString(Convert.ToString(html.ViewContext.ViewData.TemplateInfo.FormattedModelValue, CultureInfo.CurrentCulture));
       }
 
-      public static void UrlTemplate(HtmlHelper html, XmlWriter output) {
+      public static void UrlTemplate(HtmlHelper html, XcstWriter output) {
 
          output.WriteStartElement("a");
          output.WriteAttributeString("href", Convert.ToString(html.ViewContext.ViewData.Model, CultureInfo.InvariantCulture));

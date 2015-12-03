@@ -22,7 +22,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Web.Mvc;
-using System.Xml;
 
 namespace Xcst.Web.Mvc.Html {
 
@@ -30,7 +29,7 @@ namespace Xcst.Web.Mvc.Html {
    public static class LabelExtensions {
 
       public static void Label(this HtmlHelper html,
-                               XmlWriter output,
+                               XcstWriter output,
                                string expression,
                                string labelText = null,
                                IDictionary<string, object> htmlAttributes = null) {
@@ -42,7 +41,7 @@ namespace Xcst.Web.Mvc.Html {
 
       [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "This is an appropriate nesting of generic types")]
       public static void LabelFor<TModel, TValue>(this HtmlHelper<TModel> html,
-                                                  XmlWriter output,
+                                                  XcstWriter output,
                                                   Expression<Func<TModel, TValue>> expression,
                                                   string labelText = null,
                                                   IDictionary<string, object> htmlAttributes = null) {
@@ -54,7 +53,7 @@ namespace Xcst.Web.Mvc.Html {
       }
 
       public static void LabelForModel(this HtmlHelper html,
-                                       XmlWriter output,
+                                       XcstWriter output,
                                        string labelText = null,
                                        IDictionary<string, object> htmlAttributes = null) {
 
@@ -62,7 +61,7 @@ namespace Xcst.Web.Mvc.Html {
       }
 
       public static void LabelHelper(HtmlHelper html,
-                                     XmlWriter output,
+                                     XcstWriter output,
                                      ModelMetadata metadata,
                                      string expression,
                                      string labelText = null,
