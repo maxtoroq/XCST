@@ -1051,7 +1051,6 @@
    -->
 
    <template match="c:result-document" mode="src:statement">
-      <param name="context-field" tunnel="yes"/>
       <param name="context-param" tunnel="yes"/>
 
       <if test="@parameter-document">
@@ -1065,8 +1064,8 @@
       <value-of select="src:fully-qualified-helper('DynamicContext')"/>
       <text> </text>
       <value-of select="$new-context"/>
-      <text> = this.</text>
-      <value-of select="$context-field"/>
+      <text> = </text>
+      <value-of select="$src:context-field"/>
       <text>.ChangeOutput(</text>
       <value-of select="src:fully-qualified-helper('DataType')"/>
       <text>.Uri(</text>
@@ -1102,7 +1101,6 @@
    </template>
 
    <template match="c:serialize" mode="src:expression">
-      <param name="context-field" tunnel="yes"/>
       <param name="context-param" as="xs:string?" tunnel="yes"/>
 
       <if test="@parameter-document">
@@ -1110,7 +1108,7 @@
       </if>
 
       <variable name="new-context" select="concat(src:aux-variable('context'), '_', generate-id())"/>
-      <value-of select="$context-field"/>
+      <value-of select="$src:context-field"/>
       <text>.Serialize(</text>
       <!-- TODO: @format AVT -->
       <value-of select="(@format/src:QName(resolve-QName(., ..)), 'null')[1]"/>
@@ -1449,7 +1447,7 @@
             true()
          else if ($string = ('no', 'false', '0')) then
             false()
-         else if (xcst:is-avt($node)) then
+         else if (xcst:is-value-template($node)) then
             ()
          else
             error(xs:QName('err:XTSE0020'), concat('Invalid boolean for ', name($node), '.'), src:error-object($node))
@@ -1493,7 +1491,7 @@
             false()
          else if ($string = ('descending')) then
             true()
-         else if (xcst:is-avt($node)) then
+         else if (xcst:is-value-template($node)) then
             ()
          else
             error(xs:QName('err:XTSE0020'), concat('Invalid value for ', name($node), '. Must be one of (ascending|descending)'), src:error-object($node))
@@ -1514,10 +1512,10 @@
       <sequence select="$string"/>
    </function>
 
-   <function name="xcst:is-avt" as="xs:boolean">
-      <param name="node" as="node()"/>
+   <function name="xcst:is-value-template" as="xs:boolean">
+      <param name="item" as="item()"/>
 
-      <sequence select="contains(string($node), '{')"/>
+      <sequence select="contains(string($item), '{')"/>
    </function>
 
    <function name="xcst:tvt-enabled" as="xs:boolean">
@@ -1629,21 +1627,15 @@
       <param name="attribute" as="attribute()?"/>
       <param name="separator" select="()"/>
 
-      <variable name="join" select="$attribute or *"/>
-
-      <if test="$join">
-         <value-of select="src:fully-qualified-helper('SimpleContent')"/>
-         <text>.Join(</text>
-         <value-of select="if ($attribute) then ($separator, src:string(' '))[1] else src:string('')"/>
-         <text>, </text>
-      </if>
+      <value-of select="$src:context-field, 'SimpleContent'" separator="."/>
+      <text>.Join(</text>
+      <value-of select="if ($attribute) then ($separator, src:string(' '))[1] else src:string('')"/>
+      <text>, </text>
       <call-template name="src:value">
          <with-param name="attribute" select="$attribute"/>
          <with-param name="fallback" select="src:string('')"/>
       </call-template>
-      <if test="$join">
-         <text>)</text>
-      </if>
+      <text>)</text>
    </template>
 
    <template name="src:value">
@@ -1709,8 +1701,8 @@
       <param name="text" as="xs:string"/>
 
       <sequence select="
-         if (xcst:tvt-enabled($el)) then
-            concat('$@', src:string(src:escape-value-template($text)))
+         if (xcst:tvt-enabled($el) and xcst:is-value-template($text)) then
+            src:format-value-template($text)
          else
             src:verbatim-string($text)"/>
    </function>
@@ -1718,7 +1710,22 @@
    <function name="src:expand-attribute" as="xs:string">
       <param name="attr" as="attribute()"/>
 
-      <sequence select="concat('$@', src:string(src:escape-value-template($attr/string())))"/>
+      <variable name="text" select="string($attr)"/>
+
+      <choose>
+         <when test="xcst:is-value-template($text)">
+            <sequence select="src:format-value-template($text)"/>
+         </when>
+         <otherwise>
+            <sequence select="src:verbatim-string($text)"/>
+         </otherwise>
+      </choose>
+   </function>
+
+   <function name="src:format-value-template" as="xs:string">
+      <param name="text" as="xs:string"/>
+
+      <sequence select="concat($src:context-field, '.SimpleContent.FormatValueTemplate(', '$@', src:string(src:escape-value-template($text)), ')')"/>
    </function>
 
    <function name="src:fully-qualified-helper" as="xs:string">

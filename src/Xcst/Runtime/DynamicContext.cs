@@ -29,13 +29,14 @@ namespace Xcst.Runtime {
 
       public XcstWriter Output { get; }
 
-      internal DynamicContext(IWriterFactory writerFactory, OutputParameters defaultOutputParams, DynamicContext currentContext = null)
+      internal DynamicContext(IWriterFactory writerFactory, OutputParameters defaultOutputParams, ExecutionContext execContext, DynamicContext currentContext = null)
          : this(currentContext, false) {
 
          if (writerFactory == null) throw new ArgumentNullException(nameof(writerFactory));
 
          this.CurrentOutputUri = writerFactory.OutputUri;
          this.Output = writerFactory.Create(defaultOutputParams);
+         this.Output.ExecutionContext = execContext;
          this.keepWriterOpen = writerFactory.KeepWriterOpen;
       }
 

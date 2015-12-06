@@ -209,6 +209,7 @@ namespace Xcst {
       readonly Action<IXcstExecutable, DynamicContext> executionFn;
 
       OutputParameters parameters;
+      IFormatProvider formatProvider;
 
       internal XcstOutputter(IXcstExecutable executable, Func<OutputParameters, IWriterFactory> writerFn, Action<IXcstExecutable, DynamicContext> executionFn) {
 
@@ -227,9 +228,15 @@ namespace Xcst {
          return this;
       }
 
+      public XcstOutputter WithFormatProvider(IFormatProvider formatProvider) {
+
+         this.formatProvider = formatProvider;
+         return this;
+      }
+
       public void Run() {
 
-         var execContext = new ExecutionContext(this.executable);
+         var execContext = new ExecutionContext(this.executable, this.formatProvider);
 
          using (IWriterFactory writerFactory = writerFn(this.parameters)) {
             using (DynamicContext dynamicContext = execContext.CreateDynamicContext(writerFactory)) {

@@ -156,11 +156,13 @@ namespace Xcst.Web.Mvc.Html {
 
          string value;
 
-         if (modelState != null && modelState.Value != null) {
+         if (modelState != null
+            && modelState.Value != null) {
+
             value = modelState.Value.AttemptedValue;
 
          } else if (modelMetadata.Model != null) {
-            value = modelMetadata.Model.ToString();
+            value = Convert.ToString(modelMetadata.Model, CultureInfo.CurrentCulture);
 
          } else {
             value = String.Empty;

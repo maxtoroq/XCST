@@ -31,6 +31,8 @@
    <param name="src:alternate-first-base-type" as="xs:string?"/>
    <param name="src:alternate-first-base-type-if-exists-type" as="xs:string?"/>
 
+   <variable name="src:context-field" select="concat('this.', src:aux-variable('execution_context'))"/>
+
    <output cdata-section-elements="src:compilation-unit"/>
 
    <template match="document-node()" mode="src:main">
@@ -243,10 +245,8 @@
             </apply-templates>
          </if>
       </for-each>
-      <variable name="context-field" select="src:aux-variable('execution_context')"/>
       <apply-templates select="c:template | c:function | c:type" mode="src:member">
          <with-param name="indent" select="$indent + 1" tunnel="yes"/>
-         <with-param name="context-field" select="$context-field" tunnel="yes"/>
       </apply-templates>
       <value-of select="$src:new-line"/>
       <call-template name="src:new-line-indented">
@@ -256,7 +256,6 @@
       <if test="$principal-module">
          <apply-templates select="." mode="src:execution-context">
             <with-param name="indent" select="$indent + 1" tunnel="yes"/>
-            <with-param name="context-field" select="$context-field"/>
          </apply-templates>
       </if>
       <apply-templates select="." mode="src:prime-method">
@@ -518,8 +517,6 @@
    -->
 
    <template match="c:module" mode="src:execution-context">
-      <param name="context-field"/>
-
       <value-of select="$src:new-line"/>
       <call-template name="src:new-line-indented"/>
       <text>[</text>
@@ -530,7 +527,7 @@
       <call-template name="src:new-line-indented"/>
       <value-of select="src:fully-qualified-helper('ExecutionContext')"/>
       <text> </text>
-      <value-of select="$context-field"/>
+      <value-of select="substring-after($src:context-field, 'this.')"/>
       <value-of select="$src:statement-delimiter"/>
       <value-of select="$src:new-line"/>
       <call-template name="src:new-line-indented"/>
@@ -542,8 +539,8 @@
       <call-template name="src:new-line-indented">
          <with-param name="increase" select="1"/>
       </call-template>
-      <text>set { this.</text>
-      <value-of select="$context-field"/>
+      <text>set { </text>
+      <value-of select="$src:context-field"/>
       <text> = value; }</text>
       <call-template name="src:close-brace"/>
    </template>

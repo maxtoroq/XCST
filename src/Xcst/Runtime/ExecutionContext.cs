@@ -14,6 +14,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace Xcst.Runtime {
@@ -22,26 +23,30 @@ namespace Xcst.Runtime {
    public class ExecutionContext {
 
       readonly IXcstExecutable executable;
+      readonly HashSet<Uri> outputUris = new HashSet<Uri>();
+      readonly IFormatProvider formatProvider;
 
-      internal HashSet<Uri> OutputUris { get; } = new HashSet<Uri>();
+      public SimpleContent SimpleContent { get; }
 
-      internal ExecutionContext(IXcstExecutable executable) {
+      internal ExecutionContext(IXcstExecutable executable, IFormatProvider formatProvider) {
 
          if (executable == null) throw new ArgumentNullException(nameof(executable));
 
          this.executable = executable;
+         this.formatProvider = formatProvider ?? CultureInfo.CurrentCulture;
+         this.SimpleContent = new SimpleContent(this.formatProvider);
       }
 
       internal DynamicContext CreateDynamicContext(IWriterFactory writerFactory, QualifiedName outputName = null, DynamicContext currentContext = null) {
 
          if (writerFactory == null) throw new ArgumentNullException(nameof(writerFactory));
 
-         this.OutputUris.Add(writerFactory.OutputUri);
+         this.outputUris.Add(writerFactory.OutputUri);
 
          var outputParams = new OutputParameters();
          this.executable.ReadOutputDefinition(outputName, outputParams);
 
-         return new DynamicContext(writerFactory, outputParams, currentContext);
+         return new DynamicContext(writerFactory, outputParams, this, currentContext);
       }
 
       public DynamicContext ChangeOutput(Uri outputUri, QualifiedName outputName, OutputParameters parameters, DynamicContext currentContext) {
@@ -55,7 +60,7 @@ namespace Xcst.Runtime {
             outputUri = new Uri(currentContext.CurrentOutputUri, outputUri);
          }
 
-         if (this.OutputUris.Contains(outputUri)) {
+         if (this.outputUris.Contains(outputUri)) {
             throw new RuntimeException($"Cannot write to the same URI more than once ({outputUri.OriginalString}).", DynamicError.Code("XTDE1490"));
          }
 
@@ -84,7 +89,7 @@ namespace Xcst.Runtime {
          }
 
          using (IWriterFactory writerFactory = WriterFactory.CreateFactory(sb, parameters)) {
-            using (var newContext = new DynamicContext(writerFactory, defaultParameters, currentContext)) {
+            using (var newContext = new DynamicContext(writerFactory, defaultParameters, this, currentContext)) {
                action(newContext);
             }
          }

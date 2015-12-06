@@ -184,14 +184,7 @@ namespace Xcst.Web.Mvc.Html {
          RouteValueDictionary htmlAttributes = (htmlAttributesDict != null) ? new RouteValueDictionary(htmlAttributesDict)
              : HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributesObject);
 
-         string htmlClassName;
-
-         if (htmlAttributes.TryGetValue("class", out htmlClassName)) {
-            htmlClassName += " " + className;
-            htmlAttributes["class"] = htmlClassName;
-         } else {
-            htmlAttributes.Add("class", className);
-         }
+         htmlAttributes.AddCssClass(className);
 
          // The input type from the provided htmlAttributes overrides the inputType parameter.
          if (inputType != null && !htmlAttributes.ContainsKey("type")) {
@@ -315,7 +308,7 @@ namespace Xcst.Web.Mvc.Html {
 
       public static void ColorInputTemplate(HtmlHelper html, XcstWriter output) {
 
-         string value = null;
+         object value = null;
 
          if (html.ViewContext.ViewData.Model != null) {
 
@@ -323,7 +316,7 @@ namespace Xcst.Web.Mvc.Html {
                Color color = (Color)html.ViewContext.ViewData.Model;
                value = String.Format(CultureInfo.InvariantCulture, "#{0:X2}{1:X2}{2:X2}", color.R, color.G, color.B);
             } else {
-               value = html.ViewContext.ViewData.Model.ToString();
+               value = html.ViewContext.ViewData.Model;
             }
          }
 
@@ -391,15 +384,7 @@ namespace Xcst.Web.Mvc.Html {
          string commonClass = EditorExtensions.CommonCssClass;
 
          if (!String.IsNullOrEmpty(commonClass)) {
-
-            string htmlClass;
-
-            if (htmlAttributes.TryGetValue("class", out htmlClass)) {
-               htmlClass += " " + commonClass;
-               htmlAttributes["class"] = htmlClass;
-            } else {
-               htmlAttributes.Add("class", htmlClass);
-            }
+            htmlAttributes.AddCssClass(commonClass);
          }
       }
 

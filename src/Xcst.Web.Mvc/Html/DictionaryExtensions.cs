@@ -135,5 +135,16 @@ namespace Xcst.Web.Mvc.Html {
 
          return @default;
       }
+
+      public static void AddCssClass(this IDictionary<string, object> dict, string cssClass) {
+
+         string existingClass;
+
+         if (TryGetValue(dict, "class", out existingClass)) {
+            dict["class"] = existingClass + " " + cssClass;
+         } else {
+            dict["class"] = cssClass;
+         }
+      }
    }
 }

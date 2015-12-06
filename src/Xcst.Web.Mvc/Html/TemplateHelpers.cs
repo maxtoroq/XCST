@@ -262,25 +262,38 @@ namespace Xcst.Web.Mvc.Html {
          // the Model property on the ViewPage/ViewUserControl is get-only, so the type descriptor automatically
          // decorates it with a [ReadOnly] attribute...
 
-         if (metadata.ConvertEmptyStringToNull && String.Empty.Equals(metadata.Model)) {
+         bool displayMode = mode == DataBoundControlMode.ReadOnly;
+
+         if (metadata.ConvertEmptyStringToNull
+            && String.Empty.Equals(metadata.Model)) {
+
             metadata.Model = null;
          }
 
          object formattedModelValue = metadata.Model;
 
-         if (metadata.Model == null && mode == DataBoundControlMode.ReadOnly) {
+         if (metadata.Model == null
+            && displayMode) {
+
             formattedModelValue = metadata.NullDisplayText;
          }
 
-         string formatString = mode == DataBoundControlMode.ReadOnly ? metadata.DisplayFormatString : metadata.EditFormatString;
+         string formatString = (displayMode) ?
+            metadata.DisplayFormatString
+            : metadata.EditFormatString;
 
-         if (metadata.Model != null && !String.IsNullOrEmpty(formatString)) {
-            formattedModelValue = String.Format(CultureInfo.CurrentCulture, formatString, metadata.Model);
+         if (metadata.Model != null
+            && !String.IsNullOrEmpty(formatString)) {
+
+            formattedModelValue = (displayMode) ?
+               output.SimpleContent.Format(formatString, metadata.Model)
+               : String.Format(CultureInfo.CurrentCulture, formatString, metadata.Model);
          }
 
          // Normally this shouldn't happen, unless someone writes their own custom Object templates which
          // don't check to make sure that the object hasn't already been displayed
-         object visitedObjectsKey = metadata.Model ?? metadata.RealModelType();
+         object visitedObjectsKey = metadata.Model
+            ?? metadata.RealModelType();
 
          if (html.ViewDataContainer.ViewData.TemplateInfo.VisitedObjects().Contains(visitedObjectsKey)) {
             // DDB #224750

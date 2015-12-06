@@ -13,12 +13,23 @@
 // limitations under the License.
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using Xcst.Runtime;
 
 namespace Xcst {
 
    public abstract class XcstWriter : IDisposable {
 
       bool disposed;
+
+      internal ExecutionContext ExecutionContext { get; set; }
+
+      /// <exclude/>
+      [EditorBrowsable(EditorBrowsableState.Never)]
+      public SimpleContent SimpleContent => ExecutionContext.SimpleContent;
 
       public void WriteStartElement(string localName) {
          WriteStartElement(null, localName, default(string));
@@ -64,6 +75,22 @@ namespace Xcst {
       public abstract void WriteStartAttribute(string prefix, string localName, string ns);
 
       public abstract void WriteEndAttribute();
+
+      public void WriteString(IEnumerable text) {
+         WriteString(text?.Cast<object>());
+      }
+
+      public void WriteString(IEnumerable<object> text) {
+         WriteString(this.SimpleContent.Join(SimpleContent.DefaultTextSeparator, text));
+      }
+
+      public void WriteString(IEnumerable<string> text) {
+         WriteString(this.SimpleContent.Join(SimpleContent.DefaultTextSeparator, text));
+      }
+
+      public void WriteString(object text) {
+         WriteString(this.SimpleContent.Convert(text));
+      }
 
       public abstract void WriteString(string text);
 

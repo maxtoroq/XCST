@@ -40,7 +40,7 @@ namespace Xcst.Web.Mvc.Html {
          if (html.ViewContext.ViewData.ModelMetadata.IsNullableValueType) {
 
             output.WriteStartElement("select");
-            output.WriteAttributeString("class", "list-box, tri-state");
+            output.WriteAttributeString("class", "list-box tri-state");
             output.WriteAttributeString("disabled", "disabled");
 
             foreach (SelectListItem item in DefaultEditorTemplates.TriStateValues(value)) {
@@ -121,7 +121,7 @@ namespace Xcst.Web.Mvc.Html {
       public static void DecimalTemplate(HtmlHelper html, XcstWriter output) {
 
          if (html.ViewContext.ViewData.TemplateInfo.FormattedModelValue == html.ViewContext.ViewData.ModelMetadata.Model) {
-            html.ViewContext.ViewData.TemplateInfo.FormattedModelValue = String.Format(CultureInfo.CurrentCulture, "{0:0.00}", html.ViewContext.ViewData.ModelMetadata.Model);
+            html.ViewContext.ViewData.TemplateInfo.FormattedModelValue = output.SimpleContent.Format("{0:0.00}", html.ViewContext.ViewData.ModelMetadata.Model);
          }
 
          StringTemplate(html, output);
@@ -131,7 +131,7 @@ namespace Xcst.Web.Mvc.Html {
 
          output.WriteStartElement("a");
          output.WriteAttributeString("href", "mailto:" + Convert.ToString(html.ViewContext.ViewData.Model, CultureInfo.InvariantCulture));
-         output.WriteString(Convert.ToString(html.ViewContext.ViewData.TemplateInfo.FormattedModelValue, CultureInfo.CurrentCulture));
+         output.WriteString(html.ViewContext.ViewData.TemplateInfo.FormattedModelValue);
          output.WriteEndElement();
       }
 
@@ -145,7 +145,7 @@ namespace Xcst.Web.Mvc.Html {
       }
 
       public static void HtmlTemplate(HtmlHelper html, XcstWriter output) {
-         output.WriteRaw(html.ViewContext.ViewData.TemplateInfo.FormattedModelValue.ToString());
+         output.WriteRaw(output.SimpleContent.Convert(html.ViewContext.ViewData.TemplateInfo.FormattedModelValue));
       }
 
       public static void ObjectTemplate(HtmlHelper html, XcstWriter output) {
@@ -208,14 +208,14 @@ namespace Xcst.Web.Mvc.Html {
       }
 
       public static void StringTemplate(HtmlHelper html, XcstWriter output) {
-         output.WriteString(Convert.ToString(html.ViewContext.ViewData.TemplateInfo.FormattedModelValue, CultureInfo.CurrentCulture));
+         output.WriteString(html.ViewContext.ViewData.TemplateInfo.FormattedModelValue);
       }
 
       public static void UrlTemplate(HtmlHelper html, XcstWriter output) {
 
          output.WriteStartElement("a");
          output.WriteAttributeString("href", Convert.ToString(html.ViewContext.ViewData.Model, CultureInfo.InvariantCulture));
-         output.WriteString(Convert.ToString(html.ViewContext.ViewData.TemplateInfo.FormattedModelValue, CultureInfo.CurrentCulture));
+         output.WriteString(html.ViewContext.ViewData.TemplateInfo.FormattedModelValue);
          output.WriteEndElement();
       }
    }

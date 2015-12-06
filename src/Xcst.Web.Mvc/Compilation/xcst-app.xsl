@@ -459,7 +459,9 @@
                   <value-of select="src:global-identifier('System.Web.Mvc.SelectListItem')"/>
                   <text> { </text>
                   <text>Value = </text>
-                  <value-of select="(@value/concat('((object)', string(), ')?.ToString()'), src:string(''))[1]"/>
+                  <call-template name="src:simple-content">
+                     <with-param name="attribute" select="@value"/>
+                  </call-template>
                   <text>, Text = </text>
                   <call-template name="src:simple-content"/>
                   <if test="@selected">

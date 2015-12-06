@@ -14,9 +14,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Web.Mvc;
-using System.Xml;
 
 namespace Xcst.Web.Mvc.Html {
 
@@ -51,14 +49,7 @@ namespace Xcst.Web.Mvc.Html {
 
       public HtmlAttributesMerger AddCssClass(string cssClass) {
 
-         object existingClass;
-
-         if (this.Attributes.TryGetValue("class", out existingClass)) {
-            this.Attributes["class"] = existingClass.ToString() + " " + cssClass;
-         } else {
-            this.Attributes["class"] = cssClass;
-         }
-
+         this.Attributes.AddCssClass(cssClass);
          return this;
       }
 
@@ -93,7 +84,7 @@ namespace Xcst.Web.Mvc.Html {
          return this;
       }
 
-      public HtmlAttributesMerger MergeAttribute(string key, string value, bool replaceExisting) {
+      public HtmlAttributesMerger MergeAttribute(string key, object value, bool replaceExisting) {
 
          if (String.IsNullOrEmpty(key)) throw new ArgumentNullException(nameof(key));
 
@@ -104,13 +95,11 @@ namespace Xcst.Web.Mvc.Html {
          return this;
       }
 
-      public HtmlAttributesMerger MergeAttributes<TKey, TValue>(IDictionary<TKey, TValue> attributes, bool replaceExisting) {
+      public HtmlAttributesMerger MergeAttributes<TValue>(IDictionary<string, TValue> attributes, bool replaceExisting) {
 
          if (attributes != null) {
             foreach (var entry in attributes) {
-               string key = Convert.ToString(entry.Key, CultureInfo.InvariantCulture);
-               string value = Convert.ToString(entry.Value, CultureInfo.InvariantCulture);
-               MergeAttribute(key, value, replaceExisting);
+               MergeAttribute(entry.Key, entry.Value, replaceExisting);
             }
          }
 
@@ -134,7 +123,7 @@ namespace Xcst.Web.Mvc.Html {
       internal void WriteTo(XcstWriter output) {
 
          foreach (var item in this.Attributes) {
-            output.WriteAttributeString(item.Key, Convert.ToString(item.Value, CultureInfo.InvariantCulture));
+            output.WriteAttributeString(item.Key, output.SimpleContent.Convert(item.Value));
          }
       }
    }
