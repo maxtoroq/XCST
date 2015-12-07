@@ -542,9 +542,16 @@
 
       <define name="model">
          <element name="model">
-            <attribute name="value">
-               <ref name="Expression"/>
-            </attribute>
+            <oneOrMore>
+               <choice>
+                  <attribute name="value">
+                     <ref name="Expression"/>
+                  </attribute>
+                  <attribute name="as">
+                     <ref name="Type"/>
+                  </attribute>
+               </choice>
+            </oneOrMore>
             <optional>
                <attribute name="html-field-prefix">
                   <ref name="AVT"/>

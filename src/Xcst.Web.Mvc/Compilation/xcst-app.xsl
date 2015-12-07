@@ -944,15 +944,20 @@
 
    <template match="a:model" mode="src:extension-instruction">
       <variable name="new-helper" select="concat(src:aux-variable('html_helper'), '_', generate-id())"/>
+      <variable name="type" select="@as/xcst:type(.)"/>
       <call-template name="src:new-line-indented"/>
       <text>var </text>
       <value-of select="$new-helper"/>
       <text> = </text>
       <value-of select="a:fully-qualified-helper('HtmlHelperFactory')"/>
-      <text>.HtmlHelperFor(</text>
+      <text>.HtmlHelperFor</text>
+      <if test="$type">
+         <value-of select="concat('&lt;', $type, '>')"/>
+      </if>
+      <text>(</text>
       <call-template name="a:html-helper"/>
       <text>, </text>
-      <value-of select="(@value, 'default(object)')[1]"/>
+      <value-of select="(@value, concat('default(', ($type, 'object')[1], ')'))[1]"/>
       <if test="@html-field-prefix">
          <text>, htmlFieldPrefix: </text>
          <value-of select="src:expand-attribute(@html-field-prefix)"/>
