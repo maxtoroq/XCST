@@ -380,6 +380,10 @@ namespace Xcst.Web.Mvc.Html {
       }
 
       static void AddCommonAttributes(HtmlHelper html, IDictionary<string, object> htmlAttributes) {
+         AddCommonCssClass(htmlAttributes);
+      }
+
+      internal static void AddCommonCssClass(IDictionary<string, object> htmlAttributes) {
 
          string commonClass = EditorExtensions.CommonCssClass;
 

@@ -40,7 +40,14 @@ namespace Xcst.Web.Mvc.Html {
          if (html.ViewContext.ViewData.ModelMetadata.IsNullableValueType) {
 
             output.WriteStartElement("select");
-            output.WriteAttributeString("class", "list-box tri-state");
+
+            var attribs = HtmlAttributesMerger.Create()
+               .AddCssClass("list-box tri-state");
+
+            DefaultEditorTemplates.AddCommonCssClass(attribs.Attributes);
+
+            attribs.WriteTo(output);
+
             output.WriteAttributeString("disabled", "disabled");
 
             foreach (SelectListItem item in DefaultEditorTemplates.TriStateValues(value)) {
