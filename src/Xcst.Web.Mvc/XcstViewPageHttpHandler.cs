@@ -24,6 +24,8 @@ namespace Xcst.Web.Mvc {
 
       readonly XcstViewPage page;
 
+      public bool DisableRequestValidation { get; set; }
+
       public XcstViewPageHttpHandler(XcstViewPage page)
          : base(page) {
 
@@ -63,7 +65,9 @@ namespace Xcst.Web.Mvc {
 
             // page's ViewData can depend on runtime type (TModel)
             // since data is not coming from controller we can let page create it
-            ViewData = this.page.ViewData
+            ViewData = this.page.ViewData,
+
+            ValidateRequest = !this.DisableRequestValidation
          };
 
          controller.Init(requestContext);
