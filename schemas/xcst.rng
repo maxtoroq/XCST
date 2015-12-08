@@ -377,6 +377,9 @@
          <attribute name="disable-empty-string-to-null-conversion">
             <ref name="Boolean"/>
          </attribute>
+         <attribute name="allow-empty-string">
+            <ref name="Boolean"/>
+         </attribute>
       </optional>
       <ref name="validation-attributes"/>
    </define>
@@ -444,9 +447,6 @@
                </choice>
             </attribute>
             <attribute name="required">
-               <ref name="Boolean"/>
-            </attribute>
-            <attribute name="allow-empty-string">
                <ref name="Boolean"/>
             </attribute>
             <attribute name="max-length">

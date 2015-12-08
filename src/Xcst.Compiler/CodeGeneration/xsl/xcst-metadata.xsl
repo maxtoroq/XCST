@@ -256,7 +256,7 @@
    <template name="src:required-attribute">
       <if test="@required/xcst:boolean(.)">
          <variable name="setters" as="text()*">
-            <apply-templates select="@allow-empty-string" mode="src:required-setter"/>
+            <apply-templates select="(ancestor-or-self::c:*[self::c:member or self::c:type]/@allow-empty-string)[1]" mode="src:required-setter"/>
             <call-template name="src:validation-setters">
                <with-param name="name" select="name(@required)"/>
             </call-template>
