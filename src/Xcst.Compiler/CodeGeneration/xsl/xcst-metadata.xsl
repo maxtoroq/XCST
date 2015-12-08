@@ -108,7 +108,7 @@
       <variable name="setters" as="text()*">
          <apply-templates select="@display-format
             | @apply-format-in-edit-mode
-            | @convert-empty-string-to-null
+            | (ancestor-or-self::c:*[self::c:member or self::c:type]/@disable-empty-string-to-null-conversion)[1]
             | @disable-output-escaping
             | @null-display-text"
             mode="src:display-format-setter"/>
@@ -133,8 +133,8 @@
       <value-of select="'ApplyFormatInEditMode', src:boolean(xcst:boolean(.))" separator=" = "/>
    </template>
 
-   <template match="@convert-empty-string-to-null" mode="src:display-format-setter">
-      <value-of select="'ConvertEmptyStringToNull', src:boolean(xcst:boolean(.))" separator=" = "/>
+   <template match="@disable-empty-string-to-null-conversion" mode="src:display-format-setter">
+      <value-of select="'ConvertEmptyStringToNull', src:boolean(not(xcst:boolean(.)))" separator=" = "/>
    </template>
 
    <template match="@disable-output-escaping" mode="src:display-format-setter">

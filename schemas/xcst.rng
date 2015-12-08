@@ -374,6 +374,9 @@
          <attribute name="resource-type">
             <ref name="Type"/>
          </attribute>
+         <attribute name="disable-empty-string-to-null-conversion">
+            <ref name="Boolean"/>
+         </attribute>
       </optional>
       <ref name="validation-attributes"/>
    </define>
@@ -403,9 +406,6 @@
                <ref name="String"/>
             </attribute>
             <attribute name="apply-format-in-edit-mode">
-               <ref name="Boolean"/>
-            </attribute>
-            <attribute name="convert-empty-string-to-null">
                <ref name="Boolean"/>
             </attribute>
             <attribute name="disable-output-escaping">
