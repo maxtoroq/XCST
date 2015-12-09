@@ -8,8 +8,8 @@
    <c:use-functions in='System.Linq'/>
    <c:use-functions in='System.Web.Mvc'/>
 
-   <c:param name='__xcst_html_label_column_class' value='"col-md-3"' as='string'/>
-   <c:param name='__xcst_html_field_column_class' value='"col-md-9"' as='string'/>
+   <c:param name='labelColumnClass'>col-md-3</c:param>
+   <c:param name='fieldColumnClass'>col-md-9</c:param>
    <c:param name='__xcst_row_template' as='Action&lt;Xcst.Runtime.DynamicContext>'/>
 
    <c:function name='ShouldShowProperty' as='bool'>
@@ -62,9 +62,9 @@
                            ValidationMessage has similar issue with unobtrusive validation attributes.
                         -->
                         <a:label name='{prop.PropertyName}' text='{prop.DisplayName ?? prop.PropertyName}'
-                           html-class='control-label {__xcst_html_label_column_class}'/>
+                           html-class='control-label {labelColumnClass}'/>
 
-                        <div class='{__xcst_html_field_column_class}'>
+                        <div class='{fieldColumnClass}'>
                            <a:editor name='{prop.PropertyName}' template='{editorTemplate}'/>
                            <c:text> </c:text>
                            <a:validation-message name='{prop.PropertyName}'/>

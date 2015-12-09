@@ -787,7 +787,7 @@
 
    <template name="a:editor-additional-view-data">
       <variable name="setters" as="text()*">
-         <for-each select="@html-label-column-class | @html-field-column-class | @html-attributes | a:row-template">
+         <for-each select="@html-attributes | a:row-template">
             <variable name="setter">
                <apply-templates select="." mode="a:editor-additional-view-data"/>
             </variable>
@@ -796,24 +796,22 @@
             </if>
          </for-each>
       </variable>
-      <if test="$setters">
-         <text>, additionalViewData: </text>
-         <text>new { </text>
+      <if test="@parameters or $setters">
+         <text>, additionalViewData: new </text>
+         <value-of select="src:global-identifier('System.Web.Routing.RouteValueDictionary')"/>
+         <if test="@parameters">
+            <text>(</text>
+            <value-of select="@parameters"/>
+            <text>)</text>
+         </if>
+         <text> { </text>
          <value-of select="string-join($setters, ', ')"/>
          <text> }</text>
       </if>
    </template>
 
-   <template match="@html-label-column-class" mode="a:editor-additional-view-data">
-      <value-of select="src:aux-variable('html_label_column_class'), src:expand-attribute(.)" separator=" = "/>
-   </template>
-
-   <template match="@html-field-column-class" mode="a:editor-additional-view-data">
-      <value-of select="src:aux-variable('html_field_column_class'), src:expand-attribute(.)" separator=" = "/>
-   </template>
-
    <template match="@html-attributes" mode="a:editor-additional-view-data">
-      <value-of select="'htmlAttributes', ." separator=" = "/>
+      <value-of select="'[&quot;htmlAttributes&quot;]', ." separator=" = "/>
    </template>
 
    <template match="a:row-template" mode="a:editor-additional-view-data">
@@ -822,7 +820,7 @@
       <variable name="prop" select="concat(src:aux-variable('prop'), '_', generate-id())"/>
       <variable name="new-context" select="concat(src:aux-variable('context'), '_', generate-id())"/>
 
-      <value-of select="src:aux-variable('row_template')"/>
+      <value-of select="concat('[&quot;', src:aux-variable('row_template'), '&quot;]')"/>
       <text> = new </text>
       <value-of select="src:global-identifier(concat('System.Action&lt;', src:fully-qualified-helper('DynamicContext'), '>'))"/>
       <text>((</text>

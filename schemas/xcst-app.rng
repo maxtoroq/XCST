@@ -484,14 +484,11 @@
                <attribute name="html-field-name">
                   <ref name="AVT"/>
                </attribute>
-               <attribute name="html-label-column-class">
-                  <ref name="AVT"/>
-               </attribute>
-               <attribute name="html-field-column-class">
-                  <ref name="AVT"/>
-               </attribute>
                <attribute name="html-attributes">
                   <ref name="AVT"/>
+               </attribute>
+               <attribute name="parameters">
+                  <ref name="Expression"/>
                </attribute>
             </choice>
          </zeroOrMore>

@@ -312,7 +312,11 @@ namespace Xcst.Web.Mvc.Html {
          viewData.TemplateInfo.VisitedObjects(new HashSet<object>(html.ViewContext.ViewData.TemplateInfo.VisitedObjects())); // DDB #224750
 
          if (additionalViewData != null) {
-            foreach (KeyValuePair<string, object> kvp in TypeHelpers.ObjectToDictionary(additionalViewData)) {
+
+            IDictionary<string, object> additionalParams = additionalViewData as IDictionary<string, object>
+               ?? TypeHelpers.ObjectToDictionary(additionalViewData);
+
+            foreach (KeyValuePair<string, object> kvp in additionalParams) {
                viewData[kvp.Key] = kvp.Value;
             }
          }
