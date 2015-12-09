@@ -29,6 +29,8 @@ namespace Xcst.Web.Mvc.Html {
 
       public static Func<EditorInfo, string, string> EditorCssClassFunction { get; set; }
 
+      public static bool OmitPasswordValue { get; set; }
+
       public static void Editor(this HtmlHelper html,
                                 XcstWriter output,
                                 string expression,

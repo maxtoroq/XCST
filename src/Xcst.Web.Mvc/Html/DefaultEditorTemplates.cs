@@ -253,7 +253,10 @@ namespace Xcst.Web.Mvc.Html {
 
       public static void PasswordTemplate(HtmlHelper html, XcstWriter output) {
 
-         object value = html.ViewContext.ViewData.TemplateInfo.FormattedModelValue;
+         object value = (!EditorExtensions.OmitPasswordValue) ?
+            html.ViewContext.ViewData.TemplateInfo.FormattedModelValue
+            : null;
+
          string className = GetEditorCssClass(new EditorInfo("Password", "input", InputType.Password), "text-box single-line password");
          IDictionary<string, object> htmlAttributes = CreateHtmlAttributes(html, className);
 
