@@ -8,8 +8,6 @@
    <c:use-functions in='System.Linq'/>
    <c:use-functions in='System.Web.Mvc'/>
 
-   <c:param name='includeComplexProperties' value='false' as='bool'/>
-   <c:param name='recurseComplexProperties' value='false' as='bool'/>
    <c:param name='__xcst_html_label_column_class' value='"col-md-3"' as='string'/>
    <c:param name='__xcst_html_field_column_class' value='"col-md-9"' as='string'/>
    <c:param name='__xcst_row_template' as='Action&lt;Xcst.Runtime.DynamicContext>'/>
@@ -20,20 +18,24 @@
       <c:script>
          <![CDATA[
          return prop.ShowForDisplay
-            && (includeComplexProperties || !prop.IsComplexType || prop.TemplateHint != null || prop.DataTypeName != null)
+            /*&& prop.ModelType != typeof(EntityState)*/
+            && !prop.IsComplexType
             && !ViewData.TemplateInfo.Visited(prop);
          ]]>
       </c:script>
    </c:function>
 
-   <c:template name='c:initial-template'>
-
-      <c:variable name='renderDisplayText' value='!recurseComplexProperties
-         &amp;&amp; ViewData.TemplateInfo.TemplateDepth > 1'/>
-
+   <c:template name='c:initial-template' expand-text='yes'>
       <c:choose>
-         <c:when test='renderDisplayText'>
-            <c:value-of value='(Model == null) ? ViewData.ModelMetadata.NullDisplayText : ViewData.ModelMetadata.SimpleDisplayText'/>
+         <c:when test='Model == null'>{ViewData.ModelMetadata.NullDisplayText}</c:when>
+         <c:when test='ViewData.TemplateInfo.TemplateDepth > 1'>
+            <c:variable name='displayText' value='ViewData.ModelMetadata.SimpleDisplayText'/>
+            <c:choose>
+               <c:when test='ViewData.ModelMetadata.HtmlEncode'>{displayText}</c:when>
+               <c:otherwise>
+                  <c:value-of value='displayText' disable-output-escaping='yes'/>
+               </c:otherwise>
+            </c:choose>
          </c:when>
          <c:otherwise>
             <c:for-each name='prop' in='ViewData.ModelMetadata.Properties.Where(x => ShouldShowProperty(x))'>
