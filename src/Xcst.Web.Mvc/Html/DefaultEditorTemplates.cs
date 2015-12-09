@@ -43,9 +43,17 @@ namespace Xcst.Web.Mvc.Html {
          }
 
          if (html.ViewContext.ViewData.ModelMetadata.IsNullableValueType) {
-            SelectExtensions.DropDownList(html, output, String.Empty, TriStateValues(value), optionLabel: null, htmlAttributes: CreateHtmlAttributes(html, "list-box tri-state"));
+
+            string className = GetEditorCssClass(new EditorInfo("Boolean", "select"), "list-box tri-state");
+            IDictionary<string, object> htmlAttributes = CreateHtmlAttributes(html, className);
+
+            SelectExtensions.DropDownList(html, output, String.Empty, TriStateValues(value), optionLabel: null, htmlAttributes: htmlAttributes);
+
          } else {
-            InputExtensions.CheckBox(html, output, String.Empty, value.GetValueOrDefault(), CreateHtmlAttributes(html, "check-box"));
+
+            string className = GetEditorCssClass(new EditorInfo("Boolean", "input", InputType.CheckBox), "check-box");
+
+            InputExtensions.CheckBox(html, output, String.Empty, value.GetValueOrDefault(), CreateHtmlAttributes(html, className));
          }
       }
 
@@ -110,7 +118,7 @@ namespace Xcst.Web.Mvc.Html {
             html.ViewContext.ViewData.TemplateInfo.FormattedModelValue = String.Format(CultureInfo.CurrentCulture, "{0:0.00}", html.ViewContext.ViewData.ModelMetadata.Model);
          }
 
-         StringTemplate(html, output);
+         HtmlInputTemplateHelper(html, output, "Decimal");
       }
 
       public static void HiddenInputTemplate(HtmlHelper html, XcstWriter output) {
@@ -136,22 +144,17 @@ namespace Xcst.Web.Mvc.Html {
             }
          }
 
-         object htmlAttributesObject = viewData[HtmlAttributeKey];
-         IDictionary<string, object> htmlAttributesDict = htmlAttributesObject as IDictionary<string, object>;
+         string className = GetEditorCssClass(new EditorInfo("HiddenInput", "input", InputType.Hidden), null);
+         IDictionary<string, object> htmlAttributes = CreateHtmlAttributes(html, className);
 
-         if (htmlAttributesDict == null
-            && htmlAttributesObject != null) {
-
-            htmlAttributesDict = HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributesObject);
-         }
-
-         InputExtensions.Hidden(html, output, String.Empty, model, htmlAttributesDict);
+         InputExtensions.Hidden(html, output, String.Empty, model, htmlAttributes);
       }
 
       public static void MultilineTextTemplate(HtmlHelper html, XcstWriter output) {
 
          object value = html.ViewContext.ViewData.TemplateInfo.FormattedModelValue;
-         IDictionary<string, object> htmlAttributes = CreateHtmlAttributes(html, "text-box multi-line");
+         string className = GetEditorCssClass(new EditorInfo("MultilineText", "textarea"), "text-box multi-line");
+         IDictionary<string, object> htmlAttributes = CreateHtmlAttributes(html, className);
 
          AddInputAttributes(html, htmlAttributes);
 
@@ -166,9 +169,8 @@ namespace Xcst.Web.Mvc.Html {
             return MergeHtmlAttributes(htmlAttributesObject, className, inputType);
          }
 
-         var htmlAttributes = new Dictionary<string, object>() {
-            { "class", className }
-         };
+         var htmlAttributes = new Dictionary<string, object>();
+         htmlAttributes.AddCssClass(className);
 
          if (inputType != null) {
             htmlAttributes.Add("type", inputType);
@@ -187,7 +189,10 @@ namespace Xcst.Web.Mvc.Html {
          htmlAttributes.AddCssClass(className);
 
          // The input type from the provided htmlAttributes overrides the inputType parameter.
-         if (inputType != null && !htmlAttributes.ContainsKey("type")) {
+
+         if (inputType != null
+            && !htmlAttributes.ContainsKey("type")) {
+
             htmlAttributes.Add("type", inputType);
          }
 
@@ -249,7 +254,8 @@ namespace Xcst.Web.Mvc.Html {
       public static void PasswordTemplate(HtmlHelper html, XcstWriter output) {
 
          object value = html.ViewContext.ViewData.TemplateInfo.FormattedModelValue;
-         IDictionary<string, object> htmlAttributes = CreateHtmlAttributes(html, "text-box single-line password");
+         string className = GetEditorCssClass(new EditorInfo("Password", "input", InputType.Password), "text-box single-line password");
+         IDictionary<string, object> htmlAttributes = CreateHtmlAttributes(html, className);
 
          InputExtensions.Password(html, output, String.Empty, value, htmlAttributes);
       }
@@ -263,47 +269,71 @@ namespace Xcst.Web.Mvc.Html {
       }
 
       public static void StringTemplate(HtmlHelper html, XcstWriter output) {
-         HtmlInputTemplateHelper(html, output);
+         HtmlInputTemplateHelper(html, output, "String");
+      }
+
+      public static void TextTemplate(HtmlHelper html, XcstWriter output) {
+         HtmlInputTemplateHelper(html, output, "Text");
       }
 
       public static void PhoneNumberInputTemplate(HtmlHelper html, XcstWriter output) {
-         HtmlInputTemplateHelper(html, output, inputType: "tel");
+         HtmlInputTemplateHelper(html, output, "PhoneNumber", inputType: "tel");
       }
 
       public static void UrlInputTemplate(HtmlHelper html, XcstWriter output) {
-         HtmlInputTemplateHelper(html, output, inputType: "url");
+         HtmlInputTemplateHelper(html, output, "Url", inputType: "url");
       }
 
       public static void EmailAddressInputTemplate(HtmlHelper html, XcstWriter output) {
-         HtmlInputTemplateHelper(html, output, inputType: "email");
+         HtmlInputTemplateHelper(html, output, "EmailAddress", inputType: "email");
       }
 
       public static void DateTimeInputTemplate(HtmlHelper html, XcstWriter output) {
 
          ApplyRfc3339DateFormattingIfNeeded(html, "{0:yyyy-MM-ddTHH:mm:ss.fffK}");
-         HtmlInputTemplateHelper(html, output, inputType: "datetime");
+         HtmlInputTemplateHelper(html, output, "DateTime", inputType: "datetime");
       }
 
       public static void DateTimeLocalInputTemplate(HtmlHelper html, XcstWriter output) {
 
          ApplyRfc3339DateFormattingIfNeeded(html, "{0:yyyy-MM-ddTHH:mm:ss.fff}");
-         HtmlInputTemplateHelper(html, output, inputType: "datetime-local");
+         HtmlInputTemplateHelper(html, output, "DateTime-local", inputType: "datetime-local");
       }
 
       public static void DateInputTemplate(HtmlHelper html, XcstWriter output) {
 
          ApplyRfc3339DateFormattingIfNeeded(html, "{0:yyyy-MM-dd}");
-         HtmlInputTemplateHelper(html, output, inputType: "date");
+         HtmlInputTemplateHelper(html, output, "Date", inputType: "date");
       }
 
       public static void TimeInputTemplate(HtmlHelper html, XcstWriter output) {
 
          ApplyRfc3339DateFormattingIfNeeded(html, "{0:HH:mm:ss.fff}");
-         HtmlInputTemplateHelper(html, output, inputType: "time");
+         HtmlInputTemplateHelper(html, output, "Time", inputType: "time");
       }
 
-      public static void NumberInputTemplate(HtmlHelper html, XcstWriter output) {
-         HtmlInputTemplateHelper(html, output, inputType: "number");
+      public static void ByteInputTemplate(HtmlHelper html, XcstWriter output) {
+         HtmlInputTemplateHelper(html, output, "Byte", inputType: "number");
+      }
+
+      public static void SByteInputTemplate(HtmlHelper html, XcstWriter output) {
+         HtmlInputTemplateHelper(html, output, "SByte", inputType: "number");
+      }
+
+      public static void Int32InputTemplate(HtmlHelper html, XcstWriter output) {
+         HtmlInputTemplateHelper(html, output, "Int32", inputType: "number");
+      }
+
+      public static void UInt32InputTemplate(HtmlHelper html, XcstWriter output) {
+         HtmlInputTemplateHelper(html, output, "UInt32", inputType: "number");
+      }
+
+      public static void Int64InputTemplate(HtmlHelper html, XcstWriter output) {
+         HtmlInputTemplateHelper(html, output, "Int64", inputType: "number");
+      }
+
+      public static void UInt64InputTemplate(HtmlHelper html, XcstWriter output) {
+         HtmlInputTemplateHelper(html, output, "UInt64", inputType: "number");
       }
 
       public static void ColorInputTemplate(HtmlHelper html, XcstWriter output) {
@@ -320,7 +350,7 @@ namespace Xcst.Web.Mvc.Html {
             }
          }
 
-         HtmlInputTemplateHelper(html, output, "color", value);
+         HtmlInputTemplateHelper(html, output, "Color", "color", value);
       }
 
       static void ApplyRfc3339DateFormattingIfNeeded(HtmlHelper html, string format) {
@@ -345,13 +375,14 @@ namespace Xcst.Web.Mvc.Html {
          }
       }
 
-      static void HtmlInputTemplateHelper(HtmlHelper html, XcstWriter output, string inputType = null) {
-         HtmlInputTemplateHelper(html, output, inputType, html.ViewContext.ViewData.TemplateInfo.FormattedModelValue);
+      static void HtmlInputTemplateHelper(HtmlHelper html, XcstWriter output, string templateName, string inputType = null) {
+         HtmlInputTemplateHelper(html, output, templateName, inputType, html.ViewContext.ViewData.TemplateInfo.FormattedModelValue);
       }
 
-      static void HtmlInputTemplateHelper(HtmlHelper html, XcstWriter output, string inputType, object value) {
+      static void HtmlInputTemplateHelper(HtmlHelper html, XcstWriter output, string templateName, string inputType, object value) {
 
-         IDictionary<string, object> htmlAttributes = CreateHtmlAttributes(html, "text-box single-line", inputType: inputType);
+         string className = GetEditorCssClass(new EditorInfo(templateName, "input", InputType.Text), "text-box single-line");
+         IDictionary<string, object> htmlAttributes = CreateHtmlAttributes(html, className, inputType: inputType);
 
          AddInputAttributes(html, htmlAttributes);
 
@@ -375,21 +406,17 @@ namespace Xcst.Web.Mvc.Html {
 
             htmlAttributes["readonly"] = "readonly";
          }
-
-         AddCommonAttributes(html, htmlAttributes);
       }
 
-      static void AddCommonAttributes(HtmlHelper html, IDictionary<string, object> htmlAttributes) {
-         AddCommonCssClass(htmlAttributes);
-      }
+      internal static string GetEditorCssClass(EditorInfo editorInfo, string defaultCssClass) {
 
-      internal static void AddCommonCssClass(IDictionary<string, object> htmlAttributes) {
+         Func<EditorInfo, string, string> customFn = EditorExtensions.EditorCssClassFunction;
 
-         string commonClass = EditorExtensions.CommonCssClass;
-
-         if (!String.IsNullOrEmpty(commonClass)) {
-            htmlAttributes.AddCssClass(commonClass);
+         if (customFn != null) {
+            return customFn(editorInfo, defaultCssClass);
          }
+
+         return defaultCssClass;
       }
 
       internal static List<SelectListItem> TriStateValues(bool? value) {

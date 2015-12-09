@@ -33,7 +33,7 @@ namespace Xcst.Web.Mvc.Html {
       /// Remove entries from dictionary that match the removeCondition.
       /// </summary>
       public static void RemoveFromDictionary<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, Func<KeyValuePair<TKey, TValue>, bool> removeCondition) {
-         
+
          // Pass the delegate as the state to avoid a delegate and closure
          dictionary.RemoveFromDictionary((entry, innerCondition) => {
             return innerCondition(entry);
@@ -137,6 +137,10 @@ namespace Xcst.Web.Mvc.Html {
       }
 
       public static void AddCssClass(this IDictionary<string, object> dict, string cssClass) {
+
+         if (String.IsNullOrEmpty(cssClass)) {
+            return;
+         }
 
          string existingClass;
 

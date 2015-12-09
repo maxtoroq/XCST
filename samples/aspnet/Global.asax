@@ -1,10 +1,16 @@
 ﻿<%@ Application Language="C#" %>
+<%@ Import Namespace="System.Web.Mvc" %>
+<%@ Import Namespace="Xcst.Web.Mvc.Html" %>
 
 <script runat="server">
 
    void Application_Start(object sender, EventArgs e) {
 
-      Xcst.Web.Mvc.Html.EditorExtensions.CommonCssClass = "form-control";
+      EditorExtensions.EditorCssClassFunction = (info, defaultClass) =>
+         (info.InputType == InputType.Text
+            || info.InputType == InputType.Password
+            || info.TagName != "input") ? "form-control"
+            : null;
    }
 
 </script>

@@ -41,12 +41,11 @@ namespace Xcst.Web.Mvc.Html {
 
             output.WriteStartElement("select");
 
-            var attribs = HtmlAttributesMerger.Create()
-               .AddCssClass("list-box tri-state");
+            string className = DefaultEditorTemplates.GetEditorCssClass(new EditorInfo("Boolean", "select"), "list-box tri-state");
 
-            DefaultEditorTemplates.AddCommonCssClass(attribs.Attributes);
-
-            attribs.WriteTo(output);
+            HtmlAttributesMerger.Create()
+               .AddCssClass(className)
+               .WriteTo(output);
 
             output.WriteAttributeString("disabled", "disabled");
 
@@ -60,7 +59,13 @@ namespace Xcst.Web.Mvc.Html {
 
             output.WriteStartElement("input");
             output.WriteAttributeString("type", "checkbox");
-            output.WriteAttributeString("class", "check-box");
+
+            string className = DefaultEditorTemplates.GetEditorCssClass(new EditorInfo("Boolean", "input", InputType.CheckBox), "check-box");
+
+            HtmlAttributesMerger.Create()
+               .AddCssClass(className)
+               .WriteTo(output);
+
             output.WriteAttributeString("disabled", "disabled");
 
             if (value.GetValueOrDefault()) {

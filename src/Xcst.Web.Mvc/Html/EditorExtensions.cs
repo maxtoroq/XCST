@@ -27,7 +27,7 @@ namespace Xcst.Web.Mvc.Html {
    /// <exclude/>
    public static class EditorExtensions {
 
-      public static string CommonCssClass { get; set; }
+      public static Func<EditorInfo, string, string> EditorCssClassFunction { get; set; }
 
       public static void Editor(this HtmlHelper html,
                                 XcstWriter output,

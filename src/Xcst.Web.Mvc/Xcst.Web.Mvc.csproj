@@ -82,6 +82,7 @@
     <Compile Include="Html\DisplayNameExtensions.cs" />
     <Compile Include="Html\DisplayTextExtensions.cs" />
     <Compile Include="Html\EditorExtensions.cs" />
+    <Compile Include="Html\EditorInfo.cs" />
     <Compile Include="Html\InputExtensions.cs" />
     <Compile Include="Html\LabelExtensions.cs" />
     <Compile Include="Html\MvcReflectionExtensions.cs" />
