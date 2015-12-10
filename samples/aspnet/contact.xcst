@@ -60,7 +60,7 @@
       <a:model value='contact'>
          <dl>
             <a:display>
-               <a:row-template>
+               <a:member-template>
                   <dt>
                      <a:display-name/>
                      <c:text>:</c:text>
@@ -68,7 +68,7 @@
                   <dd>
                      <a:display/>
                   </dd>
-               </a:row-template>
+               </a:member-template>
             </a:display>
          </dl>
       </a:model>

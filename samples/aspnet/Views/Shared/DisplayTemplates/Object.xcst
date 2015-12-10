@@ -10,7 +10,7 @@
 
    <c:param name='labelColumnClass'>col-md-3</c:param>
    <c:param name='fieldColumnClass'>col-md-9</c:param>
-   <c:param name='__xcst_row_template' as='Action&lt;Xcst.Runtime.DynamicContext>'/>
+   <c:param name='__xcst_member_template' as='Action&lt;Xcst.Runtime.DynamicContext>'/>
 
    <c:function name='ShouldShowProperty' as='bool'>
       <c:param name='prop' as='ModelMetadata'/>
@@ -44,8 +44,8 @@
                   <c:when test='prop.HideSurroundingHtml'>
                      <a:display name='{prop.PropertyName}' template='{displayTemplate}'/>
                   </c:when>
-                  <c:when test='__xcst_row_template != null'>
-                     <c:evaluate-delegate value='__xcst_row_template'>
+                  <c:when test='__xcst_member_template != null'>
+                     <c:evaluate-delegate value='__xcst_member_template'>
                         <c:with-param name='member' value='prop'/>
                      </c:evaluate-delegate>
                   </c:when>

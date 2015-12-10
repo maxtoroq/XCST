@@ -787,7 +787,7 @@
 
    <template name="a:editor-additional-view-data">
       <variable name="setters" as="text()*">
-         <for-each select="@html-attributes | a:row-template">
+         <for-each select="@html-attributes | a:member-template">
             <variable name="setter">
                <apply-templates select="." mode="a:editor-additional-view-data"/>
             </variable>
@@ -814,13 +814,13 @@
       <value-of select="'[&quot;htmlAttributes&quot;]', ." separator=" = "/>
    </template>
 
-   <template match="a:row-template" mode="a:editor-additional-view-data">
+   <template match="a:member-template" mode="a:editor-additional-view-data">
       <param name="indent" tunnel="yes"/>
 
       <variable name="prop" select="concat(src:aux-variable('prop'), '_', generate-id())"/>
       <variable name="new-context" select="concat(src:aux-variable('context'), '_', generate-id())"/>
 
-      <value-of select="concat('[&quot;', src:aux-variable('row_template'), '&quot;]')"/>
+      <value-of select="concat('[&quot;', src:aux-variable('member_template'), '&quot;]')"/>
       <text> = new </text>
       <value-of select="src:global-identifier(concat('System.Action&lt;', src:fully-qualified-helper('DynamicContext'), '>'))"/>
       <text>((</text>

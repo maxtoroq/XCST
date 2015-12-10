@@ -493,7 +493,7 @@
             </choice>
          </zeroOrMore>
          <optional>
-            <element name="row-template">
+            <element name="member-template">
                <ref name="sequence-constructor"/>
             </element>
          </optional>
