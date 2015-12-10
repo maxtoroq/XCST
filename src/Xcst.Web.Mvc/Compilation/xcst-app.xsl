@@ -170,7 +170,7 @@
    -->
 
    <template match="a:text-box" mode="src:extension-instruction">
-      <param name="output" tunnel="yes"/>
+      <param name="context-param" tunnel="yes"/>
 
       <variable name="expr">
          <value-of select="a:fully-qualified-helper-html('InputExtensions')"/>
@@ -179,7 +179,7 @@
          <text>(</text>
          <call-template name="a:html-helper"/>
          <text>, </text>
-         <value-of select="$output"/>
+         <value-of select="$context-param"/>
          <text>, </text>
          <choose>
             <when test="@for">
@@ -209,7 +209,7 @@
    </template>
 
    <template match="a:password" mode="src:extension-instruction">
-      <param name="output" tunnel="yes"/>
+      <param name="context-param" tunnel="yes"/>
 
       <variable name="expr">
          <value-of select="a:fully-qualified-helper-html('InputExtensions')"/>
@@ -218,7 +218,7 @@
          <text>(</text>
          <call-template name="a:html-helper"/>
          <text>, </text>
-         <value-of select="$output"/>
+         <value-of select="$context-param"/>
          <text>, </text>
          <choose>
             <when test="@for">
@@ -244,7 +244,7 @@
    </template>
 
    <template match="a:hidden" mode="src:extension-instruction">
-      <param name="output" tunnel="yes"/>
+      <param name="context-param" tunnel="yes"/>
 
       <variable name="expr">
          <value-of select="a:fully-qualified-helper-html('InputExtensions')"/>
@@ -253,7 +253,7 @@
          <text>(</text>
          <call-template name="a:html-helper"/>
          <text>, </text>
-         <value-of select="$output"/>
+         <value-of select="$context-param"/>
          <text>, </text>
          <choose>
             <when test="@for">
@@ -279,7 +279,7 @@
    </template>
 
    <template match="a:text-area" mode="src:extension-instruction">
-      <param name="output" tunnel="yes"/>
+      <param name="context-param" tunnel="yes"/>
 
       <variable name="expr">
          <value-of select="a:fully-qualified-helper-html('TextAreaExtensions')"/>
@@ -288,7 +288,7 @@
          <text>(</text>
          <call-template name="a:html-helper"/>
          <text>, </text>
-         <value-of select="$output"/>
+         <value-of select="$context-param"/>
          <text>, </text>
          <choose>
             <when test="@for">
@@ -320,7 +320,7 @@
    </template>
 
    <template match="a:check-box" mode="src:extension-instruction">
-      <param name="output" tunnel="yes"/>
+      <param name="context-param" tunnel="yes"/>
 
       <variable name="expr">
          <value-of select="a:fully-qualified-helper-html('InputExtensions')"/>
@@ -329,7 +329,7 @@
          <text>(</text>
          <call-template name="a:html-helper"/>
          <text>, </text>
-         <value-of select="$output"/>
+         <value-of select="$context-param"/>
          <text>, </text>
          <choose>
             <when test="@for">
@@ -357,7 +357,7 @@
    </template>
 
    <template match="a:radio-button" mode="src:extension-instruction">
-      <param name="output" tunnel="yes"/>
+      <param name="context-param" tunnel="yes"/>
 
       <variable name="expr">
          <value-of select="a:fully-qualified-helper-html('InputExtensions')"/>
@@ -366,7 +366,7 @@
          <text>(</text>
          <call-template name="a:html-helper"/>
          <text>, </text>
-         <value-of select="$output"/>
+         <value-of select="$context-param"/>
          <text>, </text>
          <choose>
             <when test="@for">
@@ -404,14 +404,14 @@
    </template>
 
    <template match="a:http-method-override" mode="src:extension-instruction">
-      <param name="output" tunnel="yes"/>
+      <param name="context-param" tunnel="yes"/>
 
       <variable name="expr">
          <value-of select="a:fully-qualified-helper-html('InputExtensions')"/>
          <text>.HttpMethodOverride(</text>
          <call-template name="a:html-helper"/>
          <text>, </text>
-         <value-of select="$output"/>
+         <value-of select="$context-param"/>
          <text>, </text>
          <value-of select="src:expand-attribute(@method)"/>
          <text>)</text>
@@ -420,7 +420,7 @@
    </template>
 
    <template match="a:drop-down-list | a:list-box" mode="src:extension-instruction">
-      <param name="output" tunnel="yes"/>
+      <param name="context-param" tunnel="yes"/>
 
       <variable name="ddl" select="self::a:drop-down-list"/>
       <variable name="expr">
@@ -431,7 +431,7 @@
          <text>(</text>
          <call-template name="a:html-helper"/>
          <text>, </text>
-         <value-of select="$output"/>
+         <value-of select="$context-param"/>
          <text>, </text>
          <choose>
             <when test="@for">
@@ -499,7 +499,7 @@
    </template>
 
    <template match="a:label" mode="src:extension-instruction">
-      <param name="output" tunnel="yes"/>
+      <param name="context-param" tunnel="yes"/>
       <param name="a:model-metadata" as="xs:string?" tunnel="yes"/>
 
       <variable name="for-model" select="empty((@for, @name, $a:model-metadata))"/>
@@ -514,7 +514,7 @@
          <text>(</text>
          <call-template name="a:html-helper"/>
          <text>, </text>
-         <value-of select="$output"/>
+         <value-of select="$context-param"/>
          <if test="$a:model-metadata">
             <text>, </text>
             <value-of select="$a:model-metadata"/>
@@ -551,14 +551,14 @@
    </template>
 
    <template match="a:validation-summary" mode="src:extension-instruction">
-      <param name="output" tunnel="yes"/>
+      <param name="context-param" tunnel="yes"/>
 
       <variable name="expr">
          <value-of select="a:fully-qualified-helper-html('ValidationExtensions')"/>
          <text>.ValidationSummary(</text>
          <call-template name="a:html-helper"/>
          <text>, </text>
-         <value-of select="$output"/>
+         <value-of select="$context-param"/>
          <if test="@exclude-member-errors">
             <text>, excludePropertyErrors: </text>
             <value-of select="@exclude-member-errors"/>
@@ -576,7 +576,7 @@
    </template>
 
    <template match="a:validation-message" mode="src:extension-instruction">
-      <param name="output" tunnel="yes"/>
+      <param name="context-param" tunnel="yes"/>
       <param name="a:model-metadata" as="xs:string?" tunnel="yes"/>
 
       <variable name="expr">
@@ -586,7 +586,7 @@
          <text>(</text>
          <call-template name="a:html-helper"/>
          <text>, </text>
-         <value-of select="$output"/>
+         <value-of select="$context-param"/>
          <text>, </text>
          <choose>
             <when test="@for">
@@ -731,7 +731,7 @@
    -->
 
    <template match="a:editor | a:display" mode="src:extension-instruction">
-      <param name="output" tunnel="yes"/>
+      <param name="context-param" tunnel="yes"/>
       <param name="a:model-metadata" as="xs:string?" tunnel="yes"/>
 
       <variable name="editor" select="self::a:editor"/>
@@ -745,7 +745,7 @@
          <text>(</text>
          <call-template name="a:html-helper"/>
          <text>, </text>
-         <value-of select="$output"/>
+         <value-of select="$context-param"/>
          <if test="not($for-model)">
             <text>, </text>
             <choose>
@@ -889,7 +889,7 @@
    </template>
 
    <template match="a:display-text" mode="src:extension-instruction">
-      <param name="output" tunnel="yes"/>
+      <param name="context-param" tunnel="yes"/>
       <param name="src:current-mode" as="xs:QName" required="yes" tunnel="yes"/>
       <param name="a:model-metadata" as="xs:string?" tunnel="yes"/>
 
@@ -904,7 +904,7 @@
          <call-template name="a:html-helper"/>
          <if test="$statement">
             <text>, </text>
-            <value-of select="$output"/>
+            <value-of select="$context-param"/>
          </if>
          <text>, </text>
          <choose>

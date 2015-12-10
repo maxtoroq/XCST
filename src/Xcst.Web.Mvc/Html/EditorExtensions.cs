@@ -21,6 +21,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Web.UI.WebControls;
 using System.Web.Mvc;
+using Xcst.Runtime;
 
 namespace Xcst.Web.Mvc.Html {
 
@@ -32,33 +33,33 @@ namespace Xcst.Web.Mvc.Html {
       public static bool OmitPasswordValue { get; set; }
 
       public static void Editor(this HtmlHelper html,
-                                XcstWriter output,
+                                DynamicContext context,
                                 string expression,
                                 string templateName = null,
                                 string htmlFieldName = null,
                                 object additionalViewData = null) {
 
-         TemplateHelpers.Template(html, output, expression, templateName, htmlFieldName, DataBoundControlMode.Edit, additionalViewData);
+         TemplateHelpers.Template(html, context, expression, templateName, htmlFieldName, DataBoundControlMode.Edit, additionalViewData);
       }
 
       [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "This is an appropriate nesting of generic types")]
       public static void EditorFor<TModel, TValue>(this HtmlHelper<TModel> html,
-                                                   XcstWriter output,
+                                                   DynamicContext context,
                                                    Expression<Func<TModel, TValue>> expression,
                                                    string templateName = null,
                                                    string htmlFieldName = null,
                                                    object additionalViewData = null) {
 
-         TemplateHelpers.TemplateFor(html, output, expression, templateName, htmlFieldName, DataBoundControlMode.Edit, additionalViewData);
+         TemplateHelpers.TemplateFor(html, context, expression, templateName, htmlFieldName, DataBoundControlMode.Edit, additionalViewData);
       }
 
       public static void EditorForModel(this HtmlHelper html,
-                                        XcstWriter output,
+                                        DynamicContext context,
                                         string templateName = null,
                                         string htmlFieldName = null,
                                         object additionalViewData = null) {
 
-         TemplateHelpers.TemplateHelper(html, output, html.ViewData.ModelMetadata, htmlFieldName, templateName, DataBoundControlMode.Edit, additionalViewData);
+         TemplateHelpers.TemplateHelper(html, context, html.ViewData.ModelMetadata, htmlFieldName, templateName, DataBoundControlMode.Edit, additionalViewData);
       }
    }
 }

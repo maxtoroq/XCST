@@ -20,23 +20,25 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using System.Web.Mvc;
+using Xcst.Runtime;
 
 namespace Xcst.Web.Mvc.Html {
 
    /// <exclude/>
    public static class DisplayTextExtensions {
 
-      public static void DisplayText(this HtmlHelper html, XcstWriter output, string name) {
-         DisplayTextHelper(html, output, ModelMetadata.FromStringExpression(name, html.ViewContext.ViewData));
+      public static void DisplayText(this HtmlHelper html, DynamicContext context, string name) {
+         DisplayTextHelper(html, context, ModelMetadata.FromStringExpression(name, html.ViewContext.ViewData));
       }
 
       [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "This is an appropriate nesting of generic types")]
-      public static void DisplayTextFor<TModel, TResult>(this HtmlHelper<TModel> html, XcstWriter output, Expression<Func<TModel, TResult>> expression) {
-         DisplayTextHelper(html, output, ModelMetadata.FromLambdaExpression(expression, html.ViewData));
+      public static void DisplayTextFor<TModel, TResult>(this HtmlHelper<TModel> html, DynamicContext context, Expression<Func<TModel, TResult>> expression) {
+         DisplayTextHelper(html, context, ModelMetadata.FromLambdaExpression(expression, html.ViewData));
       }
 
-      internal static void DisplayTextHelper(HtmlHelper html, XcstWriter output, ModelMetadata metadata) {
+      internal static void DisplayTextHelper(HtmlHelper html, DynamicContext context, ModelMetadata metadata) {
 
+         XcstWriter output = context.Output;
          string text = metadata.SimpleDisplayText;
 
          if (metadata.HtmlEncode) {
@@ -56,10 +58,7 @@ namespace Xcst.Web.Mvc.Html {
       }
 
       internal static string DisplayStringHelper(HtmlHelper html, ModelMetadata metadata) {
-
-         string text = metadata.SimpleDisplayText;
-
-         return text;
+         return metadata.SimpleDisplayText;
       }
    }
 }
