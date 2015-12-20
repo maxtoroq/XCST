@@ -112,7 +112,7 @@ namespace Xcst.Web {
          return UrlUtil.GenerateClientUrl(this.Context, this.VirtualPath, path, pathParts);
       }
 
-      public virtual bool Authorize(string[] users = null, string[] roles = null) {
+      public virtual bool TryAuthorize(string[] users = null, string[] roles = null) {
 
          if (IsAuthorized(this.User, users, roles)) {
 
