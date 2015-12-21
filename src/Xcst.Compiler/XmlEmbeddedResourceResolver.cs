@@ -18,7 +18,7 @@ using System.Net;
 using System.Reflection;
 using System.IO;
 
-namespace Xcst.Compiler.CodeGeneration {
+namespace Xcst.Compiler {
 
    class XmlEmbeddedResourceResolver : XmlResolver {
 

@@ -51,7 +51,7 @@ namespace Xcst.Compiler {
          Uri baseUri = new UriBuilder {
             Scheme = XmlEmbeddedResourceResolver.UriSchemeClires,
             Host = null,
-            Path = $"{thisType.Assembly.GetName().Name}/{nameof(CodeGeneration)}/xsl/xcst-compile.xsl"
+            Path = $"{thisType.Assembly.GetName().Name}/{nameof(CodeGeneration)}/xcst-compile.xsl"
          }.Uri;
 
          XmlResolver resolver = new XmlEmbeddedResourceResolver(

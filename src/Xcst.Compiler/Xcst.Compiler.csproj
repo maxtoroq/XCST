@@ -56,19 +56,17 @@
     <Compile Include="..\Xcst\XmlNamespaces.cs">
       <Link>XmlNamespaces.cs</Link>
     </Compile>
+    <Compile Include="CodeGeneration\ExtensionFunctions.cs" />
     <Compile Include="CompileException.cs" />
     <Compile Include="CodeGeneration\Helpers.cs" />
-    <Compile Include="CodeGeneration\EscapeValueTemplateFunction.cs" />
-    <Compile Include="CodeGeneration\LocalPathFunction.cs" />
-    <Compile Include="CodeGeneration\LineNumberFunction.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SaxonExtensions.cs" />
     <Compile Include="XcstCompiler.cs" />
     <Compile Include="XcstCompilerFactory.cs" />
-    <Compile Include="CodeGeneration\XmlEmbeddedResourceResolver.cs" />
+    <Compile Include="XmlEmbeddedResourceResolver.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="CodeGeneration\xsl\xcst-compile.xsl">
+    <EmbeddedResource Include="CodeGeneration\xcst-compile.xsl">
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
@@ -82,13 +80,13 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="CodeGeneration\xsl\xcst-core.xsl">
+    <EmbeddedResource Include="CodeGeneration\xcst-core.xsl">
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="CodeGeneration\xsl\xcst-metadata.xsl">
+    <EmbeddedResource Include="CodeGeneration\xcst-metadata.xsl">
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <Content Include="CodeGeneration\xsl\xcst-extensions.xsl" />
+    <Content Include="CodeGeneration\xcst-extensions.xsl" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
