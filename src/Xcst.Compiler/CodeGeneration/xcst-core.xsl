@@ -515,6 +515,29 @@
       </call-template>
    </template>
 
+   <template match="c:choose" mode="src:expression">
+      <text>(</text>
+      <apply-templates select="c:*" mode="#current"/>
+      <text>)</text>
+   </template>
+
+   <template match="c:choose/c:when" mode="src:expression">
+      <if test="position() gt 1"> : </if>
+      <text>(</text>
+      <value-of select="@test"/>
+      <text>) ? </text>
+      <call-template name="src:apply-children">
+         <with-param name="mode" select="'expression'"/>
+      </call-template>
+   </template>
+
+   <template match="c:choose/c:otherwise" mode="src:expression">
+      <text> : </text>
+      <call-template name="src:apply-children">
+         <with-param name="mode" select="'expression'"/>
+      </call-template>
+   </template>
+
    <template match="c:if" mode="src:statement">
       <value-of select="$src:new-line"/>
       <call-template name="src:line-number"/>
@@ -1602,20 +1625,25 @@
             </choose>
          </when>
          <when test="$value or $text">
-            <call-template name="src:line-number">
-               <with-param name="indent" select="$new-indent" tunnel="yes"/>
-            </call-template>
-            <call-template name="src:new-line-indented">
-               <with-param name="indent" select="$new-indent" tunnel="yes"/>
-            </call-template>
-            <value-of select="$output"/>
-            <text>.WriteString(</text>
+            <variable name="mode-not-expression" select="empty($mode) or $mode ne 'expression'"/>
+            <if test="$mode-not-expression">
+               <call-template name="src:line-number">
+                  <with-param name="indent" select="$new-indent" tunnel="yes"/>
+               </call-template>
+               <call-template name="src:new-line-indented">
+                  <with-param name="indent" select="$new-indent" tunnel="yes"/>
+               </call-template>
+               <value-of select="$output"/>
+               <text>.WriteString(</text>
+            </if>
             <value-of select="if ($value) then $value else src:expand-text(., $text)"/>
-            <text>)</text>
-            <value-of select="$src:statement-delimiter"/>
-            <call-template name="src:line-default">
-               <with-param name="indent" select="$new-indent" tunnel="yes"/>
-            </call-template>
+            <if test="$mode-not-expression">
+               <text>)</text>
+               <value-of select="$src:statement-delimiter"/>
+               <call-template name="src:line-default">
+                  <with-param name="indent" select="$new-indent" tunnel="yes"/>
+               </call-template>
+            </if>
          </when>
       </choose>
       <if test="$use-block">
