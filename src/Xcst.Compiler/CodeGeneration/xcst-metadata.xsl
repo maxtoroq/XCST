@@ -57,6 +57,7 @@
             | @placeholder
             | @order
             | @group
+            | @auto-generate-filter
             | (ancestor-or-self::c:*[self::c:member or self::c:type]/@resource-type)[1]"
             mode="src:display-setter"/>
       </variable>
@@ -94,6 +95,10 @@
 
    <template match="@group" mode="src:display-setter">
       <value-of select="'GroupName', src:verbatim-string(.)" separator=" = "/>
+   </template>
+
+   <template match="@auto-generate-filter" mode="src:display-setter">
+      <value-of select="'AutoGenerateFilter', src:boolean(xcst:boolean(.))" separator=" = "/>
    </template>
 
    <template match="@resource-type" mode="src:display-setter">

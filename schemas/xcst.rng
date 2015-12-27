@@ -426,6 +426,9 @@
             <attribute name="read-only">
                <ref name="Boolean"/>
             </attribute>
+            <attribute name="auto-generate-filter">
+               <ref name="Boolean"/>
+            </attribute>
             <attribute name="data-type">
                <choice>
                   <value>CreditCard</value>
