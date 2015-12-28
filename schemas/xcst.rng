@@ -339,11 +339,6 @@
          <attribute name="name">
             <ref name="Name"/>
          </attribute>
-         <optional>
-            <attribute name="value">
-               <ref name="Expression"/>
-            </attribute>
-         </optional>
          <ref name="standard-attributes"/>
          <ref name="type-or-member-attributes"/>
          <ref name="member-attributes"/>
@@ -370,17 +365,19 @@
    </define>
 
    <define name="type-or-member-attributes">
-      <optional>
-         <attribute name="resource-type">
-            <ref name="Type"/>
-         </attribute>
-         <attribute name="disable-empty-string-to-null-conversion">
-            <ref name="Boolean"/>
-         </attribute>
-         <attribute name="allow-empty-string">
-            <ref name="Boolean"/>
-         </attribute>
-      </optional>
+      <zeroOrMore>
+         <choice>
+            <attribute name="resource-type">
+               <ref name="Type"/>
+            </attribute>
+            <attribute name="disable-empty-string-to-null-conversion">
+               <ref name="Boolean"/>
+            </attribute>
+            <attribute name="allow-empty-string">
+               <ref name="Boolean"/>
+            </attribute>
+         </choice>
+      </zeroOrMore>
       <ref name="validation-attributes"/>
    </define>
 
@@ -472,6 +469,16 @@
             </attribute>
          </choice>
       </zeroOrMore>
+      <optional>
+         <choice>
+            <attribute name="value">
+               <ref name="Expression"/>
+            </attribute>
+            <attribute name="expression">
+               <ref name="Expression"/>
+            </attribute>
+         </choice>
+      </optional>
    </define>
 
    <define name="output">

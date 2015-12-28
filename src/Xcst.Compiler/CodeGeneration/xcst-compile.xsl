@@ -478,12 +478,21 @@
       <value-of select="(@as/xcst:type(.), src:anonymous-type-name(.))[1]"/>
       <text> </text>
       <value-of select="xcst:name(@name)"/>
-      <text> { get; set; }</text>
-      <if test="@value">
-         <text> = </text>
-         <value-of select="@value"/>
-         <text>;</text>
-      </if>
+      <choose>
+         <when test="@expression">
+            <text> => </text>
+            <value-of select="@expression"/>
+            <text>;</text>
+         </when>
+         <otherwise>
+            <text> { get; set; }</text>
+            <if test="@value">
+               <text> = </text>
+               <value-of select="@value"/>
+               <text>;</text>
+            </if>
+         </otherwise>
+      </choose>
       <call-template name="src:line-default"/>
    </template>
 
