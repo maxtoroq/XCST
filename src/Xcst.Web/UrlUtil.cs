@@ -56,14 +56,6 @@ namespace Xcst.Web {
             return path;
          }
 
-         if (pathParts != null) {
-            for (int i = 0; i < pathParts.Length; i++) {
-               if (pathParts[i] == null) {
-                  throw new ArgumentNullException("pathParts");
-               }
-            }
-         }
-
          if (basePath != null) {
             path = VirtualPathUtility.Combine(basePath, path);
          }
@@ -149,41 +141,67 @@ namespace Xcst.Web {
          // for performance. The most common case (for WebPages) will provide a single int value as a 
          // path-part - string.Concat can be more efficient when we know the number of strings to join.
 
-         if (pathParts == null || pathParts.Length == 0) {
+         string finalPath;
+
+         if (pathParts == null
+            || pathParts.Length == 0) {
+
             query = String.Empty;
-            return HttpUtility.UrlPathEncode(path);
+            finalPath = path;
+
          } else if (pathParts.Length == 1) {
+
             object pathPart = pathParts[0];
-            if (IsDisplayableType(pathPart.GetType())) {
+
+            if (pathPart == null) {
+               query = String.Empty;
+               finalPath = path;
+
+            } else if (IsDisplayableType(pathPart.GetType())) {
+
                string displayablePath = Convert.ToString(pathPart, CultureInfo.InvariantCulture);
                path = path + "/" + displayablePath;
                query = String.Empty;
-               return HttpUtility.UrlPathEncode(path);
+               finalPath = path;
+
             } else {
-               StringBuilder queryBuilder = new StringBuilder();
+
+               var queryBuilder = new StringBuilder();
                AppendToQueryString(queryBuilder, pathPart);
 
                query = queryBuilder.ToString();
-               return HttpUtility.UrlPathEncode(path);
+               finalPath = path;
             }
+
          } else {
-            StringBuilder pathBuilder = new StringBuilder(path);
-            StringBuilder queryBuilder = new StringBuilder();
+
+            var pathBuilder = new StringBuilder(path);
+            var queryBuilder = new StringBuilder();
 
             for (int i = 0; i < pathParts.Length; i++) {
+
                object pathPart = pathParts[i];
+
+               if (pathPart == null) {
+                  continue;
+               }
+
                if (IsDisplayableType(pathPart.GetType())) {
+
                   var displayablePath = Convert.ToString(pathPart, CultureInfo.InvariantCulture);
                   pathBuilder.Append('/');
                   pathBuilder.Append(displayablePath);
+
                } else {
                   AppendToQueryString(queryBuilder, pathPart);
                }
             }
 
             query = queryBuilder.ToString();
-            return HttpUtility.UrlPathEncode(pathBuilder.ToString());
+            finalPath = pathBuilder.ToString();
          }
+
+         return HttpUtility.UrlPathEncode(finalPath);
       }
 
       /// <summary>
