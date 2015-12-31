@@ -366,6 +366,10 @@ namespace Xcst.Web.Mvc.Html {
          HtmlInputTemplateHelper(html, context, "Color", "color", value);
       }
 
+      public static void UploadTemplate(HtmlHelper html, DynamicContext context) {
+         HtmlInputTemplateHelper(html, context, "Upload", inputType: "file");
+      }
+
       static void ApplyRfc3339DateFormattingIfNeeded(HtmlHelper html, string format) {
 
          if (html.Html5DateRenderingMode != Html5DateRenderingMode.Rfc3339) {

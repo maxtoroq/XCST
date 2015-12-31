@@ -67,6 +67,7 @@ namespace Xcst.Web.Mvc.Html {
             { "DateTime-local", DefaultEditorTemplates.DateTimeLocalInputTemplate },
             { "Date", DefaultEditorTemplates.DateInputTemplate },
             { "Time", DefaultEditorTemplates.TimeInputTemplate },
+            { "Upload", DefaultEditorTemplates.UploadTemplate },
             { typeof(Color).Name, DefaultEditorTemplates.ColorInputTemplate },
             { typeof(byte).Name, DefaultEditorTemplates.ByteInputTemplate },
             { typeof(sbyte).Name, DefaultEditorTemplates.SByteInputTemplate },
