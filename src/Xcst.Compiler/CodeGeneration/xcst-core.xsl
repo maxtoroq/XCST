@@ -717,7 +717,8 @@
             <value-of select="xcst:type(@as)"/>
          </when>
          <when test="not(@value) and $text">string</when>
-         <otherwise>var</otherwise>
+         <when test="$has-value">var</when>
+         <otherwise>object</otherwise>
       </choose>
       <text> </text>
       <value-of select="xcst:name(@name)"/>
