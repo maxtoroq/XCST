@@ -248,5 +248,16 @@ namespace Xcst.Web.Mvc.Html {
          output.WriteString(html.ViewContext.ViewData.TemplateInfo.FormattedModelValue);
          output.WriteEndElement();
       }
+
+      public static void ImageUrlTemplate(HtmlHelper html, DynamicContext context) {
+
+         XcstWriter output = context.Output;
+
+         if (html.ViewContext.ViewData.Model != null) {
+            output.WriteStartElement("img");
+            output.WriteAttributeString("src", Convert.ToString(html.ViewContext.ViewData.Model, CultureInfo.InvariantCulture));
+            output.WriteEndElement();
+         }
+      }
    }
 }

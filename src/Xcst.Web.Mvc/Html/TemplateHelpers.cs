@@ -46,6 +46,7 @@ namespace Xcst.Web.Mvc.Html {
             { "Html", DefaultDisplayTemplates.HtmlTemplate },
             { "Text", DefaultDisplayTemplates.StringTemplate },
             { "Url", DefaultDisplayTemplates.UrlTemplate },
+            { "ImageUrl", DefaultDisplayTemplates.ImageUrlTemplate },
             { "Collection", DefaultDisplayTemplates.CollectionTemplate },
             { typeof(bool).Name, DefaultDisplayTemplates.BooleanTemplate },
             { typeof(decimal).Name, DefaultDisplayTemplates.DecimalTemplate },
