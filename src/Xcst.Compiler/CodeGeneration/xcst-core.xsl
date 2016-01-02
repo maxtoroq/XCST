@@ -1396,10 +1396,31 @@
       </call-template>
    </template>
 
-   <template match="c:script" mode="src:statement">
+   <template match="c:script[not(@src)]" mode="src:statement">
       <call-template name="src:line-number"/>
       <value-of select="$src:new-line"/>
       <value-of select="text()"/>
+      <call-template name="src:line-default"/>
+      <!-- Make sure following output is not on same line as #line default -->
+      <call-template name="src:new-line-indented"/>
+   </template>
+
+   <template match="c:script[@src]" mode="src:statement">
+
+      <variable name="src" select="resolve-uri(@src, base-uri())"/>
+
+      <if test="not(unparsed-text-available($src))">
+         <sequence select="error((), 'Cannot retrieve script.', src:error-object(.))"/>
+      </if>
+
+      <variable name="script" select="unparsed-text($src)"/>
+
+      <call-template name="src:line-number">
+         <with-param name="line-uri" select="$src" tunnel="yes"/>
+         <with-param name="line-number-offset" select="(src:line-number(.) * -1) + 1" tunnel="yes"/>
+      </call-template>
+      <value-of select="$src:new-line"/>
+      <value-of select="$script"/>
       <call-template name="src:line-default"/>
       <!-- Make sure following output is not on same line as #line default -->
       <call-template name="src:new-line-indented"/>

@@ -967,7 +967,12 @@
    <define name="script">
       <element name="script">
          <ref name="standard-attributes"/>
-         <text/>
+         <choice>
+            <attribute name="src">
+               <ref name="URI"/>
+            </attribute>
+            <text/>
+         </choice>
       </element>
    </define>
 
