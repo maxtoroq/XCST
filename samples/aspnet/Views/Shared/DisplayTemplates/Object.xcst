@@ -51,15 +51,7 @@
                   </c:when>
                   <c:otherwise>
                      <div class='form-group'>
-                        <!--
-                           Setting text explicitly because of ModelMetadata issue when an entry with same 
-                           name exists in ViewData (e.g. SelectList).
-
-                           ValidationMessage has similar issue with unobtrusive validation attributes.
-                        -->
-                        <a:label name='{prop.PropertyName}' text='{prop.DisplayName ?? prop.PropertyName}'
-                           html-class='control-label {labelColumnClass}'/>
-
+                        <a:label name='{prop.PropertyName}' html-class='control-label {labelColumnClass}'/>
                         <div class='{fieldColumnClass}'>
                            <p class='form-control-static'>
                               <a:display name='{prop.PropertyName}' template='{displayTemplate}'/>
