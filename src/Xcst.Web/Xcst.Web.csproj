@@ -42,13 +42,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Xcst\XmlNamespaces.cs">
+      <Link>XmlNamespaces.cs</Link>
+    </Compile>
     <Compile Include="Compilation\BaseBuildProvider.cs" />
     <Compile Include="Compilation\PageBuildProvider.cs" />
     <Compile Include="IFileDependent.cs" />
     <Compile Include="PreApplicationStartCode.cs" />
     <Compile Include="PropertyHelper.cs" />
     <Compile Include="UrlDataList.cs" />
-    <Compile Include="UrlUtil.cs" />
+    <Compile Include="Runtime\UrlUtil.cs" />
     <Compile Include="XcstPageHttpModule.cs" />
     <Compile Include="WebPageRoute.cs" />
     <Compile Include="XcstPage.cs" />

@@ -1710,9 +1710,7 @@
       </choose>
    </template>
 
-   <template name="src:line-number" use-when="not(function-available('src:line-number') and function-available('src:local-path'))"/>
-
-   <template name="src:line-number" use-when="function-available('src:line-number') and function-available('src:local-path')">
+   <template name="src:line-number">
       <param name="line-number-offset" select="0" as="xs:integer" tunnel="yes"/>
       <param name="line-uri" as="xs:anyURI?" tunnel="yes"/>
 
@@ -1725,9 +1723,7 @@
       </if>
    </template>
 
-   <template name="src:line-default" use-when="not(function-available('src:line-number') and function-available('src:local-path'))"/>
-
-   <template name="src:line-default" use-when="function-available('src:line-number') and function-available('src:local-path')">
+   <template name="src:line-default">
       <if test="$src:use-line-directive">
          <call-template name="src:new-line-indented"/>
          <text>#line default</text>
@@ -1902,8 +1898,7 @@
    <function name="src:error-object" as="item()*">
       <param name="node" as="node()"/>
 
-      <sequence select="document-uri(root($node))"/>
-      <sequence select="src:line-number($node)" use-when="function-available('src:line-number')"/>
+      <sequence select="document-uri(root($node)), src:line-number($node)"/>
    </function>
 
 </stylesheet>

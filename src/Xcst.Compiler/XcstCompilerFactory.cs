@@ -38,6 +38,7 @@ namespace Xcst.Compiler {
          this.processor.RegisterExtensionFunction(new LineNumberFunction());
          this.processor.RegisterExtensionFunction(new LocalPathFunction());
          this.processor.RegisterExtensionFunction(new EscapeValueTemplateFunction());
+         this.processor.RegisterExtensionFunction(new MakeRelativeUriFunction());
 
          this.executable = new Lazy<XsltExecutable>(CreateCompilerExec);
       }

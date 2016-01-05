@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
@@ -62,10 +63,6 @@ namespace Xcst.Compiler {
          }
 
          return (IXdmEnumerator)value.GetEnumerator();
-      }
-
-      public static XdmValue ToXdmValue(this IEnumerable<XdmItem> value) {
-         return new XdmValue(value);
       }
 
       public static XdmValue ToXdmValue(this string value) {
@@ -124,11 +121,15 @@ namespace Xcst.Compiler {
          return (value != null) ? (XdmValue)ToXdmItem(value) : XdmEmptySequence.INSTANCE;
       }
 
-      public static XdmValue ToXdmValue(this QName value) {
+      public static XdmValue ToXdmValue(this XmlQualifiedName value) {
          return (value != null) ? (XdmValue)ToXdmItem(value) : XdmEmptySequence.INSTANCE;
       }
 
-      public static XdmValue ToXdmValue(this XmlQualifiedName value) {
+      public static XdmValue ToXdmValue(this QualifiedName value) {
+         return (value != null) ? (XdmValue)ToXdmItem(value) : XdmEmptySequence.INSTANCE;
+      }
+
+      public static XdmValue ToXdmValue(this QName value) {
          return (value != null) ? (XdmValue)ToXdmItem(value) : XdmEmptySequence.INSTANCE;
       }
 
@@ -139,6 +140,55 @@ namespace Xcst.Compiler {
          }
 
          return new XdmValue(value.Select(s => ToXdmValue(s)));
+      }
+
+      public static XdmValue ToXdmValue(this IEnumerable<XdmItem> value) {
+         return new XdmValue(value);
+      }
+
+      public static XdmValue ToXdmValue(this IEnumerable value) {
+
+         if (value == null) {
+            return XdmEmptySequence.INSTANCE;
+         }
+
+         XdmValue result = XdmEmptySequence.INSTANCE;
+
+         foreach (object item in value) {
+            result = result.Append(ToXdmValue(item));
+         }
+
+         return result;
+      }
+
+      public static XdmValue ToXdmValue(this object value) {
+
+         if (value == null) {
+            return XdmEmptySequence.INSTANCE;
+         }
+
+         // Must check for string before checking for IEnumerable
+         var str = value as string;
+
+         if (str != null) {
+            return ToXdmAtomicValue(str);
+         }
+
+         var xdmVal = value as XdmValue;
+
+         if (xdmVal != null) {
+            return xdmVal;
+         }
+
+         Type type = value.GetType();
+
+         if (type.IsArray
+            || typeof(IEnumerable).IsAssignableFrom(type)) {
+
+            return ToXdmValue((IEnumerable)value);
+         }
+
+         return ToXdmItem(value);
       }
 
       public static XdmItem ToXdmItem(this string value) {
@@ -197,11 +247,22 @@ namespace Xcst.Compiler {
          return ToXdmAtomicValue(value);
       }
 
+      public static XdmItem ToXdmItem(this XmlQualifiedName value) {
+         return ToXdmAtomicValue(value);
+      }
+
+      public static XdmItem ToXdmItem(this QualifiedName value) {
+         return ToXdmAtomicValue(value);
+      }
+
       public static XdmItem ToXdmItem(this QName value) {
          return ToXdmAtomicValue(value);
       }
 
-      public static XdmItem ToXdmItem(this XmlQualifiedName value) {
+      public static XdmItem ToXdmItem(this object value) {
+
+         if (value == null) throw new ArgumentNullException(nameof(value));
+
          return ToXdmAtomicValue(value);
       }
 
@@ -261,12 +322,102 @@ namespace Xcst.Compiler {
          return new XdmAtomicValue(value);
       }
 
+      public static XdmAtomicValue ToXdmAtomicValue(this XmlQualifiedName value) {
+         return ToXdmAtomicValue(new QName(value));
+      }
+
+      public static XdmAtomicValue ToXdmAtomicValue(this QualifiedName value) {
+
+         if (value == null) throw new ArgumentNullException(nameof(value));
+
+         return ToXdmAtomicValue(ToQName(value));
+      }
+
       public static XdmAtomicValue ToXdmAtomicValue(this QName value) {
          return new XdmAtomicValue(value);
       }
 
-      public static XdmAtomicValue ToXdmAtomicValue(this XmlQualifiedName value) {
-         return ToXdmAtomicValue(new QName(value));
+      public static XdmAtomicValue ToXdmAtomicValue(this object value) {
+
+         if (value == null) throw new ArgumentNullException(nameof(value));
+
+         Type type = value.GetType();
+
+         return ToXdmAtomicValue(value, type, Type.GetTypeCode(type));
+      }
+
+      static XdmAtomicValue ToXdmAtomicValue(this object value, Type type, TypeCode typeCode) {
+
+         switch (typeCode) {
+            case TypeCode.Boolean:
+               return ToXdmAtomicValue((Boolean)value);
+
+            case TypeCode.Int16:
+               return ToXdmAtomicValue((Int16)value);
+
+            case TypeCode.Int32:
+               return ToXdmAtomicValue((Int32)value);
+
+            case TypeCode.Int64:
+               return ToXdmAtomicValue((Int64)value);
+
+            case TypeCode.Byte:
+               return ToXdmAtomicValue((Byte)value);
+
+            case TypeCode.SByte:
+               return ToXdmAtomicValue((SByte)value);
+
+            case TypeCode.UInt16:
+               return ToXdmAtomicValue((UInt16)value);
+
+            case TypeCode.UInt32:
+               return ToXdmAtomicValue((UInt32)value);
+
+            case TypeCode.UInt64:
+               return ToXdmAtomicValue((UInt64)value);
+
+            case TypeCode.Char:
+            case TypeCode.String:
+               return ToXdmAtomicValue(value.ToString());
+
+            case TypeCode.Decimal:
+               return ToXdmAtomicValue((Decimal)value);
+
+            case TypeCode.Double:
+               return ToXdmAtomicValue((Double)value);
+
+            case TypeCode.DBNull:
+            case TypeCode.Empty:
+               throw new ArgumentException($"{nameof(value)} cannot be null or empty.", nameof(value));
+
+            case TypeCode.Single:
+               return ToXdmAtomicValue((Single)value);
+
+            default:
+               break;
+         }
+
+         if (typeof(Uri).IsAssignableFrom(type)) {
+            return ToXdmAtomicValue((Uri)value);
+         }
+
+         if (typeof(XmlQualifiedName).IsAssignableFrom(type)) {
+            return ToXdmAtomicValue((XmlQualifiedName)value);
+         }
+
+         if (typeof(QualifiedName).IsAssignableFrom(type)) {
+            return ToXdmAtomicValue((QualifiedName)value);
+         }
+
+         if (typeof(QName).IsAssignableFrom(type)) {
+            return ToXdmAtomicValue((QName)value);
+         }
+
+         if (typeof(XdmAtomicValue).IsAssignableFrom(type)) {
+            return (XdmAtomicValue)value;
+         }
+
+         throw new ArgumentException($"{nameof(value)} of type {type.FullName} is not supported.", nameof(value));
       }
 
       public static XdmValue FirstElementOrSelf(this XdmValue value) {
@@ -302,8 +453,12 @@ namespace Xcst.Compiler {
          return value.Implementation.getLineNumber();
       }
 
-      public static QualifiedName ToQualifiedName(this QName qname) {
-         return new QualifiedName(qname.LocalName, qname.Uri);
+      public static QualifiedName ToQualifiedName(this QName value) {
+         return new QualifiedName(value.LocalName, value.Uri);
+      }
+
+      public static QName ToQName(this QualifiedName value) {
+         return new QName(value.Namespace, value.Name);
       }
    }
 }

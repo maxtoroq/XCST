@@ -34,6 +34,10 @@ namespace Xcst.Compiler.CodeGeneration {
 
          return uri.AbsoluteUri;
       }
+
+      public static Uri MakeRelativeUri(Uri current, Uri compare) {
+         return current.MakeRelativeUri(compare);
+      }
    }
 
    static class ValueTemplateEscaper {

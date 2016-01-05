@@ -22,6 +22,8 @@
    xmlns:src="http://maxtoroq.github.io/XCST/compiled"
    xmlns:xcst="http://maxtoroq.github.io/XCST/syntax">
 
+   <param name="a:application-uri" as="xs:anyURI"/>
+
    <!--
       ## Repetition
    -->
@@ -1095,6 +1097,66 @@
          <c:void value="this.Response.StatusDescription = {src:expand-attribute(@description)}"/>
       </if>
    </template>
+
+   <!--
+      ## Infrastructure
+   -->
+
+   <template match="c:module" mode="src:import-namespace-extra">
+      <next-match/>
+      <call-template name="src:new-line-indented"/>
+      <text>using static </text>
+      <value-of select="$src:class, a:functions-type-name(.)" separator="."/>
+      <value-of select="$src:statement-delimiter"/>
+   </template>
+
+   <template match="c:module" mode="src:infrastructure-extra">
+      <param name="indent" tunnel="yes"/>
+
+      <next-match/>
+      <variable name="module-uri" select="document-uri(root(.))"/>
+      <variable name="functions-type" select="a:functions-type-name(.)"/>
+      <value-of select="$src:new-line"/>
+      <call-template name="src:new-line-indented"/>
+      <text>internal static class </text>
+      <value-of select="$functions-type"/>
+      <call-template name="src:open-brace"/>
+      <value-of select="$src:new-line"/>
+      <call-template name="src:new-line-indented">
+         <with-param name="increase" select="1"/>
+      </call-template>
+      <text>static readonly string BasePath = </text>
+      <value-of select="src:global-identifier('System.Web.VirtualPathUtility')"/>
+      <text>.ToAbsolute(</text>
+      <value-of select="src:verbatim-string(concat('~/', src:make-relative-uri($a:application-uri, $module-uri)))"/>
+      <text>)</text>
+      <value-of select="$src:statement-delimiter"/>
+      <value-of select="$src:new-line"/>
+      <call-template name="src:new-line-indented">
+         <with-param name="increase" select="1"/>
+      </call-template>
+      <text>public static string Href(string path, params object[] pathParts)</text>
+      <call-template name="src:open-brace"/>
+      <call-template name="src:new-line-indented">
+         <with-param name="increase" select="2"/>
+      </call-template>
+      <text>return </text>
+      <value-of select="src:global-identifier('Xcst.Web.Runtime'), 'UrlUtil'" separator="."/>
+      <text>.GenerateClientUrl(</text>
+      <value-of select="$functions-type, 'BasePath'" separator="."/>
+      <text>, path, pathParts)</text>
+      <value-of select="$src:statement-delimiter"/>
+      <call-template name="src:close-brace">
+         <with-param name="indent" select="$indent + 1" tunnel="yes"/>
+      </call-template>
+      <call-template name="src:close-brace"/>
+   </template>
+
+   <function name="a:functions-type-name">
+      <param name="module" as="element(c:module)"/>
+
+      <sequence select="concat('__xcst_functions_', generate-id($module))"/>
+   </function>
 
    <!--
       ## Helpers

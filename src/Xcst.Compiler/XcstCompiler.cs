@@ -26,6 +26,7 @@ namespace Xcst.Compiler {
 
       readonly Lazy<XsltExecutable> compilerExec;
       readonly Processor processor;
+      readonly IDictionary<QualifiedName, object> parameters = new Dictionary<QualifiedName, object>();
 
       public string TargetNamespace { get; set; }
 
@@ -90,6 +91,14 @@ namespace Xcst.Compiler {
          }
 
          return sb.ToString();
+      }
+
+      public void SetParameter(QualifiedName name, object value) {
+
+         if (name == null) throw new ArgumentNullException(nameof(name));
+         if (String.IsNullOrEmpty(name.Namespace)) throw new ArgumentException($"{nameof(name)} must be a qualified name.", nameof(name));
+
+         this.parameters.Add(name, value);
       }
 
       public CompileResult Compile(Stream module, Uri baseUri = null) {
@@ -200,6 +209,10 @@ namespace Xcst.Compiler {
          compiler.InitialMode = CompilerQName("main");
          compiler.InitialContextNode = moduleDoc;
 
+         foreach (var pair in this.parameters) {
+            compiler.SetParameter(pair.Key.ToQName(), pair.Value.ToXdmValue());
+         }
+
          compiler.SetParameter(CompilerQName("namespace"), this.TargetNamespace.ToXdmItem());
          compiler.SetParameter(CompilerQName("class"), this.TargetClass.ToXdmItem());
          compiler.SetParameter(CompilerQName("base-types"), this.TargetBaseTypes.ToXdmValue());
@@ -229,7 +242,7 @@ namespace Xcst.Compiler {
       }
 
       internal static QName CompilerQName(string local) {
-         return new QName(XmlNamespaces.Xcst + "/compiled", local);
+         return new QName(XmlNamespaces.XcstCompiled, local);
       }
    }
 

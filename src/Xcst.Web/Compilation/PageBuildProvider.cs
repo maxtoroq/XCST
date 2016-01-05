@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Web.Compilation;
+using System.Web.Hosting;
 using Xcst.Compiler;
 
 namespace Xcst.Web.Compilation {
@@ -59,6 +60,11 @@ namespace Xcst.Web.Compilation {
          compiler.TargetClass = this.GeneratedTypeName;
          compiler.SetTargetBaseTypes(typeof(TPage));
          compiler.UseLineDirective = true;
+
+         compiler.SetParameter(
+            new QualifiedName("application-uri", XmlNamespaces.XcstApplication),
+            new Uri(HostingEnvironment.ApplicationPhysicalPath, UriKind.Absolute)
+         );
       }
 
       protected override IEnumerable<CodeCompileUnit> BuildCompileUnits() {

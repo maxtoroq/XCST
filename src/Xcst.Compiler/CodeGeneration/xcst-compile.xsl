@@ -188,11 +188,16 @@
       <apply-templates select="c:use-functions" mode="src:import-namespace">
          <with-param name="indent" select="$indent + 1" tunnel="yes"/>
       </apply-templates>
+      <apply-templates select="." mode="src:import-namespace-extra">
+         <with-param name="indent" select="$indent + 1" tunnel="yes"/>
+      </apply-templates>
       <apply-templates select="." mode="src:class">
          <with-param name="indent" select="$indent + 1" tunnel="yes"/>
       </apply-templates>
       <call-template name="src:close-brace"/>
    </template>
+
+   <template match="c:module/node()" mode="src:import-namespace-extra"/>
 
    <template match="c:use-functions" mode="src:import-namespace">
       <call-template name="src:line-number"/>
@@ -269,6 +274,9 @@
             <with-param name="indent" select="$indent + 1" tunnel="yes"/>
          </apply-templates>
       </if>
+      <apply-templates select="." mode="src:infrastructure-extra">
+         <with-param name="indent" select="$indent + 1" tunnel="yes"/>
+      </apply-templates>
       <value-of select="$src:new-line"/>
       <call-template name="src:new-line-indented">
          <with-param name="increase" select="1"/>
@@ -276,6 +284,8 @@
       <text>#endregion </text>
       <call-template name="src:close-brace"/>
    </template>
+
+   <template match="c:module/node()" mode="src:infrastructure-extra"/>
 
    <template match="c:param | c:variable" mode="src:member">
 

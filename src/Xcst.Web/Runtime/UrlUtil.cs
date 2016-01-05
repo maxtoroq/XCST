@@ -23,14 +23,19 @@ using System.Text;
 using System.Web;
 using System.Web.Routing;
 
-namespace Xcst.Web {
+// Code generation uses static method for Href function,
+// therefore HttpContextBase cannot be provided dynamically
+using HttpContextBase = System.Web.HttpContext;
 
-   static class UrlUtil {
+namespace Xcst.Web.Runtime {
+
+   /// <exclude/>
+   public static class UrlUtil {
 
       static UrlRewriterHelper _urlRewriterHelper = new UrlRewriterHelper();
 
       // this method can accept an app-relative path or an absolute path for contentPath
-      public static string GenerateClientUrl(HttpContextBase httpContext, string contentPath) {
+      internal static string GenerateClientUrl(HttpContextBase httpContext, string contentPath) {
 
          if (String.IsNullOrEmpty(contentPath)) {
             return contentPath;
@@ -50,7 +55,11 @@ namespace Xcst.Web {
          }
       }
 
-      public static string GenerateClientUrl(HttpContextBase httpContext, string basePath, string path, params object[] pathParts) {
+      public static string GenerateClientUrl(string basePath, string path, params object[] pathParts) {
+         return GenerateClientUrl(HttpContext.Current, basePath, path, pathParts);
+      }
+
+      internal static string GenerateClientUrl(HttpContextBase httpContext, string basePath, string path, params object[] pathParts) {
 
          if (String.IsNullOrEmpty(path)) {
             return path;
@@ -101,7 +110,7 @@ namespace Xcst.Web {
          return absoluteUrlToDestination;
       }
 
-      public static string MakeAbsolute(string basePath, string relativePath) {
+      internal static string MakeAbsolute(string basePath, string relativePath) {
 
          // The Combine() method can't handle query strings on the base path, so we trim it off.
          string query;
@@ -109,7 +118,7 @@ namespace Xcst.Web {
          return VirtualPathUtility.Combine(basePath, relativePath);
       }
 
-      public static string MakeRelative(string fromPath, string toPath) {
+      internal static string MakeRelative(string fromPath, string toPath) {
 
          string relativeUrl = VirtualPathUtility.MakeRelative(fromPath, toPath);
          if (String.IsNullOrEmpty(relativeUrl) || relativeUrl[0] == '?') {
@@ -133,7 +142,7 @@ namespace Xcst.Web {
          }
       }
 
-      public static string BuildUrl(string path, out string query, params object[] pathParts) {
+      internal static string BuildUrl(string path, out string query, params object[] pathParts) {
 
          // Performance senstive 
          // 
@@ -279,7 +288,7 @@ namespace Xcst.Web {
          if (!_urlRewriterIsTurnedOnCalculated) {
             lock (_lockObject) {
                if (!_urlRewriterIsTurnedOnCalculated) {
-                  HttpWorkerRequest httpWorkerRequest = (HttpWorkerRequest)httpContext.GetService(typeof(HttpWorkerRequest));
+                  HttpWorkerRequest httpWorkerRequest = GetService<HttpWorkerRequest>(httpContext);
                   bool urlRewriterIsEnabled = (httpWorkerRequest != null && httpWorkerRequest.GetServerVariable(UrlRewriterEnabledServerVar) != null);
                   _urlRewriterIsTurnedOnValue = urlRewriterIsEnabled;
                   _urlRewriterIsTurnedOnCalculated = true;
@@ -294,7 +303,7 @@ namespace Xcst.Web {
          if (httpContext.Items.Contains(UrlWasRewrittenServerVar)) {
             return Object.Equals(httpContext.Items[UrlWasRewrittenServerVar], UrlWasRequestRewrittenTrueValue);
          } else {
-            HttpWorkerRequest httpWorkerRequest = (HttpWorkerRequest)httpContext.GetService(typeof(HttpWorkerRequest));
+            HttpWorkerRequest httpWorkerRequest = GetService<HttpWorkerRequest>(httpContext);
             bool requestWasRewritten = (httpWorkerRequest != null && httpWorkerRequest.GetServerVariable(UrlWasRewrittenServerVar) != null);
 
             if (requestWasRewritten) {
@@ -305,6 +314,10 @@ namespace Xcst.Web {
 
             return requestWasRewritten;
          }
+      }
+
+      static TService GetService<TService>(IServiceProvider httpContext) {
+         return (TService)httpContext.GetService(typeof(TService));
       }
    }
 }

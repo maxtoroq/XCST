@@ -108,10 +108,6 @@ namespace Xcst.Web {
          }
       }
 
-      public virtual string Href(string path, params object[] pathParts) {
-         return UrlUtil.GenerateClientUrl(this.Context, this.VirtualPath, path, pathParts);
-      }
-
       public virtual bool TryAuthorize(string[] users = null, string[] roles = null) {
 
          if (IsAuthorized(this.User, users, roles)) {

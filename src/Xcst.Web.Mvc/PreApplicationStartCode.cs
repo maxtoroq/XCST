@@ -38,7 +38,7 @@ namespace Xcst.Web.Mvc {
             config.RegisterHandlerFactory(XcstViewPageHttpHandler.Create);
 
             config.CompilerFactory.RegisterExtension(
-               new Uri(XmlNamespaces.Xcst + "/application"),
+               new Uri(XmlNamespaces.XcstApplication),
                () => typeof(PreApplicationStartCode).Assembly.GetManifestResourceStream($"{typeof(ViewPageBuildProvider<>).Namespace}.xcst-app.xsl")
             );
 

@@ -120,4 +120,40 @@ namespace Xcst.Compiler.CodeGeneration {
          }
       }
    }
+
+   class MakeRelativeUriFunction : ExtensionFunctionDefinition {
+
+      public override QName FunctionName { get; } = CompilerQName("make-relative-uri");
+
+      public override XdmSequenceType[] ArgumentTypes { get; } = {
+         new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_ANYURI), ' '),
+         new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_ANYURI), ' ')
+      };
+
+      public override int MinimumNumberOfArguments => 2;
+
+      public override int MaximumNumberOfArguments => MinimumNumberOfArguments;
+
+      public override ExtensionFunctionCall MakeFunctionCall() {
+         return new FunctionCall();
+      }
+
+      public override XdmSequenceType ResultType(XdmSequenceType[] ArgumentTypes) {
+         return new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_ANYURI), ' ');
+      }
+
+      class FunctionCall : ExtensionFunctionCall {
+
+         public override IXdmEnumerator Call(IXdmEnumerator[] arguments, DynamicContext context) {
+
+            Uri[] uris = arguments.SelectMany(a => a.AsAtomicValues())
+               .Select(a => (Uri)a.Value)
+               .ToArray();
+
+            return (IXdmEnumerator)new XdmAtomicValue(
+               Helpers.MakeRelativeUri(uris[0], uris[1])
+            ).GetEnumerator();
+         }
+      }
+   }
 }
