@@ -25,6 +25,7 @@ namespace Xcst.Web.Mvc {
       UrlHelper _Url;
       HtmlHelper<object> _Html;
       TempDataDictionary _TempData;
+      ModelHelper _ModelHelper;
 
       public virtual ViewContext ViewContext {
          get { return _ViewContext; }
@@ -71,7 +72,10 @@ namespace Xcst.Web.Mvc {
             }
             return _Html;
          }
-         set { _Html = value; }
+         set {
+            _Html = value;
+            ModelHelper = null;
+         }
       }
 
       public ModelStateDictionary ModelState => ViewData.ModelState;
@@ -82,6 +86,17 @@ namespace Xcst.Web.Mvc {
                ?? (_TempData = ViewContext?.TempData);
          }
          set { _TempData = value; }
+      }
+
+      public ModelHelper ModelHelper {
+         get {
+            if (_ModelHelper == null
+               && Html != null) {
+               _ModelHelper = new ModelHelper(Html);
+            }
+            return _ModelHelper;
+         }
+         set { _ModelHelper = value; }
       }
 
       internal virtual void SetViewData(ViewDataDictionary viewData) {

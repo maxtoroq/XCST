@@ -169,13 +169,13 @@ namespace Xcst.Web.Mvc.Html {
       }
 
       [SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase", Justification = "Normalization to lowercase is a common requirement for JavaScript and HTML values")]
-      static void ValidationMessageHelper(this HtmlHelper htmlHelper,
-                                          DynamicContext context,
-                                          ModelMetadata modelMetadata,
-                                          string expression,
-                                          string validationMessage,
-                                          IDictionary<string, object> htmlAttributes,
-                                          string tag) {
+      internal static void ValidationMessageHelper(this HtmlHelper htmlHelper,
+                                                   DynamicContext context,
+                                                   ModelMetadata modelMetadata,
+                                                   string expression,
+                                                   string validationMessage,
+                                                   IDictionary<string, object> htmlAttributes,
+                                                   string tag) {
 
          string modelName = htmlHelper.ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldName(expression);
          FormContext formContext = htmlHelper.ViewContext.GetFormContextForClientValidation();

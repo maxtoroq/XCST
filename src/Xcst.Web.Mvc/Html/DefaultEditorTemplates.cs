@@ -255,7 +255,7 @@ namespace Xcst.Web.Mvc.Html {
 
             if (!propertyMetadata.HideSurroundingHtml) {
                output.WriteString(" ");
-               ValidationExtensions.ValidationMessage(html, context, propertyMetadata.PropertyName);
+               ValidationExtensions.ValidationMessageHelper(html, context, propertyMetadata, propertyMetadata.PropertyName, null, null, null);
                output.WriteEndElement(); // </div>
             }
          }

@@ -21,6 +21,7 @@ namespace Xcst.Web.Mvc {
 
       ViewDataDictionary<TModel> _ViewData;
       HtmlHelper<TModel> _Html;
+      ModelHelper<TModel> _ModelHelper;
 
       public new ViewDataDictionary<TModel> ViewData {
          get {
@@ -42,7 +43,24 @@ namespace Xcst.Web.Mvc {
             }
             return _Html;
          }
-         set { _Html = value; }
+         set {
+            _Html = value;
+            ModelHelper = null;
+         }
+      }
+
+      public new ModelHelper<TModel> ModelHelper {
+         get {
+            if (_ModelHelper == null
+               && Html != null) {
+               base.ModelHelper = _ModelHelper = new ModelHelper<TModel>(Html);
+            }
+            return _ModelHelper;
+         }
+         set {
+            _ModelHelper = value;
+            base.ModelHelper = value;
+         }
       }
 
       internal override void SetViewData(ViewDataDictionary viewData) {

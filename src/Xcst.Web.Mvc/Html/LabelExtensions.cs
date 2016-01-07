@@ -61,7 +61,7 @@ namespace Xcst.Web.Mvc.Html {
          LabelHelper(html, context, html.ViewData.ModelMetadata, String.Empty, labelText, htmlAttributes);
       }
 
-      public static void LabelHelper(HtmlHelper html,
+      internal static void LabelHelper(HtmlHelper html,
                                      DynamicContext context,
                                      ModelMetadata metadata,
                                      string expression,
