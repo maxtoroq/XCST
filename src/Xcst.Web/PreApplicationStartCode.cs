@@ -34,7 +34,7 @@ namespace Xcst.Web {
 
             XcstWebConfiguration.Instance.RegisterHandlerFactory(XcstPageHttpHandler.Create);
 
-            BuildProvider.RegisterBuildProvider(".xcst", typeof(PageBuildProvider<XcstPage>));
+            BuildProvider.RegisterBuildProvider("." + XcstWebConfiguration.FileExtension, typeof(PageBuildProvider<XcstPage>));
             DynamicModuleUtility.RegisterModule(typeof(XcstPageHttpModule));
          }
       }

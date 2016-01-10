@@ -42,7 +42,7 @@ namespace Xcst.Web.Mvc {
                () => typeof(PreApplicationStartCode).Assembly.GetManifestResourceStream($"{typeof(ViewPageBuildProvider<>).Namespace}.xcst-app.xsl")
             );
 
-            BuildProvider.RegisterBuildProvider(".xcst", typeof(ViewPageBuildProvider<XcstViewPage>));
+            BuildProvider.RegisterBuildProvider("." + XcstWebConfiguration.FileExtension, typeof(ViewPageBuildProvider<XcstViewPage>));
             ViewEngines.Engines.Add(new XcstViewEngine());
          }
       }

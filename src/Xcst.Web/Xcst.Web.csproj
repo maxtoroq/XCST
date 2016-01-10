@@ -36,6 +36,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Web" />
@@ -52,6 +53,7 @@
     <Compile Include="PropertyHelper.cs" />
     <Compile Include="UrlDataList.cs" />
     <Compile Include="Runtime\UrlUtil.cs" />
+    <Compile Include="WebPagesDeployment.cs" />
     <Compile Include="XcstPageHttpModule.cs" />
     <Compile Include="WebPageRoute.cs" />
     <Compile Include="XcstPage.cs" />

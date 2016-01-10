@@ -21,6 +21,8 @@ namespace Xcst.Web {
 
    public sealed class XcstWebConfiguration {
 
+      public const string FileExtension = "xcst";
+
       public static XcstWebConfiguration Instance { get; } = new XcstWebConfiguration();
 
       public XcstCompilerFactory CompilerFactory { get; } = new XcstCompilerFactory {

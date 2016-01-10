@@ -47,7 +47,7 @@ namespace Xcst.Web {
 
          HttpContextBase context = new HttpContextWrapper(((HttpApplication)sender).Context);
 
-         new WebPageRoute().DoPostResolveRequestCache(context);
+         WebPageRoute.DoPostResolveRequestCache(context);
       }
    }
 }

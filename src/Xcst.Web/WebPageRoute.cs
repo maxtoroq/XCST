@@ -24,19 +24,17 @@ using System.Web.Hosting;
 
 namespace Xcst.Web {
 
-   sealed class WebPageRoute {
+   static class WebPageRoute {
 
-      static readonly Lazy<bool> _isRootExplicitlyDisabled = new Lazy<bool>(() => false /*WebPagesDeployment.IsExplicitlyDisabled("~/")*/);
-      bool? _isExplicitlyDisabled;
+      static readonly Lazy<bool> _isRootExplicitlyDisabled = new Lazy<bool>(() => WebPagesDeployment.IsExplicitlyDisabled("~/"));
 
-      public bool IsExplicitlyDisabled {
-         get { return _isExplicitlyDisabled ?? _isRootExplicitlyDisabled.Value; }
-         set { _isExplicitlyDisabled = value; }
+      public static bool IsExplicitlyDisabled {
+         get { return _isRootExplicitlyDisabled.Value; }
       }
 
-      public void DoPostResolveRequestCache(HttpContextBase context) {
+      public static void DoPostResolveRequestCache(HttpContextBase context) {
 
-         if (this.IsExplicitlyDisabled) {
+         if (IsExplicitlyDisabled) {
             // If the root config is explicitly disabled, do not process the request.
             return;
          }
@@ -45,7 +43,7 @@ namespace Xcst.Web {
 
          // Parse incoming URL (we trim off the first two chars since they're always "~/")
          string requestPath = request.AppRelativeCurrentExecutionFilePath.Substring(2) + request.PathInfo;
-         string[] registeredExtensions = { "xcst" };
+         string[] registeredExtensions = { XcstWebConfiguration.FileExtension };
 
          // Check if this request matches a file in the app
          WebPageMatch webpageRouteMatch = MatchRequest(requestPath, registeredExtensions, HostingEnvironment.VirtualPathProvider.FileExists /*VirtualPathFactoryManager.InstancePathExists*/, context/*, DisplayModeProvider.Instance*/);
@@ -58,16 +56,16 @@ namespace Xcst.Web {
             string virtualPath = "~/" + webpageRouteMatch.MatchedPath;
 
             // Verify that this path is enabled before remapping
-            //if (!WebPagesDeployment.IsExplicitlyDisabled(virtualPath)) {
+            if (!WebPagesDeployment.IsExplicitlyDisabled(virtualPath)) {
 
-            IHttpHandler handler = XcstPageHttpHandler.CreateFromVirtualPath(virtualPath);
+               IHttpHandler handler = XcstPageHttpHandler.CreateFromVirtualPath(virtualPath);
 
-            if (handler != null) {
-               //SessionStateUtil.SetUpSessionState(context, handler);
-               // Remap to our handler
-               context.RemapHandler(handler);
+               if (handler != null) {
+                  //SessionStateUtil.SetUpSessionState(context, handler);
+                  // Remap to our handler
+                  context.RemapHandler(handler);
+               }
             }
-            //}
          } else {
 
             // Bug:904704 If its not a match, but to a supported extension, we want to return a 404 instead of a 403
@@ -252,35 +250,49 @@ namespace Xcst.Web {
          /// This method is a near clone of Path.GetExtension without a call to CheckInvalidPathChars(path);
          /// </summary>
          internal static string GetExtension(string path) {
+
             if (String.IsNullOrEmpty(path)) {
                return path;
             }
+
             int current = path.Length;
+
             while (--current >= 0) {
+
                char ch = path[current];
+
                if (ch == '.') {
+
                   if (current == path.Length - 1) {
                      break;
                   }
+
                   return path.Substring(current);
                }
-               if (ch == Path.DirectorySeparatorChar || ch == Path.AltDirectorySeparatorChar) {
+
+               if (ch == Path.DirectorySeparatorChar
+                  || ch == Path.AltDirectorySeparatorChar) {
+
                   break;
                }
             }
+
             return String.Empty;
          }
 
          internal static bool IsWithinAppRoot(string appDomainAppVirtualPath, string virtualPath) {
+
             if (appDomainAppVirtualPath == null) {
                // If the runtime has not been initialized, just return true.
                return true;
             }
 
             var absPath = virtualPath;
+
             if (!VirtualPathUtility.IsAbsolute(absPath)) {
                absPath = VirtualPathUtility.ToAbsolute(absPath);
             }
+
             // We need to call this overload because it returns null if the path is not within the application root.
             // The overload calls into MakeVirtualPathAppRelative(string virtualPath, string applicationPath, bool nullIfNotInApp), with 
             // nullIfNotInApp set to true.
@@ -292,12 +304,17 @@ namespace Xcst.Web {
          /// </summary>
          /// <returns>True if it is a not app-relative, absolute or relative.</returns>
          internal static bool IsSimpleName(string path) {
-            if (VirtualPathUtility.IsAbsolute(path) || VirtualPathUtility.IsAppRelative(path)) {
+
+            if (VirtualPathUtility.IsAbsolute(path)
+               || VirtualPathUtility.IsAppRelative(path)) {
+
                return false;
             }
+
             if (path.StartsWith(".", StringComparison.OrdinalIgnoreCase)) {
                return false;
             }
+
             return true;
          }
       }
@@ -310,8 +327,8 @@ namespace Xcst.Web {
       public string PathInfo { get; }
 
       public WebPageMatch(string matchedPath, string pathInfo) {
-         MatchedPath = matchedPath;
-         PathInfo = pathInfo;
+         this.MatchedPath = matchedPath;
+         this.PathInfo = pathInfo;
       }
    }
 }

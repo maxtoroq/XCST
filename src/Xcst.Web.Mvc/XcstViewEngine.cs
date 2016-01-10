@@ -21,7 +21,9 @@ namespace Xcst.Web.Mvc {
 
       public XcstViewEngine() {
 
-         this.ViewLocationFormats = new[] { "~/Views/{1}/{0}.xcst", "~/Views/Shared/{0}.xcst" };
+         const string fileExtension = XcstWebConfiguration.FileExtension;
+
+         this.ViewLocationFormats = new[] { "~/Views/{1}/{0}." + fileExtension, "~/Views/Shared/{0}." + fileExtension };
          this.PartialViewLocationFormats = this.ViewLocationFormats;
       }
 
