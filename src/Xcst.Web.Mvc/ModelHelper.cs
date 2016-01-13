@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using Xcst.Web.Mvc.Html;
@@ -68,19 +69,26 @@ namespace Xcst.Web.Mvc {
          return new ModelHelper<TModel>(html);
       }
 
-      public static ModelHelper ForMetadata(ModelHelper currentHelper, ModelMetadata metadata) {
+      public static ModelHelper ForProperty(ModelHelper currentHelper, ModelMetadata metadata) {
 
          if (currentHelper == null) throw new ArgumentNullException(nameof(currentHelper));
          if (metadata == null) throw new ArgumentNullException(nameof(metadata));
 
          HtmlHelper currentHtml = currentHelper.Html;
+         ViewDataDictionary currentViewData = currentHtml.ViewData;
 
          var container = new ViewDataContainer {
-            ViewData = new ViewDataDictionary(currentHtml.ViewData) {
+            ViewData = new ViewDataDictionary(currentViewData) {
                Model = metadata.Model,
-               ModelMetadata = metadata
+               ModelMetadata = metadata,
+               TemplateInfo = new TemplateInfo {
+                  HtmlFieldPrefix = currentViewData.TemplateInfo.GetFullHtmlFieldName(metadata.PropertyName)
+               }
             }
          };
+
+         // setting new TemplateInfo clears VisitedObjects cache, need to restore it
+         currentViewData.TemplateInfo.VisitedObjects(new HashSet<object>(currentViewData.TemplateInfo.VisitedObjects()));
 
          var html = new HtmlHelper(currentHtml.ViewContext, container, currentHtml.RouteCollection);
 

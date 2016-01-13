@@ -705,7 +705,7 @@
       <value-of select="$new-helper"/>
       <text> = </text>
       <value-of select="src:global-identifier('Xcst.Web.Mvc.ModelHelper')"/>
-      <text>.ForMetadata(</text>
+      <text>.ForProperty(</text>
       <call-template name="a:model-helper"/>
       <text>, </text>
       <value-of select="$new-context"/>
