@@ -64,7 +64,7 @@ namespace Xcst.Web.Mvc.Html {
                                   object value = null,
                                   IDictionary<string, object> htmlAttributes = null) {
 
-         ModelMetadata metadata = ModelMetadata.FromStringExpression(name, htmlHelper.ViewContext.ViewData);
+         ModelMetadata metadata = ModelMetadata.FromStringExpression(name, htmlHelper.ViewData);
 
          if (value != null) {
             metadata.Model = value;
@@ -80,7 +80,7 @@ namespace Xcst.Web.Mvc.Html {
                                   int rows, int columns,
                                   IDictionary<string, object> htmlAttributes = null) {
 
-         ModelMetadata metadata = ModelMetadata.FromStringExpression(name, htmlHelper.ViewContext.ViewData);
+         ModelMetadata metadata = ModelMetadata.FromStringExpression(name, htmlHelper.ViewData);
 
          if (value != null) {
             metadata.Model = value;
@@ -130,7 +130,7 @@ namespace Xcst.Web.Mvc.Html {
                                           IDictionary<string, object> htmlAttributes,
                                           string innerHtmlPrefix = null) {
 
-         string fullName = htmlHelper.ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldName(name);
+         string fullName = htmlHelper.ViewData.TemplateInfo.GetFullHtmlFieldName(name);
 
          if (String.IsNullOrEmpty(fullName)) {
             throw new ArgumentNullException(nameof(name));

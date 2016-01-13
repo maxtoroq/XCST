@@ -40,11 +40,11 @@ namespace Xcst.Web.Mvc.Html {
 
          bool? value = null;
 
-         if (html.ViewContext.ViewData.Model != null) {
-            value = Convert.ToBoolean(html.ViewContext.ViewData.Model, CultureInfo.InvariantCulture);
+         if (html.ViewData.Model != null) {
+            value = Convert.ToBoolean(html.ViewData.Model, CultureInfo.InvariantCulture);
          }
 
-         if (html.ViewContext.ViewData.ModelMetadata.IsNullableValueType) {
+         if (html.ViewData.ModelMetadata.IsNullableValueType) {
 
             string className = GetEditorCssClass(new EditorInfo("Boolean", "select"), "list-box tri-state");
             IDictionary<string, object> htmlAttributes = CreateHtmlAttributes(html, className);
@@ -65,7 +65,7 @@ namespace Xcst.Web.Mvc.Html {
 
       internal static void CollectionTemplate(HtmlHelper html, DynamicContext context, TemplateHelpers.TemplateHelperDelegate templateHelper) {
 
-         ViewDataDictionary viewData = html.ViewContext.ViewData;
+         ViewDataDictionary viewData = html.ViewData;
          object model = viewData.ModelMetadata.Model;
 
          if (model == null) {
@@ -116,8 +116,8 @@ namespace Xcst.Web.Mvc.Html {
 
       public static void DecimalTemplate(HtmlHelper html, DynamicContext context) {
 
-         if (html.ViewContext.ViewData.TemplateInfo.FormattedModelValue == html.ViewContext.ViewData.ModelMetadata.Model) {
-            html.ViewContext.ViewData.TemplateInfo.FormattedModelValue = String.Format(CultureInfo.CurrentCulture, "{0:0.00}", html.ViewContext.ViewData.ModelMetadata.Model);
+         if (html.ViewData.TemplateInfo.FormattedModelValue == html.ViewData.ModelMetadata.Model) {
+            html.ViewData.TemplateInfo.FormattedModelValue = String.Format(CultureInfo.CurrentCulture, "{0:0.00}", html.ViewData.ModelMetadata.Model);
          }
 
          HtmlInputTemplateHelper(html, context, "Decimal");
@@ -125,7 +125,7 @@ namespace Xcst.Web.Mvc.Html {
 
       public static void HiddenInputTemplate(HtmlHelper html, DynamicContext context) {
 
-         ViewDataDictionary viewData = html.ViewContext.ViewData;
+         ViewDataDictionary viewData = html.ViewData;
 
          if (!viewData.ModelMetadata.HideSurroundingHtml) {
             DefaultDisplayTemplates.StringTemplate(html, context);
@@ -154,7 +154,7 @@ namespace Xcst.Web.Mvc.Html {
 
       public static void MultilineTextTemplate(HtmlHelper html, DynamicContext context) {
 
-         object value = html.ViewContext.ViewData.TemplateInfo.FormattedModelValue;
+         object value = html.ViewData.TemplateInfo.FormattedModelValue;
          string className = GetEditorCssClass(new EditorInfo("MultilineText", "textarea"), "text-box multi-line");
          IDictionary<string, object> htmlAttributes = CreateHtmlAttributes(html, className);
 
@@ -165,7 +165,7 @@ namespace Xcst.Web.Mvc.Html {
 
       static IDictionary<string, object> CreateHtmlAttributes(HtmlHelper html, string className, string inputType = null) {
 
-         object htmlAttributesObject = html.ViewContext.ViewData[HtmlAttributeKey];
+         object htmlAttributesObject = html.ViewData[HtmlAttributeKey];
 
          if (htmlAttributesObject != null) {
             return MergeHtmlAttributes(htmlAttributesObject, className, inputType);
@@ -208,7 +208,7 @@ namespace Xcst.Web.Mvc.Html {
       internal static void ObjectTemplate(HtmlHelper html, DynamicContext context, TemplateHelpers.TemplateHelperDelegate templateHelper) {
 
          XcstWriter output = context.Output;
-         ViewDataDictionary viewData = html.ViewContext.ViewData;
+         ViewDataDictionary viewData = html.ViewData;
          TemplateInfo templateInfo = viewData.TemplateInfo;
          ModelMetadata modelMetadata = viewData.ModelMetadata;
 
@@ -264,7 +264,7 @@ namespace Xcst.Web.Mvc.Html {
       public static void PasswordTemplate(HtmlHelper html, DynamicContext context) {
 
          object value = (!EditorExtensions.OmitPasswordValue) ?
-            html.ViewContext.ViewData.TemplateInfo.FormattedModelValue
+            html.ViewData.TemplateInfo.FormattedModelValue
             : null;
 
          string className = GetEditorCssClass(new EditorInfo("Password", "input", InputType.Password), "text-box single-line password");
@@ -353,13 +353,13 @@ namespace Xcst.Web.Mvc.Html {
 
          object value = null;
 
-         if (html.ViewContext.ViewData.Model != null) {
+         if (html.ViewData.Model != null) {
 
-            if (html.ViewContext.ViewData.Model is Color) {
-               Color color = (Color)html.ViewContext.ViewData.Model;
+            if (html.ViewData.Model is Color) {
+               Color color = (Color)html.ViewData.Model;
                value = String.Format(CultureInfo.InvariantCulture, "#{0:X2}{1:X2}{2:X2}", color.R, color.G, color.B);
             } else {
-               value = html.ViewContext.ViewData.Model;
+               value = html.ViewData.Model;
             }
          }
 
@@ -376,10 +376,10 @@ namespace Xcst.Web.Mvc.Html {
             return;
          }
 
-         ModelMetadata metadata = html.ViewContext.ViewData.ModelMetadata;
+         ModelMetadata metadata = html.ViewData.ModelMetadata;
          object value = metadata.Model;
 
-         if (html.ViewContext.ViewData.TemplateInfo.FormattedModelValue != value
+         if (html.ViewData.TemplateInfo.FormattedModelValue != value
             && metadata.HasNonDefaultEditFormat()) {
 
             return;
@@ -388,12 +388,12 @@ namespace Xcst.Web.Mvc.Html {
          if (value is DateTime
             || value is DateTimeOffset) {
 
-            html.ViewContext.ViewData.TemplateInfo.FormattedModelValue = String.Format(CultureInfo.InvariantCulture, format, value);
+            html.ViewData.TemplateInfo.FormattedModelValue = String.Format(CultureInfo.InvariantCulture, format, value);
          }
       }
 
       static void HtmlInputTemplateHelper(HtmlHelper html, DynamicContext context, string templateName, string inputType = null) {
-         HtmlInputTemplateHelper(html, context, templateName, inputType, html.ViewContext.ViewData.TemplateInfo.FormattedModelValue);
+         HtmlInputTemplateHelper(html, context, templateName, inputType, html.ViewData.TemplateInfo.FormattedModelValue);
       }
 
       static void HtmlInputTemplateHelper(HtmlHelper html, DynamicContext context, string templateName, string inputType, object value) {
@@ -408,7 +408,7 @@ namespace Xcst.Web.Mvc.Html {
 
       static void AddInputAttributes(HtmlHelper html, IDictionary<string, object> htmlAttributes) {
 
-         ModelMetadata metadata = html.ViewContext.ViewData.ModelMetadata;
+         ModelMetadata metadata = html.ViewData.ModelMetadata;
 
          string placeholder = metadata.Watermark;
 

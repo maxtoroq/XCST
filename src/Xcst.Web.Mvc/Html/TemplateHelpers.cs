@@ -308,11 +308,11 @@ namespace Xcst.Web.Mvc.Html {
             ModelMetadata = metadata,
             TemplateInfo = new TemplateInfo {
                FormattedModelValue = formattedModelValue,
-               HtmlFieldPrefix = html.ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldName(htmlFieldName)
+               HtmlFieldPrefix = html.ViewData.TemplateInfo.GetFullHtmlFieldName(htmlFieldName)
             }
          };
 
-         viewData.TemplateInfo.VisitedObjects(new HashSet<object>(html.ViewContext.ViewData.TemplateInfo.VisitedObjects())); // DDB #224750
+         viewData.TemplateInfo.VisitedObjects(new HashSet<object>(html.ViewData.TemplateInfo.VisitedObjects())); // DDB #224750
 
          if (additionalViewData != null) {
 

@@ -80,7 +80,7 @@ namespace Xcst.Web.Mvc.Html {
          output.WriteStartElement("label");
 
          HtmlAttributesMerger.Create(htmlAttributes)
-            .AddDontReplace("for", TagBuilder.CreateSanitizedId(html.ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldName(htmlFieldName)))
+            .AddDontReplace("for", TagBuilder.CreateSanitizedId(html.ViewData.TemplateInfo.GetFullHtmlFieldName(htmlFieldName)))
             .WriteTo(output);
 
          output.WriteString(resolvedLabelText);

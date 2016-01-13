@@ -405,7 +405,7 @@ namespace Xcst.Web.Mvc.Html {
                               string format,
                               IDictionary<string, object> htmlAttributes) {
 
-         string fullName = htmlHelper.ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldName(name);
+         string fullName = htmlHelper.ViewData.TemplateInfo.GetFullHtmlFieldName(name);
 
          if (String.IsNullOrEmpty(fullName)) {
             throw new ArgumentNullException(nameof(name));

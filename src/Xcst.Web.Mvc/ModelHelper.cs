@@ -161,7 +161,7 @@ namespace Xcst.Web.Mvc {
 
       internal string FieldValueHelper(string name, object value, string format, bool useViewData) {
 
-         string fullName = this.Html.ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldName(name);
+         string fullName = this.Html.ViewData.TemplateInfo.GetFullHtmlFieldName(name);
          string attemptedValue = (string)this.Html.GetModelStateValue(fullName, typeof(string));
          string resolvedValue;
 
@@ -177,7 +177,7 @@ namespace Xcst.Web.Mvc {
 
                // case 2(a): format the value from ModelMetadata for the current model
 
-               ModelMetadata metadata = ModelMetadata.FromStringExpression(String.Empty, this.Html.ViewContext.ViewData);
+               ModelMetadata metadata = ModelMetadata.FromStringExpression(String.Empty, this.Html.ViewData);
                resolvedValue = this.Html.FormatValue(metadata.Model, format);
 
             } else {

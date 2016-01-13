@@ -28,7 +28,7 @@ namespace Xcst.Web.Mvc.Html {
    public static class DisplayTextExtensions {
 
       public static void DisplayText(this HtmlHelper html, DynamicContext context, string name) {
-         DisplayTextHelper(html, context, ModelMetadata.FromStringExpression(name, html.ViewContext.ViewData));
+         DisplayTextHelper(html, context, ModelMetadata.FromStringExpression(name, html.ViewData));
       }
 
       [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "This is an appropriate nesting of generic types")]
@@ -49,7 +49,7 @@ namespace Xcst.Web.Mvc.Html {
       }
 
       public static string DisplayString(this HtmlHelper html, string name) {
-         return DisplayStringHelper(html, ModelMetadata.FromStringExpression(name, html.ViewContext.ViewData));
+         return DisplayStringHelper(html, ModelMetadata.FromStringExpression(name, html.ViewData));
       }
 
       [SuppressMessage("Microsoft.Design", "CA1006:DoNotNestGenericTypesInMemberSignatures", Justification = "This is an appropriate nesting of generic types")]

@@ -87,7 +87,7 @@ namespace Xcst.Web.Mvc.Html {
          if (modelName == null) throw new ArgumentNullException(nameof(modelName));
 
          ValidateHelper(htmlHelper,
-                        ModelMetadata.FromStringExpression(modelName, htmlHelper.ViewContext.ViewData),
+                        ModelMetadata.FromStringExpression(modelName, htmlHelper.ViewData),
                         modelName);
       }
 
@@ -108,7 +108,7 @@ namespace Xcst.Web.Mvc.Html {
             return; // nothing to do
          }
 
-         string modelName = htmlHelper.ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldName(expression);
+         string modelName = htmlHelper.ViewData.TemplateInfo.GetFullHtmlFieldName(expression);
 
          ApplyFieldValidationMetadata(htmlHelper, modelMetadata, modelName);
       }
@@ -135,7 +135,7 @@ namespace Xcst.Web.Mvc.Html {
 
          if (modelName == null) throw new ArgumentNullException(nameof(modelName));
 
-         ModelMetadata metadata = ModelMetadata.FromStringExpression(modelName, htmlHelper.ViewContext.ViewData);
+         ModelMetadata metadata = ModelMetadata.FromStringExpression(modelName, htmlHelper.ViewData);
 
          ValidationMessageHelper(htmlHelper, context, metadata, modelName, validationMessage, htmlAttributes, tag);
       }
@@ -177,7 +177,7 @@ namespace Xcst.Web.Mvc.Html {
                                                    IDictionary<string, object> htmlAttributes,
                                                    string tag) {
 
-         string modelName = htmlHelper.ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldName(expression);
+         string modelName = htmlHelper.ViewData.TemplateInfo.GetFullHtmlFieldName(expression);
          FormContext formContext = htmlHelper.ViewContext.GetFormContextForClientValidation();
 
          if (!htmlHelper.ViewData.ModelState.ContainsKey(modelName)

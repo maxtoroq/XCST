@@ -99,7 +99,7 @@ namespace Xcst.Web.Mvc.Html {
          // in the select list.
          string expressionName = ExpressionHelper.GetExpressionText(expression);
          string expressionFullName =
-             htmlHelper.ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldName(expressionName);
+             htmlHelper.ViewData.TemplateInfo.GetFullHtmlFieldName(expressionName);
 
          Enum currentValue = null;
 
@@ -260,7 +260,7 @@ namespace Xcst.Web.Mvc.Html {
                                  bool allowMultiple,
                                  IDictionary<string, object> htmlAttributes) {
 
-         string fullName = htmlHelper.ViewContext.ViewData.TemplateInfo.GetFullHtmlFieldName(name);
+         string fullName = htmlHelper.ViewData.TemplateInfo.GetFullHtmlFieldName(name);
 
          if (String.IsNullOrEmpty(fullName)) {
             throw new ArgumentNullException(nameof(name));
