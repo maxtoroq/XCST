@@ -1618,8 +1618,10 @@
       <param name="indent" tunnel="yes"/>
 
       <variable name="complex-content" select="boolean($children[self::*])"/>
-      <variable name="use-block" select="not($omit-block) and ($ensure-block or $complex-content)"/>
+      <variable name="mode-expression" select="not(empty($mode)) and $mode eq 'expression'"/>
+      <variable name="use-block" select="not($omit-block) and ($ensure-block or ($complex-content and not($mode-expression)))"/>
       <variable name="new-indent" select="if ($use-block) then $indent + 1 else $indent"/>
+
       <if test="$use-block">
          <call-template name="src:open-brace"/>
          <call-template name="src:line-default">
@@ -1647,8 +1649,7 @@
             </choose>
          </when>
          <when test="$value or $text">
-            <variable name="mode-not-expression" select="empty($mode) or $mode ne 'expression'"/>
-            <if test="$mode-not-expression">
+            <if test="not($mode-expression)">
                <call-template name="src:line-number">
                   <with-param name="indent" select="$new-indent" tunnel="yes"/>
                </call-template>
@@ -1659,7 +1660,7 @@
                <text>.WriteString(</text>
             </if>
             <value-of select="if ($value) then $value else src:expand-text(., $text)"/>
-            <if test="$mode-not-expression">
+            <if test="not($mode-expression)">
                <text>)</text>
                <value-of select="$src:statement-delimiter"/>
                <call-template name="src:line-default">
