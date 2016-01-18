@@ -238,7 +238,7 @@ namespace Xcst.Web.Mvc.Html {
 
       public static void ValidationSummary(this HtmlHelper htmlHelper,
                                            DynamicContext context,
-                                           bool excludePropertyErrors = false,
+                                           bool includePropertyErrors = false,
                                            string message = null,
                                            IDictionary<string, object> htmlAttributes = null,
                                            string headingTag = null) {
@@ -256,7 +256,7 @@ namespace Xcst.Web.Mvc.Html {
 
             // TODO: This isn't really about unobtrusive; can we fix up non-unobtrusive to get rid of this, too?
             if (htmlHelper.ViewContext.UnobtrusiveJavaScriptEnabled
-               && excludePropertyErrors) {
+               && !includePropertyErrors) {
 
                // No client-side updates
                return;
@@ -274,7 +274,7 @@ namespace Xcst.Web.Mvc.Html {
 
             if (htmlHelper.ViewContext.UnobtrusiveJavaScriptEnabled) {
 
-               if (!excludePropertyErrors) {
+               if (includePropertyErrors) {
                   // Only put errors in the validation summary if they're supposed to be included there
                   divAttribs.AddDontReplace("data-valmsg-summary", "true");
                }
@@ -283,7 +283,7 @@ namespace Xcst.Web.Mvc.Html {
                // client val summaries need an ID
                divAttribs.GenerateId("validationSummary");
                formContext.ValidationSummaryId = divAttribs.Attributes["id"].ToString();
-               formContext.ReplaceValidationSummary = !excludePropertyErrors;
+               formContext.ReplaceValidationSummary = includePropertyErrors;
             }
          }
 
@@ -304,7 +304,7 @@ namespace Xcst.Web.Mvc.Html {
 
          bool empty = true;
 
-         IEnumerable<ModelState> modelStates = GetModelStateList(htmlHelper, excludePropertyErrors);
+         IEnumerable<ModelState> modelStates = GetModelStateList(htmlHelper, includePropertyErrors);
 
          foreach (ModelState modelState in modelStates) {
 
@@ -334,9 +334,9 @@ namespace Xcst.Web.Mvc.Html {
       }
 
       // Returns non-null list of model states, which caller will render in order provided.
-      static IEnumerable<ModelState> GetModelStateList(HtmlHelper htmlHelper, bool excludePropertyErrors) {
+      static IEnumerable<ModelState> GetModelStateList(HtmlHelper htmlHelper, bool includePropertyErrors) {
 
-         if (excludePropertyErrors) {
+         if (!includePropertyErrors) {
 
             ModelState ms;
             htmlHelper.ViewData.ModelState.TryGetValue(htmlHelper.ViewData.TemplateInfo.HtmlFieldPrefix, out ms);

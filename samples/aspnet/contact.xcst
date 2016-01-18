@@ -95,7 +95,7 @@
             <div class='col-md-8'>
                <form method='post' class='form-horizontal'>
                   <a:anti-forgery-token/>
-                  <a:validation-summary exclude-member-errors='true'/>
+                  <a:validation-summary/>
                   <a:editor parameters='new { labelColumnClass = "col-md-3", fieldColumnClass = "col-md-9" }'/>
                   <div class='form-group'>
                      <div class='col-md-offset-3 col-md-9'>

@@ -341,7 +341,7 @@
          <element name="validation-summary">
             <zeroOrMore>
                <choice>
-                  <attribute name="exclude-member-errors">
+                  <attribute name="include-member-errors">
                      <ref name="Expression"/>
                   </attribute>
                   <attribute name="message">

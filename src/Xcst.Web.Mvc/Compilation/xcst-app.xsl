@@ -552,9 +552,9 @@
          <call-template name="a:html-helper"/>
          <text>, </text>
          <value-of select="$context-param"/>
-         <if test="@exclude-member-errors">
-            <text>, excludePropertyErrors: </text>
-            <value-of select="@exclude-member-errors"/>
+         <if test="@include-member-errors">
+            <text>, includePropertyErrors: </text>
+            <value-of select="@include-member-errors"/>
          </if>
          <text>, message: </text>
          <value-of select="(@message/src:expand-attribute(.), 'default(string)')[1]"/>
