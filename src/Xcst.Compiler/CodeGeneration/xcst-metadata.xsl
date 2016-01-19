@@ -352,7 +352,7 @@
    -->
 
    <template name="src:range-attribute">
-      <if test="@min and @max and @as">
+      <if test="@min and @max">
          <variable name="setters" as="text()*">
             <call-template name="src:validation-setters">
                <with-param name="name" select="'range'"/>
@@ -363,10 +363,12 @@
          <text>[</text>
          <value-of select="src:global-identifier('System.ComponentModel.DataAnnotations.Range')"/>
          <text>(</text>
-         <value-of select="concat('typeof(', xcst:type(@as), ')')
-            , src:verbatim-string(@min)
-            , src:verbatim-string(@max)
-            , $setters/string()" separator=", "/>
+         <if test="@range-type">
+            <text>typeof(</text>
+            <value-of select="xcst:type(@range-type)"/>
+            <text>), </text>
+         </if>
+         <value-of select="@min, @max, $setters/string()" separator=", "/>
          <text>)]</text>
          <call-template name="src:line-default"/>
       </if>

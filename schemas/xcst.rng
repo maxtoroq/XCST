@@ -459,10 +459,13 @@
                <ref name="String"/>
             </attribute>
             <attribute name="min">
-               <ref name="String"/>
+               <ref name="Expression"/>
             </attribute>
             <attribute name="max">
-               <ref name="String"/>
+               <ref name="Expression"/>
+            </attribute>
+            <attribute name="range-type">
+               <ref name="Type"/>
             </attribute>
             <attribute name="equal-to">
                <ref name="Name"/>
