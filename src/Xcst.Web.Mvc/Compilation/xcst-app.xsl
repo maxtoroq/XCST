@@ -379,10 +379,10 @@
             </when>
             <otherwise>
                <value-of select="(@name/src:expand-attribute(.), src:string(''))[1]"/>
-               <text>, </text>
-               <value-of select="(@value, 'default(object)')[1]"/>
             </otherwise>
          </choose>
+         <text>, </text>
+         <value-of select="(@value, 'default(object)')[1]"/>
          <if test="not(@for) and @checked">
             <text>, isChecked: </text>
             <value-of select="@checked"/>
