@@ -382,6 +382,7 @@
          <value-of select="src:global-identifier('System.ComponentModel.EditorBrowsableState.Never')"/>
          <text>)]</text>
       </if>
+      <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
       <value-of select="(@as/xcst:type(.), 'void')[1]"/>
       <text> </text>
