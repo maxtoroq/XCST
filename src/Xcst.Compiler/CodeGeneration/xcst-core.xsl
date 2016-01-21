@@ -1731,6 +1731,13 @@
       </if>
    </template>
 
+   <template name="src:line-hidden">
+      <if test="$src:use-line-directive">
+         <call-template name="src:new-line-indented"/>
+         <text>#line hidden</text>
+      </if>
+   </template>
+
    <function name="src:template-method-name" as="xs:string">
       <param name="template" as="element(c:template)"/>
 

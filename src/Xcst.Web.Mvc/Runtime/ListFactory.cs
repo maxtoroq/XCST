@@ -15,18 +15,47 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Xcst.Web.Mvc.Runtime {
 
    /// <exclude/>
    public static class ListFactory {
 
-      public static List<object> CreateList(IEnumerator iter, int capacity) {
+      // Arrays implement IEnumerable<T>.GetEnumerator() explicitly
+      // cast is needed to call it
+
+      public static IEnumerator GetEnumerator(IEnumerable seq) {
+         return seq.GetEnumerator();
+      }
+
+      public static IEnumerator<T> GetEnumerator<T>(IEnumerable<T> seq) {
+         return seq.GetEnumerator();
+      }
+
+      public static IList<object> CreateMutable(IEnumerator justForTypeInference, int capacity) {
          return new List<object>(capacity);
       }
 
-      public static List<T> CreateList<T>(IEnumerator<T> iter, int capacity) {
+      public static IList<T> CreateMutable<T>(IEnumerator<T> justForTypeInference, int capacity) {
          return new List<T>(capacity);
+      }
+
+      public static IList<T> CreateImmutable<T>(IList<T> list) {
+         return new Collection<T>(new List<T>(list));
+      }
+
+      public static void Dispose(IEnumerator iter) {
+
+         IDisposable disp = iter as IDisposable;
+
+         if (disp != null) {
+            disp.Dispose();
+         }
+      }
+
+      public static void Dispose<T>(IEnumerator<T> iter) {
+         iter.Dispose();
       }
    }
 }

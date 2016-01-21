@@ -32,13 +32,12 @@
       <param name="indent" tunnel="yes"/>
 
       <variable name="iter" select="concat(src:aux-variable('iter'), '_', generate-id())"/>
+      <variable name="helper" select="a:fully-qualified-helper('ListFactory')"/>
 
       <value-of select="$src:new-line"/>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
-      <text>using (var </text>
-      <value-of select="$iter"/>
-      <text> = (</text>
+      <value-of select="'var', $iter, '=', concat($helper, '.GetEnumerator(')"/>
       <choose>
          <when test="a:sort">
             <for-each select="a:sort">
@@ -70,21 +69,37 @@
             <value-of select="@in"/>
          </otherwise>
       </choose>
-      <text>).GetEnumerator())</text>
+      <text>)</text>
+      <value-of select="$src:statement-delimiter"/>
+
+      <call-template name="src:line-hidden"/>
+      <value-of select="$src:new-line"/>
+      <call-template name="src:new-line-indented"/>
+      <text>try</text>
       <call-template name="src:open-brace"/>
-      <call-template name="a:for-each-row-using">
+      <call-template name="a:for-each-row-try">
          <with-param name="iter" select="$iter"/>
+         <with-param name="helper" select="$helper"/>
+         <with-param name="indent" select="$indent + 1" tunnel="yes"/>
+      </call-template>
+      <call-template name="src:close-brace"/>
+      <text> finally</text>
+      <call-template name="src:open-brace"/>
+      <call-template name="a:for-each-row-finally">
+         <with-param name="iter" select="$iter"/>
+         <with-param name="helper" select="$helper"/>
          <with-param name="indent" select="$indent + 1" tunnel="yes"/>
       </call-template>
       <call-template name="src:close-brace"/>
    </template>
 
-   <template name="a:for-each-row-using">
+   <template name="a:for-each-row-try">
       <param name="iter" required="yes"/>
+      <param name="helper" required="yes"/>
       <param name="indent" tunnel="yes"/>
 
       <variable name="cols" select="concat(src:aux-variable('cols'), '_', generate-id())"/>
-      <variable name="row" select="@name"/>
+      <variable name="buff" select="concat(src:aux-variable('buff'), '_', generate-id())"/>
       <variable name="eof" select="concat(src:aux-variable('eof'), '_', generate-id())"/>
 
       <call-template name="src:new-line-indented"/>
@@ -92,7 +107,7 @@
       <value-of select="$src:statement-delimiter"/>
 
       <call-template name="src:new-line-indented"/>
-      <value-of select="'var', $row, '=', concat(a:fully-qualified-helper('ListFactory'), '.CreateList(', $iter, ', ', $cols, ')')"/>
+      <value-of select="'var', $buff, '=', concat($helper, '.CreateMutable(', $iter, ', ', $cols, ')')"/>
       <value-of select="$src:statement-delimiter"/>
 
       <call-template name="src:new-line-indented"/>
@@ -108,8 +123,9 @@
       <call-template name="a:for-each-row-while">
          <with-param name="iter" select="$iter"/>
          <with-param name="cols" select="$cols"/>
-         <with-param name="row" select="$row"/>
+         <with-param name="buff" select="$buff"/>
          <with-param name="eof" select="$eof"/>
+         <with-param name="helper" select="$helper"/>
          <with-param name="indent" select="$indent + 1" tunnel="yes"/>
       </call-template>
       <call-template name="src:close-brace"/>
@@ -118,8 +134,9 @@
    <template name="a:for-each-row-while">
       <param name="iter" required="yes"/>
       <param name="cols" required="yes"/>
-      <param name="row" required="yes"/>
+      <param name="buff" required="yes"/>
       <param name="eof" required="yes"/>
+      <param name="helper" required="yes"/>
       <param name="indent" tunnel="yes"/>
 
       <call-template name="src:new-line-indented"/>
@@ -132,39 +149,55 @@
       <call-template name="src:new-line-indented">
          <with-param name="increase" select="1"/>
       </call-template>
-      <value-of select="$row, '.Add(', $iter, '.Current)'" separator=""/>
+      <value-of select="$buff, '.Add(', $iter, '.Current)'" separator=""/>
       <value-of select="$src:statement-delimiter"/>
       <call-template name="src:close-brace"/>
 
       <call-template name="src:new-line-indented"/>
       <text>if (</text>
-      <value-of select="$row"/>
-      <text>.Count == </text>
-      <value-of select="$cols"/>
-      <text> || </text>
-      <value-of select="$eof"/>
-      <text>)</text>
-      <call-template name="src:apply-children">
-         <with-param name="children" select="node()[not(self::a:sort or following-sibling::a:sort)]"/>
-         <with-param name="ensure-block" select="true()"/>
-         <with-param name="mode" select="'statement'"/>
-      </call-template>
-
-      <call-template name="src:new-line-indented"/>
-      <text>if (</text>
-      <value-of select="$row"/>
+      <value-of select="$buff"/>
       <text>.Count == </text>
       <value-of select="$cols"/>
       <text> || </text>
       <value-of select="$eof"/>
       <text>)</text>
       <call-template name="src:open-brace"/>
-      <call-template name="src:new-line-indented">
-         <with-param name="increase" select="1"/>
+      <call-template name="a:for-each-row-if">
+         <with-param name="buff" select="$buff"/>
+         <with-param name="helper" select="$helper"/>
+         <with-param name="indent" select="$indent + 1" tunnel="yes"/>
       </call-template>
-      <value-of select="$row, '.Clear()'" separator=""/>
-      <value-of select="$src:statement-delimiter"/>
       <call-template name="src:close-brace"/>
+   </template>
+
+   <template name="a:for-each-row-if">
+      <param name="buff" required="yes"/>
+      <param name="helper" required="yes"/>
+
+      <call-template name="src:line-number"/>
+      <call-template name="src:new-line-indented"/>
+      <value-of select="'var', @name, '=', concat($helper, '.CreateImmutable(', $buff, ')')"/>
+      <value-of select="$src:statement-delimiter"/>
+
+      <call-template name="src:apply-children">
+         <with-param name="children" select="node()[not(self::a:sort or following-sibling::a:sort)]"/>
+         <with-param name="omit-block" select="true()"/>
+         <with-param name="mode" select="'statement'"/>
+      </call-template>
+
+      <call-template name="src:line-hidden"/>
+      <call-template name="src:new-line-indented"/>
+      <value-of select="$buff, '.Clear()'" separator=""/>
+      <value-of select="$src:statement-delimiter"/>
+   </template>
+
+   <template name="a:for-each-row-finally">
+      <param name="iter" required="yes"/>
+      <param name="helper" required="yes"/>
+
+      <call-template name="src:new-line-indented"/>
+      <value-of select="concat($helper, '.Dispose(', $iter,')')"/>
+      <value-of select="$src:statement-delimiter"/>
    </template>
 
    <!--
