@@ -221,6 +221,7 @@
          for $pos in (1 to count($modules)) 
          return if ($modules[$pos] is current()) then $pos else ()"/>
       <variable name="principal-module" select="$module-pos eq count($modules)"/>
+
       <value-of select="$src:new-line"/>
       <call-template name="src:new-line-indented"/>
       <text>public partial class </text>
@@ -243,16 +244,35 @@
          <value-of select="$base-types" separator=", "/>
       </if>
       <call-template name="src:open-brace"/>
-      <for-each select="c:param | c:variable">
-         <if test="not($modules[position() gt $module-pos]/c:*[local-name() eq current()/local-name() and @name/xcst:name(.) = current()/@name/xcst:name(.)])">
-            <apply-templates select="." mode="src:member">
-               <with-param name="indent" select="$indent + 1" tunnel="yes"/>
-            </apply-templates>
-         </if>
-      </for-each>
+
+      <variable name="fields" as="element()*">
+         <for-each select="c:param | c:variable">
+            <if test="not($modules[position() gt $module-pos]/c:*[local-name() eq current()/local-name() and @name/xcst:name(.) = current()/@name/xcst:name(.)])">
+               <sequence select="."/>
+            </if>
+         </for-each>
+      </variable>
+      <variable name="disable-CS0414" select="not($principal-module) and not(empty($fields))"/>
+      <if test="$disable-CS0414">
+         <call-template name="src:new-line-indented">
+            <with-param name="increase" select="1"/>
+         </call-template>
+         <text>#pragma warning disable 414</text>
+      </if>
+      <apply-templates select="$fields" mode="src:member">
+         <with-param name="indent" select="$indent + 1" tunnel="yes"/>
+      </apply-templates>
+      <if test="$disable-CS0414">
+         <call-template name="src:new-line-indented">
+            <with-param name="increase" select="1"/>
+         </call-template>
+         <text>#pragma warning restore 414</text>
+      </if>
+
       <apply-templates select="c:template | c:function | c:type" mode="src:member">
          <with-param name="indent" select="$indent + 1" tunnel="yes"/>
       </apply-templates>
+
       <value-of select="$src:new-line"/>
       <call-template name="src:new-line-indented">
          <with-param name="increase" select="1"/>
