@@ -29,6 +29,7 @@
 
    <define name="declaration-element">
       <choice>
+         <ref name="attribute-set"/>
          <ref name="function"/>
          <ref name="output"/>
          <ref name="param"/>
@@ -137,6 +138,13 @@
                <list>
                   <zeroOrMore>
                      <ref name="Prefix"/>
+                  </zeroOrMore>
+               </list>
+            </attribute>
+            <attribute name="c:use-attribute-sets">
+               <list>
+                  <zeroOrMore>
+                     <ref name="QName"/>
                   </zeroOrMore>
                </list>
             </attribute>
@@ -315,6 +323,27 @@
          </zeroOrMore>
          <ref name="standard-attributes"/>
          <ref name="value-attribute-or-content"/>
+      </element>
+   </define>
+
+   <define name="attribute-set">
+      <element name="attribute-set">
+         <attribute name="name">
+            <ref name="QName"/>
+         </attribute>
+         <optional>
+            <attribute name="use-attribute-sets">
+               <list>
+                  <zeroOrMore>
+                     <ref name="QName"/>
+                  </zeroOrMore>
+               </list>
+            </attribute>
+         </optional>
+         <ref name="standard-attributes"/>
+         <zeroOrMore>
+            <ref name="attribute"/>
+         </zeroOrMore>
       </element>
    </define>
 
@@ -746,14 +775,23 @@
                <ref name="AVTExpr"/>
             </choice>
          </attribute>
-         <optional>
-            <attribute name="namespace">
-               <choice>
-                  <ref name="URI"/>
-                  <ref name="AVTExpr"/>
-               </choice>
-            </attribute>
-         </optional>
+         <zeroOrMore>
+            <choice>
+               <attribute name="namespace">
+                  <choice>
+                     <ref name="URI"/>
+                     <ref name="AVTExpr"/>
+                  </choice>
+               </attribute>
+               <attribute name="use-attribute-sets">
+                  <list>
+                     <zeroOrMore>
+                        <ref name="QName"/>
+                     </zeroOrMore>
+                  </list>
+               </attribute>
+            </choice>
+         </zeroOrMore>
          <ref name="standard-attributes"/>
          <ref name="sequence-constructor"/>
       </element>

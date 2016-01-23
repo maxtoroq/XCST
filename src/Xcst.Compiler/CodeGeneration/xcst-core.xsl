@@ -145,6 +145,9 @@
       <value-of select="src:verbatim-string(namespace-uri-from-QName($name))"/>
       <text>)</text>
       <value-of select="$src:statement-delimiter"/>
+      <call-template name="src:use-attribute-sets">
+         <with-param name="attr" select="@use-attribute-sets"/>
+      </call-template>
       <call-template name="src:apply-children"/>
       <call-template name="src:new-line-indented"/>
       <value-of select="$output"/>
@@ -288,6 +291,9 @@
       <value-of select="src:verbatim-string(namespace-uri())"/>
       <text>)</text>
       <value-of select="$src:statement-delimiter"/>
+      <call-template name="src:use-attribute-sets">
+         <with-param name="attr" select="@c:use-attribute-sets"/>
+      </call-template>
       <for-each select="@* except @c:*">
          <call-template name="src:new-line-indented"/>
          <value-of select="$output"/>
@@ -312,6 +318,32 @@
       <value-of select="$output"/>
       <text>.WriteEndElement()</text>
       <value-of select="$src:statement-delimiter"/>
+   </template>
+
+   <template name="src:use-attribute-sets">
+      <param name="attr" as="attribute()?"/>
+      <param name="modules" tunnel="yes"/>
+      <param name="context-param" tunnel="yes"/>
+
+      <if test="$attr">
+         <variable name="names" select="
+            for $s in tokenize($attr, '\s')[.]
+            return resolve-QName($s, .)"/>
+         <variable name="sets" select="
+            for $n in $names, $m in $modules
+            return $m/c:attribute-set[resolve-QName(@name, .) eq $n]"/>
+         <for-each select="$sets">
+            <call-template name="src:new-line-indented"/>
+            <text>this.</text>
+            <value-of select="src:template-method-name(.)"/>
+            <text>(new </text>
+            <value-of select="src:fully-qualified-helper('DynamicContext')"/>
+            <text>(</text>
+            <value-of select="$context-param"/>
+            <text>))</text>
+            <value-of select="$src:statement-delimiter"/>
+         </for-each>
+      </if>
    </template>
 
    <template match="c:object" mode="src:expression">
@@ -1739,7 +1771,7 @@
    </template>
 
    <function name="src:template-method-name" as="xs:string">
-      <param name="template" as="element(c:template)"/>
+      <param name="template" as="element()"/>
 
       <sequence select="concat('__', replace(string(resolve-QName($template/@name, $template)), '[^A-Za-z0-9]', '_'), '_', generate-id($template))"/>
    </function>

@@ -155,7 +155,7 @@
       </if>
    </template>
 
-   <template match="c:use-functions | c:import | c:param | c:variable | c:output | c:validation | c:template | c:function | c:type" mode="xcst:check-top-level"/>
+   <template match="c:attribute-set | c:function | c:import | c:output | c:param | c:template | c:type | c:use-functions | c:validation | c:variable" mode="xcst:check-top-level"/>
 
    <template match="c:*" mode="xcst:check-top-level">
       <sequence select="error(xs:QName('err:XTSE0010'), concat('Unknown XCST element: ', local-name(), '.'), src:error-object(.))"/>
@@ -269,7 +269,7 @@
          <text>#pragma warning restore 414</text>
       </if>
 
-      <apply-templates select="c:template | c:function | c:type" mode="src:member">
+      <apply-templates select="c:attribute-set | c:function | c:template | c:type" mode="src:member">
          <with-param name="indent" select="$indent + 1" tunnel="yes"/>
       </apply-templates>
 
@@ -454,6 +454,53 @@
          <with-param name="ensure-block" select="true()"/>
          <with-param name="next-function" select="subsequence($functions, $current-index + 1)[1]" tunnel="yes"/>
       </call-template>
+   </template>
+
+   <template match="c:attribute-set" mode="src:member">
+      <param name="modules" tunnel="yes"/>
+      <param name="indent" tunnel="yes"/>
+
+      <variable name="qname" select="resolve-QName(@name, .)"/>
+
+      <if test="xcst:is-reserved-namespace(namespace-uri-from-QName($qname))">
+         <sequence select="error(xs:QName('err:XTSE0080'), concat('Namespace prefix ', prefix-from-QName($qname),' refers to a reserved namespace.'), src:error-object(.))"/>
+      </if>
+
+      <variable name="context-param" select="src:aux-variable('context')"/>
+
+      <value-of select="$src:new-line"/>
+      <call-template name="src:new-line-indented"/>
+      <text>/* </text>
+      <value-of select="@name"/>
+      <text> */</text>
+      <call-template name="src:new-line-indented"/>
+      <text>[</text>
+      <value-of select="src:global-identifier('System.ComponentModel.EditorBrowsable')"/>
+      <text>(</text>
+      <value-of select="src:global-identifier('System.ComponentModel.EditorBrowsableState.Never')"/>
+      <text>)]</text>
+      <call-template name="src:new-line-indented"/>
+      <text>void </text>
+      <value-of select="src:template-method-name(.)"/>
+      <text>(</text>
+      <value-of select="src:fully-qualified-helper('DynamicContext'), $context-param"/>
+      <text>)</text>
+      <call-template name="src:open-brace"/>
+      <call-template name="src:use-attribute-sets">
+         <with-param name="attr" select="@use-attribute-sets"/>
+         <with-param name="indent" select="$indent + 1" tunnel="yes"/>
+         <with-param name="context-param" select="$context-param" tunnel="yes"/>
+         <with-param name="output" select="concat($context-param, '.Output')" tunnel="yes"/>
+      </call-template>
+      <call-template name="src:apply-children">
+         <with-param name="children" select="c:attribute"/>
+         <with-param name="mode" select="'statement'"/>
+         <with-param name="omit-block" select="true()"/>
+         <with-param name="indent" select="$indent + 1" tunnel="yes"/>
+         <with-param name="context-param" select="$context-param" tunnel="yes"/>
+         <with-param name="output" select="concat($context-param, '.Output')" tunnel="yes"/>
+      </call-template>
+      <call-template name="src:close-brace"/>
    </template>
 
    <template match="c:type" mode="src:member">

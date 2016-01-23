@@ -96,6 +96,7 @@
     <None Include="Syntax\CallableComponents\NextTemplate\DuplicateParameter.i.xcst" />
     <None Include="Syntax\ConditionalProcessing\Choose\ExpressionComplex.c.xcst" />
     <None Include="Syntax\ConditionalProcessing\Choose\Expression.c.xcst" />
+    <None Include="Syntax\Declarations\ReservedNamespaces\CoreAttributeSet.i.xcst" />
     <None Include="Syntax\VariablesAndParameters\Delegate\DefaultValueAndRequired.c.xcst" />
     <None Include="Syntax\VariablesAndParameters\Delegate\DefaultValueAndRequired.i.xcst" />
     <None Include="Syntax\VariablesAndParameters\Delegate\DuplicateParameter.i.xcst" />
