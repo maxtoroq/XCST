@@ -171,22 +171,28 @@ namespace Xcst.Compiler {
          }
 
          XdmNode docEl = destination.XdmNode.FirstElementOrSelf();
-         QName compilationUnitName = CompilerQName("compilation-unit");
-         QName importName = CompilerQName("import");
-         QName hrefName = new QName("href");
+
+         QName languageName = new QName("language"),
+            hrefName = new QName("href"),
+            srcName = new QName("src");
 
          var result = new CompileResult {
-            Language = docEl.GetAttributeValue(new QName("language")),
+            Language = docEl.GetAttributeValue(languageName),
             CompilationUnits =
-               (from n in ((IXdmEnumerator)docEl.EnumerateAxis(XdmAxis.Child)).AsNodes()
-                where n.NodeName.Equals(compilationUnitName)
-                select n.StringValue)
-               .ToArray(),
+               ((IXdmEnumerator)docEl.EnumerateAxis(XdmAxis.Child, CompilerQName("compilation-unit")))
+                  .AsNodes()
+                  .Select(n => n.StringValue)
+                  .ToArray(),
             ImportUris =
-               (from n in ((IXdmEnumerator)docEl.EnumerateAxis(XdmAxis.Child)).AsNodes()
-                where n.NodeName.Equals(importName)
-                select new Uri(n.GetAttributeValue(hrefName), UriKind.Absolute))
-               .ToArray()
+               ((IXdmEnumerator)docEl.EnumerateAxis(XdmAxis.Child, CompilerQName("import")))
+                  .AsNodes()
+                  .Select(n => new Uri(n.GetAttributeValue(hrefName), UriKind.Absolute))
+                  .ToArray(),
+            ScriptUris =
+               ((IXdmEnumerator)docEl.EnumerateAxis(XdmAxis.Child, CompilerQName("script")))
+                  .AsNodes()
+                  .Select(n => new Uri(n.GetAttributeValue(srcName), UriKind.Absolute))
+                  .ToArray()
          };
 
          return result;
@@ -256,5 +262,7 @@ namespace Xcst.Compiler {
       public IReadOnlyList<string> CompilationUnits { get; internal set; }
 
       public IReadOnlyList<Uri> ImportUris { get; internal set; }
+
+      public IReadOnlyList<Uri> ScriptUris { get; internal set; }
    }
 }

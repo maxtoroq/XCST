@@ -86,7 +86,10 @@ namespace Xcst.Web.Compilation {
          var fileArray = new CodeArrayCreateExpression(typeof(string));
          fileArray.Initializers.Add(new CodePrimitiveExpression(this.PhysicalPath.LocalPath));
 
-         foreach (Uri uri in this.result.ImportUris.Where(u => u.IsFile)) {
+         foreach (Uri uri in this.result.ImportUris
+               .Concat(this.result.ScriptUris)
+               .Where(u => u.IsFile)) {
+
             fileArray.Initializers.Add(new CodePrimitiveExpression(uri.LocalPath));
          }
 
@@ -119,7 +122,7 @@ namespace Xcst.Web.Compilation {
 
       public override void GenerateCode(AssemblyBuilder assemblyBuilder) {
 
-         if (IgnoreFile) {
+         if (this.IgnoreFile) {
             return;
          }
 

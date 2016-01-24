@@ -74,6 +74,9 @@
                <copy-of select="@name"/>
             </src:type>
          </for-each-group>
+         <for-each-group select="for $m in reverse($modules) return $m//c:script[@src]" group-by="resolve-uri(@src, base-uri())">
+            <src:script src="{resolve-uri(@src, base-uri())}"/>
+         </for-each-group>
          <call-template name="src:compilation-units">
             <with-param name="modules" select="$modules" tunnel="yes"/>
          </call-template>
