@@ -33,11 +33,14 @@ namespace Xcst.Web.Mvc.Runtime {
          return seq.GetEnumerator();
       }
 
-      public static IList<object> CreateMutable(IEnumerator justForTypeInference, int capacity) {
+      // Must return List instead of IList to avoid following issue (when T is dynamic):
+      // 'System.Collections.Generic.IList<object>' does not contain a definition for 'Add'
+
+      public static List<object> CreateMutable(IEnumerator justForTypeInference, int capacity) {
          return new List<object>(capacity);
       }
 
-      public static IList<T> CreateMutable<T>(IEnumerator<T> justForTypeInference, int capacity) {
+      public static List<T> CreateMutable<T>(IEnumerator<T> justForTypeInference, int capacity) {
          return new List<T>(capacity);
       }
 
