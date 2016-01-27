@@ -497,11 +497,16 @@
                   </attribute>
                </choice>
             </oneOrMore>
-            <optional>
-               <attribute name="html-field-prefix">
-                  <ref name="AVT"/>
-               </attribute>
-            </optional>
+            <zeroOrMore>
+               <choice>
+                  <attribute name="html-field-prefix">
+                     <ref name="AVT"/>
+                  </attribute>
+                  <attribute name="parameters">
+                     <ref name="Expression"/>
+                  </attribute>
+               </choice>
+            </zeroOrMore>
             <ref name="sequence-constructor"/>
          </element>
       </define>

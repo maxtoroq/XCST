@@ -28,7 +28,11 @@ namespace Xcst.Web.Mvc {
 
       public ModelMetadata Metadata => Html.ViewData.ModelMetadata;
 
-      public static ModelHelper<TModel> ForModel<TModel>(ModelHelper currentHelper, TModel model, string htmlFieldPrefix = null) {
+      public static ModelHelper<TModel> ForModel<TModel>(
+            ModelHelper currentHelper,
+            TModel model,
+            string htmlFieldPrefix = null,
+            object additionalViewData = null) {
 
          if (currentHelper == null) throw new ArgumentNullException(nameof(currentHelper));
 
@@ -50,6 +54,16 @@ namespace Xcst.Web.Mvc {
 
             TemplateInfo templateInfo = container.ViewData.TemplateInfo;
             templateInfo.HtmlFieldPrefix = templateInfo.GetFullHtmlFieldName(htmlFieldPrefix);
+         }
+
+         if (additionalViewData != null) {
+
+            IDictionary<string, object> additionalParams = additionalViewData as IDictionary<string, object>
+               ?? TypeHelpers.ObjectToDictionary(additionalViewData);
+
+            foreach (var kvp in additionalParams) {
+               container.ViewData[kvp.Key] = kvp.Value;
+            }
          }
 
          ViewContext currentViewContext = currentHtml.ViewContext;

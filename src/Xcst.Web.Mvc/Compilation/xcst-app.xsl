@@ -855,6 +855,10 @@
          <text>, htmlFieldPrefix: </text>
          <value-of select="src:expand-attribute(@html-field-prefix)"/>
       </if>
+      <if test="@parameters">
+         <text>, additionalViewData: </text>
+         <value-of select="@parameters"/>
+      </if>
       <text>)</text>
       <value-of select="$src:statement-delimiter"/>
       <call-template name="src:apply-children">
