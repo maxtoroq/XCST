@@ -39,9 +39,15 @@ namespace Xcst.Web.Mvc {
          HtmlHelper currentHtml = currentHelper.Html;
          ViewDataDictionary currentViewData = currentHtml.ViewData;
 
+         // Cannot call new ViewDataDictionary<TModel>(currentViewData)
+         // because currentViewData.Model might be incompatible with TModel
+
+         var tempDictionary = new ViewDataDictionary(currentViewData) {
+            Model = model
+         };
+
          var container = new ViewDataContainer {
-            ViewData = new ViewDataDictionary<TModel>(currentViewData) {
-               Model = model,
+            ViewData = new ViewDataDictionary<TModel>(tempDictionary) {
 
                // setting new TemplateInfo clears VisitedObjects cache
                TemplateInfo = new TemplateInfo {
