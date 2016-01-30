@@ -39,7 +39,6 @@
             <ref name="label"/>
             <ref name="list-box"/>
             <ref name="model"/>
-            <ref name="model-info"/>
             <ref name="password"/>
             <ref name="radio-button"/>
             <ref name="redirect"/>
@@ -442,6 +441,11 @@
          </zeroOrMore>
          <optional>
             <element name="member-template">
+               <optional>
+                  <attribute name="helper-name">
+                     <ref name="Name"/>
+                  </attribute>
+               </optional>
                <ref name="sequence-constructor"/>
             </element>
          </optional>
@@ -505,15 +509,12 @@
                   <attribute name="parameters">
                      <ref name="Expression"/>
                   </attribute>
+                  <attribute name="helper-name">
+                     <ref name="Name"/>
+                  </attribute>
                </choice>
             </zeroOrMore>
             <ref name="sequence-constructor"/>
-         </element>
-      </define>
-
-      <define name="model-info">
-         <element name="model-info">
-            <empty/>
          </element>
       </define>
 

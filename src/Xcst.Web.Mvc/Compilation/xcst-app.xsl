@@ -722,7 +722,7 @@
       <param name="indent" tunnel="yes"/>
 
       <variable name="new-context" select="concat(src:aux-variable('context'), '_', generate-id())"/>
-      <variable name="new-helper" select="concat(src:aux-variable('model_helper'), '_', generate-id())"/>
+      <variable name="new-helper" select="(@helper-name/xcst:name(.), concat(src:aux-variable('model_helper'), '_', generate-id()))[1]"/>
 
       <value-of select="concat('[&quot;', src:aux-variable('member_template'), '&quot;]')"/>
       <text> = new </text>
@@ -836,7 +836,7 @@
    -->
 
    <template match="a:model" mode="src:extension-instruction">
-      <variable name="new-helper" select="concat(src:aux-variable('model_helper'), '_', generate-id())"/>
+      <variable name="new-helper" select="(@helper-name/xcst:name(.), concat(src:aux-variable('model_helper'), '_', generate-id()))[1]"/>
       <variable name="type" select="@as/xcst:type(.)"/>
       <call-template name="src:new-line-indented"/>
       <text>var </text>
@@ -866,13 +866,6 @@
          <with-param name="mode" select="'statement'"/>
          <with-param name="a:model-helper" select="$new-helper" tunnel="yes"/>
       </call-template>
-   </template>
-
-   <template match="a:model-info" mode="src:extension-instruction">
-      <variable name="expr">
-         <call-template name="a:model-helper"/>
-      </variable>
-      <c:object value="{$expr}"/>
    </template>
 
    <template match="a:set-model" mode="src:extension-instruction">
