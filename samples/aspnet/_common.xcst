@@ -2,7 +2,8 @@
 <c:module version='1.0' language='C#'
    xmlns:c='http://maxtoroq.github.io/XCST'>
 
-   <c:import href="_validation.xcst" />
    <c:import href="_layout.xcst" />
+
+   <c:validation required-error-message='Required field cannot be left blank.'/>
 
 </c:module>
