@@ -24,22 +24,17 @@
    <c:function name='SendMail' as='bool'>
       <c:param name='contact' as='Contact'/>
 
-      <c:variable name='message' value='new MailMessage {
-         From = new MailAddress("noreply@example.com", Request.Url.Host),
-         To = { contactTo },
-         Subject = contactSubject,
-         ReplyToList = { new MailAddress(contact.Email, contact.Name) },
-         IsBodyHtml = true
-      }'/>
-      <c:set member='message.Body'>
-         <c:serialize method='html'>
-            <c:call-template name='mail-body'>
-               <c:with-param name='contact' value='contact'/>
-            </c:call-template>
-         </c:serialize>
-      </c:set>
       <c:script>
          <![CDATA[
+
+         var message = new MailMessage {
+            From = new MailAddress("noreply@example.com", Request.Url.Host),
+            To = { contactTo },
+            Subject = contactSubject,
+            ReplyToList = { new MailAddress(contact.Email, contact.Name) },
+            Body = MailBody(contact),
+            IsBodyHtml = true
+         };
 
          try {
             using (var smtp = new SmtpClient()) {
@@ -56,25 +51,29 @@
       </c:script>
    </c:function>
 
-   <c:template name='mail-body'>
-      <c:param name='contact' as='Contact' required='yes'/>
+   <c:function name='MailBody' as='string'>
+      <c:param name='contact' as='Contact'/>
 
-      <a:model value='contact'>
-         <dl>
-            <a:display>
-               <a:member-template>
-                  <dt>
-                     <a:display-name/>
-                     <c:text>:</c:text>
-                  </dt>
-                  <dd>
-                     <a:display/>
-                  </dd>
-               </a:member-template>
-            </a:display>
-         </dl>
-      </a:model>
-   </c:template>
+      <c:return>
+         <c:serialize method='html'>
+            <a:model value='contact'>
+               <dl>
+                  <a:display>
+                     <a:member-template>
+                        <dt>
+                           <a:display-name/>
+                           <c:text>:</c:text>
+                        </dt>
+                        <dd>
+                           <a:display/>
+                        </dd>
+                     </a:member-template>
+                  </a:display>
+               </dl>
+            </a:model>
+         </c:serialize>
+      </c:return>
+   </c:function>
 
    <c:template name='c:initial-template'>
       <c:script>
