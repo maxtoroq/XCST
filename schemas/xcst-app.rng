@@ -27,7 +27,6 @@
          <choice>
             <ref name="anti-forgery-token"/>
             <ref name="check-box"/>
-            <ref name="clear-model-state"/>
             <ref name="display"/>
             <ref name="display-name"/>
             <ref name="display-text"/>
@@ -41,15 +40,8 @@
             <ref name="model"/>
             <ref name="password"/>
             <ref name="radio-button"/>
-            <ref name="remove-cookie"/>
-            <ref name="set-content-type"/>
-            <ref name="set-cookie"/>
-            <ref name="set-header"/>
-            <ref name="set-model"/>
-            <ref name="set-status"/>
             <ref name="text-area"/>
             <ref name="text-box"/>
-            <ref name="validate-anti-forgery"/>
             <ref name="validation-summary"/>
             <ref name="validation-message"/>
          </choice>
@@ -514,99 +506,6 @@
                </choice>
             </zeroOrMore>
             <ref name="sequence-constructor"/>
-         </element>
-      </define>
-
-      <define name="set-model">
-         <element name="set-model">
-            <ref name="value-attribute-or-content"/>
-         </element>
-      </define>
-
-      <define name="clear-model-state">
-         <element name="clear-model-state">
-            <empty/>
-         </element>
-      </define>
-   </div>
-
-   <div>
-      <ann:documentation>Request</ann:documentation>
-
-      <define name="validate-anti-forgery">
-         <element name="validate-anti-forgery">
-            <empty/>
-         </element>
-      </define>
-   </div>
-
-   <div>
-      <ann:documentation>Response</ann:documentation>
-
-      <define name="remove-cookie">
-         <element name="remove-cookie">
-            <attribute name="name">
-               <ref name="AVT"/>
-            </attribute>
-         </element>
-      </define>
-
-      <define name="set-content-type">
-         <element name="set-content-type">
-            <ref name="value-attribute-or-content"/>
-         </element>
-      </define>
-
-      <define name="set-cookie">
-         <element name="set-cookie">
-            <attribute name="name">
-               <ref name="AVT"/>
-            </attribute>
-            <zeroOrMore>
-               <choice>
-                  <attribute name="domain">
-                     <ref name="AVT"/>
-                  </attribute>
-                  <attribute name="expires">
-                     <ref name="Expression"/>
-                  </attribute>
-                  <attribute name="http-only">
-                     <ref name="Expression"/>
-                  </attribute>
-                  <attribute name="path">
-                     <ref name="AVT"/>
-                  </attribute>
-                  <attribute name="secure">
-                     <ref name="Expression"/>
-                  </attribute>
-                  <attribute name="shareable">
-                     <ref name="Expression"/>
-                  </attribute>
-               </choice>
-            </zeroOrMore>
-            <ref name="value-attribute-or-content"/>
-         </element>
-      </define>
-
-      <define name="set-header">
-         <element name="set-header">
-            <attribute name="name">
-               <ref name="AVT"/>
-            </attribute>
-            <ref name="value-attribute-or-content"/>
-         </element>
-      </define>
-
-      <define name="set-status">
-         <element name="set-status">
-            <attribute name="code">
-               <ref name="Expression"/>
-            </attribute>
-            <optional>
-               <attribute name="description">
-                  <ref name="AVT"/>
-               </attribute>
-            </optional>
          </element>
       </define>
    </div>
