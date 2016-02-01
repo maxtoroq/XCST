@@ -41,7 +41,6 @@
             <ref name="model"/>
             <ref name="password"/>
             <ref name="radio-button"/>
-            <ref name="redirect"/>
             <ref name="remove-cookie"/>
             <ref name="set-content-type"/>
             <ref name="set-cookie"/>
@@ -543,29 +542,6 @@
 
    <div>
       <ann:documentation>Response</ann:documentation>
-
-      <define name="redirect">
-         <element name="redirect">
-            <attribute name="href">
-               <ref name="AVT"/>
-            </attribute>
-            <optional>
-               <choice>
-                  <attribute name="permanent">
-                     <ref name="Expression"/>
-                  </attribute>
-                  <attribute name="status-code">
-                     <ref name="Expression"/>
-                  </attribute>
-               </choice>
-            </optional>
-            <optional>
-               <attribute name="terminate">
-                  <ref name="Expression"/>
-               </attribute>
-            </optional>
-         </element>
-      </define>
 
       <define name="remove-cookie">
          <element name="remove-cookie">

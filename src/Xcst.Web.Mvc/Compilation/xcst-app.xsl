@@ -902,24 +902,6 @@
       ## Response
    -->
 
-   <template match="a:redirect" mode="src:extension-instruction">
-      <variable name="expr">
-         <value-of select="a:fully-qualified-helper('HttpRedirector')"/>
-         <text>.Redirect(this.Response, this.Url, </text>
-         <value-of select="src:expand-attribute(@href)"/>
-         <if test="@status-code or @permanent">
-            <text>, statusCode: </text>
-            <value-of select="(@status-code, @permanent/concat('(', string(), ') ? 301 : 302'))[1]"/>
-         </if>
-         <if test="@terminate">
-            <text>, terminate: </text>
-            <value-of select="@terminate"/>
-         </if>
-         <text>, tempData: this.TempData)</text>
-      </variable>
-      <c:void value="{$expr}"/>
-   </template>
-
    <template match="a:remove-cookie" mode="src:extension-instruction">
       <c:void value="this.Response.Cookies.Remove({src:expand-attribute(@name)})"/>
    </template>
