@@ -1128,7 +1128,7 @@
       <value-of select="(@href/src:expand-attribute(.), src:string(''))[1]"/>
       <text>), </text>
       <!-- TODO: @format AVT -->
-      <value-of select="(@format/src:QName(resolve-QName(., ..)), 'null')[1]"/>
+      <value-of select="src:expression-or-null(@format/src:QName(resolve-QName(., ..)))"/>
       <text>, new </text>
       <value-of select="src:global-identifier('Xcst.OutputParameters')"/>
       <call-template name="src:open-brace"/>
@@ -1147,7 +1147,7 @@
       </for-each>
       <call-template name="src:close-brace"/>
       <text>, </text>
-      <value-of select="$context-param"/>
+      <value-of select="src:expression-or-null($context-param)"/>
       <text>))</text>
       <call-template name="src:apply-children">
          <with-param name="ensure-block" select="true()"/>
@@ -1157,7 +1157,7 @@
    </template>
 
    <template match="c:serialize" mode="src:expression">
-      <param name="context-param" as="xs:string?" tunnel="yes"/>
+      <param name="context-param" tunnel="yes"/>
 
       <if test="@parameter-document">
          <sequence select="error((), concat(node-name(@parameter-document), ' parameter not supported yet.'), src:error-object(.))"/>
@@ -1167,7 +1167,7 @@
       <value-of select="$src:context-field"/>
       <text>.Serialize(</text>
       <!-- TODO: @format AVT -->
-      <value-of select="(@format/src:QName(resolve-QName(., ..)), 'null')[1]"/>
+      <value-of select="src:expression-or-null(@format/src:QName(resolve-QName(., ..)))"/>
       <text>, new </text>
       <value-of select="src:global-identifier('Xcst.OutputParameters')"/>
       <call-template name="src:open-brace"/>
@@ -1186,7 +1186,7 @@
       </for-each>
       <call-template name="src:close-brace"/>
       <text>, </text>
-      <value-of select="($context-param, 'null')[1]"/>
+      <value-of select="src:expression-or-null($context-param)"/>
       <text>, (</text>
       <value-of select="$new-context"/>
       <text>) => </text>
@@ -1360,13 +1360,13 @@
 
    <template match="c:evaluate-delegate" mode="src:expression">
       <param name="indent" tunnel="yes"/>
-      <param name="context-param" as="xs:string?" tunnel="yes"/>
+      <param name="context-param" tunnel="yes"/>
 
       <value-of select="@value"/>
       <text>(new </text>
       <value-of select="src:fully-qualified-helper('DynamicContext')"/>
       <text>(</text>
-      <value-of select="($context-param, 'null')[1]"/>
+      <value-of select="src:expression-or-null($context-param)"/>
       <text>)</text>
       <apply-templates select="c:with-param" mode="src:template-context">
          <with-param name="indent" select="$indent + 1" tunnel="yes"/>
@@ -1611,6 +1611,182 @@
    </function>
 
    <!--
+      ## Expressions
+   -->
+
+   <template name="src:simple-content">
+      <param name="attribute" as="attribute()?"/>
+      <param name="separator" select="()"/>
+
+      <value-of select="$src:context-field, 'SimpleContent'" separator="."/>
+      <text>.Join(</text>
+      <value-of select="if ($attribute) then ($separator, src:string(' '))[1] else src:string('')"/>
+      <text>, </text>
+      <call-template name="src:value">
+         <with-param name="attribute" select="$attribute"/>
+         <with-param name="fallback" select="src:string('')"/>
+      </call-template>
+      <text>)</text>
+   </template>
+
+   <template name="src:value">
+      <param name="attribute" select="@value" as="attribute()?"/>
+      <param name="text" select="xcst:text(.)"/>
+      <param name="fallback"/>
+
+      <choose>
+         <when test="$attribute">
+            <value-of select="$attribute"/>
+         </when>
+         <when test="$text">
+            <value-of select="src:expand-text(., $text)"/>
+         </when>
+         <!-- TODO: Mixed content -->
+         <when test="*">
+            <apply-templates select="*" mode="src:expression"/>
+         </when>
+         <when test="$fallback">
+            <value-of select="$fallback"/>
+         </when>
+      </choose>
+   </template>
+
+   <function name="src:expand-text" as="xs:string">
+      <param name="el" as="element()"/>
+      <param name="text" as="xs:string"/>
+
+      <sequence select="
+         if (xcst:tvt-enabled($el) and xcst:is-value-template($text)) then
+            src:format-value-template($text)
+         else
+            src:verbatim-string($text)"/>
+   </function>
+
+   <function name="src:expand-attribute" as="xs:string">
+      <param name="attr" as="attribute()"/>
+
+      <variable name="text" select="string($attr)"/>
+
+      <choose>
+         <when test="xcst:is-value-template($text)">
+            <sequence select="src:format-value-template($text)"/>
+         </when>
+         <otherwise>
+            <sequence select="src:verbatim-string($text)"/>
+         </otherwise>
+      </choose>
+   </function>
+
+   <function name="src:format-value-template" as="xs:string">
+      <param name="text" as="xs:string"/>
+
+      <sequence select="concat($src:context-field, '.SimpleContent.FormatValueTemplate(', '$@', src:string(src:escape-value-template($text)), ')')"/>
+   </function>
+
+   <function name="src:string" as="xs:string">
+      <param name="item" as="item()"/>
+
+      <sequence select="concat('&quot;', $item, '&quot;')"/>
+   </function>
+
+   <function name="src:verbatim-string" as="xs:string">
+      <param name="item" as="item()"/>
+
+      <sequence select="concat('@', src:string(replace($item, '&quot;', '&quot;&quot;')))"/>
+   </function>
+
+   <function name="src:boolean" as="xs:string">
+      <param name="bool" as="xs:boolean"/>
+
+      <sequence select="string($bool)"/>
+   </function>
+
+   <function name="src:boolean" as="xs:string">
+      <param name="bool" as="xs:boolean?"/>
+      <param name="string" as="xs:string"/>
+
+      <choose>
+         <when test="$bool instance of xs:boolean">
+            <sequence select="src:boolean($bool)"/>
+         </when>
+         <otherwise>
+            <sequence select="concat(src:fully-qualified-helper('DataType'), '.Boolean(', $string, ')')"/>
+         </otherwise>
+      </choose>
+   </function>
+
+   <function name="src:decimal" as="xs:string">
+      <param name="decimal" as="xs:decimal"/>
+
+      <sequence select="concat(string($decimal), 'm')"/>
+   </function>
+
+   <function name="src:decimal" as="xs:string">
+      <param name="decimal" as="xs:decimal?"/>
+      <param name="string" as="xs:string"/>
+
+      <choose>
+         <when test="$decimal instance of xs:decimal">
+            <sequence select="src:decimal($decimal)"/>
+         </when>
+         <otherwise>
+            <sequence select="concat(src:fully-qualified-helper('DataType'), '.Decimal(', $string, ')')"/>
+         </otherwise>
+      </choose>
+   </function>
+
+   <function name="src:QName" as="xs:string">
+      <param name="qname" as="xs:QName"/>
+
+      <sequence select="concat(
+         src:fully-qualified-helper('DataType'), 
+         '.QName(', 
+         string-join((src:verbatim-string(namespace-uri-from-QName($qname)), src:string(local-name-from-QName($qname))), ', '),
+         ')'
+      )"/>
+   </function>
+
+   <function name="src:sort-order-descending" as="xs:string">
+      <param name="bool" as="xs:boolean"/>
+
+      <sequence select="src:boolean($bool)"/>
+   </function>
+
+   <function name="src:sort-order-descending" as="xs:string">
+      <param name="bool" as="xs:boolean?"/>
+      <param name="string" as="xs:string"/>
+
+      <choose>
+         <when test="$bool instance of xs:boolean">
+            <sequence select="src:sort-order-descending($bool)"/>
+         </when>
+         <otherwise>
+            <sequence select="concat(src:fully-qualified-helper('DataType'), '.SortOrderDescending(', $string, ')')"/>
+         </otherwise>
+      </choose>
+   </function>
+
+   <function name="src:string-equals-literal" as="xs:string">
+      <param name="left-expr" as="xs:string"/>
+      <param name="right-string" as="xs:string"/>
+
+      <choose>
+         <when test="$right-string">
+            <sequence select="concat($left-expr, ' == ', src:verbatim-string($right-string))"/>
+         </when>
+         <otherwise>
+            <sequence select="concat(src:global-identifier('System.String'), '.IsNullOrEmpty(', $left-expr, ')')"/>
+         </otherwise>
+      </choose>
+   </function>
+
+   <function name="src:expression-or-null" as="xs:string">
+      <param name="expr" as="item()?"/>
+
+      <sequence select="if ($expr) then string($expr) else 'null'"/>
+   </function>
+
+   <!--
       ## Helpers
    -->
 
@@ -1706,43 +1882,6 @@
       </if>
    </template>
 
-   <template name="src:simple-content">
-      <param name="attribute" as="attribute()?"/>
-      <param name="separator" select="()"/>
-
-      <value-of select="$src:context-field, 'SimpleContent'" separator="."/>
-      <text>.Join(</text>
-      <value-of select="if ($attribute) then ($separator, src:string(' '))[1] else src:string('')"/>
-      <text>, </text>
-      <call-template name="src:value">
-         <with-param name="attribute" select="$attribute"/>
-         <with-param name="fallback" select="src:string('')"/>
-      </call-template>
-      <text>)</text>
-   </template>
-
-   <template name="src:value">
-      <param name="attribute" select="@value" as="attribute()?"/>
-      <param name="text" select="xcst:text(.)"/>
-      <param name="fallback"/>
-
-      <choose>
-         <when test="$attribute">
-            <value-of select="$attribute"/>
-         </when>
-         <when test="$text">
-            <value-of select="src:expand-text(., $text)"/>
-         </when>
-         <!-- TODO: Mixed content -->
-         <when test="*">
-            <apply-templates select="*" mode="src:expression"/>
-         </when>
-         <when test="$fallback">
-            <value-of select="$fallback"/>
-         </when>
-      </choose>
-   </template>
-
    <template name="src:line-number">
       <param name="line-number-offset" select="0" as="xs:integer" tunnel="yes"/>
       <param name="line-uri" as="xs:anyURI?" tunnel="yes"/>
@@ -1782,38 +1921,6 @@
       <sequence select="concat($function/xcst:name(@name), '_', generate-id($function))"/>
    </function>
 
-   <function name="src:expand-text" as="xs:string">
-      <param name="el" as="element()"/>
-      <param name="text" as="xs:string"/>
-
-      <sequence select="
-         if (xcst:tvt-enabled($el) and xcst:is-value-template($text)) then
-            src:format-value-template($text)
-         else
-            src:verbatim-string($text)"/>
-   </function>
-
-   <function name="src:expand-attribute" as="xs:string">
-      <param name="attr" as="attribute()"/>
-
-      <variable name="text" select="string($attr)"/>
-
-      <choose>
-         <when test="xcst:is-value-template($text)">
-            <sequence select="src:format-value-template($text)"/>
-         </when>
-         <otherwise>
-            <sequence select="src:verbatim-string($text)"/>
-         </otherwise>
-      </choose>
-   </function>
-
-   <function name="src:format-value-template" as="xs:string">
-      <param name="text" as="xs:string"/>
-
-      <sequence select="concat($src:context-field, '.SimpleContent.FormatValueTemplate(', '$@', src:string(src:escape-value-template($text)), ')')"/>
-   </function>
-
    <function name="src:fully-qualified-helper" as="xs:string">
       <param name="helper" as="xs:string"/>
 
@@ -1832,107 +1939,10 @@
       <sequence select="concat('global::', $identifier)"/>
    </function>
 
-   <function name="src:string-equals-literal" as="xs:string">
-      <param name="left-expr" as="xs:string"/>
-      <param name="right-string" as="xs:string"/>
-
-      <choose>
-         <when test="$right-string">
-            <sequence select="concat($left-expr, ' == ', src:verbatim-string($right-string))"/>
-         </when>
-         <otherwise>
-            <sequence select="concat(src:global-identifier('System.String'), '.IsNullOrEmpty(', $left-expr, ')')"/>
-         </otherwise>
-      </choose>
-   </function>
-
-   <function name="src:string" as="xs:string">
-      <param name="item" as="item()"/>
-
-      <sequence select="concat('&quot;', $item, '&quot;')"/>
-   </function>
-
-   <function name="src:verbatim-string" as="xs:string">
-      <param name="item" as="item()"/>
-
-      <sequence select="concat('@', src:string(replace($item, '&quot;', '&quot;&quot;')))"/>
-   </function>
-
-   <function name="src:boolean" as="xs:string">
-      <param name="bool" as="xs:boolean"/>
-
-      <sequence select="string($bool)"/>
-   </function>
-
-   <function name="src:boolean" as="xs:string">
-      <param name="bool" as="xs:boolean?"/>
-      <param name="string" as="xs:string"/>
-
-      <choose>
-         <when test="$bool instance of xs:boolean">
-            <sequence select="src:boolean($bool)"/>
-         </when>
-         <otherwise>
-            <sequence select="concat(src:fully-qualified-helper('DataType'), '.Boolean(', $string, ')')"/>
-         </otherwise>
-      </choose>
-   </function>
-
-   <function name="src:decimal" as="xs:string">
-      <param name="decimal" as="xs:decimal"/>
-
-      <sequence select="concat(string($decimal), 'm')"/>
-   </function>
-
-   <function name="src:decimal" as="xs:string">
-      <param name="decimal" as="xs:decimal?"/>
-      <param name="string" as="xs:string"/>
-
-      <choose>
-         <when test="$decimal instance of xs:decimal">
-            <sequence select="src:decimal($decimal)"/>
-         </when>
-         <otherwise>
-            <sequence select="concat(src:fully-qualified-helper('DataType'), '.Decimal(', $string, ')')"/>
-         </otherwise>
-      </choose>
-   </function>
-
-   <function name="src:QName" as="xs:string">
-      <param name="qname" as="xs:QName"/>
-
-      <sequence select="concat(
-         src:fully-qualified-helper('DataType'), 
-         '.QName(', 
-         string-join((src:verbatim-string(namespace-uri-from-QName($qname)), src:string(local-name-from-QName($qname))), ', '),
-         ')'
-      )"/>
-   </function>
-
    <function name="src:strip-verbatim-prefix" as="xs:string">
       <param name="name" as="xs:string"/>
 
       <sequence select="if (starts-with($name, '@')) then substring($name, 2) else $name"/>
-   </function>
-
-   <function name="src:sort-order-descending" as="xs:string">
-      <param name="bool" as="xs:boolean"/>
-
-      <sequence select="src:boolean($bool)"/>
-   </function>
-
-   <function name="src:sort-order-descending" as="xs:string">
-      <param name="bool" as="xs:boolean?"/>
-      <param name="string" as="xs:string"/>
-
-      <choose>
-         <when test="$bool instance of xs:boolean">
-            <sequence select="src:sort-order-descending($bool)"/>
-         </when>
-         <otherwise>
-            <sequence select="concat(src:fully-qualified-helper('DataType'), '.SortOrderDescending(', $string, ')')"/>
-         </otherwise>
-      </choose>
    </function>
 
    <function name="src:error-object" as="item()*">

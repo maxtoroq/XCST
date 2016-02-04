@@ -49,14 +49,15 @@ namespace Xcst.Runtime {
          return new DynamicContext(writerFactory, outputParams, this, currentContext);
       }
 
-      public DynamicContext ChangeOutput(Uri outputUri, QualifiedName outputName, OutputParameters parameters, DynamicContext currentContext) {
+      public DynamicContext ChangeOutput(Uri outputUri, QualifiedName outputName, OutputParameters parameters, DynamicContext currentContext = null) {
 
          if (outputUri == null) throw new ArgumentNullException(nameof(outputUri));
          if (parameters == null) throw new ArgumentNullException(nameof(parameters));
-         if (currentContext == null) throw new ArgumentNullException(nameof(currentContext));
 
          if (!outputUri.IsAbsoluteUri
+            && currentContext != null
             && currentContext.CurrentOutputUri.IsAbsoluteUri) {
+
             outputUri = new Uri(currentContext.CurrentOutputUri, outputUri);
          }
 
@@ -85,7 +86,7 @@ namespace Xcst.Runtime {
          var defaultParameters = new OutputParameters();
 
          if (outputName != null) {
-            this.executable.ReadOutputDefinition(outputName, defaultParameters); 
+            this.executable.ReadOutputDefinition(outputName, defaultParameters);
          }
 
          using (IWriterFactory writerFactory = WriterFactory.CreateFactory(sb, parameters)) {

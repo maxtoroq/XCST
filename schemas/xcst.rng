@@ -995,6 +995,7 @@
          </attribute>
          <ref name="output-avt-attributes"/>
          <ref name="standard-attributes"/>
+         <ref name="sequence-constructor"/>
       </element>
    </define>
 
