@@ -34,9 +34,16 @@ namespace Xcst.Runtime {
 
          if (writerFactory == null) throw new ArgumentNullException(nameof(writerFactory));
 
+         XcstWriter writer = writerFactory.Create(defaultOutputParams);
+         var runtimeWriter = writer as XcstRuntimeWriter;
+
+         if (runtimeWriter == null) {
+            runtimeWriter = new XcstRuntimeWriter(writer);
+            runtimeWriter.SimpleContent = execContext.SimpleContent;
+         }
+
          this.CurrentOutputUri = writerFactory.OutputUri;
-         this.Output = writerFactory.Create(defaultOutputParams);
-         this.Output.ExecutionContext = execContext;
+         this.Output = runtimeWriter;
          this.keepWriterOpen = writerFactory.KeepWriterOpen;
       }
 

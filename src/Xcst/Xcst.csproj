@@ -54,6 +54,8 @@
     <Compile Include="Runtime\PrimingContext.cs" />
     <Compile Include="Runtime\SimpleContent.cs" />
     <Compile Include="Runtime\Sorting.cs" />
+    <Compile Include="XcstRuntimeWriter.cs" />
+    <Compile Include="XcstWrappingWriter.cs" />
     <Compile Include="XcstWriter.cs" />
     <Compile Include="XmlNamespaces.cs" />
     <Compile Include="Xml\HtmlWriter.cs" />

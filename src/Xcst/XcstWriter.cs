@@ -25,11 +25,9 @@ namespace Xcst {
 
       bool disposed;
 
-      internal ExecutionContext ExecutionContext { get; set; }
-
       /// <exclude/>
       [EditorBrowsable(EditorBrowsableState.Never)]
-      public SimpleContent SimpleContent => ExecutionContext.SimpleContent;
+      public SimpleContent SimpleContent { get; internal set; }
 
       public void WriteStartElement(string localName) {
          WriteStartElement(null, localName, default(string));
