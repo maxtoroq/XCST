@@ -132,8 +132,15 @@ namespace Xcst.Compiler {
 
             var locator = ex.getLocator();
 
+            QualifiedName errorCode = null;
+            string errorLocal = ex.getErrorCodeLocalPart();
+
+            if (!String.IsNullOrEmpty(errorLocal)) {
+               errorCode = new QualifiedName(errorLocal, ex.getErrorCodeNamespace());
+            }
+
             throw new CompileException(ex.Message,
-               errorCode: new QualifiedName(ex.getErrorCodeLocalPart(), ex.getErrorCodeNamespace()),
+               errorCode: errorCode,
                moduleUri: locator?.getSystemId() ?? baseUri?.OriginalString,
                lineNumber: locator?.getLineNumber() ?? -1
             );

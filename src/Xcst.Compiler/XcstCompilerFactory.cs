@@ -34,6 +34,7 @@ namespace Xcst.Compiler {
 
          this.processor = new Processor();
          this.processor.SetProperty("http://saxon.sf.net/feature/linenumbering", "on");
+         this.processor.SetProperty("http://saxon.sf.net/feature/xinclude-aware", "on");
 
          this.processor.RegisterExtensionFunction(new LineNumberFunction());
          this.processor.RegisterExtensionFunction(new LocalPathFunction());
