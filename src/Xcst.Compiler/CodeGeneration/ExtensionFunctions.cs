@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.IO;
 using System.Linq;
 using Saxon.Api;
 using static Xcst.Compiler.XcstCompiler;
@@ -153,6 +154,89 @@ namespace Xcst.Compiler.CodeGeneration {
             return (IXdmEnumerator)new XdmAtomicValue(
                Helpers.MakeRelativeUri(uris[0], uris[1])
             ).GetEnumerator();
+         }
+      }
+   }
+
+   class DocWithUrisFunction : ExtensionFunctionDefinition {
+
+      readonly Processor processor;
+
+      public override QName FunctionName { get; } = CompilerQName("doc-with-uris");
+
+      public override XdmSequenceType[] ArgumentTypes { get; } = {
+         new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_ANYURI), ' ')
+      };
+
+      public override int MinimumNumberOfArguments => 1;
+
+      public override int MaximumNumberOfArguments => MinimumNumberOfArguments;
+
+      public DocWithUrisFunction(Processor processor) {
+         this.processor = processor;
+      }
+
+      public override ExtensionFunctionCall MakeFunctionCall() {
+         return new FunctionCall(this.processor);
+      }
+
+      public override XdmSequenceType ResultType(XdmSequenceType[] ArgumentTypes) {
+         return new XdmSequenceType(XdmAnyItemType.Instance, '*');
+      }
+
+      class FunctionCall : ExtensionFunctionCall {
+
+         readonly Processor processor;
+
+         public FunctionCall(Processor processor) {
+            this.processor = processor;
+         }
+
+         public override IXdmEnumerator Call(IXdmEnumerator[] arguments, DynamicContext context) {
+
+            XdmAtomicValue value = arguments[0].AsAtomicValues().Single();
+
+            Uri uri = (Uri)value.Value;
+
+            if (!uri.IsAbsoluteUri) {
+               throw new InvalidOperationException("Supplied URI must be absolute.");
+            }
+
+            var resolver = new LoggingResolver();
+
+            DocumentBuilder docb = this.processor.NewDocumentBuilder();
+            docb.XmlResolver = resolver;
+
+            XdmNode doc;
+
+            try {
+               doc = docb.Build(uri);
+
+            } catch (FileNotFoundException) {
+
+               return XdmEmptySequence.INSTANCE
+                  .GetXdmEnumerator();
+
+            } catch (net.sf.saxon.trans.XPathException ex) {
+
+               var locator = ex.getLocator();
+
+               QualifiedName errorCode = null;
+               string errorLocal = ex.getErrorCodeLocalPart();
+
+               if (!String.IsNullOrEmpty(errorLocal)) {
+                  errorCode = new QualifiedName(errorLocal, ex.getErrorCodeNamespace());
+               }
+
+               throw new CompileException(ex.Message,
+                  errorCode: errorCode,
+                  moduleUri: locator?.getSystemId() ?? uri?.AbsoluteUri,
+                  lineNumber: locator?.getLineNumber() ?? -1
+               );
+            }
+
+            return doc.Append(new XdmValue(resolver.ResolvedUris.Select(u => u.ToXdmAtomicValue())))
+               .GetXdmEnumerator();
          }
       }
    }

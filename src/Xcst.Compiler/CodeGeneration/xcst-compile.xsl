@@ -44,15 +44,18 @@
       <call-template name="xcst:check-document-element-attributes"/>
       <apply-templates mode="xcst:check-top-level"/>
 
-      <variable name="modules" as="element(c:module)+">
+      <variable name="modules-and-uris" as="item()+">
          <apply-templates select="." mode="src:load-modules">
             <with-param name="language" select="string(@language)" tunnel="yes"/>
          </apply-templates>
       </variable>
+      
+      <variable name="modules" select="$modules-and-uris[. instance of node()]" as="element(c:module)+"/>
+      <variable name="refs" select="$modules-and-uris[not(. instance of node())], $modules//c:script[@src]/resolve-uri(@src, base-uri())"/>
 
       <src:program language="{@language}">
-         <for-each select="$modules[position() lt last()]">
-            <src:import href="{document-uri(root())}"/>
+         <for-each select="distinct-values($refs)">
+            <src:ref href="{.}"/>
          </for-each>
          <for-each-group select="for $m in reverse($modules) return $m/c:param" group-by="@name/xcst:name(.)">
             <src:param>
@@ -73,9 +76,6 @@
             <src:type>
                <copy-of select="@name"/>
             </src:type>
-         </for-each-group>
-         <for-each-group select="for $m in reverse($modules) return $m//c:script[@src]" group-by="resolve-uri(@src, base-uri())">
-            <src:script src="{resolve-uri(@src, base-uri())}"/>
          </for-each-group>
          <call-template name="src:compilation-units">
             <with-param name="modules" select="$modules" tunnel="yes"/>
@@ -115,11 +115,13 @@
 
       <variable name="href" select="resolve-uri(@href, base-uri())"/>
 
-      <if test="not(doc-available($href))">
-         <sequence select="error(xs:QName('err:XTSE0165'), 'Cannot retrieve imported module.', src:error-object(.))"/>
+      <variable name="result" select="src:doc-with-uris($href)"/>
+
+      <if test="empty($result)">
+         <sequence select="error(xs:QName('err:XTSE0165'), 'Could not retrieve imported module.', src:error-object(.))"/>
       </if>
 
-      <variable name="imported" select="doc($href)"/>
+      <variable name="imported" select="$result[1]"/>
 
       <if test="some $m in $module-docs satisfies $m is $imported">
          <sequence select="error(xs:QName('err:XTSE0210'), 'A module cannot directly or indirectly import itself.', src:error-object(.))"/>
@@ -132,6 +134,7 @@
       <apply-templates select="$imported/c:module" mode="#current">
          <with-param name="module-docs" select="$module-docs, $imported" tunnel="yes"/>
       </apply-templates>
+      <sequence select="$result[position() gt 1]"/>
    </template>
 
    <template name="src:compilation-units">
