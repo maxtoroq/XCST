@@ -14,9 +14,11 @@
 
 using System;
 using System.CodeDom;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Web;
 using System.Web.Compilation;
 using System.Web.Hosting;
 using Xcst.Compiler;
@@ -26,8 +28,28 @@ namespace Xcst.Web.Compilation {
    [BuildProviderAppliesTo(BuildProviderAppliesTo.Web)]
    public class PageBuildProvider<TPage> : BaseBuildProvider where TPage : class {
 
+      readonly Uri applicationUri = new Uri(HostingEnvironment.ApplicationPhysicalPath, UriKind.Absolute);
       CompileResult result;
       bool? _IgnoreFile;
+
+      public override ICollection VirtualPathDependencies {
+         get {
+
+            if (result != null) {
+               return
+                  new[] { VirtualPath }.Concat(
+                     from u in result.References
+                     let rel = applicationUri.MakeRelativeUri(u)
+                     where !rel.IsAbsoluteUri
+                        && !rel.OriginalString.StartsWith("..")
+                     let vp = VirtualPathUtility.ToAbsolute("~/" + rel.OriginalString)
+                     select vp)
+                  .ToArray();
+            }
+
+            return base.VirtualPathDependencies;
+         }
+      }
 
       protected override string GeneratedTypeNamePrefix => "_Page_";
 
@@ -63,7 +85,7 @@ namespace Xcst.Web.Compilation {
 
          compiler.SetParameter(
             new QualifiedName("application-uri", XmlNamespaces.XcstApplication),
-            new Uri(HostingEnvironment.ApplicationPhysicalPath, UriKind.Absolute)
+            this.applicationUri
          );
       }
 
