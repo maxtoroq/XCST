@@ -167,6 +167,8 @@
     <None Include="Syntax\VariablesAndParameters\Global\DuplicateParameter.i.xcst" />
     <None Include="Syntax\VariablesAndParameters\Global\DuplicateVariable.i.xcst" />
     <None Include="Syntax\VariablesAndParameters\Template\DuplicateParameter.i.xcst" />
+    <None Include="Syntax\VariablesAndParameters\UsingModule\GlobalTunnelParameter.c.xcst" />
+    <None Include="Syntax\VariablesAndParameters\UsingModule\GlobalTunnelParameter.i.xcst" />
     <None Include="Syntax\WhitespaceStripping\PreserveText.c.xcst">
       <SubType>Designer</SubType>
     </None>

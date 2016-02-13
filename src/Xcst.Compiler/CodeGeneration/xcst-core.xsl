@@ -807,7 +807,7 @@
       <text>(</text>
       <value-of select="$context-param"/>
       <text>)</text>
-      <apply-templates select="c:with-param" mode="src:template-context">
+      <apply-templates select="c:with-param" mode="src:with-param-for-templates">
          <with-param name="indent" select="$indent + 1" tunnel="yes"/>
       </apply-templates>
       <text>)</text>
@@ -842,7 +842,7 @@
       <text>(</text>
       <value-of select="$context-param"/>
       <text>)</text>
-      <apply-templates select="c:with-param" mode="src:template-context">
+      <apply-templates select="c:with-param" mode="src:with-param-for-templates">
          <with-param name="indent" select="$indent + 1" tunnel="yes"/>
       </apply-templates>
       <text>)</text>
@@ -850,12 +850,13 @@
       <call-template name="src:line-default"/>
    </template>
 
-   <template match="c:with-param" mode="src:template-context">
+   <template match="c:with-param" mode="src:with-param-for-templates">
 
       <if test="preceding-sibling::c:with-param[@name/xcst:name(.) = current()/@name/xcst:name(.)]">
          <sequence select="error(xs:QName('err:XTSE0670'), 'Duplicate parameter name.', src:error-object(.))"/>
       </if>
 
+      <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
       <text>.WithParam(</text>
       <value-of select="src:string(xcst:name(@name))"/>
@@ -904,6 +905,77 @@
          <call-template name="src:value"/>
       </for-each>
       <text>)</text>
+   </template>
+
+   <template match="c:using-module" mode="src:statement">
+      <param name="indent" tunnel="yes"/>
+
+      <call-template name="src:line-number"/>
+      <call-template name="src:new-line-indented"/>
+      <value-of select="src:global-identifier('Xcst.XcstEvaluator')"/>
+      <text>.Using(</text>
+      <value-of select="@instance"/>
+      <text>)</text>
+      <for-each select="c:with-param">
+         <if test="preceding-sibling::c:with-param[@name/xcst:name(.) = current()/@name/xcst:name(.)]">
+            <sequence select="error(xs:QName('err:XTSE0670'), 'Duplicate parameter name.', src:error-object(.))"/>
+         </if>
+         <if test="@tunnel/xcst:boolean(.)">
+            <sequence select="error(xs:QName('err:XTSE0020'), 'For attribute ''tunnel'' on c:using-module/c:with-param, the only permitted values are: ''no'', ''false'', ''0''.', src:error-object(.))"/>
+         </if>
+         <call-template name="src:line-number">
+            <with-param name="indent" select="$indent + 1" tunnel="yes"/>
+         </call-template>
+         <call-template name="src:new-line-indented">
+            <with-param name="increase" select="1"/>
+         </call-template>
+         <text>.WithParam(</text>
+         <value-of select="src:string(xcst:name(@name))"/>
+         <text>, </text>
+         <call-template name="src:value"/>
+         <text>)</text>
+      </for-each>
+      <if test="@with-params">
+         <call-template name="src:line-number"/>
+         <call-template name="src:new-line-indented"/>
+         <text>.WithParams(</text>
+         <value-of select="@with-params"/>
+         <text>)</text>
+      </if>
+      <apply-templates select="c:call-template" mode="src:call-template">
+         <with-param name="indent" select="$indent + 1" tunnel="yes"/>
+      </apply-templates>
+      <call-template name="src:new-line-indented">
+         <with-param name="increase" select="1"/>
+      </call-template>
+      <text>.Run()</text>
+      <value-of select="$src:statement-delimiter"/>
+   </template>
+
+   <template match="c:using-module/c:call-template" mode="src:call-template">
+      <param name="context-param" tunnel="yes"/>
+      <param name="output" tunnel="yes"/>
+
+      <call-template name="src:line-number"/>
+      <call-template name="src:new-line-indented"/>
+      <text>.CallTemplate(</text>
+      <!-- TODO: @name AVT -->
+      <value-of select="src:QName(resolve-QName(@name, .))"/>
+      <text>)</text>
+      <apply-templates select="c:with-param" mode="src:with-param-for-templates"/>
+      <if test="@with-params">
+         <call-template name="src:line-number"/>
+         <call-template name="src:new-line-indented"/>
+         <text>.WithParams(</text>
+         <value-of select="@with-params"/>
+         <text>)</text>
+      </if>
+      <call-template name="src:new-line-indented"/>
+      <text>.OutputTo(</text>
+      <value-of select="$output"/>
+      <text>, outputUri: </text>
+      <value-of select="$context-param"/>
+      <text>.CurrentOutputUri)</text>
    </template>
 
    <!--
@@ -1368,7 +1440,7 @@
       <text>(</text>
       <value-of select="src:expression-or-null($context-param)"/>
       <text>)</text>
-      <apply-templates select="c:with-param" mode="src:template-context">
+      <apply-templates select="c:with-param" mode="src:with-param-for-templates">
          <with-param name="indent" select="$indent + 1" tunnel="yes"/>
       </apply-templates>
       <text>)</text>

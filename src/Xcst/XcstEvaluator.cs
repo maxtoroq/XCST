@@ -14,6 +14,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Xml;
 using Xcst.Runtime;
@@ -67,6 +68,57 @@ namespace Xcst {
          this.parameters[name] = value;
 
          return this;
+      }
+
+      public XcstEvaluator WithParams(object parameters) {
+
+         if (parameters != null) {
+            WithParams(ObjectToDictionary(parameters));
+         }
+
+         return this;
+      }
+
+      public XcstEvaluator WithParams(IDictionary<string, object> parameters) {
+
+         if (parameters != null) {
+
+            foreach (var pair in parameters) {
+               WithParam(pair.Key, pair.Value);
+            }
+         }
+
+         return this;
+      }
+
+      internal static IDictionary<string, object> ObjectToDictionary(object values) {
+
+         IDictionary<string, object> dict = null;
+
+         if (values != null) {
+
+            dict = values as IDictionary<string, object>;
+
+            if (dict != null) {
+               return dict;
+            }
+         }
+
+         if (dict == null) {
+            dict = new Dictionary<string, object>();
+         }
+
+         if (values != null) {
+
+            PropertyDescriptorCollection props = TypeDescriptor.GetProperties(values);
+
+            foreach (PropertyDescriptor prop in props) {
+               object val = prop.GetValue(values);
+               dict.Add(prop.Name, val);
+            }
+         }
+
+         return dict;
       }
 
       public XcstTemplateEvaluator CallInitialTemplate() {
@@ -129,6 +181,27 @@ namespace Xcst {
          if (name == null) throw new ArgumentNullException(nameof(name));
 
          this.parameters[name] = new ParameterArgument(value, tunnel);
+         return this;
+      }
+
+      public XcstTemplateEvaluator WithParams(object parameters) {
+
+         if (parameters != null) {
+            WithParams(XcstEvaluator.ObjectToDictionary(parameters));
+         }
+
+         return this;
+      }
+
+      public XcstTemplateEvaluator WithParams(IDictionary<string, object> parameters) {
+
+         if (parameters != null) {
+
+            foreach (var pair in parameters) {
+               WithParam(pair.Key, pair.Value);
+            }
+         }
+
          return this;
       }
 

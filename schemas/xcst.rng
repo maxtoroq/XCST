@@ -71,6 +71,7 @@
          <ref name="text"/>
          <ref name="try"/>
          <ref name="using"/>
+         <ref name="using-module"/>
          <ref name="value-of"/>
          <ref name="variable"/>
          <ref name="void"/>
@@ -1086,6 +1087,40 @@
          </optional>
          <ref name="standard-attributes"/>
          <ref name="sequence-constructor"/>
+      </element>
+   </define>
+
+   <define name="using-module">
+      <element name="using-module">
+         <attribute name="instance">
+            <ref name="Expression"/>
+         </attribute>
+         <optional>
+            <attribute name="with-params">
+               <ref name="Expression"/>
+            </attribute>
+         </optional>
+         <ref name="standard-attributes"/>
+         <zeroOrMore>
+            <ref name="with-param-for-templates"/>
+         </zeroOrMore>
+         <element name="call-template">
+            <attribute name="name">
+               <choice>
+                  <ref name="QName"/>
+                  <ref name="AVTExpr"/>
+               </choice>
+            </attribute>
+            <optional>
+               <attribute name="with-params">
+                  <ref name="Expression"/>
+               </attribute>
+            </optional>
+            <ref name="standard-attributes"/>
+            <zeroOrMore>
+               <ref name="with-param-for-templates"/>
+            </zeroOrMore>
+         </element>
       </element>
    </define>
 
