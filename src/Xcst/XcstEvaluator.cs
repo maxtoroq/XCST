@@ -25,36 +25,36 @@ namespace Xcst {
 
       static readonly QualifiedName InitialTemplate = new QualifiedName("initial-template", XmlNamespaces.Xcst);
 
-      readonly IXcstExecutable executable;
+      readonly IXcstPackage package;
       readonly IDictionary<string, object> parameters = new Dictionary<string, object>();
       bool primed = false;
 
-      public static XcstEvaluator Using<TCompiled>() where TCompiled : new() {
-         return Using(new TCompiled());
+      public static XcstEvaluator Using<TPackage>() where TPackage : new() {
+         return Using(new TPackage());
       }
 
-      public static XcstEvaluator Using(Type compiled) {
-         return Using(Activator.CreateInstance(compiled));
+      public static XcstEvaluator Using(Type packageType) {
+         return Using(Activator.CreateInstance(packageType));
       }
 
-      public static XcstEvaluator Using(object instance) {
+      public static XcstEvaluator Using(object package) {
 
-         if (instance == null) throw new ArgumentNullException(nameof(instance));
+         if (package == null) throw new ArgumentNullException(nameof(package));
 
-         var executable = instance as IXcstExecutable;
+         var pkg = package as IXcstPackage;
 
-         if (executable == null) {
-            throw new ArgumentException("Provided instance is not a valid XCST program.", nameof(instance));
+         if (pkg == null) {
+            throw new ArgumentException("Provided instance is not a valid XCST package.", nameof(package));
          }
 
-         return new XcstEvaluator(executable);
+         return new XcstEvaluator(pkg);
       }
 
-      private XcstEvaluator(IXcstExecutable executable) {
+      private XcstEvaluator(IXcstPackage package) {
 
-         if (executable == null) throw new ArgumentNullException(nameof(executable));
+         if (package == null) throw new ArgumentNullException(nameof(package));
 
-         this.executable = executable;
+         this.package = package;
       }
 
       public XcstEvaluator WithParam(string name, object value) {
@@ -138,7 +138,7 @@ namespace Xcst {
 
          Prime();
 
-         return new XcstTemplateEvaluator(this.executable, name);
+         return new XcstTemplateEvaluator(this.package, name);
       }
 
       void Prime() {
@@ -154,7 +154,7 @@ namespace Xcst {
          }
 
          this.parameters.Clear();
-         this.executable.Prime(context);
+         this.package.Prime(context);
          this.primed = true;
       }
    }
@@ -163,16 +163,16 @@ namespace Xcst {
 
       static readonly Uri DefaultOuputUri = new Uri("", UriKind.Relative);
 
-      readonly IXcstExecutable executable;
+      readonly IXcstPackage package;
       readonly QualifiedName name;
       readonly IDictionary<string, ParameterArgument> parameters = new Dictionary<string, ParameterArgument>();
 
-      internal XcstTemplateEvaluator(IXcstExecutable executable, QualifiedName name) {
+      internal XcstTemplateEvaluator(IXcstPackage package, QualifiedName name) {
 
-         if (executable == null) throw new ArgumentNullException(nameof(executable));
+         if (package == null) throw new ArgumentNullException(nameof(package));
          if (name == null) throw new ArgumentNullException(nameof(name));
 
-         this.executable = executable;
+         this.package = package;
          this.name = name;
       }
 
@@ -220,7 +220,7 @@ namespace Xcst {
          Func<OutputParameters, IWriterFactory> writerFn = @params =>
             WriterFactory.CreateFactory(file, @params);
 
-         return new XcstOutputter(this.executable, writerFn, ExecuteTemplate);
+         return new XcstOutputter(this.package, writerFn, ExecuteTemplate);
       }
 
       public XcstOutputter OutputTo(Stream output, Uri outputUri = null, bool autoClose = false) {
@@ -230,7 +230,7 @@ namespace Xcst {
          Func<OutputParameters, IWriterFactory> writerFn = @params =>
             WriterFactory.CreateFactory(output, outputUri ?? DefaultOuputUri, @params, autoClose);
 
-         return new XcstOutputter(this.executable, writerFn, ExecuteTemplate);
+         return new XcstOutputter(this.package, writerFn, ExecuteTemplate);
       }
 
       public XcstOutputter OutputTo(TextWriter output, Uri outputUri = null, bool autoClose = false) {
@@ -240,7 +240,7 @@ namespace Xcst {
          Func<OutputParameters, IWriterFactory> writerFn = @params =>
             WriterFactory.CreateFactory(output, outputUri ?? DefaultOuputUri, @params, autoClose);
 
-         return new XcstOutputter(this.executable, writerFn, ExecuteTemplate);
+         return new XcstOutputter(this.package, writerFn, ExecuteTemplate);
       }
 
       public XcstOutputter OutputTo(XmlWriter output, Uri outputUri = null, bool autoClose = false) {
@@ -250,7 +250,7 @@ namespace Xcst {
          Func<OutputParameters, IWriterFactory> writerFn = @params =>
             WriterFactory.CreateFactory(output, outputUri ?? DefaultOuputUri, autoClose);
 
-         return new XcstOutputter(this.executable, writerFn, ExecuteTemplate);
+         return new XcstOutputter(this.package, writerFn, ExecuteTemplate);
       }
 
       public XcstOutputter OutputTo(XcstWriter output, Uri outputUri = null, bool autoClose = false) {
@@ -260,10 +260,10 @@ namespace Xcst {
          Func<OutputParameters, IWriterFactory> writerFn = @params =>
             WriterFactory.CreateFactory(output, outputUri ?? DefaultOuputUri, autoClose);
 
-         return new XcstOutputter(this.executable, writerFn, ExecuteTemplate);
+         return new XcstOutputter(this.package, writerFn, ExecuteTemplate);
       }
 
-      void ExecuteTemplate(IXcstExecutable executable, DynamicContext context) {
+      void ExecuteTemplate(IXcstPackage package, DynamicContext context) {
 
          foreach (var param in this.parameters) {
             context.WithParam(param.Key, param.Value.Value, param.Value.Tunnel);
@@ -271,26 +271,26 @@ namespace Xcst {
 
          ClearParams();
 
-         executable.CallTemplate(this.name, context);
+         package.CallTemplate(this.name, context);
       }
    }
 
    public class XcstOutputter {
 
-      readonly IXcstExecutable executable;
+      readonly IXcstPackage package;
       readonly Func<OutputParameters, IWriterFactory> writerFn;
-      readonly Action<IXcstExecutable, DynamicContext> executionFn;
+      readonly Action<IXcstPackage, DynamicContext> executionFn;
 
       OutputParameters parameters;
       IFormatProvider formatProvider;
 
-      internal XcstOutputter(IXcstExecutable executable, Func<OutputParameters, IWriterFactory> writerFn, Action<IXcstExecutable, DynamicContext> executionFn) {
+      internal XcstOutputter(IXcstPackage package, Func<OutputParameters, IWriterFactory> writerFn, Action<IXcstPackage, DynamicContext> executionFn) {
 
-         if (executable == null) throw new ArgumentNullException(nameof(executable));
+         if (package == null) throw new ArgumentNullException(nameof(package));
          if (writerFn == null) throw new ArgumentNullException(nameof(writerFn));
          if (executionFn == null) throw new ArgumentNullException(nameof(executionFn));
 
-         this.executable = executable;
+         this.package = package;
          this.writerFn = writerFn;
          this.executionFn = executionFn;
       }
@@ -309,13 +309,13 @@ namespace Xcst {
 
       public void Run() {
 
-         var execContext = new ExecutionContext(this.executable, this.formatProvider);
+         var execContext = new ExecutionContext(this.package, this.formatProvider);
 
          using (IWriterFactory writerFactory = writerFn(this.parameters)) {
             using (DynamicContext dynamicContext = execContext.CreateDynamicContext(writerFactory)) {
 
-               this.executable.Context = execContext;
-               this.executionFn(this.executable, dynamicContext);
+               this.package.Context = execContext;
+               this.executionFn(this.package, dynamicContext);
             }
          }
       }

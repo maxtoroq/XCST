@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:import href='_NonexistentParameter.xcst'/>
+
+   <c:template name='bar'>
+      <c:next-template>
+         <c:with-param name='a' value='""'/>
+      </c:next-template>
+   </c:template>
+
+</c:module>

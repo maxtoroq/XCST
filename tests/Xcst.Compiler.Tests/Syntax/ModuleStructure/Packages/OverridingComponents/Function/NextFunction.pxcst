@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:package name='NextFunction' version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:function name='foo' as='string' visibility='public'>
+      <c:return>foo</c:return>
+   </c:function>
+
+</c:package>

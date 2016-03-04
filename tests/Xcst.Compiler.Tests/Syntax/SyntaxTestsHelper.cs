@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -13,7 +14,9 @@ namespace Xcst.Compiler.Tests.Syntax {
    static class SyntaxTestsHelper {
 
       static readonly XcstCompilerFactory CompilerFactory = new XcstCompilerFactory {
-         EnableExtensions = true
+         EnableExtensions = true,
+         PackageTypeResolver = (typeName) => Assembly.GetExecutingAssembly()
+            .GetType(typeName, throwOnError: true)
       };
 
       public static Type CompileFromFile(string fileName, bool correct) {
@@ -24,6 +27,7 @@ namespace Xcst.Compiler.Tests.Syntax {
             compiler.TargetNamespace = typeof(SyntaxTestsHelper).Namespace + ".Runtime";
             compiler.TargetClass = "TestModule";
             compiler.UseLineDirective = true;
+            compiler.UsePackageBase = new StackFrame(1, true).GetMethod().DeclaringType.Namespace;
 
             CompileResult xcstResult = compiler.Compile(fileStream, baseUri: new Uri(fileName, UriKind.Absolute));
 
@@ -42,7 +46,8 @@ namespace Xcst.Compiler.Tests.Syntax {
                MetadataReference.CreateFromFile(typeof(System.Uri).Assembly.Location),
                MetadataReference.CreateFromFile(typeof(System.Linq.Enumerable).Assembly.Location),
                MetadataReference.CreateFromFile(typeof(System.Xml.XmlWriter).Assembly.Location),
-               MetadataReference.CreateFromFile(typeof(Xcst.Runtime.IXcstExecutable).Assembly.Location),
+               MetadataReference.CreateFromFile(typeof(Xcst.IXcstPackage).Assembly.Location),
+               MetadataReference.CreateFromFile(Assembly.GetExecutingAssembly().Location)
             };
 
             CSharpCompilation compilation = CSharpCompilation.Create(

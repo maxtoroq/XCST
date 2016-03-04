@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:function name='foo' as='bool'>
+      <c:param name='bar' as='string'/>
+
+      <c:return value='true'/>
+   </c:function>
+
+   <c:function name='foo' as='decimal'>
+      <c:param name='baz' as='int'/>
+      <c:param name='baz2' as='int'/>
+
+      <c:return value='1m'/>
+   </c:function>
+
+</c:module>

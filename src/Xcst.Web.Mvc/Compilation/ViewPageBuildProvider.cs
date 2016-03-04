@@ -28,47 +28,50 @@ namespace Xcst.Web.Mvc.Compilation {
 
       protected override string ParsePath() {
 
-         using (Stream source = OpenStream()) {
+         if (!this.IsFileInCodeDir) {
 
-            var readerSettings = new XmlReaderSettings {
-               IgnoreComments = true,
-               IgnoreWhitespace = true
-            };
+            using (Stream source = OpenStream()) {
 
-            using (XmlReader reader = XmlReader.Create(source, readerSettings, baseUri: this.PhysicalPath.LocalPath)) {
+               var readerSettings = new XmlReaderSettings {
+                  IgnoreComments = true,
+                  IgnoreWhitespace = true
+               };
 
-               IXmlLineInfo lineInfo = reader as IXmlLineInfo;
+               using (XmlReader reader = XmlReader.Create(source, readerSettings, baseUri: this.PhysicalPath.LocalPath)) {
 
-               Func<Exception> duplicateException = () =>
-                  CreateParseException($"Only one '{reader.LocalName}' directive is allowed.", lineInfo.LineNumber);
+                  IXmlLineInfo lineInfo = reader as IXmlLineInfo;
 
-               Func<Exception> mutuallyExclusiveException = () =>
-                  CreateParseException($"'{nameof(this.inherits)}' and '{nameof(this.model)}' directives are mutually exclusive.", lineInfo.LineNumber);
+                  Func<Exception> duplicateException = () =>
+                     CreateParseException($"Only one '{reader.LocalName}' directive is allowed.", lineInfo.LineNumber);
 
-               while (reader.Read() && reader.NodeType != XmlNodeType.Element) {
+                  Func<Exception> mutuallyExclusiveException = () =>
+                     CreateParseException($"'{nameof(this.inherits)}' and '{nameof(this.model)}' directives are mutually exclusive.", lineInfo.LineNumber);
 
-                  if (reader.NodeType == XmlNodeType.ProcessingInstruction) {
+                  while (reader.Read() && reader.NodeType != XmlNodeType.Element) {
 
-                     switch (reader.LocalName) {
-                        case nameof(this.model):
-                           if (this.model != null) {
-                              throw duplicateException();
-                           }
-                           if (this.inherits != null) {
-                              throw mutuallyExclusiveException();
-                           }
-                           this.model = reader.Value.Trim();
-                           break;
+                     if (reader.NodeType == XmlNodeType.ProcessingInstruction) {
 
-                        case nameof(this.inherits):
-                           if (this.inherits != null) {
-                              throw duplicateException();
-                           }
-                           if (this.model != null) {
-                              throw mutuallyExclusiveException();
-                           }
-                           this.inherits = reader.Value.Trim();
-                           break;
+                        switch (reader.LocalName) {
+                           case nameof(this.model):
+                              if (this.model != null) {
+                                 throw duplicateException();
+                              }
+                              if (this.inherits != null) {
+                                 throw mutuallyExclusiveException();
+                              }
+                              this.model = reader.Value.Trim();
+                              break;
+
+                           case nameof(this.inherits):
+                              if (this.inherits != null) {
+                                 throw duplicateException();
+                              }
+                              if (this.model != null) {
+                                 throw mutuallyExclusiveException();
+                              }
+                              this.inherits = reader.Value.Trim();
+                              break;
+                        }
                      }
                   }
                }
@@ -82,32 +85,35 @@ namespace Xcst.Web.Mvc.Compilation {
 
          base.ConfigureCompiler(compiler);
 
-         var baseTypes = new List<string>(compiler.TargetBaseTypes);
-         baseTypes.RemoveAt(0);
+         if (!this.IsFileInCodeDir) {
 
-         if (!String.IsNullOrEmpty(this.inherits)) {
-            baseTypes.Insert(0, this.inherits);
-         } else {
+            var baseTypes = new List<string>(compiler.TargetBaseTypes);
+            baseTypes.RemoveAt(0);
 
-            string modelType;
+            if (!String.IsNullOrEmpty(this.inherits)) {
+               baseTypes.Insert(0, this.inherits);
+            } else {
 
-            if (!String.IsNullOrEmpty(this.model)) {
+               string modelType;
 
-               modelType = this.model;
+               if (!String.IsNullOrEmpty(this.model)) {
 
-               if (!this.model.Contains(".")) {
-                  compiler.AlternateFirstBaseType = $"{typeof(TViewPage).FullName}<{this.GeneratedTypeFullName}.{this.model}>";
-                  compiler.AlternateFirstBaseTypeIfExistsType = this.model;
+                  modelType = this.model;
+
+                  if (!this.model.Contains(".")) {
+                     compiler.AlternateFirstBaseType = $"{typeof(TViewPage).FullName}<{this.GeneratedTypeFullName}.{this.model}>";
+                     compiler.AlternateFirstBaseTypeIfExistsType = this.model;
+                  }
+
+               } else {
+                  modelType = "dynamic";
                }
 
-            } else {
-               modelType = "dynamic";
+               baseTypes.Insert(0, $"{typeof(TViewPage).FullName}<{modelType}>");
             }
 
-            baseTypes.Insert(0, $"{typeof(TViewPage).FullName}<{modelType}>");
+            compiler.TargetBaseTypes = baseTypes.ToArray();
          }
-
-         compiler.TargetBaseTypes = baseTypes.ToArray();
       }
    }
 }

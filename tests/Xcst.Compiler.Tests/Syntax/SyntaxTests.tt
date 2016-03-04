@@ -2,12 +2,14 @@
 <#@ Output Extension=".generated.cs" #>
 <#@ Assembly Name="System" #>
 <#@ Assembly Name="System.Core" #>
+<#@ Assembly Name="$(SolutionDir)src\Xcst.Compiler\bin\Debug\Xcst.Compiler.dll" #>
 <#@ Import Namespace="System" #>
 <#@ Import Namespace="System.Collections.Generic" #>
 <#@ Import Namespace="System.IO" #>
 <#@ Import Namespace="System.Linq" #>
 <#@ Import Namespace="System.Text.RegularExpressions" #>
 <#@ Import Namespace="Microsoft.CSharp" #>
+<#@ Import Namespace="Xcst.Compiler" #>
 <#
    string className = Path.GetFileNameWithoutExtension(this.Host.TemplateFile);
    DirectoryInfo startDirectory = Directory.CreateDirectory(this.Host.ResolvePath(""));
@@ -24,15 +26,41 @@
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Xcst.Compiler.Tests.Syntax {<# 
+namespace Xcst.Compiler.Tests {<# 
    PushIndent(indent);
-   GenerateClass(startDirectory, indent, @public: true); 
+   GenerateClass(startDirectory, indent, startDirectory.Name); 
    WriteLine("");
    PopIndent();
 #>
 }
 
-<#+ void GenerateClass(DirectoryInfo directory, string indent, bool @public = false) { 
+<#+ void GenerateClass(DirectoryInfo directory, string indent, string fullName) { 
+
+   var packages = directory.EnumerateFiles("*.pxcst").ToArray();
+
+   foreach (FileInfo file in packages) {
+
+      WriteLine("");
+
+      using (var fileStream = File.OpenRead(file.FullName)) {
+
+         XcstCompiler compiler = new XcstCompilerFactory().CreateCompiler();
+         compiler.TargetNamespace = directory.Name;
+         compiler.LibraryPackage = true;
+
+         CompileResult xcstResult = compiler.Compile(fileStream, baseUri: new Uri(file.FullName, UriKind.Absolute));
+
+         foreach (var src in xcstResult.CompilationUnits) {
+            WriteLine(src);
+         }
+      }
+   }
+
+   WriteLine("");
+   WriteLine("");
+   Write("namespace " + directory.Name);
+   Write(" {");
+   PushIndent(indent);
 
    var tests = directory.EnumerateFiles("*.xcst").ToArray();
 
@@ -41,12 +69,7 @@ namespace Xcst.Compiler.Tests.Syntax {<#
       WriteLine("");
       WriteLine("");
       WriteLine("[TestClass]");
-
-      if (@public) {
-         Write("public ");
-      }
-
-      Write("class ");
+      Write("public class ");
       Write(directory.Name + "Tests");
       Write(" {");
       PushIndent(indent);
@@ -65,7 +88,7 @@ namespace Xcst.Compiler.Tests.Syntax {<#
 
          WriteLine("");
          WriteLine("");
-         WriteLine("[TestMethod]");
+         WriteLine("[TestMethod, TestCategory(\"" + fullName + "\")]");
 
          if (!correct) {
             WriteLine("[ExpectedException(typeof(Xcst.Compiler.CompileException))]");
@@ -77,7 +100,7 @@ namespace Xcst.Compiler.Tests.Syntax {<#
          PushIndent(indent);
          WriteLine("");
 
-         Write("Type moduleType = SyntaxTestsHelper.CompileFromFile(@\"{0}\", {1});", file.FullName, correct.ToString().ToLower());
+         Write("var moduleType = SyntaxTestsHelper.CompileFromFile(@\"{0}\", {1});", file.FullName, correct.ToString().ToLower());
 
          if (correct) {
 
@@ -87,6 +110,7 @@ namespace Xcst.Compiler.Tests.Syntax {<#
 
                if (testFileName.EndsWith(".p")
                   || testFileName.EndsWith(".f")) {
+
                   WriteLine("");
                   Write("Assert.Is{0}(SyntaxTestsHelper.OutputEqualsToDoc(moduleType, @\"{1}\"));", testFileName.EndsWith(".p"), testCase.FullName);
                }
@@ -104,6 +128,10 @@ namespace Xcst.Compiler.Tests.Syntax {<#
    }
 
    foreach (DirectoryInfo subDirectory in directory.EnumerateDirectories()) {
-      GenerateClass(subDirectory, indent, @public: true);
+      GenerateClass(subDirectory, indent, fullName + "." + subDirectory.Name);
    }
+
+   PopIndent();
+   WriteLine("");
+   Write("}");
 } #>

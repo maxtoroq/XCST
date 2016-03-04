@@ -30,7 +30,21 @@ namespace Xcst.Compiler {
       readonly Lazy<XsltExecutable> executable;
       readonly IDictionary<Uri, Func<Stream>> extensions = new Dictionary<Uri, Func<Stream>>();
 
+      Func<string, Type> _PackageTypeResolver = typeName => Type.GetType(typeName, throwOnError: true);
+
       public bool EnableExtensions { get; set; }
+
+      public Func<string, Type> PackageTypeResolver {
+         get { return _PackageTypeResolver; }
+         set {
+
+            if (value == null) {
+               throw new ArgumentNullException(nameof(value));
+            }
+
+            _PackageTypeResolver = value;
+         }
+      }
 
       public XcstCompilerFactory() {
 
@@ -38,11 +52,12 @@ namespace Xcst.Compiler {
          this.processor.SetProperty("http://saxon.sf.net/feature/linenumbering", "on");
          this.processor.SetProperty("http://saxon.sf.net/feature/xinclude-aware", "on");
 
+         this.processor.RegisterExtensionFunction(new DocWithUrisFunction(this.processor));
+         this.processor.RegisterExtensionFunction(new EscapeValueTemplateFunction());
          this.processor.RegisterExtensionFunction(new LineNumberFunction());
          this.processor.RegisterExtensionFunction(new LocalPathFunction());
-         this.processor.RegisterExtensionFunction(new EscapeValueTemplateFunction());
          this.processor.RegisterExtensionFunction(new MakeRelativeUriFunction());
-         this.processor.RegisterExtensionFunction(new DocWithUrisFunction(this.processor));
+         this.processor.RegisterExtensionFunction(new PackageManifestFunction(this, this.processor));
 
          this.executable = new Lazy<XsltExecutable>(CreateCompilerExec);
       }

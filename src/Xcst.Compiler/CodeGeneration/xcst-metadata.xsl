@@ -28,7 +28,6 @@
       <text>[</text>
       <value-of select="@value"/>
       <text>]</text>
-      <call-template name="src:line-default"/>
    </template>
 
    <template name="src:member-attributes">
@@ -69,7 +68,6 @@
          <text>(</text>
          <value-of select="$setters/string()" separator=", "/>
          <text>)]</text>
-         <call-template name="src:line-default"/>
       </if>
    </template>
 
@@ -126,7 +124,6 @@
          <text>(</text>
          <value-of select="$setters/string()" separator=", "/>
          <text>)]</text>
-         <call-template name="src:line-default"/>
       </if>
    </template>
 
@@ -166,7 +163,6 @@
          <text>(</text>
          <value-of select="$setters/string()" separator=", "/>
          <text>)]</text>
-         <call-template name="src:line-default"/>
       </if>
    </template>
 
@@ -185,7 +181,6 @@
          <text>[</text>
          <value-of select="src:global-identifier('System.ComponentModel.DataAnnotations.ScaffoldColumn')"/>
          <text>(false)]</text>
-         <call-template name="src:line-default"/>
       </if>
    </template>
 
@@ -200,7 +195,6 @@
          <text>[</text>
          <value-of select="src:global-identifier('System.ComponentModel.ReadOnly')"/>
          <text>(true)]</text>
-         <call-template name="src:line-default"/>
       </if>
    </template>
 
@@ -250,7 +244,6 @@
             </otherwise>
          </choose>
          <text>]</text>
-         <call-template name="src:line-default"/>
       </if>
    </template>
 
@@ -276,7 +269,6 @@
             <text>)</text>
          </if>
          <text>]</text>
-         <call-template name="src:line-default"/>
       </if>
    </template>
 
@@ -308,7 +300,6 @@
          </if>
          <value-of select="$setters/string()" separator=", "/>
          <text>)]</text>
-         <call-template name="src:line-default"/>
       </if>
    </template>
 
@@ -339,7 +330,6 @@
          <text>(</text>
          <value-of select="$setters/string()" separator=", "/>
          <text>)]</text>
-         <call-template name="src:line-default"/>
       </if>
    </template>
 
@@ -370,7 +360,6 @@
          </if>
          <value-of select="@min, @max, $setters/string()" separator=", "/>
          <text>)]</text>
-         <call-template name="src:line-default"/>
       </if>
    </template>
 
@@ -393,7 +382,6 @@
          <text>(</text>
          <value-of select="$setters/string()" separator=", "/>
          <text>)]</text>
-         <call-template name="src:line-default"/>
       </if>
    </template>
 

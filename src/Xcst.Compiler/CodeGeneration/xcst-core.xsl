@@ -49,7 +49,6 @@
       <apply-templates select="." mode="src:expression"/>
       <text>)</text>
       <value-of select="$src:statement-delimiter"/>
-      <call-template name="src:line-default"/>
    </template>
 
    <template match="*" mode="src:expression">
@@ -108,7 +107,6 @@
          <text>WriteEndAttribute()</text>
          <value-of select="$src:statement-delimiter"/>
       </if>
-      <call-template name="src:line-default"/>
    </template>
 
    <template match="c:comment" mode="src:statement">
@@ -123,7 +121,6 @@
       </call-template>
       <text>)</text>
       <value-of select="$src:statement-delimiter"/>
-      <call-template name="src:line-default"/>
    </template>
 
    <template match="c:element" mode="src:statement">
@@ -154,7 +151,6 @@
       <text>.</text>
       <text>WriteEndElement()</text>
       <value-of select="$src:statement-delimiter"/>
-      <call-template name="src:line-default"/>
    </template>
 
    <template match="c:namespace" mode="src:statement">
@@ -188,7 +184,6 @@
          <text>WriteEndAttribute()</text>
          <value-of select="$src:statement-delimiter"/>
       </if>
-      <call-template name="src:line-default"/>
    </template>
 
    <template match="c:processing-instruction" mode="src:statement">
@@ -205,7 +200,6 @@
       </call-template>
       <text>.TrimStart())</text>
       <value-of select="$src:statement-delimiter"/>
-      <call-template name="src:line-default"/>
    </template>
 
    <template match="c:text | c:value-of" mode="src:statement">
@@ -223,7 +217,6 @@
       <apply-templates select="." mode="src:expression"/>
       <text>)</text>
       <value-of select="$src:statement-delimiter"/>
-      <call-template name="src:line-default"/>
    </template>
 
    <template match="c:text" mode="src:expression">
@@ -271,7 +264,6 @@
             src:verbatim-string(string())"/>
       <text>)</text>
       <value-of select="$src:statement-delimiter"/>
-      <call-template name="src:line-default"/>
    </template>
 
    <template name="src:literal-result-element">
@@ -322,20 +314,36 @@
 
    <template name="src:use-attribute-sets">
       <param name="attr" as="attribute()?"/>
-      <param name="modules" tunnel="yes"/>
+      <param name="package-manifest" tunnel="yes"/>
       <param name="context-param" tunnel="yes"/>
 
       <if test="$attr">
          <variable name="names" select="
             for $s in tokenize($attr, '\s')[.]
             return resolve-QName($s, .)"/>
-         <variable name="sets" select="
-            for $n in $names, $m in $modules
-            return $m/c:attribute-set[resolve-QName(@name, .) eq $n]"/>
+         <variable name="sets" as="xs:string*">
+            <variable name="current" select="."/>
+            <for-each select="$names">
+               <choose>
+                  <when test="$current[self::c:attribute-set] and $current/parent::c:override and . eq xs:QName('c:original')">
+                     <variable name="current-meta" select="$package-manifest/xcst:attribute-set[@declaration-id eq generate-id($current)]"/>
+                     <variable name="original-meta" select="$package-manifest/xcst:attribute-set[@id eq $current-meta/@overrides]"/>
+                     <if test="$original-meta/@original-visibility eq 'abstract'">
+                        <sequence select="error(xs:QName('err:XTSE3075'), 'Cannot use the component reference c:original when the overridden component has visibility=&quot;abstract&quot;.', src:error-object($attr))"/>
+                     </if>
+                     <sequence select="src:original-member($original-meta)"/>
+                  </when>
+                  <otherwise>
+                     <sequence select="
+                        $package-manifest/xcst:attribute-set[@visibility ne 'hidden' and resolve-QName(@name, .) eq current()]/@member-name"/>
+                  </otherwise>
+               </choose>
+            </for-each>
+         </variable>
          <for-each select="$sets">
             <call-template name="src:new-line-indented"/>
             <text>this.</text>
-            <value-of select="src:template-method-name(.)"/>
+            <value-of select="."/>
             <text>(new </text>
             <value-of select="src:fully-qualified-helper('DynamicContext')"/>
             <text>(</text>
@@ -458,7 +466,7 @@
 
    <template match="c:iterate//c:next-iteration" mode="src:statement">
       <for-each select="c:with-param">
-         <if test="preceding-sibling::c:with-param[@name/xcst:name(.) = current()/@name/xcst:name(.)]">
+         <if test="preceding-sibling::c:with-param[xcst:name-equals(@name, current()/@name)]">
             <sequence select="error(xs:QName('err:XTSE0670'), 'Duplicate parameter name.', src:error-object(.))"/>
          </if>
          <if test="@tunnel/xcst:boolean(.)">
@@ -470,7 +478,6 @@
          <text> = </text>
          <call-template name="src:value"/>
          <value-of select="$src:statement-delimiter"/>
-         <call-template name="src:line-default"/>
       </for-each>
       <call-template name="src:new-line-indented"/>
       <text>continue</text>
@@ -637,10 +644,16 @@
       ## Variables and Parameters
    -->
 
-   <template match="c:module/c:param | c:template/c:param | c:delegate/c:param" mode="src:statement">
+   <template match="c:module/c:param | c:package/c:param | c:override/c:param | c:template/c:param | c:delegate/c:param" mode="src:statement">
       <param name="context-param" tunnel="yes"/>
 
-      <if test="preceding-sibling::c:param[@name/xcst:name(.) = current()/@name/xcst:name(.)]">
+      <!-- TODO: $c:original -->
+
+      <variable name="global" select="parent::c:module
+         or parent::c:package
+         or parent::c:override"/>
+
+      <if test="not($global) and preceding-sibling::c:param[xcst:name-equals(@name, current()/@name)]">
          <sequence select="error(xs:QName('err:XTSE0580'), 'The name of the parameter is not unique.', src:error-object(.))"/>
       </if>
 
@@ -658,16 +671,11 @@
       <call-template name="src:new-line-indented"/>
 
       <choose>
-         <when test="parent::c:module">
+         <when test="$global">
             <text>this.</text>
          </when>
          <otherwise>
-            <choose>
-               <when test="@as">
-                  <value-of select="xcst:type(@as)"/>
-               </when>
-               <otherwise>var</otherwise>
-            </choose>
+            <value-of select="(@as/$type, 'var')[1]"/>
             <text> </text>
          </otherwise>
       </choose>
@@ -690,7 +698,7 @@
             <value-of select="src:fully-qualified-helper('DynamicError')"/>
             <text>.</text>
             <choose>
-               <when test="parent::c:module">RequiredGlobalParameter</when>
+               <when test="$global">RequiredGlobalParameter</when>
                <otherwise>RequiredTemplateParameter</otherwise>
             </choose>
             <text>(</text>
@@ -719,7 +727,6 @@
       </if>
       <text>)</text>
       <value-of select="$src:statement-delimiter"/>
-      <call-template name="src:line-default"/>
    </template>
 
    <template match="c:variable | c:iterate/c:param" mode="src:statement">
@@ -728,7 +735,7 @@
       <variable name="has-value" select="xcst:has-value(., $text)"/>
 
       <if test="parent::c:iterate">
-         <if test="preceding-sibling::c:param[@name/xcst:name(.) = current()/@name/xcst:name(.)]">
+         <if test="preceding-sibling::c:param[xcst:name-equals(@name, current()/@name)]">
             <sequence select="error(xs:QName('err:XTSE0580'), 'The name of the parameter is not unique.', src:error-object(.))"/>
          </if>
          <if test="not($has-value)">
@@ -761,10 +768,10 @@
          </call-template>
       </if>
       <value-of select="$src:statement-delimiter"/>
-      <call-template name="src:line-default"/>
    </template>
 
-   <template match="c:module/c:variable" mode="src:statement">
+   <template match="c:module/c:variable | c:package/c:variable | c:override/c:variable" mode="src:statement">
+      <!-- TODO: $c:original -->
       <variable name="text" select="xcst:text(.)"/>
       <if test="xcst:has-value(., $text)">
          <call-template name="src:line-number"/>
@@ -776,7 +783,6 @@
             <with-param name="text" select="$text"/>
          </call-template>
          <value-of select="$src:statement-delimiter"/>
-         <call-template name="src:line-default"/>
       </if>
    </template>
 
@@ -785,23 +791,53 @@
    -->
 
    <template match="c:call-template" mode="src:statement">
+      <param name="package-manifest" tunnel="yes"/>
       <param name="indent" tunnel="yes"/>
-      <param name="modules" tunnel="yes"/>
       <param name="context-param" tunnel="yes"/>
 
-      <!-- TODO: XTSE0690: No value supplied for required parameter {@name} -->
-      <!-- TODO: XTSE0680: Parameter {@name} is not declared in the called template -->
+      <variable name="qname" select="resolve-QName(@name, .)"/>
+      <variable name="original" select="$qname eq xs:QName('c:original') and ancestor::c:override"/>
+      <variable name="meta" as="element(xcst:template)">
+         <choose>
+            <when test="$original">
+               <variable name="current-template" select="ancestor::c:template[1]"/>
+               <variable name="current-meta" select="$package-manifest/xcst:template[@declaration-id eq generate-id($current-template)]"/>
+               <variable name="original-meta" select="$package-manifest/xcst:template[@id eq $current-meta/@overrides]"/>
+               <if test="$original-meta/@original-visibility eq 'abstract'">
+                  <sequence select="error(xs:QName('err:XTSE3075'), 'Cannot use the component reference c:original when the overridden component has visibility=&quot;abstract&quot;.', src:error-object(.))"/>
+               </if>
+               <sequence select="$original-meta"/>
+            </when>
+            <otherwise>
+               <variable name="meta" select="
+               (reverse($package-manifest/xcst:template)[
+                  resolve-QName(@name, .) eq $qname
+                  and @visibility ne 'hidden'])[1]"/>
+               <if test="not($meta)">
+                  <sequence select="error(xs:QName('err:XTSE0650'), concat('No template exists named ', resolve-QName(@name, .), '.'), src:error-object(.))"/>
+               </if>
+               <sequence select="$meta"/>
+            </otherwise>
+         </choose>
+      </variable>
+
+      <variable name="current" select="."/>
+      <for-each select="$meta/xcst:param[@required/xs:boolean(.) and not(@tunnel/xs:boolean(.))]">
+         <if test="not($current/c:with-param[xcst:name-equals(@name, current()/string(@name))])">
+            <sequence select="error(xs:QName('err:XTSE0690'), concat('No value supplied for required parameter ', @name, '.'), src:error-object($current))"/>
+         </if>
+      </for-each>
+      <for-each select="c:with-param[not((@tunnel/xcst:boolean(.), false())[1])]">
+         <variable name="param-name" select="xcst:name(@name)"/>
+         <if test="not($meta/xcst:param[string(@name) eq $param-name])">
+            <sequence select="error(xs:QName('err:XTSE0680'), concat('Parameter ', $param-name, ' is not declared in the called template.'), src:error-object(.))"/>
+         </if>
+      </for-each>
 
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
-      <variable name="template" select="
-         (for $m in reverse($modules) 
-         return $m/c:template[resolve-QName(@name, .) eq current()/resolve-QName(@name, .)])[1]"/>
-      <if test="not($template)">
-         <sequence select="error(xs:QName('err:XTSE0650'), concat('No template exists named ', resolve-QName(@name, .), '.'), src:error-object(.))"/>
-      </if>
       <text>this.</text>
-      <value-of select="src:template-method-name($template)"/>
+      <value-of select="if ($original) then src:original-member($meta) else $meta/@member-name"/>
       <text>(new </text>
       <value-of select="src:fully-qualified-helper('DynamicContext')"/>
       <text>(</text>
@@ -812,31 +848,46 @@
       </apply-templates>
       <text>)</text>
       <value-of select="$src:statement-delimiter"/>
-      <call-template name="src:line-default"/>
    </template>
 
    <template match="c:next-template" mode="src:statement">
+      <param name="package-manifest" tunnel="yes"/>
       <param name="indent" tunnel="yes"/>
-      <param name="modules" tunnel="yes"/>
       <param name="context-param" tunnel="yes"/>
 
       <variable name="current-template" select="ancestor::c:template[1]"/>
+
       <if test="not($current-template)">
          <sequence select="error(xs:QName('err:XTSE0010'), concat('&lt;', name(), '> instruction can only be used within a &lt;c:template> declaration.'), src:error-object(.))"/>
       </if>
-      <variable name="templates" select="
-         for $m in reverse($modules) 
-         return $m/c:template[resolve-QName(@name, .) eq resolve-QName($current-template/@name, .)]"/>
-      <variable name="current-index" select="for $pos in (1 to count($templates)) return (if ($templates[$pos] is $current-template) then $pos else ())"/>
-      <variable name="next-templates" select="subsequence($templates, $current-index + 1)"/>
-      <if test="not($next-templates)">
+
+      <variable name="current-meta" select="$package-manifest/xcst:template[@declaration-id eq generate-id($current-template)]"/>
+
+      <variable name="meta" select="
+         $current-meta/preceding-sibling::xcst:*[
+            xcst:homonymous(., $current-meta) and not(@accepted/xs:boolean(.))][1]"/>
+
+      <if test="not($meta)">
          <sequence select="error(xs:QName('err:XTSE0650'), 'There are no more templates to call.', src:error-object(.))"/>
       </if>
-      <variable name="template" select="$next-templates[1]"/>
+
+      <variable name="current" select="."/>
+      <for-each select="$meta/xcst:param[@required/xs:boolean(.) and not(@tunnel/xs:boolean(.))]">
+         <if test="not($current/c:with-param[xcst:name-equals(@name, current()/string(@name))])">
+            <sequence select="error(xs:QName('err:XTSE0690'), concat('No value supplied for required parameter ', @name, '.'), src:error-object($current))"/>
+         </if>
+      </for-each>
+      <for-each select="c:with-param[not((@tunnel/xcst:boolean(.), false())[1])]">
+         <variable name="param-name" select="xcst:name(@name)"/>
+         <if test="not($meta/xcst:param[string(@name) eq $param-name])">
+            <sequence select="error(xs:QName('err:XTSE0680'), concat('Parameter ', $param-name, ' is not declared in the called template.'), src:error-object(.))"/>
+         </if>
+      </for-each>
+
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
       <text>this.</text>
-      <value-of select="src:template-method-name($template)"/>
+      <value-of select="$meta/@member-name"/>
       <text>(new </text>
       <value-of select="src:fully-qualified-helper('DynamicContext')"/>
       <text>(</text>
@@ -847,19 +898,18 @@
       </apply-templates>
       <text>)</text>
       <value-of select="$src:statement-delimiter"/>
-      <call-template name="src:line-default"/>
    </template>
 
    <template match="c:with-param" mode="src:with-param-for-templates">
 
-      <if test="preceding-sibling::c:with-param[@name/xcst:name(.) = current()/@name/xcst:name(.)]">
+      <if test="preceding-sibling::c:with-param[xcst:name-equals(@name, current()/@name)]">
          <sequence select="error(xs:QName('err:XTSE0670'), 'Duplicate parameter name.', src:error-object(.))"/>
       </if>
 
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
       <text>.WithParam(</text>
-      <value-of select="src:string(xcst:name(@name))"/>
+      <value-of select="src:string(src:strip-verbatim-prefix(xcst:name(@name)))"/>
       <text>, </text>
       <call-template name="src:value"/>
       <if test="@tunnel">
@@ -874,24 +924,31 @@
       <call-template name="src:new-line-indented"/>
       <apply-templates select="." mode="src:expression"/>
       <value-of select="$src:statement-delimiter"/>
-      <call-template name="src:line-default"/>
    </template>
 
    <template match="c:next-function" mode="src:expression">
-      <param name="modules" tunnel="yes"/>
-      <param name="next-function" tunnel="yes"/>
+      <param name="package-manifest" tunnel="yes"/>
 
       <variable name="current-function" select="ancestor::c:function[1]"/>
+
       <if test="not($current-function)">
          <sequence select="error(xs:QName('err:XTSE0010'), concat('&lt;', name(), '> instruction can only be used within a &lt;c:function> declaration.'), src:error-object(.))"/>
       </if>
-      <if test="not($next-function)">
+
+      <variable name="current-meta" select="$package-manifest/xcst:function[@declaration-id eq generate-id($current-function)]"/>
+
+      <variable name="function" select="
+         $current-meta/preceding-sibling::xcst:*[
+            xcst:homonymous(., $current-meta) and not(@accepted/xs:boolean(.))][1]"/>
+
+      <if test="not($function)">
          <sequence select="error(xs:QName('err:XTSE0650'), 'There are no more functions to call.', src:error-object(.))"/>
       </if>
-      <value-of select="src:overriden-function-method-name($next-function)"/>
+
+      <value-of select="$function/@member-name"/>
       <text>(</text>
       <for-each select="c:with-param">
-         <if test="preceding-sibling::c:with-param[@name/xcst:name(.) = current()/@name/xcst:name(.)]">
+         <if test="preceding-sibling::c:with-param[xcst:name-equals(@name, current()/@name)]">
             <sequence select="error(xs:QName('err:XTSE0670'), 'Duplicate parameter name.', src:error-object(.))"/>
          </if>
          <if test="@tunnel/xcst:boolean(.)">
@@ -917,7 +974,7 @@
       <value-of select="@instance"/>
       <text>)</text>
       <for-each select="c:with-param">
-         <if test="preceding-sibling::c:with-param[@name/xcst:name(.) = current()/@name/xcst:name(.)]">
+         <if test="preceding-sibling::c:with-param[xcst:name-equals(@name, current()/@name)]">
             <sequence select="error(xs:QName('err:XTSE0670'), 'Duplicate parameter name.', src:error-object(.))"/>
          </if>
          <if test="@tunnel/xcst:boolean(.)">
@@ -930,7 +987,7 @@
             <with-param name="increase" select="1"/>
          </call-template>
          <text>.WithParam(</text>
-         <value-of select="src:string(xcst:name(@name))"/>
+         <value-of select="src:string(src:strip-verbatim-prefix(xcst:name(@name)))"/>
          <text>, </text>
          <call-template name="src:value"/>
          <text>)</text>
@@ -991,7 +1048,6 @@
          <value-of select="@test"/>
          <text>))</text>
          <call-template name="src:open-brace"/>
-         <call-template name="src:line-default"/>
          <call-template name="src:new-line-indented">
             <with-param name="increase" select="1"/>
          </call-template>
@@ -1040,7 +1096,6 @@
          <value-of select="$terminate-expr"/>
          <text>)</text>
          <call-template name="src:open-brace"/>
-         <call-template name="src:line-default"/>
       </if>
       <call-template name="src:new-line-indented">
          <with-param name="increase" select="if ($use-if) then 1 else 0"/>
@@ -1081,7 +1136,6 @@
          </if>
          <text>)</text>
          <value-of select="$src:statement-delimiter"/>
-         <call-template name="src:line-default"/>
          <call-template name="src:close-brace"/>
       </if>
    </template>
@@ -1462,7 +1516,6 @@
          </call-template>
       </if>
       <value-of select="$src:statement-delimiter"/>
-      <call-template name="src:line-default"/>
    </template>
 
    <template match="c:set" mode="src:statement">
@@ -1472,7 +1525,6 @@
       <text> = </text>
       <call-template name="src:value"/>
       <value-of select="$src:statement-delimiter"/>
-      <call-template name="src:line-default"/>
    </template>
 
    <template match="c:void" mode="src:statement">
@@ -1480,7 +1532,6 @@
       <call-template name="src:new-line-indented"/>
       <call-template name="src:value"/>
       <value-of select="$src:statement-delimiter"/>
-      <call-template name="src:line-default"/>
    </template>
 
    <template match="c:using" mode="src:statement">
@@ -1504,8 +1555,7 @@
       <call-template name="src:line-number"/>
       <value-of select="$src:new-line"/>
       <value-of select="text()"/>
-      <call-template name="src:line-default"/>
-      <!-- Make sure following output is not on same line as #line default -->
+      <!-- Make sure following output is not on same line as text() -->
       <call-template name="src:new-line-indented"/>
    </template>
 
@@ -1525,8 +1575,7 @@
       </call-template>
       <value-of select="$src:new-line"/>
       <value-of select="$script"/>
-      <call-template name="src:line-default"/>
-      <!-- Make sure following output is not on same line as #line default -->
+      <!-- Make sure following output is not on same line as $script -->
       <call-template name="src:new-line-indented"/>
    </template>
 
@@ -1658,7 +1707,24 @@
       <param name="node" as="node()"/>
 
       <variable name="string" select="xcst:non-string($node)"/>
+
+      <if test="not($string)">
+         <sequence select="error(xs:QName('err:XTSE0020'), concat('Value of ', name($node), ' must be a non-empty string.'), src:error-object($node))"/>
+      </if>
+
       <sequence select="$string"/>
+   </function>
+
+   <function name="xcst:name-equals" as="xs:boolean">
+      <param name="a" as="item()"/>
+      <param name="b" as="item()"/>
+
+      <variable name="strings" select="
+         for $item in ($a, $b)
+         return if ($item instance of node()) then xcst:name($item)
+         else $item"/>
+
+      <sequence select="$strings[1] eq $strings[2]"/>
    </function>
 
    <function name="xcst:is-value-template" as="xs:boolean">
@@ -1904,9 +1970,6 @@
 
       <if test="$use-block">
          <call-template name="src:open-brace"/>
-         <call-template name="src:line-default">
-            <with-param name="indent" select="$new-indent" tunnel="yes"/>
-         </call-template>
       </if>
       <choose>
          <when test="$complex-content">
@@ -1943,9 +2006,6 @@
             <if test="not($mode-expression)">
                <text>)</text>
                <value-of select="$src:statement-delimiter"/>
-               <call-template name="src:line-default">
-                  <with-param name="indent" select="$new-indent" tunnel="yes"/>
-               </call-template>
             </if>
          </when>
       </choose>
@@ -1967,31 +2027,12 @@
       </if>
    </template>
 
-   <template name="src:line-default">
-      <if test="$src:use-line-directive">
-         <call-template name="src:new-line-indented"/>
-         <text>#line default</text>
-      </if>
-   </template>
-
    <template name="src:line-hidden">
       <if test="$src:use-line-directive">
          <call-template name="src:new-line-indented"/>
          <text>#line hidden</text>
       </if>
    </template>
-
-   <function name="src:template-method-name" as="xs:string">
-      <param name="template" as="element()"/>
-
-      <sequence select="concat('__', replace(string(resolve-QName($template/@name, $template)), '[^A-Za-z0-9]', '_'), '_', generate-id($template))"/>
-   </function>
-
-   <function name="src:overriden-function-method-name" as="xs:string">
-      <param name="function" as="element(c:function)"/>
-
-      <sequence select="concat($function/xcst:name(@name), '_', generate-id($function))"/>
-   </function>
 
    <function name="src:fully-qualified-helper" as="xs:string">
       <param name="helper" as="xs:string"/>
@@ -2017,10 +2058,10 @@
       <sequence select="if (starts-with($name, '@')) then substring($name, 2) else $name"/>
    </function>
 
-   <function name="src:error-object" as="item()*">
+   <function name="src:error-object" as="item()+">
       <param name="node" as="node()"/>
 
-      <sequence select="document-uri(root($node)), src:line-number($node)"/>
+      <sequence select="(document-uri(root($node)), xs:anyURI(''))[1], src:line-number($node)"/>
    </function>
 
 </stylesheet>

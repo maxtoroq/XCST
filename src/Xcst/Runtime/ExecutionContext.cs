@@ -22,17 +22,17 @@ namespace Xcst.Runtime {
    /// <exclude/>
    public class ExecutionContext {
 
-      readonly IXcstExecutable executable;
+      readonly IXcstPackage package;
       readonly HashSet<Uri> outputUris = new HashSet<Uri>();
       readonly IFormatProvider formatProvider;
 
       public SimpleContent SimpleContent { get; }
 
-      internal ExecutionContext(IXcstExecutable executable, IFormatProvider formatProvider) {
+      internal ExecutionContext(IXcstPackage package, IFormatProvider formatProvider) {
 
-         if (executable == null) throw new ArgumentNullException(nameof(executable));
+         if (package == null) throw new ArgumentNullException(nameof(package));
 
-         this.executable = executable;
+         this.package = package;
          this.formatProvider = formatProvider ?? CultureInfo.CurrentCulture;
          this.SimpleContent = new SimpleContent(this.formatProvider);
       }
@@ -44,7 +44,7 @@ namespace Xcst.Runtime {
          this.outputUris.Add(writerFactory.OutputUri);
 
          var outputParams = new OutputParameters();
-         this.executable.ReadOutputDefinition(outputName, outputParams);
+         this.package.ReadOutputDefinition(outputName, outputParams);
 
          return new DynamicContext(writerFactory, outputParams, this, currentContext);
       }
@@ -86,7 +86,7 @@ namespace Xcst.Runtime {
          var defaultParameters = new OutputParameters();
 
          if (outputName != null) {
-            this.executable.ReadOutputDefinition(outputName, defaultParameters);
+            this.package.ReadOutputDefinition(outputName, defaultParameters);
          }
 
          using (IWriterFactory writerFactory = WriterFactory.CreateFactory(sb, parameters)) {

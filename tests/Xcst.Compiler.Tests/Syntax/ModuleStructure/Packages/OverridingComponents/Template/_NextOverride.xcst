@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:use-package name='NextOverride'>
+      <c:override>
+         <c:template name='text'>bar</c:template>
+      </c:override>
+   </c:use-package>
+
+   <c:template name='c:initial-template'>
+      <c:call-template name='foo'/>
+   </c:template>
+
+</c:module>

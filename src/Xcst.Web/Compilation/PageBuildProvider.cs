@@ -25,7 +25,7 @@ using Xcst.Compiler;
 
 namespace Xcst.Web.Compilation {
 
-   [BuildProviderAppliesTo(BuildProviderAppliesTo.Web)]
+   [BuildProviderAppliesTo(BuildProviderAppliesTo.Web | BuildProviderAppliesTo.Code)]
    public class PageBuildProvider<TPage> : BaseBuildProvider where TPage : class {
 
       readonly Uri applicationUri = new Uri(HostingEnvironment.ApplicationPhysicalPath, UriKind.Absolute);
@@ -78,9 +78,14 @@ namespace Xcst.Web.Compilation {
 
       protected virtual void ConfigureCompiler(XcstCompiler compiler) {
 
-         compiler.TargetNamespace = this.GeneratedTypeNamespace;
-         compiler.TargetClass = this.GeneratedTypeName;
-         compiler.SetTargetBaseTypes(typeof(TPage));
+         if (this.IsFileInCodeDir) {
+            compiler.LibraryPackage = true;
+         } else {
+            compiler.SetTargetBaseTypes(typeof(TPage));
+            compiler.TargetNamespace = this.GeneratedTypeNamespace;
+            compiler.TargetClass = this.GeneratedTypeName;
+         }
+
          compiler.UseLineDirective = true;
 
          compiler.SetParameter(
@@ -94,7 +99,9 @@ namespace Xcst.Web.Compilation {
          // The 'Show Complete Compilation Source' feature of the ASP.NET server error page
          // shows the last compile unit. Returning IFileDependent partial first.
 
-         if (!typeof(IFileDependent).IsAssignableFrom(typeof(TPage))) {
+         if (!this.IsFileInCodeDir
+            && !typeof(IFileDependent).IsAssignableFrom(typeof(TPage))) {
+
             yield return FileDependentPartial();
          }
 
@@ -147,9 +154,12 @@ namespace Xcst.Web.Compilation {
 
          base.GenerateCode(assemblyBuilder);
 
-         assemblyBuilder.AddAssemblyReference(typeof(Xcst.Runtime.IXcstExecutable).Assembly);
-         assemblyBuilder.AddAssemblyReference(typeof(TPage).Assembly);
-         assemblyBuilder.GenerateTypeFactory(this.GeneratedTypeFullName);
+         assemblyBuilder.AddAssemblyReference(typeof(Xcst.IXcstPackage).Assembly);
+
+         if (!this.IsFileInCodeDir) {
+            assemblyBuilder.AddAssemblyReference(typeof(TPage).Assembly);
+            assemblyBuilder.GenerateTypeFactory(this.GeneratedTypeFullName);
+         }
       }
    }
 }

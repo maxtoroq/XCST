@@ -15,6 +15,7 @@
 using System;
 using System.Collections.Generic;
 using System.Web;
+using System.Web.Compilation;
 using Xcst.Compiler;
 
 namespace Xcst.Web {
@@ -26,7 +27,8 @@ namespace Xcst.Web {
       public static XcstWebConfiguration Instance { get; } = new XcstWebConfiguration();
 
       public XcstCompilerFactory CompilerFactory { get; } = new XcstCompilerFactory {
-         EnableExtensions = true
+         EnableExtensions = true,
+         PackageTypeResolver = typeName => BuildManager.GetType(typeName, throwOnError: true)
       };
 
       internal IList<Func<object, IHttpHandler>> HttpHandlerFactories { get; } = new List<Func<object, IHttpHandler>>();

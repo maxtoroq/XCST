@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:package name='OverrideOverridden' version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:template name='text' visibility='public'>foo</c:template>
+
+   <c:template name='foo' visibility='public'>
+      <foo>
+         <c:call-template name='text'/>
+      </foo>
+   </c:template>
+
+</c:package>

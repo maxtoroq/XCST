@@ -23,6 +23,7 @@
    <start>
       <choice>
          <ref name="module"/>
+         <ref name="package"/>
          <ref name="simplified-module-element"/>
       </choice>
    </start>
@@ -176,6 +177,14 @@
       </choice>
    </define>
 
+   <define name="visibility-attribute">
+      <optional>
+         <attribute name="visibility">
+            <ref name="Visibility"/>
+         </attribute>
+      </optional>
+   </define>
+
    <define name="user-defined-data-element">
       <element>
          <anyName>
@@ -223,26 +232,44 @@
 
    <define name="module">
       <element name="module">
-         <attribute name="version">
-            <ref name="Version"/>
-         </attribute>
-         <attribute name="language">
-            <ref name="Language"/>
-         </attribute>
-         <ref name="standard-attributes-except-version"/>
-         <zeroOrMore>
-            <ref name="use-functions"/>
-         </zeroOrMore>
-         <zeroOrMore>
-            <ref name="import"/>
-         </zeroOrMore>
-         <zeroOrMore>
-            <choice>
-               <ref name="declaration-element"/>
-               <ref name="user-defined-data-element"/>
-            </choice>
-         </zeroOrMore>
+         <ref name="module-content"/>
       </element>
+   </define>
+
+   <define name="package">
+      <element name="package">
+         <optional>
+            <attribute name="name">
+               <ref name="Name"/>
+            </attribute>
+         </optional>
+         <ref name="module-content"/>
+      </element>
+   </define>
+
+   <define name="module-content">
+      <attribute name="version">
+         <ref name="Version"/>
+      </attribute>
+      <attribute name="language">
+         <ref name="Language"/>
+      </attribute>
+      <ref name="standard-attributes-except-version"/>
+      <zeroOrMore>
+         <ref name="use-functions"/>
+      </zeroOrMore>
+      <zeroOrMore>
+         <ref name="use-package"/>
+      </zeroOrMore>
+      <zeroOrMore>
+         <ref name="import"/>
+      </zeroOrMore>
+      <zeroOrMore>
+         <choice>
+            <ref name="declaration-element"/>
+            <ref name="user-defined-data-element"/>
+         </choice>
+      </zeroOrMore>
    </define>
 
    <define name="use-functions">
@@ -264,6 +291,34 @@
       </element>
    </define>
 
+   <define name="use-package">
+      <element name="use-package">
+         <attribute name="name">
+            <ref name="Name"/>
+         </attribute>
+         <ref name="standard-attributes"/>
+         <zeroOrMore>
+            <ref name="override"/>
+         </zeroOrMore>
+      </element>
+   </define>
+
+   <define name="override">
+      <element name="override">
+         <ref name="standard-attributes"/>
+         <zeroOrMore>
+            <choice>
+               <ref name="template"/>
+               <ref name="function"/>
+               <ref name="variable"/>
+               <ref name="param"/>
+               <ref name="attribute-set"/>
+               <ref name="type"/>
+            </choice>
+         </zeroOrMore>
+      </element>
+   </define>
+
    <define name="import">
       <element name="import">
          <attribute name="href">
@@ -278,6 +333,7 @@
          <attribute name="name">
             <ref name="QName"/>
          </attribute>
+         <ref name="visibility-attribute"/>
          <ref name="standard-attributes"/>
          <zeroOrMore>
             <ref name="param"/>
@@ -296,6 +352,7 @@
                <ref name="Type"/>
             </attribute>
          </optional>
+         <ref name="visibility-attribute"/>
          <ref name="standard-attributes"/>
          <zeroOrMore>
             <ref name="param"/>
@@ -341,6 +398,7 @@
                </list>
             </attribute>
          </optional>
+         <ref name="visibility-attribute"/>
          <ref name="standard-attributes"/>
          <zeroOrMore>
             <ref name="attribute"/>
@@ -353,6 +411,7 @@
          <attribute name="name">
             <ref name="Name"/>
          </attribute>
+         <ref name="visibility-attribute"/>
          <ref name="standard-attributes"/>
          <ref name="type-or-member-attributes"/>
          <zeroOrMore>
@@ -1151,6 +1210,7 @@
                <ref name="Type"/>
             </attribute>
          </optional>
+         <ref name="visibility-attribute"/>
          <ref name="standard-attributes"/>
          <ref name="value-attribute-or-content"/>
       </element>
@@ -1382,6 +1442,15 @@
 
    <define name="Language">
       <data type="token"/>
+   </define>
+
+   <define name="Visibility">
+      <choice>
+         <value>public</value>
+         <value>private</value>
+         <value>final</value>
+         <value>abstract</value>
+      </choice>
    </define>
 
    <define name="SortOrder">

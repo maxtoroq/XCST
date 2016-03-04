@@ -48,7 +48,7 @@
     <Compile Include="Runtime\DynamicError.cs" />
     <Compile Include="Runtime\ExecutionContext.cs" />
     <Compile Include="IWriterFactory.cs" />
-    <Compile Include="Runtime\IXcstExecutable.cs" />
+    <Compile Include="IXcstPackage.cs" />
     <Compile Include="ParameterArgument.cs" />
     <Compile Include="Runtime\PrimingContext.cs" />
     <Compile Include="Runtime\SimpleContent.cs" />

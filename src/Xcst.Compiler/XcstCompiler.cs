@@ -48,6 +48,10 @@ namespace Xcst.Compiler {
 
       public bool OpenBraceOnNewLine { get; set; }
 
+      public bool LibraryPackage { get; set; }
+
+      public string UsePackageBase { get; set; }
+
       internal XcstCompiler(Func<XsltExecutable> compilerExecFn, Processor processor) {
 
          if (compilerExecFn == null) throw new ArgumentNullException(nameof(compilerExecFn));
@@ -115,8 +119,6 @@ namespace Xcst.Compiler {
 
       CompileResult Compile(Func<DocumentBuilder, XdmNode> buildFn, Uri baseUri = null) {
 
-         CheckRequiredParams();
-
          var resolver = new LoggingResolver();
 
          DocumentBuilder docBuilder = this.processor.NewDocumentBuilder();
@@ -159,19 +161,10 @@ namespace Xcst.Compiler {
          } catch (DynamicError ex) {
 
             XdmValue errorObject = ex.GetErrorObject();
+            var errorData = ModuleUriAndLineNumberFromErrorObject(errorObject);
 
-            string moduleUri = errorObject.GetXdmEnumerator()
-               .AsAtomicValues()
-               .Select(x => x.ToString())
-               .DefaultIfEmpty(ex.ModuleUri)
-               .FirstOrDefault();
-
-            int lineNumber = errorObject.GetXdmEnumerator()
-               .AsAtomicValues()
-               .Skip(1)
-               .Select(x => (int)(long)x.Value)
-               .DefaultIfEmpty(ex.LineNumber)
-               .FirstOrDefault();
+            string moduleUri = errorData.Item1 ?? ex.ModuleUri;
+            int lineNumber = errorData.Item2 ?? ex.LineNumber;
 
             throw new CompileException(ex.Message,
                errorCode: ex.ErrorCode?.ToQualifiedName(),
@@ -204,17 +197,6 @@ namespace Xcst.Compiler {
          return result;
       }
 
-      void CheckRequiredParams() {
-
-         if (String.IsNullOrEmpty(this.TargetNamespace)) {
-            throw new InvalidOperationException($"Must set {nameof(this.TargetNamespace)} first.");
-         }
-
-         if (String.IsNullOrEmpty(this.TargetClass)) {
-            throw new InvalidOperationException($"Must set {nameof(this.TargetClass)} first.");
-         }
-      }
-
       XsltTransformer GetCompiler(XdmNode moduleDoc) {
 
          XsltTransformer compiler = this.compilerExec.Value.Load();
@@ -225,36 +207,67 @@ namespace Xcst.Compiler {
             compiler.SetParameter(pair.Key.ToQName(), pair.Value.ToXdmValue());
          }
 
-         compiler.SetParameter(CompilerQName("namespace"), this.TargetNamespace.ToXdmItem());
-         compiler.SetParameter(CompilerQName("class"), this.TargetClass.ToXdmItem());
+         if (this.TargetNamespace != null) {
+            compiler.SetParameter(CompilerQName("namespace"), this.TargetNamespace.ToXdmItem());
+         }
+
+         if (this.TargetClass != null) {
+            compiler.SetParameter(CompilerQName("class"), this.TargetClass.ToXdmItem());
+         }
+
          compiler.SetParameter(CompilerQName("base-types"), this.TargetBaseTypes.ToXdmValue());
-         compiler.SetParameter(CompilerQName("omit-assertions"), this.OmitAssertions.ToXdmValue());
+         compiler.SetParameter(CompilerQName("omit-assertions"), this.OmitAssertions.ToXdmItem());
 
          if (this.AlternateFirstBaseType != null) {
-            compiler.SetParameter(CompilerQName("alternate-first-base-type"), this.AlternateFirstBaseType.ToXdmValue());
+            compiler.SetParameter(CompilerQName("alternate-first-base-type"), this.AlternateFirstBaseType.ToXdmItem());
          }
 
          if (this.AlternateFirstBaseTypeIfExistsType != null) {
-            compiler.SetParameter(CompilerQName("alternate-first-base-type-if-exists-type"), this.AlternateFirstBaseTypeIfExistsType.ToXdmValue());
+            compiler.SetParameter(CompilerQName("alternate-first-base-type-if-exists-type"), this.AlternateFirstBaseTypeIfExistsType.ToXdmItem());
          }
 
          compiler.SetParameter(CompilerQName("use-line-directive"), this.UseLineDirective.ToXdmValue());
 
          if (this.NewLineChars != null) {
-            compiler.SetParameter(CompilerQName("new-line"), this.NewLineChars.ToXdmValue());
+            compiler.SetParameter(CompilerQName("new-line"), this.NewLineChars.ToXdmItem());
          }
 
          if (this.IndentChars != null) {
-            compiler.SetParameter(CompilerQName("indent"), this.IndentChars.ToXdmValue());
+            compiler.SetParameter(CompilerQName("indent"), this.IndentChars.ToXdmItem());
          }
 
-         compiler.SetParameter(CompilerQName("open-brace-on-new-line"), this.OpenBraceOnNewLine.ToXdmValue());
+         compiler.SetParameter(CompilerQName("open-brace-on-new-line"), this.OpenBraceOnNewLine.ToXdmItem());
+
+         compiler.SetParameter(CompilerQName("library-package"), this.LibraryPackage.ToXdmItem());
+
+         if (this.UsePackageBase != null) {
+            compiler.SetParameter(CompilerQName("use-package-base"), this.UsePackageBase.ToXdmItem());
+         }
 
          return compiler;
       }
 
       internal static QName CompilerQName(string local) {
          return new QName(XmlNamespaces.XcstCompiled, local);
+      }
+
+      internal static Tuple<string, int?> ModuleUriAndLineNumberFromErrorObject(XdmValue errorObject) {
+
+         XdmAtomicValue[] values = errorObject
+            .GetXdmEnumerator()
+            .AsAtomicValues()
+            .ToArray();
+
+         string moduleUri = values
+            .Select(x => x.ToString())
+            .FirstOrDefault();
+
+         int? lineNumber = values
+            .Skip(1)
+            .Select(x => (int?)(long)x.Value)
+            .FirstOrDefault();
+
+         return Tuple.Create(moduleUri, lineNumber);
       }
    }
 

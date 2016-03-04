@@ -13,8 +13,11 @@
 // limitations under the License.
 
 using System;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Xml;
 using Saxon.Api;
 using static Xcst.Compiler.XcstCompiler;
 
@@ -28,7 +31,7 @@ namespace Xcst.Compiler.CodeGeneration {
          new XdmSequenceType(XdmAnyNodeType.Instance, ' ')
       };
 
-      public override int MinimumNumberOfArguments => 1;
+      public override int MinimumNumberOfArguments => ArgumentTypes.Length;
 
       public override int MaximumNumberOfArguments => MinimumNumberOfArguments;
 
@@ -61,7 +64,7 @@ namespace Xcst.Compiler.CodeGeneration {
          new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_ANYURI), ' ')
       };
 
-      public override int MinimumNumberOfArguments => 1;
+      public override int MinimumNumberOfArguments => ArgumentTypes.Length;
 
       public override int MaximumNumberOfArguments => MinimumNumberOfArguments;
 
@@ -97,7 +100,7 @@ namespace Xcst.Compiler.CodeGeneration {
          new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_STRING), ' ')
       };
 
-      public override int MinimumNumberOfArguments => 1;
+      public override int MinimumNumberOfArguments => ArgumentTypes.Length;
 
       public override int MaximumNumberOfArguments => MinimumNumberOfArguments;
 
@@ -131,7 +134,7 @@ namespace Xcst.Compiler.CodeGeneration {
          new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_ANYURI), ' ')
       };
 
-      public override int MinimumNumberOfArguments => 2;
+      public override int MinimumNumberOfArguments => ArgumentTypes.Length;
 
       public override int MaximumNumberOfArguments => MinimumNumberOfArguments;
 
@@ -165,10 +168,11 @@ namespace Xcst.Compiler.CodeGeneration {
       public override QName FunctionName { get; } = CompilerQName("doc-with-uris");
 
       public override XdmSequenceType[] ArgumentTypes { get; } = {
-         new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_ANYURI), ' ')
+         new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_ANYURI), ' '),
+         new XdmSequenceType(XdmAnyItemType.Instance, '+')
       };
 
-      public override int MinimumNumberOfArguments => 1;
+      public override int MinimumNumberOfArguments => ArgumentTypes.Length;
 
       public override int MaximumNumberOfArguments => MinimumNumberOfArguments;
 
@@ -181,7 +185,7 @@ namespace Xcst.Compiler.CodeGeneration {
       }
 
       public override XdmSequenceType ResultType(XdmSequenceType[] ArgumentTypes) {
-         return new XdmSequenceType(XdmAnyItemType.Instance, '*');
+         return new XdmSequenceType(XdmAnyItemType.Instance, '+');
       }
 
       class FunctionCall : ExtensionFunctionCall {
@@ -195,6 +199,11 @@ namespace Xcst.Compiler.CodeGeneration {
          public override IXdmEnumerator Call(IXdmEnumerator[] arguments, DynamicContext context) {
 
             XdmAtomicValue value = arguments[0].AsAtomicValues().Single();
+
+            XdmValue errorObject = new XdmValue(arguments[1].AsItems());
+            var errorData = ModuleUriAndLineNumberFromErrorObject(errorObject);
+            string moduleUri = errorData.Item1;
+            int lineNumber = errorData.Item2.GetValueOrDefault();
 
             Uri uri = (Uri)value.Value;
 
@@ -214,8 +223,11 @@ namespace Xcst.Compiler.CodeGeneration {
 
             } catch (FileNotFoundException) {
 
-               return XdmEmptySequence.INSTANCE
-                  .GetXdmEnumerator();
+               throw new CompileException("Could not retrieve imported module.",
+                  errorCode: new QualifiedName("XTSE0165", XmlNamespaces.XcstErrors),
+                  moduleUri: moduleUri,
+                  lineNumber: lineNumber
+               );
 
             } catch (net.sf.saxon.trans.XPathException ex) {
 
@@ -237,6 +249,231 @@ namespace Xcst.Compiler.CodeGeneration {
 
             return doc.Append(new XdmValue(resolver.ResolvedUris.Select(u => u.ToXdmAtomicValue())))
                .GetXdmEnumerator();
+         }
+      }
+   }
+
+   class PackageManifestFunction : ExtensionFunctionDefinition {
+
+      readonly XcstCompilerFactory compilerFactory;
+      readonly Processor processor;
+
+      public override QName FunctionName { get; } = CompilerQName("package-manifest");
+
+      public override XdmSequenceType[] ArgumentTypes { get; } = {
+         new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_STRING), ' '),
+         new XdmSequenceType(XdmAnyItemType.Instance, '+')
+      };
+
+      public override int MinimumNumberOfArguments => ArgumentTypes.Length;
+
+      public override int MaximumNumberOfArguments => MinimumNumberOfArguments;
+
+      public PackageManifestFunction(XcstCompilerFactory compilerFactory, Processor processor) {
+         this.compilerFactory = compilerFactory;
+         this.processor = processor;
+      }
+
+      public override ExtensionFunctionCall MakeFunctionCall() {
+         return new FunctionCall(this.compilerFactory, this.processor);
+      }
+
+      public override XdmSequenceType ResultType(XdmSequenceType[] ArgumentTypes) {
+         return new XdmSequenceType(XdmNodeKind.Document, ' ');
+      }
+
+      class FunctionCall : ExtensionFunctionCall {
+
+         readonly XcstCompilerFactory compilerFactory;
+         readonly Processor processor;
+
+         public FunctionCall(XcstCompilerFactory compilerFactory, Processor processor) {
+            this.compilerFactory = compilerFactory;
+            this.processor = processor;
+         }
+
+         public override IXdmEnumerator Call(IXdmEnumerator[] arguments, DynamicContext context) {
+
+            string typeName = arguments[0].AsAtomicValues().Single().ToString();
+
+            XdmValue errorObject = new XdmValue(arguments[1].AsItems());
+            var errorData = ModuleUriAndLineNumberFromErrorObject(errorObject);
+            string moduleUri = errorData.Item1;
+            int lineNumber = errorData.Item2.GetValueOrDefault();
+
+            Type packageType;
+            var packageResolveError = new QualifiedName("XTSE3000", XmlNamespaces.XcstErrors);
+
+            try {
+               packageType = this.compilerFactory.PackageTypeResolver(typeName);
+
+            } catch (Exception ex) {
+
+               throw new CompileException(ex.Message,
+                  errorCode: packageResolveError,
+                  moduleUri: moduleUri,
+                  lineNumber: lineNumber
+               );
+            }
+
+            if (packageType == null) {
+
+               throw new CompileException("Package type resolver returned null.",
+                  errorCode: packageResolveError,
+                  moduleUri: moduleUri,
+                  lineNumber: lineNumber
+               );
+            }
+
+            if (!typeof(IXcstPackage).IsAssignableFrom(packageType)) {
+
+               throw new CompileException($"{packageType.FullName} is not a valid XCST package.",
+                  errorCode: packageResolveError,
+                  moduleUri: moduleUri,
+                  lineNumber: lineNumber
+               );
+            }
+
+            using (var output = new MemoryStream()) {
+               using (XmlWriter writer = XmlWriter.Create(output)) {
+
+                  const string ns = XmlNamespaces.XcstSyntax;
+                  const string prefix = "xcst";
+
+                  Func<MethodBase, string> methodVisibility = m =>
+                     (m.IsAbstract) ? "abstract"
+                     : (m.IsVirtual) ? "public"
+                     : "final";
+
+                  Func<MemberInfo, string> memberVisibility = m =>
+                     methodVisibility(m as MethodBase ?? ((PropertyInfo)m).GetGetMethod());
+
+                  writer.WriteStartElement(prefix, "package-manifest", ns);
+                  writer.WriteAttributeString("package-type", packageType.FullName);
+
+                  foreach (MemberInfo member in packageType.GetMembers(BindingFlags.Instance | BindingFlags.Public)) {
+
+                     XcstComponentAttribute attr = member.GetCustomAttribute<XcstComponentAttribute>(inherit: true);
+
+                     if (attr == null) {
+                        continue;
+                     }
+
+                     switch (attr.ComponentKind) {
+                        case XcstComponentKind.AttributeSet:
+
+                           writer.WriteStartElement(prefix, "attribute-set", ns);
+
+                           if (String.IsNullOrEmpty(attr.Namespace)) {
+                              writer.WriteAttributeString("name", attr.Name);
+                           } else {
+                              writer.WriteAttributeString("xmlns", "ns1", null, attr.Namespace);
+                           }
+
+                           writer.WriteAttributeString("visibility", memberVisibility(member));
+                           writer.WriteAttributeString("member-name", member.Name);
+
+                           break;
+
+                        case XcstComponentKind.Function:
+
+                           writer.WriteStartElement(prefix, "function", ns);
+                           writer.WriteAttributeString("name", attr.Name ?? member.Name);
+                           writer.WriteAttributeString("visibility", memberVisibility(member));
+                           writer.WriteAttributeString("member-name", member.Name);
+
+                           MethodInfo method = ((MethodInfo)member);
+
+                           if (method.ReturnType != typeof(void)) {
+                              writer.WriteAttributeString("as", method.ReturnType.FullName);
+                           }
+
+                           foreach (ParameterInfo param in method.GetParameters()) {
+
+                              writer.WriteStartElement(prefix, "param", ns);
+                              writer.WriteAttributeString("name", param.Name);
+                              writer.WriteAttributeString("as", param.ParameterType.FullName);
+
+                              if (param.IsOptional) {
+                                 // TODO: Need to produce valid C# literal
+                                 writer.WriteAttributeString("value", Convert.ToString(param.RawDefaultValue, CultureInfo.InvariantCulture));
+                              }
+
+                              writer.WriteEndElement();
+                           }
+
+                           break;
+
+                        case XcstComponentKind.Parameter:
+                           writer.WriteStartElement(prefix, "param", ns);
+                           writer.WriteAttributeString("name", attr.Name ?? member.Name);
+                           writer.WriteAttributeString("as", ((PropertyInfo)member).PropertyType.FullName);
+                           writer.WriteAttributeString("visibility", memberVisibility(member));
+                           writer.WriteAttributeString("member-name", member.Name);
+                           break;
+
+                        case XcstComponentKind.Template:
+
+                           writer.WriteStartElement(prefix, "template", ns);
+
+                           if (String.IsNullOrEmpty(attr.Namespace)) {
+                              writer.WriteAttributeString("name", attr.Name);
+                           } else {
+                              writer.WriteAttributeString("xmlns", "ns1", null, attr.Namespace);
+                           }
+
+                           writer.WriteAttributeString("visibility", memberVisibility(member));
+                           writer.WriteAttributeString("member-name", member.Name);
+
+                           foreach (var param in member.GetCustomAttributes<XcstTemplateParameterAttribute>(inherit: true)) {
+
+                              writer.WriteStartElement(prefix, "param", ns);
+                              writer.WriteAttributeString("name", param.Name);
+                              writer.WriteAttributeString("required", param.Required.ToString().ToLowerInvariant());
+                              writer.WriteAttributeString("tunnel", param.Tunnel.ToString().ToLowerInvariant());
+                              writer.WriteEndElement();
+                           }
+
+                           break;
+
+                        case XcstComponentKind.Type:
+
+                           Type type = (Type)member;
+
+                           writer.WriteStartElement(prefix, "type", ns);
+                           writer.WriteAttributeString("name", attr.Name ?? member.Name);
+
+                           writer.WriteAttributeString("visibility",
+                              type.IsAbstract ? "abstract"
+                              : type.IsSealed ? "final"
+                              : "public");
+
+                           break;
+
+                        case XcstComponentKind.Variable:
+                           writer.WriteStartElement(prefix, "variable", ns);
+                           writer.WriteAttributeString("name", attr.Name ?? member.Name);
+                           writer.WriteAttributeString("as", ((PropertyInfo)member).PropertyType.FullName);
+                           writer.WriteAttributeString("visibility", memberVisibility(member));
+                           writer.WriteAttributeString("member-name", member.Name);
+                           break;
+                     }
+
+                     writer.WriteEndElement();
+                  }
+
+                  writer.WriteEndElement();
+               }
+
+               output.Position = 0;
+
+               DocumentBuilder builder = this.processor.NewDocumentBuilder();
+               builder.BaseUri = new Uri("", UriKind.Relative);
+
+               XdmNode result = builder.Build(output);
+
+               return result.GetXdmEnumerator();
+            }
          }
       }
    }

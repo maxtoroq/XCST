@@ -81,9 +81,36 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Syntax\ModuleStructure\Packages\AcceptingComponents\AttributeSet\Accepted.p.xml" />
+    <Content Include="Syntax\ModuleStructure\Packages\AcceptingComponents\Function\Accepted.p.xml" />
+    <Content Include="Syntax\ModuleStructure\Packages\AcceptingComponents\Parameter\Accepted.p.xml" />
+    <Content Include="Syntax\ModuleStructure\Packages\AcceptingComponents\Template\Accepted.p.xml" />
+    <Content Include="Syntax\ModuleStructure\Packages\AcceptingComponents\Type\Accepted.p.xml" />
+    <Content Include="Syntax\ModuleStructure\Packages\AcceptingComponents\Variable\Accepted.p.xml" />
+    <Content Include="Syntax\ModuleStructure\Packages\OverridingComponents\AttributeSet\OverrideOverridden.p.xml" />
+    <Content Include="Syntax\ModuleStructure\Packages\OverridingComponents\AttributeSet\Overridden.p.xml" />
+    <Content Include="Syntax\ModuleStructure\Packages\OverridingComponents\AttributeSet\Original.p.xml" />
+    <Content Include="Syntax\ModuleStructure\Packages\OverridingComponents\Function\NextOverride.p.xml" />
+    <Content Include="Syntax\ModuleStructure\Packages\OverridingComponents\Function\OverrideOverridden.p.xml" />
+    <Content Include="Syntax\ModuleStructure\Packages\OverridingComponents\Function\Overridden.p.xml" />
+    <Content Include="Syntax\ModuleStructure\Packages\OverridingComponents\Template\Original.p.xml" />
+    <Content Include="Syntax\ModuleStructure\Packages\OverridingComponents\Template\NextOverride.p.xml" />
+    <Content Include="Syntax\ModuleStructure\Packages\OverridingComponents\Template\OverrideOverridden.p.xml" />
+    <Content Include="Syntax\ModuleStructure\Packages\OverridingComponents\Template\Overridden.p.xml" />
+    <Content Include="Syntax\VariablesAndParameters\Global\VariableHidesParam.p.xml" />
+    <Content Include="Syntax\VariablesAndParameters\Global\ParamHidesVariable.p.xml" />
+    <None Include="Syntax\CallableComponents\AttributeSet\Abstract.i.xcst" />
+    <None Include="Syntax\CallableComponents\AttributeSet\Duplicate5.i.xcst" />
+    <None Include="Syntax\CallableComponents\AttributeSet\Duplicate4.i.xcst" />
+    <None Include="Syntax\CallableComponents\AttributeSet\Duplicate3.i.xcst" />
+    <None Include="Syntax\CallableComponents\AttributeSet\Duplicate2.i.xcst" />
+    <None Include="Syntax\CallableComponents\AttributeSet\Duplicate1.c.xcst" />
     <None Include="Syntax\CallableComponents\CallTemplate\DuplicateParameter.i.xcst" />
     <None Include="Syntax\CallableComponents\CallTemplate\VerbatimParameterName.c.xcst" />
     <None Include="Syntax\CallableComponents\EvaluateDelegate\DuplicateParameter.i.xcst" />
+    <None Include="Syntax\CallableComponents\Function\Abstract.i.xcst" />
+    <None Include="Syntax\CallableComponents\Function\Duplicate.c.xcst" />
+    <None Include="Syntax\CallableComponents\Function\Duplicate.i.xcst" />
     <None Include="Syntax\CallableComponents\NextFunction\TunnelParameter.c.xcst" />
     <None Include="Syntax\CallableComponents\NextFunction\TunnelParameter.i.xcst" />
     <None Include="Syntax\CallableComponents\NextFunction\DuplicateParameter.i.xcst" />
@@ -92,11 +119,156 @@
     <None Include="Syntax\CallableComponents\NextIteration\TunnelParameter.c.xcst" />
     <None Include="Syntax\CallableComponents\NextIteration\TunnelParameter.i.xcst" />
     <None Include="Syntax\CallableComponents\NextIteration\DuplicateParameter.i.xcst" />
+    <None Include="Syntax\CallableComponents\NextTemplate\NonexistentParameter.i.xcst" />
+    <None Include="Syntax\CallableComponents\NextTemplate\MissingRequiredTunnelParameter.c.xcst" />
+    <None Include="Syntax\CallableComponents\NextTemplate\_NonexistentParameter.xcst" />
+    <None Include="Syntax\CallableComponents\NextTemplate\_MissingRequiredTunnelParameter.xcst" />
+    <None Include="Syntax\CallableComponents\NextTemplate\_MissingRequiredParameter.xcst" />
+    <None Include="Syntax\CallableComponents\NextTemplate\MissingRequiredParameter.i.xcst" />
+    <None Include="Syntax\CallableComponents\Template\Abstract.i.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\Dependencies\Duplicate2.c.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\Dependencies\_Duplicate2.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\Dependencies\Duplicate2.pxcst" />
+    <None Include="Syntax\ModuleStructure\Packages\Dependencies\Duplicate1.pxcst" />
+    <None Include="Syntax\ModuleStructure\Packages\Dependencies\Duplicate1.i.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\AttributeSet\Duplicate5.c.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\AttributeSet\_OverrideOverridden.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\AttributeSet\OverrideOverridden.pxcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\AttributeSet\OverrideOverridden.c.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\AttributeSet\_Duplicate5.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\AttributeSet\_Duplicate4.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\AttributeSet\Duplicate4.i.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\AttributeSet\OriginalAbstract.pxcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\AttributeSet\OriginalAbstract.i.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\AttributeSet\Overridden.c.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\AttributeSet\Overridden.pxcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\AttributeSet\Original.c.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\AttributeSet\Original.pxcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Function\Duplicate5.c.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Function\Duplicate4.i.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Function\NextOverride.pxcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Function\NextOverride.c.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Function\NextFunction.i.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Function\NextFunction.pxcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Function\_NextOverride.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Function\_OverrideOverridden.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Function\OverrideOverridden.pxcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Function\OverrideOverridden.c.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Function\Overridden.c.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Function\Overridden.pxcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Function\_Duplicate5.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Function\_Duplicate4.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Template\Duplicate5.c.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Template\NextOverride.pxcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Template\NextOverride.c.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Template\_NextOverride.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Template\_OverrideOverridden.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Template\OverrideOverridden.pxcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Template\OverrideOverridden.c.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Template\_Duplicate5.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Variable\Duplicate11.c.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Variable\Duplicate10.i.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Template\Duplicate4.i.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Template\OriginalAbstract.i.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Template\OriginalAbstract.pxcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Template\Original.pxcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Template\Original.c.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Template\NextTemplate.i.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Template\NextTemplate.pxcst" />
     <None Include="Syntax\CallableComponents\NextTemplate\_DuplicateParameter.xcst" />
     <None Include="Syntax\CallableComponents\NextTemplate\DuplicateParameter.i.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\AcceptingComponents\AttributeSet\Accepted.c.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\AcceptingComponents\AttributeSet\Accepted.pxcst" />
+    <None Include="Syntax\ModuleStructure\Packages\AcceptingComponents\AttributeSet\Duplicate2.pxcst" />
+    <None Include="Syntax\ModuleStructure\Packages\AcceptingComponents\AttributeSet\Duplicate2.i.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\AcceptingComponents\Function\Accepted.c.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\AcceptingComponents\Function\Accepted.pxcst" />
+    <None Include="Syntax\ModuleStructure\Packages\AcceptingComponents\Function\Duplicate2.i.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\AcceptingComponents\Function\Duplicate2.pxcst" />
+    <None Include="Syntax\ModuleStructure\Packages\AcceptingComponents\Parameter\Accepted.c.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\AcceptingComponents\Parameter\Accepted.pxcst" />
+    <None Include="Syntax\ModuleStructure\Packages\AcceptingComponents\Parameter\Duplicate2.i.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\AcceptingComponents\Parameter\Duplicate2.pxcst" />
+    <None Include="Syntax\ModuleStructure\Packages\AcceptingComponents\Template\Accepted.c.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\AcceptingComponents\Template\Accepted.pxcst" />
+    <None Include="Syntax\ModuleStructure\Packages\AcceptingComponents\Template\Duplicate2.i.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\AcceptingComponents\Template\Duplicate2.pxcst" />
+    <None Include="Syntax\ModuleStructure\Packages\AcceptingComponents\Type\Accepted.c.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\AcceptingComponents\Type\Accepted.pxcst" />
+    <None Include="Syntax\ModuleStructure\Packages\AcceptingComponents\Type\Duplicate2.i.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\AcceptingComponents\Type\Duplicate2.pxcst" />
+    <None Include="Syntax\ModuleStructure\Packages\AcceptingComponents\Variable\Accepted.c.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\AcceptingComponents\Variable\Accepted.pxcst" />
+    <None Include="Syntax\ModuleStructure\Packages\AcceptingComponents\Variable\Duplicate2.i.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\AcceptingComponents\Variable\Duplicate2.pxcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\AttributeSet\Duplicate.pxcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\AttributeSet\Duplicate1.i.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\AttributeSet\Duplicate2.i.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\AttributeSet\Duplicate3.i.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\AttributeSet\NoOverridable.pxcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\AttributeSet\NoOverridable.i.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Function\Duplicate.pxcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Function\Duplicate1.i.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Function\Duplicate2.i.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Function\Duplicate3.i.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Function\NoOverridable.pxcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Function\NoOverridable.i.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Function\NoMatching.pxcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Function\NoMatching.i.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\AttributeSet\NoMatching.pxcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\AttributeSet\NoMatching.i.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Template\NoCompatible.pxcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Template\NoCompatible5.i.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Template\NoCompatible6.c.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Template\NoCompatible7.c.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Template\NoCompatible4.i.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Template\NoCompatible3.i.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Template\NoCompatible2.i.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Template\NoCompatible1.i.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Template\NoOverridable.pxcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Template\NoOverridable.i.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Template\Overridden.c.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Template\Overridden.pxcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Variable\_Duplicate11.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Variable\_Duplicate10.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Template\_Duplicate4.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Type\NoOverridable.pxcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Type\NoOverridable.i.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Variable\NoOverridable.pxcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Variable\NoOverridable.i.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Variable\NoMatching.pxcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Variable\NoMatching.i.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Template\NoMatching.i.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Template\NoMatching.pxcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Template\Duplicate1.i.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Template\Duplicate.pxcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Template\Duplicate3.i.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Template\Duplicate2.i.xcst" />
     <None Include="Syntax\ConditionalProcessing\Choose\ExpressionComplex.c.xcst" />
     <None Include="Syntax\ConditionalProcessing\Choose\Expression.c.xcst" />
-    <None Include="Syntax\Declarations\ReservedNamespaces\CoreAttributeSet.i.xcst" />
+    <None Include="Syntax\LanguageFeatures\ReservedNamespaces\CoreAttributeSet.i.xcst" />
+    <None Include="Syntax\ModuleStructure\DocumentElementPackage.c.xcst" />
+    <None Include="Syntax\ModuleStructure\DocumentElementModule.c.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\AcceptingComponents\Function\Duplicate1.i.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\AcceptingComponents\AttributeSet\Duplicate1.i.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\AcceptingComponents\Type\Duplicate1.i.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\AcceptingComponents\Type\Duplicate1a.pxcst" />
+    <None Include="Syntax\ModuleStructure\Packages\AcceptingComponents\Type\Duplicate1b.pxcst" />
+    <None Include="Syntax\ModuleStructure\Packages\AcceptingComponents\Variable\Duplicate1.i.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\AcceptingComponents\Parameter\Duplicate1.i.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\AcceptingComponents\Variable\Duplicate1a.pxcst" />
+    <None Include="Syntax\ModuleStructure\Packages\AcceptingComponents\Variable\Duplicate1b.pxcst" />
+    <None Include="Syntax\ModuleStructure\Packages\AcceptingComponents\Template\Duplicate1.i.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\AcceptingComponents\Function\Duplicate1a.pxcst" />
+    <None Include="Syntax\ModuleStructure\Packages\AcceptingComponents\Function\Duplicate1b.pxcst" />
+    <None Include="Syntax\ModuleStructure\Packages\AcceptingComponents\AttributeSet\Duplicate1a.pxcst" />
+    <None Include="Syntax\ModuleStructure\Packages\AcceptingComponents\AttributeSet\Duplicate1b.pxcst" />
+    <None Include="Syntax\ModuleStructure\Packages\AcceptingComponents\Parameter\Duplicate1a.pxcst" />
+    <None Include="Syntax\ModuleStructure\Packages\AcceptingComponents\Parameter\Duplicate1b.pxcst" />
+    <None Include="Syntax\ModuleStructure\Packages\AcceptingComponents\Template\Duplicate1b.pxcst" />
+    <None Include="Syntax\ModuleStructure\Packages\AcceptingComponents\Template\Duplicate1a.pxcst" />
+    <None Include="Syntax\Types\Abstract.i.xcst" />
+    <None Include="Syntax\Types\Duplicate.i.xcst" />
     <None Include="Syntax\VariablesAndParameters\Delegate\DefaultValueAndRequired.c.xcst" />
     <None Include="Syntax\VariablesAndParameters\Delegate\DefaultValueAndRequired.i.xcst" />
     <None Include="Syntax\VariablesAndParameters\Delegate\DuplicateParameter.i.xcst" />
@@ -107,34 +279,48 @@
     <None Include="Syntax\VariablesAndParameters\Function\DuplicateParameter.i.xcst" />
     <None Include="Syntax\VariablesAndParameters\Function\TunnelParameter.c.xcst" />
     <None Include="Syntax\VariablesAndParameters\Function\TunnelParameter.i.xcst" />
-    <None Include="Syntax\VariablesAndParameters\Global\DefaultValueAndRequired.c.xcst" />
+    <None Include="Syntax\VariablesAndParameters\Global\Abstract2.i.xcst" />
+    <None Include="Syntax\VariablesAndParameters\Global\Abstract1.i.xcst" />
+    <None Include="Syntax\VariablesAndParameters\Global\DefaultValueAndRequired4.c.xcst" />
+    <None Include="Syntax\VariablesAndParameters\Global\DefaultValueAndRequired3.c.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Variable\Duplicate.pxcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Variable\Duplicate9.i.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Variable\Duplicate8.i.xcst" />
+    <None Include="Syntax\VariablesAndParameters\Global\DefaultValueAndRequired2.i.xcst" />
+    <None Include="Syntax\VariablesAndParameters\Global\VariableHidesParam.c.xcst" />
+    <None Include="Syntax\VariablesAndParameters\Global\_VariableHidesParam.xcst" />
+    <None Include="Syntax\VariablesAndParameters\Global\_ParamHidesVariable.xcst" />
+    <None Include="Syntax\VariablesAndParameters\Global\ParamHidesVariable.c.xcst" />
+    <None Include="Syntax\VariablesAndParameters\Global\Duplicate3.i.xcst" />
+    <None Include="Syntax\VariablesAndParameters\Global\Duplicate2.i.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Variable\Duplicate2.i.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Variable\Duplicate3.i.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Variable\Duplicate1.i.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Variable\Duplicate6.i.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Variable\Duplicate5.i.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Variable\Duplicate4.i.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Variable\Duplicate7.i.xcst" />
     <None Include="Syntax\VariablesAndParameters\Global\TunnelParameter.c.xcst" />
     <None Include="Syntax\VariablesAndParameters\Global\TunnelParameter.i.xcst" />
-    <None Include="Syntax\Declarations\ReservedNamespaces\CoreTemplate.c.xcst" />
-    <None Include="Syntax\Declarations\ReservedNamespaces\CoreOutput.i.xcst" />
+    <None Include="Syntax\LanguageFeatures\ReservedNamespaces\CoreTemplate.c.xcst" />
+    <None Include="Syntax\LanguageFeatures\ReservedNamespaces\CoreOutput.i.xcst" />
     <None Include="Syntax\SyntaxTests.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>SyntaxTests.generated.cs</LastGenOutput>
     </None>
-    <Content Include="Syntax\CallableComponents\CallTemplate\VerbatimParameterName.p.xml">
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="Syntax\WhitespaceStripping\PreserveText.p.xml">
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="Syntax\WhitespaceStripping\StripDelegate.p.xml" />
-    <Content Include="Syntax\WhitespaceStripping\StripTry.p.xml" />
-    <Content Include="Syntax\WhitespaceStripping\StripTemplate.p.xml" />
-    <Content Include="Syntax\WhitespaceStripping\StripForEach.p.xml" />
-    <Content Include="Syntax\WhitespaceStripping\StripChoose.p.xml" />
-    <Content Include="Syntax\WhitespaceStripping\StripIterate.p.xml" />
+    <Content Include="Syntax\CallableComponents\CallTemplate\VerbatimParameterName.p.xml" />
+    <Content Include="Syntax\DataModel\WhitespaceStripping\PreserveText.p.xml" />
+    <Content Include="Syntax\DataModel\WhitespaceStripping\StripDelegate.p.xml" />
+    <Content Include="Syntax\DataModel\WhitespaceStripping\StripTry.p.xml" />
+    <Content Include="Syntax\DataModel\WhitespaceStripping\StripTemplate.p.xml" />
+    <Content Include="Syntax\DataModel\WhitespaceStripping\StripForEach.p.xml" />
+    <Content Include="Syntax\DataModel\WhitespaceStripping\StripChoose.p.xml" />
+    <Content Include="Syntax\DataModel\WhitespaceStripping\StripIterate.p.xml" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="Syntax\VariablesAndParameters\Iterate\DefaultValue.c.xcst" />
-    <None Include="Syntax\VariablesAndParameters\Iterate\DuplicateParameter.i.xcst">
-      <SubType>Designer</SubType>
-    </None>
+    <None Include="Syntax\VariablesAndParameters\Iterate\DuplicateParameter.i.xcst" />
     <None Include="Syntax\VariablesAndParameters\Iterate\RequiredParameter.c.xcst" />
     <None Include="Syntax\VariablesAndParameters\Iterate\DefaultValue.i.xcst" />
     <None Include="Syntax\VariablesAndParameters\Iterate\TunnelParameter.c.xcst" />
@@ -147,49 +333,32 @@
     <None Include="Syntax\CallableComponents\CallTemplate\NonexistentParameter.i.xcst" />
     <None Include="Syntax\CallableComponents\CallTemplate\MissingRequiredParameter.i.xcst" />
     <None Include="Syntax\CallableComponents\NextTemplate\LastTemplate.i.xcst" />
-    <None Include="Syntax\Declarations\UserDefinedDataElement.c.xcst" />
-    <None Include="Syntax\Declarations\UserDefinedDataElement.i.xcst" />
-    <None Include="Syntax\Declarations\UnknownDeclaration.i.xcst" />
-    <None Include="Syntax\Declarations\UnknownDocument.i.xcst" />
-    <None Include="Syntax\Declarations\Output\_ConflictingValuesImport.xcst" />
-    <None Include="Syntax\Declarations\Output\ConflictingValuesImport.c.xcst" />
-    <None Include="Syntax\Declarations\Output\ImplicitAndExplicitValues.c.xcst" />
-    <None Include="Syntax\Declarations\Output\EqualValues.c.xcst" />
-    <None Include="Syntax\Declarations\Output\ConflictingValues.i.xcst" />
-    <None Include="Syntax\Declarations\_InconsistentLanguage.xcst" />
-    <None Include="Syntax\Declarations\InconsistentLanguage.i.xcst">
-      <SubType>Designer</SubType>
-    </None>
+    <None Include="Syntax\ModuleStructure\UserDefinedDataElement.c.xcst" />
+    <None Include="Syntax\ModuleStructure\UserDefinedDataElement.i.xcst" />
+    <None Include="Syntax\ModuleStructure\UnknownDeclaration.i.xcst" />
+    <None Include="Syntax\ModuleStructure\DocumentElement.i.xcst" />
+    <None Include="Syntax\Serialization\_ConflictingValuesImport.xcst" />
+    <None Include="Syntax\Serialization\ConflictingValuesImport.c.xcst" />
+    <None Include="Syntax\Serialization\ImplicitAndExplicitValues.c.xcst" />
+    <None Include="Syntax\Serialization\EqualValues.c.xcst" />
+    <None Include="Syntax\Serialization\ConflictingValues.i.xcst" />
+    <None Include="Syntax\ModuleStructure\_InconsistentLanguage.xcst" />
+    <None Include="Syntax\ModuleStructure\InconsistentLanguage.i.xcst" />
     <None Include="Syntax\CallableComponents\CallTemplate\NonexistentTemplate.i.xcst" />
-    <None Include="Syntax\Declarations\ReservedNamespaces\CoreTemplate.i.xcst" />
-    <None Include="Syntax\Declarations\DuplicateTemplate.i.xcst" />
-    <None Include="Syntax\VariablesAndParameters\Global\DefaultValueAndRequired.i.xcst" />
-    <None Include="Syntax\VariablesAndParameters\Global\DuplicateParameter.i.xcst" />
-    <None Include="Syntax\VariablesAndParameters\Global\DuplicateVariable.i.xcst" />
+    <None Include="Syntax\LanguageFeatures\ReservedNamespaces\CoreTemplate.i.xcst" />
+    <None Include="Syntax\CallableComponents\Template\Duplicate.i.xcst" />
+    <None Include="Syntax\VariablesAndParameters\Global\DefaultValueAndRequired1.i.xcst" />
+    <None Include="Syntax\VariablesAndParameters\Global\Duplicate1.i.xcst" />
     <None Include="Syntax\VariablesAndParameters\Template\DuplicateParameter.i.xcst" />
     <None Include="Syntax\VariablesAndParameters\UsingModule\GlobalTunnelParameter.c.xcst" />
     <None Include="Syntax\VariablesAndParameters\UsingModule\GlobalTunnelParameter.i.xcst" />
-    <None Include="Syntax\WhitespaceStripping\PreserveText.c.xcst">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Syntax\WhitespaceStripping\StripDelegate.c.xcst">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Syntax\WhitespaceStripping\StripTry.c.xcst">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Syntax\WhitespaceStripping\StripTemplate.c.xcst">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Syntax\WhitespaceStripping\StripForEach.c.xcst">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Syntax\WhitespaceStripping\StripChoose.c.xcst">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Syntax\WhitespaceStripping\StripIterate.c.xcst">
-      <SubType>Designer</SubType>
-    </None>
+    <None Include="Syntax\DataModel\WhitespaceStripping\PreserveText.c.xcst" />
+    <None Include="Syntax\DataModel\WhitespaceStripping\StripDelegate.c.xcst" />
+    <None Include="Syntax\DataModel\WhitespaceStripping\StripTry.c.xcst" />
+    <None Include="Syntax\DataModel\WhitespaceStripping\StripTemplate.c.xcst" />
+    <None Include="Syntax\DataModel\WhitespaceStripping\StripForEach.c.xcst" />
+    <None Include="Syntax\DataModel\WhitespaceStripping\StripChoose.c.xcst" />
+    <None Include="Syntax\DataModel\WhitespaceStripping\StripIterate.c.xcst" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
@@ -229,13 +398,6 @@
   </Choose>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\..\packages\Clarius.TransformOnBuild.1.1.12\build\Clarius.TransformOnBuild.targets" Condition="Exists('..\..\packages\Clarius.TransformOnBuild.1.1.12\build\Clarius.TransformOnBuild.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\..\packages\Clarius.TransformOnBuild.1.1.12\build\Clarius.TransformOnBuild.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\Clarius.TransformOnBuild.1.1.12\build\Clarius.TransformOnBuild.targets'))" />
-  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
