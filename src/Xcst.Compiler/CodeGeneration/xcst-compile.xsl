@@ -1300,27 +1300,42 @@
    </template>
 
    <template match="c:member" mode="src:member">
+
+      <variable name="type" select="(@as/xcst:type(.), src:anonymous-type-name(.))[1]"/>
+      <variable name="auto-init" select="(@auto-initialize/xcst:boolean(.), false())[1]"/>
+
+      <if test="$auto-init and (@expression or @value)">
+         <sequence select="error(xs:QName('err:XTSE0020'), 'When auto-initialize=''yes'' the expression and value attributes must be omitted.', src:error-object(@auto-initialize))"/>
+      </if>
+
       <value-of select="$src:new-line"/>
       <call-template name="src:member-attributes"/>
       <apply-templates select="c:metadata" mode="src:attribute"/>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
       <text>public </text>
-      <value-of select="(@as/xcst:type(.), src:anonymous-type-name(.))[1]"/>
-      <text> </text>
-      <value-of select="xcst:name(@name)"/>
+      <value-of select="$type, xcst:name(@name)"/>
       <choose>
          <when test="@expression">
             <text> => </text>
             <value-of select="@expression"/>
-            <text>;</text>
+            <value-of select="$src:statement-delimiter"/>
          </when>
          <otherwise>
             <text> { get; set; }</text>
-            <if test="@value">
+            <if test="$auto-init or @value">
                <text> = </text>
-               <value-of select="@value"/>
-               <text>;</text>
+               <choose>
+                  <when test="$auto-init">
+                     <text>new </text>
+                     <value-of select="$type"/>
+                     <text>()</text>
+                  </when>
+                  <otherwise>
+                     <value-of select="@value"/>
+                  </otherwise>
+               </choose>
+               <value-of select="$src:statement-delimiter"/>
             </if>
          </otherwise>
       </choose>

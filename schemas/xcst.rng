@@ -473,6 +473,9 @@
    <define name="member-attributes">
       <zeroOrMore>
          <choice>
+            <attribute name="auto-initialize">
+               <ref name="Boolean"/>
+            </attribute>
             <attribute name="display-name">
                <ref name="String"/>
             </attribute>
