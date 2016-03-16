@@ -649,7 +649,6 @@
       <param name="indent" tunnel="yes"/>
 
       <value-of select="$src:new-line"/>
-      <value-of select="$src:new-line"/>
       <text>namespace </text>
       <value-of select="$namespace"/>
       <call-template name="src:open-brace"/>

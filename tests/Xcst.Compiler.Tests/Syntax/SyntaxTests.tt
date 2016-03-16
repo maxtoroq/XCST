@@ -51,7 +51,7 @@ namespace Xcst.Compiler.Tests {<#
          CompileResult xcstResult = compiler.Compile(fileStream, baseUri: new Uri(file.FullName, UriKind.Absolute));
 
          foreach (var src in xcstResult.CompilationUnits) {
-            WriteLine(src);
+            Write(src);
          }
       }
    }
