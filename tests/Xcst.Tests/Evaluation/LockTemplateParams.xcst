@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:output method='text'/>
+
+   <c:template name='c:initial-template' expand-text='yes'>
+      <c:param name='foo' as='string'/>
+      <c:param name='bar' as='string'/>
+
+      <c:text>{bar ?? foo}</c:text>
+   </c:template>
+
+</c:module>

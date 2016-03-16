@@ -27,7 +27,7 @@ namespace Xcst {
 
       readonly IXcstPackage package;
       readonly IDictionary<string, object> parameters = new Dictionary<string, object>();
-      bool primed = false;
+      bool paramsLocked = false, primed = false;
 
       public static XcstEvaluator Using<TPackage>() where TPackage : new() {
          return Using(new TPackage());
@@ -61,8 +61,12 @@ namespace Xcst {
 
          if (name == null) throw new ArgumentNullException(nameof(name));
 
-         if (this.primed) {
-            throw new InvalidOperationException("Already primed.");
+         // since there's no way to un-prime, a second prime would still use the values
+         // of the first prime (for parameters not specified in the second prime)
+         // the workaround is to simple create a new evaluator
+
+         if (this.paramsLocked) {
+            throw new InvalidOperationException($"Cannot modify parameters, use a new {nameof(XcstEvaluator)} object.");
          }
 
          this.parameters[name] = value;
@@ -136,9 +140,9 @@ namespace Xcst {
 
          if (name == null) throw new ArgumentNullException(nameof(name));
 
-         Prime();
+         this.paramsLocked = true;
 
-         return new XcstTemplateEvaluator(this.package, name);
+         return new XcstTemplateEvaluator(this.package, Prime, name);
       }
 
       void Prime() {
@@ -164,15 +168,18 @@ namespace Xcst {
       static readonly Uri DefaultOuputUri = new Uri("", UriKind.Relative);
 
       readonly IXcstPackage package;
+      readonly Action primeFn;
       readonly QualifiedName name;
       readonly IDictionary<string, ParameterArgument> parameters = new Dictionary<string, ParameterArgument>();
 
-      internal XcstTemplateEvaluator(IXcstPackage package, QualifiedName name) {
+      internal XcstTemplateEvaluator(IXcstPackage package, Action primeFn, QualifiedName name) {
 
          if (package == null) throw new ArgumentNullException(nameof(package));
+         if (primeFn == null) throw new ArgumentNullException(nameof(primeFn));
          if (name == null) throw new ArgumentNullException(nameof(name));
 
          this.package = package;
+         this.primeFn = primeFn;
          this.name = name;
       }
 
@@ -220,7 +227,7 @@ namespace Xcst {
          Func<OutputParameters, IWriterFactory> writerFn = @params =>
             WriterFactory.CreateFactory(file, @params);
 
-         return new XcstOutputter(this.package, writerFn, ExecuteTemplate);
+         return CreateOutputter(writerFn);
       }
 
       public XcstOutputter OutputTo(Stream output, Uri outputUri = null, bool autoClose = false) {
@@ -230,7 +237,7 @@ namespace Xcst {
          Func<OutputParameters, IWriterFactory> writerFn = @params =>
             WriterFactory.CreateFactory(output, outputUri ?? DefaultOuputUri, @params, autoClose);
 
-         return new XcstOutputter(this.package, writerFn, ExecuteTemplate);
+         return CreateOutputter(writerFn);
       }
 
       public XcstOutputter OutputTo(TextWriter output, Uri outputUri = null, bool autoClose = false) {
@@ -240,7 +247,7 @@ namespace Xcst {
          Func<OutputParameters, IWriterFactory> writerFn = @params =>
             WriterFactory.CreateFactory(output, outputUri ?? DefaultOuputUri, @params, autoClose);
 
-         return new XcstOutputter(this.package, writerFn, ExecuteTemplate);
+         return CreateOutputter(writerFn);
       }
 
       public XcstOutputter OutputTo(XmlWriter output, Uri outputUri = null, bool autoClose = false) {
@@ -250,7 +257,7 @@ namespace Xcst {
          Func<OutputParameters, IWriterFactory> writerFn = @params =>
             WriterFactory.CreateFactory(output, outputUri ?? DefaultOuputUri, autoClose);
 
-         return new XcstOutputter(this.package, writerFn, ExecuteTemplate);
+         return CreateOutputter(writerFn);
       }
 
       public XcstOutputter OutputTo(XcstWriter output, Uri outputUri = null, bool autoClose = false) {
@@ -260,16 +267,23 @@ namespace Xcst {
          Func<OutputParameters, IWriterFactory> writerFn = @params =>
             WriterFactory.CreateFactory(output, outputUri ?? DefaultOuputUri, autoClose);
 
-         return new XcstOutputter(this.package, writerFn, ExecuteTemplate);
+         return CreateOutputter(writerFn);
       }
 
-      void ExecuteTemplate(IXcstPackage package, DynamicContext context) {
+      XcstOutputter CreateOutputter(Func<OutputParameters, IWriterFactory> writerFn) {
 
-         foreach (var param in this.parameters) {
+         var templateParams = new Dictionary<string, ParameterArgument>(this.parameters);
+
+         Action<IXcstPackage, DynamicContext> executionFn = (p, c) => ExecuteTemplate(p, c, templateParams);
+
+         return new XcstOutputter(this.package, this.primeFn, writerFn, executionFn);
+      }
+
+      void ExecuteTemplate(IXcstPackage package, DynamicContext context, IDictionary<string, ParameterArgument> parameters) {
+
+         foreach (var param in parameters) {
             context.WithParam(param.Key, param.Value.Value, param.Value.Tunnel);
          }
-
-         ClearParams();
 
          package.CallTemplate(this.name, context);
       }
@@ -278,19 +292,22 @@ namespace Xcst {
    public class XcstOutputter {
 
       readonly IXcstPackage package;
+      readonly Action primeFn;
       readonly Func<OutputParameters, IWriterFactory> writerFn;
       readonly Action<IXcstPackage, DynamicContext> executionFn;
 
       OutputParameters parameters;
       IFormatProvider formatProvider;
 
-      internal XcstOutputter(IXcstPackage package, Func<OutputParameters, IWriterFactory> writerFn, Action<IXcstPackage, DynamicContext> executionFn) {
+      internal XcstOutputter(IXcstPackage package, Action primeFn, Func<OutputParameters, IWriterFactory> writerFn, Action<IXcstPackage, DynamicContext> executionFn) {
 
          if (package == null) throw new ArgumentNullException(nameof(package));
+         if (primeFn == null) throw new ArgumentNullException(nameof(primeFn));
          if (writerFn == null) throw new ArgumentNullException(nameof(writerFn));
          if (executionFn == null) throw new ArgumentNullException(nameof(executionFn));
 
          this.package = package;
+         this.primeFn = primeFn;
          this.writerFn = writerFn;
          this.executionFn = executionFn;
       }
@@ -311,10 +328,13 @@ namespace Xcst {
 
          var execContext = new ExecutionContext(this.package, this.formatProvider);
 
+         this.package.Context = execContext;
+
+         this.primeFn();
+
          using (IWriterFactory writerFactory = writerFn(this.parameters)) {
             using (DynamicContext dynamicContext = execContext.CreateDynamicContext(writerFactory)) {
 
-               this.package.Context = execContext;
                this.executionFn(this.package, dynamicContext);
             }
          }
