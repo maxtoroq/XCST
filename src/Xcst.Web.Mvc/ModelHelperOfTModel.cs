@@ -14,7 +14,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq.Expressions;
 using System.Web.Mvc;
 
@@ -73,22 +72,6 @@ namespace Xcst.Web.Mvc {
          string expressionString = ExpressionHelper.GetExpressionText(expression);
 
          return FieldValueHelper(expressionString, metadata.Model, format, useViewData: false);
-      }
-
-      [EditorBrowsable(EditorBrowsableState.Never)]
-      public override void SetModel(object value) {
-         SetModel((TModel)value);
-      }
-
-      public void SetModel(TModel value) {
-
-         base.SetModel(value);
-
-         // 1. HtmlHelper<TModel> creates a copy of ViewData
-         // 2. Setting ViewDataDictionary.Model resets ModelMetadata back to null
-         //    (this is important so ModelMetadata.Model is also updated)
-         //    ViewDataDictionary<TModel>.Model doesn't, that's why we cast it
-         ((ViewDataDictionary)this.Html.ViewData).Model = value;
       }
    }
 }

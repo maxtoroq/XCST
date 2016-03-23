@@ -216,10 +216,6 @@ namespace Xcst.Web.Mvc {
          return resolvedValue;
       }
 
-      public virtual void SetModel(object value) {
-         this.Html.ViewData.Model = value;
-      }
-
       class ViewDataContainer : IViewDataContainer {
 
          public ViewDataDictionary ViewData { get; set; }
