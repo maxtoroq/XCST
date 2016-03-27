@@ -53,8 +53,6 @@ namespace <#= @namespace #> {<#
 
       bool libraryPackage = file.Extension == ".pxcst";
 
-      WriteLine("");
-
       using (var fileStream = File.OpenRead(file.FullName)) {
 
          XcstCompiler compiler = new XcstCompilerFactory().CreateCompiler();

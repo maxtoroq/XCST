@@ -40,8 +40,6 @@ namespace Xcst.Compiler.Tests {<#
 
    foreach (FileInfo file in packages) {
 
-      WriteLine("");
-
       using (var fileStream = File.OpenRead(file.FullName)) {
 
          XcstCompiler compiler = new XcstCompilerFactory().CreateCompiler();
