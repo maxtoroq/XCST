@@ -64,37 +64,42 @@ namespace Xcst.Compiler {
 
          this.TargetBaseTypes = targetBaseTypes?
             .Where(t => t != null)
-            .Select(t => TypeToCSharp(t, fullName: true))
+            .Select(t => TypeReferenceExpression(t))
             .ToArray();
       }
 
-      static string TypeToCSharp(Type type, bool fullName) {
+      internal static string TypeReferenceExpression(Type type) {
 
          var sb = new StringBuilder();
-         return TypeToCSharp(type, fullName, sb);
+         TypeReferenceExpression(type, sb);
+
+         return sb.ToString();
       }
 
-      static string TypeToCSharp(Type type, bool fullName, StringBuilder sb) {
+      static void TypeReferenceExpression(Type type, StringBuilder sb) {
 
-         if (fullName) {
+         if (type.IsNested) {
+            TypeReferenceExpression(type.DeclaringType, sb);
+            sb.Append(".");
+         } else {
             sb.Append(type.Namespace);
             sb.Append(".");
          }
 
-         sb.Append(type.IsGenericType ? type.Name.Substring(0, type.Name.IndexOf('`')) : type.Name);
-
          if (type.IsGenericType) {
 
+            sb.Append(type.Name.Substring(0, type.Name.IndexOf('`')));
             sb.Append("<");
 
             foreach (var typeParam in type.GetGenericArguments()) {
-               sb.Append(TypeToCSharp(typeParam, fullName, sb));
+               TypeReferenceExpression(typeParam, sb);
             }
 
             sb.Append(">");
-         }
 
-         return sb.ToString();
+         } else {
+            sb.Append(type.Name);
+         }
       }
 
       public void SetParameter(QualifiedName name, object value) {

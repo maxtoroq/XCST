@@ -385,14 +385,14 @@ namespace Xcst.Compiler.CodeGeneration {
                            MethodInfo method = ((MethodInfo)member);
 
                            if (method.ReturnType != typeof(void)) {
-                              writer.WriteAttributeString("as", method.ReturnType.FullName);
+                              writer.WriteAttributeString("as", TypeReferenceExpression(method.ReturnType));
                            }
 
                            foreach (ParameterInfo param in method.GetParameters()) {
 
                               writer.WriteStartElement(prefix, "param", ns);
                               writer.WriteAttributeString("name", param.Name);
-                              writer.WriteAttributeString("as", param.ParameterType.FullName);
+                              writer.WriteAttributeString("as", TypeReferenceExpression(param.ParameterType));
 
                               if (param.IsOptional) {
                                  // TODO: Need to produce valid C# literal
@@ -407,7 +407,7 @@ namespace Xcst.Compiler.CodeGeneration {
                         case XcstComponentKind.Parameter:
                            writer.WriteStartElement(prefix, "param", ns);
                            writer.WriteAttributeString("name", attr.Name ?? member.Name);
-                           writer.WriteAttributeString("as", ((PropertyInfo)member).PropertyType.FullName);
+                           writer.WriteAttributeString("as", TypeReferenceExpression(((PropertyInfo)member).PropertyType));
                            writer.WriteAttributeString("visibility", memberVisibility(member));
                            writer.WriteAttributeString("member-name", member.Name);
                            break;
@@ -453,7 +453,7 @@ namespace Xcst.Compiler.CodeGeneration {
                         case XcstComponentKind.Variable:
                            writer.WriteStartElement(prefix, "variable", ns);
                            writer.WriteAttributeString("name", attr.Name ?? member.Name);
-                           writer.WriteAttributeString("as", ((PropertyInfo)member).PropertyType.FullName);
+                           writer.WriteAttributeString("as", TypeReferenceExpression(((PropertyInfo)member).PropertyType));
                            writer.WriteAttributeString("visibility", memberVisibility(member));
                            writer.WriteAttributeString("member-name", member.Name);
                            break;
