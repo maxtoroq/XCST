@@ -49,16 +49,15 @@
          <ref name="call-template"/>
          <ref name="choose"/>
          <ref name="comment"/>
+         <ref name="continue"/>
          <ref name="delegate"/>
          <ref name="element"/>
          <ref name="evaluate-delegate"/>
          <ref name="fallback"/>
          <ref name="for-each"/>
          <ref name="if"/>
-         <ref name="iterate"/>
          <ref name="message"/>
          <ref name="namespace"/>
-         <ref name="next-iteration"/>
          <ref name="next-function"/>
          <ref name="next-template"/>
          <ref name="normalize-space"/>
@@ -754,7 +753,6 @@
    <define name="break">
       <element name="break">
          <ref name="standard-attributes"/>
-         <ref name="value-attribute-or-content"/>
       </element>
    </define>
 
@@ -812,6 +810,12 @@
       <element name="comment">
          <ref name="standard-attributes"/>
          <ref name="value-attribute-or-content"/>
+      </element>
+   </define>
+
+   <define name="continue">
+      <element name="continue">
+         <ref name="standard-attributes"/>
       </element>
    </define>
 
@@ -931,33 +935,6 @@
       </element>
    </define>
 
-   <define name="iterate">
-      <element name="iterate">
-         <attribute name="name">
-            <ref name="Name"/>
-         </attribute>
-         <attribute name="in">
-            <ref name="Expression"/>
-         </attribute>
-         <optional>
-            <attribute name="as">
-               <ref name="Type"/>
-            </attribute>
-         </optional>
-         <ref name="standard-attributes"/>
-         <zeroOrMore>
-            <ref name="param"/>
-         </zeroOrMore>
-         <optional>
-            <element name="on-completion">
-               <ref name="standard-attributes"/>
-               <ref name="value-attribute-or-content"/>
-            </element>
-         </optional>
-         <ref name="sequence-constructor"/>
-      </element>
-   </define>
-
    <define name="message">
       <element name="message">
          <zeroOrMore>
@@ -991,15 +968,6 @@
          </attribute>
          <ref name="standard-attributes"/>
          <ref name="value-attribute-or-content"/>
-      </element>
-   </define>
-
-   <define name="next-iteration">
-      <element name="next-iteration">
-         <ref name="standard-attributes"/>
-         <zeroOrMore>
-            <ref name="with-param-for-templates"/>
-         </zeroOrMore>
       </element>
    </define>
 

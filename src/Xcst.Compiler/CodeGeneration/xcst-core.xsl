@@ -409,111 +409,16 @@
       </call-template>
    </template>
 
-   <template match="c:iterate" mode="src:statement">
-      <if test="not(c:param or c:on-completion)">
-         <value-of select="$src:new-line"/>
-      </if>
-      <call-template name="src:line-number"/>
-      <call-template name="src:new-line-indented"/>
-      <text>foreach (</text>
-      <value-of select="(@as/xcst:type(.), 'var')[1]"/>
-      <text> </text>
-      <value-of select="xcst:name(@name)"/>
-      <text> in </text>
-      <value-of select="@in"/>
-      <text>)</text>
-      <call-template name="src:apply-children">
-         <with-param name="children" select="
-            node()[not(self::c:param
-               or following-sibling::c:param
-               or self::c:on-completion
-               or following-sibling::c:on-completion)]"/>
-         <with-param name="ensure-block" select="true()"/>
-      </call-template>
-   </template>
-
-   <template match="c:iterate[c:param or c:on-completion]" mode="src:statement">
-      <param name="indent" tunnel="yes"/>
-
-      <call-template name="src:new-line-indented"/>
-      <call-template name="src:open-brace"/>
-      <apply-templates select="c:param" mode="#current">
-         <with-param name="indent" select="$indent + 1" tunnel="yes"/>
-      </apply-templates>
-      <variable name="on-completion-var" select="
-         if (c:on-completion) then 
-            src:aux-variable(concat('on_completion_', generate-id())) 
-         else ()"/>
-      <if test="c:on-completion">
-         <call-template name="src:new-line-indented">
-            <with-param name="increase" select="1"/>
-         </call-template>
-         <text>bool </text>
-         <value-of select="$on-completion-var"/>
-         <text> = true</text>
-         <value-of select="$src:statement-delimiter"/>
-      </if>
-      <next-match>
-         <with-param name="indent" select="$indent + 1" tunnel="yes"/>
-         <with-param name="on-completion-var" select="$on-completion-var" tunnel="yes"/>
-      </next-match>
-      <apply-templates select="c:on-completion" mode="#current">
-         <with-param name="indent" select="$indent + 1" tunnel="yes"/>
-         <with-param name="on-completion-var" select="$on-completion-var" tunnel="yes"/>
-      </apply-templates>
-      <call-template name="src:close-brace"/>
-   </template>
-
-   <template match="c:iterate//c:next-iteration" mode="src:statement">
-      <for-each select="c:with-param">
-         <if test="preceding-sibling::c:with-param[xcst:name-equals(@name, current()/@name)]">
-            <sequence select="error(xs:QName('err:XTSE0670'), 'Duplicate parameter name.', src:error-object(.))"/>
-         </if>
-         <if test="@tunnel/xcst:boolean(.)">
-            <sequence select="error(xs:QName('err:XTSE0020'), 'For attribute ''tunnel'' on c:next-iteration/c:with-param, the only permitted values are: ''no'', ''false'', ''0''.', src:error-object(.))"/>
-         </if>
-         <call-template name="src:line-number"/>
-         <call-template name="src:new-line-indented"/>
-         <value-of select="xcst:name(@name)"/>
-         <text> = </text>
-         <call-template name="src:value"/>
-         <value-of select="$src:statement-delimiter"/>
-      </for-each>
+   <template match="c:for-each//c:continue" mode="src:statement">
       <call-template name="src:new-line-indented"/>
       <text>continue</text>
       <value-of select="$src:statement-delimiter"/>
    </template>
 
-   <template match="c:iterate//c:break" mode="src:statement">
-      <param name="on-completion-var" tunnel="yes"/>
-
-      <call-template name="src:apply-children">
-         <with-param name="value" select="@value"/>
-      </call-template>
-      <if test="$on-completion-var">
-         <call-template name="src:new-line-indented"/>
-         <value-of select="$on-completion-var"/>
-         <text> = false</text>
-         <value-of select="$src:statement-delimiter"/>
-      </if>
+   <template match="c:for-each//c:break" mode="src:statement">
       <call-template name="src:new-line-indented"/>
       <text>break</text>
       <value-of select="$src:statement-delimiter"/>
-   </template>
-
-   <template match="c:iterate/c:on-completion" mode="src:statement">
-      <param name="on-completion-var" tunnel="yes"/>
-
-      <value-of select="$src:new-line"/>
-      <call-template name="src:line-number"/>
-      <call-template name="src:new-line-indented"/>
-      <text>if (</text>
-      <value-of select="$on-completion-var"/>
-      <text>)</text>
-      <call-template name="src:apply-children">
-         <with-param name="value" select="@value"/>
-         <with-param name="ensure-block" select="true()"/>
-      </call-template>
    </template>
 
    <!--
@@ -729,25 +634,10 @@
       <value-of select="$src:statement-delimiter"/>
    </template>
 
-   <template match="c:variable | c:iterate/c:param" mode="src:statement">
+   <template match="c:variable" mode="src:statement">
 
       <variable name="text" select="xcst:text(.)"/>
       <variable name="has-value" select="xcst:has-value(., $text)"/>
-
-      <if test="parent::c:iterate">
-         <if test="preceding-sibling::c:param[xcst:name-equals(@name, current()/@name)]">
-            <sequence select="error(xs:QName('err:XTSE0580'), 'The name of the parameter is not unique.', src:error-object(.))"/>
-         </if>
-         <if test="not($has-value)">
-            <sequence select="error(xs:QName('err:XTSE3520'), 'A c:iterate parameter must be initialized with a default value.', src:error-object(.))"/>
-         </if>
-         <if test="@required/xcst:boolean(.)">
-            <sequence select="error(xs:QName('err:XTSE0020'), 'For attribute ''required'' within a c:iterate parameter, the only permitted values are: ''no'', ''false'', ''0''.', src:error-object(.))"/>
-         </if>
-         <if test="@tunnel/xcst:boolean(.)">
-            <sequence select="error(xs:QName('err:XTSE0020'), 'For attribute ''tunnel'' within a c:iterate parameter, the only permitted values are: ''no'', ''false'', ''0''.', src:error-object(.))"/>
-         </if>
-      </if>
 
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>

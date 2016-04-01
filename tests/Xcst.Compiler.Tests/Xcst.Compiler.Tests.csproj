@@ -117,9 +117,6 @@
     <None Include="Syntax\CallableComponents\NextFunction\DuplicateParameter.i.xcst" />
     <None Include="Syntax\CallableComponents\NextFunction\_TunnelParameter.xcst" />
     <None Include="Syntax\CallableComponents\NextFunction\_DuplicateParameter.xcst" />
-    <None Include="Syntax\CallableComponents\NextIteration\TunnelParameter.c.xcst" />
-    <None Include="Syntax\CallableComponents\NextIteration\TunnelParameter.i.xcst" />
-    <None Include="Syntax\CallableComponents\NextIteration\DuplicateParameter.i.xcst" />
     <None Include="Syntax\CallableComponents\NextTemplate\NonexistentParameter.i.xcst" />
     <None Include="Syntax\CallableComponents\NextTemplate\MissingRequiredTunnelParameter.c.xcst" />
     <None Include="Syntax\CallableComponents\NextTemplate\_NonexistentParameter.xcst" />
@@ -316,17 +313,9 @@
     <Content Include="Syntax\DataModel\WhitespaceStripping\StripTemplate.p.xml" />
     <Content Include="Syntax\DataModel\WhitespaceStripping\StripForEach.p.xml" />
     <Content Include="Syntax\DataModel\WhitespaceStripping\StripChoose.p.xml" />
-    <Content Include="Syntax\DataModel\WhitespaceStripping\StripIterate.p.xml" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="Syntax\VariablesAndParameters\Iterate\DefaultValue.c.xcst" />
-    <None Include="Syntax\VariablesAndParameters\Iterate\DuplicateParameter.i.xcst" />
-    <None Include="Syntax\VariablesAndParameters\Iterate\RequiredParameter.c.xcst" />
-    <None Include="Syntax\VariablesAndParameters\Iterate\DefaultValue.i.xcst" />
-    <None Include="Syntax\VariablesAndParameters\Iterate\TunnelParameter.c.xcst" />
-    <None Include="Syntax\VariablesAndParameters\Iterate\RequiredParameter.i.xcst" />
-    <None Include="Syntax\VariablesAndParameters\Iterate\TunnelParameter.i.xcst" />
     <None Include="Syntax\VariablesAndParameters\Template\DefaultValueAndRequired.c.xcst" />
     <None Include="Syntax\VariablesAndParameters\Template\DefaultValueAndRequired.i.xcst" />
     <None Include="Syntax\CallableComponents\CallTemplate\MissingRequiredTunnelParameter.c.xcst" />
@@ -359,7 +348,6 @@
     <None Include="Syntax\DataModel\WhitespaceStripping\StripTemplate.c.xcst" />
     <None Include="Syntax\DataModel\WhitespaceStripping\StripForEach.c.xcst" />
     <None Include="Syntax\DataModel\WhitespaceStripping\StripChoose.c.xcst" />
-    <None Include="Syntax\DataModel\WhitespaceStripping\StripIterate.c.xcst" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
