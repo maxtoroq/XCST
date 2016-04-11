@@ -82,6 +82,14 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Syntax\LanguageFeatures\Names\QualifiedNames\AttributeNoPrefixWithNamespace.p.xml" />
+    <Content Include="Syntax\LanguageFeatures\Names\QualifiedNames\AttributeWithPrefixAndNamespace1.p.xml" />
+    <Content Include="Syntax\LanguageFeatures\Names\QualifiedNames\AttributeWithPrefix.p.xml" />
+    <Content Include="Syntax\LanguageFeatures\Names\QualifiedNames\AttributeNoPrefix.p.xml" />
+    <Content Include="Syntax\LanguageFeatures\Names\QualifiedNames\ElementNoPrefixWithNamespace.p.xml" />
+    <Content Include="Syntax\LanguageFeatures\Names\QualifiedNames\ElementWithPrefixAndNamespace1.p.xml" />
+    <Content Include="Syntax\LanguageFeatures\Names\QualifiedNames\ElementWithPrefix.p.xml" />
+    <Content Include="Syntax\LanguageFeatures\Names\QualifiedNames\ElementNoPrefix.p.xml" />
     <Content Include="Syntax\ModuleStructure\Packages\AcceptingComponents\AttributeSet\Accepted.p.xml" />
     <Content Include="Syntax\ModuleStructure\Packages\AcceptingComponents\Function\Accepted.p.xml" />
     <Content Include="Syntax\ModuleStructure\Packages\AcceptingComponents\Parameter\Accepted.p.xml" />
@@ -124,6 +132,18 @@
     <None Include="Syntax\CallableComponents\NextTemplate\_MissingRequiredParameter.xcst" />
     <None Include="Syntax\CallableComponents\NextTemplate\MissingRequiredParameter.i.xcst" />
     <None Include="Syntax\CallableComponents\Template\Abstract.i.xcst" />
+    <None Include="Syntax\LanguageFeatures\Names\QualifiedNames\AttributeNoPrefixWithNamespace.c.xcst" />
+    <None Include="Syntax\LanguageFeatures\Names\QualifiedNames\AttributeWithPrefixAndNamespace2.c.xcst" />
+    <None Include="Syntax\LanguageFeatures\Names\QualifiedNames\AttributeWithPrefixAndNamespace1.c.xcst" />
+    <None Include="Syntax\LanguageFeatures\Names\QualifiedNames\AttributeWithPrefix.i.xcst" />
+    <None Include="Syntax\LanguageFeatures\Names\QualifiedNames\AttributeWithPrefix.c.xcst" />
+    <None Include="Syntax\LanguageFeatures\Names\QualifiedNames\AttributeNoPrefix.c.xcst" />
+    <None Include="Syntax\LanguageFeatures\Names\QualifiedNames\ElementNoPrefixWithNamespace.c.xcst" />
+    <None Include="Syntax\LanguageFeatures\Names\QualifiedNames\ElementWithPrefixAndNamespace2.c.xcst" />
+    <None Include="Syntax\LanguageFeatures\Names\QualifiedNames\ElementWithPrefixAndNamespace1.c.xcst" />
+    <None Include="Syntax\LanguageFeatures\Names\QualifiedNames\ElementWithPrefix.i.xcst" />
+    <None Include="Syntax\LanguageFeatures\Names\QualifiedNames\ElementWithPrefix.c.xcst" />
+    <None Include="Syntax\LanguageFeatures\Names\QualifiedNames\ElementNoPrefix.c.xcst" />
     <None Include="Syntax\ModuleStructure\Packages\Dependencies\Duplicate2.c.xcst" />
     <None Include="Syntax\ModuleStructure\Packages\Dependencies\_Duplicate2.xcst" />
     <None Include="Syntax\ModuleStructure\Packages\Dependencies\Duplicate2.pxcst" />
@@ -244,7 +264,7 @@
     <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Template\Duplicate2.i.xcst" />
     <None Include="Syntax\ConditionalProcessing\Choose\ExpressionComplex.c.xcst" />
     <None Include="Syntax\ConditionalProcessing\Choose\Expression.c.xcst" />
-    <None Include="Syntax\LanguageFeatures\ReservedNamespaces\CoreAttributeSet.i.xcst" />
+    <None Include="Syntax\LanguageFeatures\Names\ReservedNamespaces\CoreAttributeSet.i.xcst" />
     <None Include="Syntax\ModuleStructure\DocumentElementPackage.c.xcst" />
     <None Include="Syntax\ModuleStructure\DocumentElementModule.c.xcst" />
     <None Include="Syntax\ModuleStructure\Packages\AcceptingComponents\Function\Duplicate1.i.xcst" />
@@ -300,8 +320,8 @@
     <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Variable\Duplicate7.i.xcst" />
     <None Include="Syntax\VariablesAndParameters\Global\TunnelParameter.c.xcst" />
     <None Include="Syntax\VariablesAndParameters\Global\TunnelParameter.i.xcst" />
-    <None Include="Syntax\LanguageFeatures\ReservedNamespaces\CoreTemplate.c.xcst" />
-    <None Include="Syntax\LanguageFeatures\ReservedNamespaces\CoreOutput.i.xcst" />
+    <None Include="Syntax\LanguageFeatures\Names\ReservedNamespaces\CoreTemplate.c.xcst" />
+    <None Include="Syntax\LanguageFeatures\Names\ReservedNamespaces\CoreOutput.i.xcst" />
     <None Include="Syntax\SyntaxTests.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>SyntaxTests.generated.cs</LastGenOutput>
@@ -335,7 +355,7 @@
     <None Include="Syntax\ModuleStructure\_InconsistentLanguage.xcst" />
     <None Include="Syntax\ModuleStructure\InconsistentLanguage.i.xcst" />
     <None Include="Syntax\CallableComponents\CallTemplate\NonexistentTemplate.i.xcst" />
-    <None Include="Syntax\LanguageFeatures\ReservedNamespaces\CoreTemplate.i.xcst" />
+    <None Include="Syntax\LanguageFeatures\Names\ReservedNamespaces\CoreTemplate.i.xcst" />
     <None Include="Syntax\CallableComponents\Template\Duplicate.i.xcst" />
     <None Include="Syntax\VariablesAndParameters\Global\DefaultValueAndRequired1.i.xcst" />
     <None Include="Syntax\VariablesAndParameters\Global\Duplicate1.i.xcst" />
