@@ -73,7 +73,7 @@
       </choose>
       <text>(</text>
       <!-- TODO: @name AVT -->
-      <variable name="name" select="resolve-QName(@name, .)"/>
+      <variable name="name" select="if (@namespace) then QName('urn:foo', @name) else resolve-QName(@name, .)"/>
       <variable name="prefix" select="prefix-from-QName($name)"/>
       <if test="$prefix">
          <value-of select="src:string($prefix)"/>
@@ -131,7 +131,7 @@
       <value-of select="$output"/>
       <text>.WriteStartElement(</text>
       <!-- TODO: @name AVT -->
-      <variable name="name" select="resolve-QName(@name, .)"/>
+      <variable name="name" select="if (@namespace) then QName('urn:foo', @name) else resolve-QName(@name, .)"/>
       <variable name="prefix" select="prefix-from-QName($name)"/>
       <if test="$prefix">
          <value-of select="src:string($prefix)"/>
@@ -139,7 +139,14 @@
       </if>
       <value-of select="src:string(local-name-from-QName($name))"/>
       <text>, </text>
-      <value-of select="src:verbatim-string(namespace-uri-from-QName($name))"/>
+      <choose>
+         <when test="@namespace">
+            <value-of select="src:expand-attribute(@namespace)"/>
+         </when>
+         <otherwise>
+            <value-of select="src:verbatim-string(namespace-uri-from-QName($name))"/>
+         </otherwise>
+      </choose>
       <text>)</text>
       <value-of select="$src:statement-delimiter"/>
       <call-template name="src:use-attribute-sets">
