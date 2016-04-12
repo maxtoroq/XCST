@@ -869,6 +869,11 @@
          <attribute name="value">
             <ref name="Expression"/>
          </attribute>
+         <optional>
+            <attribute name="with-params">
+               <ref name="Expression"/>
+            </attribute>
+         </optional>
          <ref name="standard-attributes"/>
          <zeroOrMore>
             <ref name="with-param-for-templates"/>

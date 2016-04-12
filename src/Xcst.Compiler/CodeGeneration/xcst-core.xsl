@@ -1412,6 +1412,17 @@
       <apply-templates select="c:with-param" mode="src:with-param-for-templates">
          <with-param name="indent" select="$indent + 1" tunnel="yes"/>
       </apply-templates>
+      <if test="@with-params">
+         <call-template name="src:line-number">
+            <with-param name="indent" select="$indent + 1" tunnel="yes"/>
+         </call-template>
+         <call-template name="src:new-line-indented">
+            <with-param name="increase" select="1"/>
+         </call-template>
+         <text>.WithParams(</text>
+         <value-of select="@with-params"/>
+         <text>)</text>
+      </if>
       <text>)</text>
    </template>
 

@@ -77,6 +77,27 @@ namespace Xcst.Runtime {
          return this;
       }
 
+      public DynamicContext WithParams(object parameters) {
+
+         if (parameters != null) {
+            WithParams(XcstEvaluator.ObjectToDictionary(parameters));
+         }
+
+         return this;
+      }
+
+      public DynamicContext WithParams(IDictionary<string, object> parameters) {
+
+         if (parameters != null) {
+
+            foreach (var pair in parameters) {
+               WithParam(pair.Key, pair.Value);
+            }
+         }
+
+         return this;
+      }
+
       public TValue Param<TValue>(string name, Func<TValue> defaultValue, bool tunnel = false) {
 
          if (name == null) throw new ArgumentNullException(nameof(name));

@@ -45,9 +45,7 @@
                      <a:display name='{prop.PropertyName}' template='{displayTemplate}'/>
                   </c:when>
                   <c:when test='__xcst_member_template != null'>
-                     <c:evaluate-delegate value='__xcst_member_template'>
-                        <c:with-param name='member' value='prop'/>
-                     </c:evaluate-delegate>
+                     <c:evaluate-delegate value='__xcst_member_template' with-params='new { member = prop }'/>
                   </c:when>
                   <c:otherwise>
                      <div class='form-group'>
