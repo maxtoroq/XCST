@@ -82,6 +82,8 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Syntax\LanguageFeatures\Names\QualifiedNames\OutputNoPrefix.p.xml" />
+    <Content Include="Syntax\LanguageFeatures\Names\QualifiedNames\SerializeFormatNoPrefix.p.xml" />
     <Content Include="Syntax\LanguageFeatures\Names\QualifiedNames\AttributeAvtNoPrefix.p.xml" />
     <Content Include="Syntax\LanguageFeatures\Names\QualifiedNames\AttributeNoPrefixWithNamespace.p.xml" />
     <Content Include="Syntax\LanguageFeatures\Names\QualifiedNames\AttributeAvtWithPrefix.p.xml" />
@@ -120,6 +122,7 @@
     <None Include="Syntax\CallableComponents\AttributeSet\Duplicate3.i.xcst" />
     <None Include="Syntax\CallableComponents\AttributeSet\Duplicate2.i.xcst" />
     <None Include="Syntax\CallableComponents\AttributeSet\Duplicate1.c.xcst" />
+    <None Include="Syntax\CallableComponents\AttributeSet\Nonexistent.i.xcst" />
     <None Include="Syntax\CallableComponents\CallTemplate\DuplicateParameter.i.xcst" />
     <None Include="Syntax\CallableComponents\CallTemplate\VerbatimParameterName.c.xcst" />
     <None Include="Syntax\CallableComponents\EvaluateDelegate\DuplicateParameter.i.xcst" />
@@ -138,6 +141,18 @@
     <None Include="Syntax\CallableComponents\NextTemplate\_MissingRequiredParameter.xcst" />
     <None Include="Syntax\CallableComponents\NextTemplate\MissingRequiredParameter.i.xcst" />
     <None Include="Syntax\CallableComponents\Template\Abstract.i.xcst" />
+    <None Include="Syntax\LanguageFeatures\Names\QualifiedNames\AttributeSetNoPrefix.c.xcst" />
+    <None Include="Syntax\LanguageFeatures\Names\QualifiedNames\OutputNoPrefix.c.xcst" />
+    <None Include="Syntax\LanguageFeatures\Names\QualifiedNames\SerializeFormatNoPrefix.c.xcst" />
+    <None Include="Syntax\LanguageFeatures\Names\QualifiedNames\UseAttributeSetsNoPrefix.c.xcst" />
+    <None Include="Syntax\LanguageFeatures\Names\QualifiedNames\TemplateNoPrefix.c.xcst" />
+    <None Include="Syntax\LanguageFeatures\Names\QualifiedNames\_AttributeSetNoPrefix.xcst" />
+    <None Include="Syntax\LanguageFeatures\Names\QualifiedNames\_OutputNoPrefix.xcst" />
+    <None Include="Syntax\LanguageFeatures\Names\QualifiedNames\_SerializeFormatNoPrefix.xcst" />
+    <None Include="Syntax\LanguageFeatures\Names\QualifiedNames\_UseAttributeSetsNoPrefix.xcst" />
+    <None Include="Syntax\LanguageFeatures\Names\QualifiedNames\_TemplateNoPrefix.xcst" />
+    <None Include="Syntax\LanguageFeatures\Names\QualifiedNames\_CallTemplateNoPrefix.xcst" />
+    <None Include="Syntax\LanguageFeatures\Names\QualifiedNames\CallTemplateNoPrefix.c.xcst" />
     <None Include="Syntax\LanguageFeatures\Names\QualifiedNames\AttributeAvtNoPrefix.c.xcst" />
     <None Include="Syntax\LanguageFeatures\Names\QualifiedNames\AttributeNoPrefixWithNamespace.c.xcst" />
     <None Include="Syntax\LanguageFeatures\Names\QualifiedNames\AttributeAvtWithPrefix.c.xcst" />

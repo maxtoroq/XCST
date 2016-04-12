@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#'
+   xmlns:c='http://maxtoroq.github.io/XCST'
+   xmlns='http://www.w3.org/1999/xhtml'>
+
+   <c:import href='_AttributeSetNoPrefix.xcst'/>
+
+   <c:attribute-set name='bar'>
+      <c:attribute name='bar'>bar</c:attribute>
+   </c:attribute-set>
+
+</c:module>
