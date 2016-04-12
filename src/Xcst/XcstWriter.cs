@@ -41,6 +41,29 @@ namespace Xcst {
 
       public abstract void WriteEndElement();
 
+      /// <exclude/>
+      [EditorBrowsable(EditorBrowsableState.Never)]
+      public void WriteStartElementLexical(string lexical, string ns, string defaultNs) {
+
+         int prefixIndex = lexical.IndexOf(':');
+         bool hasPrefix = prefixIndex > 0;
+
+         string prefix = (hasPrefix) ? lexical.Substring(0, prefixIndex) : null;
+         string localName = (hasPrefix) ? lexical.Substring(prefixIndex + 1) : lexical;
+
+         if (hasPrefix) {
+
+            if (String.IsNullOrEmpty(ns)) {
+               throw new NotSupportedException();
+            }
+
+            WriteStartElement(prefix, localName, ns);
+
+         } else {
+            WriteStartElement(null, localName, ns ?? defaultNs);
+         }
+      }
+
       public void WriteAttributeString(string localName, string ns, string value) {
 
          WriteStartAttribute(null, localName, ns);
@@ -73,6 +96,34 @@ namespace Xcst {
       public abstract void WriteStartAttribute(string prefix, string localName, string ns);
 
       public abstract void WriteEndAttribute();
+
+      /// <exclude/>
+      [EditorBrowsable(EditorBrowsableState.Never)]
+      public void WriteAttributeStringLexical(string lexical, string ns, string value) {
+
+         WriteStartAttributeLexical(lexical, ns);
+         WriteString(value);
+         WriteEndAttribute();
+      }
+
+      /// <exclude/>
+      [EditorBrowsable(EditorBrowsableState.Never)]
+      public void WriteStartAttributeLexical(string lexical, string ns) {
+
+         int prefixIndex = lexical.IndexOf(':');
+         bool hasPrefix = prefixIndex > 0;
+
+         string prefix = (hasPrefix) ? lexical.Substring(0, prefixIndex) : null;
+         string localName = (hasPrefix) ? lexical.Substring(prefixIndex + 1) : lexical;
+
+         if (hasPrefix
+            && String.IsNullOrEmpty(ns)) {
+
+            throw new NotSupportedException();
+         }
+
+         WriteStartAttribute(prefix, localName, ns);
+      }
 
       public void WriteString(IEnumerable text) {
          WriteString(text?.Cast<object>());

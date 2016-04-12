@@ -71,24 +71,31 @@
          <when test="$simple-content">WriteAttributeString</when>
          <otherwise>WriteStartAttribute</otherwise>
       </choose>
-      <text>(</text>
-      <!-- TODO: @name AVT -->
-      <variable name="name" select="if (@namespace) then QName('urn:foo', @name) else resolve-QName(@name, .)"/>
-      <variable name="prefix" select="prefix-from-QName($name)"/>
-      <if test="$prefix">
-         <value-of select="src:string($prefix)"/>
-         <text>, </text>
-      </if>
-      <value-of select="src:string(local-name-from-QName($name))"/>
       <choose>
-         <when test="@namespace">
-            <text>, </text>
-            <value-of select="src:expand-attribute(@namespace)"/>
+         <when test="xcst:is-value-template(@name)">
+            <text>Lexical(</text>
+            <value-of select="src:expand-attribute(@name), (@namespace/src:expand-attribute(.), 'null')[1]" separator=", "/>
          </when>
-         <when test="$prefix">
-            <text>, </text>
-            <value-of select="src:verbatim-string(namespace-uri-from-QName($name))"/>
-         </when>
+         <otherwise>
+            <text>(</text>
+            <variable name="name" select="if (@namespace) then QName('urn:foo', @name) else resolve-QName(@name, .)"/>
+            <variable name="prefix" select="prefix-from-QName($name)"/>
+            <if test="$prefix">
+               <value-of select="src:string($prefix)"/>
+               <text>, </text>
+            </if>
+            <value-of select="src:string(local-name-from-QName($name))"/>
+            <choose>
+               <when test="@namespace">
+                  <text>, </text>
+                  <value-of select="src:expand-attribute(@namespace)"/>
+               </when>
+               <when test="$prefix">
+                  <text>, </text>
+                  <value-of select="src:verbatim-string(namespace-uri-from-QName($name))"/>
+               </when>
+            </choose>
+         </otherwise>
       </choose>
       <if test="$simple-content">
          <text>, </text>
@@ -129,22 +136,33 @@
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
       <value-of select="$output"/>
-      <text>.WriteStartElement(</text>
-      <!-- TODO: @name AVT -->
-      <variable name="name" select="if (@namespace) then QName('urn:foo', @name) else resolve-QName(@name, .)"/>
-      <variable name="prefix" select="prefix-from-QName($name)"/>
-      <if test="$prefix">
-         <value-of select="src:string($prefix)"/>
-         <text>, </text>
-      </if>
-      <value-of select="src:string(local-name-from-QName($name))"/>
-      <text>, </text>
+      <text>.WriteStartElement</text>
       <choose>
-         <when test="@namespace">
-            <value-of select="src:expand-attribute(@namespace)"/>
+         <when test="xcst:is-value-template(@name)">
+            <text>Lexical(</text>
+            <value-of select="
+               src:expand-attribute(@name),
+               (@namespace/src:expand-attribute(.), 'null')[1],
+               src:verbatim-string(namespace-uri-from-QName(resolve-QName('foo', .)))" separator=", "/>
          </when>
          <otherwise>
-            <value-of select="src:verbatim-string(namespace-uri-from-QName($name))"/>
+            <text>(</text>
+            <variable name="name" select="if (@namespace) then QName('urn:foo', @name) else resolve-QName(@name, .)"/>
+            <variable name="prefix" select="prefix-from-QName($name)"/>
+            <if test="$prefix">
+               <value-of select="src:string($prefix)"/>
+               <text>, </text>
+            </if>
+            <value-of select="src:string(local-name-from-QName($name))"/>
+            <text>, </text>
+            <choose>
+               <when test="@namespace">
+                  <value-of select="src:expand-attribute(@namespace)"/>
+               </when>
+               <otherwise>
+                  <value-of select="src:verbatim-string(namespace-uri-from-QName($name))"/>
+               </otherwise>
+            </choose>
          </otherwise>
       </choose>
       <text>)</text>
