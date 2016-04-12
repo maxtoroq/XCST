@@ -82,11 +82,17 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Syntax\LanguageFeatures\Names\QualifiedNames\AttributeAvtNoPrefix.p.xml" />
     <Content Include="Syntax\LanguageFeatures\Names\QualifiedNames\AttributeNoPrefixWithNamespace.p.xml" />
+    <Content Include="Syntax\LanguageFeatures\Names\QualifiedNames\AttributeAvtWithPrefix.p.xml" />
+    <Content Include="Syntax\LanguageFeatures\Names\QualifiedNames\AttributeAvtWithPrefixAndNamespace.p.xml" />
     <Content Include="Syntax\LanguageFeatures\Names\QualifiedNames\AttributeWithPrefixAndNamespace1.p.xml" />
     <Content Include="Syntax\LanguageFeatures\Names\QualifiedNames\AttributeWithPrefix.p.xml" />
     <Content Include="Syntax\LanguageFeatures\Names\QualifiedNames\AttributeNoPrefix.p.xml" />
+    <Content Include="Syntax\LanguageFeatures\Names\QualifiedNames\ElementAvtNoPrefix.p.xml" />
     <Content Include="Syntax\LanguageFeatures\Names\QualifiedNames\ElementNoPrefixWithNamespace.p.xml" />
+    <Content Include="Syntax\LanguageFeatures\Names\QualifiedNames\ElementAvtWithPrefix.p.xml" />
+    <Content Include="Syntax\LanguageFeatures\Names\QualifiedNames\ElementAvtWithPrefixAndNamespace.p.xml" />
     <Content Include="Syntax\LanguageFeatures\Names\QualifiedNames\ElementWithPrefixAndNamespace1.p.xml" />
     <Content Include="Syntax\LanguageFeatures\Names\QualifiedNames\ElementWithPrefix.p.xml" />
     <Content Include="Syntax\LanguageFeatures\Names\QualifiedNames\ElementNoPrefix.p.xml" />
@@ -132,13 +138,19 @@
     <None Include="Syntax\CallableComponents\NextTemplate\_MissingRequiredParameter.xcst" />
     <None Include="Syntax\CallableComponents\NextTemplate\MissingRequiredParameter.i.xcst" />
     <None Include="Syntax\CallableComponents\Template\Abstract.i.xcst" />
+    <None Include="Syntax\LanguageFeatures\Names\QualifiedNames\AttributeAvtNoPrefix.c.xcst" />
     <None Include="Syntax\LanguageFeatures\Names\QualifiedNames\AttributeNoPrefixWithNamespace.c.xcst" />
+    <None Include="Syntax\LanguageFeatures\Names\QualifiedNames\AttributeAvtWithPrefix.c.xcst" />
+    <None Include="Syntax\LanguageFeatures\Names\QualifiedNames\AttributeAvtWithPrefixAndNamespace.c.xcst" />
     <None Include="Syntax\LanguageFeatures\Names\QualifiedNames\AttributeWithPrefixAndNamespace2.c.xcst" />
     <None Include="Syntax\LanguageFeatures\Names\QualifiedNames\AttributeWithPrefixAndNamespace1.c.xcst" />
     <None Include="Syntax\LanguageFeatures\Names\QualifiedNames\AttributeWithPrefix.i.xcst" />
     <None Include="Syntax\LanguageFeatures\Names\QualifiedNames\AttributeWithPrefix.c.xcst" />
     <None Include="Syntax\LanguageFeatures\Names\QualifiedNames\AttributeNoPrefix.c.xcst" />
+    <None Include="Syntax\LanguageFeatures\Names\QualifiedNames\ElementAvtNoPrefix.c.xcst" />
     <None Include="Syntax\LanguageFeatures\Names\QualifiedNames\ElementNoPrefixWithNamespace.c.xcst" />
+    <None Include="Syntax\LanguageFeatures\Names\QualifiedNames\ElementAvtWithPrefix.c.xcst" />
+    <None Include="Syntax\LanguageFeatures\Names\QualifiedNames\ElementAvtWithPrefixAndNamespace.c.xcst" />
     <None Include="Syntax\LanguageFeatures\Names\QualifiedNames\ElementWithPrefixAndNamespace2.c.xcst" />
     <None Include="Syntax\LanguageFeatures\Names\QualifiedNames\ElementWithPrefixAndNamespace1.c.xcst" />
     <None Include="Syntax\LanguageFeatures\Names\QualifiedNames\ElementWithPrefix.i.xcst" />

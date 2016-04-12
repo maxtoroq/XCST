@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#'
+   xmlns:c='http://maxtoroq.github.io/XCST'
+   xmlns:xsl='http://www.w3.org/1999/XSL/Transform'>
+
+   <c:template name='c:initial-template'>
+      <html>
+         <c:attribute name='{"xsl:version"}' namespace='urn:foo'>2.0</c:attribute>
+      </html>
+   </c:template>
+
+</c:module>
