@@ -356,7 +356,7 @@
       <param name="modules" tunnel="yes"/>
       <param name="module-pos" tunnel="yes"/>
 
-      <variable name="qname" select="resolve-QName(@name, .)"/>
+      <variable name="qname" select="xcst:resolve-QName-ignore-default(@name, .)"/>
 
       <if test="not($qname eq xs:QName('c:initial-template'))
          and xcst:is-reserved-namespace(namespace-uri-from-QName($qname))">
@@ -478,7 +478,7 @@
       <param name="modules" tunnel="yes"/>
       <param name="module-pos" tunnel="yes"/>
 
-      <variable name="qname" select="resolve-QName(@name, .)"/>
+      <variable name="qname" select="xcst:resolve-QName-ignore-default(@name, .)"/>
 
       <if test="xcst:is-reserved-namespace(namespace-uri-from-QName($qname))">
          <sequence select="error(xs:QName('err:XTSE0080'), concat('Namespace prefix ', prefix-from-QName($qname),' refers to a reserved namespace.'), src:error-object(.))"/>
@@ -606,7 +606,7 @@
          </when>
          <when test="local-name($a) eq 'template'">
             <sequence select="local-name($b) eq 'template'
-               and $a/resolve-QName(@name, .) eq $b/resolve-QName(@name, .)"/>
+               and $a/xcst:resolve-QName-ignore-default(@name, .) eq $b/xcst:resolve-QName-ignore-default(@name, .)"/>
          </when>
          <when test="local-name($a) eq 'function'">
             <sequence select="local-name($b) eq 'function'
@@ -615,7 +615,7 @@
          </when>
          <when test="local-name($a) eq 'attribute-set'">
             <sequence select="local-name($b) eq 'attribute-set'
-               and $a/resolve-QName(@name, .) eq $b/resolve-QName(@name, .)"/>
+               and $a/xcst:resolve-QName-ignore-default(@name, .) eq $b/xcst:resolve-QName-ignore-default(@name, .)"/>
          </when>
          <when test="local-name($a) eq 'type'">
             <sequence select="local-name($b) eq 'type'
@@ -630,7 +630,7 @@
    <function name="src:template-method-name" as="xs:string">
       <param name="template" as="element()"/>
 
-      <sequence select="concat(replace(string(resolve-QName($template/@name, $template)), '[^A-Za-z0-9]', '_'), '_', generate-id($template))"/>
+      <sequence select="concat(replace(string(xcst:resolve-QName-ignore-default($template/@name, $template)), '[^A-Za-z0-9]', '_'), '_', generate-id($template))"/>
    </function>
 
    <function name="src:hidden-function-method-name" as="xs:string">
@@ -903,7 +903,7 @@
       <value-of select="$src:new-line"/>
 
       <if test="$public">
-         <variable name="qname" select="resolve-QName($meta/@name, $meta)"/>
+         <variable name="qname" select="xcst:resolve-QName-ignore-default($meta/@name, $meta)"/>
 
          <call-template name="src:new-line-indented"/>
          <text>[</text>
@@ -971,7 +971,7 @@
    <template match="xcst:template" mode="src:member">
 
       <variable name="context-param" select="src:aux-variable('context')"/>
-      <variable name="qname" select="resolve-QName(@name, .)"/>
+      <variable name="qname" select="xcst:resolve-QName-ignore-default(@name, .)"/>
 
       <value-of select="$src:new-line"/>
       <call-template name="src:new-line-indented"/>
@@ -1159,7 +1159,7 @@
 
       <value-of select="$src:new-line"/>
       <if test="$public">
-         <variable name="qname" select="resolve-QName($meta/@name, $meta)"/>
+         <variable name="qname" select="xcst:resolve-QName-ignore-default($meta/@name, $meta)"/>
          <call-template name="src:new-line-indented"/>
          <text>[</text>
          <value-of select="src:global-identifier('Xcst.XcstComponent')"/>
@@ -1215,7 +1215,7 @@
    <template match="xcst:attribute-set" mode="src:member">
 
       <variable name="context-param" select="src:aux-variable('context')"/>
-      <variable name="qname" select="resolve-QName(@name, .)"/>
+      <variable name="qname" select="xcst:resolve-QName-ignore-default(@name, .)"/>
 
       <value-of select="$src:new-line"/>
       <call-template name="src:new-line-indented"/>
@@ -1578,7 +1578,7 @@
 
       <value-of select="$src:new-line"/>
       <for-each select="$templates">
-         <variable name="qname" select="resolve-QName(@name, .)"/>
+         <variable name="qname" select="xcst:resolve-QName-ignore-default(@name, .)"/>
          <choose>
             <when test="position() eq 1">
                <call-template name="src:new-line-indented"/>
@@ -1658,16 +1658,27 @@
 
       <!-- TODO: XTSE1560: Conflicting values for output parameter {name()} -->
 
+      <variable name="implicit-definition" select="not($modules/c:output[not(@name)])"/>
+
       <value-of select="$src:new-line"/>
-      <for-each-group select="for $m in reverse($modules) return $m/c:output" group-by="(resolve-QName(@name, .), '')[1]">
+      <if test="$implicit-definition">
+         <call-template name="src:new-line-indented"/>
+         <text>if (</text>
+         <value-of select="$name-param"/>
+         <text> == null</text>
+         <text>)</text>
+         <call-template name="src:open-brace"/>
+         <call-template name="src:close-brace"/>
+      </if>
+      <for-each-group select="for $m in reverse($modules) return $m/c:output" group-by="(xcst:resolve-QName-ignore-default(@name, .), '')[1]">
          <variable name="output-name" select="
             if (current-grouping-key() instance of xs:QName) then current-grouping-key()
             else ()"/>
-         <if test="$output-name and xcst:is-reserved-namespace(namespace-uri-from-QName($output-name))">
-            <sequence select="error(xs:QName('err:XTSE0080'), concat('Namespace prefix ', prefix-from-QName($output-name),' refers to a reserved namespace.'), src:error-object(.))"/>
+         <if test="not(empty($output-name)) and xcst:is-reserved-namespace(namespace-uri-from-QName($output-name))">
+            <sequence select="error(xs:QName('err:XTSE0080'), concat('Namespace prefix ', prefix-from-QName($output-name), ' refers to a reserved namespace.'), src:error-object(.))"/>
          </if>
          <choose>
-            <when test="position() eq 1">
+            <when test="position() eq 1 and not($implicit-definition)">
                <call-template name="src:new-line-indented"/>
             </when>
             <otherwise> else </otherwise>
@@ -1716,20 +1727,6 @@
          </for-each-group>
          <call-template name="src:close-brace"/>
       </for-each-group>
-      <if test="not($modules/c:output[not(@name)])">
-         <choose>
-            <when test="$modules/c:output"> else </when>
-            <otherwise>
-               <call-template name="src:new-line-indented"/>
-            </otherwise>
-         </choose>
-         <text>if (</text>
-         <value-of select="$name-param"/>
-         <text> == null</text>
-         <text>)</text>
-         <call-template name="src:open-brace"/>
-         <call-template name="src:close-brace"/>
-      </if>
       <text> else</text>
       <call-template name="src:open-brace"/>
       <call-template name="src:new-line-indented">

@@ -345,7 +345,7 @@
       <if test="$attr">
          <variable name="names" select="
             for $s in tokenize($attr, '\s')[.]
-            return resolve-QName($s, .)"/>
+            return xcst:resolve-QName-ignore-default($s, .)"/>
          <variable name="sets" as="xs:string*">
             <variable name="current" select="."/>
             <for-each select="$names">
@@ -359,8 +359,11 @@
                      <sequence select="src:original-member($original-meta)"/>
                   </when>
                   <otherwise>
-                     <sequence select="
-                        $package-manifest/xcst:attribute-set[@visibility ne 'hidden' and resolve-QName(@name, .) eq current()]/@member-name"/>
+                     <variable name="meta" select="$package-manifest/xcst:attribute-set[@visibility ne 'hidden' and xcst:resolve-QName-ignore-default(@name, .) eq current()]"/>
+                     <if test="not($meta)">
+                        <sequence select="error(xs:QName('err:XTSE0710'), concat('No attribute set exists named ', current(), '.'), src:error-object($current))"/>
+                     </if>
+                     <sequence select="$meta/@member-name"/>
                   </otherwise>
                </choose>
             </for-each>
@@ -710,7 +713,7 @@
       <param name="indent" tunnel="yes"/>
       <param name="context-param" tunnel="yes"/>
 
-      <variable name="qname" select="resolve-QName(@name, .)"/>
+      <variable name="qname" select="xcst:resolve-QName-ignore-default(@name, .)"/>
       <variable name="original" select="$qname eq xs:QName('c:original') and ancestor::c:override"/>
       <variable name="meta" as="element(xcst:template)">
          <choose>
@@ -725,11 +728,11 @@
             </when>
             <otherwise>
                <variable name="meta" select="
-               (reverse($package-manifest/xcst:template)[
-                  resolve-QName(@name, .) eq $qname
-                  and @visibility ne 'hidden'])[1]"/>
+                  (reverse($package-manifest/xcst:template)[
+                     xcst:resolve-QName-ignore-default(@name, .) eq $qname
+                     and @visibility ne 'hidden'])[1]"/>
                <if test="not($meta)">
-                  <sequence select="error(xs:QName('err:XTSE0650'), concat('No template exists named ', resolve-QName(@name, .), '.'), src:error-object(.))"/>
+                  <sequence select="error(xs:QName('err:XTSE0650'), concat('No template exists named ', $qname, '.'), src:error-object(.))"/>
                </if>
                <sequence select="$meta"/>
             </otherwise>
@@ -974,7 +977,7 @@
          </call-template>
          <if test="@error-code">
             <text>, </text>
-            <variable name="error-code" select="resolve-QName(@error-code, .)"/>
+            <variable name="error-code" select="xcst:resolve-QName-ignore-default(@error-code, .)"/>
             <value-of select="src:QName($error-code)"/>
          </if>
          <text>)</text>
@@ -999,7 +1002,7 @@
       </variable>
       <variable name="error-code-expr">
          <if test="@error-code">
-            <variable name="error-code" select="resolve-QName(@error-code, .)"/>
+            <variable name="error-code" select="xcst:resolve-QName-ignore-default(@error-code, .)"/>
             <value-of select="src:QName($error-code)"/>
          </if>
       </variable>
@@ -1169,7 +1172,7 @@
       <value-of select="(@href/src:expand-attribute(.), src:string(''))[1]"/>
       <text>), </text>
       <!-- TODO: @format AVT -->
-      <value-of select="src:expression-or-null(@format/src:QName(resolve-QName(., ..)))"/>
+      <value-of select="src:expression-or-null(@format/src:QName(xcst:resolve-QName-ignore-default(., ..)))"/>
       <text>, new </text>
       <value-of select="src:global-identifier('Xcst.OutputParameters')"/>
       <call-template name="src:open-brace"/>
@@ -1207,8 +1210,9 @@
       <variable name="new-context" select="concat(src:aux-variable('context'), '_', generate-id())"/>
       <value-of select="$src:context-field"/>
       <text>.Serialize(</text>
+      <!-- TODO: throw non-existent output definition -->
       <!-- TODO: @format AVT -->
-      <value-of select="src:expression-or-null(@format/src:QName(resolve-QName(., ..)))"/>
+      <value-of select="src:expression-or-null(@format/src:QName(xcst:resolve-QName-ignore-default(., ..)))"/>
       <text>, new </text>
       <value-of select="src:global-identifier('Xcst.OutputParameters')"/>
       <call-template name="src:open-brace"/>
@@ -1672,6 +1676,17 @@
       <variable name="core-ns" select="namespace-uri-from-QName(xs:QName('c:foo'))"/>
       <sequence select="$ns eq $core-ns
          or starts-with($ns, concat($ns, '/'))"/>
+   </function>
+
+   <function name="xcst:resolve-QName-ignore-default" as="xs:QName?">
+      <param name="qname" as="xs:string?"/>
+      <param name="element" as="element()"/>
+
+      <if test="not(empty($qname))">
+         <sequence select="
+            if (contains($qname, ':')) then resolve-QName($qname, $element)
+            else QName('', $qname)"/>
+      </if>
    </function>
 
    <!--
