@@ -190,7 +190,7 @@ namespace Xcst.Compiler {
                   .AsNodes()
                   .Select(n => n.StringValue)
                   .ToArray(),
-            References =
+            Dependencies =
                new HashSet<Uri>(resolver.ResolvedUris
                   .Concat(((IXdmEnumerator)docEl.EnumerateAxis(XdmAxis.Child, CompilerQName("ref")))
                      .AsNodes()
@@ -285,6 +285,6 @@ namespace Xcst.Compiler {
 
       public IReadOnlyList<string> CompilationUnits { get; internal set; }
 
-      public IReadOnlyList<Uri> References { get; internal set; }
+      public IReadOnlyList<Uri> Dependencies { get; internal set; }
    }
 }

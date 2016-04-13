@@ -38,7 +38,7 @@ namespace Xcst.Web.Compilation {
             if (result != null) {
                return
                   new[] { VirtualPath }.Concat(
-                     from u in result.References
+                     from u in result.Dependencies
                      let rel = applicationUri.MakeRelativeUri(u)
                      where !rel.IsAbsoluteUri
                         && !rel.OriginalString.StartsWith("..")
@@ -115,7 +115,7 @@ namespace Xcst.Web.Compilation {
          var fileArray = new CodeArrayCreateExpression(typeof(string));
          fileArray.Initializers.Add(new CodePrimitiveExpression(this.PhysicalPath.LocalPath));
 
-         foreach (Uri uri in this.result.References.Where(u => u.IsFile)) {
+         foreach (Uri uri in this.result.Dependencies.Where(u => u.IsFile)) {
             fileArray.Initializers.Add(new CodePrimitiveExpression(uri.LocalPath));
          }
 
