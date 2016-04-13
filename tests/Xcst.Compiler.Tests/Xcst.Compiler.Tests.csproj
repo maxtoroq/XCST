@@ -115,7 +115,6 @@
     <Content Include="Syntax\ModuleStructure\Packages\OverridingComponents\Template\NextOverride.p.xml" />
     <Content Include="Syntax\ModuleStructure\Packages\OverridingComponents\Template\OverrideOverridden.p.xml" />
     <Content Include="Syntax\ModuleStructure\Packages\OverridingComponents\Template\Overridden.p.xml" />
-    <Content Include="Syntax\Serialization\UnnamedDefinitionLast.p.xml" />
     <Content Include="Syntax\VariablesAndParameters\Global\VariableHidesParam.p.xml" />
     <Content Include="Syntax\VariablesAndParameters\Global\ParamHidesVariable.p.xml" />
     <None Include="Syntax\CallableComponents\AttributeSet\Abstract.i.xcst" />
@@ -316,7 +315,6 @@
     <None Include="Syntax\ModuleStructure\Packages\AcceptingComponents\Parameter\Duplicate1b.pxcst" />
     <None Include="Syntax\ModuleStructure\Packages\AcceptingComponents\Template\Duplicate1b.pxcst" />
     <None Include="Syntax\ModuleStructure\Packages\AcceptingComponents\Template\Duplicate1a.pxcst" />
-    <None Include="Syntax\Serialization\UnnamedDefinitionLast.c.xcst" />
     <None Include="Syntax\Types\Abstract.i.xcst" />
     <None Include="Syntax\Types\Duplicate.i.xcst" />
     <None Include="Syntax\VariablesAndParameters\Delegate\DefaultValueAndRequired.c.xcst" />
