@@ -31,6 +31,10 @@ namespace Xcst.Compiler.Tests.Syntax {
 
             CompileResult xcstResult = compiler.Compile(fileStream, baseUri: new Uri(fileName, UriKind.Absolute));
 
+            foreach (string unit in xcstResult.CompilationUnits) {
+               Console.WriteLine(unit);
+            }
+
             if (!correct) {
                return null;
             }
