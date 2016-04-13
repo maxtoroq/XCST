@@ -935,7 +935,7 @@
       <call-template name="src:new-line-indented"/>
       <text>.CallTemplate(</text>
       <!-- TODO: @name AVT -->
-      <value-of select="src:QName(resolve-QName(@name, .))"/>
+      <value-of select="src:QName(xcst:resolve-QName-ignore-default(@name, .))"/>
       <text>)</text>
       <apply-templates select="c:with-param" mode="src:with-param-for-templates"/>
       <if test="@with-params">
