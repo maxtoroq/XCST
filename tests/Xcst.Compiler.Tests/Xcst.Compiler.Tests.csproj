@@ -82,6 +82,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Syntax\LanguageFeatures\Names\QualifiedNames\UsingModuleNoPrefix.p.xml" />
     <Content Include="Syntax\LanguageFeatures\Names\QualifiedNames\OutputNoPrefix.p.xml" />
     <Content Include="Syntax\LanguageFeatures\Names\QualifiedNames\SerializeFormatNoPrefix.p.xml" />
     <Content Include="Syntax\LanguageFeatures\Names\QualifiedNames\AttributeAvtNoPrefix.p.xml" />
@@ -145,6 +146,8 @@
     <None Include="Syntax\LanguageFeatures\Names\QualifiedNames\AttributeSetNoPrefix.c.xcst" />
     <None Include="Syntax\LanguageFeatures\Names\QualifiedNames\OutputNoPrefix.c.xcst" />
     <None Include="Syntax\LanguageFeatures\Names\QualifiedNames\SerializeFormatNoPrefix.c.xcst" />
+    <None Include="Syntax\LanguageFeatures\Names\QualifiedNames\_UsingModuleNoPrefix.xcst" />
+    <None Include="Syntax\LanguageFeatures\Names\QualifiedNames\UsingModuleNoPrefix.c.xcst" />
     <None Include="Syntax\LanguageFeatures\Names\QualifiedNames\UseAttributeSetsNoPrefix.c.xcst" />
     <None Include="Syntax\LanguageFeatures\Names\QualifiedNames\TemplateNoPrefix.c.xcst" />
     <None Include="Syntax\LanguageFeatures\Names\QualifiedNames\_AttributeSetNoPrefix.xcst" />

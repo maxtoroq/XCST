@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#'
+   xmlns:c='http://maxtoroq.github.io/XCST'
+   xmlns='http://www.w3.org/1999/xhtml'>
+
+   <c:use-functions in='System'/>
+   
+   <c:import href='_UsingModuleNoPrefix.xcst'/>
+
+   <c:template name='c:initial-template'>
+      <c:using-module instance='Activator.CreateInstance(this.GetType())'>
+         <c:call-template name='foo'/>
+      </c:using-module>
+   </c:template>
+
+</c:module>
