@@ -1671,6 +1671,8 @@
          <call-template name="src:close-brace"/>
       </if>
       <for-each-group select="for $m in reverse($modules) return $m/c:output" group-by="(xcst:resolve-QName-ignore-default(@name, .), '')[1]">
+         <sort select="current-grouping-key() instance of xs:QName"/>
+
          <variable name="output-name" select="
             if (current-grouping-key() instance of xs:QName) then current-grouping-key()
             else ()"/>
