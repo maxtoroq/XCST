@@ -1171,8 +1171,7 @@
       <text>.Uri(</text>
       <value-of select="(@href/src:expand-attribute(.), src:string(''))[1]"/>
       <text>), </text>
-      <!-- TODO: @format AVT -->
-      <value-of select="src:expression-or-null(@format/src:QName(xcst:resolve-QName-ignore-default(., ..)))"/>
+      <call-template name="src:format-QName"/>
       <text>, new </text>
       <value-of select="src:global-identifier('Xcst.OutputParameters')"/>
       <call-template name="src:open-brace"/>
@@ -1210,9 +1209,7 @@
       <variable name="new-context" select="concat(src:aux-variable('context'), '_', generate-id())"/>
       <value-of select="$src:context-field"/>
       <text>.Serialize(</text>
-      <!-- TODO: throw non-existent output definition -->
-      <!-- TODO: @format AVT -->
-      <value-of select="src:expression-or-null(@format/src:QName(xcst:resolve-QName-ignore-default(., ..)))"/>
+      <call-template name="src:format-QName"/>
       <text>, new </text>
       <value-of select="src:global-identifier('Xcst.OutputParameters')"/>
       <call-template name="src:open-brace"/>
@@ -1242,6 +1239,29 @@
          <with-param name="output" select="concat($new-context, '.Output')" tunnel="yes"/>
       </call-template>
       <text>)</text>
+   </template>
+
+   <template name="src:format-QName">
+      <param name="package-manifest" tunnel="yes"/>
+
+      <choose>
+         <when test="@format">
+            <choose>
+               <when test="xcst:is-value-template(@format)">
+                  <!-- TODO: @format AVT -->
+                  <sequence select="error((), 'Attribute value template for @format not supported yet.', src:error-object(.))"/>
+               </when>
+               <otherwise>
+                  <variable name="format" select="xcst:resolve-QName-ignore-default(@format, .)"/>
+                  <if test="not($package-manifest/xcst:output[xcst:resolve-QName-ignore-default(@name, .) eq $format])">
+                     <sequence select="error(xs:QName('err:XTDE1460'), concat('No output definition exists named ', $format, '.'), src:error-object(.))"/>
+                  </if>
+                  <value-of select="src:QName($format)"/>
+               </otherwise>
+            </choose>
+         </when>
+         <otherwise>null</otherwise>
+      </choose>
    </template>
 
    <template match="@*" mode="src:output-parameter-setter"/>

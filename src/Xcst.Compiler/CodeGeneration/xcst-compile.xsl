@@ -130,6 +130,9 @@
                <with-param name="local-components" select="$local-components" tunnel="yes"/>
             </apply-templates>
             <copy-of select="$local-components"/>
+            <call-template name="xcst:output-definitions">
+               <with-param name="modules" select="$modules" tunnel="yes"/>
+            </call-template>
          </xcst:package-manifest>
       </variable>
 
@@ -595,6 +598,30 @@
       </copy>
    </template>
 
+   <template name="xcst:output-definitions">
+      <param name="modules" tunnel="yes"/>
+
+      <for-each-group select="for $m in reverse($modules) return $m/c:output" group-by="(xcst:resolve-QName-ignore-default(@name, .), '')[1]">
+         <sort select="current-grouping-key() instance of xs:QName"/>
+
+         <variable name="output-name" select="
+            if (current-grouping-key() instance of xs:QName) then current-grouping-key()
+            else ()"/>
+
+         <if test="not(empty($output-name)) and xcst:is-reserved-namespace(namespace-uri-from-QName($output-name))">
+            <sequence select="error(xs:QName('err:XTSE0080'), concat('Namespace prefix ', prefix-from-QName($output-name), ' refers to a reserved namespace.'), src:error-object(.))"/>
+         </if>
+
+         <xcst:output member-name="{src:template-method-name(.)}" declaration-ids="{current-group()/generate-id(.)}">
+            <if test="not(empty($output-name))">
+               <attribute name="name" select="$output-name"/>
+            </if>
+            <copy-of select="namespace::*"/>
+         </xcst:output>
+      </for-each-group>
+
+   </template>
+
    <function name="xcst:homonymous" as="xs:boolean">
       <param name="a" as="element()"/>
       <param name="b" as="element()"/>
@@ -630,7 +657,7 @@
    <function name="src:template-method-name" as="xs:string">
       <param name="template" as="element()"/>
 
-      <sequence select="concat(replace(string(xcst:resolve-QName-ignore-default($template/@name, $template)), '[^A-Za-z0-9]', '_'), '_', generate-id($template))"/>
+      <sequence select="concat($template/@name/concat(replace(., '[^A-Za-z0-9]', '_'), '_'), generate-id($template))"/>
    </function>
 
    <function name="src:hidden-function-method-name" as="xs:string">
@@ -799,6 +826,9 @@
          <call-template name="src:read-output-definition-method">
             <with-param name="indent" select="$indent + 1" tunnel="yes"/>
          </call-template>
+         <apply-templates select="$package-manifest/xcst:output" mode="src:member">
+            <with-param name="indent" select="$indent + 1" tunnel="yes"/>
+         </apply-templates>
          <apply-templates select="$used-packages" mode="src:used-package-class">
             <with-param name="indent" select="$indent + 1" tunnel="yes"/>
          </apply-templates>
@@ -1652,16 +1682,14 @@
 
    <template name="src:read-output-definition-method-body">
       <param name="indent" tunnel="yes"/>
-      <param name="modules" tunnel="yes"/>
+      <param name="package-manifest" tunnel="yes"/>
       <param name="name-param"/>
       <param name="parameters-param"/>
 
-      <!-- TODO: XTSE1560: Conflicting values for output parameter {name()} -->
-
-      <variable name="implicit-definition" select="not($modules/c:output[not(@name)])"/>
+      <variable name="explicit-unnamed" select="not(empty($package-manifest/xcst:output[not(@name)]))"/>
 
       <value-of select="$src:new-line"/>
-      <if test="$implicit-definition">
+      <if test="not($explicit-unnamed)">
          <call-template name="src:new-line-indented"/>
          <text>if (</text>
          <value-of select="$name-param"/>
@@ -1670,17 +1698,10 @@
          <call-template name="src:open-brace"/>
          <call-template name="src:close-brace"/>
       </if>
-      <for-each-group select="for $m in reverse($modules) return $m/c:output" group-by="(xcst:resolve-QName-ignore-default(@name, .), '')[1]">
-         <sort select="current-grouping-key() instance of xs:QName"/>
-
-         <variable name="output-name" select="
-            if (current-grouping-key() instance of xs:QName) then current-grouping-key()
-            else ()"/>
-         <if test="not(empty($output-name)) and xcst:is-reserved-namespace(namespace-uri-from-QName($output-name))">
-            <sequence select="error(xs:QName('err:XTSE0080'), concat('Namespace prefix ', prefix-from-QName($output-name), ' refers to a reserved namespace.'), src:error-object(.))"/>
-         </if>
+      <for-each select="$package-manifest/xcst:output">
+         <variable name="output-name" select="@name/xcst:resolve-QName-ignore-default(., ..)"/>
          <choose>
-            <when test="position() eq 1 and not($implicit-definition)">
+            <when test="position() eq 1 and $explicit-unnamed">
                <call-template name="src:new-line-indented"/>
             </when>
             <otherwise> else </otherwise>
@@ -1702,33 +1723,17 @@
          </choose>
          <text>)</text>
          <call-template name="src:open-brace"/>
-         <for-each-group select="for $o in current-group() return $o/@*[not(self::attribute(name))]" group-by="node-name(.)">
-            <if test="self::attribute(parameter-document)">
-               <sequence select="error((), concat(name(), ' parameter not supported yet.'), src:error-object(.))"/>
-            </if>
-            <call-template name="src:new-line-indented">
-               <with-param name="increase" select="1"/>
-            </call-template>
-            <value-of select="$parameters-param"/>
-            <if test="not(namespace-uri())">.</if>
-            <apply-templates select="." mode="src:output-parameter-setter">
-               <with-param name="indent" select="$indent + 2" tunnel="yes"/>
-               <with-param name="list-value" as="xs:QName*">
-                  <if test="self::attribute(cdata-section-elements) 
-                     or self::attribute(suppress-indentation)
-                     or self::attribute(use-character-maps)">
-                     <sequence select="distinct-values(
-                        for $p in current-group()
-                        return for $s in tokenize($p, '\s')[.]
-                        return resolve-QName($s, $p/..)
-                     )"/>
-                  </if>
-               </with-param>
-            </apply-templates>
-            <value-of select="$src:statement-delimiter"/>
-         </for-each-group>
+         <call-template name="src:new-line-indented">
+            <with-param name="increase" select="1"/>
+         </call-template>
+         <text>this.</text>
+         <value-of select="@member-name"/>
+         <text>(</text>
+         <value-of select="$parameters-param"/>
+         <text>)</text>
+         <value-of select="$src:statement-delimiter"/>
          <call-template name="src:close-brace"/>
-      </for-each-group>
+      </for-each>
       <text> else</text>
       <call-template name="src:open-brace"/>
       <call-template name="src:new-line-indented">
@@ -1740,6 +1745,51 @@
       <value-of select="$name-param"/>
       <text>)</text>
       <value-of select="$src:statement-delimiter"/>
+      <call-template name="src:close-brace"/>
+   </template>
+
+   <template match="xcst:output" mode="src:member">
+      <param name="indent" tunnel="yes"/>
+      <param name="modules" tunnel="yes"/>
+
+      <variable name="parameters-param" select="src:aux-variable('parameters')"/>
+      <variable name="declarations" select="for $id in tokenize(@declaration-ids, '\s') return $modules/c:output[generate-id() eq $id]"/>
+
+      <value-of select="$src:new-line"/>
+      <call-template name="src:editor-browsable-never"/>
+      <call-template name="src:new-line-indented"/>
+      <text>void </text>
+      <value-of select="@member-name"/>
+      <text>(</text>
+      <value-of select="src:global-identifier('Xcst.OutputParameters'), $parameters-param"/>
+      <text>)</text>
+      <call-template name="src:open-brace"/>
+      <for-each-group select="for $o in $declarations return $o/@*[not(self::attribute(name))]" group-by="node-name(.)">
+         <!-- TODO: XTSE1560: Conflicting values for output parameter {name()} -->
+         <if test="self::attribute(parameter-document)">
+            <sequence select="error((), concat(name(), ' parameter not supported yet.'), src:error-object(.))"/>
+         </if>
+         <call-template name="src:new-line-indented">
+            <with-param name="increase" select="1"/>
+         </call-template>
+         <value-of select="$parameters-param"/>
+         <if test="not(namespace-uri())">.</if>
+         <apply-templates select="." mode="src:output-parameter-setter">
+            <with-param name="indent" select="$indent + 2" tunnel="yes"/>
+            <with-param name="list-value" as="xs:QName*">
+               <if test="self::attribute(cdata-section-elements) 
+                  or self::attribute(suppress-indentation)
+                  or self::attribute(use-character-maps)">
+                  <sequence select="distinct-values(
+                     for $p in current-group()
+                     return for $s in tokenize($p, '\s')[.]
+                     return resolve-QName($s, $p/..)
+                  )"/>
+               </if>
+            </with-param>
+         </apply-templates>
+         <value-of select="$src:statement-delimiter"/>
+      </for-each-group>
       <call-template name="src:close-brace"/>
    </template>
 
