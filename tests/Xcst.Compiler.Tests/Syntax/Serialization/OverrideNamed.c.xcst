@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#'
+   xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:import href='_OverrideNamed.xcst'/>
+
+   <c:output name='bar' method='text'/>
+
+   <c:template name='c:initial-template'>
+      <foo>
+         <c:serialize format='bar'>
+            <bar>bar</bar>
+         </c:serialize>
+      </foo>
+   </c:template>
+
+</c:module>

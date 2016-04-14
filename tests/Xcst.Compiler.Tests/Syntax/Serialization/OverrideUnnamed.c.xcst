@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:import href='_OverrideUnnamed.xcst'/>
+
+   <c:output method='xml'/>
+
+   <c:template name='c:initial-template'>
+      <foo/>
+   </c:template>
+
+</c:module>
