@@ -1462,6 +1462,13 @@
       <call-template name="src:new-line-indented">
          <with-param name="increase" select="1"/>
       </call-template>
+      <text>get { return </text>
+      <value-of select="$src:context-field"/>
+      <value-of select="$src:statement-delimiter"/>
+      <text> }</text>
+      <call-template name="src:new-line-indented">
+         <with-param name="increase" select="1"/>
+      </call-template>
       <text>set { </text>
       <if test="$used-packages">
          <for-each select="$used-packages">

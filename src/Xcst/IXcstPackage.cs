@@ -22,7 +22,7 @@ namespace Xcst {
    [EditorBrowsable(EditorBrowsableState.Never)]
    public interface IXcstPackage {
 
-      ExecutionContext Context { set; }
+      ExecutionContext Context { get; set; }
 
       void Prime(PrimingContext context);
 

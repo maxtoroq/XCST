@@ -367,6 +367,7 @@ namespace Xcst.Compiler.CodeGeneration {
                            if (String.IsNullOrEmpty(attr.Namespace)) {
                               writer.WriteAttributeString("name", attr.Name);
                            } else {
+                              writer.WriteAttributeString("name", "ns1:" + attr.Name);
                               writer.WriteAttributeString("xmlns", "ns1", null, attr.Namespace);
                            }
 
@@ -419,6 +420,7 @@ namespace Xcst.Compiler.CodeGeneration {
                            if (String.IsNullOrEmpty(attr.Namespace)) {
                               writer.WriteAttributeString("name", attr.Name);
                            } else {
+                              writer.WriteAttributeString("name", "ns1:" + attr.Name);
                               writer.WriteAttributeString("xmlns", "ns1", null, attr.Namespace);
                            }
 

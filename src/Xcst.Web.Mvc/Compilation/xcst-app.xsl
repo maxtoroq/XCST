@@ -941,7 +941,18 @@
    <template name="a:model-helper">
       <param name="a:model-helper" as="xs:string?" tunnel="yes"/>
 
-      <value-of select="($a:model-helper, 'this.ModelHelper')[1]"/>
+      <choose>
+         <when test="$a:model-helper">
+            <value-of select="$a:model-helper"/>
+         </when>
+         <otherwise>
+            <text>((</text>
+            <value-of select="src:global-identifier('Xcst.Web.Mvc.XcstViewPage')"/>
+            <text>)</text>
+            <value-of select="$src:context-field"/>
+            <text>.TopLevelPackage).ModelHelper</text>
+         </otherwise>
+      </choose>
    </template>
 
    <template name="a:html-helper">
