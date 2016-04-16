@@ -1165,8 +1165,8 @@
       <text> </text>
       <value-of select="$new-context"/>
       <text> = </text>
-      <value-of select="$src:context-field"/>
-      <text>.ChangeOutput(</text>
+      <value-of select="src:fully-qualified-helper('Serialization')"/>
+      <text>.ChangeOutput(this, </text>
       <value-of select="src:fully-qualified-helper('DataType')"/>
       <text>.Uri(</text>
       <value-of select="(@href/src:expand-attribute(.), src:string(''))[1]"/>
@@ -1207,8 +1207,8 @@
       </if>
 
       <variable name="new-context" select="concat(src:aux-variable('context'), '_', generate-id())"/>
-      <value-of select="$src:context-field"/>
-      <text>.Serialize(</text>
+      <value-of select="src:fully-qualified-helper('Serialization')"/>
+      <text>.Serialize(this, </text>
       <call-template name="src:format-QName"/>
       <text>, new </text>
       <value-of select="src:global-identifier('Xcst.OutputParameters')"/>

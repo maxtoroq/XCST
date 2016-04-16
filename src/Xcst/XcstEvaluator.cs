@@ -333,8 +333,11 @@ namespace Xcst {
          this.primeFn();
 
          using (IWriterFactory writerFactory = writerFn(this.parameters)) {
-            using (DynamicContext dynamicContext = execContext.CreateDynamicContext(writerFactory)) {
 
+            var defaultParameters = new OutputParameters();
+            this.package.ReadOutputDefinition(null, defaultParameters);
+
+            using (var dynamicContext = new DynamicContext(writerFactory, defaultParameters, execContext)) {
                this.executionFn(this.package, dynamicContext);
             }
          }

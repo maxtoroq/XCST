@@ -13,16 +13,13 @@
 // limitations under the License.
 
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Text;
 
 namespace Xcst.Runtime {
 
    /// <exclude/>
    public class ExecutionContext {
 
-      readonly HashSet<Uri> outputUris = new HashSet<Uri>();
       readonly IFormatProvider formatProvider;
 
       public IXcstPackage TopLevelPackage { get; }
@@ -36,67 +33,6 @@ namespace Xcst.Runtime {
          this.TopLevelPackage = topLevelPackage;
          this.formatProvider = formatProvider ?? CultureInfo.CurrentCulture;
          this.SimpleContent = new SimpleContent(this.formatProvider);
-      }
-
-      internal DynamicContext CreateDynamicContext(IWriterFactory writerFactory, QualifiedName outputName = null, DynamicContext currentContext = null) {
-
-         if (writerFactory == null) throw new ArgumentNullException(nameof(writerFactory));
-
-         this.outputUris.Add(writerFactory.OutputUri);
-
-         var outputParams = new OutputParameters();
-         this.TopLevelPackage.ReadOutputDefinition(outputName, outputParams);
-
-         return new DynamicContext(writerFactory, outputParams, this, currentContext);
-      }
-
-      public DynamicContext ChangeOutput(Uri outputUri, QualifiedName outputName, OutputParameters parameters, DynamicContext currentContext = null) {
-
-         if (outputUri == null) throw new ArgumentNullException(nameof(outputUri));
-         if (parameters == null) throw new ArgumentNullException(nameof(parameters));
-
-         if (!outputUri.IsAbsoluteUri
-            && currentContext != null
-            && currentContext.CurrentOutputUri.IsAbsoluteUri) {
-
-            outputUri = new Uri(currentContext.CurrentOutputUri, outputUri);
-         }
-
-         if (this.outputUris.Contains(outputUri)) {
-            throw new RuntimeException($"Cannot write to the same URI more than once ({outputUri.OriginalString}).", DynamicError.Code("XTDE1490"));
-         }
-
-         if (!outputUri.IsAbsoluteUri) {
-            throw new RuntimeException($"Cannot resolve {outputUri.OriginalString}. Specify an output URI.", DynamicError.Code(""));
-         }
-
-         if (!outputUri.IsFile) {
-            throw new RuntimeException($"Can write to file URIs only ({outputUri.OriginalString}).", DynamicError.Code(""));
-         }
-
-         return CreateDynamicContext(WriterFactory.CreateFactory(outputUri, parameters), outputName, currentContext);
-      }
-
-      public string Serialize(QualifiedName outputName, OutputParameters parameters, DynamicContext currentContext, Action<DynamicContext> action) {
-
-         if (parameters == null) throw new ArgumentNullException(nameof(parameters));
-         if (action == null) throw new ArgumentNullException(nameof(action));
-
-         var sb = new StringBuilder();
-
-         var defaultParameters = new OutputParameters();
-
-         if (outputName != null) {
-            this.TopLevelPackage.ReadOutputDefinition(outputName, defaultParameters);
-         }
-
-         using (IWriterFactory writerFactory = WriterFactory.CreateFactory(sb, parameters)) {
-            using (var newContext = new DynamicContext(writerFactory, defaultParameters, this, currentContext)) {
-               action(newContext);
-            }
-         }
-
-         return sb.ToString();
       }
    }
 }
