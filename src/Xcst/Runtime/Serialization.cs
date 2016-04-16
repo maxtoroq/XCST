@@ -45,6 +45,7 @@ namespace Xcst.Runtime {
 
       public static DynamicContext ChangeOutput(IXcstPackage package, Uri outputUri, QualifiedName outputName, OutputParameters parameters, DynamicContext currentContext = null) {
 
+         if (package == null) throw new ArgumentNullException(nameof(package));
          if (outputUri == null) throw new ArgumentNullException(nameof(outputUri));
          if (parameters == null) throw new ArgumentNullException(nameof(parameters));
 
