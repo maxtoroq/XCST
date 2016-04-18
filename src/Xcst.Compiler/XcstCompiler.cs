@@ -86,13 +86,20 @@ namespace Xcst.Compiler {
             sb.Append(".");
          }
 
-         if (type.IsGenericType) {
+         Type[] typeArguments = type.GetGenericArguments();
+
+         if (typeArguments.Length > 0) {
 
             sb.Append(type.Name.Substring(0, type.Name.IndexOf('`')));
             sb.Append("<");
 
-            foreach (var typeParam in type.GetGenericArguments()) {
-               TypeReferenceExpression(typeParam, sb);
+            for (int i = 0; i < typeArguments.Length; i++) {
+
+               if (i > 0) {
+                  sb.Append(", ");
+               }
+
+               TypeReferenceExpression(typeArguments[i], sb);
             }
 
             sb.Append(">");

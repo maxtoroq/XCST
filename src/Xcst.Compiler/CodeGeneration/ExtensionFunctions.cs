@@ -396,8 +396,7 @@ namespace Xcst.Compiler.CodeGeneration {
                               writer.WriteAttributeString("as", TypeReferenceExpression(param.ParameterType));
 
                               if (param.IsOptional) {
-                                 // TODO: Need to produce valid C# literal
-                                 writer.WriteAttributeString("value", Convert.ToString(param.RawDefaultValue, CultureInfo.InvariantCulture));
+                                 writer.WriteAttributeString("value", Constant(param.RawDefaultValue));
                               }
 
                               writer.WriteEndElement();
@@ -476,6 +475,45 @@ namespace Xcst.Compiler.CodeGeneration {
 
                return result.GetXdmEnumerator();
             }
+         }
+
+         static string Constant(object value) {
+
+            if (value == null) {
+               return "null";
+            }
+
+            string str = Convert.ToString(value, CultureInfo.InvariantCulture);
+
+            if (value is string) {
+               return $"@\"{str.Replace("\"", "\"\"")}\"";
+            }
+
+            if (value is decimal) {
+               return str + "m";
+            }
+
+            if (value is long) {
+               return str + "L";
+            }
+
+            if (value is double) {
+               return str + "d";
+            }
+
+            if (value is float) {
+               return str + "f";
+            }
+
+            if (value is uint) {
+               return str + "u";
+            }
+
+            if (value is ulong) {
+               return str + "ul";
+            }
+
+            return str;
          }
       }
    }
