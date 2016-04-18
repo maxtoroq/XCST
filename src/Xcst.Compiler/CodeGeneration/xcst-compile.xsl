@@ -329,7 +329,7 @@
       <variable name="visibility" select="
          if (parent::c:override) then
          ('hidden'[$modules[position() gt $module-pos]/c:use-package[xcst:name-equals(@name, current()/parent::c:override/parent::c:use-package/@name)]/c:override/c:*[xcst:homonymous(., current())]]
-            , self::c:variable/@visibility/xcst:non-string(.), 'public')[1]
+            , self::c:variable/(@visibility/xcst:non-string(.), 'private')[1], 'public')[1]
          else if ($modules[position() gt $module-pos]/c:*[xcst:homonymous(., current())]) then 'hidden'
          else if (self::c:param) then 'public'
          else (@visibility/xcst:non-string(.), 'private')[1]"/>
@@ -400,7 +400,7 @@
       <variable name="visibility" select="
          if (parent::c:override) then
          ('hidden'[$modules[position() gt $module-pos]/c:use-package[xcst:name-equals(@name, current()/parent::c:override/parent::c:use-package/@name)]/c:override/c:*[xcst:homonymous(., current())]]
-            , @visibility/xcst:non-string(.), 'public')[1]
+            , @visibility/xcst:non-string(.), 'private')[1]
          else if ($modules[position() gt $module-pos]/c:*[xcst:homonymous(., current())]) then 'hidden'
          else (@visibility/xcst:non-string(.), 'private')[1]"/>
 
@@ -451,7 +451,7 @@
       <variable name="visibility" select="
          if (parent::c:override) then
          ('hidden'[$modules[position() gt $module-pos]/c:use-package[xcst:name-equals(@name, current()/parent::c:override/parent::c:use-package/@name)]/c:override/c:*[xcst:homonymous(., current())]]
-            , @visibility/xcst:non-string(.), 'public')[1]
+            , @visibility/xcst:non-string(.), 'private')[1]
          else if ($modules[position() gt $module-pos]/c:*[xcst:homonymous(., current())]) then 'hidden'
          else (@visibility/xcst:non-string(.), 'private')[1]"/>
 
@@ -501,7 +501,7 @@
       <variable name="visibility" select="
          if (parent::c:override) then
          ('hidden'[$modules[position() gt $module-pos]/c:use-package[xcst:name-equals(@name, current()/parent::c:override/parent::c:use-package/@name)]/c:override/c:*[xcst:homonymous(., current())]]
-            , @visibility/xcst:non-string(.), 'public')[1]
+            , @visibility/xcst:non-string(.), 'private')[1]
          else (@visibility/xcst:non-string(.), 'private')[1]"/>
 
       <variable name="public" select="$visibility = ('public', 'final', 'abstract')"/>
