@@ -574,7 +574,8 @@
 
       <variable name="visibility" select="
          if ($local-components[@overrides eq current()/generate-id()]) then 'hidden'
-         else @visibility"/>
+         else if (self::xcst:param) then 'public'
+         else 'private'"/>
 
       <variable name="local-duplicate" select="
          if ($visibility ne 'hidden') then ($local-components[xcst:homonymous(., current())])[1]
@@ -888,19 +889,22 @@
 
    <template match="xcst:param | xcst:variable" mode="src:member">
       <variable name="used-package-field-name" select="src:used-package-field-name(.)"/>
+      <variable name="public" select="@visibility ne 'private'"/>
       <if test="position() eq 1">
          <value-of select="$src:new-line"/>
       </if>
+      <if test="$public">
+         <call-template name="src:new-line-indented"/>
+         <text>[</text>
+         <value-of select="src:global-identifier('Xcst.XcstComponent')"/>
+         <text>(</text>
+         <value-of select="src:global-identifier('Xcst.XcstComponentKind')"/>
+         <text>.</text>
+         <value-of select="if (self::xcst:param) then 'Parameter' else 'Variable'"/>
+         <text>)]</text>
+      </if>
       <call-template name="src:new-line-indented"/>
-      <text>[</text>
-      <value-of select="src:global-identifier('Xcst.XcstComponent')"/>
-      <text>(</text>
-      <value-of select="src:global-identifier('Xcst.XcstComponentKind')"/>
-      <text>.</text>
-      <value-of select="if (self::xcst:param) then 'Parameter' else 'Variable'"/>
-      <text>)]</text>
-      <call-template name="src:new-line-indented"/>
-      <text>public </text>
+      <if test="$public">public </if>
       <if test="@visibility eq 'public'">virtual </if>
       <value-of select="src:global-identifier(@as), @member-name"/>
       <call-template name="src:open-brace"/>
@@ -1002,35 +1006,39 @@
 
       <variable name="context-param" select="src:aux-variable('context')"/>
       <variable name="qname" select="xcst:resolve-QName-ignore-default(@name, .)"/>
+      <variable name="public" select="@visibility ne 'private'"/>
 
       <value-of select="$src:new-line"/>
-      <call-template name="src:new-line-indented"/>
-      <text>[</text>
-      <value-of select="src:global-identifier('Xcst.XcstComponent')"/>
-      <text>(</text>
-      <value-of select="src:global-identifier('Xcst.XcstComponentKind'), 'Template'" separator="."/>
-      <text>, Name = </text>
-      <value-of select="src:string(local-name-from-QName($qname))"/>
-      <if test="namespace-uri-from-QName($qname)">
-         <text>, Namespace = </text>
-         <value-of select="src:verbatim-string(namespace-uri-from-QName($qname))"/>
-      </if>
-      <text>)]</text>
 
-      <for-each select="xcst:param">
+      <if test="$public">
          <call-template name="src:new-line-indented"/>
          <text>[</text>
-         <value-of select="src:global-identifier('Xcst.XcstTemplateParameter')"/>
+         <value-of select="src:global-identifier('Xcst.XcstComponent')"/>
          <text>(</text>
-         <value-of select="src:string(@name)"/>
-         <if test="@required/xs:boolean(.)">, Required = true</if>
-         <if test="@tunnel/xs:boolean(.)">, Tunnel = true</if>
+         <value-of select="src:global-identifier('Xcst.XcstComponentKind'), 'Template'" separator="."/>
+         <text>, Name = </text>
+         <value-of select="src:string(local-name-from-QName($qname))"/>
+         <if test="namespace-uri-from-QName($qname)">
+            <text>, Namespace = </text>
+            <value-of select="src:verbatim-string(namespace-uri-from-QName($qname))"/>
+         </if>
          <text>)]</text>
-      </for-each>
+
+         <for-each select="xcst:param">
+            <call-template name="src:new-line-indented"/>
+            <text>[</text>
+            <value-of select="src:global-identifier('Xcst.XcstTemplateParameter')"/>
+            <text>(</text>
+            <value-of select="src:string(@name)"/>
+            <if test="@required/xs:boolean(.)">, Required = true</if>
+            <if test="@tunnel/xs:boolean(.)">, Tunnel = true</if>
+            <text>)]</text>
+         </for-each>
+      </if>
 
       <call-template name="src:editor-browsable-never"/>
       <call-template name="src:new-line-indented"/>
-      <text>public </text>
+      <if test="$public">public </if>
       <if test="@visibility eq 'public'">virtual </if>
       <text>void </text>
       <value-of select="@member-name"/>
@@ -1137,15 +1145,18 @@
    </template>
 
    <template match="xcst:function" mode="src:member">
+      <variable name="public" select="@visibility ne 'private'"/>
       <value-of select="$src:new-line"/>
+      <if test="$public">
+         <call-template name="src:new-line-indented"/>
+         <text>[</text>
+         <value-of select="src:global-identifier('Xcst.XcstComponent')"/>
+         <text>(</text>
+         <value-of select="src:global-identifier('Xcst.XcstComponentKind'), 'Function'" separator="."/>
+         <text>)]</text>
+      </if>
       <call-template name="src:new-line-indented"/>
-      <text>[</text>
-      <value-of select="src:global-identifier('Xcst.XcstComponent')"/>
-      <text>(</text>
-      <value-of select="src:global-identifier('Xcst.XcstComponentKind'), 'Function'" separator="."/>
-      <text>)]</text>
-      <call-template name="src:new-line-indented"/>
-      <text>public </text>
+      <if test="$public">public </if>
       <if test="@visibility eq 'public'">virtual </if>
       <value-of select="(@as/src:global-identifier(.), 'void')[1]"/>
       <text> </text>
@@ -1246,23 +1257,26 @@
 
       <variable name="context-param" select="src:aux-variable('context')"/>
       <variable name="qname" select="xcst:resolve-QName-ignore-default(@name, .)"/>
+      <variable name="public" select="@visibility ne 'private'"/>
 
       <value-of select="$src:new-line"/>
-      <call-template name="src:new-line-indented"/>
-      <text>[</text>
-      <value-of select="src:global-identifier('Xcst.XcstComponent')"/>
-      <text>(</text>
-      <value-of select="src:global-identifier('Xcst.XcstComponentKind'), 'AttributeSet'" separator="."/>
-      <text>, Name = </text>
-      <value-of select="src:string(local-name-from-QName($qname))"/>
-      <if test="namespace-uri-from-QName($qname)">
-         <text>, Namespace = </text>
-         <value-of select="src:verbatim-string(namespace-uri-from-QName($qname))"/>
+      <if test="$public">
+         <call-template name="src:new-line-indented"/>
+         <text>[</text>
+         <value-of select="src:global-identifier('Xcst.XcstComponent')"/>
+         <text>(</text>
+         <value-of select="src:global-identifier('Xcst.XcstComponentKind'), 'AttributeSet'" separator="."/>
+         <text>, Name = </text>
+         <value-of select="src:string(local-name-from-QName($qname))"/>
+         <if test="namespace-uri-from-QName($qname)">
+            <text>, Namespace = </text>
+            <value-of select="src:verbatim-string(namespace-uri-from-QName($qname))"/>
+         </if>
+         <text>)]</text>
       </if>
-      <text>)]</text>
       <call-template name="src:editor-browsable-never"/>
       <call-template name="src:new-line-indented"/>
-      <text>public </text>
+      <if test="$public">public </if>
       <if test="@visibility eq 'public'">virtual </if>
       <text>void </text>
       <value-of select="@member-name"/>
