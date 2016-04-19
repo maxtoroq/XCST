@@ -489,6 +489,10 @@ namespace Xcst.Compiler.CodeGeneration {
                return $"@\"{str.Replace("\"", "\"\"")}\"";
             }
 
+            if (value is bool) {
+               return str.ToLowerInvariant();
+            }
+
             if (value is decimal) {
                return str + "m";
             }
