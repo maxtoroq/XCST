@@ -105,6 +105,7 @@
 
       <variable name="modules" select="$modules-and-uris[. instance of node()]" as="element()+"/>
       <variable name="refs" select="$modules-and-uris[not(. instance of node())], $modules//c:script[@src]/resolve-uri(@src, base-uri())"/>
+      <variable name="implicit-package" select="self::c:module"/>
 
       <variable name="used-packages" as="element()*">
          <for-each-group select="for $m in $modules return $m/c:use-package" group-by="src:resolve-package-name(., $namespace)">
@@ -120,6 +121,7 @@
             <with-param name="modules" select="$modules" tunnel="yes"/>
             <with-param name="used-packages" select="$used-packages" tunnel="yes"/>
             <with-param name="namespace" select="$namespace" tunnel="yes"/>
+            <with-param name="implicit-package" select="$implicit-package" tunnel="yes"/>
          </apply-templates>
       </variable>
 
@@ -358,6 +360,7 @@
    <template match="c:template" mode="xcst:package-manifest">
       <param name="modules" tunnel="yes"/>
       <param name="module-pos" tunnel="yes"/>
+      <param name="implicit-package" tunnel="yes"/>
 
       <variable name="qname" select="xcst:resolve-QName-ignore-default(@name, .)"/>
 
@@ -402,7 +405,7 @@
          ('hidden'[$modules[position() gt $module-pos]/c:use-package[xcst:name-equals(@name, current()/parent::c:override/parent::c:use-package/@name)]/c:override/c:*[xcst:homonymous(., current())]]
             , @visibility/xcst:non-string(.), 'private')[1]
          else if ($modules[position() gt $module-pos]/c:*[xcst:homonymous(., current())]) then 'hidden'
-         else (@visibility/xcst:non-string(.), 'private')[1]"/>
+         else (@visibility/xcst:non-string(.), 'public'[$implicit-package], 'private')[1]"/>
 
       <xcst:template name="{$qname}" visibility="{$visibility}" member-name="{src:template-method-name(.)}" declaration-id="{generate-id()}">
          <if test="$overriden-meta">
@@ -417,8 +420,8 @@
             <variable name="required" select="(@required/xcst:boolean(.), false())[1]"/>
             <variable name="tunnel" select="(@tunnel/xcst:boolean(.), false())[1]"/>
             <if test="$overriden-meta
-                and not($overriden-meta/xcst:param[xcst:name-equals(string(@name), $param-name)])
-                and (not(@required) or $required)">
+               and not($overriden-meta/xcst:param[xcst:name-equals(string(@name), $param-name)])
+               and (not(@required) or $required)">
                <sequence select="error(xs:QName('err:XTSE3070'), 'Any parameter on the overriding template for which there is no corresponding parameter on the overridden template must specify required=&quot;no&quot;.', src:error-object(.))"/>
             </if>
             <xcst:param name="{$param-name}" required="{$required}" tunnel="{$tunnel}"/>
@@ -1625,10 +1628,12 @@
       <param name="name-param"/>
       <param name="context-param" tunnel="yes"/>
 
-      <variable name="templates" select="$package-manifest/xcst:template[@visibility ne 'hidden']"/>
+      <variable name="templates" select="$package-manifest/xcst:template[@visibility = ('public', 'final', 'absent')]"/>
 
       <value-of select="$src:new-line"/>
       <for-each select="$templates">
+         <sort select="xcst:resolve-QName-ignore-default(@name, .) eq xs:QName('c:initial-template')" order="descending"/>
+
          <variable name="qname" select="xcst:resolve-QName-ignore-default(@name, .)"/>
          <choose>
             <when test="position() eq 1">
