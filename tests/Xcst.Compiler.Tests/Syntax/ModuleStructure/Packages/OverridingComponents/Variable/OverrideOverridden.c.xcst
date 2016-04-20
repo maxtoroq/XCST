@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:use-package name='OverrideOverridden'>
+      <c:override>
+         <c:variable name='foo' as='string'>baz</c:variable>
+      </c:override>
+   </c:use-package>
+
+   <c:import href='_OverrideOverridden.xcst'/>
+
+</c:module>

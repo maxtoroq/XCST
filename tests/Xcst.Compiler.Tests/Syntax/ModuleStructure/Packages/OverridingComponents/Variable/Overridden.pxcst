@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:package name='Overridden' version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:variable name='foo' as='string' visibility='public'>foo</c:variable>
+
+   <c:template name='foo' visibility='public'>
+      <foo>
+         <c:value-of value='foo'/>
+      </foo>
+   </c:template>
+
+</c:package>

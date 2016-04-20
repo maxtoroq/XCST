@@ -115,6 +115,8 @@
     <Content Include="Syntax\ModuleStructure\Packages\OverridingComponents\Template\NextOverride.p.xml" />
     <Content Include="Syntax\ModuleStructure\Packages\OverridingComponents\Template\OverrideOverridden.p.xml" />
     <Content Include="Syntax\ModuleStructure\Packages\OverridingComponents\Template\Overridden.p.xml" />
+    <Content Include="Syntax\ModuleStructure\Packages\OverridingComponents\Variable\Overridden.p.xml" />
+    <Content Include="Syntax\ModuleStructure\Packages\OverridingComponents\Variable\OverrideOverridden.p.xml" />
     <Content Include="Syntax\Serialization\OverrideUnnamed.p.xml" />
     <Content Include="Syntax\Serialization\OverrideNamed.p.xml" />
     <Content Include="Syntax\VariablesAndParameters\Global\VariableHidesParam.p.xml" />
@@ -280,6 +282,10 @@
     <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Template\NoOverridable.i.xcst" />
     <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Template\Overridden.c.xcst" />
     <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Template\Overridden.pxcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Variable\Overridden.c.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Variable\Overridden.pxcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Variable\OverrideOverridden.c.xcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Variable\OverrideOverridden.pxcst" />
     <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Variable\_Duplicate11.xcst" />
     <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Variable\_Duplicate10.xcst" />
     <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Template\_Duplicate4.xcst" />
@@ -318,6 +324,7 @@
     <None Include="Syntax\ModuleStructure\Packages\AcceptingComponents\Parameter\Duplicate1b.pxcst" />
     <None Include="Syntax\ModuleStructure\Packages\AcceptingComponents\Template\Duplicate1b.pxcst" />
     <None Include="Syntax\ModuleStructure\Packages\AcceptingComponents\Template\Duplicate1a.pxcst" />
+    <None Include="Syntax\ModuleStructure\Packages\OverridingComponents\Variable\_OverrideOverridden.xcst" />
     <None Include="Syntax\Serialization\NonexistentFormat.i.xcst" />
     <None Include="Syntax\Serialization\OverrideNamed.c.xcst" />
     <None Include="Syntax\Serialization\_OverrideUnnamed.xcst" />
