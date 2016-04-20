@@ -578,6 +578,7 @@
    -->
 
    <template match="c:module/c:param | c:package/c:param | c:override/c:param | c:template/c:param | c:delegate/c:param" mode="src:statement">
+      <param name="package-manifest" tunnel="yes"/>
       <param name="context-param" tunnel="yes"/>
 
       <!-- TODO: $c:original -->
@@ -605,14 +606,14 @@
 
       <choose>
          <when test="$global">
+            <variable name="meta" select="$package-manifest/xcst:*[@declaration-id eq current()/generate-id()]"/>
             <text>this.</text>
+            <value-of select="src:backing-field($meta)"/>
          </when>
          <otherwise>
-            <value-of select="(@as/$type, 'var')[1]"/>
-            <text> </text>
+            <value-of select="(@as/$type, 'var')[1], $name"/>
          </otherwise>
       </choose>
-      <value-of select="$name"/>
       <text> = </text>
       <value-of select="$context-param"/>
       <text>.Param</text>
@@ -689,13 +690,17 @@
    </template>
 
    <template match="c:module/c:variable | c:package/c:variable | c:override/c:variable" mode="src:statement">
+      <param name="package-manifest" tunnel="yes"/>
+
       <!-- TODO: $c:original -->
       <variable name="text" select="xcst:text(.)"/>
+
       <if test="xcst:has-value(., $text)">
+         <variable name="meta" select="$package-manifest/xcst:*[@declaration-id eq current()/generate-id()]"/>
          <call-template name="src:line-number"/>
          <call-template name="src:new-line-indented"/>
          <text>this.</text>
-         <value-of select="xcst:name(@name)"/>
+         <value-of select="if ($meta/@visibility = ('public', 'final')) then src:backing-field($meta) else xcst:name(@name)"/>
          <text> = </text>
          <call-template name="src:value">
             <with-param name="text" select="$text"/>

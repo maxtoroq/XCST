@@ -855,13 +855,23 @@
 
       <variable name="meta" select="$package-manifest/xcst:*[@declaration-id eq current()/generate-id()]"/>
       <variable name="public" select="$meta/@visibility = ('public', 'final', 'abstract')"/>
+      <variable name="use-backing-field" select="$meta/@visibility = ('public', 'final')"/>
+      <variable name="backing-field" select="if ($use-backing-field) then src:backing-field($meta) else ()"/>
 
       <variable name="as" select="
          if (@as) then xcst:type(@as)
          else if (not(@value) and xcst:text(.)) then 'string'
          else 'object'"/>
 
-      <if test="position() eq 1">
+      <if test="position() eq 1 or $use-backing-field">
+         <value-of select="$src:new-line"/>
+      </if>
+      <if test="$use-backing-field">
+         <call-template name="src:line-hidden"/>
+         <call-template name="src:editor-browsable-never"/>
+         <call-template name="src:new-line-indented"/>
+         <value-of select="$as, $backing-field"/>
+         <value-of select="$src:statement-delimiter"/>
          <value-of select="$src:new-line"/>
       </if>
       <if test="$public">
@@ -879,11 +889,30 @@
       <if test="$public">public </if>
       <if test="$meta/@visibility eq 'public'">virtual </if>
       <if test="$meta/@visibility eq 'abstract'">abstract </if>
-      <value-of select="$as"/>
-      <text> </text>
-      <value-of select="$meta/@member-name"/>
+      <value-of select="$as, $meta/@member-name"/>
       <choose>
-         <when test="$public"> { get; set; }</when>
+         <when test="$use-backing-field">
+            <call-template name="src:open-brace"/>
+            <call-template name="src:new-line-indented">
+               <with-param name="increase" select="1"/>
+            </call-template>
+            <text>get { return this.</text>
+            <value-of select="$backing-field"/>
+            <value-of select="$src:statement-delimiter"/>
+            <text> }</text>
+            <call-template name="src:new-line-indented">
+               <with-param name="increase" select="1"/>
+            </call-template>
+            <text>set { this.</text>
+            <value-of select="$backing-field"/>
+            <text> = value</text>
+            <value-of select="$src:statement-delimiter"/>
+            <text> }</text>
+            <call-template name="src:close-brace"/>
+         </when>
+         <when test="$meta/@visibility eq 'abstract'">
+            <text> { get; set; }</text>
+         </when>
          <otherwise>
             <value-of select="$src:statement-delimiter"/>
          </otherwise>
@@ -1412,6 +1441,10 @@
       <sequence select="concat($member/@name/xcst:name(.), '_', generate-id($member))"/>
    </function>
 
+   <!--
+      ### Infrastructure
+   -->
+
    <template match="xcst:package-manifest" mode="src:member">
       <if test="position() eq 1">
          <value-of select="$src:new-line"/>
@@ -1448,15 +1481,51 @@
             <value-of select="src:used-package-class-name(.)"/>
             <text>(</text>
             <for-each select="$overridden">
+               <variable name="meta" select="$package-manifest/xcst:*[@overrides eq current()/@id and @visibility ne 'hidden']"/>
                <if test="position() gt 1">, </if>
-               <text>this.</text>
-               <value-of select="$package-manifest/xcst:*[@overrides eq current()/@id and @visibility ne 'hidden']/@member-name"/>
+               <apply-templates select="." mode="src:used-package-overriding-argument">
+                  <with-param name="meta" select="$meta"/>
+               </apply-templates>
             </for-each>
             <text>)</text>
             <value-of select="$src:statement-delimiter"/>
          </for-each>
          <call-template name="src:close-brace"/>
       </if>
+   </template>
+
+   <template match="xcst:variable | xcst:param" mode="src:used-package-overriding-argument">
+      <param name="meta" as="element()"/>
+
+      <variable name="type" select="src:global-identifier(@as)"/>
+
+      <value-of select="src:global-identifier('System.Tuple')"/>
+      <text>.Create(new </text>
+      <value-of select="src:global-identifier('System.Func')"/>
+      <text>&lt;</text>
+      <value-of select="$type"/>
+      <text>>(() => this.</text>
+      <value-of select="$meta/@member-name"/>
+      <text>), new </text>
+      <value-of select="src:global-identifier('System.Action')"/>
+      <text>&lt;</text>
+      <value-of select="$type"/>
+      <text>>( </text>
+      <variable name="param" select="src:aux-variable(generate-id())"/>
+      <value-of select="$param"/>
+      <text> => { this.</text>
+      <value-of select="$meta/@member-name"/>
+      <text> = </text>
+      <value-of select="$param"/>
+      <value-of select="$src:statement-delimiter"/>
+      <text> }))</text>
+   </template>
+
+   <template match="xcst:template | xcst:attribute-set | xcst:function" mode="src:used-package-overriding-argument">
+      <param name="meta" as="element()"/>
+
+      <text>this.</text>
+      <value-of select="$meta/@member-name"/>
    </template>
 
    <template name="src:execution-context">
@@ -1885,7 +1954,7 @@
       <call-template name="src:close-brace"/>
    </template>
 
-   <template match="xcst:template | xcst:attribute-set | xcst:function" mode="src:used-package-overridden">
+   <template match="xcst:template | xcst:attribute-set | xcst:function | xcst:variable | xcst:param" mode="src:used-package-overridden">
       <if test="position() eq 1">
          <value-of select="$src:new-line"/>
       </if>
@@ -1897,11 +1966,25 @@
       <value-of select="$src:statement-delimiter"/>
    </template>
 
+   <template match="xcst:param | xcst:variable" mode="src:used-package-overridden-type">
+      <variable name="type" select="src:global-identifier(@as)"/>
+      <value-of select="src:global-identifier('System.Tuple')"/>
+      <text>&lt;</text>
+      <value-of select="src:global-identifier('System.Func')"/>
+      <text>&lt;</text>
+      <value-of select="$type"/>
+      <text>>, </text>
+      <value-of select="src:global-identifier('System.Action')"/>
+      <text>&lt;</text>
+      <value-of select="$type"/>
+      <text>>></text>
+   </template>
+
    <template match="xcst:template | xcst:attribute-set" mode="src:used-package-overridden-type">
       <value-of select="src:global-identifier('System.Action')"/>
       <text>&lt;</text>
       <value-of select="src:fully-qualified-helper('DynamicContext')"/>
-      <text>&gt;</text>
+      <text>></text>
    </template>
 
    <template match="xcst:function" mode="src:used-package-overridden-type">
@@ -1910,14 +1993,38 @@
          <text>&lt;</text>
          <value-of select="
             xcst:param/src:global-identifier(@as), @as/src:global-identifier(.)" separator=", "/>
-         <text>&gt;</text>
+         <text>></text>
       </if>
    </template>
 
+   <template match="xcst:variable | xcst:param" mode="src:used-package-override">
+      <variable name="field" select="src:overridden-field-name(.)"/>
+      <value-of select="$src:new-line"/>
+      <call-template name="src:new-line-indented"/>
+      <text>public override </text>
+      <value-of select="@as, @member-name"/>
+      <call-template name="src:open-brace"/>
+      <call-template name="src:new-line-indented">
+         <with-param name="increase" select="1"/>
+      </call-template>
+      <text>get { return this.</text>
+      <value-of select="$field"/>
+      <text>.Item1()</text>
+      <value-of select="$src:statement-delimiter"/>
+      <text> }</text>
+      <call-template name="src:new-line-indented">
+         <with-param name="increase" select="1"/>
+      </call-template>
+      <text>set { this.</text>
+      <value-of select="$field"/>
+      <text>.Item2(value)</text>
+      <value-of select="$src:statement-delimiter"/>
+      <text> }</text>
+      <call-template name="src:close-brace"/>
+   </template>
+
    <template match="xcst:template | xcst:attribute-set" mode="src:used-package-override">
-
       <variable name="context-param" select="src:aux-variable('context')"/>
-
       <value-of select="$src:new-line"/>
       <call-template name="src:new-line-indented"/>
       <text>public override void </text>
@@ -1993,6 +2100,12 @@
       <value-of select="$src:statement-delimiter"/>
       <call-template name="src:close-brace"/>
    </template>
+
+   <function name="src:backing-field" as="xs:string">
+      <param name="meta" as="element()"/>
+
+      <sequence select="src:aux-variable(concat('backing_field_', $meta/@name))"/>
+   </function>
 
    <function name="src:overridden-components" as="element()*">
       <param name="used-package" as="element(xcst:package-manifest)"/>
