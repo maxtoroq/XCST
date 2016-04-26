@@ -14,8 +14,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Web;
 using System.Web.Compilation;
+using System.Web.Hosting;
+using System.Xml;
 using Xcst.Compiler;
 
 namespace Xcst.Web {
@@ -28,10 +31,41 @@ namespace Xcst.Web {
 
       public XcstCompilerFactory CompilerFactory { get; } = new XcstCompilerFactory {
          EnableExtensions = true,
-         PackageTypeResolver = typeName => BuildManager.GetType(typeName, throwOnError: true)
+         PackageTypeResolver = typeName => BuildManager.GetType(typeName, throwOnError: false),
+         PackageLocationResolver = FindLibraryPackage
       };
 
       internal IList<Func<object, IHttpHandler>> HttpHandlerFactories { get; } = new List<Func<object, IHttpHandler>>();
+
+      static Uri FindLibraryPackage(string packageName) {
+
+         foreach (string path in Directory.EnumerateFiles(HostingEnvironment.MapPath("~/App_Code"), "*." + FileExtension, SearchOption.AllDirectories)) {
+
+            if (Path.GetFileNameWithoutExtension(path)[0] == '_') {
+               continue;
+            }
+
+            using (var reader = XmlReader.Create(path)) {
+
+               while (reader.Read()) {
+
+                  if (reader.NodeType == XmlNodeType.Element) {
+
+                     if (reader.LocalName == "package"
+                        && reader.NamespaceURI == XmlNamespaces.Xcst
+                        && reader.GetAttribute("name") == packageName) {
+
+                        return new Uri(path);
+                     }
+
+                     break;
+                  }
+               }
+            }
+         }
+
+         return null;
+      }
 
       private XcstWebConfiguration() { }
 

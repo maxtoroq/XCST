@@ -30,7 +30,7 @@ namespace Xcst.Compiler {
       readonly Lazy<XsltExecutable> executable;
       readonly IDictionary<Uri, Func<Stream>> extensions = new Dictionary<Uri, Func<Stream>>();
 
-      Func<string, Type> _PackageTypeResolver = typeName => Type.GetType(typeName, throwOnError: true);
+      Func<string, Type> _PackageTypeResolver = typeName => Type.GetType(typeName, throwOnError: false);
 
       public bool EnableExtensions { get; set; }
 
@@ -46,6 +46,8 @@ namespace Xcst.Compiler {
          }
       }
 
+      public Func<string, Uri> PackageLocationResolver { get; set; }
+
       public XcstCompilerFactory() {
 
          this.processor = new Processor();
@@ -57,6 +59,7 @@ namespace Xcst.Compiler {
          this.processor.RegisterExtensionFunction(new LineNumberFunction());
          this.processor.RegisterExtensionFunction(new LocalPathFunction());
          this.processor.RegisterExtensionFunction(new MakeRelativeUriFunction());
+         this.processor.RegisterExtensionFunction(new PackageLocationFunction(this));
          this.processor.RegisterExtensionFunction(new PackageManifestFunction(this, this.processor));
 
          this.executable = new Lazy<XsltExecutable>(CreateCompilerExec);

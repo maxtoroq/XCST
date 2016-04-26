@@ -874,9 +874,10 @@
 
    <template match="c:module | c:package" mode="src:import-namespace-extra">
       <param name="class" tunnel="yes"/>
+      <param name="library-package" tunnel="yes"/>
 
       <next-match/>
-      <if test="not($src:library-package)">
+      <if test="not($library-package)">
          <call-template name="src:new-line-indented"/>
          <text>using static </text>
          <value-of select="$class, a:functions-type-name(.)" separator="."/>
@@ -886,9 +887,10 @@
 
    <template match="c:module | c:package" mode="src:infrastructure-extra">
       <param name="indent" tunnel="yes"/>
+      <param name="library-package" tunnel="yes"/>
 
       <next-match/>
-      <if test="not($src:library-package)">
+      <if test="not($library-package)">
          <variable name="module-uri" select="document-uri(root(.))"/>
          <variable name="functions-type" select="a:functions-type-name(.)"/>
          <value-of select="$src:new-line"/>

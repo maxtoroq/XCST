@@ -14,7 +14,11 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Reflection;
 using System.Text;
+using System.Xml;
+using static Xcst.Compiler.XcstCompiler;
 
 namespace Xcst.Compiler.CodeGeneration {
 
@@ -37,6 +41,181 @@ namespace Xcst.Compiler.CodeGeneration {
 
       public static Uri MakeRelativeUri(Uri current, Uri compare) {
          return current.MakeRelativeUri(compare);
+      }
+
+      public static void PackageManifest(Type packageType, XmlWriter writer) {
+
+         const string ns = XmlNamespaces.XcstSyntax;
+         const string prefix = "xcst";
+
+         Func<MethodBase, string> methodVisibility = m =>
+            (m.IsAbstract) ? "abstract"
+            : (m.IsVirtual) ? "public"
+            : "final";
+
+         Func<MemberInfo, string> memberVisibility = m =>
+            methodVisibility(m as MethodBase ?? ((PropertyInfo)m).GetGetMethod());
+
+         writer.WriteStartElement(prefix, "package-manifest", ns);
+         writer.WriteAttributeString("package-type", packageType.FullName);
+         writer.WriteAttributeString("qualified-types", "true");
+
+         foreach (MemberInfo member in packageType.GetMembers(BindingFlags.Instance | BindingFlags.Public)) {
+
+            XcstComponentAttribute attr = member.GetCustomAttribute<XcstComponentAttribute>(inherit: true);
+
+            if (attr == null) {
+               continue;
+            }
+
+            switch (attr.ComponentKind) {
+               case XcstComponentKind.AttributeSet:
+
+                  writer.WriteStartElement(prefix, "attribute-set", ns);
+
+                  if (String.IsNullOrEmpty(attr.Namespace)) {
+                     writer.WriteAttributeString("name", attr.Name);
+                  } else {
+                     writer.WriteAttributeString("name", "ns1:" + attr.Name);
+                     writer.WriteAttributeString("xmlns", "ns1", null, attr.Namespace);
+                  }
+
+                  writer.WriteAttributeString("visibility", memberVisibility(member));
+                  writer.WriteAttributeString("member-name", member.Name);
+
+                  break;
+
+               case XcstComponentKind.Function:
+
+                  writer.WriteStartElement(prefix, "function", ns);
+                  writer.WriteAttributeString("name", attr.Name ?? member.Name);
+                  writer.WriteAttributeString("visibility", memberVisibility(member));
+                  writer.WriteAttributeString("member-name", member.Name);
+
+                  MethodInfo method = ((MethodInfo)member);
+
+                  if (method.ReturnType != typeof(void)) {
+                     writer.WriteAttributeString("as", TypeReferenceExpression(method.ReturnType));
+                  }
+
+                  foreach (ParameterInfo param in method.GetParameters()) {
+
+                     writer.WriteStartElement(prefix, "param", ns);
+                     writer.WriteAttributeString("name", param.Name);
+                     writer.WriteAttributeString("as", TypeReferenceExpression(param.ParameterType));
+
+                     if (param.IsOptional) {
+                        writer.WriteAttributeString("value", Constant(param.RawDefaultValue));
+                     }
+
+                     writer.WriteEndElement();
+                  }
+
+                  break;
+
+               case XcstComponentKind.Parameter:
+                  writer.WriteStartElement(prefix, "param", ns);
+                  writer.WriteAttributeString("name", attr.Name ?? member.Name);
+                  writer.WriteAttributeString("as", TypeReferenceExpression(((PropertyInfo)member).PropertyType));
+                  writer.WriteAttributeString("visibility", memberVisibility(member));
+                  writer.WriteAttributeString("member-name", member.Name);
+                  break;
+
+               case XcstComponentKind.Template:
+
+                  writer.WriteStartElement(prefix, "template", ns);
+
+                  if (String.IsNullOrEmpty(attr.Namespace)) {
+                     writer.WriteAttributeString("name", attr.Name);
+                  } else {
+                     writer.WriteAttributeString("name", "ns1:" + attr.Name);
+                     writer.WriteAttributeString("xmlns", "ns1", null, attr.Namespace);
+                  }
+
+                  writer.WriteAttributeString("visibility", memberVisibility(member));
+                  writer.WriteAttributeString("member-name", member.Name);
+
+                  foreach (var param in member.GetCustomAttributes<XcstTemplateParameterAttribute>(inherit: true)) {
+
+                     writer.WriteStartElement(prefix, "param", ns);
+                     writer.WriteAttributeString("name", param.Name);
+                     writer.WriteAttributeString("required", XmlConvert.ToString(param.Required));
+                     writer.WriteAttributeString("tunnel", XmlConvert.ToString(param.Tunnel));
+                     writer.WriteEndElement();
+                  }
+
+                  break;
+
+               case XcstComponentKind.Type:
+
+                  Type type = (Type)member;
+
+                  writer.WriteStartElement(prefix, "type", ns);
+                  writer.WriteAttributeString("name", attr.Name ?? member.Name);
+
+                  writer.WriteAttributeString("visibility",
+                     type.IsAbstract ? "abstract"
+                     : type.IsSealed ? "final"
+                     : "public");
+
+                  break;
+
+               case XcstComponentKind.Variable:
+                  writer.WriteStartElement(prefix, "variable", ns);
+                  writer.WriteAttributeString("name", attr.Name ?? member.Name);
+                  writer.WriteAttributeString("as", TypeReferenceExpression(((PropertyInfo)member).PropertyType));
+                  writer.WriteAttributeString("visibility", memberVisibility(member));
+                  writer.WriteAttributeString("member-name", member.Name);
+                  break;
+            }
+
+            writer.WriteEndElement();
+         }
+
+         writer.WriteEndElement();
+      }
+
+      static string Constant(object value) {
+
+         if (value == null) {
+            return "null";
+         }
+
+         string str = Convert.ToString(value, CultureInfo.InvariantCulture);
+
+         if (value is string) {
+            return $"@\"{str.Replace("\"", "\"\"")}\"";
+         }
+
+         if (value is bool) {
+            return str.ToLowerInvariant();
+         }
+
+         if (value is decimal) {
+            return str + "m";
+         }
+
+         if (value is long) {
+            return str + "L";
+         }
+
+         if (value is double) {
+            return str + "d";
+         }
+
+         if (value is float) {
+            return str + "f";
+         }
+
+         if (value is uint) {
+            return str + "u";
+         }
+
+         if (value is ulong) {
+            return str + "ul";
+         }
+
+         return str;
       }
    }
 

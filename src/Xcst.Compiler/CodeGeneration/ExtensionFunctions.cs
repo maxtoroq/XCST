@@ -13,10 +13,8 @@
 // limitations under the License.
 
 using System;
-using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Xml;
 using Saxon.Api;
 using static Xcst.Compiler.XcstCompiler;
@@ -279,7 +277,7 @@ namespace Xcst.Compiler.CodeGeneration {
       }
 
       public override XdmSequenceType ResultType(XdmSequenceType[] ArgumentTypes) {
-         return new XdmSequenceType(XdmNodeKind.Document, ' ');
+         return new XdmSequenceType(XdmNodeKind.Document, '?');
       }
 
       class FunctionCall : ExtensionFunctionCall {
@@ -317,12 +315,7 @@ namespace Xcst.Compiler.CodeGeneration {
             }
 
             if (packageType == null) {
-
-               throw new CompileException("Package type resolver returned null.",
-                  errorCode: packageResolveError,
-                  moduleUri: moduleUri,
-                  lineNumber: lineNumber
-               );
+               return EmptyEnumerator.INSTANCE;
             }
 
             if (!typeof(IXcstPackage).IsAssignableFrom(packageType)) {
@@ -336,134 +329,7 @@ namespace Xcst.Compiler.CodeGeneration {
 
             using (var output = new MemoryStream()) {
                using (XmlWriter writer = XmlWriter.Create(output)) {
-
-                  const string ns = XmlNamespaces.XcstSyntax;
-                  const string prefix = "xcst";
-
-                  Func<MethodBase, string> methodVisibility = m =>
-                     (m.IsAbstract) ? "abstract"
-                     : (m.IsVirtual) ? "public"
-                     : "final";
-
-                  Func<MemberInfo, string> memberVisibility = m =>
-                     methodVisibility(m as MethodBase ?? ((PropertyInfo)m).GetGetMethod());
-
-                  writer.WriteStartElement(prefix, "package-manifest", ns);
-                  writer.WriteAttributeString("package-type", packageType.FullName);
-
-                  foreach (MemberInfo member in packageType.GetMembers(BindingFlags.Instance | BindingFlags.Public)) {
-
-                     XcstComponentAttribute attr = member.GetCustomAttribute<XcstComponentAttribute>(inherit: true);
-
-                     if (attr == null) {
-                        continue;
-                     }
-
-                     switch (attr.ComponentKind) {
-                        case XcstComponentKind.AttributeSet:
-
-                           writer.WriteStartElement(prefix, "attribute-set", ns);
-
-                           if (String.IsNullOrEmpty(attr.Namespace)) {
-                              writer.WriteAttributeString("name", attr.Name);
-                           } else {
-                              writer.WriteAttributeString("name", "ns1:" + attr.Name);
-                              writer.WriteAttributeString("xmlns", "ns1", null, attr.Namespace);
-                           }
-
-                           writer.WriteAttributeString("visibility", memberVisibility(member));
-                           writer.WriteAttributeString("member-name", member.Name);
-
-                           break;
-
-                        case XcstComponentKind.Function:
-
-                           writer.WriteStartElement(prefix, "function", ns);
-                           writer.WriteAttributeString("name", attr.Name ?? member.Name);
-                           writer.WriteAttributeString("visibility", memberVisibility(member));
-                           writer.WriteAttributeString("member-name", member.Name);
-
-                           MethodInfo method = ((MethodInfo)member);
-
-                           if (method.ReturnType != typeof(void)) {
-                              writer.WriteAttributeString("as", TypeReferenceExpression(method.ReturnType));
-                           }
-
-                           foreach (ParameterInfo param in method.GetParameters()) {
-
-                              writer.WriteStartElement(prefix, "param", ns);
-                              writer.WriteAttributeString("name", param.Name);
-                              writer.WriteAttributeString("as", TypeReferenceExpression(param.ParameterType));
-
-                              if (param.IsOptional) {
-                                 writer.WriteAttributeString("value", Constant(param.RawDefaultValue));
-                              }
-
-                              writer.WriteEndElement();
-                           }
-
-                           break;
-
-                        case XcstComponentKind.Parameter:
-                           writer.WriteStartElement(prefix, "param", ns);
-                           writer.WriteAttributeString("name", attr.Name ?? member.Name);
-                           writer.WriteAttributeString("as", TypeReferenceExpression(((PropertyInfo)member).PropertyType));
-                           writer.WriteAttributeString("visibility", memberVisibility(member));
-                           writer.WriteAttributeString("member-name", member.Name);
-                           break;
-
-                        case XcstComponentKind.Template:
-
-                           writer.WriteStartElement(prefix, "template", ns);
-
-                           if (String.IsNullOrEmpty(attr.Namespace)) {
-                              writer.WriteAttributeString("name", attr.Name);
-                           } else {
-                              writer.WriteAttributeString("name", "ns1:" + attr.Name);
-                              writer.WriteAttributeString("xmlns", "ns1", null, attr.Namespace);
-                           }
-
-                           writer.WriteAttributeString("visibility", memberVisibility(member));
-                           writer.WriteAttributeString("member-name", member.Name);
-
-                           foreach (var param in member.GetCustomAttributes<XcstTemplateParameterAttribute>(inherit: true)) {
-
-                              writer.WriteStartElement(prefix, "param", ns);
-                              writer.WriteAttributeString("name", param.Name);
-                              writer.WriteAttributeString("required", param.Required.ToString().ToLowerInvariant());
-                              writer.WriteAttributeString("tunnel", param.Tunnel.ToString().ToLowerInvariant());
-                              writer.WriteEndElement();
-                           }
-
-                           break;
-
-                        case XcstComponentKind.Type:
-
-                           Type type = (Type)member;
-
-                           writer.WriteStartElement(prefix, "type", ns);
-                           writer.WriteAttributeString("name", attr.Name ?? member.Name);
-
-                           writer.WriteAttributeString("visibility",
-                              type.IsAbstract ? "abstract"
-                              : type.IsSealed ? "final"
-                              : "public");
-
-                           break;
-
-                        case XcstComponentKind.Variable:
-                           writer.WriteStartElement(prefix, "variable", ns);
-                           writer.WriteAttributeString("name", attr.Name ?? member.Name);
-                           writer.WriteAttributeString("as", TypeReferenceExpression(((PropertyInfo)member).PropertyType));
-                           writer.WriteAttributeString("visibility", memberVisibility(member));
-                           writer.WriteAttributeString("member-name", member.Name);
-                           break;
-                     }
-
-                     writer.WriteEndElement();
-                  }
-
-                  writer.WriteEndElement();
+                  Helpers.PackageManifest(packageType, writer);
                }
 
                output.Position = 0;
@@ -476,48 +342,52 @@ namespace Xcst.Compiler.CodeGeneration {
                return result.GetXdmEnumerator();
             }
          }
+      }
+   }
 
-         static string Constant(object value) {
+   class PackageLocationFunction : ExtensionFunctionDefinition {
 
-            if (value == null) {
-               return "null";
-            }
+      readonly XcstCompilerFactory compilerFactory;
 
-            string str = Convert.ToString(value, CultureInfo.InvariantCulture);
+      public override QName FunctionName { get; } = CompilerQName("package-location");
 
-            if (value is string) {
-               return $"@\"{str.Replace("\"", "\"\"")}\"";
-            }
+      public override XdmSequenceType[] ArgumentTypes { get; } = {
+         new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_STRING), ' ')
+      };
 
-            if (value is bool) {
-               return str.ToLowerInvariant();
-            }
+      public override int MinimumNumberOfArguments => ArgumentTypes.Length;
 
-            if (value is decimal) {
-               return str + "m";
-            }
+      public override int MaximumNumberOfArguments => MinimumNumberOfArguments;
 
-            if (value is long) {
-               return str + "L";
-            }
+      public PackageLocationFunction(XcstCompilerFactory compilerFactory) {
+         this.compilerFactory = compilerFactory;
+      }
 
-            if (value is double) {
-               return str + "d";
-            }
+      public override ExtensionFunctionCall MakeFunctionCall() {
+         return new FunctionCall(this.compilerFactory);
+      }
 
-            if (value is float) {
-               return str + "f";
-            }
+      public override XdmSequenceType ResultType(XdmSequenceType[] ArgumentTypes) {
+         return new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_ANYURI), '?');
+      }
 
-            if (value is uint) {
-               return str + "u";
-            }
+      class FunctionCall : ExtensionFunctionCall {
 
-            if (value is ulong) {
-               return str + "ul";
-            }
+         readonly XcstCompilerFactory compilerFactory;
 
-            return str;
+         public FunctionCall(XcstCompilerFactory compilerFactory) {
+            this.compilerFactory = compilerFactory;
+         }
+
+         public override IXdmEnumerator Call(IXdmEnumerator[] arguments, DynamicContext context) {
+
+            string packageName = arguments[0].AsAtomicValues().Single().ToString();
+
+            Uri packageLocation = this.compilerFactory.PackageLocationResolver?.Invoke(packageName);
+
+            return packageLocation?.ToXdmAtomicValue()
+               .GetXdmEnumerator()
+               ?? EmptyEnumerator.INSTANCE;
          }
       }
    }
