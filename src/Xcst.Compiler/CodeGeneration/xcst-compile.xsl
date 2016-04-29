@@ -438,7 +438,13 @@
          else if ($modules[position() gt $module-pos]/c:*[xcst:homonymous(., current())]) then 'hidden'
          else (@visibility/xcst:non-string(.), 'public'[$implicit-package], 'private')[1]"/>
 
-      <xcst:template name="{$qname}" visibility="{$visibility}" member-name="{src:template-method-name(.)}" declaration-id="{generate-id()}" declaring-module-uri="{document-uri(root())}">
+      <variable name="public" select="$visibility = ('public', 'final', 'abstract')"/>
+
+      <xcst:template name="{$qname}"
+            visibility="{$visibility}"
+            member-name="{src:template-method-name(., $qname, 'tmpl', $public)}"
+            declaration-id="{generate-id()}"
+            declaring-module-uri="{document-uri(root())}">
          <if test="$overriden-meta">
             <attribute name="overrides" select="generate-id($overriden-meta)"/>
          </if>
@@ -494,7 +500,11 @@
          src:hidden-function-method-name(.)
          else $name"/>
 
-      <xcst:function name="{$name}" visibility="{$visibility}" member-name="{$member-name}" declaration-id="{generate-id()}" declaring-module-uri="{document-uri(root())}">
+      <xcst:function name="{$name}"
+            visibility="{$visibility}"
+            member-name="{$member-name}"
+            declaration-id="{generate-id()}"
+            declaring-module-uri="{document-uri(root())}">
          <if test="@as">
             <attribute name="as" select="xcst:type(@as)"/>
          </if>
@@ -576,7 +586,11 @@
          <sequence select="error((), 'Public attribute sets must be defined in a single declaration.', src:error-object(.))"/>
       </if>
 
-      <xcst:attribute-set name="{$qname}" visibility="{$visibility}" member-name="{src:template-method-name(.)}" declaration-id="{generate-id()}" declaring-module-uri="{document-uri(root())}">
+      <xcst:attribute-set name="{$qname}"
+            visibility="{$visibility}"
+            member-name="{src:template-method-name(., $qname, 'attribs', $public)}"
+            declaration-id="{generate-id()}"
+            declaring-module-uri="{document-uri(root())}">
          <if test="$overriden-meta">
             <attribute name="overrides" select="$overriden-meta/generate-id()"/>
          </if>
@@ -678,7 +692,7 @@
             <sequence select="error(xs:QName('err:XTSE0080'), concat('Namespace prefix ', prefix-from-QName($output-name), ' refers to a reserved namespace.'), src:error-object(.))"/>
          </if>
 
-         <xcst:output member-name="{src:template-method-name(.)}" declaration-ids="{current-group()/generate-id(.)}">
+         <xcst:output member-name="{src:template-method-name(., $output-name, 'output', false())}" declaration-ids="{current-group()/generate-id(.)}">
             <if test="not(empty($output-name))">
                <attribute name="name" select="$output-name"/>
             </if>
@@ -721,9 +735,17 @@
    </function>
 
    <function name="src:template-method-name" as="xs:string">
-      <param name="template" as="element()"/>
+      <param name="declaration" as="element()"/>
+      <param name="qname" as="xs:QName?"/>
+      <param name="component-kind" as="xs:string"/>
+      <param name="deterministic" as="xs:boolean"/>
 
-      <sequence select="concat($template/@name/concat(replace(., '[^A-Za-z0-9]', '_'), '_'), generate-id($template))"/>
+      <sequence select="concat(
+         if (not(empty($qname))) then concat(replace(string($qname), '[^A-Za-z0-9]', '_'), '_') else (),
+         $component-kind,
+         '_',
+         if ($deterministic and not(empty($qname))) then replace(string(src:qname-id($qname)), '-', '_') else generate-id($declaration)
+      )"/>
    </function>
 
    <function name="src:hidden-function-method-name" as="xs:string">

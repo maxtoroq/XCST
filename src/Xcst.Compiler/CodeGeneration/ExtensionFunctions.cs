@@ -391,4 +391,38 @@ namespace Xcst.Compiler.CodeGeneration {
          }
       }
    }
+
+   class QNameIdFunction : ExtensionFunctionDefinition {
+
+      public override QName FunctionName { get; } = CompilerQName("qname-id");
+
+      public override XdmSequenceType[] ArgumentTypes { get; } = {
+         new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_QNAME), ' ')
+      };
+
+      public override int MinimumNumberOfArguments => ArgumentTypes.Length;
+
+      public override int MaximumNumberOfArguments => MinimumNumberOfArguments;
+
+      public override ExtensionFunctionCall MakeFunctionCall() {
+         return new FunctionCall();
+      }
+
+      public override XdmSequenceType ResultType(XdmSequenceType[] ArgumentTypes) {
+         return new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_INTEGER), ' ');
+      }
+
+      class FunctionCall : ExtensionFunctionCall {
+
+         public override IXdmEnumerator Call(IXdmEnumerator[] arguments, DynamicContext context) {
+
+            QualifiedName qname = ((QName)arguments[0].AsAtomicValues().Single().Value).ToQualifiedName();
+
+            return qname.ToString()
+               .GetHashCode()
+               .ToXdmAtomicValue()
+               .GetXdmEnumerator();
+         }
+      }
+   }
 }

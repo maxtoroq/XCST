@@ -61,6 +61,7 @@ namespace Xcst.Compiler {
          this.processor.RegisterExtensionFunction(new MakeRelativeUriFunction());
          this.processor.RegisterExtensionFunction(new PackageLocationFunction(this));
          this.processor.RegisterExtensionFunction(new PackageManifestFunction(this, this.processor));
+         this.processor.RegisterExtensionFunction(new QNameIdFunction());
 
          this.executable = new Lazy<XsltExecutable>(CreateCompilerExec);
       }
