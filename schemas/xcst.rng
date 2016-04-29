@@ -456,12 +456,15 @@
       <zeroOrMore>
          <choice>
             <attribute name="resource-type">
+               <ann:documentation>A type that contains resources for name, short-name, description and placeholder attributes.</ann:documentation>
                <ref name="Type"/>
             </attribute>
             <attribute name="disable-empty-string-to-null-conversion">
+               <ann:documentation>Indicates if empty strings should not be converted to null for this member.</ann:documentation>
                <ref name="Boolean"/>
             </attribute>
             <attribute name="allow-empty-string">
+               <ann:documentation>Indicates if an empty string is a valid value for this member.</ann:documentation>
                <ref name="Boolean"/>
             </attribute>
          </choice>
@@ -580,9 +583,11 @@
       <optional>
          <choice>
             <attribute name="value">
+               <ann:documentation>An initial value for this member.</ann:documentation>
                <ref name="Expression"/>
             </attribute>
             <attribute name="expression">
+               <ann:documentation>An expression for computed members.</ann:documentation>
                <ref name="Expression"/>
             </attribute>
          </choice>
@@ -674,42 +679,55 @@
       <zeroOrMore>
          <choice>
             <attribute name="error-resource-type">
+               <ann:documentation>A type that contains error message resources for validation attributes.</ann:documentation>
                <ref name="Type"/>
             </attribute>
             <attribute name="data-type-error-message">
+               <ann:documentation>An error message for the data-type attribute.</ann:documentation>
                <ref name="Type"/>
             </attribute>
             <attribute name="data-type-error-resource">
+               <ann:documentation>A resource name that contains an error message for the data-type attribute.</ann:documentation>
                <ref name="String"/>
             </attribute>
             <attribute name="required-error-message">
+               <ann:documentation>An error message for the required attribute.</ann:documentation>
                <ref name="Type"/>
             </attribute>
             <attribute name="required-error-resource">
+               <ann:documentation>A resource name that contains an error message for the required attribute.</ann:documentation>
                <ref name="String"/>
             </attribute>
             <attribute name="length-error-message">
+               <ann:documentation>An error message for the min-length and max-length attributes.</ann:documentation>
                <ref name="Type"/>
             </attribute>
             <attribute name="length-error-resource">
+               <ann:documentation>A resource name that contains an error message for the min-length and max-length attributes.</ann:documentation>
                <ref name="String"/>
             </attribute>
             <attribute name="pattern-error-message">
+               <ann:documentation>An error message for the pattern attribute.</ann:documentation>
                <ref name="Type"/>
             </attribute>
             <attribute name="pattern-error-resource">
+               <ann:documentation>A resource name that contains an error message for the pattern attribute.</ann:documentation>
                <ref name="String"/>
             </attribute>
             <attribute name="range-error-message">
+               <ann:documentation>An error message for the min and max attributes.</ann:documentation>
                <ref name="Type"/>
             </attribute>
             <attribute name="range-error-resource">
+               <ann:documentation>A resource name that contains an error message for the min and max attributes.</ann:documentation>
                <ref name="String"/>
             </attribute>
             <attribute name="equal-to-error-message">
+               <ann:documentation>An error message for the equal-to attribute.</ann:documentation>
                <ref name="Type"/>
             </attribute>
             <attribute name="equal-to-error-resource">
+               <ann:documentation>A resource name that contains an error message for the equal-to attribute.</ann:documentation>
                <ref name="String"/>
             </attribute>
          </choice>
