@@ -476,45 +476,59 @@
                <ref name="Boolean"/>
             </attribute>
             <attribute name="display-name">
+               <ann:documentation>A name suitable for UI.</ann:documentation>
                <ref name="String"/>
             </attribute>
             <attribute name="description">
+               <ann:documentation>A description of this member suitable for UI.</ann:documentation>
                <ref name="String"/>
             </attribute>
             <attribute name="short-name">
+               <ann:documentation>A shorter name suitable for UI where the display name would be too long to fit (e.g. a table column).</ann:documentation>
                <ref name="String"/>
             </attribute>
             <attribute name="placeholder">
+               <ann:documentation>A hint to the user of what can be entered in a control for this member.</ann:documentation>
                <ref name="String"/>
             </attribute>
             <attribute name="order">
+               <ann:documentation>A number that indicates the relative position of this member in a UI.</ann:documentation>
                <ref name="Integer"/>
             </attribute>
             <attribute name="group">
+               <ann:documentation>A name that is used to group members in a UI.</ann:documentation>
                <ref name="String"/>
             </attribute>
             <attribute name="display-format">
+               <ann:documentation>A formatting string that specifies the display format for the value of this member.</ann:documentation>
                <ref name="String"/>
             </attribute>
             <attribute name="apply-format-in-edit-mode">
+               <ann:documentation>Indicates if the display format should be used in an edit control for this member.</ann:documentation>
                <ref name="Boolean"/>
             </attribute>
             <attribute name="disable-output-escaping">
+               <ann:documentation>Indicates if this member should not be escaped when displaying in a UI (e.g. HTML content).</ann:documentation>
                <ref name="Boolean"/>
             </attribute>
             <attribute name="null-display-text">
+               <ann:documentation>A text that is displayed for this member when the value is null.</ann:documentation>
                <ref name="String"/>
             </attribute>
             <attribute name="template">
+               <ann:documentation>The name of a template to use when displaying this member in a UI.</ann:documentation>
                <ref name="String"/>
             </attribute>
             <attribute name="hidden">
+               <ann:documentation>Indicates if this member should not be displayed in a UI.</ann:documentation>
                <ref name="Boolean"/>
             </attribute>
             <attribute name="read-only">
+               <ann:documentation>Indicates if this member should not be editable in a UI.</ann:documentation>
                <ref name="Boolean"/>
             </attribute>
             <attribute name="auto-generate-filter">
+               <ann:documentation>Indicates if a filtering control should be automatically displayed for this member in a UI.</ann:documentation>
                <ref name="Boolean"/>
             </attribute>
             <attribute name="data-type">
