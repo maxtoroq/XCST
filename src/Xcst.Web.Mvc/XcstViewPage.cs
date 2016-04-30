@@ -121,7 +121,7 @@ namespace Xcst.Web.Mvc {
          this.Response.RedirectPermanent(this.Url.Content(url), endResponse: false);
       }
 
-      public bool TryUpdate(object value, Type type = null, string prefix = null, string[] includeProperties = null, string[] excludeProperties = null, IValueProvider valueProvider = null) {
+      public bool TryBind(object value, Type type = null, string prefix = null, string[] includeProperties = null, string[] excludeProperties = null, IValueProvider valueProvider = null) {
 
          if (value == null) throw new ArgumentNullException(nameof(value));
 
