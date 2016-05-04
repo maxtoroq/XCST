@@ -16,7 +16,7 @@ namespace Xcst.Compiler.Tests.Syntax {
       static readonly XcstCompilerFactory CompilerFactory = new XcstCompilerFactory {
          EnableExtensions = true,
          PackageTypeResolver = (typeName) => Assembly.GetExecutingAssembly()
-            .GetType(typeName, throwOnError: true)
+            .GetType(typeName)
       };
 
       public static Type CompileFromFile(string fileName, bool correct) {

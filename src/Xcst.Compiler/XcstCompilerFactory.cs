@@ -31,8 +31,13 @@ namespace Xcst.Compiler {
       readonly IDictionary<Uri, Func<Stream>> extensions = new Dictionary<Uri, Func<Stream>>();
 
       Func<string, Type> _PackageTypeResolver = typeName => Type.GetType(typeName, throwOnError: false);
+      Func<string, Uri> _PackageLocationResolver;
 
       public bool EnableExtensions { get; set; }
+
+      public string PackagesLocation { get; set; }
+
+      public string PackageFileExtension { get; set; }
 
       public Func<string, Type> PackageTypeResolver {
          get { return _PackageTypeResolver; }
@@ -46,7 +51,22 @@ namespace Xcst.Compiler {
          }
       }
 
-      public Func<string, Uri> PackageLocationResolver { get; set; }
+      public Func<string, Uri> PackageLocationResolver {
+         get {
+            if (_PackageLocationResolver != null) {
+               return _PackageLocationResolver;
+            }
+            if (!String.IsNullOrEmpty(PackagesLocation)
+               && !String.IsNullOrEmpty(PackageFileExtension)) {
+
+               return FindLibraryPackage;
+            }
+            return null;
+         }
+         set {
+            _PackageLocationResolver = value;
+         }
+      }
 
       public XcstCompilerFactory() {
 
@@ -163,6 +183,36 @@ namespace Xcst.Compiler {
          }
 
          return loader();
+      }
+
+      Uri FindLibraryPackage(string packageName) {
+
+         foreach (string path in Directory.EnumerateFiles(this.PackagesLocation, "*." + this.PackageFileExtension, SearchOption.AllDirectories)) {
+
+            if (Path.GetFileNameWithoutExtension(path)[0] == '_') {
+               continue;
+            }
+
+            using (var reader = XmlReader.Create(path)) {
+
+               while (reader.Read()) {
+
+                  if (reader.NodeType == XmlNodeType.Element) {
+
+                     if (reader.LocalName == "package"
+                        && reader.NamespaceURI == XmlNamespaces.Xcst
+                        && reader.GetAttribute("name") == packageName) {
+
+                        return new Uri(path);
+                     }
+
+                     break;
+                  }
+               }
+            }
+         }
+
+         return null;
       }
 
       class CompilerResolver : XmlResolver {

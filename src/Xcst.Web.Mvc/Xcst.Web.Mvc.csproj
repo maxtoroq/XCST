@@ -75,6 +75,7 @@
     <Compile Include="..\Xcst\XmlNamespaces.cs">
       <Link>XmlNamespaces.cs</Link>
     </Compile>
+    <Compile Include="Compiler\CompilerFactoryExtensions.cs" />
     <Compile Include="Html\DefaultDisplayTemplates.cs" />
     <Compile Include="Html\DefaultEditorTemplates.cs" />
     <Compile Include="Html\DictionaryExtensions.cs" />

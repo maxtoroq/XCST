@@ -16,6 +16,7 @@ using System;
 using System.ComponentModel;
 using System.Web.Compilation;
 using System.Web.Mvc;
+using Xcst.Compiler;
 using Xcst.Web.Mvc.Compilation;
 
 namespace Xcst.Web.Mvc {
@@ -36,11 +37,7 @@ namespace Xcst.Web.Mvc {
             XcstWebConfiguration config = XcstWebConfiguration.Instance;
 
             config.RegisterHandlerFactory(XcstViewPageHttpHandler.Create);
-
-            config.CompilerFactory.RegisterExtension(
-               new Uri(XmlNamespaces.XcstApplication),
-               () => typeof(PreApplicationStartCode).Assembly.GetManifestResourceStream($"{typeof(ViewPageBuildProvider<>).Namespace}.xcst-app.xsl")
-            );
+            config.CompilerFactory.RegisterApplicationExtension();
 
             BuildProvider.RegisterBuildProvider("." + XcstWebConfiguration.FileExtension, typeof(ViewPageBuildProvider<XcstViewPage>));
             ViewEngines.Engines.Add(new XcstViewEngine());
