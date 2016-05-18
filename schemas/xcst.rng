@@ -75,6 +75,7 @@
          <ref name="value-of"/>
          <ref name="variable"/>
          <ref name="void"/>
+         <ref name="while"/>
       </choice>
    </define>
 
@@ -1227,6 +1228,16 @@
       <element name="void">
          <ref name="standard-attributes"/>
          <ref name="value-attribute-or-content"/>
+      </element>
+   </define>
+
+   <define name="while">
+      <element name="while">
+         <attribute name="test">
+            <ref name="Expression"/>
+         </attribute>
+         <ref name="standard-attributes"/>
+         <ref name="sequence-constructor"/>
       </element>
    </define>
 

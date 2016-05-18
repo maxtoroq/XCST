@@ -510,7 +510,7 @@
       </call-template>
    </template>
 
-   <template match="c:for-each//c:continue" mode="src:statement">
+   <template match="c:for-each//c:continue | c:while//c:continue" mode="src:statement">
       <call-template name="xcst:validate-attribs">
          <with-param name="allowed" select="()"/>
          <with-param name="required" select="()"/>
@@ -520,7 +520,7 @@
       <value-of select="$src:statement-delimiter"/>
    </template>
 
-   <template match="c:for-each//c:break" mode="src:statement">
+   <template match="c:for-each//c:break | c:while//c:break" mode="src:statement">
       <call-template name="xcst:validate-attribs">
          <with-param name="allowed" select="()"/>
          <with-param name="required" select="()"/>
@@ -528,6 +528,22 @@
       <call-template name="src:new-line-indented"/>
       <text>break</text>
       <value-of select="$src:statement-delimiter"/>
+   </template>
+
+   <template match="c:while" mode="src:statement">
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="'test'"/>
+         <with-param name="required" select="'test'"/>
+      </call-template>
+      <value-of select="$src:new-line"/>
+      <call-template name="src:line-number"/>
+      <call-template name="src:new-line-indented"/>
+      <text>while (</text>
+      <value-of select="xcst:expression(@test)"/>
+      <text>)</text>
+      <call-template name="src:apply-children">
+         <with-param name="ensure-block" select="true()"/>
+      </call-template>
    </template>
 
    <!--

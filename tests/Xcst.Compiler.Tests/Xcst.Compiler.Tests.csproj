@@ -133,6 +133,9 @@
     <None Include="Language\CallableComponents\Function\_Hidden.xcst" />
     <None Include="Language\CallableComponents\Template\Hidden.c.xcst" />
     <None Include="Language\CallableComponents\Template\_Hidden.xcst" />
+    <None Include="Language\Repetition\While\while.test.type.i.xcst" />
+    <None Include="Language\Repetition\While\while.test.req.i.xcst" />
+    <None Include="Language\Repetition\While\while.foo.i.xcst" />
     <None Include="Language\Serialization\Output\DuplicateUnnamed.i.xcst" />
     <None Include="Language\Serialization\Output\DuplicateNamed.i.xcst" />
     <None Include="Language\Types\Hidden.c.xcst" />
