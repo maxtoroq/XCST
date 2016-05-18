@@ -23,10 +23,14 @@
    xmlns:err="http://maxtoroq.github.io/XCST/errors">
 
    <template match="c:metadata" mode="src:attribute">
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="'value'"/>
+         <with-param name="required" select="'value'"/>
+      </call-template>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
       <text>[</text>
-      <value-of select="@value"/>
+      <value-of select="xcst:expression(@value)"/>
       <text>]</text>
    </template>
 

@@ -644,9 +644,6 @@
                <attribute name="omit-xml-declaration">
                   <ref name="Boolean"/>
                </attribute>
-               <attribute name="parameter-document">
-                  <ref name="URI"/>
-               </attribute>
                <attribute name="standalone">
                   <ref name="OutputStandalone"/>
                </attribute>
@@ -684,7 +681,7 @@
             </attribute>
             <attribute name="data-type-error-message">
                <ann:documentation>An error message for the data-type attribute.</ann:documentation>
-               <ref name="Type"/>
+               <ref name="String"/>
             </attribute>
             <attribute name="data-type-error-resource">
                <ann:documentation>A resource name that contains an error message for the data-type attribute.</ann:documentation>
@@ -692,7 +689,7 @@
             </attribute>
             <attribute name="required-error-message">
                <ann:documentation>An error message for the required attribute.</ann:documentation>
-               <ref name="Type"/>
+               <ref name="String"/>
             </attribute>
             <attribute name="required-error-resource">
                <ann:documentation>A resource name that contains an error message for the required attribute.</ann:documentation>
@@ -700,7 +697,7 @@
             </attribute>
             <attribute name="length-error-message">
                <ann:documentation>An error message for the min-length and max-length attributes.</ann:documentation>
-               <ref name="Type"/>
+               <ref name="String"/>
             </attribute>
             <attribute name="length-error-resource">
                <ann:documentation>A resource name that contains an error message for the min-length and max-length attributes.</ann:documentation>
@@ -708,7 +705,7 @@
             </attribute>
             <attribute name="pattern-error-message">
                <ann:documentation>An error message for the pattern attribute.</ann:documentation>
-               <ref name="Type"/>
+               <ref name="String"/>
             </attribute>
             <attribute name="pattern-error-resource">
                <ann:documentation>A resource name that contains an error message for the pattern attribute.</ann:documentation>
@@ -716,7 +713,7 @@
             </attribute>
             <attribute name="range-error-message">
                <ann:documentation>An error message for the min and max attributes.</ann:documentation>
-               <ref name="Type"/>
+               <ref name="String"/>
             </attribute>
             <attribute name="range-error-resource">
                <ann:documentation>A resource name that contains an error message for the min and max attributes.</ann:documentation>
@@ -724,7 +721,7 @@
             </attribute>
             <attribute name="equal-to-error-message">
                <ann:documentation>An error message for the equal-to attribute.</ann:documentation>
-               <ref name="Type"/>
+               <ref name="String"/>
             </attribute>
             <attribute name="equal-to-error-resource">
                <ann:documentation>A resource name that contains an error message for the equal-to attribute.</ann:documentation>
@@ -1141,17 +1138,19 @@
 
    <define name="using">
       <element name="using">
-         <attribute name="name">
-            <ref name="Name"/>
-         </attribute>
          <attribute name="value">
             <ref name="Expression"/>
          </attribute>
-         <optional>
-            <attribute name="as">
-               <ref name="Type"/>
-            </attribute>
-         </optional>
+         <zeroOrMore>
+            <choice>
+               <attribute name="name">
+                  <ref name="Name"/>
+               </attribute>
+               <attribute name="as">
+                  <ref name="Type"/>
+               </attribute>
+            </choice>
+         </zeroOrMore>
          <ref name="standard-attributes"/>
          <ref name="sequence-constructor"/>
       </element>
@@ -1347,12 +1346,6 @@
                   <ref name="AVTExpr"/>
                </choice>
             </attribute>
-            <attribute name="parameter-document">
-               <choice>
-                  <ref name="URI"/>
-                  <ref name="AVTExpr"/>
-               </choice>
-            </attribute>
             <attribute name="standalone">
                <choice>
                   <ref name="OutputStandalone"/>
@@ -1449,7 +1442,9 @@
    </define>
 
    <define name="Language">
-      <data type="token"/>
+      <data type="token">
+         <param name="minLength">1</param>
+      </data>
    </define>
 
    <define name="Visibility">
@@ -1503,11 +1498,15 @@
    </define>
 
    <define name="Name">
-      <data type="token"/>
+      <data type="token">
+         <param name="minLength">1</param>
+      </data>
    </define>
 
    <define name="Type">
-      <data type="token"/>
+      <data type="token">
+         <param name="minLength">1</param>
+      </data>
    </define>
 
    <define name="Expression">

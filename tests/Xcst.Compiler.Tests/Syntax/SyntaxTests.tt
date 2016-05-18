@@ -82,10 +82,11 @@ namespace Xcst.Compiler.Tests {<#
 
          bool correct = fileName.EndsWith(".c");
          string fileName2 = fileName.Substring(0, fileName.LastIndexOf("."));
-         string testName = Regex.Replace(fileName.Replace(".", "_"), @"([a-z])([A-Z])", "$1_$2");
+         string testName = Regex.Replace(fileName.Replace(".", "_").Replace("-", "_"), @"([a-z])([A-Z])", "$1_$2");
 
          WriteLine("");
          WriteLine("");
+         WriteLine("#line 1 \"" + file.FullName + "\"");
          WriteLine("[TestMethod, TestCategory(\"" + fullName + "\")]");
 
          if (!correct) {

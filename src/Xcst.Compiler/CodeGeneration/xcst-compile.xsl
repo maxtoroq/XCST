@@ -36,12 +36,10 @@
    <param name="src:manifest-only" select="false()" as="xs:boolean"/>
 
    <variable name="src:context-field" select="concat('this.', src:aux-variable('execution_context'))"/>
+   <variable name="xcst:validation-attributes" select="'error-resource-type', 'data-type-error-message', 'data-type-error-resource', 'required-error-message', 'required-error-resource', 'length-error-message', 'length-error-resource', 'pattern-error-message', 'pattern-error-resource', 'range-error-message', 'range-error-resource', 'equal-to-error-message', 'equal-to-error-resource'"/>
+   <variable name="xcst:type-or-member-attributes" select="'resource-type', 'disable-empty-string-to-null-conversion', 'allow-empty-string', $xcst:validation-attributes"/>
 
    <output cdata-section-elements="src:compilation-unit"/>
-
-   <template match="document-node()" mode="src:main">
-      <apply-templates select="(*, node())[1]" mode="#current"/>
-   </template>
 
    <template match="c:module | c:package" mode="src:main">
       <param name="namespace" select="$src:namespace" as="xs:string?"/>
@@ -51,7 +49,7 @@
 
       <variable name="package-name" select="self::c:package/@name/xcst:name(.)"/>
       <variable name="package-name-parts" select="tokenize($package-name, '\.')"/>
-      <variable name="language" select="string(@language)"/>
+      <variable name="language" select="@language/xcst:non-string(.)"/>
 
       <if test="$library-package
          and not($package-name)">
@@ -133,7 +131,7 @@
                            <with-param name="manifest-only" select="true()"/>
                         </apply-templates>
                      </variable>
-                     <if test="upper-case($result/*/@language) ne upper-case($language)">
+                     <if test="not(xcst:language-equals($result/*/@language, $language))">
                         <sequence select="error((), 'Used packages that are not pre-compiled must declare the same @language as the top-level package.', src:error-object(.))"/>
                      </if>
                      <sequence select="$result/*/xcst:package-manifest"/>
@@ -219,17 +217,13 @@
       <sequence select="error((), 'Simplified module not implemented yet.', src:error-object(.))"/>
    </template>
 
-   <template match="node()" mode="src:main">
-      <sequence select="error((), 'Expecting element.', src:error-object(.))"/>
-   </template>
-
    <template match="c:module | c:package" mode="src:load-imports">
       <param name="language" required="yes" tunnel="yes"/>
 
       <call-template name="xcst:check-document-element-attributes"/>
       <apply-templates mode="xcst:check-top-level"/>
 
-      <if test="upper-case(string(@language)) ne upper-case($language)">
+      <if test="not(xcst:language-equals(@language, $language))">
          <sequence select="error(xs:QName('err:XTSE0020'), 'Imported modules must declare the same @language as the principal module.', src:error-object(.))"/>
       </if>
 
@@ -239,6 +233,11 @@
 
    <template match="c:import" mode="src:load-imports">
       <param name="module-docs" as="document-node()+" tunnel="yes"/>
+
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="'href'"/>
+         <with-param name="required" select="'href'"/>
+      </call-template>
 
       <variable name="href" select="resolve-uri(@href, base-uri())"/>
 
@@ -271,19 +270,39 @@
 
    <template name="xcst:check-document-element-attributes">
 
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="'version', 'language', 'name'[current()/self::c:package]"/>
+         <with-param name="required" select="'version', 'language'"/>
+      </call-template>
+
       <variable name="attr-name" select="if (self::c:*) then QName('', 'language') else xs:QName('c:language')"/>
       <variable name="language-attr" select="@*[node-name() eq $attr-name]"/>
 
-      <if test="not($language-attr)">
-         <sequence select="error(xs:QName('err:XTSE0010'), concat('Element must have a @', $attr-name,' attribute.'), src:error-object(.))"/>
-      </if>
-
-      <if test="not(upper-case(string($language-attr)) eq 'C#')">
+      <if test="not(xcst:language-equals($language-attr, 'C#'))">
          <sequence select="error(xs:QName('err:XTSE0020'), concat('This implementation supports only ''C#'' (@', $attr-name, ' attribute).'), src:error-object(.))"/>
       </if>
    </template>
 
+   <function name="xcst:language-equals" as="xs:boolean">
+      <param name="a" as="item()"/>
+      <param name="b" as="item()"/>
+
+      <variable name="strings" select="
+         for $item in ($a, $b)
+         return if ($item instance of node()) then xcst:non-string($item)
+         else $item"/>
+
+      <sequence select="upper-case($strings[1]) eq upper-case($strings[2])"/>
+   </function>
+
    <template match="c:attribute-set | c:function | c:import | c:output | c:param | c:template | c:type | c:use-functions | c:use-package | c:validation | c:variable" mode="xcst:check-top-level"/>
+
+   <template match="c:validation" mode="xcst:check-top-level">
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="$xcst:validation-attributes"/>
+         <with-param name="required" select="()"/>
+      </call-template>
+   </template>
 
    <template match="c:*" mode="xcst:check-top-level">
       <sequence select="error(xs:QName('err:XTSE0010'), concat('Unknown XCST element: ', local-name(), '.'), src:error-object(.))"/>
@@ -320,15 +339,30 @@
    <template match="c:*" mode="xcst:package-manifest"/>
 
    <template match="c:use-package" mode="xcst:package-manifest">
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="'name'"/>
+         <with-param name="required" select="'name'"/>
+      </call-template>
       <if test="preceding-sibling::c:use-package[xcst:name-equals(@name, current()/@name)]">
          <sequence select="error((), 'Duplicate c:use-package declaration.', src:error-object(.))"/>
       </if>
-      <apply-templates select="c:override/c:*" mode="#current"/>
+      <for-each select="c:override">
+         <call-template name="xcst:validate-attribs">
+            <with-param name="allowed" select="()"/>
+            <with-param name="required" select="()"/>
+         </call-template>
+         <apply-templates select="c:*" mode="#current"/>
+      </for-each>
    </template>
 
    <template match="c:param | c:variable" mode="xcst:package-manifest">
       <param name="modules" tunnel="yes"/>
       <param name="module-pos" tunnel="yes"/>
+
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="'name', 'value', 'as', ('required', 'tunnel')[current()/self::c:param], 'visibility'[current()/self::c:variable]"/>
+         <with-param name="required" select="'name'"/>
+      </call-template>
 
       <variable name="name" select="src:strip-verbatim-prefix(xcst:name(@name))"/>
 
@@ -355,10 +389,10 @@
       <variable name="visibility" select="
          if (parent::c:override) then
          ('hidden'[$modules[position() gt $module-pos]/c:use-package[xcst:name-equals(@name, current()/parent::c:override/parent::c:use-package/@name)]/c:override/c:*[xcst:homonymous(., current())]]
-            , self::c:variable/(@visibility/xcst:non-string(.), 'private')[1], 'public')[1]
+            , self::c:variable/(@visibility/xcst:visibility(.), 'private')[1], 'public')[1]
          else if ($modules[position() gt $module-pos]/c:*[xcst:homonymous(., current())]) then 'hidden'
          else if (self::c:param) then 'public'
-         else (@visibility/xcst:non-string(.), 'private')[1]"/>
+         else (@visibility/xcst:visibility(.), 'private')[1]"/>
 
       <variable name="text" select="xcst:text(.)"/>
       <variable name="has-default-value" select="xcst:has-value(., $text)"/>
@@ -393,7 +427,12 @@
       <param name="module-pos" tunnel="yes"/>
       <param name="implicit-package" tunnel="yes"/>
 
-      <variable name="qname" select="xcst:resolve-QName-ignore-default(@name, .)"/>
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="'name', 'visibility'"/>
+         <with-param name="required" select="'name'"/>
+      </call-template>
+
+      <variable name="qname" select="xcst:resolve-QName-ignore-default(xcst:name(@name), .)"/>
 
       <if test="not($qname eq xs:QName('c:initial-template'))
          and xcst:is-reserved-namespace(namespace-uri-from-QName($qname))">
@@ -434,9 +473,9 @@
       <variable name="visibility" select="
          if (parent::c:override) then
          ('hidden'[$modules[position() gt $module-pos]/c:use-package[xcst:name-equals(@name, current()/parent::c:override/parent::c:use-package/@name)]/c:override/c:*[xcst:homonymous(., current())]]
-            , @visibility/xcst:non-string(.), 'private')[1]
+            , @visibility/xcst:visibility(.), 'private')[1]
          else if ($modules[position() gt $module-pos]/c:*[xcst:homonymous(., current())]) then 'hidden'
-         else (@visibility/xcst:non-string(.), 'public'[$implicit-package], 'private')[1]"/>
+         else (@visibility/xcst:visibility(.), 'public'[$implicit-package], 'private')[1]"/>
 
       <variable name="public" select="$visibility = ('public', 'final', 'abstract')"/>
 
@@ -450,6 +489,10 @@
          </if>
          <copy-of select="namespace::*"/>
          <for-each select="c:param">
+            <call-template name="xcst:validate-attribs">
+               <with-param name="allowed" select="'name', 'value', 'as', 'required', 'tunnel'"/>
+               <with-param name="required" select="'name'"/>
+            </call-template>
             <variable name="param-name" select="src:strip-verbatim-prefix(xcst:name(@name))"/>
             <if test="preceding-sibling::c:param[xcst:name-equals(@name, $param-name)]">
                <sequence select="error(xs:QName('err:XTSE0580'), 'The name of the parameter is not unique.', src:error-object(.))"/>
@@ -469,6 +512,11 @@
    <template match="c:function" mode="xcst:package-manifest">
       <param name="modules" tunnel="yes"/>
       <param name="module-pos" tunnel="yes"/>
+
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="'name', 'as', 'visibility'"/>
+         <with-param name="required" select="'name'"/>
+      </call-template>
 
       <variable name="name" select="src:strip-verbatim-prefix(xcst:name(@name))"/>
 
@@ -491,9 +539,9 @@
       <variable name="visibility" select="
          if (parent::c:override) then
          ('hidden'[$modules[position() gt $module-pos]/c:use-package[xcst:name-equals(@name, current()/parent::c:override/parent::c:use-package/@name)]/c:override/c:*[xcst:homonymous(., current())]]
-            , @visibility/xcst:non-string(.), 'private')[1]
+            , @visibility/xcst:visibility(.), 'private')[1]
          else if ($modules[position() gt $module-pos]/c:*[xcst:homonymous(., current())]) then 'hidden'
-         else (@visibility/xcst:non-string(.), 'private')[1]"/>
+         else (@visibility/xcst:visibility(.), 'private')[1]"/>
 
       <variable name="member-name" select="
          if ($visibility eq 'hidden') then 
@@ -512,6 +560,10 @@
             <attribute name="overrides" select="generate-id($overriden-meta)"/>
          </if>
          <for-each select="c:param">
+            <call-template name="xcst:validate-attribs">
+               <with-param name="allowed" select="'name', 'value', 'as', 'required', 'tunnel'"/>
+               <with-param name="required" select="'name'"/>
+            </call-template>
             <variable name="param-name" select="src:strip-verbatim-prefix(xcst:name(@name))"/>
             <if test="preceding-sibling::c:param[xcst:name-equals(@name, $param-name)]">
                <sequence select="error(xs:QName('err:XTSE0580'), 'The name of the parameter is not unique.', src:error-object(.))"/>
@@ -555,7 +607,12 @@
       <param name="modules" tunnel="yes"/>
       <param name="module-pos" tunnel="yes"/>
 
-      <variable name="qname" select="xcst:resolve-QName-ignore-default(@name, .)"/>
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="'name', 'use-attribute-sets', 'visibility'"/>
+         <with-param name="required" select="'name'"/>
+      </call-template>
+
+      <variable name="qname" select="xcst:resolve-QName-ignore-default(xcst:name(@name), .)"/>
 
       <if test="xcst:is-reserved-namespace(namespace-uri-from-QName($qname))">
          <sequence select="error(xs:QName('err:XTSE0080'), concat('Namespace prefix ', prefix-from-QName($qname),' refers to a reserved namespace.'), src:error-object(.))"/>
@@ -575,8 +632,8 @@
       <variable name="visibility" select="
          if (parent::c:override) then
          ('hidden'[$modules[position() gt $module-pos]/c:use-package[xcst:name-equals(@name, current()/parent::c:override/parent::c:use-package/@name)]/c:override/c:*[xcst:homonymous(., current())]]
-            , @visibility/xcst:non-string(.), 'private')[1]
-         else (@visibility/xcst:non-string(.), 'private')[1]"/>
+            , @visibility/xcst:visibility(.), 'private')[1]
+         else (@visibility/xcst:visibility(.), 'private')[1]"/>
 
       <variable name="public" select="$visibility = ('public', 'final', 'abstract')"/>
 
@@ -602,6 +659,11 @@
       <param name="modules" tunnel="yes"/>
       <param name="module-pos" tunnel="yes"/>
 
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="'name', 'visibility', $xcst:type-or-member-attributes"/>
+         <with-param name="required" select="'name'"/>
+      </call-template>
+
       <variable name="name" select="src:strip-verbatim-prefix(xcst:name(@name))"/>
 
       <if test="preceding-sibling::c:type[xcst:homonymous(., current())]">
@@ -614,7 +676,7 @@
 
       <variable name="visibility" select="
          if ($modules[position() gt $module-pos]/c:*[xcst:homonymous(., current())]) then 'hidden'
-         else (@visibility/xcst:non-string(.), 'private')[1]"/>
+         else (@visibility/xcst:visibility(.), 'private')[1]"/>
 
       <if test="$visibility eq 'abstract'">
          <sequence select="error((), 'visibility=''abstract'' is not a valid value for c:type declarations.', src:error-object(.))"/>
@@ -681,8 +743,15 @@
    <template name="xcst:output-definitions">
       <param name="modules" tunnel="yes"/>
 
-      <for-each-group select="for $m in reverse($modules) return $m/c:output" group-by="(xcst:resolve-QName-ignore-default(@name, .), '')[1]">
+      <for-each-group select="for $m in reverse($modules) return $m/c:output" group-by="(@name/xcst:resolve-QName-ignore-default(xcst:name(.), ..), '')[1]">
          <sort select="current-grouping-key() instance of xs:QName"/>
+
+         <for-each select="current-group()">
+            <call-template name="xcst:validate-attribs">
+               <with-param name="allowed" select="'name', $src:output-parameters/*[not(self::version) and not(self::output-version)]/local-name()"/>
+               <with-param name="required" select="()"/>
+            </call-template>
+         </for-each>
 
          <variable name="output-name" select="
             if (current-grouping-key() instance of xs:QName) then current-grouping-key()
@@ -701,6 +770,18 @@
       </for-each-group>
 
    </template>
+
+   <function name="xcst:visibility" as="xs:string">
+      <param name="node" as="node()"/>
+
+      <variable name="string" select="xcst:non-string($node)"/>
+
+      <if test="not($string = ('public', 'private', 'final', 'abstract'))">
+         <sequence select="error(xs:QName('err:XTSE0020'), concat('Invalid value for ', name($node), '. Must be one of (public|private|final|abstract)'), src:error-object($node))"/>
+      </if>
+
+      <sequence select="$string"/>
+   </function>
 
    <function name="xcst:homonymous" as="xs:boolean">
       <param name="a" as="element()"/>
@@ -1351,15 +1432,24 @@
    </template>
 
    <template match="c:use-functions" mode="src:import-namespace">
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="'in', 'alias', 'static-only'"/>
+         <with-param name="required" select="'in'"/>
+      </call-template>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
       <text>using </text>
-      <if test="@static-only/xcst:boolean(.)">static </if>
+      <if test="@static-only/xcst:boolean(.)">
+         <if test="@alias">
+            <sequence select="error(xs:QName('err:XTSE0020'), 'Cannot use both @alias and @static-only=''yes''.', src:error-object(.))"/>
+         </if>
+         <text>static </text>
+      </if>
       <if test="@alias">
-         <value-of select="@alias"/>
+         <value-of select="xcst:type(@alias)"/>
          <text> = </text>
       </if>
-      <value-of select="@in"/>
+      <value-of select="xcst:type(@in)"/>
       <value-of select="$src:statement-delimiter"/>
    </template>
 
@@ -1791,11 +1881,16 @@
 
    <template match="c:member" mode="src:member">
 
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="'name', 'as', 'auto-initialize', 'display-name', 'description', 'short-name', 'placeholder', 'order', 'group', 'display-format', 'apply-format-in-edit-mode', 'disable-output-escaping', 'null-display-text', 'template', 'hidden', 'read-only', 'auto-generate-filter', 'data-type', 'required', 'max-length', 'min-length', 'pattern', 'min', 'max', 'range-type', 'equal-to', 'value', 'expression', $xcst:type-or-member-attributes"/>
+         <with-param name="required" select="'name'"/>
+      </call-template>
+
       <variable name="type" select="(@as/xcst:type(.), src:anonymous-type-name(.))[1]"/>
       <variable name="auto-init" select="(@auto-initialize/xcst:boolean(.), false())[1]"/>
 
       <if test="$auto-init and (@expression or @value)">
-         <sequence select="error(xs:QName('err:XTSE0020'), 'When auto-initialize=''yes'' the expression and value attributes must be omitted.', src:error-object(@auto-initialize))"/>
+         <sequence select="error(xs:QName('err:XTSE0020'), 'When @auto-initialize=''yes'' the @expression and @value attributes must be omitted.', src:error-object(@auto-initialize))"/>
       </if>
 
       <value-of select="$src:new-line"/>
@@ -2273,9 +2368,6 @@
       <call-template name="src:open-brace"/>
       <for-each-group select="for $o in $declarations return $o/@*[not(self::attribute(name))]" group-by="node-name(.)">
          <!-- TODO: XTSE1560: Conflicting values for output parameter {name()} -->
-         <if test="self::attribute(parameter-document)">
-            <sequence select="error((), concat(name(), ' parameter not supported yet.'), src:error-object(.))"/>
-         </if>
          <call-template name="src:new-line-indented">
             <with-param name="increase" select="1"/>
          </call-template>
@@ -2285,8 +2377,7 @@
             <with-param name="indent" select="$indent + 2" tunnel="yes"/>
             <with-param name="list-value" as="xs:QName*">
                <if test="self::attribute(cdata-section-elements) 
-                  or self::attribute(suppress-indentation)
-                  or self::attribute(use-character-maps)">
+                  or self::attribute(suppress-indentation)">
                   <sequence select="distinct-values(
                      for $p in current-group()
                      return for $s in tokenize($p, '\s')[.]

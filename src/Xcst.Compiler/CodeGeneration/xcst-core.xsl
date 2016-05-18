@@ -31,6 +31,28 @@
    <param name="src:open-brace-on-new-line" select="false()" as="xs:boolean"/>
 
    <variable name="src:statement-delimiter" select="';'" as="xs:string"/>
+   <variable name="src:output-parameters" as="element()">
+      <data xmlns="foo">
+         <byte-order-mark>ByteOrderMark</byte-order-mark>
+         <cdata-section-elements>CdataSectionElements</cdata-section-elements>
+         <doctype-public>DoctypePublic</doctype-public>
+         <doctype-system>DoctypeSystem</doctype-system>
+         <encoding>Encoding</encoding>
+         <escape-uri-attributes>EscapeUriAttributes</escape-uri-attributes>
+         <html-version>HtmlVersion</html-version>
+         <include-content-type>IncludeContentType</include-content-type>
+         <indent>Indent</indent>
+         <item-separator>ItemSeparator</item-separator>
+         <media-type>MediaType</media-type>
+         <method>Method</method>
+         <omit-xml-declaration>OmitXmlDeclaration</omit-xml-declaration>
+         <output-version>Version</output-version>
+         <standalone>Standalone</standalone>
+         <suppress-indentation>SuppressIndentation</suppress-indentation>
+         <undeclare-prefixes>UndeclarePrefixes</undeclare-prefixes>
+         <version>Version</version>
+      </data>
+   </variable>
 
    <template match="*[* and not(text()[normalize-space()])]/text()" mode="src:statement"/>
 
@@ -62,6 +84,10 @@
    <template match="c:attribute" mode="src:statement">
       <param name="output" tunnel="yes"/>
 
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="'name', 'namespace', 'separator', 'value'"/>
+         <with-param name="required" select="'name'"/>
+      </call-template>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
       <value-of select="$output"/>
@@ -78,7 +104,8 @@
          </when>
          <otherwise>
             <text>(</text>
-            <variable name="name" select="if (@namespace) then QName('urn:foo', @name) else resolve-QName(@name, .)"/>
+            <variable name="n" select="xcst:name(@name)"/>
+            <variable name="name" select="if (@namespace) then QName('urn:foo', $n) else resolve-QName($n, .)"/>
             <variable name="prefix" select="prefix-from-QName($name)"/>
             <if test="$prefix">
                <value-of select="src:string($prefix)"/>
@@ -119,6 +146,10 @@
    <template match="c:comment" mode="src:statement">
       <param name="output" tunnel="yes"/>
 
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="'value'"/>
+         <with-param name="required" select="()"/>
+      </call-template>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
       <value-of select="$output"/>
@@ -133,6 +164,10 @@
    <template match="c:element" mode="src:statement">
       <param name="output" tunnel="yes"/>
 
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="'name', 'namespace', 'use-attribute-sets'"/>
+         <with-param name="required" select="'name'"/>
+      </call-template>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
       <value-of select="$output"/>
@@ -147,7 +182,8 @@
          </when>
          <otherwise>
             <text>(</text>
-            <variable name="name" select="if (@namespace) then QName('urn:foo', @name) else resolve-QName(@name, .)"/>
+            <variable name="n" select="xcst:name(@name)"/>
+            <variable name="name" select="if (@namespace) then QName('urn:foo', $n) else resolve-QName($n, .)"/>
             <variable name="prefix" select="prefix-from-QName($name)"/>
             <if test="$prefix">
                <value-of select="src:string($prefix)"/>
@@ -181,6 +217,10 @@
    <template match="c:namespace" mode="src:statement">
       <param name="output" tunnel="yes"/>
 
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="'name', 'value'"/>
+         <with-param name="required" select="'name'"/>
+      </call-template>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
       <value-of select="$output"/>
@@ -191,7 +231,9 @@
          <otherwise>WriteStartAttribute</otherwise>
       </choose>
       <text>("xmlns", </text>
-      <value-of select="src:expand-attribute(@name)"/>
+      <value-of select="
+         if (xcst:is-value-template(@name)) then src:expand-attribute(@name)
+         else src:string(xcst:name(@name))"/>
       <text>, null</text>
       <if test="$simple-content">
          <text>, </text>
@@ -214,11 +256,17 @@
    <template match="c:processing-instruction" mode="src:statement">
       <param name="output" tunnel="yes"/>
 
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="'name', 'value'"/>
+         <with-param name="required" select="'name'"/>
+      </call-template>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
       <value-of select="$output"/>
       <text>.WriteProcessingInstruction(</text>
-      <value-of select="src:expand-attribute(@name)"/>
+      <value-of select="
+         if (xcst:is-value-template(@name)) then src:expand-attribute(@name)
+         else src:string(xcst:name(@name))"/>
       <text>, </text>
       <call-template name="src:simple-content">
          <with-param name="attribute" select="@value"/>
@@ -245,6 +293,10 @@
    </template>
 
    <template match="c:text" mode="src:expression">
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="'disable-output-escaping'"/>
+         <with-param name="required" select="()"/>
+      </call-template>
       <variable name="text" select="xcst:text(., false())"/>
       <value-of select="
          if ($text) then src:expand-text(., $text) 
@@ -252,6 +304,10 @@
    </template>
 
    <template match="c:value-of" mode="src:expression">
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="'disable-output-escaping', 'value', 'separator'"/>
+         <with-param name="required" select="()"/>
+      </call-template>
       <call-template name="src:simple-content">
          <with-param name="attribute" select="@value"/>
          <with-param name="separator" select="@separator/src:expand-attribute(.)"/>
@@ -259,6 +315,10 @@
    </template>
 
    <template match="c:normalize-space" mode="src:expression">
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="'value'"/>
+         <with-param name="required" select="()"/>
+      </call-template>
       <choose>
          <when test="@value or * or xcst:tvt-enabled(.)">
             <value-of select="src:fully-qualified-helper('SimpleContent')"/>
@@ -383,6 +443,10 @@
    </template>
 
    <template match="c:object" mode="src:expression">
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="'value'"/>
+         <with-param name="required" select="()"/>
+      </call-template>
       <call-template name="src:value"/>
    </template>
 
@@ -391,6 +455,11 @@
    -->
 
    <template match="c:for-each" mode="src:statement">
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="'name', 'in', 'as'"/>
+         <with-param name="required" select="'name', 'in'"/>
+      </call-template>
+      <variable name="in" select="xcst:expression(@in)"/>
       <value-of select="$src:new-line"/>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
@@ -402,11 +471,15 @@
       <choose>
          <when test="c:sort">
             <for-each select="c:sort">
+               <call-template name="xcst:validate-attribs">
+                  <with-param name="allowed" select="'value', 'order'"/>
+                  <with-param name="required" select="()"/>
+               </call-template>
                <choose>
                   <when test="position() eq 1">
                      <value-of select="src:fully-qualified-helper('Sorting')"/>
                      <text>.SortBy(</text>
-                     <value-of select="../@in"/>
+                     <value-of select="$in"/>
                      <text>, </text>
                   </when>
                   <otherwise>.CreateOrderedEnumerable(</otherwise>
@@ -414,7 +487,7 @@
                <variable name="param" select="src:aux-variable(generate-id())"/>
                <value-of select="$param, '=>', $param"/>
                <if test="@value">.</if>
-               <value-of select="@value"/>
+               <value-of select="@value/xcst:expression(.)"/>
                <if test="position() gt 1">, null</if>
                <text>, </text>
                <variable name="descending-expr" select="
@@ -427,7 +500,7 @@
             </for-each>
          </when>
          <otherwise>
-            <value-of select="@in"/>
+            <value-of select="$in"/>
          </otherwise>
       </choose>
       <text>)</text>
@@ -438,12 +511,20 @@
    </template>
 
    <template match="c:for-each//c:continue" mode="src:statement">
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="()"/>
+         <with-param name="required" select="()"/>
+      </call-template>
       <call-template name="src:new-line-indented"/>
       <text>continue</text>
       <value-of select="$src:statement-delimiter"/>
    </template>
 
    <template match="c:for-each//c:break" mode="src:statement">
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="()"/>
+         <with-param name="required" select="()"/>
+      </call-template>
       <call-template name="src:new-line-indented"/>
       <text>break</text>
       <value-of select="$src:statement-delimiter"/>
@@ -454,26 +535,27 @@
    -->
 
    <template match="c:choose" mode="src:statement">
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="()"/>
+         <with-param name="required" select="()"/>
+      </call-template>
       <apply-templates select="c:*" mode="#current"/>
    </template>
 
-   <template match="c:choose/c:when[1]" mode="src:statement">
-      <value-of select="$src:new-line"/>
-      <call-template name="src:line-number"/>
-      <call-template name="src:new-line-indented"/>
-      <text>if (</text>
-      <value-of select="@test"/>
-      <text>)</text>
-      <call-template name="src:apply-children">
-         <with-param name="ensure-block" select="true()"/>
+   <template match="c:choose/c:when" mode="src:statement">
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="'test'"/>
+         <with-param name="required" select="'test'"/>
       </call-template>
-   </template>
-
-   <template match="c:choose/c:when[position() gt 1]" mode="src:statement">
+      <variable name="pos" select="position()"/>
+      <if test="$pos eq 1">
+         <value-of select="$src:new-line"/>
+      </if>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
-      <text>else if (</text>
-      <value-of select="@test"/>
+      <if test="$pos gt 1">else </if>
+      <text>if (</text>
+      <value-of select="xcst:expression(@test)"/>
       <text>)</text>
       <call-template name="src:apply-children">
          <with-param name="ensure-block" select="true()"/>
@@ -481,6 +563,10 @@
    </template>
 
    <template match="c:choose/c:otherwise" mode="src:statement">
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="()"/>
+         <with-param name="required" select="()"/>
+      </call-template>
       <text> else</text>
       <call-template name="src:apply-children">
          <with-param name="ensure-block" select="true()"/>
@@ -488,15 +574,23 @@
    </template>
 
    <template match="c:choose" mode="src:expression">
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="()"/>
+         <with-param name="required" select="()"/>
+      </call-template>
       <text>(</text>
       <apply-templates select="c:*" mode="#current"/>
       <text>)</text>
    </template>
 
    <template match="c:choose/c:when" mode="src:expression">
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="'test'"/>
+         <with-param name="required" select="'test'"/>
+      </call-template>
       <if test="position() gt 1"> : </if>
       <text>(</text>
-      <value-of select="@test"/>
+      <value-of select="xcst:expression(@test)"/>
       <text>) ? </text>
       <call-template name="src:apply-children">
          <with-param name="mode" select="'expression'"/>
@@ -504,6 +598,10 @@
    </template>
 
    <template match="c:choose/c:otherwise" mode="src:expression">
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="()"/>
+         <with-param name="required" select="()"/>
+      </call-template>
       <text> : </text>
       <call-template name="src:apply-children">
          <with-param name="mode" select="'expression'"/>
@@ -511,11 +609,15 @@
    </template>
 
    <template match="c:if" mode="src:statement">
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="'test'"/>
+         <with-param name="required" select="'test'"/>
+      </call-template>
       <value-of select="$src:new-line"/>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
       <text>if (</text>
-      <value-of select="@test"/>
+      <value-of select="xcst:expression(@test)"/>
       <text>)</text>
       <call-template name="src:apply-children">
          <with-param name="ensure-block" select="true()"/>
@@ -523,6 +625,10 @@
    </template>
 
    <template match="c:try" mode="src:statement">
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="'rollback-output', 'value'"/>
+         <with-param name="required" select="()"/>
+      </call-template>
       <variable name="rollback" select="(@rollback-output/xcst:boolean(.), true())[1]"/>
       <if test="$rollback">
          <!-- TODO: Buffering -->
@@ -544,17 +650,21 @@
    </template>
 
    <template match="c:try/c:catch" mode="src:statement">
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="'exception', 'when', 'value'"/>
+         <with-param name="required" select="()"/>
+      </call-template>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
       <text>catch</text>
       <if test="@exception">
          <text> (</text>
-         <value-of select="@exception"/>
+         <value-of select="xcst:expression(@exception)"/>
          <text>)</text>
       </if>
       <if test="@when">
          <text> when (</text>
-         <value-of select="@when"/>
+         <value-of select="xcst:expression(@when)"/>
          <text>)</text>
       </if>
       <call-template name="src:apply-children">
@@ -564,6 +674,10 @@
    </template>
 
    <template match="c:try/c:finally" mode="src:statement">
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="'value'"/>
+         <with-param name="required" select="()"/>
+      </call-template>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
       <text>finally</text>
@@ -665,6 +779,11 @@
 
    <template match="c:variable" mode="src:statement">
 
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="'name', 'value', 'as'"/>
+         <with-param name="required" select="'name'"/>
+      </call-template>
+
       <variable name="text" select="xcst:text(.)"/>
       <variable name="has-value" select="xcst:has-value(., $text)"/>
 
@@ -718,7 +837,19 @@
       <param name="indent" tunnel="yes"/>
       <param name="context-param" tunnel="yes"/>
 
-      <variable name="qname" select="xcst:resolve-QName-ignore-default(@name, .)"/>
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="'name'"/>
+         <with-param name="required" select="'name'"/>
+      </call-template>
+
+      <for-each select="c:with-param">
+         <call-template name="xcst:validate-attribs">
+            <with-param name="allowed" select="'name', 'value', 'as', 'tunnel'"/>
+            <with-param name="required" select="'name'"/>
+         </call-template>
+      </for-each>
+
+      <variable name="qname" select="xcst:resolve-QName-ignore-default(xcst:name(@name), .)"/>
       <variable name="original" select="$qname eq xs:QName('c:original') and ancestor::c:override"/>
       <variable name="meta" as="element(xcst:template)">
          <choose>
@@ -778,6 +909,18 @@
       <param name="indent" tunnel="yes"/>
       <param name="context-param" tunnel="yes"/>
 
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="()"/>
+         <with-param name="required" select="()"/>
+      </call-template>
+
+      <for-each select="c:with-param">
+         <call-template name="xcst:validate-attribs">
+            <with-param name="allowed" select="'name', 'value', 'as', 'tunnel'"/>
+            <with-param name="required" select="'name'"/>
+         </call-template>
+      </for-each>
+
       <variable name="current-template" select="ancestor::c:template[1]"/>
 
       <if test="not($current-template)">
@@ -834,6 +977,9 @@
       <text>.WithParam(</text>
       <value-of select="src:string(src:strip-verbatim-prefix(xcst:name(@name)))"/>
       <text>, </text>
+      <if test="@as">
+         <value-of select="'(', xcst:type(@as), ')'" separator=""/>
+      </if>
       <call-template name="src:value"/>
       <if test="@tunnel">
          <text>, tunnel: </text>
@@ -851,6 +997,11 @@
 
    <template match="c:next-function" mode="src:expression">
       <param name="package-manifest" tunnel="yes"/>
+
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="()"/>
+         <with-param name="required" select="()"/>
+      </call-template>
 
       <variable name="current-function" select="ancestor::c:function[1]"/>
 
@@ -871,7 +1022,11 @@
       <value-of select="$function/@member-name"/>
       <text>(</text>
       <for-each select="c:with-param">
-         <if test="preceding-sibling::c:with-param[xcst:name-equals(@name, current()/@name)]">
+         <call-template name="xcst:validate-attribs">
+            <with-param name="allowed" select="'name', 'value', 'as', 'tunnel'"/>
+            <with-param name="required" select="()"/>
+         </call-template>
+         <if test="@name and preceding-sibling::c:with-param[@name and xcst:name-equals(@name, current()/@name)]">
             <sequence select="error(xs:QName('err:XTSE0670'), 'Duplicate parameter name.', src:error-object(.))"/>
          </if>
          <if test="@tunnel/xcst:boolean(.)">
@@ -882,6 +1037,9 @@
             <value-of select="xcst:name(@name)"/>
             <text>: </text>
          </if>
+         <if test="@as">
+            <value-of select="'(', xcst:type(@as), ')'" separator=""/>
+         </if>
          <call-template name="src:value"/>
       </for-each>
       <text>)</text>
@@ -890,13 +1048,21 @@
    <template match="c:using-module" mode="src:statement">
       <param name="indent" tunnel="yes"/>
 
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="'instance', 'with-params'"/>
+         <with-param name="required" select="'instance'"/>
+      </call-template>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
       <value-of select="src:global-identifier('Xcst.XcstEvaluator')"/>
       <text>.Using(</text>
-      <value-of select="@instance"/>
+      <value-of select="xcst:expression(@instance)"/>
       <text>)</text>
       <for-each select="c:with-param">
+         <call-template name="xcst:validate-attribs">
+            <with-param name="allowed" select="'name', 'value', 'as', 'tunnel'"/>
+            <with-param name="required" select="'name'"/>
+         </call-template>
          <if test="preceding-sibling::c:with-param[xcst:name-equals(@name, current()/@name)]">
             <sequence select="error(xs:QName('err:XTSE0670'), 'Duplicate parameter name.', src:error-object(.))"/>
          </if>
@@ -912,6 +1078,9 @@
          <text>.WithParam(</text>
          <value-of select="src:string(src:strip-verbatim-prefix(xcst:name(@name)))"/>
          <text>, </text>
+         <if test="@as">
+            <value-of select="'(', xcst:type(@as), ')'" separator=""/>
+         </if>
          <call-template name="src:value"/>
          <text>)</text>
       </for-each>
@@ -919,7 +1088,7 @@
          <call-template name="src:line-number"/>
          <call-template name="src:new-line-indented"/>
          <text>.WithParams(</text>
-         <value-of select="@with-params"/>
+         <value-of select="xcst:expression(@with-params)"/>
          <text>)</text>
       </if>
       <apply-templates select="c:call-template" mode="src:call-template">
@@ -936,18 +1105,29 @@
       <param name="context-param" tunnel="yes"/>
       <param name="output" tunnel="yes"/>
 
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="'name', 'with-params'"/>
+         <with-param name="required" select="'name'"/>
+      </call-template>
+
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
       <text>.CallTemplate(</text>
       <!-- TODO: @name AVT -->
-      <value-of select="src:QName(xcst:resolve-QName-ignore-default(@name, .))"/>
+      <value-of select="src:QName(xcst:resolve-QName-ignore-default(xcst:name(@name), .))"/>
       <text>)</text>
-      <apply-templates select="c:with-param" mode="src:with-param-for-templates"/>
+      <for-each select="c:with-param">
+         <call-template name="xcst:validate-attribs">
+            <with-param name="allowed" select="'name', 'value', 'as', 'tunnel'"/>
+            <with-param name="required" select="'name'"/>
+         </call-template>
+         <apply-templates select="." mode="src:with-param-for-templates"/>
+      </for-each>
       <if test="@with-params">
          <call-template name="src:line-number"/>
          <call-template name="src:new-line-indented"/>
          <text>.WithParams(</text>
-         <value-of select="@with-params"/>
+         <value-of select="xcst:expression(@with-params)"/>
          <text>)</text>
       </if>
       <call-template name="src:new-line-indented"/>
@@ -963,12 +1143,16 @@
    -->
 
    <template match="c:assert" mode="src:statement">
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="'test', 'error-code', 'value'"/>
+         <with-param name="required" select="'test'"/>
+      </call-template>
       <if test="not($src:omit-assertions)">
          <value-of select="$src:new-line"/>
          <call-template name="src:line-number"/>
          <call-template name="src:new-line-indented"/>
          <text>if (!(</text>
-         <value-of select="@test"/>
+         <value-of select="xcst:expression(@test)"/>
          <text>))</text>
          <call-template name="src:open-brace"/>
          <call-template name="src:new-line-indented">
@@ -992,6 +1176,10 @@
    </template>
 
    <template match="c:message" mode="src:statement">
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="'terminate', 'error-code', 'value'"/>
+         <with-param name="required" select="()"/>
+      </call-template>
       <variable name="never-terminate" select="not(@terminate) or xcst:avt-boolean(@terminate) eq false()"/>
       <variable name="always-terminate" select="boolean(@terminate/xcst:avt-boolean(.))"/>
       <variable name="use-if" select="not($never-terminate) and not($always-terminate)"/>
@@ -1067,7 +1255,12 @@
       ## Extensibility and Fallback
    -->
 
-   <template match="c:fallback" mode="src:statement src:expression"/>
+   <template match="c:fallback" mode="src:statement src:expression">
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="()"/>
+         <with-param name="required" select="()"/>
+      </call-template>
+   </template>
 
    <template match="*[not(self::c:*)]" mode="src:statement">
       <call-template name="src:unknown-element">
@@ -1125,6 +1318,10 @@
                </when>
                <when test="c:fallback">
                   <for-each select="c:fallback">
+                     <call-template name="xcst:validate-attribs">
+                        <with-param name="allowed" select="()"/>
+                        <with-param name="required" select="()"/>
+                     </call-template>
                      <call-template name="src:apply-children"/>
                   </for-each>
                </when>
@@ -1158,9 +1355,10 @@
    <template match="c:result-document" mode="src:statement">
       <param name="context-param" tunnel="yes"/>
 
-      <if test="@parameter-document">
-         <sequence select="error((), concat(node-name(@parameter-document), ' parameter not supported yet.'), src:error-object(.))"/>
-      </if>
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="'format', $src:output-parameters/*[not(self::version)]/local-name()"/>
+         <with-param name="required" select="'href'"/>
+      </call-template>
       <value-of select="$src:new-line"/>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
@@ -1174,13 +1372,13 @@
       <text>.ChangeOutput(this, </text>
       <value-of select="src:fully-qualified-helper('DataType')"/>
       <text>.Uri(</text>
-      <value-of select="(@href/src:expand-attribute(.), src:string(''))[1]"/>
+      <value-of select="src:expand-attribute(@href)"/>
       <text>), </text>
       <call-template name="src:format-QName"/>
       <text>, new </text>
       <value-of select="src:global-identifier('Xcst.OutputParameters')"/>
       <call-template name="src:open-brace"/>
-      <for-each select="@* except (@format, @href, @validation, @type, @version)">
+      <for-each select="@* except (@format, @href, @version)">
          <variable name="setter" as="item()*">
             <apply-templates select="." mode="src:output-parameter-setter"/>
          </variable>
@@ -1207,10 +1405,10 @@
    <template match="c:serialize" mode="src:expression">
       <param name="context-param" tunnel="yes"/>
 
-      <if test="@parameter-document">
-         <sequence select="error((), concat(node-name(@parameter-document), ' parameter not supported yet.'), src:error-object(.))"/>
-      </if>
-
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="'format', $src:output-parameters/*[not(self::version)]/local-name()"/>
+         <with-param name="required" select="()"/>
+      </call-template>
       <variable name="new-context" select="concat(src:aux-variable('context'), '_', generate-id())"/>
       <value-of select="src:fully-qualified-helper('Serialization')"/>
       <text>.Serialize(this, </text>
@@ -1337,10 +1535,6 @@
       </choose>
    </template>
 
-   <template match="@normalization-form | @use-character-maps" mode="src:output-parameter-setter">
-      <sequence select="error((), concat(name(), ' parameter not supported yet.'), src:error-object(.))"/>
-   </template>
-
    <template match="@standalone" mode="src:output-parameter-setter">
       <value-of select="src:output-parameter-property(.)"/>
       <text> = </text>
@@ -1362,31 +1556,7 @@
    <function name="src:output-parameter-property" as="xs:string">
       <param name="node" as="node()"/>
 
-      <variable name="mapping" as="element()">
-         <data xmlns="foo">
-            <byte-order-mark>ByteOrderMark</byte-order-mark>
-            <cdata-section-elements>CdataSectionElements</cdata-section-elements>
-            <doctype-public>DoctypePublic</doctype-public>
-            <doctype-system>DoctypeSystem</doctype-system>
-            <encoding>Encoding</encoding>
-            <escape-uri-attributes>EscapeUriAttributes</escape-uri-attributes>
-            <html-version>HtmlVersion</html-version>
-            <include-content-type>IncludeContentType</include-content-type>
-            <indent>Indent</indent>
-            <item-separator>ItemSeparator</item-separator>
-            <media-type>MediaType</media-type>
-            <method>Method</method>
-            <normalization-form>NormalizationForm</normalization-form>
-            <omit-xml-declaration>OmitXmlDeclaration</omit-xml-declaration>
-            <output-version>Version</output-version>
-            <standalone>Standalone</standalone>
-            <suppress-indentation>SuppressIndentation</suppress-indentation>
-            <undeclare-prefixes>UndeclarePrefixes</undeclare-prefixes>
-            <use-character-maps>UseCharacterMaps</use-character-maps>
-            <version>Version</version>
-         </data>
-      </variable>
-      <sequence select="$mapping/*[local-name() eq local-name($node)]/string()"/>
+      <sequence select="$src:output-parameters/*[local-name() eq local-name($node)]/string()"/>
    </function>
 
    <!--
@@ -1396,6 +1566,10 @@
    <template match="c:delegate" mode="src:expression">
       <param name="indent" tunnel="yes"/>
 
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="'as'"/>
+         <with-param name="required" select="()"/>
+      </call-template>
       <variable name="new-context" select="concat(src:aux-variable('context'), '_', generate-id())"/>
       <text>new </text>
       <value-of select="src:global-identifier(concat('System.', if (@as) then 'Func' else 'Action'))"/>
@@ -1405,10 +1579,16 @@
       <value-of select="$new-context"/>
       <text>) => </text>
       <call-template name="src:open-brace"/>
-      <apply-templates select="c:param" mode="src:statement">
-         <with-param name="indent" select="$indent + 1" tunnel="yes"/>
-         <with-param name="context-param" select="$new-context" tunnel="yes"/>
-      </apply-templates>
+      <for-each select="c:param">
+         <call-template name="xcst:validate-attribs">
+            <with-param name="allowed" select="'name', 'value', 'as', 'required', 'tunnel'"/>
+            <with-param name="required" select="'name'"/>
+         </call-template>
+         <apply-templates select="." mode="src:statement">
+            <with-param name="indent" select="$indent + 1" tunnel="yes"/>
+            <with-param name="context-param" select="$new-context" tunnel="yes"/>
+         </apply-templates>
+      </for-each>
       <call-template name="src:apply-children">
          <with-param name="children" select="node()[not(self::c:param or following-sibling::c:param)]"/>
          <with-param name="mode" select="'statement'"/>
@@ -1432,15 +1612,25 @@
       <param name="indent" tunnel="yes"/>
       <param name="context-param" tunnel="yes"/>
 
-      <value-of select="@value"/>
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="'value', 'with-params'"/>
+         <with-param name="required" select="'value'"/>
+      </call-template>
+      <value-of select="xcst:expression(@value)"/>
       <text>(new </text>
       <value-of select="src:fully-qualified-helper('DynamicContext')"/>
       <text>(</text>
       <value-of select="src:expression-or-null($context-param)"/>
       <text>)</text>
-      <apply-templates select="c:with-param" mode="src:with-param-for-templates">
-         <with-param name="indent" select="$indent + 1" tunnel="yes"/>
-      </apply-templates>
+      <for-each select="c:with-param">
+         <call-template name="xcst:validate-attribs">
+            <with-param name="allowed" select="'name', 'value', 'as', 'tunnel'"/>
+            <with-param name="required" select="'name'"/>
+         </call-template>
+         <apply-templates select="." mode="src:with-param-for-templates">
+            <with-param name="indent" select="$indent + 1" tunnel="yes"/>
+         </apply-templates>
+      </for-each>
       <if test="@with-params">
          <call-template name="src:line-number">
             <with-param name="indent" select="$indent + 1" tunnel="yes"/>
@@ -1449,7 +1639,7 @@
             <with-param name="increase" select="1"/>
          </call-template>
          <text>.WithParams(</text>
-         <value-of select="@with-params"/>
+         <value-of select="xcst:expression(@with-params)"/>
          <text>)</text>
       </if>
       <text>)</text>
@@ -1460,6 +1650,10 @@
    -->
 
    <template match="c:return" mode="src:statement">
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="'value'"/>
+         <with-param name="required" select="()"/>
+      </call-template>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
       <value-of select="local-name()"/>
@@ -1474,15 +1668,23 @@
    </template>
 
    <template match="c:set" mode="src:statement">
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="'member', 'value'"/>
+         <with-param name="required" select="'member'"/>
+      </call-template>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
-      <value-of select="@member"/>
+      <value-of select="xcst:expression(@member)"/>
       <text> = </text>
       <call-template name="src:value"/>
       <value-of select="$src:statement-delimiter"/>
    </template>
 
    <template match="c:void" mode="src:statement">
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="'value'"/>
+         <with-param name="required" select="()"/>
+      </call-template>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
       <call-template name="src:value"/>
@@ -1490,53 +1692,94 @@
    </template>
 
    <template match="c:using" mode="src:statement">
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="'name', 'as', 'value'"/>
+         <with-param name="required" select="'value'"/>
+      </call-template>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
       <text>using (</text>
-      <if test="@name">
-         <value-of select="(@as/xcst:type(.), 'var')[1]"/>
-         <text> </text>
-         <value-of select="xcst:name(@name)"/>
-         <text> = </text>
-      </if>
-      <value-of select="@value"/>
+      <choose>
+         <when test="@name">
+            <value-of select="(@as/xcst:type(.), 'var')[1], xcst:name(@name)"/>
+            <text> = </text>
+         </when>
+         <when test="@as">
+            <value-of select="'(', xcst:type(@as), ')'" separator=""/>
+         </when>
+      </choose>
+      <value-of select="xcst:expression(@value)"/>
       <text>)</text>
       <call-template name="src:apply-children">
          <with-param name="ensure-block" select="true()"/>
       </call-template>
    </template>
 
-   <template match="c:script[not(@src)]" mode="src:statement">
-      <call-template name="src:line-number"/>
-      <value-of select="$src:new-line"/>
-      <value-of select="text()"/>
-      <!-- Make sure following output is not on same line as text() -->
-      <call-template name="src:new-line-indented"/>
-   </template>
-
-   <template match="c:script[@src]" mode="src:statement">
-
-      <variable name="src" select="resolve-uri(@src, base-uri())"/>
-
-      <if test="not(unparsed-text-available($src))">
-         <sequence select="error((), 'Cannot retrieve script.', src:error-object(.))"/>
-      </if>
-
-      <variable name="script" select="unparsed-text($src)"/>
-
-      <call-template name="src:line-number">
-         <with-param name="line-uri" select="$src" tunnel="yes"/>
-         <with-param name="line-number-offset" select="(src:line-number(.) * -1) + 1" tunnel="yes"/>
+   <template match="c:script" mode="src:statement">
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="'src'"/>
+         <with-param name="required" select="()"/>
       </call-template>
-      <value-of select="$src:new-line"/>
-      <value-of select="$script"/>
-      <!-- Make sure following output is not on same line as $script -->
+      <choose>
+         <when test="@src">
+            <variable name="src" select="resolve-uri(@src, base-uri())"/>
+            <if test="not(unparsed-text-available($src))">
+               <sequence select="error((), 'Cannot retrieve script.', src:error-object(.))"/>
+            </if>
+            <call-template name="src:line-number">
+               <with-param name="line-uri" select="$src" tunnel="yes"/>
+               <with-param name="line-number-offset" select="(src:line-number(.) * -1) + 1" tunnel="yes"/>
+            </call-template>
+            <value-of select="$src:new-line"/>
+            <value-of select="unparsed-text($src)"/>
+         </when>
+         <otherwise>
+            <call-template name="src:line-number"/>
+            <value-of select="$src:new-line"/>
+            <value-of select="text()"/>
+         </otherwise>
+      </choose>
+      <!-- Make sure following output is not on same line -->
       <call-template name="src:new-line-indented"/>
    </template>
 
    <!--
       ## Syntax
    -->
+
+   <template name="xcst:validate-attribs">
+      <param name="allowed" as="xs:string*" required="yes"/>
+      <param name="required" as="xs:string*" required="yes"/>
+
+      <variable name="std-names" select="
+         if (self::c:*) then (QName('', 'version'), QName('', 'expand-text'), QName('', 'extension-element-prefixes'))
+         else (xs:QName('c:version'), xs:QName('c:expand-text'), xs:QName('c:extension-element-prefixes'))"/>
+
+      <for-each select="@*[node-name() = $std-names]">
+         <choose>
+            <when test="local-name() eq 'version' and not(xcst:decimal(.) ge 1.0)">
+               <sequence select="error(xs:QName('err:XTSE0020'), concat('Attribute @', name(), ' should be 1.0 or greater.'))"/>
+            </when>
+         </choose>
+      </for-each>
+
+      <variable name="attribs" select="@*[not(namespace-uri())]
+         except (if (self::c:*) then @*[node-name() = $std-names and (not(local-name() eq 'version') or current()/parent::*)] else ())"/>
+
+      <variable name="context" select="."/>
+
+      <for-each select="$attribs">
+         <if test="not(local-name() = $allowed)">
+            <sequence select="error(xs:QName('err:XTSE0090'), concat('Attribute @', local-name(), ' is not allowed on element &lt;c:', local-name($context), '>.'), src:error-object($context))"/>
+         </if>
+      </for-each>
+
+      <for-each select="$required">
+         <if test="not(some $a in $attribs satisfies . eq local-name($a))">
+            <sequence select="error(xs:QName('err:XTSE0010'), concat('Element must have an @', .,' attribute.'), src:error-object($context))"/>
+         </if>
+      </for-each>
+   </template>
 
    <function name="xcst:has-value" as="xs:boolean">
       <param name="el" as="element()"/>
@@ -1655,6 +1898,11 @@
       <param name="node" as="node()"/>
 
       <variable name="string" select="xcst:non-string($node)"/>
+
+      <if test="not($string)">
+         <sequence select="error(xs:QName('err:XTSE0020'), concat('Value of ', name($node), ' must be a non-empty string.'), src:error-object($node))"/>
+      </if>
+
       <sequence select="$string"/>
    </function>
 
@@ -1668,6 +1916,16 @@
       </if>
 
       <sequence select="$string"/>
+   </function>
+
+   <function name="xcst:expression" as="xs:string">
+      <param name="node" as="node()"/>
+
+      <if test="not(xcst:non-string($node))">
+         <sequence select="error(xs:QName('err:XTSE0020'), concat('Value of ', name($node), ' must be a non-empty string.'), src:error-object($node))"/>
+      </if>
+
+      <sequence select="string($node)"/>
    </function>
 
    <function name="xcst:name-equals" as="xs:boolean">
@@ -1740,7 +1998,7 @@
 
       <choose>
          <when test="$attribute">
-            <value-of select="$attribute"/>
+            <value-of select="xcst:expression($attribute)"/>
          </when>
          <when test="$text">
             <value-of select="src:expand-text(., $text)"/>
@@ -1921,7 +2179,7 @@
 
    <template name="src:apply-children">
       <param name="children" select="node()"/>
-      <param name="value" select="()"/>
+      <param name="value" as="node()?"/>
       <param name="text" select="xcst:text(., true(), $children)"/>
       <param name="ensure-block" select="false()"/>
       <param name="omit-block" select="false()"/>
@@ -1968,7 +2226,7 @@
                <value-of select="$output"/>
                <text>.WriteString(</text>
             </if>
-            <value-of select="if ($value) then $value else src:expand-text(., $text)"/>
+            <value-of select="if ($value) then xcst:expression($value) else src:expand-text(., $text)"/>
             <if test="not($mode-expression)">
                <text>)</text>
                <value-of select="$src:statement-delimiter"/>

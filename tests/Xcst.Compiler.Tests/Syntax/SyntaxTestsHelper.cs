@@ -29,7 +29,21 @@ namespace Xcst.Compiler.Tests.Syntax {
             compiler.UseLineDirective = true;
             compiler.UsePackageBase = new StackFrame(1, true).GetMethod().DeclaringType.Namespace;
 
-            CompileResult xcstResult = compiler.Compile(fileStream, baseUri: new Uri(fileName, UriKind.Absolute));
+            CompileResult xcstResult;
+
+            try {
+               xcstResult = compiler.Compile(fileStream, baseUri: new Uri(fileName, UriKind.Absolute));
+
+            } catch (CompileException ex) {
+
+               if (!correct) {
+                  Console.WriteLine(ex.Message);
+                  Console.WriteLine($"Module URI: {ex.ModuleUri}");
+                  Console.WriteLine($"Line number: {ex.LineNumber}");
+               }
+
+               throw;
+            }
 
             foreach (string unit in xcstResult.CompilationUnits) {
                Console.WriteLine(unit);

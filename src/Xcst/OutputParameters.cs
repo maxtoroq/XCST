@@ -203,12 +203,10 @@ namespace Xcst {
          public static readonly QualifiedName ItemSeparator = new QualifiedName("item-separator");
          public static readonly QualifiedName MediaType = new QualifiedName("media-type");
          public static readonly QualifiedName Method = new QualifiedName("method");
-         public static readonly QualifiedName NormalizationForm = new QualifiedName("normalization-form");
          public static readonly QualifiedName OmitXmlDeclaration = new QualifiedName("omit-xml-declaration");
          public static readonly QualifiedName Standalone = new QualifiedName("standalone");
          public static readonly QualifiedName SuppressIndentation = new QualifiedName("suppress-indentation");
          public static readonly QualifiedName UndeclarePrefixes = new QualifiedName("undeclare-prefixes");
-         public static readonly QualifiedName UseCharacterMaps = new QualifiedName("use-character-maps");
          public static readonly QualifiedName Version = new QualifiedName("version");
 
          public static QualifiedName Parse(string name) {
@@ -252,9 +250,6 @@ namespace Xcst {
                case "method":
                   return Method;
 
-               case "normalization-form":
-                  return NormalizationForm;
-
                case "omit-xml-declaration":
                   return OmitXmlDeclaration;
 
@@ -269,9 +264,6 @@ namespace Xcst {
 
                case "undeclare-prefixes":
                   return UndeclarePrefixes;
-
-               case "use-character-maps":
-                  return UseCharacterMaps;
 
                case "version":
                   return Version;
