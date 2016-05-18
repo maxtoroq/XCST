@@ -295,7 +295,7 @@
       <sequence select="upper-case($strings[1]) eq upper-case($strings[2])"/>
    </function>
 
-   <template match="c:attribute-set | c:function | c:import | c:output | c:param | c:template | c:type | c:use-functions | c:use-package | c:validation | c:variable" mode="xcst:check-top-level"/>
+   <template match="c:attribute-set | c:function | c:import | c:output | c:param | c:template | c:type | c:use-functions | c:use-package | c:variable" mode="xcst:check-top-level"/>
 
    <template match="c:validation" mode="xcst:check-top-level">
       <call-template name="xcst:validate-attribs">
@@ -746,16 +746,19 @@
       <for-each-group select="for $m in reverse($modules) return $m/c:output" group-by="(@name/xcst:resolve-QName-ignore-default(xcst:name(.), ..), '')[1]">
          <sort select="current-grouping-key() instance of xs:QName"/>
 
+         <variable name="output-name" select="
+            if (current-grouping-key() instance of xs:QName) then current-grouping-key()
+            else ()"/>
+
          <for-each select="current-group()">
             <call-template name="xcst:validate-attribs">
                <with-param name="allowed" select="'name', $src:output-parameters/*[not(self::version) and not(self::output-version)]/local-name()"/>
                <with-param name="required" select="()"/>
             </call-template>
+            <if test="preceding-sibling::c:output[(empty($output-name) and empty(@name)) or (xcst:resolve-QName-ignore-default(xcst:name(@name), .) eq $output-name)]">
+               <sequence select="error((), 'Duplicate c:output declaration.', src:error-object(.))"/>
+            </if>
          </for-each>
-
-         <variable name="output-name" select="
-            if (current-grouping-key() instance of xs:QName) then current-grouping-key()
-            else ()"/>
 
          <if test="not(empty($output-name)) and xcst:is-reserved-namespace(namespace-uri-from-QName($output-name))">
             <sequence select="error(xs:QName('err:XTSE0080'), concat('Namespace prefix ', prefix-from-QName($output-name), ' refers to a reserved namespace.'), src:error-object(.))"/>
@@ -2367,7 +2370,6 @@
       <text>)</text>
       <call-template name="src:open-brace"/>
       <for-each-group select="for $o in $declarations return $o/@*[not(self::attribute(name))]" group-by="node-name(.)">
-         <!-- TODO: XTSE1560: Conflicting values for output parameter {name()} -->
          <call-template name="src:new-line-indented">
             <with-param name="increase" select="1"/>
          </call-template>

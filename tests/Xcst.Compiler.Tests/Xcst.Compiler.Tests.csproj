@@ -133,6 +133,8 @@
     <None Include="Language\CallableComponents\Function\_Hidden.xcst" />
     <None Include="Language\CallableComponents\Template\Hidden.c.xcst" />
     <None Include="Language\CallableComponents\Template\_Hidden.xcst" />
+    <None Include="Language\Serialization\Output\DuplicateUnnamed.i.xcst" />
+    <None Include="Language\Serialization\Output\DuplicateNamed.i.xcst" />
     <None Include="Language\Types\Hidden.c.xcst" />
     <None Include="Language\Types\_Hidden.xcst" />
     <None Include="Language\VariablesAndParameters\Global\Hidden2.c.xcst" />
@@ -631,9 +633,6 @@
     <None Include="Language\ProgramStructure\DocumentElement.i.xcst" />
     <None Include="Language\Serialization\Output\_ConflictingValuesImport.xcst" />
     <None Include="Language\Serialization\Output\ConflictingValuesImport.c.xcst" />
-    <None Include="Language\Serialization\Output\ImplicitAndExplicitValues.c.xcst" />
-    <None Include="Language\Serialization\Output\EqualValues.c.xcst" />
-    <None Include="Language\Serialization\Output\ConflictingValues.i.xcst" />
     <None Include="Language\ProgramStructure\CombiningModules\_InconsistentLanguage.xcst" />
     <None Include="Language\ProgramStructure\CombiningModules\InconsistentLanguage.i.xcst" />
     <None Include="Language\CallableComponents\CallTemplate\NonexistentTemplate.i.xcst" />
