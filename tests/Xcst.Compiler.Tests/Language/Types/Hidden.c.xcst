@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:import href='_Hidden.xcst'/>
+
+   <c:type name='MyType'>
+      <c:member name='foo' as='string' value='"bar"'/>
+   </c:type>
+
+   <c:template name='c:initial-template'>
+      <foo>
+         <c:value-of value='new MyType().foo'/>
+      </foo>
+   </c:template>
+
+</c:module>

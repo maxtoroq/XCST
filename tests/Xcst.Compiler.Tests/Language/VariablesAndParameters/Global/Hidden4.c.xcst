@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:import href='_Hidden4.xcst'/>
+
+   <c:variable name='foo' as='string'>variable</c:variable>
+
+   <c:template name='c:initial-template'>
+      <foo>
+         <c:value-of value='foo'/>
+      </foo>
+   </c:template>
+
+</c:module>

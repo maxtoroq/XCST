@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
-   <c:import href='_ParamHidesVariable.xcst'/>
-
-   <c:variable name='foo' as='string'>variable</c:variable>
+   <c:import href='_Hidden3.xcst'/>
+   
+   <c:param name='foo' as='string'>param</c:param>
 
    <c:template name='c:initial-template'>
       <foo>

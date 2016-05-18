@@ -83,6 +83,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Language\CallableComponents\AttributeSet\Hidden.p.xml" />
+    <Content Include="Language\CallableComponents\Function\Hidden.p.xml" />
+    <Content Include="Language\CallableComponents\Template\Hidden.p.xml" />
     <Content Include="Language\LanguageFeatures\Names\QualifiedNames\UsingModuleNoPrefix.p.xml" />
     <Content Include="Language\LanguageFeatures\Names\QualifiedNames\OutputNoPrefix.p.xml" />
     <Content Include="Language\LanguageFeatures\Names\QualifiedNames\SerializeFormatNoPrefix.p.xml" />
@@ -120,10 +122,23 @@
     <Content Include="Language\ProgramStructure\Packages\OverridingComponents\Variable\OverrideOverridden.p.xml" />
     <Content Include="Language\Serialization\Output\OverrideUnnamed.p.xml" />
     <Content Include="Language\Serialization\Output\OverrideNamed.p.xml" />
-    <Content Include="Language\VariablesAndParameters\Global\VariableHidesParam.p.xml" />
-    <Content Include="Language\VariablesAndParameters\Global\ParamHidesVariable.p.xml" />
+    <Content Include="Language\Types\Hidden.p.xml" />
+    <Content Include="Language\VariablesAndParameters\Global\Hidden2.p.xml" />
+    <Content Include="Language\VariablesAndParameters\Global\Hidden1.p.xml" />
+    <Content Include="Language\VariablesAndParameters\Global\Hidden4.p.xml" />
+    <Content Include="Language\VariablesAndParameters\Global\Hidden3.p.xml" />
     <None Include="Language\CallableComponents\AttributeSet\_Hidden.xcst" />
     <None Include="Language\CallableComponents\AttributeSet\Hidden.c.xcst" />
+    <None Include="Language\CallableComponents\Function\Hidden.c.xcst" />
+    <None Include="Language\CallableComponents\Function\_Hidden.xcst" />
+    <None Include="Language\CallableComponents\Template\Hidden.c.xcst" />
+    <None Include="Language\CallableComponents\Template\_Hidden.xcst" />
+    <None Include="Language\Types\Hidden.c.xcst" />
+    <None Include="Language\Types\_Hidden.xcst" />
+    <None Include="Language\VariablesAndParameters\Global\Hidden2.c.xcst" />
+    <None Include="Language\VariablesAndParameters\Global\_Hidden2.xcst" />
+    <None Include="Language\VariablesAndParameters\Global\_Hidden1.xcst" />
+    <None Include="Language\VariablesAndParameters\Global\Hidden1.c.xcst" />
     <None Include="packages.config" />
     <None Include="Language\CallableComponents\AttributeSet\Abstract.i.xcst" />
     <None Include="Language\CallableComponents\AttributeSet\Duplicate.i.xcst" />
@@ -569,10 +584,10 @@
     <None Include="Language\VariablesAndParameters\Global\param.required.type.i.xcst" />
     <None Include="Language\VariablesAndParameters\Global\param.tunnel.type.i.xcst" />
     <None Include="Language\VariablesAndParameters\Global\param.value.type.i.xcst" />
-    <None Include="Language\VariablesAndParameters\Global\VariableHidesParam.c.xcst" />
-    <None Include="Language\VariablesAndParameters\Global\_VariableHidesParam.xcst" />
-    <None Include="Language\VariablesAndParameters\Global\_ParamHidesVariable.xcst" />
-    <None Include="Language\VariablesAndParameters\Global\ParamHidesVariable.c.xcst" />
+    <None Include="Language\VariablesAndParameters\Global\Hidden4.c.xcst" />
+    <None Include="Language\VariablesAndParameters\Global\_Hidden4.xcst" />
+    <None Include="Language\VariablesAndParameters\Global\_Hidden3.xcst" />
+    <None Include="Language\VariablesAndParameters\Global\Hidden3.c.xcst" />
     <None Include="Language\VariablesAndParameters\Global\Duplicate3.i.xcst" />
     <None Include="Language\VariablesAndParameters\Global\Duplicate2.i.xcst" />
     <None Include="Language\ProgramStructure\Packages\OverridingComponents\Variable\Duplicate2.i.xcst" />
