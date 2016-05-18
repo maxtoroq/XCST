@@ -354,6 +354,10 @@
    <template name="src:literal-result-element">
       <param name="output" tunnel="yes"/>
 
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="@*[not(namespace-uri())]/local-name()"/>
+         <with-param name="required" select="()"/>
+      </call-template>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
       <value-of select="$output"/>
@@ -1768,10 +1772,13 @@
       <param name="required" as="xs:string*" required="yes"/>
 
       <variable name="std-names" select="
-         if (self::c:*) then (QName('', 'version'), QName('', 'expand-text'), QName('', 'extension-element-prefixes'))
-         else (xs:QName('c:version'), xs:QName('c:expand-text'), xs:QName('c:extension-element-prefixes'))"/>
+         if (self::c:*) then (QName('', 'version')[not(current()/self::c:output)], QName('', 'expand-text'), QName('', 'extension-element-prefixes'))
+         else (xs:QName('c:version'), xs:QName('c:expand-text'), xs:QName('c:extension-element-prefixes'), xs:QName('c:use-attribute-sets'))"/>
 
-      <for-each select="@*[node-name() = $std-names]">
+      <for-each select="if (self::c:*) then @*[node-name() = $std-names] else @c:*">
+         <if test="not(node-name() = $std-names)">
+            <sequence select="error(xs:QName('err:XTSE0805'), concat('Unknown XCST attribute @', name(), '.'))"/>
+         </if>
          <choose>
             <when test="local-name() eq 'version' and not(xcst:decimal(.) ge 1.0)">
                <sequence select="error(xs:QName('err:XTSE0020'), concat('Attribute @', name(), ' should be 1.0 or greater.'))"/>

@@ -85,6 +85,7 @@
     <Content Include="Language\CallableComponents\AttributeSet\Hidden.p.xml" />
     <Content Include="Language\CallableComponents\Function\Hidden.p.xml" />
     <Content Include="Language\CallableComponents\Template\Hidden.p.xml" />
+    <Content Include="Language\CreatingNodesAndObjects\LiteralResultElement\foo.foo.p.xml" />
     <Content Include="Language\LanguageFeatures\Names\QualifiedNames\UsingModuleNoPrefix.p.xml" />
     <Content Include="Language\LanguageFeatures\Names\QualifiedNames\OutputNoPrefix.p.xml" />
     <Content Include="Language\LanguageFeatures\Names\QualifiedNames\SerializeFormatNoPrefix.p.xml" />
@@ -133,6 +134,8 @@
     <None Include="Language\CallableComponents\Function\_Hidden.xcst" />
     <None Include="Language\CallableComponents\Template\Hidden.c.xcst" />
     <None Include="Language\CallableComponents\Template\_Hidden.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\LiteralResultElement\foo.foo.c.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\LiteralResultElement\foo.foo.i.xcst" />
     <None Include="Language\Repetition\While\while.test.type.i.xcst" />
     <None Include="Language\Repetition\While\while.test.req.i.xcst" />
     <None Include="Language\Repetition\While\while.foo.i.xcst" />
