@@ -618,10 +618,15 @@
          <sequence select="error(xs:QName('err:XTSE0080'), concat('Namespace prefix ', prefix-from-QName($qname),' refers to a reserved namespace.'), src:error-object(.))"/>
       </if>
 
-      <if test="(if (parent::c:override) then
-         (preceding-sibling::c:*, ../preceding-sibling::c:override/c:*)
-         else (preceding-sibling::c:use-package/c:override/c:*, $modules[position() ne $module-pos]/c:use-package/c:override/c:*)
-         )[xcst:homonymous(., current())]">
+      <if test="(preceding-sibling::c:*, (
+         if (parent::c:override) then ../preceding-sibling::c:override/c:*
+         else preceding-sibling::c:use-package/c:override/c:*
+         ))[xcst:homonymous(., current())]">
+         <sequence select="error(xs:QName('err:XTSE0660'), 'Duplicate c:attribute-set declaration.', src:error-object(.))"/>
+      </if>
+
+      <if test="not(parent::c:override)
+          and $modules[position() ne $module-pos]/c:use-package/c:override/c:*[xcst:homonymous(., current())]">
          <sequence select="error(xs:QName('err:XTSE3055'), 'There is an homonymous overriding component.', src:error-object(.))"/>
       </if>
 
@@ -633,15 +638,10 @@
          if (parent::c:override) then
          ('hidden'[$modules[position() gt $module-pos]/c:use-package[xcst:name-equals(@name, current()/parent::c:override/parent::c:use-package/@name)]/c:override/c:*[xcst:homonymous(., current())]]
             , @visibility/xcst:visibility(.), 'private')[1]
+         else if ($modules[position() gt $module-pos]/c:*[xcst:homonymous(., current())]) then 'hidden'
          else (@visibility/xcst:visibility(.), 'private')[1]"/>
 
       <variable name="public" select="$visibility = ('public', 'final', 'abstract')"/>
-
-      <if test="not(parent::c:override)
-         and $public
-         and (preceding-sibling::c:*, $modules[position() lt $module-pos]/c:*)[xcst:homonymous(., current())]">
-         <sequence select="error((), 'Public attribute sets must be defined in a single declaration.', src:error-object(.))"/>
-      </if>
 
       <xcst:attribute-set name="{$qname}"
             visibility="{$visibility}"

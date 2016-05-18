@@ -82,6 +82,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Language\CallableComponents\AttributeSet\Hidden.p.xml" />
     <Content Include="Language\LanguageFeatures\Names\QualifiedNames\UsingModuleNoPrefix.p.xml" />
     <Content Include="Language\LanguageFeatures\Names\QualifiedNames\OutputNoPrefix.p.xml" />
     <Content Include="Language\LanguageFeatures\Names\QualifiedNames\SerializeFormatNoPrefix.p.xml" />
@@ -121,13 +122,11 @@
     <Content Include="Language\Serialization\Output\OverrideNamed.p.xml" />
     <Content Include="Language\VariablesAndParameters\Global\VariableHidesParam.p.xml" />
     <Content Include="Language\VariablesAndParameters\Global\ParamHidesVariable.p.xml" />
+    <None Include="Language\CallableComponents\AttributeSet\_Hidden.xcst" />
+    <None Include="Language\CallableComponents\AttributeSet\Hidden.c.xcst" />
     <None Include="packages.config" />
     <None Include="Language\CallableComponents\AttributeSet\Abstract.i.xcst" />
-    <None Include="Language\CallableComponents\AttributeSet\Duplicate5.i.xcst" />
-    <None Include="Language\CallableComponents\AttributeSet\Duplicate4.i.xcst" />
-    <None Include="Language\CallableComponents\AttributeSet\Duplicate3.i.xcst" />
-    <None Include="Language\CallableComponents\AttributeSet\Duplicate2.i.xcst" />
-    <None Include="Language\CallableComponents\AttributeSet\Duplicate1.c.xcst" />
+    <None Include="Language\CallableComponents\AttributeSet\Duplicate.i.xcst" />
     <None Include="Language\CallableComponents\AttributeSet\attribute-set.foo.i.xcst" />
     <None Include="Language\CallableComponents\AttributeSet\attribute-set.name.req.i.xcst" />
     <None Include="Language\CallableComponents\AttributeSet\attribute-set.name.type.i.xcst" />
