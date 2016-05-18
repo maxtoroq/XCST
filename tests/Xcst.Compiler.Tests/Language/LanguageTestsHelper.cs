@@ -9,9 +9,9 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
 
-namespace Xcst.Compiler.Tests.Syntax {
+namespace Xcst.Compiler.Tests.Language {
 
-   static class SyntaxTestsHelper {
+   static class LanguageTestsHelper {
 
       static readonly XcstCompilerFactory CompilerFactory = new XcstCompilerFactory {
          EnableExtensions = true,
@@ -24,7 +24,7 @@ namespace Xcst.Compiler.Tests.Syntax {
          using (var fileStream = File.OpenRead(fileName)) {
 
             XcstCompiler compiler = CompilerFactory.CreateCompiler();
-            compiler.TargetNamespace = typeof(SyntaxTestsHelper).Namespace + ".Runtime";
+            compiler.TargetNamespace = typeof(LanguageTestsHelper).Namespace + ".Runtime";
             compiler.TargetClass = "TestModule";
             compiler.UseLineDirective = true;
             compiler.UsePackageBase = new StackFrame(1, true).GetMethod().DeclaringType.Namespace;

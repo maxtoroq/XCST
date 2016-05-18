@@ -99,7 +99,7 @@ namespace Xcst.Compiler.Tests {<#
          PushIndent(indent);
          WriteLine("");
 
-         Write("var moduleType = SyntaxTestsHelper.CompileFromFile(@\"{0}\", {1});", file.FullName, correct.ToString().ToLower());
+         Write("var moduleType = LanguageTestsHelper.CompileFromFile(@\"{0}\", {1});", file.FullName, correct.ToString().ToLower());
 
          if (correct) {
 
@@ -111,7 +111,7 @@ namespace Xcst.Compiler.Tests {<#
                   || testFileName.EndsWith(".f")) {
 
                   WriteLine("");
-                  Write("Assert.Is{0}(SyntaxTestsHelper.OutputEqualsToDoc(moduleType, @\"{1}\"));", testFileName.EndsWith(".p"), testCase.FullName);
+                  Write("Assert.Is{0}(LanguageTestsHelper.OutputEqualsToDoc(moduleType, @\"{1}\"));", testFileName.EndsWith(".p"), testCase.FullName);
                }
             }
          }
