@@ -16,6 +16,7 @@ using System;
 using System.ComponentModel;
 using System.Web.Compilation;
 using Microsoft.Web.Infrastructure.DynamicModuleHelper;
+using Xcst.Compiler;
 using Xcst.Web.Compilation;
 
 namespace Xcst.Web {
@@ -32,7 +33,10 @@ namespace Xcst.Web {
 
             startWasCalled = true;
 
-            XcstWebConfiguration.Instance.RegisterHandlerFactory(XcstPageHttpHandler.Create);
+            XcstWebConfiguration config = XcstWebConfiguration.Instance;
+
+            config.RegisterHandlerFactory(XcstPageHttpHandler.Create);
+            config.CompilerFactory.RegisterWebExtension();
 
             BuildProvider.RegisterBuildProvider("." + XcstWebConfiguration.FileExtension, typeof(PageBuildProvider<XcstPage>));
             DynamicModuleUtility.RegisterModule(typeof(XcstPageHttpModule));

@@ -13,18 +13,18 @@
 // limitations under the License.
 
 using System;
-using Xcst.Web.Mvc;
-using Xcst.Web.Mvc.Compilation;
+using Xcst.Web;
+using Xcst.Web.Compilation;
 
 namespace Xcst.Compiler {
 
-   public static class CompilerFactoryExtensions {
+   public static class WebExtensionConfiguration {
 
-      public static void RegisterApplicationExtension(this XcstCompilerFactory compilerFactory) {
+      public static void RegisterWebExtension(this XcstCompilerFactory compilerFactory) {
 
          compilerFactory.RegisterExtension(
-            new Uri(XmlNamespaces.XcstApplication),
-            () => typeof(PreApplicationStartCode).Assembly.GetManifestResourceStream($"{typeof(ViewPageBuildProvider<>).Namespace}.xcst-app.xsl")
+            new Uri(XmlNamespaces.XcstWeb),
+            () => typeof(PreApplicationStartCode).Assembly.GetManifestResourceStream($"{typeof(PageBuildProvider<>).Namespace}.xcst-web.xsl")
          );
       }
    }

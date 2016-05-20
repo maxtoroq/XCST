@@ -1,4 +1,4 @@
-﻿// Copyright 2015 Max Toro Q.
+﻿// Copyright 2016 Max Toro Q.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,15 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Xcst {
+using System;
+using Xcst.Web.Mvc;
+using Xcst.Web.Mvc.Compilation;
 
-   static class XmlNamespaces {
+namespace Xcst.Compiler {
 
-      public const string Xcst = "http://maxtoroq.github.io/XCST";
-      public const string XcstErrors = Xcst + "/errors";
-      public const string XcstCompiled = Xcst + "/compiled";
-      public const string XcstSyntax = Xcst + "/syntax";
-      public const string XcstWeb = Xcst + "/web";
-      public const string XcstApplication = Xcst + "/application";
+   public static class ApplicationExtensionConfiguration {
+
+      public static void RegisterApplicationExtension(this XcstCompilerFactory compilerFactory) {
+
+         compilerFactory.RegisterExtension(
+            new Uri(XmlNamespaces.XcstApplication),
+            () => typeof(PreApplicationStartCode).Assembly.GetManifestResourceStream($"{typeof(ViewPageBuildProvider<>).Namespace}.xcst-app.xsl")
+         );
+      }
    }
 }

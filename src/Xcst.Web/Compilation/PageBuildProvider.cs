@@ -89,7 +89,7 @@ namespace Xcst.Web.Compilation {
          compiler.UseLineDirective = true;
 
          compiler.SetParameter(
-            new QualifiedName("application-uri", XmlNamespaces.XcstApplication),
+            new QualifiedName("application-uri", XmlNamespaces.XcstWeb),
             this.applicationUri
          );
       }

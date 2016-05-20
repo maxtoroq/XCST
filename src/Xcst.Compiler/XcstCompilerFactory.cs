@@ -148,7 +148,7 @@ namespace Xcst.Compiler {
          if (extensionNamespace.Scheme.Equals(CompilerResolver.UriSchemeClires, StringComparison.OrdinalIgnoreCase)) throw new ArgumentException("Invalid URI.", nameof(extensionNamespace));
          if (extensionLoader == null) throw new ArgumentNullException(nameof(extensionLoader));
 
-         this.extensions.Add(extensionNamespace, extensionLoader);
+         this.extensions[extensionNamespace] = extensionLoader;
       }
 
       void BuildExtensionsModule(Stream output) {

@@ -48,6 +48,7 @@
     </Compile>
     <Compile Include="Compilation\BaseBuildProvider.cs" />
     <Compile Include="Compilation\PageBuildProvider.cs" />
+    <Compile Include="Compiler\WebExtensionConfiguration.cs" />
     <Compile Include="IFileDependent.cs" />
     <Compile Include="PreApplicationStartCode.cs" />
     <Compile Include="PropertyHelper.cs" />
@@ -73,6 +74,11 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Compilation\xcst-web.xsl">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
