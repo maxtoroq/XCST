@@ -1770,10 +1770,11 @@
    <template name="xcst:validate-attribs">
       <param name="allowed" as="xs:string*" required="yes"/>
       <param name="required" as="xs:string*" required="yes"/>
+      <param name="extension" select="false()"/>
 
       <variable name="std-names" select="
          if (self::c:*) then (QName('', 'version')[not(current()/self::c:output)], QName('', 'expand-text'), QName('', 'extension-element-prefixes'))
-         else (xs:QName('c:version'), xs:QName('c:expand-text'), xs:QName('c:extension-element-prefixes'), xs:QName('c:use-attribute-sets'))"/>
+         else (xs:QName('c:version'), xs:QName('c:expand-text'), xs:QName('c:extension-element-prefixes'), xs:QName('c:use-attribute-sets')[not($extension)])"/>
 
       <for-each select="if (self::c:*) then @*[node-name() = $std-names] else @c:*">
          <if test="not(node-name() = $std-names)">
@@ -1793,7 +1794,7 @@
 
       <for-each select="$attribs">
          <if test="not(local-name() = $allowed)">
-            <sequence select="error(xs:QName('err:XTSE0090'), concat('Attribute @', local-name(), ' is not allowed on element &lt;c:', local-name($context), '>.'), src:error-object($context))"/>
+            <sequence select="error(xs:QName('err:XTSE0090'), concat('Attribute @', local-name(), ' is not allowed on element &lt;', name($context), '>.'), src:error-object($context))"/>
          </if>
       </for-each>
 
@@ -1923,7 +1924,7 @@
       <variable name="string" select="xcst:non-string($node)"/>
 
       <if test="not($string)">
-         <sequence select="error(xs:QName('err:XTSE0020'), concat('Value of ', name($node), ' must be a non-empty string.'), src:error-object($node))"/>
+         <sequence select="error(xs:QName('err:XTSE0020'), concat('Value of ', '@'[$node instance of attribute()], name($node), ' must be a non-empty string.'), src:error-object($node))"/>
       </if>
 
       <sequence select="$string"/>
@@ -1935,7 +1936,7 @@
       <variable name="string" select="xcst:non-string($node)"/>
 
       <if test="not($string)">
-         <sequence select="error(xs:QName('err:XTSE0020'), concat('Value of ', name($node), ' must be a non-empty string.'), src:error-object($node))"/>
+         <sequence select="error(xs:QName('err:XTSE0020'), concat('Value of ', '@'[$node instance of attribute()], name($node), ' must be a non-empty string.'), src:error-object($node))"/>
       </if>
 
       <sequence select="$string"/>
@@ -1945,7 +1946,7 @@
       <param name="node" as="node()"/>
 
       <if test="not(xcst:non-string($node))">
-         <sequence select="error(xs:QName('err:XTSE0020'), concat('Value of ', name($node), ' must be a non-empty string.'), src:error-object($node))"/>
+         <sequence select="error(xs:QName('err:XTSE0020'), concat('Value of ', '@'[$node instance of attribute()], name($node), ' must be a non-empty string.'), src:error-object($node))"/>
       </if>
 
       <sequence select="string($node)"/>

@@ -1,0 +1,248 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{9C2C8E13-E69D-4656-8554-11CD69147448}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Xcst.Web.Mvc.Tests</RootNamespace>
+    <AssemblyName>Xcst.Web.Mvc.Tests</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+    <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
+    <IsCodedUITest>False</IsCodedUITest>
+    <TestProjectType>UnitTest</TestProjectType>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CodeAnalysis, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.CodeAnalysis.Common.1.1.0\lib\net45\Microsoft.CodeAnalysis.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.CodeAnalysis.CSharp.1.1.0\lib\net45\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Collections.Immutable, Version=1.1.37.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Collections.Immutable.1.1.37\lib\dotnet\System.Collections.Immutable.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Reflection.Metadata, Version=1.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Reflection.Metadata.1.1.0\lib\dotnet5.2\System.Reflection.Metadata.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <Choose>
+    <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
+      <ItemGroup>
+        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <ItemGroup>
+        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework" />
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
+  <ItemGroup>
+    <Compile Include="..\..\src\Xcst\XmlNamespaces.cs">
+      <Link>XmlNamespaces.cs</Link>
+    </Compile>
+    <Compile Include="Extension\ExtensionTests.generated.cs">
+      <DependentUpon>ExtensionTests.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Extension\ExtensionTestsHelper.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Extension\ExtensionTests.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>ExtensionTests.generated.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Extension\Forms\AntiForgeryToken\anti-forgery-token.foo.i.xcst" />
+    <None Include="Extension\Forms\CheckBox\check-box.foo.i.xcst" />
+    <None Include="Extension\Forms\CheckBox\check-box.for.type.i.xcst" />
+    <None Include="Extension\Forms\CheckBox\check-box.for_name.mutex.i.xcst" />
+    <None Include="Extension\Forms\CheckBox\check-box.for_checked.mutex.i.xcst" />
+    <None Include="Extension\Forms\CheckBox\check-box.html-attributes.type.i.xcst" />
+    <None Include="Extension\Forms\CheckBox\check-box.checked.type.i.xcst" />
+    <None Include="Extension\Forms\DropDownList\drop-down-list.foo.i.xcst" />
+    <None Include="Extension\Forms\DropDownList\drop-down-list.for.type.i.xcst" />
+    <None Include="Extension\Forms\DropDownList\drop-down-list.for_name.mutex.i.xcst" />
+    <None Include="Extension\Forms\DropDownList\drop-down-list.for_value.mutex.i.xcst" />
+    <None Include="Extension\Forms\DropDownList\drop-down-list.html-attributes.type.i.xcst" />
+    <None Include="Extension\Forms\DropDownList\drop-down-list.options.type.i.xcst" />
+    <None Include="Extension\Forms\DropDownList\drop-down-list.value.type.i.xcst" />
+    <None Include="Extension\Forms\DropDownList\option.foo.i.xcst" />
+    <None Include="Extension\Forms\DropDownList\option.selected.type.i.xcst" />
+    <None Include="Extension\Forms\DropDownList\option.value.type.i.xcst" />
+    <None Include="Extension\Forms\Hidden\hidden.foo.i.xcst" />
+    <None Include="Extension\Forms\Hidden\hidden.for.type.i.xcst" />
+    <None Include="Extension\Forms\Hidden\hidden.for_name.mutex.i.xcst" />
+    <None Include="Extension\Forms\Hidden\hidden.for_value.mutex.i.xcst" />
+    <None Include="Extension\Forms\Hidden\hidden.html-attributes.type.i.xcst" />
+    <None Include="Extension\Forms\Hidden\hidden.value.type.i.xcst" />
+    <None Include="Extension\Forms\HttpMethodOverride\http-method-override.foo.i.xcst" />
+    <None Include="Extension\Forms\Label\label.foo.i.xcst" />
+    <None Include="Extension\Forms\Label\label.for_name.mutex.i.xcst" />
+    <None Include="Extension\Forms\Label\label.html-attributes.type.i.xcst" />
+    <None Include="Extension\Forms\ListBox\option.selected.type.i.xcst" />
+    <None Include="Extension\Forms\ListBox\option.value.type.i.xcst" />
+    <None Include="Extension\Forms\ListBox\option.foo.i.xcst" />
+    <None Include="Extension\Forms\ListBox\list-box.foo.i.xcst" />
+    <None Include="Extension\Forms\ListBox\list-box.for.type.i.xcst" />
+    <None Include="Extension\Forms\ListBox\list-box.for_name.mutex.i.xcst" />
+    <None Include="Extension\Forms\ListBox\list-box.for_value.mutex.i.xcst" />
+    <None Include="Extension\Forms\ListBox\list-box.html-attributes.type.i.xcst" />
+    <None Include="Extension\Forms\ListBox\list-box.options.type.i.xcst" />
+    <None Include="Extension\Forms\ListBox\list-box.value.type.i.xcst" />
+    <None Include="Extension\Forms\Password\password.foo.i.xcst" />
+    <None Include="Extension\Forms\Password\password.for.type.i.xcst" />
+    <None Include="Extension\Forms\Password\password.for_name.mutex.i.xcst" />
+    <None Include="Extension\Forms\Password\password.for_value.mutex.i.xcst" />
+    <None Include="Extension\Forms\Password\password.html-attributes.type.i.xcst" />
+    <None Include="Extension\Forms\Password\password.value.type.i.xcst" />
+    <None Include="Extension\Forms\RadioButton\radio-button.for_value.mutex.i.xcst" />
+    <None Include="Extension\Forms\RadioButton\radio-button.vaue.type.i.xcst" />
+    <None Include="Extension\Forms\RadioButton\radio-button.checked.type.i.xcst" />
+    <None Include="Extension\Forms\RadioButton\radio-button.foo.i.xcst" />
+    <None Include="Extension\Forms\RadioButton\radio-button.for.type.i.xcst" />
+    <None Include="Extension\Forms\RadioButton\radio-button.for_checked.mutex.i.xcst" />
+    <None Include="Extension\Forms\RadioButton\radio-button.for_name.mutex.i.xcst" />
+    <None Include="Extension\Forms\RadioButton\radio-button.html-attributes.type.i.xcst" />
+    <None Include="Extension\Forms\TextArea\text-area.cols.type.i.xcst" />
+    <None Include="Extension\Forms\TextArea\text-area.foo.i.xcst" />
+    <None Include="Extension\Forms\TextArea\text-area.rows.type.i.xcst" />
+    <None Include="Extension\Forms\TextArea\text-area.for.type.i.xcst" />
+    <None Include="Extension\Forms\TextArea\text-area.for_name.mutex.i.xcst" />
+    <None Include="Extension\Forms\TextArea\text-area.for_value.mutex.i.xcst" />
+    <None Include="Extension\Forms\TextArea\text-area.html-attributes.type.i.xcst" />
+    <None Include="Extension\Forms\TextArea\text-area.value.type.i.xcst" />
+    <None Include="Extension\Forms\TextBox\text-box.for_value.mutex.i.xcst" />
+    <None Include="Extension\Forms\TextBox\text-box.for_name.mutex.i.xcst" />
+    <None Include="Extension\Forms\TextBox\text-box.html-attributes.type.i.xcst" />
+    <None Include="Extension\Forms\TextBox\text-box.value.type.i.xcst" />
+    <None Include="Extension\Forms\TextBox\text-box.for.type.i.xcst" />
+    <None Include="Extension\Forms\TextBox\text-box.foo.i.xcst" />
+    <None Include="Extension\Forms\ValidationMessage\validation-message.for.type.i.xcst" />
+    <None Include="Extension\Forms\ValidationMessage\validation-message.for_name.mutex.i.xcst" />
+    <None Include="Extension\Forms\ValidationMessage\validation-message.foo.i.xcst" />
+    <None Include="Extension\Forms\ValidationMessage\validation-message.html-attributes.type.i.xcst" />
+    <None Include="Extension\Forms\ValidationSummary\validation-summary.foo.i.xcst" />
+    <None Include="Extension\Forms\ValidationSummary\validation-summary.html-attributes.type.i.xcst" />
+    <None Include="Extension\Forms\ValidationSummary\validation-summary.include-member-errors.type.i.xcst" />
+    <None Include="Extension\Metadata\DisplayName\display-name.foo.i.xcst" />
+    <None Include="Extension\Metadata\DisplayName\display-name.for.type.i.xcst" />
+    <None Include="Extension\Metadata\DisplayName\display-name.for_name.mutex.i.xcst" />
+    <None Include="Extension\Metadata\DisplayText\display-text.foo.i.xcst" />
+    <None Include="Extension\Metadata\DisplayText\display-text.for.type.i.xcst" />
+    <None Include="Extension\Metadata\DisplayText\display-text.for_name.mutex.i.xcst" />
+    <None Include="Extension\Models\Model\model.parameters.type.i.xcst" />
+    <None Include="Extension\Models\Model\model.value_or_as.req.i.xcst" />
+    <None Include="Extension\Models\Model\model.value.type.i.xcst" />
+    <None Include="Extension\Models\Model\model.as.type.i.xcst" />
+    <None Include="Extension\Models\Model\model.foo.i.xcst" />
+    <None Include="Extension\Repetition\ForEachRow\for-each-row.foo.i.xcst" />
+    <None Include="Extension\Repetition\ForEachRow\for-each-row.columns.req.i.xcst" />
+    <None Include="Extension\Repetition\ForEachRow\for-each-row.in.req.i.xcst" />
+    <None Include="Extension\Repetition\ForEachRow\for-each-row.columns.type.i.xcst" />
+    <None Include="Extension\Repetition\ForEachRow\for-each-row.in.type.i.xcst" />
+    <None Include="Extension\Repetition\ForEachRow\for-each-row.name.req.i.xcst" />
+    <None Include="Extension\Repetition\ForEachRow\for-each-row.name.type.i.xcst" />
+    <None Include="Extension\Repetition\ForEachRow\sort.foo.i.xcst" />
+    <None Include="Extension\Repetition\ForEachRow\sort.order.type.i.xcst" />
+    <None Include="Extension\Repetition\ForEachRow\sort.value.type.i.xcst" />
+    <None Include="Extension\Templates\Display\display.foo.i.xcst" />
+    <None Include="Extension\Templates\Display\display.for.type.i.xcst" />
+    <None Include="Extension\Templates\Display\display.for_name.mutex.i.xcst" />
+    <None Include="Extension\Templates\Display\display.html-attributes.type.i.xcst" />
+    <None Include="Extension\Templates\Display\display.parameters.type.i.xcst" />
+    <None Include="Extension\Templates\Display\member-template.foo.i.xcst" />
+    <None Include="Extension\Templates\Editor\member-template.foo.i.xcst" />
+    <None Include="Extension\Templates\Editor\editor.foo.i.xcst" />
+    <None Include="Extension\Templates\Editor\editor.for.type.i.xcst" />
+    <None Include="Extension\Templates\Editor\editor.for_name.mutex.i.xcst" />
+    <None Include="Extension\Templates\Editor\editor.parameters.type.i.xcst" />
+    <None Include="Extension\Templates\Editor\editor.html-attributes.type.i.xcst" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\..\packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
+    <Analyzer Include="..\..\packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Xcst.Compiler\Xcst.Compiler.csproj">
+      <Project>{1228fbc0-3a76-4152-9d34-07fc2f9c9f31}</Project>
+      <Name>Xcst.Compiler</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\Xcst.Web.Mvc\Xcst.Web.Mvc.csproj">
+      <Project>{4201bbcb-dbbb-47db-8cd6-e62f697dea64}</Project>
+      <Name>Xcst.Web.Mvc</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\Xcst.Web\Xcst.Web.csproj">
+      <Project>{e9805d4e-cd90-475c-b1a2-36e4e5032589}</Project>
+      <Name>Xcst.Web</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\Xcst\Xcst.csproj">
+      <Project>{4387c5be-1873-4060-b547-9467d5e2c779}</Project>
+      <Name>Xcst</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Choose>
+    <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
+      <ItemGroup>
+        <Reference Include="Microsoft.VisualStudio.QualityTools.CodedUITestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <Private>False</Private>
+        </Reference>
+        <Reference Include="Microsoft.VisualStudio.TestTools.UITest.Common, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <Private>False</Private>
+        </Reference>
+        <Reference Include="Microsoft.VisualStudio.TestTools.UITest.Extension, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <Private>False</Private>
+        </Reference>
+        <Reference Include="Microsoft.VisualStudio.TestTools.UITesting, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <Private>False</Private>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

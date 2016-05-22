@@ -22,6 +22,9 @@
    xmlns:src="http://maxtoroq.github.io/XCST/compiled"
    xmlns:xcst="http://maxtoroq.github.io/XCST/syntax">
 
+   <variable name="a:html-attributes" select="'html-class', 'html-attributes'"/>
+   <variable name="a:input-attributes" select="'for', 'name', 'value', $a:html-attributes"/>
+
    <!--
       ## Repetition
    -->
@@ -29,6 +32,13 @@
    <template match="a:for-each-row" mode="src:extension-instruction">
       <param name="indent" tunnel="yes"/>
 
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="'name', 'in', 'columns'"/>
+         <with-param name="required" select="'name', 'in', 'columns'"/>
+         <with-param name="extension" select="true()"/>
+      </call-template>
+
+      <variable name="in" select="xcst:expression(@in)"/>
       <variable name="iter" select="concat(src:aux-variable('iter'), '_', generate-id())"/>
       <variable name="helper" select="a:fully-qualified-helper('ListFactory')"/>
 
@@ -39,11 +49,16 @@
       <choose>
          <when test="a:sort">
             <for-each select="a:sort">
+               <call-template name="xcst:validate-attribs">
+                  <with-param name="allowed" select="'value', 'order'"/>
+                  <with-param name="required" select="()"/>
+                  <with-param name="extension" select="true()"/>
+               </call-template>
                <choose>
                   <when test="position() eq 1">
                      <value-of select="src:fully-qualified-helper('Sorting')"/>
                      <text>.SortBy(</text>
-                     <value-of select="../@in"/>
+                     <value-of select="$in"/>
                      <text>, </text>
                   </when>
                   <otherwise>.CreateOrderedEnumerable(</otherwise>
@@ -51,7 +66,7 @@
                <variable name="param" select="src:aux-variable(generate-id())"/>
                <value-of select="$param, '=>', $param"/>
                <if test="@value">.</if>
-               <value-of select="@value"/>
+               <value-of select="@value/xcst:expression(.)"/>
                <if test="position() gt 1">, null</if>
                <text>, </text>
                <variable name="descending-expr" select="
@@ -64,7 +79,7 @@
             </for-each>
          </when>
          <otherwise>
-            <value-of select="@in"/>
+            <value-of select="$in"/>
          </otherwise>
       </choose>
       <text>)</text>
@@ -101,7 +116,7 @@
       <variable name="eof" select="concat(src:aux-variable('eof'), '_', generate-id())"/>
 
       <call-template name="src:new-line-indented"/>
-      <value-of select="'int', $cols, '=', @columns"/>
+      <value-of select="'int', $cols, '=', xcst:expression(@columns)"/>
       <value-of select="$src:statement-delimiter"/>
 
       <call-template name="src:new-line-indented"/>
@@ -174,7 +189,7 @@
 
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
-      <value-of select="'var', @name, '=', concat($helper, '.CreateImmutable(', $buff, ')')"/>
+      <value-of select="'var', xcst:name(@name), '=', concat($helper, '.CreateImmutable(', $buff, ')')"/>
       <value-of select="$src:statement-delimiter"/>
 
       <call-template name="src:apply-children">
@@ -205,6 +220,16 @@
    <template match="a:text-box" mode="src:extension-instruction">
       <param name="context-param" tunnel="yes"/>
 
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="$a:input-attributes, 'format', 'html-type', 'html-placeholder'"/>
+         <with-param name="required" select="()"/>
+         <with-param name="extension" select="true()"/>
+      </call-template>
+
+      <call-template name="a:validate-for">
+         <with-param name="attribs" select="@name, @value"/>
+      </call-template>
+
       <variable name="expr">
          <value-of select="a:fully-qualified-helper-html('InputExtensions')"/>
          <text>.TextBox</text>
@@ -219,12 +244,12 @@
                <variable name="param" select="src:aux-variable(generate-id())"/>
                <value-of select="$param"/>
                <text> => </text>
-               <value-of select="$param, @for" separator="."/>
+               <value-of select="$param, xcst:expression(@for)" separator="."/>
             </when>
             <otherwise>
                <value-of select="(@name/src:expand-attribute(.), src:string(''))[1]"/>
                <text>, </text>
-               <value-of select="(@value, 'default(object)')[1]"/>
+               <value-of select="(@value/xcst:expression(.), 'default(object)')[1]"/>
             </otherwise>
          </choose>
          <if test="@format">
@@ -244,6 +269,16 @@
    <template match="a:password" mode="src:extension-instruction">
       <param name="context-param" tunnel="yes"/>
 
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="$a:input-attributes, 'html-placeholder'"/>
+         <with-param name="required" select="()"/>
+         <with-param name="extension" select="true()"/>
+      </call-template>
+
+      <call-template name="a:validate-for">
+         <with-param name="attribs" select="@name, @value"/>
+      </call-template>
+
       <variable name="expr">
          <value-of select="a:fully-qualified-helper-html('InputExtensions')"/>
          <text>.Password</text>
@@ -258,12 +293,12 @@
                <variable name="param" select="src:aux-variable(generate-id())"/>
                <value-of select="$param"/>
                <text> => </text>
-               <value-of select="$param, @for" separator="."/>
+               <value-of select="$param, xcst:expression(@for)" separator="."/>
             </when>
             <otherwise>
                <value-of select="(@name/src:expand-attribute(.), src:string(''))[1]"/>
                <text>, </text>
-               <value-of select="(@value, 'default(object)')[1]"/>
+               <value-of select="(@value/xcst:expression(.), 'default(object)')[1]"/>
             </otherwise>
          </choose>
          <variable name="merge-attributes" select="@html-placeholder"/>
@@ -279,6 +314,16 @@
    <template match="a:hidden" mode="src:extension-instruction">
       <param name="context-param" tunnel="yes"/>
 
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="$a:input-attributes"/>
+         <with-param name="required" select="()"/>
+         <with-param name="extension" select="true()"/>
+      </call-template>
+
+      <call-template name="a:validate-for">
+         <with-param name="attribs" select="@name, @value"/>
+      </call-template>
+
       <variable name="expr">
          <value-of select="a:fully-qualified-helper-html('InputExtensions')"/>
          <text>.Hidden</text>
@@ -293,12 +338,12 @@
                <variable name="param" select="src:aux-variable(generate-id())"/>
                <value-of select="$param"/>
                <text> => </text>
-               <value-of select="$param, @for" separator="."/>
+               <value-of select="$param, xcst:expression(@for)" separator="."/>
             </when>
             <otherwise>
                <value-of select="(@name/src:expand-attribute(.), src:string(''))[1]"/>
                <text>, </text>
-               <value-of select="(@value, 'default(object)')[1]"/>
+               <value-of select="(@value/xcst:expression(.), 'default(object)')[1]"/>
             </otherwise>
          </choose>
          <variable name="merge-attributes" select="()"/>
@@ -314,6 +359,16 @@
    <template match="a:text-area" mode="src:extension-instruction">
       <param name="context-param" tunnel="yes"/>
 
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="$a:input-attributes, 'rows', 'cols', 'html-placeholder'"/>
+         <with-param name="required" select="()"/>
+         <with-param name="extension" select="true()"/>
+      </call-template>
+
+      <call-template name="a:validate-for">
+         <with-param name="attribs" select="@name, @value"/>
+      </call-template>
+
       <variable name="expr">
          <value-of select="a:fully-qualified-helper-html('TextAreaExtensions')"/>
          <text>.TextArea</text>
@@ -328,19 +383,19 @@
                <variable name="param" select="src:aux-variable(generate-id())"/>
                <value-of select="$param"/>
                <text> => </text>
-               <value-of select="$param, @for" separator="."/>
+               <value-of select="$param, xcst:expression(@for)" separator="."/>
             </when>
             <otherwise>
                <value-of select="(@name/src:expand-attribute(.), src:string(''))[1]"/>
                <text>, </text>
-               <value-of select="(@value, 'default(object)')[1]"/>
+               <value-of select="(@value/xcst:expression(.), 'default(object)')[1]"/>
             </otherwise>
          </choose>
          <if test="@rows or @cols">
             <text>, rows: </text>
-            <value-of select="(@rows, '2')[1]"/>
+            <value-of select="(@rows/xcst:expression(.), '2')[1]"/>
             <text>, columns: </text>
-            <value-of select="(@cols, '20')[1]"/>
+            <value-of select="(@cols/xcst:expression(.), '20')[1]"/>
          </if>
          <variable name="merge-attributes" select="@html-placeholder"/>
          <if test="not(empty((@html-attributes, @html-class, $merge-attributes)))">
@@ -354,6 +409,16 @@
 
    <template match="a:check-box" mode="src:extension-instruction">
       <param name="context-param" tunnel="yes"/>
+
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="$a:html-attributes, 'for', 'name', 'checked'"/>
+         <with-param name="required" select="()"/>
+         <with-param name="extension" select="true()"/>
+      </call-template>
+
+      <call-template name="a:validate-for">
+         <with-param name="attribs" select="@name, @checked"/>
+      </call-template>
 
       <variable name="expr">
          <value-of select="a:fully-qualified-helper-html('InputExtensions')"/>
@@ -369,7 +434,7 @@
                <variable name="param" select="src:aux-variable(generate-id())"/>
                <value-of select="$param"/>
                <text> => </text>
-               <value-of select="$param, @for" separator="."/>
+               <value-of select="$param, xcst:expression(@for)" separator="."/>
             </when>
             <otherwise>
                <value-of select="(@name/src:expand-attribute(.), src:string(''))[1]"/>
@@ -377,7 +442,7 @@
          </choose>
          <if test="not(@for) and @checked">
             <text>, isChecked: </text>
-            <value-of select="@checked"/>
+            <value-of select="xcst:expression(@checked)"/>
          </if>
          <variable name="merge-attributes" select="()"/>
          <if test="not(empty((@html-attributes, @html-class, $merge-attributes)))">
@@ -391,6 +456,16 @@
 
    <template match="a:radio-button" mode="src:extension-instruction">
       <param name="context-param" tunnel="yes"/>
+
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="$a:html-attributes, 'for', 'name', 'value', 'checked'"/>
+         <with-param name="required" select="()"/>
+         <with-param name="extension" select="true()"/>
+      </call-template>
+
+      <call-template name="a:validate-for">
+         <with-param name="attribs" select="@name, @value, @checked"/>
+      </call-template>
 
       <variable name="expr">
          <value-of select="a:fully-qualified-helper-html('InputExtensions')"/>
@@ -406,17 +481,17 @@
                <variable name="param" select="src:aux-variable(generate-id())"/>
                <value-of select="$param"/>
                <text> => </text>
-               <value-of select="$param, @for" separator="."/>
+               <value-of select="$param, xcst:expression(@for)" separator="."/>
             </when>
             <otherwise>
                <value-of select="(@name/src:expand-attribute(.), src:string(''))[1]"/>
             </otherwise>
          </choose>
          <text>, </text>
-         <value-of select="(@value, 'default(object)')[1]"/>
+         <value-of select="(@value/xcst:expression(.), 'default(object)')[1]"/>
          <if test="not(@for) and @checked">
             <text>, isChecked: </text>
-            <value-of select="@checked"/>
+            <value-of select="xcst:expression(@checked)"/>
          </if>
          <variable name="merge-attributes" select="()"/>
          <if test="not(empty((@html-attributes, @html-class, $merge-attributes)))">
@@ -429,6 +504,13 @@
    </template>
 
    <template match="a:anti-forgery-token" mode="src:extension-instruction">
+
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="()"/>
+         <with-param name="required" select="()"/>
+         <with-param name="extension" select="true()"/>
+      </call-template>
+
       <variable name="expr">
          <call-template name="a:html-helper"/>
          <text>.AntiForgeryToken()</text>
@@ -438,6 +520,12 @@
 
    <template match="a:http-method-override" mode="src:extension-instruction">
       <param name="context-param" tunnel="yes"/>
+
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="'method'"/>
+         <with-param name="required" select="'method'"/>
+         <with-param name="extension" select="true()"/>
+      </call-template>
 
       <variable name="expr">
          <value-of select="a:fully-qualified-helper-html('InputExtensions')"/>
@@ -456,6 +544,17 @@
       <param name="context-param" tunnel="yes"/>
 
       <variable name="ddl" select="self::a:drop-down-list"/>
+
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="$a:input-attributes, 'options', 'option-label'[$ddl]"/>
+         <with-param name="required" select="()"/>
+         <with-param name="extension" select="true()"/>
+      </call-template>
+
+      <call-template name="a:validate-for">
+         <with-param name="attribs" select="@name, @value"/>
+      </call-template>
+
       <variable name="expr">
          <value-of select="a:fully-qualified-helper-html('SelectExtensions')"/>
          <text>.</text>
@@ -471,7 +570,7 @@
                <variable name="param" select="src:aux-variable(generate-id())"/>
                <value-of select="$param"/>
                <text> => </text>
-               <value-of select="$param, @for" separator="."/>
+               <value-of select="$param, xcst:expression(@for)" separator="."/>
             </when>
             <otherwise>
                <value-of select="(@name/src:expand-attribute(.), src:string(''))[1]"/>
@@ -487,6 +586,11 @@
                </if>
                <text>new[] { </text>
                <for-each select="a:option">
+                  <call-template name="xcst:validate-attribs">
+                     <with-param name="allowed" select="'value', 'selected'"/>
+                     <with-param name="required" select="()"/>
+                     <with-param name="extension" select="true()"/>
+                  </call-template>
                   <if test="position() gt 1">, </if>
                   <text>new </text>
                   <value-of select="src:global-identifier('System.Web.Mvc.SelectListItem')"/>
@@ -499,19 +603,19 @@
                   <call-template name="src:simple-content"/>
                   <if test="@selected">
                      <text>, Selected = </text>
-                     <value-of select="@selected"/>
+                     <value-of select="xcst:expression(@selected)"/>
                   </if>
                   <text>}</text>
                </for-each>
                <text> }</text>
                <if test="$ddl and @value">
                   <text>, "Value", "Text", </text>
-                  <value-of select="@value"/>
+                  <value-of select="xcst:expression(@value)"/>
                   <text>)</text>
                </if>
             </when>
             <when test="@options">
-               <value-of select="@options"/>
+               <value-of select="xcst:expression(@options)"/>
             </when>
             <otherwise>
                <value-of select="concat('default(', src:global-identifier('System.Collections.Generic.IEnumerable'), '&lt;', src:global-identifier('System.Web.Mvc.SelectListItem'), '>)')"/>
@@ -533,6 +637,14 @@
 
    <template match="a:label" mode="src:extension-instruction">
       <param name="context-param" tunnel="yes"/>
+
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="$a:html-attributes, 'for', 'name', 'text'"/>
+         <with-param name="required" select="()"/>
+         <with-param name="extension" select="true()"/>
+      </call-template>
+
+      <call-template name="a:validate-for"/>
 
       <variable name="for-model" select="empty((@for, @name))"/>
       <variable name="expr">
@@ -577,6 +689,12 @@
    <template match="a:validation-summary" mode="src:extension-instruction">
       <param name="context-param" tunnel="yes"/>
 
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="$a:html-attributes, 'include-member-errors', 'message'"/>
+         <with-param name="required" select="()"/>
+         <with-param name="extension" select="true()"/>
+      </call-template>
+
       <variable name="expr">
          <value-of select="a:fully-qualified-helper-html('ValidationExtensions')"/>
          <text>.ValidationSummary(</text>
@@ -585,7 +703,7 @@
          <value-of select="$context-param"/>
          <if test="@include-member-errors">
             <text>, includePropertyErrors: </text>
-            <value-of select="@include-member-errors"/>
+            <value-of select="xcst:expression(@include-member-errors)"/>
          </if>
          <text>, message: </text>
          <value-of select="(@message/src:expand-attribute(.), 'default(string)')[1]"/>
@@ -602,6 +720,14 @@
    <template match="a:validation-message" mode="src:extension-instruction">
       <param name="context-param" tunnel="yes"/>
 
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="$a:html-attributes, 'for', 'name', 'message'"/>
+         <with-param name="required" select="()"/>
+         <with-param name="extension" select="true()"/>
+      </call-template>
+
+      <call-template name="a:validate-for"/>
+
       <variable name="expr">
          <value-of select="a:fully-qualified-helper-html('ValidationExtensions')"/>
          <text>.ValidationMessage</text>
@@ -616,7 +742,7 @@
                <variable name="param" select="src:aux-variable(generate-id())"/>
                <value-of select="$param"/>
                <text> => </text>
-               <value-of select="$param, @for" separator="."/>
+               <value-of select="$param, xcst:expression(@for)" separator="."/>
             </when>
             <when test="@name">
                <value-of select="src:expand-attribute(@name)"/>
@@ -644,6 +770,14 @@
    <template match="a:editor | a:display" mode="src:extension-instruction">
       <param name="context-param" tunnel="yes"/>
 
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="'for', 'name', 'template', 'html-field-name', 'html-attributes', 'parameters'"/>
+         <with-param name="required" select="()"/>
+         <with-param name="extension" select="true()"/>
+      </call-template>
+
+      <call-template name="a:validate-for"/>
+
       <variable name="editor" select="self::a:editor"/>
       <variable name="for-model" select="empty((@for, @name))"/>
       <variable name="expr">
@@ -663,7 +797,7 @@
                   <variable name="param" select="src:aux-variable(generate-id())"/>
                   <value-of select="$param"/>
                   <text> => </text>
-                  <value-of select="$param, @for" separator="."/>
+                  <value-of select="$param, xcst:expression(@for)" separator="."/>
                </when>
                <when test="@name">
                   <value-of select="src:expand-attribute(@name)"/>
@@ -703,7 +837,7 @@
          <value-of select="src:global-identifier('System.Web.Routing.RouteValueDictionary')"/>
          <if test="@parameters">
             <text>(</text>
-            <value-of select="@parameters"/>
+            <value-of select="xcst:expression(@parameters)"/>
             <text>)</text>
          </if>
          <text> { </text>
@@ -713,11 +847,17 @@
    </template>
 
    <template match="@html-attributes" mode="a:editor-additional-view-data">
-      <value-of select="'[&quot;htmlAttributes&quot;]', ." separator=" = "/>
+      <value-of select="'[&quot;htmlAttributes&quot;]', xcst:expression(.)" separator=" = "/>
    </template>
 
    <template match="a:member-template" mode="a:editor-additional-view-data">
       <param name="indent" tunnel="yes"/>
+
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="'helper-name'"/>
+         <with-param name="required" select="()"/>
+         <with-param name="extension" select="true()"/>
+      </call-template>
 
       <variable name="new-context" select="concat(src:aux-variable('context'), '_', generate-id())"/>
       <variable name="new-helper" select="(@helper-name/xcst:name(.), concat(src:aux-variable('model_helper'), '_', generate-id()))[1]"/>
@@ -763,6 +903,15 @@
    -->
 
    <template match="a:display-name" mode="src:extension-instruction">
+
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="'for', 'name'"/>
+         <with-param name="required" select="()"/>
+         <with-param name="extension" select="true()"/>
+      </call-template>
+
+      <call-template name="a:validate-for"/>
+
       <variable name="for-model" select="empty((@for, @name))"/>
       <variable name="expr">
          <call-template name="a:model-helper"/>
@@ -773,7 +922,7 @@
                   <variable name="param" select="src:aux-variable(generate-id())"/>
                   <value-of select="$param"/>
                   <text> => </text>
-                  <value-of select="$param, @for" separator="."/>
+                  <value-of select="$param, xcst:expression(@for)" separator="."/>
                </when>
                <when test="@name">
                   <value-of select="src:expand-attribute(@name)"/>
@@ -788,6 +937,14 @@
    <template match="a:display-text" mode="src:extension-instruction">
       <param name="context-param" tunnel="yes"/>
       <param name="src:current-mode" as="xs:QName" required="yes" tunnel="yes"/>
+
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="'for', 'name'"/>
+         <with-param name="required" select="()"/>
+         <with-param name="extension" select="true()"/>
+      </call-template>
+
+      <call-template name="a:validate-for"/>
 
       <variable name="statement" select="$src:current-mode eq xs:QName('src:statement')"/>
 
@@ -808,7 +965,7 @@
                <variable name="param" select="src:aux-variable(generate-id())"/>
                <value-of select="$param"/>
                <text> => </text>
-               <value-of select="$param, @for" separator="."/>
+               <value-of select="$param, xcst:expression(@for)" separator="."/>
             </when>
             <when test="@name">
                <value-of select="src:expand-attribute(@name)"/>
@@ -834,6 +991,17 @@
    -->
 
    <template match="a:model" mode="src:extension-instruction">
+
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="'value', 'as', 'html-field-prefix', 'helper-name', 'parameters'"/>
+         <with-param name="required" select="()"/>
+         <with-param name="extension" select="true()"/>
+      </call-template>
+
+      <if test="not(@value or @as)">
+         <sequence select="error((), 'Element must have either @value or @as attributes.', src:error-object(.))"/>
+      </if>
+
       <variable name="new-helper" select="(@helper-name/xcst:name(.), concat(src:aux-variable('model_helper'), '_', generate-id()))[1]"/>
       <variable name="type" select="@as/xcst:type(.)"/>
       <call-template name="src:new-line-indented"/>
@@ -848,14 +1016,14 @@
       <text>(</text>
       <call-template name="a:model-helper"/>
       <text>, </text>
-      <value-of select="(@value, concat('default(', ($type, 'object')[1], ')'))[1]"/>
+      <value-of select="(@value/xcst:expression(.), concat('default(', ($type, 'object')[1], ')'))[1]"/>
       <if test="@html-field-prefix">
          <text>, htmlFieldPrefix: </text>
          <value-of select="src:expand-attribute(@html-field-prefix)"/>
       </if>
       <if test="@parameters">
          <text>, additionalViewData: </text>
-         <value-of select="@parameters"/>
+         <value-of select="xcst:expression(@parameters)"/>
       </if>
       <text>)</text>
       <value-of select="$src:statement-delimiter"/>
@@ -869,6 +1037,14 @@
    <!--
       ## Helpers
    -->
+
+   <template name="a:validate-for">
+      <param name="attribs" select="@name" as="attribute()*"/>
+
+      <if test="@for and $attribs">
+         <sequence select="error((), concat('@for and @', $attribs[1]/local-name(), ' attributes are mutually exclusive.'), src:error-object(.))"/>
+      </if>
+   </template>
 
    <template name="a:model-helper">
       <param name="a:model-helper" as="xs:string?" tunnel="yes"/>
@@ -902,7 +1078,7 @@
       <variable name="expr">
          <value-of select="a:fully-qualified-helper-html('HtmlAttributesMerger')"/>
          <text>.Create(</text>
-         <value-of select="$html-attributes"/>
+         <value-of select="$html-attributes/xcst:expression(.)"/>
          <text>)</text>
          <if test="$html-class">
             <text>.AddCssClass(</text>
