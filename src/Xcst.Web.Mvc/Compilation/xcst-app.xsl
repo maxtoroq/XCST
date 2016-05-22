@@ -459,12 +459,12 @@
 
       <call-template name="xcst:validate-attribs">
          <with-param name="allowed" select="$a:html-attributes, 'for', 'name', 'value', 'checked'"/>
-         <with-param name="required" select="()"/>
+         <with-param name="required" select="'value'"/>
          <with-param name="extension" select="true()"/>
       </call-template>
 
       <call-template name="a:validate-for">
-         <with-param name="attribs" select="@name, @value, @checked"/>
+         <with-param name="attribs" select="@name, @checked"/>
       </call-template>
 
       <variable name="expr">
@@ -488,7 +488,7 @@
             </otherwise>
          </choose>
          <text>, </text>
-         <value-of select="(@value/xcst:expression(.), 'default(object)')[1]"/>
+         <value-of select="xcst:expression(@value)"/>
          <if test="not(@for) and @checked">
             <text>, isChecked: </text>
             <value-of select="xcst:expression(@checked)"/>

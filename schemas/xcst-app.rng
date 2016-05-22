@@ -208,6 +208,9 @@
 
       <define name="radio-button">
          <element name="radio-button">
+            <attribute name="value">
+               <ref name="Expression"/>
+            </attribute>
             <choice>
                <attribute name="for">
                   <ref name="Expression"/>
@@ -216,9 +219,6 @@
                   <choice>
                      <attribute name="name">
                         <ref name="AVT"/>
-                     </attribute>
-                     <attribute name="value">
-                        <ref name="Expression"/>
                      </attribute>
                      <attribute name="checked">
                         <ref name="Expression"/>

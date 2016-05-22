@@ -129,8 +129,8 @@
     <None Include="Extension\Forms\Password\password.for_value.mutex.i.xcst" />
     <None Include="Extension\Forms\Password\password.html-attributes.type.i.xcst" />
     <None Include="Extension\Forms\Password\password.value.type.i.xcst" />
-    <None Include="Extension\Forms\RadioButton\radio-button.for_value.mutex.i.xcst" />
-    <None Include="Extension\Forms\RadioButton\radio-button.vaue.type.i.xcst" />
+    <None Include="Extension\Forms\RadioButton\radio-button.value.req.i.xcst" />
+    <None Include="Extension\Forms\RadioButton\radio-button.value.type.i.xcst" />
     <None Include="Extension\Forms\RadioButton\radio-button.checked.type.i.xcst" />
     <None Include="Extension\Forms\RadioButton\radio-button.foo.i.xcst" />
     <None Include="Extension\Forms\RadioButton\radio-button.for.type.i.xcst" />

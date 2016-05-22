@@ -5,7 +5,7 @@
    extension-element-prefixes='a'>
 
    <c:template name='foo'>
-      <a:radio-button html-attributes=''/>
+      <a:radio-button value='1' html-attributes=''/>
    </c:template>
 
 </c:module>
