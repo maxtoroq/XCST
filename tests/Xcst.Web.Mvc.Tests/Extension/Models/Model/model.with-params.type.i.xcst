@@ -5,7 +5,7 @@
    extension-element-prefixes='a'>
 
    <c:template name='foo'>
-      <a:display parameters=''/>
+      <a:model value='5' with-params=''/>
    </c:template>
 
 </c:module>

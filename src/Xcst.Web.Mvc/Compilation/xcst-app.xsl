@@ -771,7 +771,7 @@
       <param name="context-param" tunnel="yes"/>
 
       <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="'for', 'name', 'template', 'html-field-name', 'html-attributes', 'parameters'"/>
+         <with-param name="allowed" select="'for', 'name', 'template', 'html-field-name', 'html-attributes', 'with-params'"/>
          <with-param name="required" select="()"/>
          <with-param name="extension" select="true()"/>
       </call-template>
@@ -832,12 +832,12 @@
             </if>
          </for-each>
       </variable>
-      <if test="@parameters or $setters">
+      <if test="@with-params or $setters">
          <text>, additionalViewData: new </text>
          <value-of select="src:global-identifier('System.Web.Routing.RouteValueDictionary')"/>
-         <if test="@parameters">
+         <if test="@with-params">
             <text>(</text>
-            <value-of select="xcst:expression(@parameters)"/>
+            <value-of select="xcst:expression(@with-params)"/>
             <text>)</text>
          </if>
          <text> { </text>
@@ -993,7 +993,7 @@
    <template match="a:model" mode="src:extension-instruction">
 
       <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="'value', 'as', 'html-field-prefix', 'helper-name', 'parameters'"/>
+         <with-param name="allowed" select="'value', 'as', 'html-field-prefix', 'helper-name', 'with-params'"/>
          <with-param name="required" select="()"/>
          <with-param name="extension" select="true()"/>
       </call-template>
@@ -1021,9 +1021,9 @@
          <text>, htmlFieldPrefix: </text>
          <value-of select="src:expand-attribute(@html-field-prefix)"/>
       </if>
-      <if test="@parameters">
+      <if test="@with-params">
          <text>, additionalViewData: </text>
-         <value-of select="xcst:expression(@parameters)"/>
+         <value-of select="xcst:expression(@with-params)"/>
       </if>
       <text>)</text>
       <value-of select="$src:statement-delimiter"/>

@@ -5,7 +5,7 @@
    extension-element-prefixes='a'>
 
    <c:template name='foo'>
-      <a:editor parameters=''/>
+      <a:display with-params=''/>
    </c:template>
 
 </c:module>

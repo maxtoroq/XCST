@@ -164,7 +164,7 @@
     <None Include="Extension\Metadata\DisplayText\display-text.foo.i.xcst" />
     <None Include="Extension\Metadata\DisplayText\display-text.for.type.i.xcst" />
     <None Include="Extension\Metadata\DisplayText\display-text.for_name.mutex.i.xcst" />
-    <None Include="Extension\Models\Model\model.parameters.type.i.xcst" />
+    <None Include="Extension\Models\Model\model.with-params.type.i.xcst" />
     <None Include="Extension\Models\Model\model.value_or_as.req.i.xcst" />
     <None Include="Extension\Models\Model\model.value.type.i.xcst" />
     <None Include="Extension\Models\Model\model.as.type.i.xcst" />
@@ -183,13 +183,13 @@
     <None Include="Extension\Templates\Display\display.for.type.i.xcst" />
     <None Include="Extension\Templates\Display\display.for_name.mutex.i.xcst" />
     <None Include="Extension\Templates\Display\display.html-attributes.type.i.xcst" />
-    <None Include="Extension\Templates\Display\display.parameters.type.i.xcst" />
+    <None Include="Extension\Templates\Display\display.with-params.type.i.xcst" />
     <None Include="Extension\Templates\Display\member-template.foo.i.xcst" />
     <None Include="Extension\Templates\Editor\member-template.foo.i.xcst" />
     <None Include="Extension\Templates\Editor\editor.foo.i.xcst" />
     <None Include="Extension\Templates\Editor\editor.for.type.i.xcst" />
     <None Include="Extension\Templates\Editor\editor.for_name.mutex.i.xcst" />
-    <None Include="Extension\Templates\Editor\editor.parameters.type.i.xcst" />
+    <None Include="Extension\Templates\Editor\editor.with-params.type.i.xcst" />
     <None Include="Extension\Templates\Editor\editor.html-attributes.type.i.xcst" />
     <None Include="packages.config" />
   </ItemGroup>
