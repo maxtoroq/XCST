@@ -43,11 +43,11 @@ function script:NuSpec {
       "<metadata>"
          "<id>$projName</id>"
          "<version>$PackageVersion</version>"
-         "<authors>$($noticeDoc.DocumentElement.SelectSingleNode('authors').InnerText)</authors>"
-         "<licenseUrl>$($noticeDoc.DocumentElement.SelectSingleNode('license').Attributes['url'].Value)</licenseUrl>"
-         "<projectUrl>$($noticeDoc.DocumentElement.SelectSingleNode('website').InnerText)</projectUrl>"
-         "<copyright>$($noticeDoc.DocumentElement.SelectSingleNode('copyright').InnerText)</copyright>"
-         "<iconUrl>$($noticeDoc.DocumentElement.SelectSingleNode('website').InnerText)nuget/icon.png</iconUrl>"
+         "<authors>$($notice.authors)</authors>"
+         "<licenseUrl>$($notice.license.url)</licenseUrl>"
+         "<projectUrl>$($notice.website)</projectUrl>"
+         "<copyright>$($notice.copyright)</copyright>"
+         "<iconUrl>$($notice.website)nuget/icon.png</iconUrl>"
 
    if ($projName -eq "Xcst") {
 
@@ -114,22 +114,22 @@ function script:NuSpec {
 
 function script:NuPack([string]$projName) {
 
-   $projPath = Resolve-Path "$solutionPath\src\$projName"
+   $projPath = Resolve-Path $solutionPath\src\$projName
    $projFile = "$projPath\$projName.csproj"
 
    if (-not (Test-Path temp -PathType Container)) {
       md temp | Out-Null
    }
 
-   if (-not (Test-Path "temp\$projName" -PathType Container)) {
-      md "temp\$projName" | Out-Null
+   if (-not (Test-Path temp\$projName -PathType Container)) {
+      md temp\$projName | Out-Null
    }
 
    if (-not (Test-Path nupkg -PathType Container)) {
       md nupkg | Out-Null
    }
 
-   $tempPath = Resolve-Path "temp\$projName"
+   $tempPath = Resolve-Path temp\$projName
    $outputPath = Resolve-Path nupkg
 
    ## Read project file
@@ -140,7 +140,8 @@ function script:NuPack([string]$projName) {
 
    ## Create nuspec using info from project file and notice
 
-   [xml]$noticeDoc = Get-Content "$solutionPath\NOTICE.xml"
+   [xml]$noticeDoc = Get-Content $solutionPath\NOTICE.xml
+   $notice = $noticeDoc.DocumentElement
 
    $nuspecPath = "$tempPath\$projName.nuspec"
 
@@ -158,9 +159,9 @@ function script:NuPack([string]$projName) {
 using System;
 using System.Reflection;
 
-[assembly: AssemblyProduct("$($noticeDoc.DocumentElement.SelectSingleNode("work").InnerText)")]
-[assembly: AssemblyCompany("$($noticeDoc.DocumentElement.SelectSingleNode("website").InnerText)")]
-[assembly: AssemblyCopyright("$($noticeDoc.DocumentElement.SelectSingleNode("copyright").InnerText)")]
+[assembly: AssemblyProduct("$($notice.work)")]
+[assembly: AssemblyCompany("$($notice.website)")]
+[assembly: AssemblyCopyright("$($notice.copyright)")]
 [assembly: AssemblyVersion("$AssemblyVersion")]
 [assembly: AssemblyFileVersion("$PackageVersion")]
 "@
