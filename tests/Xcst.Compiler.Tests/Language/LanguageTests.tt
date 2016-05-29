@@ -11,7 +11,6 @@
 <#@ Import Namespace="Microsoft.CSharp" #>
 <#@ Import Namespace="Xcst.Compiler" #>
 <#
-   string className = Path.GetFileNameWithoutExtension(this.Host.TemplateFile);
    DirectoryInfo startDirectory = Directory.CreateDirectory(this.Host.ResolvePath(""));
    string indent = "   ";
 #>
@@ -25,6 +24,8 @@
 //------------------------------------------------------------------------------
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using static Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
+using static Xcst.Compiler.Tests.Language.LanguageTestsHelper;
 
 namespace Xcst.Compiler.Tests {<# 
    PushIndent(indent);
@@ -99,7 +100,7 @@ namespace Xcst.Compiler.Tests {<#
          PushIndent(indent);
          WriteLine("");
 
-         Write("var moduleType = LanguageTestsHelper.CompileFromFile(@\"{0}\", {1});", file.FullName, correct.ToString().ToLower());
+         Write("var moduleType = CompileFromFile(@\"{0}\", correct: {1});", file.FullName, correct.ToString().ToLower());
 
          if (correct) {
 
@@ -111,7 +112,7 @@ namespace Xcst.Compiler.Tests {<#
                   || testFileName.EndsWith(".f")) {
 
                   WriteLine("");
-                  Write("Assert.Is{0}(LanguageTestsHelper.OutputEqualsToDoc(moduleType, @\"{1}\"));", testFileName.EndsWith(".p"), testCase.FullName);
+                  Write("Is{0}(OutputEqualsToDoc(moduleType, @\"{1}\"));", testFileName.EndsWith(".p"), testCase.FullName);
                }
             }
          }
