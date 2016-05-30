@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Converted from Relax NG schema, using Jing. Use with code completion tools that do not support Relax NG, such as Visual Studio. -->
+<!-- Converted from Relax NG schema, using Jing. Use only with code completion tools that do not support Relax NG. -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:a="http://maxtoroq.github.io/XCST/application" elementFormDefault="qualified" targetNamespace="http://maxtoroq.github.io/XCST/application">
    <xs:element name="instruction-element" abstract="true"/>
    <xs:group name="sequence-constructor">
