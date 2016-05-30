@@ -42,7 +42,7 @@
       <call-template name="src:regular-expression-attribute"/>
       <call-template name="src:range-attribute"/>
       <call-template name="src:compare-attribute"/>
-      <call-template name="src:read-only-attribute"/>
+      <call-template name="src:editable-attribute"/>
       <call-template name="src:display-attribute"/>
       <call-template name="src:display-format-attribute"/>
       <call-template name="src:ui-hint-attribute"/>
@@ -189,16 +189,16 @@
    </template>
 
    <!--
-      ## ReadOnly
+      ## Editable
    -->
 
-   <template name="src:read-only-attribute">
+   <template name="src:editable-attribute">
       <if test="@read-only/xcst:boolean(.)">
          <call-template name="src:line-number"/>
          <call-template name="src:new-line-indented"/>
          <text>[</text>
-         <value-of select="src:global-identifier('System.ComponentModel.ReadOnly')"/>
-         <text>(true)]</text>
+         <value-of select="src:global-identifier('System.ComponentModel.DataAnnotations.Editable')"/>
+         <text>(false)]</text>
       </if>
    </template>
 
