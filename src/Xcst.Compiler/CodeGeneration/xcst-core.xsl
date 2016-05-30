@@ -1069,14 +1069,14 @@
       <param name="indent" tunnel="yes"/>
 
       <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="'instance', 'with-params'"/>
-         <with-param name="required" select="'instance'"/>
+         <with-param name="allowed" select="'value', 'with-params'"/>
+         <with-param name="required" select="'value'"/>
       </call-template>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
       <value-of select="src:global-identifier('Xcst.XcstEvaluator')"/>
       <text>.Using(</text>
-      <value-of select="xcst:expression(@instance)"/>
+      <value-of select="xcst:expression(@value)"/>
       <text>)</text>
       <for-each select="c:with-param">
          <call-template name="xcst:validate-attribs">

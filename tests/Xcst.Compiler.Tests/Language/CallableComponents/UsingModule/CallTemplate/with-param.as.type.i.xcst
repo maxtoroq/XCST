@@ -2,7 +2,7 @@
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
    <c:template name='foo'>
-      <c:using-module instance='null'>
+      <c:using-module value='null'>
          <c:call-template name='bar'>
             <c:with-param name='a' value='null' as=''/>
          </c:call-template>

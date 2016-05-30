@@ -8,7 +8,7 @@
    <c:import href='_UsingModuleNoPrefix.xcst'/>
 
    <c:template name='c:initial-template'>
-      <c:using-module instance='Activator.CreateInstance(this.GetType())'>
+      <c:using-module value='Activator.CreateInstance(this.GetType())'>
          <c:call-template name='foo'/>
       </c:using-module>
    </c:template>

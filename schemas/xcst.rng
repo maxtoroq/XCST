@@ -1159,7 +1159,7 @@
 
    <define name="using-module">
       <element name="using-module">
-         <attribute name="instance">
+         <attribute name="value">
             <ref name="Expression"/>
          </attribute>
          <optional>

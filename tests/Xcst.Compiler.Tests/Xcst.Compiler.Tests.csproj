@@ -241,7 +241,7 @@
     <None Include="Language\CallableComponents\UsingModule\CallTemplate\with-param.name.type.i.xcst" />
     <None Include="Language\CallableComponents\UsingModule\CallTemplate\with-param.tunnel.type.i.xcst" />
     <None Include="Language\CallableComponents\UsingModule\CallTemplate\with-param.value.type.i.xcst" />
-    <None Include="Language\CallableComponents\UsingModule\using-module.instance.type.i.xcst" />
+    <None Include="Language\CallableComponents\UsingModule\using-module.value.type.i.xcst" />
     <None Include="Language\CallableComponents\UsingModule\using-module.with-params.type.i.xcst" />
     <None Include="Language\CallableComponents\UsingModule\using-module.foo.i.xcst" />
     <None Include="Language\CallableComponents\UsingModule\with-param.as.type.i.xcst" />
