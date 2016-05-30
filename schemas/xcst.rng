@@ -477,6 +477,7 @@
       <zeroOrMore>
          <choice>
             <attribute name="auto-initialize">
+               <ann:documentation>Auto-assign an initial value to this member.</ann:documentation>
                <ref name="Boolean"/>
             </attribute>
             <attribute name="display-name">
