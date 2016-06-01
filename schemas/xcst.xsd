@@ -343,7 +343,7 @@
             <xs:documentation>A name that is used to group members in a UI.</xs:documentation>
          </xs:annotation>
       </xs:attribute>
-      <xs:attribute name="display-format" type="c:String">
+      <xs:attribute name="format" type="c:String">
          <xs:annotation>
             <xs:documentation>A formatting string that specifies the display format for the value of this member.</xs:documentation>
          </xs:annotation>

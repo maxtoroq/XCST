@@ -516,7 +516,7 @@
                <ann:documentation>A name that is used to group members in a UI.</ann:documentation>
                <ref name="String"/>
             </attribute>
-            <attribute name="display-format">
+            <attribute name="format">
                <ann:documentation>A formatting string that specifies the display format for the value of this member.</ann:documentation>
                <ref name="String"/>
             </attribute>

@@ -113,7 +113,7 @@
 
    <template name="src:display-format-attribute">
       <variable name="setters" as="text()*">
-         <apply-templates select="@display-format
+         <apply-templates select="@format
             | @apply-format-in-edit-mode
             | (ancestor-or-self::c:*[self::c:member or self::c:type]/@disable-empty-string-to-null-conversion)[1]
             | @disable-output-escaping
@@ -131,7 +131,7 @@
       </if>
    </template>
 
-   <template match="@display-format" mode="src:display-format-setter">
+   <template match="@format" mode="src:display-format-setter">
       <value-of select="'DataFormatString', src:verbatim-string(.)" separator=" = "/>
    </template>
 
