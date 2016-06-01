@@ -73,8 +73,7 @@ void GeneratePackages(DirectoryInfo directory) {
 
    WriteLine("");
    WriteLine("");
-   Write("namespace " + directory.Name);
-   Write(" {");
+   Write("namespace {0} {{", directory.Name);
    PushIndent(Indent);
 
    foreach (DirectoryInfo subDirectory in directory.EnumerateDirectories()) {
