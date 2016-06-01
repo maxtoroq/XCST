@@ -504,7 +504,7 @@
                <ann:documentation>A shorter name suitable for UI where the display name would be too long to fit (e.g. a table column).</ann:documentation>
                <ref name="String"/>
             </attribute>
-            <attribute name="placeholder">
+            <attribute name="place-holder">
                <ann:documentation>A hint to the user of what can be entered in a control for this member.</ann:documentation>
                <ref name="String"/>
             </attribute>
