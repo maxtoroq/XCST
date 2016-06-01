@@ -17,10 +17,19 @@
 
       <c:script>
          <![CDATA[
-         return prop.ShowForEdit
-            /*&& prop.ModelType != typeof(EntityState)*/
-            && !prop.IsComplexType
-            && !ViewData.TemplateInfo.Visited(prop);
+
+         if (!prop.ShowForEdit
+            || ViewData.TemplateInfo.Visited(prop)) {
+
+            return false;
+         }
+
+         if (prop.AdditionalValues.ContainsKey(nameof(prop.ShowForEdit))) {
+            return (bool)prop.AdditionalValues[nameof(prop.ShowForEdit)];
+         }
+
+         return /*prop.ModelType != typeof(EntityState)
+            &&*/ !prop.IsComplexType;
          ]]>
       </c:script>
    </c:function>

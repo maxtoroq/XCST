@@ -179,13 +179,19 @@
    -->
 
    <template name="src:scaffold-column-attribute">
-      <if test="@hidden/xcst:boolean(.)">
-         <call-template name="src:line-number"/>
-         <call-template name="src:new-line-indented"/>
-         <text>[</text>
-         <value-of select="src:global-identifier('System.ComponentModel.DataAnnotations.ScaffoldColumn')"/>
-         <text>(false)]</text>
-      </if>
+      <apply-templates select="@display" mode="src:scaffold-column-attribute"/>
+   </template>
+
+   <template match="@display" mode="src:scaffold-column-attribute">
+      <variable name="display" select="xcst:non-string(.)"/>
+      <variable name="scaffold" select="if ($display = ('view-only', 'edit-only')) then true() else xcst:boolean(.)"/>
+      <call-template name="src:line-number"/>
+      <call-template name="src:new-line-indented"/>
+      <text>[</text>
+      <value-of select="src:global-identifier('System.ComponentModel.DataAnnotations.ScaffoldColumn')"/>
+      <text>(</text>
+      <value-of select="src:boolean($scaffold)"/>
+      <text>)]</text>
    </template>
 
    <!--
@@ -193,12 +199,14 @@
    -->
 
    <template name="src:editable-attribute">
-      <if test="@read-only/xcst:boolean(.)">
+      <if test="@read-only">
          <call-template name="src:line-number"/>
          <call-template name="src:new-line-indented"/>
          <text>[</text>
          <value-of select="src:global-identifier('System.ComponentModel.DataAnnotations.Editable')"/>
-         <text>(false)]</text>
+         <text>(</text>
+         <value-of select="src:boolean(not(xcst:boolean(@read-only)))"/>
+         <text>)]</text>
       </if>
    </template>
 

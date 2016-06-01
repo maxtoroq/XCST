@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Converted from Relax NG schema, using Jing. Use only with code completion tools that do not support Relax NG. -->
+<!-- Converted from Relax NG schema, using Trang. Use only with code completion tools that do not support Relax NG. -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:c="http://maxtoroq.github.io/XCST" elementFormDefault="qualified" targetNamespace="http://maxtoroq.github.io/XCST">
    <xs:group name="declaration-element">
       <xs:choice>
@@ -281,7 +281,38 @@
       <xs:attributeGroup ref="c:validation-attributes"/>
    </xs:attributeGroup>
    <xs:attributeGroup name="member-attributes">
-      <xs:attribute name="auto-initialize" type="c:Boolean"/>
+      <xs:attribute name="auto-initialize" type="c:Boolean">
+         <xs:annotation>
+            <xs:documentation>Auto-assign an initial value to this member.</xs:documentation>
+         </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="display">
+         <xs:annotation>
+            <xs:documentation>Indicates if this member should be displayed in a UI.</xs:documentation>
+         </xs:annotation>
+         <xs:simpleType>
+            <xs:union memberTypes="c:Boolean">
+               <xs:simpleType>
+                  <xs:restriction base="xs:token">
+                     <xs:enumeration value="view-only">
+                        <xs:annotation>
+                           <xs:documentation>Indicates that this member should only be displayed in a viewing UI.</xs:documentation>
+                        </xs:annotation>
+                     </xs:enumeration>
+                  </xs:restriction>
+               </xs:simpleType>
+               <xs:simpleType>
+                  <xs:restriction base="xs:token">
+                     <xs:enumeration value="edit-only">
+                        <xs:annotation>
+                           <xs:documentation>Indicates that this member should only be displayed in an editing UI.</xs:documentation>
+                        </xs:annotation>
+                     </xs:enumeration>
+                  </xs:restriction>
+               </xs:simpleType>
+            </xs:union>
+         </xs:simpleType>
+      </xs:attribute>
       <xs:attribute name="display-name" type="c:String">
          <xs:annotation>
             <xs:documentation>A name suitable for UI.</xs:documentation>
@@ -337,14 +368,9 @@
             <xs:documentation>The name of a template to use when displaying this member in a UI.</xs:documentation>
          </xs:annotation>
       </xs:attribute>
-      <xs:attribute name="hidden" type="c:Boolean">
-         <xs:annotation>
-            <xs:documentation>Indicates if this member should not be displayed in a UI.</xs:documentation>
-         </xs:annotation>
-      </xs:attribute>
       <xs:attribute name="read-only" type="c:Boolean">
          <xs:annotation>
-            <xs:documentation>Indicates if this member should not be editable in a UI.</xs:documentation>
+            <xs:documentation>Indicates if editing should be disabled for this member in an editing UI.</xs:documentation>
          </xs:annotation>
       </xs:attribute>
       <xs:attribute name="auto-generate-filter" type="c:Boolean">

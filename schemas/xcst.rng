@@ -480,6 +480,18 @@
                <ann:documentation>Auto-assign an initial value to this member.</ann:documentation>
                <ref name="Boolean"/>
             </attribute>
+            <attribute name="display">
+               <ann:documentation>Indicates if this member should be displayed in a UI.</ann:documentation>
+               <choice>
+                  <value>view-only</value>
+                  <ann:documentation>Indicates that this member should only be displayed in a viewing UI.</ann:documentation>
+
+                  <value>edit-only</value>
+                  <ann:documentation>Indicates that this member should only be displayed in an editing UI.</ann:documentation>
+
+                  <ref name="Boolean"/>
+               </choice>
+            </attribute>
             <attribute name="display-name">
                <ann:documentation>A name suitable for UI.</ann:documentation>
                <ref name="String"/>
@@ -524,12 +536,8 @@
                <ann:documentation>The name of a template to use when displaying this member in a UI.</ann:documentation>
                <ref name="String"/>
             </attribute>
-            <attribute name="hidden">
-               <ann:documentation>Indicates if this member should not be displayed in a UI.</ann:documentation>
-               <ref name="Boolean"/>
-            </attribute>
             <attribute name="read-only">
-               <ann:documentation>Indicates if this member should not be editable in a UI.</ann:documentation>
+               <ann:documentation>Indicates if editing should be disabled for this member in an editing UI.</ann:documentation>
                <ref name="Boolean"/>
             </attribute>
             <attribute name="auto-generate-filter">

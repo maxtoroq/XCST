@@ -9,7 +9,7 @@
 
    <xsl:template match="/comment()">
       <xsl:text>&#xA;</xsl:text>
-      <xsl:comment> Converted from Relax NG schema, using Jing. Use only with code completion tools that do not support Relax NG. </xsl:comment>
+      <xsl:comment> Converted from Relax NG schema, using Trang. Use only with code completion tools that do not support Relax NG. </xsl:comment>
       <xsl:text>&#xA;</xsl:text>
    </xsl:template>
 

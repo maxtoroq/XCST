@@ -902,6 +902,27 @@
       ## Metadata
    -->
 
+   <template match="@display" mode="src:scaffold-column-attribute">
+      <next-match/>
+      <variable name="display" select="xcst:non-string(.)"/>
+      <variable name="scaffold" select="if ($display = ('view-only', 'edit-only')) then true() else xcst:boolean(.)"/>
+      <if test="$scaffold">
+         <call-template name="src:line-hidden"/>
+         <call-template name="src:new-line-indented"/>
+         <text>[</text>
+         <value-of select="src:global-identifier('System.Web.Mvc.AdditionalMetadata')"/>
+         <text>("ShowForDisplay", </text>
+         <value-of select="src:boolean($display ne 'edit-only')"/>
+         <text>)]</text>
+         <call-template name="src:new-line-indented"/>
+         <text>[</text>
+         <value-of select="src:global-identifier('System.Web.Mvc.AdditionalMetadata')"/>
+         <text>("ShowForEdit", </text>
+         <value-of select="src:boolean($display ne 'view-only')"/>
+         <text>)]</text>
+      </if>
+   </template>
+
    <template match="a:display-name" mode="src:extension-instruction">
 
       <call-template name="xcst:validate-attribs">

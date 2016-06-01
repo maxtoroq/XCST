@@ -275,10 +275,18 @@ namespace Xcst.Web.Mvc.Html {
 
       static bool ShouldShow(ModelMetadata metadata, TemplateInfo templateInfo) {
 
-         return metadata.ShowForEdit
-             && metadata.ModelType != typeof(EntityState)
-             && !metadata.IsComplexType
-             && !templateInfo.Visited(metadata);
+         if (!metadata.ShowForEdit
+            || templateInfo.Visited(metadata)) {
+
+            return false;
+         }
+
+         if (metadata.AdditionalValues.ContainsKey(nameof(metadata.ShowForEdit))) {
+            return (bool)metadata.AdditionalValues[nameof(metadata.ShowForEdit)];
+         }
+
+         return metadata.ModelType != typeof(EntityState)
+            && !metadata.IsComplexType;
       }
 
       public static void StringTemplate(HtmlHelper html, DynamicContext context) {
