@@ -51,12 +51,12 @@
                   <p>© {DateTime.Now.Year} - {siteTitle}</p>
                </footer>
             </div>
+            <script src='/js/jquery.min.js'></script>
+            <script src='/js/jquery.validate.min.js'></script>
+            <script src='/js/jquery.validate.unobtrusive.min.js'></script>
+            <script src='/js/bootstrap.min.js'></script>
+            <c:call-template name='scripts'/>
          </body>
-         <script src='/js/jquery.min.js'></script>
-         <script src='/js/jquery.validate.min.js'></script>
-         <script src='/js/jquery.validate.unobtrusive.min.js'></script>
-         <script src='/js/bootstrap.min.js'></script>
-         <c:call-template name='scripts'/>
       </html>
    </c:template>
 
