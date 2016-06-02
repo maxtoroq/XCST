@@ -645,6 +645,9 @@
                <attribute name="indent">
                   <ref name="Boolean"/>
                </attribute>
+               <attribute name="indent-spaces">
+                  <ref name="Integer"/>
+               </attribute>
                <attribute name="item-separator">
                   <ref name="String"/>
                </attribute>
@@ -1351,6 +1354,12 @@
             <attribute name="indent">
                <choice>
                   <ref name="Boolean"/>
+                  <ref name="AVTExpr"/>
+               </choice>
+            </attribute>
+            <attribute name="indent-spaces">
+               <choice>
+                  <ref name="Integer"/>
                   <ref name="AVTExpr"/>
                </choice>
             </attribute>

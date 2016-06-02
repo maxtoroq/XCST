@@ -436,6 +436,7 @@
          <xs:attribute name="html-version" type="c:Decimal"/>
          <xs:attribute name="include-content-type" type="c:Boolean"/>
          <xs:attribute name="indent" type="c:Boolean"/>
+         <xs:attribute name="indent-spaces" type="c:Integer"/>
          <xs:attribute name="item-separator" type="c:String"/>
          <xs:attribute name="media-type" type="c:String"/>
          <xs:attribute name="omit-xml-declaration" type="c:Boolean"/>
@@ -992,6 +993,11 @@
       <xs:attribute name="indent">
          <xs:simpleType>
             <xs:union memberTypes="c:Boolean c:AVTExpr"/>
+         </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="indent-spaces">
+         <xs:simpleType>
+            <xs:union memberTypes="c:Integer c:AVTExpr"/>
          </xs:simpleType>
       </xs:attribute>
       <xs:attribute name="item-separator" type="c:AVT"/>

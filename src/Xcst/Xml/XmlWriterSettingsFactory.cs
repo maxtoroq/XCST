@@ -31,17 +31,17 @@ namespace Xcst.Xml {
          Type settingsType = typeof(XmlWriterSettings);
 
          setOutputMethod = (Action<XmlWriterSettings, XmlOutputMethod>)Delegate.CreateDelegate(typeof(Action<XmlWriterSettings, XmlOutputMethod>), settingsType.GetProperty("OutputMethod", BindingFlags.Instance | BindingFlags.Public).GetSetMethod(true));
-         
+
          setDocTypePublic = (Action<XmlWriterSettings, string>)Delegate.CreateDelegate(typeof(Action<XmlWriterSettings, string>), settingsType.GetProperty("DocTypePublic", BindingFlags.Instance | BindingFlags.NonPublic).GetSetMethod(true));
-         
+
          setDocTypeSystem = (Action<XmlWriterSettings, string>)Delegate.CreateDelegate(typeof(Action<XmlWriterSettings, string>), settingsType.GetProperty("DocTypeSystem", BindingFlags.Instance | BindingFlags.NonPublic).GetSetMethod(true));
-         
+
          setMediaType = (Action<XmlWriterSettings, string>)Delegate.CreateDelegate(typeof(Action<XmlWriterSettings, string>), settingsType.GetProperty("MediaType", BindingFlags.Instance | BindingFlags.NonPublic).GetSetMethod(true));
       }
 
       public static XmlWriterSettings Create(OutputParameters parameters) {
 
-         var settings = new XmlWriterSettings { 
+         var settings = new XmlWriterSettings {
             ConformanceLevel = ConformanceLevel.Auto
          };
 
@@ -74,6 +74,10 @@ namespace Xcst.Xml {
 
          if (parameters.Indent != null) {
             settings.Indent = parameters.Indent.Value;
+         }
+
+         if (parameters.IndentSpaces != null) {
+            settings.IndentChars = new string(' ', parameters.IndentSpaces.Value);
          }
 
          if (parameters.MediaType != null) {

@@ -42,6 +42,7 @@
          <html-version>HtmlVersion</html-version>
          <include-content-type>IncludeContentType</include-content-type>
          <indent>Indent</indent>
+         <indent-spaces>IndentSpaces</indent-spaces>
          <item-separator>ItemSeparator</item-separator>
          <media-type>MediaType</media-type>
          <method>Method</method>
@@ -1541,6 +1542,12 @@
       <value-of select="src:decimal(xcst:decimal(.))"/>
    </template>
 
+   <template match="@indent-spaces" mode="src:output-parameter-setter">
+      <value-of select="src:output-parameter-property(.)"/>
+      <text> = </text>
+      <value-of select="src:integer(xcst:integer(.))"/>
+   </template>
+
    <template match="@method" mode="src:output-parameter-setter">
       <value-of select="src:output-parameter-property(.)"/>
       <text> = </text>
@@ -2119,6 +2126,12 @@
             <sequence select="concat(src:fully-qualified-helper('DataType'), '.Decimal(', $string, ')')"/>
          </otherwise>
       </choose>
+   </function>
+
+   <function name="src:integer" as="xs:string">
+      <param name="int" as="xs:integer"/>
+
+      <sequence select="string($int)"/>
    </function>
 
    <function name="src:QName" as="xs:string">

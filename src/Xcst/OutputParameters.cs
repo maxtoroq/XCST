@@ -108,6 +108,11 @@ namespace Xcst {
          set { parameters[StandardParameters.Indent] = value; }
       }
 
+      public int? IndentSpaces {
+         get { return (int?)this[StandardParameters.IndentSpaces]; }
+         set { parameters[StandardParameters.IndentSpaces] = value; }
+      }
+
       public string ItemSeparator {
          get { return (string)this[StandardParameters.ItemSeparator]; }
          set { parameters[StandardParameters.ItemSeparator] = value; }
@@ -200,6 +205,7 @@ namespace Xcst {
          public static readonly QualifiedName HtmlVersion = new QualifiedName("html-version");
          public static readonly QualifiedName IncludeContentType = new QualifiedName("include-content-type");
          public static readonly QualifiedName Indent = new QualifiedName("indent");
+         public static readonly QualifiedName IndentSpaces = new QualifiedName("indent-spaces");
          public static readonly QualifiedName ItemSeparator = new QualifiedName("item-separator");
          public static readonly QualifiedName MediaType = new QualifiedName("media-type");
          public static readonly QualifiedName Method = new QualifiedName("method");
@@ -240,6 +246,9 @@ namespace Xcst {
 
                case "indent":
                   return Indent;
+
+               case "indent-spaces":
+                  return IndentSpaces;
 
                case "item-separator":
                   return ItemSeparator;
