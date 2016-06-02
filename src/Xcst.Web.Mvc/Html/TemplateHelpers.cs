@@ -261,10 +261,6 @@ namespace Xcst.Web.Mvc.Html {
 
       internal static void TemplateHelper(HtmlHelper html, DynamicContext context, ModelMetadata metadata, string htmlFieldName, string templateName, DataBoundControlMode mode, object additionalViewData, ExecuteTemplateDelegate executeTemplate) {
 
-         // TODO: Convert Editor into Display if model.IsReadOnly is true? Need to be careful about this because
-         // the Model property on the ViewPage/ViewUserControl is get-only, so the type descriptor automatically
-         // decorates it with a [ReadOnly] attribute...
-
          bool displayMode = mode == DataBoundControlMode.ReadOnly;
 
          if (metadata.ConvertEmptyStringToNull

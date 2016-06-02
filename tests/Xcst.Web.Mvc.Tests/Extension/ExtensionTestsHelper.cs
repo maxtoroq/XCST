@@ -68,8 +68,6 @@ namespace Xcst.Web.Mvc.Tests.Extension {
                .Select(c => CSharpSyntaxTree.ParseText(c))
                .ToArray();
 
-            // TODO: Should compiler give list of assembly references?
-
             MetadataReference[] references = {
                MetadataReference.CreateFromFile(typeof(System.Object).Assembly.Location),
                MetadataReference.CreateFromFile(typeof(System.Uri).Assembly.Location),
@@ -111,9 +109,6 @@ namespace Xcst.Web.Mvc.Tests.Extension {
       }
 
       public static bool OutputEqualsToDoc(Type module, string fileName) {
-
-         // TODO: XNode.DeepEquals has quirks <http://blogs.msdn.com/b/ericwhite/archive/2009/01/28/equality-semantics-of-linq-to-xml-trees.aspx>
-         // use fn:deep-equals instead ?
 
          XDocument comparingDoc = XDocument.Load(fileName, LoadOptions.PreserveWhitespace);
          XDocument outputDoc = new XDocument();
