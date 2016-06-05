@@ -57,6 +57,10 @@ namespace Xcst.Runtime {
          }
       }
 
+      public static QualifiedName QName(string localOrUriQualifiedName) {
+         return QualifiedName.Parse(localOrUriQualifiedName);
+      }
+
       public static QualifiedName QName(string ns, string localName) {
          return new QualifiedName(localName, ns);
       }

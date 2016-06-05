@@ -72,14 +72,7 @@ namespace Xcst.Compiler.CodeGeneration {
                case XcstComponentKind.AttributeSet:
 
                   writer.WriteStartElement(prefix, "attribute-set", ns);
-
-                  if (String.IsNullOrEmpty(attr.Namespace)) {
-                     writer.WriteAttributeString("name", attr.Name);
-                  } else {
-                     writer.WriteAttributeString("name", "ns1:" + attr.Name);
-                     writer.WriteAttributeString("xmlns", "ns1", null, attr.Namespace);
-                  }
-
+                  writer.WriteAttributeString("name", attr.Name);
                   writer.WriteAttributeString("visibility", memberVisibility(member));
                   writer.WriteAttributeString("member-name", member.Name);
 
@@ -124,14 +117,7 @@ namespace Xcst.Compiler.CodeGeneration {
                case XcstComponentKind.Template:
 
                   writer.WriteStartElement(prefix, "template", ns);
-
-                  if (String.IsNullOrEmpty(attr.Namespace)) {
-                     writer.WriteAttributeString("name", attr.Name);
-                  } else {
-                     writer.WriteAttributeString("name", "ns1:" + attr.Name);
-                     writer.WriteAttributeString("xmlns", "ns1", null, attr.Namespace);
-                  }
-
+                  writer.WriteAttributeString("name", attr.Name);
                   writer.WriteAttributeString("visibility", memberVisibility(member));
                   writer.WriteAttributeString("member-name", member.Name);
 
@@ -173,6 +159,10 @@ namespace Xcst.Compiler.CodeGeneration {
          }
 
          writer.WriteEndElement();
+      }
+
+      public static int QNameId(QualifiedName name) {
+         return name.ToUriQualifiedName().GetHashCode();
       }
 
       static string Constant(object value) {

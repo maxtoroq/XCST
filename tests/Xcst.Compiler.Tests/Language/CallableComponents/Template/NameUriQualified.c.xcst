@@ -1,12 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <c:module version='1.0' language='C#'
    xmlns:c='http://maxtoroq.github.io/XCST'
-   xmlns='http://www.w3.org/1999/xhtml'>
+   xmlns:foo='urn:foo'>
 
-   <c:import href='_CallTemplateNoPrefix.xcst'/>
+   <c:template name='Q{urn:foo}foo'>
+      <foo/>
+   </c:template>
 
    <c:template name='c:initial-template'>
-      <c:call-template name='foo'/>
+      <c:call-template name='foo:foo'/>
    </c:template>
 
 </c:module>

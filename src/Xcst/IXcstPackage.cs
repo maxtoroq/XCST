@@ -40,8 +40,6 @@ namespace Xcst {
 
       public string Name { get; set; }
 
-      public string Namespace { get; set; }
-
       public XcstComponentAttribute(XcstComponentKind componentKind) {
          this.ComponentKind = componentKind;
       }

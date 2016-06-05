@@ -77,7 +77,7 @@
       </xs:attribute>
       <xs:attribute name="use-attribute-sets" form="qualified">
          <xs:simpleType>
-            <xs:list itemType="c:QName"/>
+            <xs:list itemType="c:EQName"/>
          </xs:simpleType>
       </xs:attribute>
       <xs:anyAttribute processContents="skip"/>
@@ -187,7 +187,7 @@
             <xs:element minOccurs="0" maxOccurs="unbounded" ref="c:param"/>
             <xs:group ref="c:sequence-constructor"/>
          </xs:sequence>
-         <xs:attribute name="name" use="required" type="c:QName"/>
+         <xs:attribute name="name" use="required" type="c:EQName"/>
          <xs:attributeGroup ref="c:visibility-attribute"/>
          <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
@@ -222,10 +222,10 @@
          <xs:sequence>
             <xs:element minOccurs="0" maxOccurs="unbounded" ref="c:attribute"/>
          </xs:sequence>
-         <xs:attribute name="name" use="required" type="c:QName"/>
+         <xs:attribute name="name" use="required" type="c:EQName"/>
          <xs:attribute name="use-attribute-sets">
             <xs:simpleType>
-               <xs:list itemType="c:QName"/>
+               <xs:list itemType="c:EQName"/>
             </xs:simpleType>
          </xs:attribute>
          <xs:attributeGroup ref="c:visibility-attribute"/>
@@ -421,12 +421,12 @@
    </xs:attributeGroup>
    <xs:element name="output">
       <xs:complexType>
-         <xs:attribute name="name" type="c:QName"/>
+         <xs:attribute name="name" type="c:EQName"/>
          <xs:attribute name="method" type="c:OutputMethod"/>
          <xs:attribute name="byte-order-mark" type="c:Boolean"/>
          <xs:attribute name="cdata-section-elements">
             <xs:simpleType>
-               <xs:list itemType="c:QName"/>
+               <xs:list itemType="c:EQName-default"/>
             </xs:simpleType>
          </xs:attribute>
          <xs:attribute name="doctype-public" type="c:String"/>
@@ -443,7 +443,7 @@
          <xs:attribute name="standalone" type="c:OutputStandalone"/>
          <xs:attribute name="suppress-indentation">
             <xs:simpleType>
-               <xs:list itemType="c:QName"/>
+               <xs:list itemType="c:EQName-default"/>
             </xs:simpleType>
          </xs:attribute>
          <xs:attribute name="undeclare-prefixes" type="c:Boolean"/>
@@ -531,7 +531,7 @@
                <xs:attribute name="test" use="required" type="c:Expression"/>
                <xs:attribute name="error-code">
                   <xs:simpleType>
-                     <xs:union memberTypes="c:QName c:AVTExpr"/>
+                     <xs:union memberTypes="c:EQName c:AVTExpr"/>
                   </xs:simpleType>
                </xs:attribute>
                <xs:attributeGroup ref="c:standard-attributes"/>
@@ -567,7 +567,7 @@
    <xs:element name="call-template">
       <xs:complexType>
          <xs:group minOccurs="0" maxOccurs="unbounded" ref="c:with-param-for-templates"/>
-         <xs:attribute name="name" use="required" type="c:QName"/>
+         <xs:attribute name="name" use="required" type="c:EQName"/>
          <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
@@ -633,7 +633,7 @@
          <xs:group ref="c:sequence-constructor"/>
          <xs:attribute name="name" use="required">
             <xs:simpleType>
-               <xs:union memberTypes="c:QName c:AVTExpr"/>
+               <xs:union memberTypes="c:QName-default c:AVTExpr"/>
             </xs:simpleType>
          </xs:attribute>
          <xs:attribute name="namespace">
@@ -643,7 +643,7 @@
          </xs:attribute>
          <xs:attribute name="use-attribute-sets">
             <xs:simpleType>
-               <xs:list itemType="c:QName"/>
+               <xs:list itemType="c:EQName"/>
             </xs:simpleType>
          </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>
@@ -712,7 +712,7 @@
                </xs:attribute>
                <xs:attribute name="error-code">
                   <xs:simpleType>
-                     <xs:union memberTypes="c:QName c:AVTExpr"/>
+                     <xs:union memberTypes="c:EQName c:AVTExpr"/>
                   </xs:simpleType>
                </xs:attribute>
                <xs:attributeGroup ref="c:standard-attributes"/>
@@ -863,7 +863,7 @@
                   <xs:group minOccurs="0" maxOccurs="unbounded" ref="c:with-param-for-templates"/>
                   <xs:attribute name="name" use="required">
                      <xs:simpleType>
-                        <xs:union memberTypes="c:QName c:AVTExpr"/>
+                        <xs:union memberTypes="c:EQName c:AVTExpr"/>
                      </xs:simpleType>
                   </xs:attribute>
                   <xs:attribute name="with-params" type="c:Expression"/>
@@ -950,7 +950,7 @@
    <xs:attributeGroup name="output-avt-attributes">
       <xs:attribute name="format">
          <xs:simpleType>
-            <xs:union memberTypes="c:QName c:AVTExpr"/>
+            <xs:union memberTypes="c:EQName c:AVTExpr"/>
          </xs:simpleType>
       </xs:attribute>
       <xs:attribute name="method">
@@ -967,7 +967,7 @@
          <xs:simpleType>
             <xs:union memberTypes="c:AVTExpr">
                <xs:simpleType>
-                  <xs:list itemType="c:QName"/>
+                  <xs:list itemType="c:EQName-default"/>
                </xs:simpleType>
             </xs:union>
          </xs:simpleType>
@@ -1016,7 +1016,7 @@
          <xs:simpleType>
             <xs:union memberTypes="c:AVTExpr">
                <xs:simpleType>
-                  <xs:list itemType="c:QName"/>
+                  <xs:list itemType="c:EQName-default"/>
                </xs:simpleType>
             </xs:union>
          </xs:simpleType>
@@ -1057,19 +1057,33 @@
    </xs:simpleType>
    <xs:simpleType name="QName">
       <xs:annotation>
-         <xs:documentation>
-         A QName.
-         This schema does not use the built-in type xs:QName, but rather defines its own
-         QName type. Although xs:QName would define the correct validation on these attributes,
-         a schema processor would expand unprefixed QNames incorrectly when constructing the PSVI,
-         because (as defined in XML Schema errata) an unprefixed xs:QName is assumed to be in
-         the default namespace, which is not the correct assumption for XCST.
-         The data type is defined as a restriction of the built-in type Name, restricted
-         so that it can only contain one colon which must not be the first or last character.
-      </xs:documentation>
+         <xs:documentation>A QName. Unprefixed names are in the null namespace.</xs:documentation>
       </xs:annotation>
       <xs:restriction base="xs:Name">
-         <xs:pattern value="([^:]+:)?[^:]+"/>
+         <xs:pattern value="([^:\{\}]+:)?[^:\{\}]+"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="QName-default">
+      <xs:annotation>
+         <xs:documentation>A QName. Unprefixed names are in the default namespace.</xs:documentation>
+      </xs:annotation>
+      <xs:restriction base="xs:QName"/>
+   </xs:simpleType>
+   <xs:simpleType name="EQName">
+      <xs:annotation>
+         <xs:documentation>An EQName. Unprefixed QNames are in the null namespace.</xs:documentation>
+      </xs:annotation>
+      <xs:union memberTypes="c:QName c:URIQualifiedName"/>
+   </xs:simpleType>
+   <xs:simpleType name="EQName-default">
+      <xs:annotation>
+         <xs:documentation>An EQName. Unprefixed QNames are in the default namespace.</xs:documentation>
+      </xs:annotation>
+      <xs:union memberTypes="c:QName-default c:URIQualifiedName"/>
+   </xs:simpleType>
+   <xs:simpleType name="URIQualifiedName">
+      <xs:restriction base="xs:Name">
+         <xs:pattern value="Q\{[^\{\}]*\}([^:\{\}]+:)?[^:\{\}]+"/>
       </xs:restriction>
    </xs:simpleType>
    <xs:simpleType name="NCName">
@@ -1115,7 +1129,7 @@
       </xs:restriction>
    </xs:simpleType>
    <xs:simpleType name="OutputMethod">
-      <xs:union>
+      <xs:union memberTypes="c:EQName">
          <xs:simpleType>
             <xs:restriction base="xs:token">
                <xs:enumeration value="xml"/>
@@ -1134,11 +1148,6 @@
          <xs:simpleType>
             <xs:restriction base="xs:token">
                <xs:enumeration value="text"/>
-            </xs:restriction>
-         </xs:simpleType>
-         <xs:simpleType>
-            <xs:restriction base="xs:QName">
-               <xs:pattern value=".+:.+"/>
             </xs:restriction>
          </xs:simpleType>
       </xs:union>

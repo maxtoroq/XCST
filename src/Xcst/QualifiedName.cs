@@ -68,7 +68,35 @@ namespace Xcst {
             return this.Name;
          }
 
-         return $"{{{this.Namespace}}}{this.Name}";
+         return ToUriQualifiedName();
+      }
+
+      public string ToUriQualifiedName() {
+         return $"Q{{{this.Namespace}}}{this.Name}";
+      }
+
+      public static QualifiedName Parse(string localOrUriQualifiedName) {
+
+         if (localOrUriQualifiedName == null) throw new ArgumentNullException(nameof(localOrUriQualifiedName));
+         if (String.IsNullOrWhiteSpace(localOrUriQualifiedName)) throw new ArgumentException($"{nameof(localOrUriQualifiedName)} cannot be empty.", nameof(localOrUriQualifiedName));
+
+         if (localOrUriQualifiedName.Length > 2
+            && localOrUriQualifiedName[0] == 'Q'
+            && localOrUriQualifiedName[1] == '{') {
+
+            int closeIndex = localOrUriQualifiedName.IndexOf('}');
+
+            if (closeIndex < 0) {
+               throw new ArgumentException("Closing brace not found.", nameof(localOrUriQualifiedName));
+            }
+
+            string ns = localOrUriQualifiedName.Substring(2, closeIndex - 2).Trim();
+            string local = localOrUriQualifiedName.Substring(closeIndex + 1);
+
+            return new QualifiedName(local, ns);
+         }
+
+         return new QualifiedName(localOrUriQualifiedName);
       }
 
       public static bool operator ==(QualifiedName left, QualifiedName right) {

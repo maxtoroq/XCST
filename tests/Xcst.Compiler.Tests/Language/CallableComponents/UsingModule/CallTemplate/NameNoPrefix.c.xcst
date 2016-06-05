@@ -3,14 +3,14 @@
    xmlns:c='http://maxtoroq.github.io/XCST'
    xmlns='http://www.w3.org/1999/xhtml'>
 
-   <c:import href='_SerializeFormatNoPrefix.xcst'/>
+   <c:use-functions in='System'/>
+   
+   <c:import href='_NameNoPrefix.xcst'/>
 
    <c:template name='c:initial-template'>
-      <div>
-         <c:serialize format='foo'>
-            <foo>foo</foo>
-         </c:serialize>
-      </div>
+      <c:using-module value='Activator.CreateInstance(this.GetType())'>
+         <c:call-template name='foo'/>
+      </c:using-module>
    </c:template>
 
 </c:module>

@@ -71,7 +71,7 @@
                <text>, </text>
                <variable name="descending-expr" select="
                   if (@order) then
-                     src:sort-order-descending(xcst:avt-sort-order-descending(@order), src:expand-attribute(@order))
+                     src:sort-order-descending(xcst:sort-order-descending(@order, true()), src:expand-attribute(@order))
                   else
                      src:sort-order-descending(false())"/>
                <value-of select="$descending-expr"/>

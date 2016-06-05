@@ -418,8 +418,7 @@ namespace Xcst.Compiler.CodeGeneration {
 
             QualifiedName qname = ((QName)arguments[0].AsAtomicValues().Single().Value).ToQualifiedName();
 
-            return qname.ToString()
-               .GetHashCode()
+            return Helpers.QNameId(qname)
                .ToXdmAtomicValue()
                .GetXdmEnumerator();
          }

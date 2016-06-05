@@ -3,7 +3,7 @@
    xmlns:c='http://maxtoroq.github.io/XCST'
    xmlns='http://www.w3.org/1999/xhtml'>
 
-   <c:import href='_TemplateNoPrefix.xcst'/>
+   <c:import href='_NameNoPrefix.xcst'/>
 
    <c:template name='foo'>
       <foo/>

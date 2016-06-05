@@ -3,8 +3,10 @@
    xmlns:c='http://maxtoroq.github.io/XCST'
    xmlns='http://www.w3.org/1999/xhtml'>
 
-   <c:import href='_OutputNoPrefix.xcst'/>
+   <c:import href='_NameNoPrefix.xcst'/>
 
-   <c:output name='foo' method='text'/>
+   <c:attribute-set name='bar'>
+      <c:attribute name='bar'>bar</c:attribute>
+   </c:attribute-set>
 
 </c:module>

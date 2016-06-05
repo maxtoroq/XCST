@@ -146,7 +146,7 @@
             <attribute name="c:use-attribute-sets">
                <list>
                   <zeroOrMore>
-                     <ref name="QName"/>
+                     <ref name="EQName"/>
                   </zeroOrMore>
                </list>
             </attribute>
@@ -331,7 +331,7 @@
    <define name="template">
       <element name="template">
          <attribute name="name">
-            <ref name="QName"/>
+            <ref name="EQName"/>
          </attribute>
          <ref name="visibility-attribute"/>
          <ref name="standard-attributes"/>
@@ -387,13 +387,13 @@
    <define name="attribute-set">
       <element name="attribute-set">
          <attribute name="name">
-            <ref name="QName"/>
+            <ref name="EQName"/>
          </attribute>
          <optional>
             <attribute name="use-attribute-sets">
                <list>
                   <zeroOrMore>
-                     <ref name="QName"/>
+                     <ref name="EQName"/>
                   </zeroOrMore>
                </list>
             </attribute>
@@ -609,7 +609,7 @@
          <zeroOrMore>
             <choice>
                <attribute name="name">
-                  <ref name="QName"/>
+                  <ref name="EQName"/>
                </attribute>
                <attribute name="method">
                   <ref name="OutputMethod"/>
@@ -620,7 +620,7 @@
                <attribute name="cdata-section-elements">
                   <list>
                      <zeroOrMore>
-                        <ref name="QName"/>
+                        <ref name="EQName-default"/>
                      </zeroOrMore>
                   </list>
                </attribute>
@@ -663,7 +663,7 @@
                <attribute name="suppress-indentation">
                   <list>
                      <zeroOrMore>
-                        <ref name="QName"/>
+                        <ref name="EQName-default"/>
                      </zeroOrMore>
                   </list>
                </attribute>
@@ -756,7 +756,7 @@
          <optional>
             <attribute name="error-code">
                <choice>
-                  <ref name="QName"/>
+                  <ref name="EQName"/>
                   <ref name="AVTExpr"/>
                </choice>
             </attribute>
@@ -801,7 +801,7 @@
    <define name="call-template">
       <element name="call-template">
          <attribute name="name">
-            <ref name="QName"/>
+            <ref name="EQName"/>
          </attribute>
          <ref name="standard-attributes"/>
          <zeroOrMore>
@@ -880,7 +880,7 @@
       <element name="element">
          <attribute name="name">
             <choice>
-               <ref name="QName"/>
+               <ref name="QName-default"/>
                <ref name="AVTExpr"/>
             </choice>
          </attribute>
@@ -895,7 +895,7 @@
                <attribute name="use-attribute-sets">
                   <list>
                      <zeroOrMore>
-                        <ref name="QName"/>
+                        <ref name="EQName"/>
                      </zeroOrMore>
                   </list>
                </attribute>
@@ -994,7 +994,7 @@
                </attribute>
                <attribute name="error-code">
                   <choice>
-                     <ref name="QName"/>
+                     <ref name="EQName"/>
                      <ref name="AVTExpr"/>
                   </choice>
                </attribute>
@@ -1186,7 +1186,7 @@
          <element name="call-template">
             <attribute name="name">
                <choice>
-                  <ref name="QName"/>
+                  <ref name="EQName"/>
                   <ref name="AVTExpr"/>
                </choice>
             </attribute>
@@ -1298,7 +1298,7 @@
          <choice>
             <attribute name="format">
                <choice>
-                  <ref name="QName"/>
+                  <ref name="EQName"/>
                   <ref name="AVTExpr"/>
                </choice>
             </attribute>
@@ -1318,7 +1318,7 @@
                <choice>
                   <list>
                      <zeroOrMore>
-                        <ref name="QName"/>
+                        <ref name="EQName-default"/>
                      </zeroOrMore>
                   </list>
                   <ref name="AVTExpr"/>
@@ -1385,7 +1385,7 @@
                <choice>
                   <list>
                      <zeroOrMore>
-                        <ref name="QName"/>
+                        <ref name="EQName-default"/>
                      </zeroOrMore>
                   </list>
                   <ref name="AVTExpr"/>
@@ -1436,21 +1436,36 @@
    </define>
 
    <define name="QName">
-      <!--
-         See <http://www.w3.org/TR/xslt20/#schema-for-xslt>
-      -->
-      <ann:documentation>
-         A QName.
-         This schema does not use the built-in type xs:QName, but rather defines its own
-         QName type. Although xs:QName would define the correct validation on these attributes,
-         a schema processor would expand unprefixed QNames incorrectly when constructing the PSVI,
-         because (as defined in XML Schema errata) an unprefixed xs:QName is assumed to be in
-         the default namespace, which is not the correct assumption for XCST.
-         The data type is defined as a restriction of the built-in type Name, restricted
-         so that it can only contain one colon which must not be the first or last character.
-      </ann:documentation>
+      <ann:documentation>A QName. Unprefixed names are in the null namespace.</ann:documentation>
       <data type="Name">
-         <param name="pattern">([^:]+:)?[^:]+</param>
+         <param name="pattern">([^:\{\}]+:)?[^:\{\}]+</param>
+      </data>
+   </define>
+
+   <define name="QName-default">
+      <ann:documentation>A QName. Unprefixed names are in the default namespace.</ann:documentation>
+      <data type="QName"/>
+   </define>
+
+   <define name="EQName">
+      <ann:documentation>An EQName. Unprefixed QNames are in the null namespace.</ann:documentation>
+      <choice>
+         <ref name="QName"/>
+         <ref name="URIQualifiedName"/>
+      </choice>
+   </define>
+
+   <define name="EQName-default">
+      <ann:documentation>An EQName. Unprefixed QNames are in the default namespace.</ann:documentation>
+      <choice>
+         <ref name="QName-default"/>
+         <ref name="URIQualifiedName"/>
+      </choice>
+   </define>
+
+   <define name="URIQualifiedName">
+      <data type="Name">
+         <param name="pattern">Q\{[^\{\}]*\}([^:\{\}]+:)?[^:\{\}]+</param>
       </data>
    </define>
 
@@ -1509,9 +1524,7 @@
          <value>html</value>
          <value>xhtml</value>
          <value>text</value>
-         <data type="QName">
-            <param name="pattern">.+:.+</param>
-         </data>
+         <ref name="EQName"/>
       </choice>
    </define>
 

@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#'
+   xmlns:c='http://maxtoroq.github.io/XCST'
+   xmlns:foo='urn:foo'>
+
+   <c:use-functions in='System'/>
+
+   <c:template name='foo:foo'>
+      <foo/>
+   </c:template>
+
+   <c:template name='c:initial-template'>
+      <c:using-module value='Activator.CreateInstance(this.GetType())'>
+         <c:call-template name='Q{urn:foo}foo'/>
+      </c:using-module>
+   </c:template>
+
+</c:module>

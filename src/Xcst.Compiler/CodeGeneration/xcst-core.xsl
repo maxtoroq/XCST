@@ -410,7 +410,7 @@
       <if test="$attr">
          <variable name="names" select="
             for $s in tokenize($attr, '\s')[.]
-            return xcst:resolve-QName-ignore-default($s, .)"/>
+            return xcst:EQName($attr, $s)"/>
          <variable name="sets" as="xs:string*">
             <variable name="current" select="."/>
             <for-each select="$names">
@@ -424,7 +424,7 @@
                      <sequence select="src:original-member($original-meta)"/>
                   </when>
                   <otherwise>
-                     <variable name="meta" select="$package-manifest/xcst:attribute-set[@visibility ne 'hidden' and xcst:resolve-QName-ignore-default(@name, .) eq current()]"/>
+                     <variable name="meta" select="$package-manifest/xcst:attribute-set[@visibility ne 'hidden' and xcst:EQName(@name) eq current()]"/>
                      <if test="not($meta)">
                         <sequence select="error(xs:QName('err:XTSE0710'), concat('No attribute set exists named ', current(), '.'), src:error-object($current))"/>
                      </if>
@@ -497,7 +497,7 @@
                <text>, </text>
                <variable name="descending-expr" select="
                   if (@order) then
-                     src:sort-order-descending(xcst:avt-sort-order-descending(@order), src:expand-attribute(@order))
+                     src:sort-order-descending(xcst:sort-order-descending(@order, true()), src:expand-attribute(@order))
                   else
                      src:sort-order-descending(false())"/>
                <value-of select="$descending-expr"/>
@@ -870,7 +870,7 @@
          </call-template>
       </for-each>
 
-      <variable name="qname" select="xcst:resolve-QName-ignore-default(xcst:name(@name), .)"/>
+      <variable name="qname" select="xcst:EQName(@name)"/>
       <variable name="original" select="$qname eq xs:QName('c:original') and ancestor::c:override"/>
       <variable name="meta" as="element(xcst:template)">
          <choose>
@@ -886,7 +886,7 @@
             <otherwise>
                <variable name="meta" select="
                   (reverse($package-manifest/xcst:template)[
-                     xcst:resolve-QName-ignore-default(@name, .) eq $qname
+                     xcst:EQName(@name) eq $qname
                      and @visibility ne 'hidden'])[1]"/>
                <if test="not($meta)">
                   <sequence select="error(xs:QName('err:XTSE0650'), concat('No template exists named ', $qname, '.'), src:error-object(.))"/>
@@ -1134,8 +1134,7 @@
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
       <text>.CallTemplate(</text>
-      <!-- TODO: @name AVT -->
-      <value-of select="src:QName(xcst:resolve-QName-ignore-default(xcst:name(@name), .))"/>
+      <value-of select="src:QName(xcst:EQName(@name, (), false(), true()), src:expand-attribute(@name))"/>
       <text>)</text>
       <for-each select="c:with-param">
          <call-template name="xcst:validate-attribs">
@@ -1187,7 +1186,7 @@
          </call-template>
          <if test="@error-code">
             <text>, </text>
-            <variable name="error-code" select="xcst:resolve-QName-ignore-default(@error-code, .)"/>
+            <variable name="error-code" select="xcst:EQName(@error-code)"/>
             <value-of select="src:QName($error-code)"/>
          </if>
          <text>)</text>
@@ -1201,12 +1200,12 @@
          <with-param name="allowed" select="'terminate', 'error-code', 'value'"/>
          <with-param name="required" select="()"/>
       </call-template>
-      <variable name="never-terminate" select="not(@terminate) or xcst:avt-boolean(@terminate) eq false()"/>
-      <variable name="always-terminate" select="boolean(@terminate/xcst:avt-boolean(.))"/>
+      <variable name="never-terminate" select="not(@terminate) or xcst:boolean(@terminate, true()) eq false()"/>
+      <variable name="always-terminate" select="boolean(@terminate/xcst:boolean(., true()))"/>
       <variable name="use-if" select="not($never-terminate) and not($always-terminate)"/>
       <variable name="terminate-expr" select="
          if (@terminate) then
-            src:boolean(xcst:avt-boolean(@terminate), src:expand-attribute(@terminate))
+            src:boolean(xcst:boolean(@terminate, true()), src:expand-attribute(@terminate))
          else
             src:boolean(false())"/>
       <variable name="value-expr" as="text()">
@@ -1216,7 +1215,7 @@
       </variable>
       <variable name="error-code-expr">
          <if test="@error-code">
-            <variable name="error-code" select="xcst:resolve-QName-ignore-default(@error-code, .)"/>
+            <variable name="error-code" select="xcst:EQName(@error-code)"/>
             <value-of select="src:QName($error-code)"/>
          </if>
       </variable>
@@ -1470,19 +1469,11 @@
 
       <choose>
          <when test="@format">
-            <choose>
-               <when test="xcst:is-value-template(@format)">
-                  <!-- TODO: @format AVT -->
-                  <sequence select="error((), 'Attribute value template for @format not supported yet.', src:error-object(.))"/>
-               </when>
-               <otherwise>
-                  <variable name="format" select="xcst:resolve-QName-ignore-default(@format, .)"/>
-                  <if test="not($package-manifest/xcst:output[xcst:resolve-QName-ignore-default(@name, .) eq $format])">
-                     <sequence select="error(xs:QName('err:XTDE1460'), concat('No output definition exists named ', $format, '.'), src:error-object(.))"/>
-                  </if>
-                  <value-of select="src:QName($format)"/>
-               </otherwise>
-            </choose>
+            <variable name="format" select="xcst:EQName(@format, (), false(), true())"/>
+            <if test="not(empty($format)) and not($package-manifest/xcst:output[xcst:EQName(@name) eq $format])">
+               <sequence select="error(xs:QName('err:XTDE1460'), concat('No output definition exists named ', $format, '.'), src:error-object(.))"/>
+            </if>
+            <value-of select="src:QName($format, src:expand-attribute(@format))"/>
          </when>
          <otherwise>null</otherwise>
       </choose>
@@ -1508,7 +1499,7 @@
    <template match="@cdata-section-elements | @suppress-indentation" mode="src:output-parameter-setter">
       <param name="list-value" select="
          for $s in tokenize(., '\s')[.]
-         return resolve-QName($s, ..)"/>
+         return xcst:EQName(., $s, true())"/>
 
       <value-of select="src:output-parameter-property(.)"/>
       <text> = new </text>
@@ -1552,14 +1543,11 @@
       <value-of select="src:output-parameter-property(.)"/>
       <text> = </text>
       <variable name="string" select="xcst:non-string(.)"/>
-      <choose>
-         <when test="$string = ('xml', 'html', 'xhtml', 'text')">
-            <value-of select="src:QName(QName('', $string))"/>
-         </when>
-         <otherwise>
-            <value-of select="src:QName(resolve-QName(., ..))"/>
-         </otherwise>
-      </choose>
+      <variable name="qname" select="xcst:EQName(.)"/>
+      <if test="not(namespace-uri-from-QName($qname)) and not(local-name-from-QName($qname) = ('xml', 'html', 'xhtml', 'text'))">
+         <sequence select="error(xs:QName('err:XTSE1570'), concat('Invalid value for @', name(), '. Must be one of (xml|html|xhtml|text).'), src:error-object(.))"/>
+      </if>
+      <value-of select="src:QName($qname)"/>
    </template>
 
    <template match="@standalone" mode="src:output-parameter-setter">
@@ -1848,25 +1836,24 @@
    <function name="xcst:non-string" as="xs:string">
       <param name="node" as="node()"/>
 
-      <sequence select="replace($node, '^\s*(.+?)\s*$', '$1')"/>
+      <variable name="string" select="xcst:trim($node)"/>
+
+      <if test="not($string)">
+         <sequence select="error(xs:QName('err:XTSE0020'), concat('Value of ', '@'[$node instance of attribute()], name($node), ' must be a non-empty string.'), src:error-object($node))"/>
+      </if>
+
+      <sequence select="$string"/>
    </function>
 
    <function name="xcst:boolean" as="xs:boolean">
       <param name="node" as="node()"/>
 
-      <variable name="bool" select="xcst:avt-boolean($node)"/>
-      <choose>
-         <when test="not(empty($bool))">
-            <sequence select="$bool"/>
-         </when>
-         <otherwise>
-            <sequence select="error(xs:QName('err:XTSE0020'), concat('Invalid boolean for ', name($node), '.'), src:error-object($node))"/>
-         </otherwise>
-      </choose>
+      <sequence select="xcst:boolean($node, false())"/>
    </function>
 
-   <function name="xcst:avt-boolean" as="xs:boolean?">
+   <function name="xcst:boolean" as="xs:boolean?">
       <param name="node" as="node()"/>
+      <param name="avt" as="xs:boolean"/>
 
       <variable name="string" select="xcst:non-string($node)"/>
       <sequence select="
@@ -1874,7 +1861,7 @@
             true()
          else if ($string = ('no', 'false', '0')) then
             false()
-         else if (xcst:is-value-template($node)) then
+         else if ($avt and xcst:is-value-template($node)) then
             ()
          else
             error(xs:QName('err:XTSE0020'), concat('Invalid boolean for ', name($node), '.'), src:error-object($node))
@@ -1898,19 +1885,12 @@
    <function name="xcst:sort-order-descending" as="xs:boolean">
       <param name="node" as="node()"/>
 
-      <variable name="bool" select="xcst:avt-sort-order-descending($node)"/>
-      <choose>
-         <when test="not(empty($bool))">
-            <sequence select="$bool"/>
-         </when>
-         <otherwise>
-            <sequence select="error(xs:QName('err:XTSE0020'), concat('Invalid value for ', name($node), '. Must be one of (ascending|descending)'), src:error-object($node))"/>
-         </otherwise>
-      </choose>
+      <sequence select="xcst:sort-order-descending($node, false())"/>
    </function>
 
-   <function name="xcst:avt-sort-order-descending" as="xs:boolean?">
+   <function name="xcst:sort-order-descending" as="xs:boolean?">
       <param name="node" as="node()"/>
+      <param name="avt" as="xs:boolean"/>
 
       <variable name="string" select="xcst:non-string($node)"/>
       <sequence select="
@@ -1918,10 +1898,10 @@
             false()
          else if ($string = ('descending')) then
             true()
-         else if (xcst:is-value-template($node)) then
+         else if ($avt and xcst:is-value-template($node)) then
             ()
          else
-            error(xs:QName('err:XTSE0020'), concat('Invalid value for ', name($node), '. Must be one of (ascending|descending)'), src:error-object($node))
+            error(xs:QName('err:XTSE0020'), concat('Invalid value for ', '@'[$node instance of attribute()], name($node), '. Must be one of (ascending|descending).'), src:error-object($node))
       "/>
    </function>
 
@@ -1929,11 +1909,6 @@
       <param name="node" as="node()"/>
 
       <variable name="string" select="xcst:non-string($node)"/>
-
-      <if test="not($string)">
-         <sequence select="error(xs:QName('err:XTSE0020'), concat('Value of ', '@'[$node instance of attribute()], name($node), ' must be a non-empty string.'), src:error-object($node))"/>
-      </if>
-
       <sequence select="$string"/>
    </function>
 
@@ -1941,11 +1916,6 @@
       <param name="node" as="node()"/>
 
       <variable name="string" select="xcst:non-string($node)"/>
-
-      <if test="not($string)">
-         <sequence select="error(xs:QName('err:XTSE0020'), concat('Value of ', '@'[$node instance of attribute()], name($node), ' must be a non-empty string.'), src:error-object($node))"/>
-      </if>
-
       <sequence select="$string"/>
    </function>
 
@@ -1992,15 +1962,70 @@
          or starts-with($ns, concat($ns, '/'))"/>
    </function>
 
-   <function name="xcst:resolve-QName-ignore-default" as="xs:QName?">
-      <param name="qname" as="xs:string?"/>
-      <param name="element" as="element()"/>
+   <function name="xcst:EQName" as="xs:QName?">
+      <param name="node" as="node()?"/>
 
-      <if test="not(empty($qname))">
-         <sequence select="
-            if (contains($qname, ':')) then resolve-QName($qname, $element)
-            else QName('', $qname)"/>
+      <sequence select="xcst:EQName($node, ())"/>
+   </function>
+
+   <function name="xcst:EQName" as="xs:QName?">
+      <param name="node" as="node()?"/>
+      <param name="value" as="xs:string?"/>
+
+      <sequence select="xcst:EQName($node, $value, false())"/>
+   </function>
+
+   <function name="xcst:EQName" as="xs:QName?">
+      <param name="node" as="node()?"/>
+      <param name="value" as="xs:string?"/>
+      <param name="default" as="xs:boolean"/>
+
+      <sequence select="xcst:EQName($node, $value, $default, false())"/>
+   </function>
+
+   <function name="xcst:EQName" as="xs:QName?">
+      <param name="node" as="node()?"/>
+      <param name="value" as="xs:string?"/>
+      <param name="default" as="xs:boolean"/>
+      <param name="avt" as="xs:boolean"/>
+
+      <if test="not(empty($node))">
+         <variable name="string" select="($value, xcst:non-string($node))[1]"/>
+         <variable name="qname-pattern" select="'([^:\{\}]+:)?[^:\{\}]+'"/>
+         <choose>
+            <when test="matches($string, concat('^Q\{[^\{\}]*\}', $qname-pattern, '$'))">
+               <variable name="ns" select="xcst:trim(substring(substring-before($string, '}'), 3))"/>
+               <variable name="lexical" select="substring-after($string, '}')"/>
+               <sequence select="QName($ns, $lexical)"/>
+            </when>
+            <when test="matches($string, concat('^', $qname-pattern, '$'))">
+               <choose>
+                  <when test="$default or contains($string, ':')">
+                     <sequence select="resolve-QName($string, $node/..)"/>
+                  </when>
+                  <otherwise>
+                     <sequence select="QName('', $string)"/>
+                  </otherwise>
+               </choose>
+            </when>
+            <when test="$avt and xcst:is-value-template($node)"/>
+            <otherwise>
+               <sequence select="error(xs:QName('err:XTSE0020'), concat('Invalid value for ', '@'[$node instance of attribute()], name($node), '.'), src:error-object($node))"/>
+            </otherwise>
+         </choose>
       </if>
+   </function>
+
+   <function name="xcst:uri-qualified-name" as="xs:string">
+      <param name="qname" as="xs:QName"/>
+
+      <sequence select="concat('Q{', namespace-uri-from-QName($qname), '}', local-name-from-QName($qname))"/>
+   </function>
+
+   <function name="xcst:trim" as="xs:string">
+      <param name="item" as="item()"/>
+
+      <sequence select="replace($item, '^\s*(.+?)\s*$', '$1')"/>
    </function>
 
    <!--
@@ -2143,6 +2168,20 @@
          string-join((src:verbatim-string(namespace-uri-from-QName($qname)), src:string(local-name-from-QName($qname))), ', '),
          ')'
       )"/>
+   </function>
+
+   <function name="src:QName" as="xs:string">
+      <param name="qname" as="xs:QName?"/>
+      <param name="string" as="xs:string"/>
+
+      <choose>
+         <when test="$qname instance of xs:QName">
+            <sequence select="src:QName($qname)"/>
+         </when>
+         <otherwise>
+            <sequence select="concat(src:fully-qualified-helper('DataType'), '.QName(', $string, ')')"/>
+         </otherwise>
+      </choose>
    </function>
 
    <function name="src:sort-order-descending" as="xs:string">

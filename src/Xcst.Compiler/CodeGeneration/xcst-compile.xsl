@@ -432,7 +432,7 @@
          <with-param name="required" select="'name'"/>
       </call-template>
 
-      <variable name="qname" select="xcst:resolve-QName-ignore-default(xcst:name(@name), .)"/>
+      <variable name="qname" select="xcst:EQName(@name)"/>
 
       <if test="not($qname eq xs:QName('c:initial-template'))
          and xcst:is-reserved-namespace(namespace-uri-from-QName($qname))">
@@ -479,7 +479,7 @@
 
       <variable name="public" select="$visibility = ('public', 'final', 'abstract')"/>
 
-      <xcst:template name="{$qname}"
+      <xcst:template name="{xcst:uri-qualified-name($qname)}"
             visibility="{$visibility}"
             member-name="{src:template-method-name(., $qname, 'tmpl', $public)}"
             declaration-id="{generate-id()}"
@@ -487,7 +487,6 @@
          <if test="$overriden-meta">
             <attribute name="overrides" select="generate-id($overriden-meta)"/>
          </if>
-         <copy-of select="namespace::*"/>
          <for-each select="c:param">
             <call-template name="xcst:validate-attribs">
                <with-param name="allowed" select="'name', 'value', 'as', 'required', 'tunnel'"/>
@@ -612,7 +611,7 @@
          <with-param name="required" select="'name'"/>
       </call-template>
 
-      <variable name="qname" select="xcst:resolve-QName-ignore-default(xcst:name(@name), .)"/>
+      <variable name="qname" select="xcst:EQName(@name)"/>
 
       <if test="xcst:is-reserved-namespace(namespace-uri-from-QName($qname))">
          <sequence select="error(xs:QName('err:XTSE0080'), concat('Namespace prefix ', prefix-from-QName($qname),' refers to a reserved namespace.'), src:error-object(.))"/>
@@ -643,7 +642,7 @@
 
       <variable name="public" select="$visibility = ('public', 'final', 'abstract')"/>
 
-      <xcst:attribute-set name="{$qname}"
+      <xcst:attribute-set name="{xcst:uri-qualified-name($qname)}"
             visibility="{$visibility}"
             member-name="{src:template-method-name(., $qname, 'attribs', $public)}"
             declaration-id="{generate-id()}"
@@ -651,7 +650,6 @@
          <if test="$overriden-meta">
             <attribute name="overrides" select="$overriden-meta/generate-id()"/>
          </if>
-         <copy-of select="namespace::*"/>
       </xcst:attribute-set>
    </template>
 
@@ -743,7 +741,7 @@
    <template name="xcst:output-definitions">
       <param name="modules" tunnel="yes"/>
 
-      <for-each-group select="for $m in reverse($modules) return $m/c:output" group-by="(@name/xcst:resolve-QName-ignore-default(xcst:name(.), ..), '')[1]">
+      <for-each-group select="for $m in reverse($modules) return $m/c:output" group-by="(@name/xcst:EQName(.), '')[1]">
          <sort select="current-grouping-key() instance of xs:QName"/>
 
          <variable name="output-name" select="
@@ -755,7 +753,7 @@
                <with-param name="allowed" select="'name', $src:output-parameters/*[not(self::version) and not(self::output-version)]/local-name()"/>
                <with-param name="required" select="()"/>
             </call-template>
-            <if test="preceding-sibling::c:output[(empty($output-name) and empty(@name)) or (xcst:resolve-QName-ignore-default(xcst:name(@name), .) eq $output-name)]">
+            <if test="preceding-sibling::c:output[(empty($output-name) and empty(@name)) or (xcst:EQName(@name) eq $output-name)]">
                <sequence select="error((), 'Duplicate c:output declaration.', src:error-object(.))"/>
             </if>
          </for-each>
@@ -766,9 +764,8 @@
 
          <xcst:output member-name="{src:template-method-name(., $output-name, 'output', false())}" declaration-ids="{current-group()/generate-id(.)}">
             <if test="not(empty($output-name))">
-               <attribute name="name" select="$output-name"/>
+               <attribute name="name" select="xcst:uri-qualified-name($output-name)"/>
             </if>
-            <copy-of select="namespace::*"/>
          </xcst:output>
       </for-each-group>
 
@@ -780,7 +777,7 @@
       <variable name="string" select="xcst:non-string($node)"/>
 
       <if test="not($string = ('public', 'private', 'final', 'abstract'))">
-         <sequence select="error(xs:QName('err:XTSE0020'), concat('Invalid value for ', name($node), '. Must be one of (public|private|final|abstract)'), src:error-object($node))"/>
+         <sequence select="error(xs:QName('err:XTSE0020'), concat('Invalid value for ', '@'[$node instance of attribute()], name($node), '. Must be one of (public|private|final|abstract).'), src:error-object($node))"/>
       </if>
 
       <sequence select="$string"/>
@@ -797,7 +794,7 @@
          </when>
          <when test="local-name($a) eq 'template'">
             <sequence select="local-name($b) eq 'template'
-               and $a/xcst:resolve-QName-ignore-default(@name, .) eq $b/xcst:resolve-QName-ignore-default(@name, .)"/>
+               and $a/xcst:EQName(@name) eq $b/xcst:EQName(@name)"/>
          </when>
          <when test="local-name($a) eq 'function'">
             <sequence select="local-name($b) eq 'function'
@@ -806,7 +803,7 @@
          </when>
          <when test="local-name($a) eq 'attribute-set'">
             <sequence select="local-name($b) eq 'attribute-set'
-               and $a/xcst:resolve-QName-ignore-default(@name, .) eq $b/xcst:resolve-QName-ignore-default(@name, .)"/>
+               and $a/xcst:EQName(@name) eq $b/xcst:EQName(@name)"/>
          </when>
          <when test="local-name($a) eq 'type'">
             <sequence select="local-name($b) eq 'type'
@@ -1032,7 +1029,7 @@
    <template match="xcst:template" mode="src:member">
 
       <variable name="context-param" select="src:aux-variable('context')"/>
-      <variable name="qname" select="xcst:resolve-QName-ignore-default(@name, .)"/>
+      <variable name="qname" select="xcst:EQName(@name)"/>
       <variable name="public" select="@visibility ne 'private'"/>
 
       <value-of select="$src:new-line"/>
@@ -1044,11 +1041,7 @@
          <text>(</text>
          <value-of select="src:global-identifier('Xcst.XcstComponentKind'), 'Template'" separator="."/>
          <text>, Name = </text>
-         <value-of select="src:string(local-name-from-QName($qname))"/>
-         <if test="namespace-uri-from-QName($qname)">
-            <text>, Namespace = </text>
-            <value-of select="src:verbatim-string(namespace-uri-from-QName($qname))"/>
-         </if>
+         <value-of select="src:verbatim-string(xcst:uri-qualified-name($qname))"/>
          <text>)]</text>
 
          <for-each select="xcst:param">
@@ -1135,7 +1128,7 @@
    <template match="xcst:attribute-set" mode="src:member">
 
       <variable name="context-param" select="src:aux-variable('context')"/>
-      <variable name="qname" select="xcst:resolve-QName-ignore-default(@name, .)"/>
+      <variable name="qname" select="xcst:EQName(@name)"/>
       <variable name="public" select="@visibility ne 'private'"/>
 
       <value-of select="$src:new-line"/>
@@ -1146,11 +1139,7 @@
          <text>(</text>
          <value-of select="src:global-identifier('Xcst.XcstComponentKind'), 'AttributeSet'" separator="."/>
          <text>, Name = </text>
-         <value-of select="src:string(local-name-from-QName($qname))"/>
-         <if test="namespace-uri-from-QName($qname)">
-            <text>, Namespace = </text>
-            <value-of select="src:verbatim-string(namespace-uri-from-QName($qname))"/>
-         </if>
+         <value-of select="src:verbatim-string(xcst:uri-qualified-name($qname))"/>
          <text>)]</text>
       </if>
       <call-template name="src:editor-browsable-never"/>
@@ -1642,7 +1631,7 @@
       <value-of select="$src:new-line"/>
 
       <if test="$public">
-         <variable name="qname" select="xcst:resolve-QName-ignore-default($meta/@name, $meta)"/>
+         <variable name="qname" select="xcst:EQName($meta/@name)"/>
 
          <call-template name="src:new-line-indented"/>
          <text>[</text>
@@ -1650,11 +1639,7 @@
          <text>(</text>
          <value-of select="src:global-identifier('Xcst.XcstComponentKind'), 'Template'" separator="."/>
          <text>, Name = </text>
-         <value-of select="src:string(local-name-from-QName($qname))"/>
-         <if test="namespace-uri-from-QName($qname)">
-            <text>, Namespace = </text>
-            <value-of select="src:verbatim-string(namespace-uri-from-QName($qname))"/>
-         </if>
+         <value-of select="src:verbatim-string(xcst:uri-qualified-name($qname))"/>
          <text>)]</text>
 
          <for-each select="$meta/xcst:param">
@@ -1782,18 +1767,14 @@
 
       <value-of select="$src:new-line"/>
       <if test="$public">
-         <variable name="qname" select="xcst:resolve-QName-ignore-default($meta/@name, $meta)"/>
+         <variable name="qname" select="xcst:EQName($meta/@name)"/>
          <call-template name="src:new-line-indented"/>
          <text>[</text>
          <value-of select="src:global-identifier('Xcst.XcstComponent')"/>
          <text>(</text>
          <value-of select="src:global-identifier('Xcst.XcstComponentKind'), 'AttributeSet'" separator="."/>
          <text>, Name = </text>
-         <value-of select="src:string(local-name-from-QName($qname))"/>
-         <if test="namespace-uri-from-QName($qname)">
-            <text>, Namespace = </text>
-            <value-of select="src:verbatim-string(namespace-uri-from-QName($qname))"/>
-         </if>
+         <value-of select="src:verbatim-string(xcst:uri-qualified-name($qname))"/>
          <text>)]</text>
       </if>
       <call-template name="src:editor-browsable-never"/>
@@ -2211,9 +2192,9 @@
 
       <value-of select="$src:new-line"/>
       <for-each select="$templates">
-         <sort select="xcst:resolve-QName-ignore-default(@name, .) eq xs:QName('c:initial-template')" order="descending"/>
+         <sort select="xcst:EQName(@name) eq xs:QName('c:initial-template')" order="descending"/>
 
-         <variable name="qname" select="xcst:resolve-QName-ignore-default(@name, .)"/>
+         <variable name="qname" select="xcst:EQName(@name)"/>
          <choose>
             <when test="position() eq 1">
                <call-template name="src:new-line-indented"/>
@@ -2304,7 +2285,7 @@
          <call-template name="src:close-brace"/>
       </if>
       <for-each select="$package-manifest/xcst:output">
-         <variable name="output-name" select="@name/xcst:resolve-QName-ignore-default(., ..)"/>
+         <variable name="output-name" select="@name/xcst:EQName(.)"/>
          <choose>
             <when test="position() eq 1 and $explicit-unnamed">
                <call-template name="src:new-line-indented"/>
@@ -2383,7 +2364,7 @@
                   <sequence select="distinct-values(
                      for $p in current-group()
                      return for $s in tokenize($p, '\s')[.]
-                     return resolve-QName($s, $p/..)
+                     return xcst:EQName($p, $s, true())
                   )"/>
                </if>
             </with-param>

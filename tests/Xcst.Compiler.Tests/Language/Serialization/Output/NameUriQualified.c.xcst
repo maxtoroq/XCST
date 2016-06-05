@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#'
+   xmlns:c='http://maxtoroq.github.io/XCST'
+   xmlns:foo='urn:foo'>
+
+   <c:output name='Q{urn:foo}foo' method='text'/>
+
+   <c:template name='c:initial-template'>
+      <div>
+         <c:serialize format='foo:foo'>
+            <foo>foo</foo>
+         </c:serialize>
+      </div>
+   </c:template>
+
+</c:module>
