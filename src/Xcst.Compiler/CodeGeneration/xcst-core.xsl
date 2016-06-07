@@ -1481,8 +1481,6 @@
 
    <template match="@*" mode="src:output-parameter-setter"/>
 
-   <!-- TODO: AVT for <c:result-document> and <c:serialize>, but not for <c:output> -->
-
    <template match="@*[namespace-uri()]" mode="src:output-parameter-setter">
       <text>[</text>
       <value-of select="src:QName(node-name(.))"/>
@@ -1493,7 +1491,7 @@
    <template match="@byte-order-mark | @escape-uri-attributes | @include-content-type | @indent | @omit-xml-declaration | @undeclare-prefixes" mode="src:output-parameter-setter">
       <value-of select="src:output-parameter-property(.)"/>
       <text> = </text>
-      <value-of select="src:boolean(xcst:boolean(.))"/>
+      <value-of select="src:boolean(xcst:boolean(., not(parent::c:output)), src:expand-attribute(.))"/>
    </template>
 
    <template match="@cdata-section-elements | @suppress-indentation" mode="src:output-parameter-setter">
@@ -1501,6 +1499,7 @@
          for $s in tokenize(., '\s')[.]
          return xcst:EQName(., $s, true())"/>
 
+      <!-- TODO: AVT -->
       <value-of select="src:output-parameter-property(.)"/>
       <text> = new </text>
       <value-of select="src:global-identifier('Xcst.QualifiedName')"/>
@@ -1515,7 +1514,7 @@
    <template match="@doctype-public | @doctype-system | @item-separator | @media-type" mode="src:output-parameter-setter">
       <value-of select="src:output-parameter-property(.)"/>
       <text> = </text>
-      <value-of select="src:verbatim-string(string())"/>
+      <value-of select="if (parent::c:output) then src:verbatim-string(string()) else src:expand-attribute(.)"/>
    </template>
 
    <template match="@encoding" mode="src:output-parameter-setter">
@@ -1523,34 +1522,35 @@
       <text> = </text>
       <value-of select="src:global-identifier('System.Text.Encoding')"/>
       <text>.GetEncoding(</text>
-      <value-of select="src:verbatim-string(string())"/>
+      <value-of select="if (parent::c:output) then src:verbatim-string(string()) else src:expand-attribute(.)"/>
       <text>)</text>
    </template>
 
    <template match="@html-version" mode="src:output-parameter-setter">
       <value-of select="src:output-parameter-property(.)"/>
       <text> = </text>
-      <value-of select="src:decimal(xcst:decimal(.))"/>
+      <value-of select="src:decimal(xcst:decimal(., not(parent::c:output)), src:expand-attribute(.))"/>
    </template>
 
    <template match="@indent-spaces" mode="src:output-parameter-setter">
       <value-of select="src:output-parameter-property(.)"/>
       <text> = </text>
-      <value-of select="src:integer(xcst:integer(.))"/>
+      <value-of select="src:integer(xcst:integer(., not(parent::c:output)), src:expand-attribute(.))"/>
    </template>
 
    <template match="@method" mode="src:output-parameter-setter">
       <value-of select="src:output-parameter-property(.)"/>
       <text> = </text>
       <variable name="string" select="xcst:non-string(.)"/>
-      <variable name="qname" select="xcst:EQName(.)"/>
-      <if test="not(namespace-uri-from-QName($qname)) and not(local-name-from-QName($qname) = ('xml', 'html', 'xhtml', 'text'))">
+      <variable name="qname" select="xcst:EQName(., (), false(), not(parent::c:output))"/>
+      <if test="not(empty($qname)) and not(namespace-uri-from-QName($qname)) and not(local-name-from-QName($qname) = ('xml', 'html', 'xhtml', 'text'))">
          <sequence select="error(xs:QName('err:XTSE1570'), concat('Invalid value for @', name(), '. Must be one of (xml|html|xhtml|text).'), src:error-object(.))"/>
       </if>
-      <value-of select="src:QName($qname)"/>
+      <value-of select="src:QName($qname, src:expand-attribute(.))"/>
    </template>
 
    <template match="@standalone" mode="src:output-parameter-setter">
+      <!-- TODO: AVT -->
       <value-of select="src:output-parameter-property(.)"/>
       <text> = </text>
       <value-of select="src:global-identifier('Xcst.XmlStandalone')"/>
@@ -1565,7 +1565,7 @@
    <template match="@version | @output-version" mode="src:output-parameter-setter">
       <value-of select="src:output-parameter-property(.)"/>
       <text> = </text>
-      <value-of select="src:string(xcst:non-string(.))"/>
+      <value-of select="if (parent::c:output) then src:string(xcst:non-string(.)) else src:expand-attribute(.)"/>
    </template>
 
    <function name="src:output-parameter-property" as="xs:string">
@@ -1871,15 +1871,39 @@
    <function name="xcst:decimal" as="xs:decimal">
       <param name="node" as="node()"/>
 
+      <sequence select="xcst:decimal($node, false())"/>
+   </function>
+
+   <function name="xcst:decimal" as="xs:decimal?">
+      <param name="node" as="node()"/>
+      <param name="avt" as="xs:boolean"/>
+
       <variable name="string" select="xcst:non-string($node)"/>
-      <sequence select="xs:decimal($string)"/>
+      <sequence select="
+         if ($avt and xcst:is-value-template($node)) then
+            ()
+         else
+            xs:decimal($string)
+      "/>
    </function>
 
    <function name="xcst:integer" as="xs:integer">
       <param name="node" as="node()"/>
 
+      <sequence select="xcst:integer($node, false())"/>
+   </function>
+
+   <function name="xcst:integer" as="xs:integer?">
+      <param name="node" as="node()"/>
+      <param name="avt" as="xs:boolean"/>
+
       <variable name="string" select="xcst:non-string($node)"/>
-      <sequence select="xs:integer($string)"/>
+      <sequence select="
+         if ($avt and xcst:is-value-template($node)) then
+            ()
+         else
+            xs:integer($string)
+      "/>
    </function>
 
    <function name="xcst:sort-order-descending" as="xs:boolean">
@@ -2157,6 +2181,20 @@
       <param name="int" as="xs:integer"/>
 
       <sequence select="string($int)"/>
+   </function>
+
+   <function name="src:integer" as="xs:string">
+      <param name="integer" as="xs:integer?"/>
+      <param name="string" as="xs:string"/>
+
+      <choose>
+         <when test="$integer instance of xs:integer">
+            <sequence select="src:integer($integer)"/>
+         </when>
+         <otherwise>
+            <sequence select="concat(src:fully-qualified-helper('DataType'), '.Integer(', $string, ')')"/>
+         </otherwise>
+      </choose>
    </function>
 
    <function name="src:QName" as="xs:string">

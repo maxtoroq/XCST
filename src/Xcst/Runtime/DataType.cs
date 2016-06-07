@@ -13,17 +13,18 @@
 // limitations under the License.
 
 using System;
+using System.Globalization;
 
 namespace Xcst.Runtime {
 
    /// <exclude/>
    public static class DataType {
 
-      public static bool Boolean(string boolean) {
+      public static bool Boolean(string value) {
 
-         if (boolean == null) throw new ArgumentNullException(nameof(boolean));
+         if (value == null) throw new ArgumentNullException(nameof(value));
 
-         switch (boolean.Trim()) {
+         switch (value.Trim()) {
             case "yes":
             case "true":
             case "True":
@@ -39,6 +40,14 @@ namespace Xcst.Runtime {
             default:
                throw new RuntimeException("Invalid boolean value.", DynamicError.Code("XTDE0030"));
          }
+      }
+
+      public static decimal Decimal(string value) {
+         return System.Decimal.Parse(value, NumberStyles.Number, CultureInfo.InvariantCulture);
+      }
+
+      public static decimal Integer(string value) {
+         return System.Int32.Parse(value, NumberStyles.Integer, CultureInfo.InvariantCulture);
       }
 
       public static bool SortOrderDescending(string order) {
