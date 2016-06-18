@@ -19,7 +19,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.Linq;
 using System.Drawing;
 using System.Globalization;
@@ -209,10 +208,9 @@ namespace Xcst.Web.Mvc.Html {
 
          XcstWriter output = context.Output;
          ViewDataDictionary viewData = html.ViewData;
-         TemplateInfo templateInfo = viewData.TemplateInfo;
          ModelMetadata modelMetadata = viewData.ModelMetadata;
 
-         if (templateInfo.TemplateDepth > 1) {
+         if (viewData.TemplateInfo.TemplateDepth > 1) {
 
             if (modelMetadata.Model == null) {
                output.WriteString(modelMetadata.NullDisplayText);
@@ -233,7 +231,7 @@ namespace Xcst.Web.Mvc.Html {
 
          Action<DynamicContext> memberTemplate = viewData[MemberTemplateKey] as Action<DynamicContext>;
 
-         foreach (ModelMetadata propertyMetadata in modelMetadata.Properties.Where(pm => ShouldShow(pm, templateInfo))) {
+         foreach (ModelMetadata propertyMetadata in modelMetadata.Properties.Where(pm => html.ShowForEdit(pm))) {
 
             if (!propertyMetadata.HideSurroundingHtml) {
 
@@ -271,22 +269,6 @@ namespace Xcst.Web.Mvc.Html {
          IDictionary<string, object> htmlAttributes = CreateHtmlAttributes(html, className);
 
          InputExtensions.Password(html, context, String.Empty, value, htmlAttributes);
-      }
-
-      static bool ShouldShow(ModelMetadata metadata, TemplateInfo templateInfo) {
-
-         if (!metadata.ShowForEdit
-            || templateInfo.Visited(metadata)) {
-
-            return false;
-         }
-
-         if (metadata.AdditionalValues.ContainsKey(nameof(metadata.ShowForEdit))) {
-            return (bool)metadata.AdditionalValues[nameof(metadata.ShowForEdit)];
-         }
-
-         return metadata.ModelType != typeof(EntityState)
-            && !metadata.IsComplexType;
       }
 
       public static void StringTemplate(HtmlHelper html, DynamicContext context) {

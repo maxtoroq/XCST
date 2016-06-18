@@ -17,10 +17,11 @@
 #endregion
 
 using System;
+using System.Data;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
-using System.Web.UI.WebControls;
 using System.Web.Mvc;
+using System.Web.UI.WebControls;
 using Xcst.Runtime;
 
 namespace Xcst.Web.Mvc.Html {
@@ -56,6 +57,28 @@ namespace Xcst.Web.Mvc.Html {
                                          object additionalViewData = null) {
 
          TemplateHelpers.TemplateHelper(html, context, html.ViewData.ModelMetadata, htmlFieldName, templateName, DataBoundControlMode.ReadOnly, additionalViewData);
+      }
+
+      /// <summary>
+      /// Determines whether a property should be shown in a display template, based on its metadata.
+      /// </summary>
+      /// <param name="html">The current <see cref="HtmlHelper"/>.</param>
+      /// <param name="propertyMetadata">The property's metadata.</param>
+      /// <returns>true if the property should be shown; otherwise false.</returns>
+      public static bool ShowForDisplay(this HtmlHelper html, ModelMetadata propertyMetadata) {
+
+         if (!propertyMetadata.ShowForDisplay
+            || html.ViewData.TemplateInfo.Visited(propertyMetadata)) {
+
+            return false;
+         }
+
+         if (propertyMetadata.AdditionalValues.ContainsKey(nameof(propertyMetadata.ShowForDisplay))) {
+            return (bool)propertyMetadata.AdditionalValues[nameof(propertyMetadata.ShowForDisplay)];
+         }
+
+         return propertyMetadata.ModelType != typeof(EntityState)
+            && !propertyMetadata.IsComplexType;
       }
    }
 }
