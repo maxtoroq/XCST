@@ -101,6 +101,7 @@
     <None Include="Extension\Forms\DropDownList\drop-down-list.options.type.i.xcst" />
     <None Include="Extension\Forms\DropDownList\drop-down-list.value.type.i.xcst" />
     <None Include="Extension\Forms\DropDownList\option.foo.i.xcst" />
+    <None Include="Extension\Forms\DropDownList\option.disabled.type.i.xcst" />
     <None Include="Extension\Forms\DropDownList\option.selected.type.i.xcst" />
     <None Include="Extension\Forms\DropDownList\option.value.type.i.xcst" />
     <None Include="Extension\Forms\Hidden\hidden.foo.i.xcst" />
@@ -113,6 +114,7 @@
     <None Include="Extension\Forms\Label\label.foo.i.xcst" />
     <None Include="Extension\Forms\Label\label.for_name.mutex.i.xcst" />
     <None Include="Extension\Forms\Label\label.html-attributes.type.i.xcst" />
+    <None Include="Extension\Forms\ListBox\option.disabled.type.i.xcst" />
     <None Include="Extension\Forms\ListBox\option.selected.type.i.xcst" />
     <None Include="Extension\Forms\ListBox\option.value.type.i.xcst" />
     <None Include="Extension\Forms\ListBox\option.foo.i.xcst" />

@@ -587,7 +587,7 @@
                <text>new[] { </text>
                <for-each select="a:option">
                   <call-template name="xcst:validate-attribs">
-                     <with-param name="allowed" select="'value', 'selected'"/>
+                     <with-param name="allowed" select="'value', 'selected', 'disabled'"/>
                      <with-param name="required" select="()"/>
                      <with-param name="extension" select="true()"/>
                   </call-template>
@@ -604,6 +604,10 @@
                   <if test="@selected">
                      <text>, Selected = </text>
                      <value-of select="xcst:expression(@selected)"/>
+                  </if>
+                  <if test="@disabled">
+                     <text>, Disabled = </text>
+                     <value-of select="xcst:expression(@disabled)"/>
                   </if>
                   <text>}</text>
                </for-each>

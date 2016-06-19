@@ -124,6 +124,7 @@
          <xs:group minOccurs="0" ref="a:sequence-constructor-node"/>
          <xs:attribute name="value" type="a:Expression"/>
          <xs:attribute name="selected" type="a:Expression"/>
+         <xs:attribute name="disabled" type="a:Expression"/>
       </xs:complexType>
    </xs:element>
    <xs:attributeGroup name="input-attributes">

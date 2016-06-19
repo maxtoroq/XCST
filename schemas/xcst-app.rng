@@ -277,6 +277,9 @@
                         <attribute name="selected">
                            <ref name="Expression"/>
                         </attribute>
+                        <attribute name="disabled">
+                           <ref name="Expression"/>
+                        </attribute>
                      </choice>
                   </zeroOrMore>
                   <optional>

@@ -378,6 +378,10 @@ namespace Xcst.Web.Mvc.Html {
             output.WriteAttributeString("selected", "selected");
          }
 
+         if (item.Disabled) {
+            output.WriteAttributeString("disabled", "disabled");
+         }
+
          output.WriteString(item.Text);
          output.WriteEndElement();
       }
