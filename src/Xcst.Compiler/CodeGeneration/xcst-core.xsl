@@ -475,34 +475,9 @@
       <text> in </text>
       <choose>
          <when test="c:sort">
-            <for-each select="c:sort">
-               <call-template name="xcst:validate-attribs">
-                  <with-param name="allowed" select="'value', 'order'"/>
-                  <with-param name="required" select="()"/>
-               </call-template>
-               <choose>
-                  <when test="position() eq 1">
-                     <value-of select="src:fully-qualified-helper('Sorting')"/>
-                     <text>.SortBy(</text>
-                     <value-of select="$in"/>
-                     <text>, </text>
-                  </when>
-                  <otherwise>.CreateOrderedEnumerable(</otherwise>
-               </choose>
-               <variable name="param" select="src:aux-variable(generate-id())"/>
-               <value-of select="$param, '=>', $param"/>
-               <if test="@value">.</if>
-               <value-of select="@value/xcst:expression(.)"/>
-               <if test="position() gt 1">, null</if>
-               <text>, </text>
-               <variable name="descending-expr" select="
-                  if (@order) then
-                     src:sort-order-descending(xcst:sort-order-descending(@order, true()), src:expand-attribute(@order))
-                  else
-                     src:sort-order-descending(false())"/>
-               <value-of select="$descending-expr"/>
-               <text>)</text>
-            </for-each>
+            <call-template name="src:sort">
+               <with-param name="in" select="$in"/>
+            </call-template>
          </when>
          <otherwise>
             <value-of select="$in"/>
@@ -1159,6 +1134,246 @@
    </template>
 
    <!--
+      ## Sorting
+   -->
+
+   <template name="src:sort">
+      <param name="in" required="yes"/>
+
+      <for-each select="c:sort">
+         <call-template name="xcst:validate-attribs">
+            <with-param name="allowed" select="'value', 'order'"/>
+            <with-param name="required" select="()"/>
+         </call-template>
+         <choose>
+            <when test="position() eq 1">
+               <value-of select="src:fully-qualified-helper('Sorting')"/>
+               <text>.SortBy(</text>
+               <value-of select="$in"/>
+               <text>, </text>
+            </when>
+            <otherwise>.CreateOrderedEnumerable(</otherwise>
+         </choose>
+         <variable name="param" select="src:aux-variable(generate-id())"/>
+         <value-of select="$param, '=>', $param"/>
+         <if test="@value">.</if>
+         <value-of select="@value/xcst:expression(.)"/>
+         <if test="position() gt 1">, null</if>
+         <text>, </text>
+         <variable name="descending-expr" select="
+            if (@order) then
+               src:sort-order-descending(xcst:sort-order-descending(@order, true()), src:expand-attribute(@order))
+            else
+               src:sort-order-descending(false())"/>
+         <value-of select="$descending-expr"/>
+         <text>)</text>
+      </for-each>
+   </template>
+
+   <!--
+      ## Grouping
+   -->
+
+   <template match="c:for-each-group" mode="src:statement">
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="'name', 'in', 'group-by', 'group-size'"/>
+         <with-param name="required" select="'name', 'in'"/>
+      </call-template>
+      <if test="count((@group-by, @group-size)) ne 1">
+         <sequence select="error(xs:QName('err:XTSE1080'), 'Exactly one of the attributes @group-by and @group-size must be specified.', src:error-object(.))"/>
+      </if>
+   </template>
+
+   <template match="c:for-each-group[@group-by]" mode="src:statement">
+      <param name="indent" tunnel="yes"/>
+
+      <next-match/>
+
+      <variable name="grouped-aux">
+         <value-of select="src:fully-qualified-helper('Grouping')"/>
+         <text>.GroupBy(</text>
+         <value-of select="xcst:expression(@in)"/>
+         <text>, </text>
+         <variable name="param" select="src:aux-variable(generate-id())"/>
+         <value-of select="$param, '=>', $param"/>
+         <text>.</text>
+         <value-of select="xcst:expression(@group-by)"/>
+         <text>)</text>
+      </variable>
+
+      <variable name="grouped" select="string($grouped-aux)"/>
+
+      <value-of select="$src:new-line"/>
+      <call-template name="src:line-number"/>
+      <call-template name="src:new-line-indented"/>
+      <text>foreach (var </text>
+      <value-of select="xcst:name(@name)"/>
+      <text> in </text>
+      <choose>
+         <when test="c:sort">
+            <call-template name="src:sort">
+               <with-param name="in" select="$grouped"/>
+            </call-template>
+         </when>
+         <otherwise>
+            <value-of select="$grouped"/>
+         </otherwise>
+      </choose>
+      <text>)</text>
+      <call-template name="src:apply-children">
+         <with-param name="children" select="node()[not(self::c:sort or following-sibling::c:sort)]"/>
+         <with-param name="ensure-block" select="true()"/>
+      </call-template>
+   </template>
+
+   <template match="c:for-each-group[@group-size]" mode="src:statement">
+      <param name="indent" tunnel="yes"/>
+
+      <next-match/>
+
+      <if test="c:sort">
+         <sequence select="error((), '&lt;c:sort> is currently not supported when using @group-size.', src:error-object(c:sort[1]))"/>
+      </if>
+
+      <variable name="in" select="xcst:expression(@in)"/>
+      <variable name="iter" select="concat(src:aux-variable('iter'), '_', generate-id())"/>
+      <variable name="helper" select="src:fully-qualified-helper('ListFactory')"/>
+
+      <value-of select="$src:new-line"/>
+      <call-template name="src:line-number"/>
+      <call-template name="src:new-line-indented"/>
+      <value-of select="'var', $iter, '=', concat($helper, '.GetEnumerator(', $in, ')')"/>
+      <value-of select="$src:statement-delimiter"/>
+
+      <call-template name="src:line-hidden"/>
+      <value-of select="$src:new-line"/>
+      <call-template name="src:new-line-indented"/>
+      <text>try</text>
+      <call-template name="src:open-brace"/>
+      <call-template name="src:group-size-try">
+         <with-param name="iter" select="$iter"/>
+         <with-param name="helper" select="$helper"/>
+         <with-param name="indent" select="$indent + 1" tunnel="yes"/>
+      </call-template>
+      <call-template name="src:close-brace"/>
+      <text> finally</text>
+      <call-template name="src:open-brace"/>
+      <call-template name="src:group-size-finally">
+         <with-param name="iter" select="$iter"/>
+         <with-param name="helper" select="$helper"/>
+         <with-param name="indent" select="$indent + 1" tunnel="yes"/>
+      </call-template>
+      <call-template name="src:close-brace"/>
+   </template>
+
+   <template name="src:group-size-try">
+      <param name="iter" required="yes"/>
+      <param name="helper" required="yes"/>
+      <param name="indent" tunnel="yes"/>
+
+      <variable name="cols" select="concat(src:aux-variable('cols'), '_', generate-id())"/>
+      <variable name="buff" select="concat(src:aux-variable('buff'), '_', generate-id())"/>
+      <variable name="eof" select="concat(src:aux-variable('eof'), '_', generate-id())"/>
+
+      <call-template name="src:new-line-indented"/>
+      <value-of select="'int', $cols, '=', xcst:expression(@group-size)"/>
+      <value-of select="$src:statement-delimiter"/>
+
+      <call-template name="src:new-line-indented"/>
+      <value-of select="'var', $buff, '=', concat($helper, '.CreateMutable(', $iter, ', ', $cols, ')')"/>
+      <value-of select="$src:statement-delimiter"/>
+
+      <call-template name="src:new-line-indented"/>
+      <value-of select="'bool', $eof, '= false'"/>
+      <value-of select="$src:statement-delimiter"/>
+
+      <value-of select="$src:new-line"/>
+      <call-template name="src:new-line-indented"/>
+      <text>while (!</text>
+      <value-of select="$eof"/>
+      <text>)</text>
+      <call-template name="src:open-brace"/>
+      <call-template name="src:group-size-while">
+         <with-param name="iter" select="$iter"/>
+         <with-param name="cols" select="$cols"/>
+         <with-param name="buff" select="$buff"/>
+         <with-param name="eof" select="$eof"/>
+         <with-param name="helper" select="$helper"/>
+         <with-param name="indent" select="$indent + 1" tunnel="yes"/>
+      </call-template>
+      <call-template name="src:close-brace"/>
+   </template>
+
+   <template name="src:group-size-while">
+      <param name="iter" required="yes"/>
+      <param name="cols" required="yes"/>
+      <param name="buff" required="yes"/>
+      <param name="eof" required="yes"/>
+      <param name="helper" required="yes"/>
+      <param name="indent" tunnel="yes"/>
+
+      <call-template name="src:new-line-indented"/>
+      <text>if (!(</text>
+      <value-of select="$eof"/>
+      <text> = !</text>
+      <value-of select="$iter"/>
+      <text>.MoveNext()))</text>
+      <call-template name="src:open-brace"/>
+      <call-template name="src:new-line-indented">
+         <with-param name="increase" select="1"/>
+      </call-template>
+      <value-of select="$buff, '.Add(', $iter, '.Current)'" separator=""/>
+      <value-of select="$src:statement-delimiter"/>
+      <call-template name="src:close-brace"/>
+
+      <call-template name="src:new-line-indented"/>
+      <text>if (</text>
+      <value-of select="$buff"/>
+      <text>.Count == </text>
+      <value-of select="$cols"/>
+      <text> || </text>
+      <value-of select="$eof"/>
+      <text>)</text>
+      <call-template name="src:open-brace"/>
+      <call-template name="src:group-size-if">
+         <with-param name="buff" select="$buff"/>
+         <with-param name="helper" select="$helper"/>
+         <with-param name="indent" select="$indent + 1" tunnel="yes"/>
+      </call-template>
+      <call-template name="src:close-brace"/>
+   </template>
+
+   <template name="src:group-size-if">
+      <param name="buff" required="yes"/>
+      <param name="helper" required="yes"/>
+
+      <call-template name="src:line-number"/>
+      <call-template name="src:new-line-indented"/>
+      <value-of select="'var', xcst:name(@name), '=', concat($helper, '.CreateImmutable(', $buff, ')')"/>
+      <value-of select="$src:statement-delimiter"/>
+
+      <call-template name="src:apply-children">
+         <with-param name="children" select="node()[not(self::c:sort or following-sibling::c:sort)]"/>
+         <with-param name="omit-block" select="true()"/>
+         <with-param name="mode" select="'statement'"/>
+      </call-template>
+
+      <call-template name="src:line-hidden"/>
+      <call-template name="src:new-line-indented"/>
+      <value-of select="$buff, '.Clear()'" separator=""/>
+      <value-of select="$src:statement-delimiter"/>
+   </template>
+
+   <template name="src:group-size-finally">
+      <param name="iter" required="yes"/>
+      <param name="helper" required="yes"/>
+
+      <call-template name="src:new-line-indented"/>
+      <value-of select="concat($helper, '.Dispose(', $iter,')')"/>
+      <value-of select="$src:statement-delimiter"/>
+   </template>
+
+   <!--
       ## Diagnostics
    -->
 
@@ -1773,11 +1988,11 @@
 
       <for-each select="if (self::c:*) then @*[node-name() = $std-names] else @c:*">
          <if test="not(node-name() = $std-names)">
-            <sequence select="error(xs:QName('err:XTSE0805'), concat('Unknown XCST attribute @', name(), '.'))"/>
+            <sequence select="error(xs:QName('err:XTSE0805'), concat('Unknown XCST attribute @', name(), '.'), src:error-object(.))"/>
          </if>
          <choose>
             <when test="local-name() eq 'version' and not(xcst:decimal(.) ge 1.0)">
-               <sequence select="error(xs:QName('err:XTSE0020'), concat('Attribute @', name(), ' should be 1.0 or greater.'))"/>
+               <sequence select="error(xs:QName('err:XTSE0020'), concat('Attribute @', name(), ' should be 1.0 or greater.'), src:error-object(.))"/>
             </when>
          </choose>
       </for-each>

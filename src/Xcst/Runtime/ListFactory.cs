@@ -17,7 +17,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-namespace Xcst.Web.Mvc.Runtime {
+namespace Xcst.Runtime {
 
    /// <exclude/>
    public static class ListFactory {

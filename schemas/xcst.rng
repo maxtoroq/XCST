@@ -55,6 +55,7 @@
          <ref name="evaluate-delegate"/>
          <ref name="fallback"/>
          <ref name="for-each"/>
+         <ref name="for-each-group"/>
          <ref name="if"/>
          <ref name="message"/>
          <ref name="namespace"/>
@@ -952,21 +953,30 @@
          </optional>
          <ref name="standard-attributes"/>
          <zeroOrMore>
-            <element name="sort">
-               <zeroOrMore>
-                  <choice>
-                     <attribute name="value">
-                        <ref name="Expression"/>
-                     </attribute>
-                     <attribute name="order">
-                        <choice>
-                           <ref name="SortOrder"/>
-                           <ref name="AVTExpr"/>
-                        </choice>
-                     </attribute>
-                  </choice>
-               </zeroOrMore>
-            </element>
+            <ref name="sort"/>
+         </zeroOrMore>
+         <ref name="sequence-constructor"/>
+      </element>
+   </define>
+
+   <define name="for-each-group">
+      <element name="for-each-group">
+         <attribute name="name">
+            <ref name="Name"/>
+         </attribute>
+         <attribute name="in">
+            <ref name="Expression"/>
+         </attribute>
+         <choice>
+            <attribute name="group-by">
+               <ref name="Expression"/>
+            </attribute>
+            <attribute name="group-size">
+               <ref name="Expression"/>
+            </attribute>
+         </choice>
+         <zeroOrMore>
+            <ref name="sort"/>
          </zeroOrMore>
          <ref name="sequence-constructor"/>
       </element>
@@ -1111,6 +1121,24 @@
          </attribute>
          <ref name="standard-attributes"/>
          <ref name="value-attribute-or-content"/>
+      </element>
+   </define>
+
+   <define name="sort">
+      <element name="sort">
+         <zeroOrMore>
+            <choice>
+               <attribute name="value">
+                  <ref name="Expression"/>
+               </attribute>
+               <attribute name="order">
+                  <choice>
+                     <ref name="SortOrder"/>
+                     <ref name="AVTExpr"/>
+                  </choice>
+               </attribute>
+            </choice>
+         </zeroOrMore>
       </element>
    </define>
 

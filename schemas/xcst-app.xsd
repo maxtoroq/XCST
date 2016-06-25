@@ -29,27 +29,6 @@
    <xs:attributeGroup name="value-attribute-or-content">
       <xs:attribute name="value" type="a:Expression"/>
    </xs:attributeGroup>
-   <xs:element name="for-each-row" substitutionGroup="a:instruction-element">
-      <xs:complexType mixed="true">
-         <xs:sequence>
-            <xs:element minOccurs="0" maxOccurs="unbounded" ref="a:sort"/>
-            <xs:group ref="a:sequence-constructor"/>
-         </xs:sequence>
-         <xs:attribute name="name" use="required" type="a:Name"/>
-         <xs:attribute name="in" use="required" type="a:Expression"/>
-         <xs:attribute name="columns" use="required" type="a:Expression"/>
-      </xs:complexType>
-   </xs:element>
-   <xs:element name="sort">
-      <xs:complexType>
-         <xs:attribute name="value" type="a:Expression"/>
-         <xs:attribute name="order">
-            <xs:simpleType>
-               <xs:union memberTypes="a:SortOrder a:AVTExpr"/>
-            </xs:simpleType>
-         </xs:attribute>
-      </xs:complexType>
-   </xs:element>
    <xs:element name="text-box" substitutionGroup="a:instruction-element">
       <xs:complexType>
          <xs:attributeGroup ref="a:input-attributes"/>
@@ -210,15 +189,6 @@
    <xs:simpleType name="AVTExpr">
       <xs:restriction base="xs:string">
          <xs:pattern value=".*\{.+\}.*"/>
-      </xs:restriction>
-   </xs:simpleType>
-   <xs:simpleType name="SortOrder">
-      <xs:annotation>
-         <xs:documentation>One of the values "ascending" or "descending".</xs:documentation>
-      </xs:annotation>
-      <xs:restriction base="xs:token">
-         <xs:enumeration value="ascending"/>
-         <xs:enumeration value="descending"/>
       </xs:restriction>
    </xs:simpleType>
    <xs:simpleType name="Name">

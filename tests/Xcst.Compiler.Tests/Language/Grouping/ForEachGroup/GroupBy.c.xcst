@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:template name='c:initial-template' expand-text='yes'>
+      <dl>
+         <c:for-each-group name='group' in='new[] { "banana", "apricot", "apple" }' group-by='Substring(0, 1)'>
+            <c:sort value='Key'/>
+
+            <dt>{group.Key}</dt>
+            <dd>
+               <ul>
+                  <c:for-each name='item' in='group'>
+                     <c:sort/>
+
+                     <li>{item}</li>
+                  </c:for-each>
+               </ul>
+            </dd>
+         </c:for-each-group>
+      </dl>
+   </c:template>
+
+</c:module>

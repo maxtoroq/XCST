@@ -96,7 +96,6 @@
     <Compile Include="PreApplicationStartCode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Html\HtmlAttributesMerger.cs" />
-    <Compile Include="Runtime\ListFactory.cs" />
     <Compile Include="XcstViewPage.cs" />
     <Compile Include="XcstView.cs" />
     <Compile Include="XcstViewEngine.cs" />

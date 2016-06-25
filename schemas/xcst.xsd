@@ -27,6 +27,7 @@
          <xs:element ref="c:evaluate-delegate"/>
          <xs:element ref="c:fallback"/>
          <xs:element ref="c:for-each"/>
+         <xs:element ref="c:for-each-group"/>
          <xs:element ref="c:if"/>
          <xs:element ref="c:message"/>
          <xs:element ref="c:namespace"/>
@@ -684,14 +685,16 @@
          <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
-   <xs:element name="sort">
-      <xs:complexType>
-         <xs:attribute name="value" type="c:Expression"/>
-         <xs:attribute name="order">
-            <xs:simpleType>
-               <xs:union memberTypes="c:SortOrder c:AVTExpr"/>
-            </xs:simpleType>
-         </xs:attribute>
+   <xs:element name="for-each-group">
+      <xs:complexType mixed="true">
+         <xs:sequence>
+            <xs:element minOccurs="0" maxOccurs="unbounded" ref="c:sort"/>
+            <xs:group ref="c:sequence-constructor"/>
+         </xs:sequence>
+         <xs:attribute name="name" use="required" type="c:Name"/>
+         <xs:attribute name="in" use="required" type="c:Expression"/>
+         <xs:attribute name="group-by" type="c:Expression"/>
+         <xs:attribute name="group-size" type="c:Expression"/>
       </xs:complexType>
    </xs:element>
    <xs:element name="if">
@@ -820,6 +823,16 @@
                <xs:attributeGroup ref="c:standard-attributes"/>
             </xs:extension>
          </xs:complexContent>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="sort">
+      <xs:complexType>
+         <xs:attribute name="value" type="c:Expression"/>
+         <xs:attribute name="order">
+            <xs:simpleType>
+               <xs:union memberTypes="c:SortOrder c:AVTExpr"/>
+            </xs:simpleType>
+         </xs:attribute>
       </xs:complexType>
    </xs:element>
    <xs:element name="text">

@@ -171,16 +171,6 @@
     <None Include="Extension\Models\Model\model.value.type.i.xcst" />
     <None Include="Extension\Models\Model\model.as.type.i.xcst" />
     <None Include="Extension\Models\Model\model.foo.i.xcst" />
-    <None Include="Extension\Repetition\ForEachRow\for-each-row.foo.i.xcst" />
-    <None Include="Extension\Repetition\ForEachRow\for-each-row.columns.req.i.xcst" />
-    <None Include="Extension\Repetition\ForEachRow\for-each-row.in.req.i.xcst" />
-    <None Include="Extension\Repetition\ForEachRow\for-each-row.columns.type.i.xcst" />
-    <None Include="Extension\Repetition\ForEachRow\for-each-row.in.type.i.xcst" />
-    <None Include="Extension\Repetition\ForEachRow\for-each-row.name.req.i.xcst" />
-    <None Include="Extension\Repetition\ForEachRow\for-each-row.name.type.i.xcst" />
-    <None Include="Extension\Repetition\ForEachRow\sort.foo.i.xcst" />
-    <None Include="Extension\Repetition\ForEachRow\sort.order.type.i.xcst" />
-    <None Include="Extension\Repetition\ForEachRow\sort.value.type.i.xcst" />
     <None Include="Extension\Templates\Display\display.foo.i.xcst" />
     <None Include="Extension\Templates\Display\display.for.type.i.xcst" />
     <None Include="Extension\Templates\Display\display.for_name.mutex.i.xcst" />

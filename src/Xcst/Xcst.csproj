@@ -40,7 +40,9 @@
     <Compile Include="OutputParameters.cs" />
     <Compile Include="QualifiedName.cs" />
     <Compile Include="RuntimeException.cs" />
+    <Compile Include="Runtime\ListFactory.cs" />
     <Compile Include="Runtime\Serialization.cs" />
+    <Compile Include="Runtime\Grouping.cs" />
     <Compile Include="XcstEvaluator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Runtime\DataType.cs" />
