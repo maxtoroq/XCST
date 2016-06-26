@@ -354,6 +354,9 @@
    -->
 
    <template name="src:range-attribute">
+      <if test="not(count((@min, @max)) = (0, 2))">
+         <sequence select="error((), 'Both @min and @max must be specified.', src:error-object(.))"/>
+      </if>
       <if test="@min and @max">
          <variable name="setters" as="text()*">
             <call-template name="src:validation-setters">
