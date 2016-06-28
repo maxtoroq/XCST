@@ -152,6 +152,7 @@
     <None Include="Language\CallableComponents\UsingModule\CallTemplate\NameUriQualified.c.xcst" />
     <None Include="Language\CreatingNodesAndObjects\LiteralResultElement\foo.foo.c.xcst" />
     <None Include="Language\CreatingNodesAndObjects\LiteralResultElement\foo.foo.i.xcst" />
+    <None Include="Language\DataModel\TextTransformation\foo.transform-text.type.i.xcst" />
     <None Include="Language\DataModel\TextTransformation\NormalizeSpaceWithExpandText.c.xcst" />
     <None Include="Language\DataModel\TextTransformation\NormalizeSpace.c.xcst" />
     <None Include="Language\DataModel\TextTransformation\MixedContent.c.xcst" />

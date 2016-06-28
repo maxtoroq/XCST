@@ -2176,7 +2176,13 @@
       <param name="el" as="element()"/>
 
       <variable name="transform" select="$el/ancestor-or-self::*[(self::c:* and @transform-text) or (not(self::c:*) and @c:transform-text)][1]/(if (self::c:*) then @transform-text else @c:transform-text)"/>
-      <sequence select="$transform/xcst:non-string(.)[. ne 'none']"/>
+      <variable name="value" select="$transform/xcst:non-string(.)"/>
+
+      <if test="not(empty($value)) and not($value = ('none', 'normalize-space', 'trim'))">
+         <sequence select="error(xs:QName('err:XTSE0020'), concat('Invalid value for @', name($transform), '. Must be one of (none|normalize-space|trim).'), src:error-object($transform))"/>
+      </if>
+
+      <sequence select="$value[. ne 'none']"/>
    </function>
 
    <function name="xcst:is-reserved-namespace" as="xs:boolean">
