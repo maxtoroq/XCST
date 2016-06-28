@@ -87,6 +87,11 @@
     <Content Include="Language\CallableComponents\Template\Hidden.p.xml" />
     <Content Include="Language\CallableComponents\UsingModule\CallTemplate\NameUriQualified.p.xml" />
     <Content Include="Language\CreatingNodesAndObjects\LiteralResultElement\foo.foo.p.xml" />
+    <Content Include="Language\DataModel\TextTransformation\MixedContent.p.xml" />
+    <Content Include="Language\DataModel\TextTransformation\NormalizeSpaceWithExpandText.p.xml" />
+    <Content Include="Language\DataModel\TextTransformation\NormalizeSpace.p.xml" />
+    <Content Include="Language\DataModel\TextTransformation\TrimWithExpandText.p.xml" />
+    <Content Include="Language\DataModel\TextTransformation\Trim.p.xml" />
     <Content Include="Language\ExtensibilityAndFallback\ForwardsCompatibility\Fallback.p.xml" />
     <Content Include="Language\CallableComponents\UsingModule\CallTemplate\NameNoPrefix.p.xml" />
     <Content Include="Language\Grouping\ForEachGroup\GroupSize.p.xml" />
@@ -147,6 +152,11 @@
     <None Include="Language\CallableComponents\UsingModule\CallTemplate\NameUriQualified.c.xcst" />
     <None Include="Language\CreatingNodesAndObjects\LiteralResultElement\foo.foo.c.xcst" />
     <None Include="Language\CreatingNodesAndObjects\LiteralResultElement\foo.foo.i.xcst" />
+    <None Include="Language\DataModel\TextTransformation\NormalizeSpaceWithExpandText.c.xcst" />
+    <None Include="Language\DataModel\TextTransformation\NormalizeSpace.c.xcst" />
+    <None Include="Language\DataModel\TextTransformation\MixedContent.c.xcst" />
+    <None Include="Language\DataModel\TextTransformation\TrimWithExpandText.c.xcst" />
+    <None Include="Language\DataModel\TextTransformation\Trim.c.xcst" />
     <None Include="Language\ExtensibilityAndFallback\ForwardsCompatibility\Fallback.c.xcst" />
     <None Include="Language\Grouping\ForEachGroup\GroupSize.c.xcst" />
     <None Include="Language\Grouping\ForEachGroup\GroupBy.c.xcst" />
@@ -335,8 +345,6 @@
     <None Include="Language\CreatingNodesAndObjects\Text\value-of.value.type.i.xcst" />
     <None Include="Language\CreatingNodesAndObjects\Text\text.disable-output-escaping.type.i.xcst" />
     <None Include="Language\CreatingNodesAndObjects\Text\text.foo.i.xcst" />
-    <None Include="Language\CreatingNodesAndObjects\Text\normalize-space.value.type.i.xcst" />
-    <None Include="Language\CreatingNodesAndObjects\Text\normalize-space.foo.i.xcst" />
     <None Include="Language\Diagnostics\message.error-code.type.i.xcst" />
     <None Include="Language\Diagnostics\message.terminate.type.i.xcst" />
     <None Include="Language\Diagnostics\message.value.type.i.xcst" />

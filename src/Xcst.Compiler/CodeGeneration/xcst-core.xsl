@@ -315,27 +315,6 @@
       </call-template>
    </template>
 
-   <template match="c:normalize-space" mode="src:expression">
-      <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="'value'"/>
-         <with-param name="required" select="()"/>
-      </call-template>
-      <choose>
-         <when test="@value or * or xcst:tvt-enabled(.)">
-            <value-of select="src:fully-qualified-helper('SimpleContent')"/>
-            <text>.NormalizeSpace(</text>
-            <call-template name="src:simple-content">
-               <with-param name="attribute" select="@value"/>
-            </call-template>
-            <text>)</text>
-         </when>
-         <otherwise>
-            <variable name="text" select="xcst:text(.)"/>
-            <value-of select="src:verbatim-string(normalize-space($text))"/>
-         </otherwise>
-      </choose>
-   </template>
-
    <template match="text()" mode="src:statement">
       <param name="output" tunnel="yes"/>
 
@@ -1983,8 +1962,8 @@
       <param name="extension" select="false()"/>
 
       <variable name="std-names" select="
-         if (self::c:*) then (QName('', 'version')[not(current()/self::c:output)], QName('', 'expand-text'), QName('', 'extension-element-prefixes'))
-         else (xs:QName('c:version'), xs:QName('c:expand-text'), xs:QName('c:extension-element-prefixes'), xs:QName('c:use-attribute-sets')[not($extension)])"/>
+         if (self::c:*) then (QName('', 'version')[not(current()/self::c:output)], QName('', 'expand-text'), QName('', 'extension-element-prefixes'), QName('', 'transform-text'))
+         else (xs:QName('c:version'), xs:QName('c:expand-text'), xs:QName('c:extension-element-prefixes'), xs:QName('c:transform-text'), xs:QName('c:use-attribute-sets')[not($extension)])"/>
 
       <for-each select="if (self::c:*) then @*[node-name() = $std-names] else @c:*">
          <if test="not(node-name() = $std-names)">
@@ -2193,6 +2172,13 @@
       <sequence select="($expand/xcst:boolean(.), false())[1]"/>
    </function>
 
+   <function name="xcst:transform-text" as="xs:string?">
+      <param name="el" as="element()"/>
+
+      <variable name="transform" select="$el/ancestor-or-self::*[(self::c:* and @transform-text) or (not(self::c:*) and @c:transform-text)][1]/(if (self::c:*) then @transform-text else @c:transform-text)"/>
+      <sequence select="$transform/xcst:non-string(.)[. ne 'none']"/>
+   </function>
+
    <function name="xcst:is-reserved-namespace" as="xs:boolean">
       <param name="ns" as="xs:string"/>
 
@@ -2312,11 +2298,32 @@
       <param name="el" as="element()"/>
       <param name="text" as="xs:string"/>
 
-      <sequence select="
-         if (xcst:tvt-enabled($el) and xcst:is-value-template($text)) then
-            src:format-value-template($text)
-         else
-            src:verbatim-string($text)"/>
+      <variable name="tvt" select="xcst:tvt-enabled($el) and xcst:is-value-template($text)"/>
+      <variable name="tt" select="xcst:transform-text($el)"/>
+
+      <variable name="result">
+         <choose>
+            <when test="$tvt">
+               <if test="$tt">
+                  <value-of select="src:fully-qualified-helper('SimpleContent')"/>
+                  <text>.</text>
+                  <value-of select="if ($tt eq 'trim') then 'Trim' else 'NormalizeSpace'"/>
+                  <text>(</text>
+               </if>
+               <value-of select="src:format-value-template($text)"/>
+               <if test="$tt">)</if>
+            </when>
+            <otherwise>
+               <value-of select="src:verbatim-string(
+                  if ($tt eq 'trim') then xcst:trim($text)
+                  else if ($tt eq 'normalize-space') then normalize-space($text)
+                  else $text
+               )"/>
+            </otherwise>
+         </choose>
+      </variable>
+
+      <sequence select="string($result)"/>
    </function>
 
    <function name="src:expand-attribute" as="xs:string">

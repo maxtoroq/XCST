@@ -99,6 +99,15 @@ namespace Xcst.Runtime {
          return System.Convert.ToString(value, this.formatProvider);
       }
 
+      public static string Trim(string value) {
+
+         if (String.IsNullOrEmpty(value)) {
+            return String.Empty;
+         }
+
+         return value.Trim();
+      }
+
       public static string NormalizeSpace(string value) {
 
          if (String.IsNullOrEmpty(value)) {

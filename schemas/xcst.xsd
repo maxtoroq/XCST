@@ -33,7 +33,6 @@
          <xs:element ref="c:namespace"/>
          <xs:element ref="c:next-function"/>
          <xs:element ref="c:next-template"/>
-         <xs:element ref="c:normalize-space"/>
          <xs:element ref="c:object"/>
          <xs:element ref="c:processing-instruction"/>
          <xs:element ref="c:result-document"/>
@@ -60,6 +59,15 @@
       <xs:attribute name="extension-element-prefixes">
          <xs:simpleType>
             <xs:list itemType="c:Prefix"/>
+         </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="transform-text">
+         <xs:simpleType>
+            <xs:restriction base="xs:token">
+               <xs:enumeration value="none"/>
+               <xs:enumeration value="normalize-space"/>
+               <xs:enumeration value="trim"/>
+            </xs:restriction>
          </xs:simpleType>
       </xs:attribute>
    </xs:attributeGroup>
@@ -747,15 +755,6 @@
       <xs:complexType>
          <xs:group minOccurs="0" maxOccurs="unbounded" ref="c:with-param-for-templates"/>
          <xs:attributeGroup ref="c:standard-attributes"/>
-      </xs:complexType>
-   </xs:element>
-   <xs:element name="normalize-space">
-      <xs:complexType>
-         <xs:complexContent>
-            <xs:extension base="c:value-attribute-or-content">
-               <xs:attributeGroup ref="c:standard-attributes"/>
-            </xs:extension>
-         </xs:complexContent>
       </xs:complexType>
    </xs:element>
    <xs:element name="object">
