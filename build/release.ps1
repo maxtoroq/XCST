@@ -36,7 +36,7 @@ function script:NuSpec {
    $targetFx = $projDoc.DocumentElement.SelectSingleNode("*/*[local-name() = 'TargetFrameworkVersion']").InnerText
    $targetFxMoniker = "net" + $targetFx.Substring(1).Replace(".", "")
 
-   $xcstMinVersion = New-Object Version $PackageVersion.Major, $PackageVersion.Minor, 0
+   $xcstMinVersion = New-Object Version $PackageVersion.Major, $PackageVersion.Minor, $(if ($ProjectName -eq '*') { $PackageVersion.Build } else { 0 })
    $xcstMaxVersion = New-Object Version $PackageVersion.Major, ($PackageVersion.Minor + 1), 0
 
    "<package xmlns='http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd'>"
