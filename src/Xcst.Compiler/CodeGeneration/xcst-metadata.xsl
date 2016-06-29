@@ -354,10 +354,10 @@
    -->
 
    <template name="src:range-attribute">
-      <if test="not(count((@min, @max)) = (0, 2))">
-         <sequence select="error((), 'Both @min and @max must be specified.', src:error-object(.))"/>
-      </if>
-      <if test="@min and @max">
+      <if test="@min or @max">
+         <if test="@range-type and not(count((@min, @max)) eq 2)">
+            <sequence select="error((), 'When @range-type is used both @min and @max must be specified.', src:error-object(.))"/>
+         </if>
          <variable name="setters" as="text()*">
             <call-template name="src:validation-setters">
                <with-param name="name" select="'range'"/>
@@ -368,12 +368,20 @@
          <text>[</text>
          <value-of select="src:global-identifier('System.ComponentModel.DataAnnotations.Range')"/>
          <text>(</text>
-         <if test="@range-type">
-            <text>typeof(</text>
-            <value-of select="xcst:type(@range-type)"/>
-            <text>), </text>
-         </if>
-         <value-of select="@min, @max, $setters/string()" separator=", "/>
+         <choose>
+            <when test="@range-type">
+               <text>typeof(</text>
+               <value-of select="xcst:type(@range-type)"/>
+               <text>), </text>
+               <value-of select="(@min, @max)/src:verbatim-string(.), $setters/string()" separator=", "/>
+            </when>
+            <otherwise>
+               <value-of select="
+                  (@min/xcst:expression(.), concat(xcst:type(@as), '.MinValue'))[1],
+                  (@max/xcst:expression(.), concat(xcst:type(@as), '.MaxValue'))[1],
+                  $setters/string()" separator=", "/>
+            </otherwise>
+         </choose>
          <text>)]</text>
       </if>
    </template>
