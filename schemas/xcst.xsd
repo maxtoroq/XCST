@@ -410,8 +410,8 @@
          </xs:simpleType>
       </xs:attribute>
       <xs:attribute name="required" type="c:Boolean"/>
-      <xs:attribute name="max-length" type="c:Integer"/>
-      <xs:attribute name="min-length" type="c:Integer"/>
+      <xs:attribute name="max-length" type="c:Expression"/>
+      <xs:attribute name="min-length" type="c:Expression"/>
       <xs:attribute name="pattern" type="c:String"/>
       <xs:attribute name="min" type="c:Expression"/>
       <xs:attribute name="max" type="c:Expression"/>

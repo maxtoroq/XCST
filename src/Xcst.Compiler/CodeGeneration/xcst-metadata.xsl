@@ -316,11 +316,11 @@
    </template>
 
    <template match="@max-length" mode="src:string-length-setter">
-      <value-of select="xcst:integer(.)"/>
+      <value-of select="xcst:expression(.)"/>
    </template>
 
    <template match="@min-length" mode="src:string-length-setter">
-      <value-of select="'MinimumLength', xcst:integer(.)" separator=" = "/>
+      <value-of select="'MinimumLength', xcst:expression(.)" separator=" = "/>
    </template>
 
    <!--
@@ -401,7 +401,7 @@
    </template>
 
    <template match="@equal-to" mode="src:compare-setter">
-      <value-of select="concat('nameof(', xcst:non-string(.), ')')"/>
+      <value-of select="concat('nameof(', xcst:name(.), ')')"/>
    </template>
 
    <!--

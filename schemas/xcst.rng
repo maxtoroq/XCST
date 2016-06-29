@@ -575,10 +575,10 @@
                <ref name="Boolean"/>
             </attribute>
             <attribute name="max-length">
-               <ref name="Integer"/>
+               <ref name="Expression"/>
             </attribute>
             <attribute name="min-length">
-               <ref name="Integer"/>
+               <ref name="Expression"/>
             </attribute>
             <attribute name="pattern">
                <ref name="String"/>
