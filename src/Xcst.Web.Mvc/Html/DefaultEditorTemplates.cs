@@ -34,6 +34,7 @@ namespace Xcst.Web.Mvc.Html {
 
       const string HtmlAttributeKey = "htmlAttributes";
       internal const string MemberTemplateKey = "__xcst_member_template";
+      const string OptionsKeyPrefix = "__xcst_options:";
 
       public static void BooleanTemplate(HtmlHelper html, DynamicContext context) {
 
@@ -360,6 +361,20 @@ namespace Xcst.Web.Mvc.Html {
          HtmlInputTemplateHelper(html, context, "Upload", inputType: "file");
       }
 
+      public static void DropDownListTemplate(HtmlHelper html, DynamicContext context) {
+
+         string className = GetEditorCssClass(new EditorInfo("DropDownList", "select"), null);
+         IDictionary<string, object> htmlAttributes = CreateHtmlAttributes(html, className);
+         ViewDataDictionary viewData = html.ViewData;
+
+         string optionLabel = viewData.ModelMetadata.Watermark
+            ?? String.Empty;
+
+         IEnumerable<SelectListItem> options = Options(viewData);
+
+         SelectExtensions.DropDownList(html, context, String.Empty, options, optionLabel: optionLabel, htmlAttributes: htmlAttributes);
+      }
+
       static void ApplyRfc3339DateFormattingIfNeeded(HtmlHelper html, string format) {
 
          if (html.Html5DateRenderingMode != Html5DateRenderingMode.Rfc3339) {
@@ -432,6 +447,17 @@ namespace Xcst.Web.Mvc.Html {
             new SelectListItem { Text = "True", Value = "true", Selected = value.HasValue && value.Value },
             new SelectListItem { Text = "False", Value = "false", Selected = value.HasValue && !value.Value },
          };
+      }
+
+      internal static IEnumerable<SelectListItem> Options(ViewDataDictionary viewData) {
+
+         IEnumerable<SelectListItem> options;
+
+         if (viewData.TryGetValue(OptionsKeyPrefix + viewData.TemplateInfo.HtmlFieldPrefix, out options)) {
+            return options;
+         }
+
+         return null;
       }
    }
 }

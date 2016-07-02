@@ -69,6 +69,7 @@ namespace Xcst.Web.Mvc.Html {
             { "Date", DefaultEditorTemplates.DateInputTemplate },
             { "Time", DefaultEditorTemplates.TimeInputTemplate },
             { "Upload", DefaultEditorTemplates.UploadTemplate },
+            { "DropDownList", DefaultEditorTemplates.DropDownListTemplate },
             { typeof(Color).Name, DefaultEditorTemplates.ColorInputTemplate },
             { typeof(byte).Name, DefaultEditorTemplates.ByteInputTemplate },
             { typeof(sbyte).Name, DefaultEditorTemplates.SByteInputTemplate },
@@ -101,7 +102,10 @@ namespace Xcst.Web.Mvc.Html {
          Dictionary<string, Action<HtmlHelper, DynamicContext>> defaultActions = getDefaultActions(mode);
          string modeViewPath = _modeViewPaths[mode];
 
-         foreach (string viewName in getViewNames(viewData.ModelMetadata, templateName, viewData.ModelMetadata.TemplateHint, viewData.ModelMetadata.DataTypeName)) {
+         var options = DefaultEditorTemplates.Options(viewData);
+         string[] templateHints = { templateName, viewData.ModelMetadata.TemplateHint, (options != null ? "DropDownList" : null), viewData.ModelMetadata.DataTypeName };
+
+         foreach (string viewName in getViewNames(viewData.ModelMetadata, templateHints)) {
 
             string fullViewName = modeViewPath + "/" + viewName;
             ActionCacheItem cacheItem;

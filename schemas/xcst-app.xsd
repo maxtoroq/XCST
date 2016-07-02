@@ -92,10 +92,16 @@
       </xs:complexType>
    </xs:element>
    <xs:complexType name="select-common">
+      <xs:complexContent>
+         <xs:extension base="a:options">
+            <xs:attributeGroup ref="a:input-attributes"/>
+         </xs:extension>
+      </xs:complexContent>
+   </xs:complexType>
+   <xs:complexType name="options">
       <xs:sequence>
          <xs:element minOccurs="0" maxOccurs="unbounded" ref="a:option"/>
       </xs:sequence>
-      <xs:attributeGroup ref="a:input-attributes"/>
       <xs:attribute name="options" type="a:Expression"/>
    </xs:complexType>
    <xs:element name="option">
@@ -143,6 +149,7 @@
    <xs:element name="display" substitutionGroup="a:instruction-element" type="a:editor-display-common"/>
    <xs:complexType name="editor-display-common">
       <xs:sequence>
+         <xs:element minOccurs="0" maxOccurs="unbounded" ref="a:with-options"/>
          <xs:element minOccurs="0" ref="a:member-template"/>
       </xs:sequence>
       <xs:attribute name="for" type="a:Expression"/>
@@ -152,6 +159,16 @@
       <xs:attribute name="html-attributes" type="a:Expression"/>
       <xs:attribute name="with-params" type="a:Expression"/>
    </xs:complexType>
+   <xs:element name="with-options">
+      <xs:complexType>
+         <xs:complexContent>
+            <xs:extension base="a:options">
+               <xs:attribute name="for" type="a:Expression"/>
+               <xs:attribute name="name" type="a:AVT"/>
+            </xs:extension>
+         </xs:complexContent>
+      </xs:complexType>
+   </xs:element>
    <xs:element name="member-template">
       <xs:complexType mixed="true">
          <xs:group ref="a:sequence-constructor"/>

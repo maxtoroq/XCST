@@ -226,6 +226,10 @@
 
       <define name="select-common">
          <ref name="input-attributes"/>
+         <ref name="options"/>
+      </define>
+
+      <define name="options">
          <choice>
             <attribute name="options">
                <ref name="Expression"/>
@@ -385,6 +389,21 @@
                   <ref name="Expression"/>
                </attribute>
             </choice>
+         </zeroOrMore>
+         <zeroOrMore>
+            <element name="with-options">
+               <choice>
+                  <attribute name="for">
+                     <ref name="Expression"/>
+                  </attribute>
+                  <optional>
+                     <attribute name="name">
+                        <ref name="AVT"/>
+                     </attribute>
+                  </optional>
+               </choice>
+               <ref name="options"/>
+            </element>
          </zeroOrMore>
          <optional>
             <element name="member-template">

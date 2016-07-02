@@ -389,54 +389,9 @@
             </otherwise>
          </choose>
          <text>, </text>
-         <choose>
-            <when test="a:option">
-               <if test="$ddl and @value">
-                  <text>new </text>
-                  <value-of select="src:global-identifier('System.Web.Mvc.SelectList')"/>
-                  <text>(</text>
-               </if>
-               <text>new[] { </text>
-               <for-each select="a:option">
-                  <call-template name="xcst:validate-attribs">
-                     <with-param name="allowed" select="'value', 'selected', 'disabled'"/>
-                     <with-param name="required" select="()"/>
-                     <with-param name="extension" select="true()"/>
-                  </call-template>
-                  <if test="position() gt 1">, </if>
-                  <text>new </text>
-                  <value-of select="src:global-identifier('System.Web.Mvc.SelectListItem')"/>
-                  <text> { </text>
-                  <text>Value = </text>
-                  <call-template name="src:simple-content">
-                     <with-param name="attribute" select="@value"/>
-                  </call-template>
-                  <text>, Text = </text>
-                  <call-template name="src:simple-content"/>
-                  <if test="@selected">
-                     <text>, Selected = </text>
-                     <value-of select="xcst:expression(@selected)"/>
-                  </if>
-                  <if test="@disabled">
-                     <text>, Disabled = </text>
-                     <value-of select="xcst:expression(@disabled)"/>
-                  </if>
-                  <text>}</text>
-               </for-each>
-               <text> }</text>
-               <if test="$ddl and @value">
-                  <text>, "Value", "Text", </text>
-                  <value-of select="xcst:expression(@value)"/>
-                  <text>)</text>
-               </if>
-            </when>
-            <when test="@options">
-               <value-of select="xcst:expression(@options)"/>
-            </when>
-            <otherwise>
-               <value-of select="concat('default(', src:global-identifier('System.Collections.Generic.IEnumerable'), '&lt;', src:global-identifier('System.Web.Mvc.SelectListItem'), '>)')"/>
-            </otherwise>
-         </choose>
+         <call-template name="a:options">
+            <with-param name="value" select="@value[$ddl]"/>
+         </call-template>
          <if test="$ddl and @option-label">
             <text>, optionLabel: </text>
             <value-of select="src:expand-attribute(@option-label)"/>
@@ -449,6 +404,59 @@
          <text>)</text>
       </variable>
       <c:void value="{$expr}"/>
+   </template>
+
+   <template name="a:options">
+      <param name="value" as="attribute()?"/>
+
+      <choose>
+         <when test="a:option">
+            <if test="$value">
+               <text>new </text>
+               <value-of select="src:global-identifier('System.Web.Mvc.SelectList')"/>
+               <text>(</text>
+            </if>
+            <text>new[] { </text>
+            <for-each select="a:option">
+               <call-template name="xcst:validate-attribs">
+                  <with-param name="allowed" select="'value', 'selected', 'disabled'"/>
+                  <with-param name="required" select="()"/>
+                  <with-param name="extension" select="true()"/>
+               </call-template>
+               <if test="position() gt 1">, </if>
+               <text>new </text>
+               <value-of select="src:global-identifier('System.Web.Mvc.SelectListItem')"/>
+               <text> { </text>
+               <text>Value = </text>
+               <call-template name="src:simple-content">
+                  <with-param name="attribute" select="@value"/>
+               </call-template>
+               <text>, Text = </text>
+               <call-template name="src:simple-content"/>
+               <if test="@selected">
+                  <text>, Selected = </text>
+                  <value-of select="xcst:expression(@selected)"/>
+               </if>
+               <if test="@disabled">
+                  <text>, Disabled = </text>
+                  <value-of select="xcst:expression(@disabled)"/>
+               </if>
+               <text>}</text>
+            </for-each>
+            <text> }</text>
+            <if test="$value">
+               <text>, "Value", "Text", </text>
+               <value-of select="xcst:expression($value)"/>
+               <text>)</text>
+            </if>
+         </when>
+         <when test="@options">
+            <value-of select="xcst:expression(@options)"/>
+         </when>
+         <otherwise>
+            <value-of select="concat('default(', src:global-identifier('System.Collections.Generic.IEnumerable'), '&lt;', src:global-identifier('System.Web.Mvc.SelectListItem'), '>)')"/>
+         </otherwise>
+      </choose>
    </template>
 
    <template match="a:label" mode="src:extension-instruction">
@@ -639,7 +647,7 @@
 
    <template name="a:editor-additional-view-data">
       <variable name="setters" as="text()*">
-         <for-each select="@html-attributes | a:member-template">
+         <for-each select="@html-attributes, a:with-options, a:member-template">
             <variable name="setter">
                <apply-templates select="." mode="a:editor-additional-view-data"/>
             </variable>
@@ -663,7 +671,40 @@
    </template>
 
    <template match="@html-attributes" mode="a:editor-additional-view-data">
-      <value-of select="'[&quot;htmlAttributes&quot;]', xcst:expression(.)" separator=" = "/>
+      <text>[</text>
+      <value-of select="src:string('htmlAttributes')"/>
+      <text>] = </text>
+      <value-of select="xcst:expression(.)"/>
+   </template>
+
+   <template match="a:with-options" mode="a:editor-additional-view-data">
+
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="'for', 'name', 'options'"/>
+         <with-param name="required" select="()"/>
+         <with-param name="extension" select="true()"/>
+      </call-template>
+
+      <call-template name="a:validate-for"/>
+
+      <text>[</text>
+      <value-of select="src:string(concat(src:aux-variable('options'), ':'))"/>
+      <text> + </text>
+      <call-template name="a:model-helper"/>
+      <text>.FieldName(</text>
+      <choose>
+         <when test="@for">
+            <variable name="param" select="src:aux-variable(generate-id())"/>
+            <value-of select="$param"/>
+            <text> => </text>
+            <value-of select="$param, xcst:expression(@for)" separator="."/>
+         </when>
+         <otherwise>
+            <value-of select="@name/src:expand-attribute(.)"/>
+         </otherwise>
+      </choose>
+      <text>)] = </text>
+      <call-template name="a:options"/>
    </template>
 
    <template match="a:member-template" mode="a:editor-additional-view-data">
@@ -678,7 +719,9 @@
       <variable name="new-context" select="concat(src:aux-variable('context'), '_', generate-id())"/>
       <variable name="new-helper" select="(@helper-name/xcst:name(.), concat(src:aux-variable('model_helper'), '_', generate-id()))[1]"/>
 
-      <value-of select="concat('[&quot;', src:aux-variable('member_template'), '&quot;]')"/>
+      <text>[</text>
+      <value-of select="src:string(src:aux-variable('member_template'))"/>
+      <text>]</text>
       <text> = new </text>
       <value-of select="src:global-identifier(concat('System.Action&lt;', src:fully-qualified-helper('DynamicContext'), '>'))"/>
       <text>((</text>
