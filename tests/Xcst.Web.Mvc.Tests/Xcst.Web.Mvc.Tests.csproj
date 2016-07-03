@@ -177,6 +177,7 @@
     <None Include="Extension\Templates\Display\display.html-attributes.type.i.xcst" />
     <None Include="Extension\Templates\Display\display.with-params.type.i.xcst" />
     <None Include="Extension\Templates\Display\member-template.foo.i.xcst" />
+    <None Include="Extension\Templates\Editor\editor.options.type.i.xcst" />
     <None Include="Extension\Templates\Editor\option.disabled.type.i.xcst" />
     <None Include="Extension\Templates\Editor\option.foo.i.xcst" />
     <None Include="Extension\Templates\Editor\option.selected.type.i.xcst" />

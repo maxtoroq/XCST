@@ -388,6 +388,9 @@
                <attribute name="with-params">
                   <ref name="Expression"/>
                </attribute>
+               <attribute name="options">
+                  <ref name="Expression"/>
+               </attribute>
             </choice>
          </zeroOrMore>
          <zeroOrMore>

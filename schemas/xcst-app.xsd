@@ -158,6 +158,7 @@
       <xs:attribute name="html-field-name" type="a:AVT"/>
       <xs:attribute name="html-attributes" type="a:Expression"/>
       <xs:attribute name="with-params" type="a:Expression"/>
+      <xs:attribute name="options" type="a:Expression"/>
    </xs:complexType>
    <xs:element name="with-options">
       <xs:complexType>

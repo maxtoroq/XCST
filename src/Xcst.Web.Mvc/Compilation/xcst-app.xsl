@@ -595,7 +595,7 @@
       <param name="context-param" tunnel="yes"/>
 
       <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="'for', 'name', 'template', 'html-field-name', 'html-attributes', 'with-params'"/>
+         <with-param name="allowed" select="'for', 'name', 'template', 'html-field-name', 'html-attributes', 'with-params', 'options'"/>
          <with-param name="required" select="()"/>
          <with-param name="extension" select="true()"/>
       </call-template>
@@ -647,7 +647,7 @@
 
    <template name="a:editor-additional-view-data">
       <variable name="setters" as="text()*">
-         <for-each select="@html-attributes, a:with-options, a:member-template">
+         <for-each select="@html-attributes, a:with-options, .[@options], a:member-template">
             <variable name="setter">
                <apply-templates select="." mode="a:editor-additional-view-data"/>
             </variable>
@@ -677,15 +677,16 @@
       <value-of select="xcst:expression(.)"/>
    </template>
 
-   <template match="a:with-options" mode="a:editor-additional-view-data">
+   <template match="a:with-options | a:*[@options]" mode="a:editor-additional-view-data">
 
-      <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="'for', 'name', 'options'"/>
-         <with-param name="required" select="()"/>
-         <with-param name="extension" select="true()"/>
-      </call-template>
-
-      <call-template name="a:validate-for"/>
+      <if test="self::a:with-options">
+         <call-template name="xcst:validate-attribs">
+            <with-param name="allowed" select="'for', 'name', 'options'"/>
+            <with-param name="required" select="()"/>
+            <with-param name="extension" select="true()"/>
+         </call-template>
+         <call-template name="a:validate-for"/>
+      </if>
 
       <text>[</text>
       <value-of select="src:string(concat(src:aux-variable('options'), ':'))"/>
