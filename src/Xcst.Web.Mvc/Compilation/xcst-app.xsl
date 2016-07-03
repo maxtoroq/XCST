@@ -723,37 +723,17 @@
       <value-of select="src:string(src:aux-variable('member_template'))"/>
       <text>]</text>
       <text> = new </text>
-      <value-of select="src:global-identifier(concat('System.Action&lt;', src:fully-qualified-helper('DynamicContext'), '>'))"/>
+      <value-of select="src:global-identifier(concat('System.Action&lt;', src:global-identifier('Xcst.Web.Mvc.ModelHelper'), ', ', src:fully-qualified-helper('DynamicContext'), '>'))"/>
       <text>((</text>
-      <value-of select="$new-context"/>
+      <value-of select="$new-helper, $new-context" separator=", "/>
       <text>) => </text>
-      <call-template name="src:open-brace"/>
-      <call-template name="src:new-line-indented">
-         <with-param name="increase" select="1"/>
-      </call-template>
-      <text>var </text>
-      <value-of select="$new-helper"/>
-      <text> = </text>
-      <value-of select="src:global-identifier('Xcst.Web.Mvc.ModelHelper')"/>
-      <text>.ForProperty(</text>
-      <call-template name="a:model-helper"/>
-      <text>, </text>
-      <value-of select="$new-context"/>
-      <text>.Param&lt;</text>
-      <value-of select="src:global-identifier('System.Web.Mvc.ModelMetadata')"/>
-      <text>>(</text>
-      <value-of select="src:string('member')"/>
-      <text>, null))</text>
-      <value-of select="$src:statement-delimiter"/>
       <call-template name="src:apply-children">
          <with-param name="mode" select="'statement'"/>
-         <with-param name="omit-block" select="true()"/>
          <with-param name="indent" select="$indent + 1" tunnel="yes"/>
          <with-param name="context-param" select="$new-context" tunnel="yes"/>
          <with-param name="output" select="concat($new-context, '.Output')" tunnel="yes"/>
          <with-param name="a:model-helper" select="$new-helper" tunnel="yes"/>
       </call-template>
-      <call-template name="src:close-brace"/>
       <text>)</text>
    </template>
 

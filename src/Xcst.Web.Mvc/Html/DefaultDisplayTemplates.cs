@@ -197,14 +197,14 @@ namespace Xcst.Web.Mvc.Html {
             return;
          }
 
-         Action<DynamicContext> memberTemplate = viewData[DefaultEditorTemplates.MemberTemplateKey] as Action<DynamicContext>;
-
          foreach (ModelMetadata propertyMetadata in modelMetadata.Properties.Where(pm => html.ShowForDisplay(pm))) {
 
             if (!propertyMetadata.HideSurroundingHtml) {
 
+               Action<DynamicContext> memberTemplate = html.MemberTemplate(propertyMetadata);
+
                if (memberTemplate != null) {
-                  memberTemplate(new DynamicContext(context).WithParam("member", propertyMetadata));
+                  memberTemplate(new DynamicContext(context));
                   continue;
                }
 

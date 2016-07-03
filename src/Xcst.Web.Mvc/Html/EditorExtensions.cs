@@ -29,6 +29,8 @@ namespace Xcst.Web.Mvc.Html {
    /// <exclude/>
    public static class EditorExtensions {
 
+      const string MemberTemplateKey = "__xcst_member_template";
+
       public static Func<EditorInfo, string, string> EditorCssClassFunction { get; set; }
 
       public static bool OmitPasswordValue { get; set; }
@@ -83,6 +85,28 @@ namespace Xcst.Web.Mvc.Html {
 
          return propertyMetadata.ModelType != typeof(EntityState)
             && !propertyMetadata.IsComplexType;
+      }
+
+      /// <summary>
+      /// Returns the member template delegate for the provided property.
+      /// </summary>
+      /// <param name="html">The current <see cref="HtmlHelper"/>.</param>
+      /// <param name="propertyMetadata">The property's metadata.</param>
+      /// <returns>The member template delegate for the provided property; or null if a member template is not available.</returns>
+      public static Action<DynamicContext> MemberTemplate(this HtmlHelper html, ModelMetadata propertyMetadata) {
+
+         if (html == null) throw new ArgumentNullException(nameof(html));
+         if (propertyMetadata == null) throw new ArgumentNullException(nameof(propertyMetadata));
+
+         Action<ModelHelper, DynamicContext> memberTemplate;
+
+         if (!html.ViewData.TryGetValue(MemberTemplateKey, out memberTemplate)) {
+            return null;
+         }
+
+         ModelHelper modelHelper = ModelHelper.ForMemberTemplate(html, propertyMetadata);
+
+         return context => memberTemplate(modelHelper, context);
       }
    }
 }

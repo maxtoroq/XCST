@@ -11,7 +11,6 @@
 
    <c:param name='labelColumnClass'>col-md-3</c:param>
    <c:param name='fieldColumnClass'>col-md-9</c:param>
-   <c:param name='__xcst_member_template' as='Action&lt;Xcst.Runtime.DynamicContext>'/>
 
    <c:template name='c:initial-template' expand-text='yes'>
       <c:choose>
@@ -36,18 +35,23 @@
                   <c:when test='prop.HideSurroundingHtml'>
                      <a:editor name='{prop.PropertyName}' template='{editorTemplate}'/>
                   </c:when>
-                  <c:when test='__xcst_member_template != null'>
-                     <c:evaluate-delegate value='__xcst_member_template' with-params='new { member = prop }'/>
-                  </c:when>
                   <c:otherwise>
-                     <div class='form-group'>
-                        <a:label name='{prop.PropertyName}' html-class='control-label {labelColumnClass}'/>
-                        <div class='{fieldColumnClass}'>
-                           <a:editor name='{prop.PropertyName}' template='{editorTemplate}'/>
-                           <c:text> </c:text>
-                           <a:validation-message name='{prop.PropertyName}'/>
-                        </div>
-                     </div>
+                     <c:variable name='memberTemplate' value='Html.MemberTemplate(prop)'/>
+                     <c:choose>
+                        <c:when test='memberTemplate != null'>
+                           <c:evaluate-delegate value='memberTemplate'/>
+                        </c:when>
+                        <c:otherwise>
+                           <div class='form-group'>
+                              <a:label name='{prop.PropertyName}' html-class='control-label {labelColumnClass}'/>
+                              <div class='{fieldColumnClass}'>
+                                 <a:editor name='{prop.PropertyName}' template='{editorTemplate}'/>
+                                 <c:text> </c:text>
+                                 <a:validation-message name='{prop.PropertyName}'/>
+                              </div>
+                           </div>
+                        </c:otherwise>
+                     </c:choose>
                   </c:otherwise>
                </c:choose>
             </c:for-each>

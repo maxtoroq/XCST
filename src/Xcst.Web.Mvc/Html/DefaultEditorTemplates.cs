@@ -33,7 +33,6 @@ namespace Xcst.Web.Mvc.Html {
    static class DefaultEditorTemplates {
 
       const string HtmlAttributeKey = "htmlAttributes";
-      internal const string MemberTemplateKey = "__xcst_member_template";
       const string OptionsKeyPrefix = "__xcst_options:";
 
       public static void BooleanTemplate(HtmlHelper html, DynamicContext context) {
@@ -230,14 +229,14 @@ namespace Xcst.Web.Mvc.Html {
             return;
          }
 
-         Action<DynamicContext> memberTemplate = viewData[MemberTemplateKey] as Action<DynamicContext>;
-
          foreach (ModelMetadata propertyMetadata in modelMetadata.Properties.Where(pm => html.ShowForEdit(pm))) {
 
             if (!propertyMetadata.HideSurroundingHtml) {
 
+               Action<DynamicContext> memberTemplate = html.MemberTemplate(propertyMetadata);
+
                if (memberTemplate != null) {
-                  memberTemplate(new DynamicContext(context).WithParam("member", propertyMetadata));
+                  memberTemplate(new DynamicContext(context));
                   continue;
                }
 

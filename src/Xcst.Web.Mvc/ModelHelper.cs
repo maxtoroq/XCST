@@ -89,20 +89,19 @@ namespace Xcst.Web.Mvc {
          return new ModelHelper<TModel>(html);
       }
 
-      public static ModelHelper ForProperty(ModelHelper currentHelper, ModelMetadata metadata) {
+      internal static ModelHelper ForMemberTemplate(HtmlHelper currentHtml, ModelMetadata memberMetadata) {
 
-         if (currentHelper == null) throw new ArgumentNullException(nameof(currentHelper));
-         if (metadata == null) throw new ArgumentNullException(nameof(metadata));
+         if (currentHtml == null) throw new ArgumentNullException(nameof(currentHtml));
+         if (memberMetadata == null) throw new ArgumentNullException(nameof(memberMetadata));
 
-         HtmlHelper currentHtml = currentHelper.Html;
          ViewDataDictionary currentViewData = currentHtml.ViewData;
 
          var container = new ViewDataContainer {
             ViewData = new ViewDataDictionary(currentViewData) {
-               Model = metadata.Model,
-               ModelMetadata = metadata,
+               Model = memberMetadata.Model,
+               ModelMetadata = memberMetadata,
                TemplateInfo = new TemplateInfo {
-                  HtmlFieldPrefix = currentViewData.TemplateInfo.GetFullHtmlFieldName(metadata.PropertyName)
+                  HtmlFieldPrefix = currentViewData.TemplateInfo.GetFullHtmlFieldName(memberMetadata.PropertyName)
                }
             }
          };
