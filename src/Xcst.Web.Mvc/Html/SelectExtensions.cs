@@ -145,13 +145,13 @@ namespace Xcst.Web.Mvc.Html {
          return attribute != null;
       }
 
-      static void DropDownListHelper(HtmlHelper htmlHelper,
-                                     DynamicContext context,
-                                     ModelMetadata metadata,
-                                     string expression,
-                                     IEnumerable<SelectListItem> selectList,
-                                     string optionLabel,
-                                     IDictionary<string, object> htmlAttributes) {
+      internal static void DropDownListHelper(HtmlHelper htmlHelper,
+                                              DynamicContext context,
+                                              ModelMetadata metadata,
+                                              string expression,
+                                              IEnumerable<SelectListItem> selectList,
+                                              string optionLabel,
+                                              IDictionary<string, object> htmlAttributes) {
 
          SelectInternal(htmlHelper, context, metadata, optionLabel, expression, selectList, allowMultiple: false, htmlAttributes: htmlAttributes);
       }
@@ -282,10 +282,17 @@ namespace Xcst.Web.Mvc.Html {
          // If we haven't already used ViewData to get the entire list of items then we need to
          // use the ViewData-supplied value before using the parameter-supplied value.
 
-         if (defaultValue == null && !String.IsNullOrEmpty(name)) {
-            if (!usedViewData) {
-               defaultValue = htmlHelper.ViewData.Eval(name);
-            } else if (metadata != null) {
+         if (defaultValue == null) {
+
+            if (metadata == null) {
+
+               if (!usedViewData
+                  && !String.IsNullOrEmpty(name)) {
+
+                  defaultValue = htmlHelper.ViewData.Eval(name);
+               }
+
+            } else {
                defaultValue = metadata.Model;
             }
          }
@@ -372,7 +379,10 @@ namespace Xcst.Web.Mvc.Html {
       internal static void ListItemToOption(XcstWriter output, SelectListItem item) {
 
          output.WriteStartElement("option");
-         output.WriteAttributeString("value", item.Value);
+
+         if (item.Value != null) {
+            output.WriteAttributeString("value", item.Value);
+         }
 
          if (item.Selected) {
             output.WriteAttributeString("selected", "selected");

@@ -371,7 +371,7 @@ namespace Xcst.Web.Mvc.Html {
 
          IEnumerable<SelectListItem> options = Options(viewData);
 
-         SelectExtensions.DropDownList(html, context, String.Empty, options, optionLabel: optionLabel, htmlAttributes: htmlAttributes);
+         SelectExtensions.DropDownListHelper(html, context, viewData.ModelMetadata, String.Empty, options, optionLabel: optionLabel, htmlAttributes: htmlAttributes);
       }
 
       static void ApplyRfc3339DateFormattingIfNeeded(HtmlHelper html, string format) {

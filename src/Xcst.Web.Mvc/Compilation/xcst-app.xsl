@@ -390,7 +390,8 @@
          </choose>
          <text>, </text>
          <call-template name="a:options">
-            <with-param name="value" select="@value[$ddl]"/>
+            <with-param name="value" select="@value"/>
+            <with-param name="allowMultiple" select="not($ddl)"/>
          </call-template>
          <if test="$ddl and @option-label">
             <text>, optionLabel: </text>
@@ -408,50 +409,62 @@
 
    <template name="a:options">
       <param name="value" as="attribute()?"/>
+      <param name="allowMultiple" select="false()"/>
 
       <choose>
-         <when test="a:option">
+         <when test="a:option or @options">
             <if test="$value">
                <text>new </text>
-               <value-of select="src:global-identifier('System.Web.Mvc.SelectList')"/>
+               <value-of select="src:global-identifier(concat('System.Web.Mvc.', (if ($allowMultiple) then 'Multi' else ''), 'SelectList'))"/>
                <text>(</text>
             </if>
-            <text>new[] { </text>
-            <for-each select="a:option">
-               <call-template name="xcst:validate-attribs">
-                  <with-param name="allowed" select="'value', 'selected', 'disabled'"/>
-                  <with-param name="required" select="()"/>
-                  <with-param name="extension" select="true()"/>
-               </call-template>
-               <if test="position() gt 1">, </if>
-               <text>new </text>
-               <value-of select="src:global-identifier('System.Web.Mvc.SelectListItem')"/>
-               <text> { </text>
-               <text>Value = </text>
-               <call-template name="src:simple-content">
-                  <with-param name="attribute" select="@value"/>
-               </call-template>
-               <text>, Text = </text>
-               <call-template name="src:simple-content"/>
-               <if test="@selected">
-                  <text>, Selected = </text>
-                  <value-of select="xcst:expression(@selected)"/>
-               </if>
-               <if test="@disabled">
-                  <text>, Disabled = </text>
-                  <value-of select="xcst:expression(@disabled)"/>
-               </if>
-               <text>}</text>
-            </for-each>
-            <text> }</text>
+            <choose>
+               <when test="a:option">
+                  <text>new[] { </text>
+                  <for-each select="a:option">
+                     <call-template name="xcst:validate-attribs">
+                        <with-param name="allowed" select="'value', 'selected', 'disabled'"/>
+                        <with-param name="required" select="()"/>
+                        <with-param name="extension" select="true()"/>
+                     </call-template>
+                     <if test="position() gt 1">, </if>
+                     <text>new </text>
+                     <value-of select="src:global-identifier('System.Web.Mvc.SelectListItem')"/>
+                     <text> { </text>
+                     <if test="@value or $value">
+                        <!--
+                           SelectList transforms null to empty string because dataValueField is always present (see below),
+                           therefore Value must be set. The same is true for @options.
+                        -->
+                        <text>Value = </text>
+                        <call-template name="src:simple-content">
+                           <with-param name="attribute" select="@value"/>
+                        </call-template>
+                        <text>, </text>
+                     </if>
+                     <text>Text = </text>
+                     <call-template name="src:simple-content"/>
+                     <if test="@selected">
+                        <text>, Selected = </text>
+                        <value-of select="xcst:expression(@selected)"/>
+                     </if>
+                     <if test="@disabled">
+                        <text>, Disabled = </text>
+                        <value-of select="xcst:expression(@disabled)"/>
+                     </if>
+                     <text>}</text>
+                  </for-each>
+                  <text> }</text>
+               </when>
+               <otherwise>
+                  <value-of select="xcst:expression(@options)"/>
+               </otherwise>
+            </choose>
             <if test="$value">
                <text>, "Value", "Text", </text>
                <value-of select="xcst:expression($value)"/>
                <text>)</text>
             </if>
-         </when>
-         <when test="@options">
-            <value-of select="xcst:expression(@options)"/>
          </when>
          <otherwise>
             <value-of select="concat('default(', src:global-identifier('System.Collections.Generic.IEnumerable'), '&lt;', src:global-identifier('System.Web.Mvc.SelectListItem'), '>)')"/>
