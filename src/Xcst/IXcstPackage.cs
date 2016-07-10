@@ -13,13 +13,10 @@
 // limitations under the License.
 
 using System;
-using System.ComponentModel;
 using Xcst.Runtime;
 
 namespace Xcst {
 
-   /// <exclude/>
-   [EditorBrowsable(EditorBrowsableState.Never)]
    public interface IXcstPackage {
 
       ExecutionContext Context { get; set; }
@@ -31,44 +28,43 @@ namespace Xcst {
       void ReadOutputDefinition(QualifiedName name, OutputParameters parameters);
    }
 
-   /// <exclude/>
-   [EditorBrowsable(EditorBrowsableState.Never)]
-   [AttributeUsage(AttributeTargets.Method | AttributeTargets.Property | AttributeTargets.Class)]
-   public sealed class XcstComponentAttribute : Attribute {
+   namespace Packages {
 
-      public XcstComponentKind ComponentKind { get; }
+      public abstract class XcstComponentAttribute : Attribute {
 
-      public string Name { get; set; }
-
-      public XcstComponentAttribute(XcstComponentKind componentKind) {
-         this.ComponentKind = componentKind;
+         public string Name { get; set; }
       }
-   }
 
-   /// <exclude/>
-   [EditorBrowsable(EditorBrowsableState.Never)]
-   public enum XcstComponentKind {
-      AttributeSet,
-      Function,
-      Parameter,
-      Template,
-      Type,
-      Variable
-   }
+      [AttributeUsage(AttributeTargets.Method)]
+      public class XcstAttributeSetAttribute : XcstComponentAttribute { }
 
-   /// <exclude/>
-   [EditorBrowsable(EditorBrowsableState.Never)]
-   [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
-   public sealed class XcstTemplateParameterAttribute : Attribute {
+      [AttributeUsage(AttributeTargets.Method)]
+      public class XcstFunctionAttribute : XcstComponentAttribute { }
 
-      public string Name { get; }
+      [AttributeUsage(AttributeTargets.Property)]
+      public class XcstParameterAttribute : XcstComponentAttribute { }
 
-      public bool Required { get; set; }
+      [AttributeUsage(AttributeTargets.Method)]
+      public class XcstTemplateAttribute : XcstComponentAttribute { }
 
-      public bool Tunnel { get; set; }
+      [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
+      public class XcstTemplateParameterAttribute : Attribute {
 
-      public XcstTemplateParameterAttribute(string name) {
-         this.Name = name;
+         public string Name { get; }
+
+         public bool Required { get; set; }
+
+         public bool Tunnel { get; set; }
+
+         public XcstTemplateParameterAttribute(string name) {
+            this.Name = name;
+         }
       }
+
+      [AttributeUsage(AttributeTargets.Class)]
+      public class XcstTypeAttribute : XcstComponentAttribute { }
+
+      [AttributeUsage(AttributeTargets.Property)]
+      public class XcstVariableAttribute : XcstComponentAttribute { }
    }
 }

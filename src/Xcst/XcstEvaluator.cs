@@ -29,8 +29,8 @@ namespace Xcst {
       readonly IDictionary<string, object> parameters = new Dictionary<string, object>();
       bool paramsLocked = false, primed = false;
 
-      public static XcstEvaluator Using<TPackage>() where TPackage : new() {
-         return Using(new TPackage());
+      public static XcstEvaluator Using<TPackage>() where TPackage : IXcstPackage, new() {
+         return new XcstEvaluator(new TPackage());
       }
 
       public static XcstEvaluator Using(Type packageType) {

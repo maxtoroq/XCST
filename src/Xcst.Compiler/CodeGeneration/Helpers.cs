@@ -18,6 +18,7 @@ using System.Globalization;
 using System.Reflection;
 using System.Text;
 using System.Xml;
+using Xcst.Packages;
 using static Xcst.Compiler.XcstCompiler;
 
 namespace Xcst.Compiler.CodeGeneration {
@@ -68,91 +69,82 @@ namespace Xcst.Compiler.CodeGeneration {
                continue;
             }
 
-            switch (attr.ComponentKind) {
-               case XcstComponentKind.AttributeSet:
+            if (attr is XcstAttributeSetAttribute) {
 
-                  writer.WriteStartElement(prefix, "attribute-set", ns);
-                  writer.WriteAttributeString("name", attr.Name);
-                  writer.WriteAttributeString("visibility", memberVisibility(member));
-                  writer.WriteAttributeString("member-name", member.Name);
+               writer.WriteStartElement(prefix, "attribute-set", ns);
+               writer.WriteAttributeString("name", attr.Name);
+               writer.WriteAttributeString("visibility", memberVisibility(member));
+               writer.WriteAttributeString("member-name", member.Name);
 
-                  break;
+            } else if (attr is XcstFunctionAttribute) {
 
-               case XcstComponentKind.Function:
+               writer.WriteStartElement(prefix, "function", ns);
+               writer.WriteAttributeString("name", attr.Name ?? member.Name);
+               writer.WriteAttributeString("visibility", memberVisibility(member));
+               writer.WriteAttributeString("member-name", member.Name);
 
-                  writer.WriteStartElement(prefix, "function", ns);
-                  writer.WriteAttributeString("name", attr.Name ?? member.Name);
-                  writer.WriteAttributeString("visibility", memberVisibility(member));
-                  writer.WriteAttributeString("member-name", member.Name);
+               MethodInfo method = ((MethodInfo)member);
 
-                  MethodInfo method = ((MethodInfo)member);
+               if (method.ReturnType != typeof(void)) {
+                  writer.WriteAttributeString("as", TypeReferenceExpression(method.ReturnType));
+               }
 
-                  if (method.ReturnType != typeof(void)) {
-                     writer.WriteAttributeString("as", TypeReferenceExpression(method.ReturnType));
-                  }
+               foreach (ParameterInfo param in method.GetParameters()) {
 
-                  foreach (ParameterInfo param in method.GetParameters()) {
-
-                     writer.WriteStartElement(prefix, "param", ns);
-                     writer.WriteAttributeString("name", param.Name);
-                     writer.WriteAttributeString("as", TypeReferenceExpression(param.ParameterType));
-
-                     if (param.IsOptional) {
-                        writer.WriteAttributeString("value", Constant(param.RawDefaultValue));
-                     }
-
-                     writer.WriteEndElement();
-                  }
-
-                  break;
-
-               case XcstComponentKind.Parameter:
                   writer.WriteStartElement(prefix, "param", ns);
-                  writer.WriteAttributeString("name", attr.Name ?? member.Name);
-                  writer.WriteAttributeString("as", TypeReferenceExpression(((PropertyInfo)member).PropertyType));
-                  writer.WriteAttributeString("visibility", memberVisibility(member));
-                  writer.WriteAttributeString("member-name", member.Name);
-                  break;
+                  writer.WriteAttributeString("name", param.Name);
+                  writer.WriteAttributeString("as", TypeReferenceExpression(param.ParameterType));
 
-               case XcstComponentKind.Template:
-
-                  writer.WriteStartElement(prefix, "template", ns);
-                  writer.WriteAttributeString("name", attr.Name);
-                  writer.WriteAttributeString("visibility", memberVisibility(member));
-                  writer.WriteAttributeString("member-name", member.Name);
-
-                  foreach (var param in member.GetCustomAttributes<XcstTemplateParameterAttribute>(inherit: true)) {
-
-                     writer.WriteStartElement(prefix, "param", ns);
-                     writer.WriteAttributeString("name", param.Name);
-                     writer.WriteAttributeString("required", XmlConvert.ToString(param.Required));
-                     writer.WriteAttributeString("tunnel", XmlConvert.ToString(param.Tunnel));
-                     writer.WriteEndElement();
+                  if (param.IsOptional) {
+                     writer.WriteAttributeString("value", Constant(param.RawDefaultValue));
                   }
 
-                  break;
+                  writer.WriteEndElement();
+               }
 
-               case XcstComponentKind.Type:
+            } else if (attr is XcstParameterAttribute) {
 
-                  Type type = (Type)member;
+               writer.WriteStartElement(prefix, "param", ns);
+               writer.WriteAttributeString("name", attr.Name ?? member.Name);
+               writer.WriteAttributeString("as", TypeReferenceExpression(((PropertyInfo)member).PropertyType));
+               writer.WriteAttributeString("visibility", memberVisibility(member));
+               writer.WriteAttributeString("member-name", member.Name);
 
-                  writer.WriteStartElement(prefix, "type", ns);
-                  writer.WriteAttributeString("name", attr.Name ?? member.Name);
+            } else if (attr is XcstTemplateAttribute) {
 
-                  writer.WriteAttributeString("visibility",
-                     type.IsAbstract ? "abstract"
-                     : type.IsSealed ? "final"
-                     : "public");
+               writer.WriteStartElement(prefix, "template", ns);
+               writer.WriteAttributeString("name", attr.Name);
+               writer.WriteAttributeString("visibility", memberVisibility(member));
+               writer.WriteAttributeString("member-name", member.Name);
 
-                  break;
+               foreach (var param in member.GetCustomAttributes<XcstTemplateParameterAttribute>(inherit: true)) {
 
-               case XcstComponentKind.Variable:
-                  writer.WriteStartElement(prefix, "variable", ns);
-                  writer.WriteAttributeString("name", attr.Name ?? member.Name);
-                  writer.WriteAttributeString("as", TypeReferenceExpression(((PropertyInfo)member).PropertyType));
-                  writer.WriteAttributeString("visibility", memberVisibility(member));
-                  writer.WriteAttributeString("member-name", member.Name);
-                  break;
+                  writer.WriteStartElement(prefix, "param", ns);
+                  writer.WriteAttributeString("name", param.Name);
+                  writer.WriteAttributeString("required", XmlConvert.ToString(param.Required));
+                  writer.WriteAttributeString("tunnel", XmlConvert.ToString(param.Tunnel));
+                  writer.WriteEndElement();
+               }
+
+            } else if (attr is XcstTypeAttribute) {
+
+               Type type = (Type)member;
+
+               writer.WriteStartElement(prefix, "type", ns);
+               writer.WriteAttributeString("name", attr.Name ?? member.Name);
+
+               writer.WriteAttributeString("visibility",
+                  type.IsAbstract ? "abstract"
+                  : type.IsSealed ? "final"
+                  : "public");
+
+            } else if (attr is XcstVariableAttribute) {
+
+               writer.WriteStartElement(prefix, "variable", ns);
+               writer.WriteAttributeString("name", attr.Name ?? member.Name);
+               writer.WriteAttributeString("as", TypeReferenceExpression(((PropertyInfo)member).PropertyType));
+               writer.WriteAttributeString("visibility", memberVisibility(member));
+               writer.WriteAttributeString("member-name", member.Name);
             }
 
             writer.WriteEndElement();

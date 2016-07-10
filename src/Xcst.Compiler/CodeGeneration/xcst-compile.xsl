@@ -996,12 +996,8 @@
       <if test="$public">
          <call-template name="src:new-line-indented"/>
          <text>[</text>
-         <value-of select="src:global-identifier('Xcst.XcstComponent')"/>
-         <text>(</text>
-         <value-of select="src:global-identifier('Xcst.XcstComponentKind')"/>
-         <text>.</text>
-         <value-of select="if (self::xcst:param) then 'Parameter' else 'Variable'"/>
-         <text>)]</text>
+         <value-of select="src:global-identifier(concat('Xcst.Packages.Xcst', (if (self::xcst:param) then 'Parameter' else 'Variable')))"/>
+         <text>]</text>
       </if>
       <call-template name="src:new-line-indented"/>
       <if test="$public">public </if>
@@ -1037,17 +1033,15 @@
       <if test="$public">
          <call-template name="src:new-line-indented"/>
          <text>[</text>
-         <value-of select="src:global-identifier('Xcst.XcstComponent')"/>
-         <text>(</text>
-         <value-of select="src:global-identifier('Xcst.XcstComponentKind'), 'Template'" separator="."/>
-         <text>, Name = </text>
+         <value-of select="src:global-identifier('Xcst.Packages.XcstTemplate')"/>
+         <text>(Name = </text>
          <value-of select="src:verbatim-string(xcst:uri-qualified-name($qname))"/>
          <text>)]</text>
 
          <for-each select="xcst:param">
             <call-template name="src:new-line-indented"/>
             <text>[</text>
-            <value-of select="src:global-identifier('Xcst.XcstTemplateParameter')"/>
+            <value-of select="src:global-identifier('Xcst.Packages.XcstTemplateParameter')"/>
             <text>(</text>
             <value-of select="src:string(@name)"/>
             <if test="@required/xs:boolean(.)">, Required = true</if>
@@ -1085,10 +1079,8 @@
       <if test="$public">
          <call-template name="src:new-line-indented"/>
          <text>[</text>
-         <value-of select="src:global-identifier('Xcst.XcstComponent')"/>
-         <text>(</text>
-         <value-of select="src:global-identifier('Xcst.XcstComponentKind'), 'Function'" separator="."/>
-         <text>)]</text>
+         <value-of select="src:global-identifier('Xcst.Packages.XcstFunction')"/>
+         <text>]</text>
       </if>
       <call-template name="src:new-line-indented"/>
       <if test="$public">public </if>
@@ -1135,10 +1127,8 @@
       <if test="$public">
          <call-template name="src:new-line-indented"/>
          <text>[</text>
-         <value-of select="src:global-identifier('Xcst.XcstComponent')"/>
-         <text>(</text>
-         <value-of select="src:global-identifier('Xcst.XcstComponentKind'), 'AttributeSet'" separator="."/>
-         <text>, Name = </text>
+         <value-of select="src:global-identifier('Xcst.Packages.XcstAttributeSet')"/>
+         <text>(Name = </text>
          <value-of select="src:verbatim-string(xcst:uri-qualified-name($qname))"/>
          <text>)]</text>
       </if>
@@ -1578,12 +1568,8 @@
       <if test="$public">
          <call-template name="src:new-line-indented"/>
          <text>[</text>
-         <value-of select="src:global-identifier('Xcst.XcstComponent')"/>
-         <text>(</text>
-         <value-of select="src:global-identifier('Xcst.XcstComponentKind')"/>
-         <text>.</text>
-         <value-of select="if (self::c:param) then 'Parameter' else 'Variable'"/>
-         <text>)]</text>
+         <value-of select="src:global-identifier(concat('Xcst.Packages.Xcst', (if (self::c:param) then 'Parameter' else 'Variable')))"/>
+         <text>]</text>
       </if>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
@@ -1635,17 +1621,15 @@
 
          <call-template name="src:new-line-indented"/>
          <text>[</text>
-         <value-of select="src:global-identifier('Xcst.XcstComponent')"/>
-         <text>(</text>
-         <value-of select="src:global-identifier('Xcst.XcstComponentKind'), 'Template'" separator="."/>
-         <text>, Name = </text>
+         <value-of select="src:global-identifier('Xcst.Packages.XcstTemplate')"/>
+         <text>(Name = </text>
          <value-of select="src:verbatim-string(xcst:uri-qualified-name($qname))"/>
          <text>)]</text>
 
          <for-each select="$meta/xcst:param">
             <call-template name="src:new-line-indented"/>
             <text>[</text>
-            <value-of select="src:global-identifier('Xcst.XcstTemplateParameter')"/>
+            <value-of select="src:global-identifier('Xcst.Packages.XcstTemplateParameter')"/>
             <text>(</text>
             <value-of select="src:string(@name)"/>
             <if test="@required/xs:boolean(.)">, Required = true</if>
@@ -1703,10 +1687,8 @@
       <if test="$public">
          <call-template name="src:new-line-indented"/>
          <text>[</text>
-         <value-of select="src:global-identifier('Xcst.XcstComponent')"/>
-         <text>(</text>
-         <value-of select="src:global-identifier('Xcst.XcstComponentKind'), 'Function'" separator="."/>
-         <text>)]</text>
+         <value-of select="src:global-identifier('Xcst.Packages.XcstFunction')"/>
+         <text>]</text>
       </if>
       <if test="$meta/@visibility eq 'hidden'">
          <call-template name="src:editor-browsable-never"/>
@@ -1770,10 +1752,8 @@
          <variable name="qname" select="xcst:EQName($meta/@name)"/>
          <call-template name="src:new-line-indented"/>
          <text>[</text>
-         <value-of select="src:global-identifier('Xcst.XcstComponent')"/>
-         <text>(</text>
-         <value-of select="src:global-identifier('Xcst.XcstComponentKind'), 'AttributeSet'" separator="."/>
-         <text>, Name = </text>
+         <value-of select="src:global-identifier('Xcst.Packages.XcstAttributeSet')"/>
+         <text>(Name = </text>
          <value-of select="src:verbatim-string(xcst:uri-qualified-name($qname))"/>
          <text>)]</text>
       </if>
@@ -1837,10 +1817,8 @@
          <if test="$public">
             <call-template name="src:new-line-indented"/>
             <text>[</text>
-            <value-of select="src:global-identifier('Xcst.XcstComponent')"/>
-            <text>(</text>
-            <value-of select="src:global-identifier('Xcst.XcstComponentKind'), 'Type'" separator="."/>
-            <text>)]</text>
+            <value-of select="src:global-identifier('Xcst.Packages.XcstType')"/>
+            <text>]</text>
          </if>
          <apply-templates select="c:metadata" mode="src:attribute"/>
          <call-template name="src:line-number"/>
