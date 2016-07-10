@@ -72,7 +72,7 @@ namespace Xcst {
       }
 
       public string ToUriQualifiedName() {
-         return $"Q{{{this.Namespace}}}{this.Name}";
+         return String.Concat("Q{", this.Namespace, "}", this.Name);
       }
 
       public static QualifiedName Parse(string localOrUriQualifiedName) {
