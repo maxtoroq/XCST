@@ -475,6 +475,10 @@
                <ann:documentation>Indicates if an empty string is a valid value for this member.</ann:documentation>
                <ref name="Boolean"/>
             </attribute>
+            <attribute name="display-text-member">
+               <ann:documentation>The name of the member to use as the text representation for this type.</ann:documentation>
+               <ref name="Name"/>
+            </attribute>
          </choice>
       </zeroOrMore>
       <ref name="validation-attributes"/>

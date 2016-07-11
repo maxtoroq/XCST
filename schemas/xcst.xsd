@@ -287,6 +287,11 @@
             <xs:documentation>Indicates if an empty string is a valid value for this member.</xs:documentation>
          </xs:annotation>
       </xs:attribute>
+      <xs:attribute name="display-text-member" type="c:Name">
+         <xs:annotation>
+            <xs:documentation>The name of the member to use as the text representation for this type.</xs:documentation>
+         </xs:annotation>
+      </xs:attribute>
       <xs:attributeGroup ref="c:validation-attributes"/>
    </xs:attributeGroup>
    <xs:attributeGroup name="member-attributes">

@@ -34,6 +34,10 @@
       <text>]</text>
    </template>
 
+   <template name="src:type-attributes">
+      <call-template name="src:display-column-attribute"/>
+   </template>
+
    <template name="src:member-attributes">
       <call-template name="src:scaffold-column-attribute"/>
       <call-template name="src:required-attribute"/>
@@ -46,6 +50,22 @@
       <call-template name="src:display-attribute"/>
       <call-template name="src:display-format-attribute"/>
       <call-template name="src:ui-hint-attribute"/>
+   </template>
+
+   <!--
+      ## DisplayColumn
+   -->
+
+   <template name="src:display-column-attribute">
+      <if test="@display-text-member">
+         <call-template name="src:line-number"/>
+         <call-template name="src:new-line-indented"/>
+         <text>[</text>
+         <value-of select="src:global-identifier('System.ComponentModel.DataAnnotations.DisplayColumn')"/>
+         <text>(</text>
+         <value-of select="concat('nameof(', xcst:name(@display-text-member), ')')"/>
+         <text>)]</text>
+      </if>
    </template>
 
    <!--

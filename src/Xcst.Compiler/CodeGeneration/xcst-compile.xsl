@@ -37,7 +37,7 @@
 
    <variable name="src:context-field" select="concat('this.', src:aux-variable('execution_context'))"/>
    <variable name="xcst:validation-attributes" select="'error-resource-type', 'data-type-error-message', 'data-type-error-resource', 'required-error-message', 'required-error-resource', 'length-error-message', 'length-error-resource', 'pattern-error-message', 'pattern-error-resource', 'range-error-message', 'range-error-resource', 'equal-to-error-message', 'equal-to-error-resource'"/>
-   <variable name="xcst:type-or-member-attributes" select="'resource-type', 'disable-empty-string-to-null-conversion', 'allow-empty-string', $xcst:validation-attributes"/>
+   <variable name="xcst:type-or-member-attributes" select="'resource-type', 'disable-empty-string-to-null-conversion', 'allow-empty-string', 'display-text-member', $xcst:validation-attributes"/>
 
    <output cdata-section-elements="src:compilation-unit"/>
 
@@ -1820,6 +1820,7 @@
             <value-of select="src:global-identifier('Xcst.Packages.XcstType')"/>
             <text>]</text>
          </if>
+         <call-template name="src:type-attributes"/>
          <apply-templates select="c:metadata" mode="src:attribute"/>
          <call-template name="src:line-number"/>
          <call-template name="src:new-line-indented"/>
@@ -1892,6 +1893,7 @@
       <param name="indent" tunnel="yes"/>
 
       <value-of select="$src:new-line"/>
+      <call-template name="src:type-attributes"/>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
       <text>public class </text>
