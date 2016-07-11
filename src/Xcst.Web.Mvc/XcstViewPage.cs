@@ -182,5 +182,23 @@ namespace Xcst.Web.Mvc {
 
          return (prefix + "." + propertyName);
       }
+
+      protected override void CopyState(XcstPage page) {
+
+         base.CopyState(page);
+
+         XcstViewPage viewPage = page as XcstViewPage;
+
+         if (viewPage != null) {
+
+            viewPage.ViewContext = new ViewContext(
+               this.ViewContext,
+               new XcstView(this.ViewContext, viewPage.VirtualPath),
+               new ViewDataDictionary(this.ViewData),
+               this.TempData,
+               this.ViewContext.Writer
+            );
+         }
+      }
    }
 }

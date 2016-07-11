@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Principal;
 using System.Web;
+using System.Web.Compilation;
 
 namespace Xcst.Web {
 
@@ -159,6 +160,36 @@ namespace Xcst.Web {
          }
 
          return true;
+      }
+
+      protected XcstPage LoadPage(string path) {
+
+         if (path == null) throw new ArgumentNullException(nameof(path));
+
+         string absolutePath = VirtualPathUtility.Combine(this.VirtualPath, path);
+         Type pageType = BuildManager.GetCompiledType(absolutePath);
+
+         if (pageType == null) {
+            throw new ArgumentException($"A page at '{absolutePath}' was not found.", nameof(path));
+         }
+
+         object pageInstance = Activator.CreateInstance(pageType);
+
+         XcstPage page = pageInstance as XcstPage;
+
+         if (page == null) {
+            throw new ArgumentException($"The page at '{absolutePath}' must derive from {nameof(XcstPage)}.", nameof(path));
+         }
+
+         page.VirtualPath = absolutePath;
+
+         CopyState(page);
+
+         return page;
+      }
+
+      protected virtual void CopyState(XcstPage page) {
+         page.Context = this.Context;
       }
    }
 }
