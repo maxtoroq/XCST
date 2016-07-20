@@ -5,10 +5,12 @@
       <xs:choice>
          <xs:element ref="c:attribute-set"/>
          <xs:element ref="c:function"/>
+         <xs:element ref="c:import"/>
          <xs:element ref="c:output"/>
          <xs:element ref="c:param"/>
          <xs:element ref="c:template"/>
          <xs:element ref="c:type"/>
+         <xs:element ref="c:use-package"/>
          <xs:element ref="c:validation"/>
          <xs:element ref="c:variable"/>
       </xs:choice>
@@ -143,8 +145,6 @@
    <xs:complexType name="module-content">
       <xs:sequence>
          <xs:element minOccurs="0" maxOccurs="unbounded" ref="c:use-functions"/>
-         <xs:element minOccurs="0" maxOccurs="unbounded" ref="c:use-package"/>
-         <xs:element minOccurs="0" maxOccurs="unbounded" ref="c:import"/>
          <xs:choice minOccurs="0" maxOccurs="unbounded">
             <xs:group ref="c:declaration-element"/>
             <xs:group ref="c:user-defined-data-element"/>

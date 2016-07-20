@@ -32,10 +32,12 @@
       <choice>
          <ref name="attribute-set"/>
          <ref name="function"/>
+         <ref name="import"/>
          <ref name="output"/>
          <ref name="param"/>
          <ref name="template"/>
          <ref name="type"/>
+         <ref name="use-package"/>
          <ref name="validation"/>
          <ref name="variable"/>
       </choice>
@@ -264,12 +266,6 @@
       <ref name="standard-attributes-except-version"/>
       <zeroOrMore>
          <ref name="use-functions"/>
-      </zeroOrMore>
-      <zeroOrMore>
-         <ref name="use-package"/>
-      </zeroOrMore>
-      <zeroOrMore>
-         <ref name="import"/>
       </zeroOrMore>
       <zeroOrMore>
          <choice>
