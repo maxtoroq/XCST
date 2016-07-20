@@ -85,6 +85,7 @@
     <Compile Include="Html\EditorInfo.cs" />
     <Compile Include="Html\InputExtensions.cs" />
     <Compile Include="Html\LabelExtensions.cs" />
+    <Compile Include="Html\ModelMetadataExtensions.cs" />
     <Compile Include="Html\MvcReflectionExtensions.cs" />
     <Compile Include="Html\SelectExtensions.cs" />
     <Compile Include="Html\TemplateHelpers.cs" />

@@ -776,6 +776,19 @@
       </if>
    </template>
 
+   <template match="c:member" mode="src:display-attribute">
+      <next-match/>
+      <if test="@group">
+         <call-template name="src:line-hidden"/>
+         <call-template name="src:new-line-indented"/>
+         <text>[</text>
+         <value-of select="src:global-identifier('System.Web.Mvc.AdditionalMetadata')"/>
+         <text>("GroupName", </text>
+         <value-of select="src:verbatim-string(@group)"/>
+         <text>)]</text>
+      </if>
+   </template>
+
    <template match="a:display-name" mode="src:extension-instruction">
 
       <call-template name="xcst:validate-attribs">

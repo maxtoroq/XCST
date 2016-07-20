@@ -73,6 +73,10 @@
    -->
 
    <template name="src:display-attribute">
+      <apply-templates select="." mode="src:display-attribute"/>
+   </template>
+
+   <template match="c:member" mode="src:display-attribute">
       <variable name="setters" as="text()*">
          <apply-templates select="@display-name
             | @description
