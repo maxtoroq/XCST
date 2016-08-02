@@ -707,14 +707,14 @@
       <call-template name="a:model-helper"/>
       <text>.FieldName(</text>
       <choose>
-         <when test="@for">
+         <when test="@for or self::a:with-options/../@for">
             <variable name="param" select="src:aux-variable(generate-id())"/>
             <value-of select="$param"/>
             <text> => </text>
-            <value-of select="$param, xcst:expression(@for)" separator="."/>
+            <value-of select="$param, self::a:with-options/../@for/xcst:expression(.), @for/xcst:expression(.)" separator="."/>
          </when>
          <otherwise>
-            <value-of select="@name/src:expand-attribute(.)"/>
+            <value-of select="self::a:with-options/../@name/src:expand-attribute(.), @name/src:expand-attribute(.)" separator="."/>
          </otherwise>
       </choose>
       <text>)] = </text>
