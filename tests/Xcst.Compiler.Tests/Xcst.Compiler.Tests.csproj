@@ -189,7 +189,7 @@
     <None Include="Language\VariablesAndParameters\Global\_Hidden1.xcst" />
     <None Include="Language\VariablesAndParameters\Global\Hidden1.c.xcst" />
     <None Include="packages.config" />
-    <None Include="Language\CallableComponents\AttributeSet\Abstract.i.xcst" />
+    <None Include="Language\CallableComponents\AttributeSet\AbstractWithContent.i.xcst" />
     <None Include="Language\CallableComponents\AttributeSet\Duplicate.i.xcst" />
     <None Include="Language\CallableComponents\AttributeSet\attribute-set.foo.i.xcst" />
     <None Include="Language\CallableComponents\AttributeSet\attribute-set.name.req.i.xcst" />
@@ -218,7 +218,7 @@
     <None Include="Language\CallableComponents\EvaluateDelegate\with-param.name.type.i.xcst" />
     <None Include="Language\CallableComponents\EvaluateDelegate\with-param.tunnel.type.i.xcst" />
     <None Include="Language\CallableComponents\EvaluateDelegate\with-param.value.type.i.xcst" />
-    <None Include="Language\CallableComponents\Function\Abstract.i.xcst" />
+    <None Include="Language\CallableComponents\Function\AbstractWithContent.i.xcst" />
     <None Include="Language\CallableComponents\Function\Duplicate.c.xcst" />
     <None Include="Language\CallableComponents\Function\Duplicate.i.xcst" />
     <None Include="Language\CallableComponents\Function\function.as.type.i.xcst" />
@@ -269,7 +269,7 @@
     <None Include="Language\CallableComponents\Template\template.name.type.i.xcst" />
     <None Include="Language\CallableComponents\Template\template.name.req.i.xcst" />
     <None Include="Language\CallableComponents\Template\template.foo.i.xcst" />
-    <None Include="Language\CallableComponents\Template\Abstract.i.xcst" />
+    <None Include="Language\CallableComponents\Template\AbstractWithContent.i.xcst" />
     <None Include="Language\CallableComponents\UsingModule\CallTemplate\call-template.foo.i.xcst" />
     <None Include="Language\CallableComponents\UsingModule\CallTemplate\call-template.name.req.i.xcst" />
     <None Include="Language\CallableComponents\UsingModule\CallTemplate\call-template.with-params.type.i.xcst" />
@@ -616,8 +616,8 @@
     <None Include="Language\VariablesAndParameters\Function\DuplicateParameter.i.xcst" />
     <None Include="Language\VariablesAndParameters\Function\TunnelParameter.c.xcst" />
     <None Include="Language\VariablesAndParameters\Function\TunnelParameter.i.xcst" />
-    <None Include="Language\VariablesAndParameters\Global\Abstract2.i.xcst" />
-    <None Include="Language\VariablesAndParameters\Global\Abstract1.i.xcst" />
+    <None Include="Language\VariablesAndParameters\Global\AbstractWithContent.i.xcst" />
+    <None Include="Language\VariablesAndParameters\Global\AbstractWithValue.i.xcst" />
     <None Include="Language\VariablesAndParameters\Global\DefaultValueAndRequired4.c.xcst" />
     <None Include="Language\VariablesAndParameters\Global\DefaultValueAndRequired3.c.xcst" />
     <None Include="Language\ProgramStructure\Packages\OverridingComponents\Variable\Duplicate.pxcst" />
