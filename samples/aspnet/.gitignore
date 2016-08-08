@@ -3,7 +3,3 @@ Bin/**/*.dll
 Bin/**/*.exe
 Bin/**/*.pdb
 Bin/**/*.xml
-
-js/
-css/
-fonts/

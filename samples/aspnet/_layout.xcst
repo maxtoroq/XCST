@@ -15,8 +15,8 @@
             <title>
                <c:value-of value='title, siteTitle' separator=' — '/>
             </title>
-            <link href='/css/bootstrap.min.css' rel='stylesheet'/>
-            <link href='/css/site.min.css' rel='stylesheet'/>
+            <link href='/Content/bootstrap.min.css' rel='stylesheet'/>
+            <link href='/Content/site.css' rel='stylesheet'/>
             <c:call-template name='head'/>
          </head>
          <body>
@@ -51,10 +51,10 @@
                   <p>© {DateTime.Now.Year} - {siteTitle}</p>
                </footer>
             </div>
-            <script src='/js/jquery.min.js'></script>
-            <script src='/js/jquery.validate.min.js'></script>
-            <script src='/js/jquery.validate.unobtrusive.min.js'></script>
-            <script src='/js/bootstrap.min.js'></script>
+            <script src='/Scripts/jquery-1.12.4.min.js'></script>
+            <script src='/Scripts/jquery.validate.min.js'></script>
+            <script src='/Scripts/jquery.validate.unobtrusive.min.js'></script>
+            <script src='/Scripts/bootstrap.min.js'></script>
             <c:call-template name='scripts'/>
          </body>
       </html>
