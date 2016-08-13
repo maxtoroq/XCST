@@ -514,7 +514,7 @@
          <with-param name="allowed" select="()"/>
          <with-param name="required" select="()"/>
       </call-template>
-      <apply-templates select="c:*" mode="#current"/>
+      <apply-templates select="c:when, c:otherwise" mode="#current"/>
    </template>
 
    <template match="c:choose/c:when" mode="src:statement">
@@ -553,8 +553,11 @@
          <with-param name="allowed" select="()"/>
          <with-param name="required" select="()"/>
       </call-template>
+      <if test="not(c:otherwise)">
+         <sequence select="error(xs:QName('err:XTSE0010'), 'c:otherwise is required when compiling into an expression.', src:error-object(.))"/>
+      </if>
       <text>(</text>
-      <apply-templates select="c:*" mode="#current"/>
+      <apply-templates select="c:when, c:otherwise" mode="#current"/>
       <text>)</text>
    </template>
 

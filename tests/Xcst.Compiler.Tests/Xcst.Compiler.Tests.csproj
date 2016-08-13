@@ -150,6 +150,7 @@
     <None Include="Language\CallableComponents\Template\NameUriQualified.c.xcst" />
     <None Include="Language\CallableComponents\Template\_Hidden.xcst" />
     <None Include="Language\CallableComponents\UsingModule\CallTemplate\NameUriQualified.c.xcst" />
+    <None Include="Language\ConditionalProcessing\Choose\Expression.i.xcst" />
     <None Include="Language\CreatingNodesAndObjects\LiteralResultElement\foo.foo.c.xcst" />
     <None Include="Language\CreatingNodesAndObjects\LiteralResultElement\foo.foo.i.xcst" />
     <None Include="Language\DataModel\TextTransformation\foo.transform-text.type.i.xcst" />
