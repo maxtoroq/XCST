@@ -96,6 +96,9 @@
     <Content Include="Language\CallableComponents\UsingModule\CallTemplate\NameNoPrefix.p.xml" />
     <Content Include="Language\Grouping\ForEachGroup\GroupSize.p.xml" />
     <Content Include="Language\Grouping\ForEachGroup\GroupBy.p.xml" />
+    <Content Include="Language\LanguageFeatures\SequenceConstructors\Raw\FromMultipleElements.p.xml" />
+    <Content Include="Language\LanguageFeatures\SequenceConstructors\SimpleContent\FromMixedContent.p.xml" />
+    <Content Include="Language\LanguageFeatures\SequenceConstructors\SimpleContent\FromMultipleElements.p.xml" />
     <Content Include="Language\Serialization\Output\NameUriQualified.p.xml" />
     <Content Include="Language\Serialization\Output\NameNoPrefix.p.xml" />
     <Content Include="Language\Serialization\Serialize\FormatUriQualified.p.xml" />
@@ -173,6 +176,9 @@
     <None Include="Language\Grouping\ForEachGroup\sort.foo.i.xcst" />
     <None Include="Language\Grouping\ForEachGroup\sort.order.type.i.xcst" />
     <None Include="Language\Grouping\ForEachGroup\sort.value.type.i.xcst" />
+    <None Include="Language\LanguageFeatures\SequenceConstructors\Raw\FromMultipleElements.c.xcst" />
+    <None Include="Language\LanguageFeatures\SequenceConstructors\SimpleContent\FromMixedContent.c.xcst" />
+    <None Include="Language\LanguageFeatures\SequenceConstructors\SimpleContent\FromMultipleElements.c.xcst" />
     <None Include="Language\Repetition\While\while.test.type.i.xcst" />
     <None Include="Language\Repetition\While\while.test.req.i.xcst" />
     <None Include="Language\Repetition\While\while.foo.i.xcst" />

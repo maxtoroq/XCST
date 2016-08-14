@@ -55,7 +55,7 @@
       </data>
    </variable>
 
-   <template match="*[* and not(text()[normalize-space()])]/text()" mode="src:statement"/>
+   <template match="*[* and not(text()[normalize-space()])]/text()" mode="src:statement src:expression"/>
 
    <template match="*" mode="src:statement">
       <param name="output" tunnel="yes"/>
@@ -135,7 +135,7 @@
       <text>)</text>
       <value-of select="$src:statement-delimiter"/>
       <if test="not($simple-content)">
-         <call-template name="src:apply-children"/>
+         <call-template name="src:sequence-constructor"/>
          <call-template name="src:new-line-indented"/>
          <value-of select="$output"/>
          <text>.</text>
@@ -207,7 +207,7 @@
       <call-template name="src:use-attribute-sets">
          <with-param name="attr" select="@use-attribute-sets"/>
       </call-template>
-      <call-template name="src:apply-children"/>
+      <call-template name="src:sequence-constructor"/>
       <call-template name="src:new-line-indented"/>
       <value-of select="$output"/>
       <text>.</text>
@@ -245,7 +245,7 @@
       <text>)</text>
       <value-of select="$src:statement-delimiter"/>
       <if test="not($simple-content)">
-         <call-template name="src:apply-children"/>
+         <call-template name="src:sequence-constructor"/>
          <call-template name="src:new-line-indented"/>
          <value-of select="$output"/>
          <text>.</text>
@@ -322,13 +322,17 @@
       <call-template name="src:new-line-indented"/>
       <value-of select="$output"/>
       <text>.WriteString(</text>
+      <apply-templates select="." mode="src:expression"/>
+      <text>)</text>
+      <value-of select="$src:statement-delimiter"/>
+   </template>
+
+   <template match="text()" mode="src:expression">
       <value-of select="
          if (.. instance of element()) then
             src:expand-text(.., string())
          else 
             src:verbatim-string(string())"/>
-      <text>)</text>
-      <value-of select="$src:statement-delimiter"/>
    </template>
 
    <template name="src:literal-result-element">
@@ -374,7 +378,7 @@
          <text>)</text>
          <value-of select="$src:statement-delimiter"/>
       </for-each>
-      <call-template name="src:apply-children"/>
+      <call-template name="src:sequence-constructor"/>
       <call-template name="src:new-line-indented"/>
       <value-of select="$output"/>
       <text>.WriteEndElement()</text>
@@ -463,7 +467,7 @@
          </otherwise>
       </choose>
       <text>)</text>
-      <call-template name="src:apply-children">
+      <call-template name="src:sequence-constructor">
          <with-param name="children" select="node()[not(self::c:sort or following-sibling::c:sort)]"/>
          <with-param name="ensure-block" select="true()"/>
       </call-template>
@@ -500,7 +504,7 @@
       <text>while (</text>
       <value-of select="xcst:expression(@test)"/>
       <text>)</text>
-      <call-template name="src:apply-children">
+      <call-template name="src:sequence-constructor">
          <with-param name="ensure-block" select="true()"/>
       </call-template>
    </template>
@@ -532,7 +536,7 @@
       <text>if (</text>
       <value-of select="xcst:expression(@test)"/>
       <text>)</text>
-      <call-template name="src:apply-children">
+      <call-template name="src:sequence-constructor">
          <with-param name="ensure-block" select="true()"/>
       </call-template>
    </template>
@@ -543,7 +547,7 @@
          <with-param name="required" select="()"/>
       </call-template>
       <text> else</text>
-      <call-template name="src:apply-children">
+      <call-template name="src:sequence-constructor">
          <with-param name="ensure-block" select="true()"/>
       </call-template>
    </template>
@@ -570,7 +574,7 @@
       <text>(</text>
       <value-of select="xcst:expression(@test)"/>
       <text>) ? </text>
-      <call-template name="src:apply-children">
+      <call-template name="src:sequence-constructor">
          <with-param name="mode" select="'expression'"/>
       </call-template>
    </template>
@@ -581,7 +585,7 @@
          <with-param name="required" select="()"/>
       </call-template>
       <text> : </text>
-      <call-template name="src:apply-children">
+      <call-template name="src:sequence-constructor">
          <with-param name="mode" select="'expression'"/>
       </call-template>
    </template>
@@ -597,7 +601,7 @@
       <text>if (</text>
       <value-of select="xcst:expression(@test)"/>
       <text>)</text>
-      <call-template name="src:apply-children">
+      <call-template name="src:sequence-constructor">
          <with-param name="ensure-block" select="true()"/>
       </call-template>
    </template>
@@ -615,7 +619,7 @@
       <value-of select="$src:new-line"/>
       <call-template name="src:new-line-indented"/>
       <text>try</text>
-      <call-template name="src:apply-children">
+      <call-template name="src:sequence-constructor">
          <with-param name="value" select="@value"/>
          <with-param name="children" select="
             node()[not(self::c:catch
@@ -645,7 +649,7 @@
          <value-of select="xcst:expression(@when)"/>
          <text>)</text>
       </if>
-      <call-template name="src:apply-children">
+      <call-template name="src:sequence-constructor">
          <with-param name="value" select="@value"/>
          <with-param name="ensure-block" select="true()"/>
       </call-template>
@@ -659,7 +663,7 @@
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
       <text>finally</text>
-      <call-template name="src:apply-children">
+      <call-template name="src:sequence-constructor">
          <with-param name="value" select="@value"/>
          <with-param name="ensure-block" select="true()"/>
       </call-template>
@@ -1202,7 +1206,7 @@
          </otherwise>
       </choose>
       <text>)</text>
-      <call-template name="src:apply-children">
+      <call-template name="src:sequence-constructor">
          <with-param name="children" select="node()[not(self::c:sort or following-sibling::c:sort)]"/>
          <with-param name="ensure-block" select="true()"/>
       </call-template>
@@ -1334,10 +1338,9 @@
       <value-of select="'var', xcst:name(@name), '=', concat($helper, '.CreateImmutable(', $buff, ')')"/>
       <value-of select="$src:statement-delimiter"/>
 
-      <call-template name="src:apply-children">
+      <call-template name="src:sequence-constructor">
          <with-param name="children" select="node()[not(self::c:sort or following-sibling::c:sort)]"/>
          <with-param name="omit-block" select="true()"/>
-         <with-param name="mode" select="'statement'"/>
       </call-template>
 
       <call-template name="src:line-hidden"/>
@@ -1539,7 +1542,9 @@
                         <with-param name="allowed" select="()"/>
                         <with-param name="required" select="()"/>
                      </call-template>
-                     <call-template name="src:apply-children"/>
+                     <call-template name="src:sequence-constructor">
+                        <with-param name="mode" select="local-name-from-QName($current-mode)"/>
+                     </call-template>
                   </for-each>
                </when>
                <otherwise>
@@ -1612,7 +1617,7 @@
       <text>, </text>
       <value-of select="src:expression-or-null($context-param)"/>
       <text>))</text>
-      <call-template name="src:apply-children">
+      <call-template name="src:sequence-constructor">
          <with-param name="ensure-block" select="true()"/>
          <with-param name="context-param" select="$new-context" tunnel="yes"/>
          <with-param name="output" select="concat($new-context, '.Output')" tunnel="yes"/>
@@ -1652,9 +1657,8 @@
       <text>, (</text>
       <value-of select="$new-context"/>
       <text>) => </text>
-      <call-template name="src:apply-children">
+      <call-template name="src:sequence-constructor">
          <with-param name="ensure-block" select="true()"/>
-         <with-param name="mode" select="'statement'"/>
          <with-param name="context-param" select="$new-context" tunnel="yes"/>
          <with-param name="output" select="concat($new-context, '.Output')" tunnel="yes"/>
       </call-template>
@@ -1801,9 +1805,8 @@
             <with-param name="context-param" select="$new-context" tunnel="yes"/>
          </apply-templates>
       </for-each>
-      <call-template name="src:apply-children">
+      <call-template name="src:sequence-constructor">
          <with-param name="children" select="node()[not(self::c:param or following-sibling::c:param)]"/>
-         <with-param name="mode" select="'statement'"/>
          <with-param name="omit-block" select="true()"/>
          <with-param name="indent" select="$indent + 1" tunnel="yes"/>
          <with-param name="context-param" select="$new-context" tunnel="yes"/>
@@ -1922,7 +1925,7 @@
       </choose>
       <value-of select="xcst:expression(@value)"/>
       <text>)</text>
-      <call-template name="src:apply-children">
+      <call-template name="src:sequence-constructor">
          <with-param name="ensure-block" select="true()"/>
       </call-template>
    </template>
@@ -2277,6 +2280,7 @@
       <call-template name="src:value">
          <with-param name="attribute" select="$attribute"/>
          <with-param name="fallback" select="src:string('')"/>
+         <with-param name="omit-array-block" select="true()"/>
       </call-template>
       <text>)</text>
    </template>
@@ -2285,6 +2289,7 @@
       <param name="attribute" select="@value" as="attribute()?"/>
       <param name="text" select="xcst:text(.)"/>
       <param name="fallback"/>
+      <param name="omit-array-block" select="false()"/>
 
       <choose>
          <when test="$attribute">
@@ -2293,14 +2298,85 @@
          <when test="$text">
             <value-of select="src:expand-text(., $text)"/>
          </when>
-         <!-- TODO: Mixed content -->
          <when test="*">
-            <apply-templates select="*" mode="src:expression"/>
+            <call-template name="src:sequence-constructor">
+               <with-param name="mode" select="'expression'"/>
+               <with-param name="omit-array-block" select="$omit-array-block"/>
+            </call-template>
          </when>
          <when test="$fallback">
             <value-of select="$fallback"/>
          </when>
       </choose>
+   </template>
+
+   <template name="src:sequence-constructor">
+      <param name="children" select="node()"/>
+      <param name="value" as="node()?"/>
+      <param name="text" select="xcst:text(., true(), $children)"/>
+      <param name="ensure-block" select="false()"/>
+      <param name="omit-block" select="false()"/>
+      <param name="omit-array-block" select="false()"/>
+      <param name="mode" select="'statement'" as="xs:string"/>
+      <param name="output" tunnel="yes"/>
+      <param name="indent" tunnel="yes"/>
+
+      <variable name="complex-content" select="boolean($children[self::*])"/>
+      <variable name="mode-expression" select="$mode eq 'expression'"/>
+      <variable name="use-block" select="not($omit-block) and ($ensure-block or ($complex-content and not($mode-expression)))"/>
+      <variable name="new-indent" select="if ($use-block) then $indent + 1 else $indent"/>
+
+      <if test="$use-block">
+         <call-template name="src:open-brace"/>
+      </if>
+      <choose>
+         <when test="$complex-content">
+            <choose>
+               <when test="$mode eq 'statement'">
+                  <apply-templates select="$children" mode="src:statement">
+                     <with-param name="indent" select="$new-indent" tunnel="yes"/>
+                  </apply-templates>
+               </when>
+               <when test="$mode eq 'expression'">
+                  <variable name="results" as="text()*">
+                     <for-each select="$children">
+                        <value-of>
+                           <apply-templates select="." mode="src:expression"/>
+                        </value-of>
+                     </for-each>
+                  </variable>
+                  <variable name="non-empty-results" select="for $t in $results return (if (string-length($t) gt 0) then $t else ())"/>
+                  <variable name="array" select="not($omit-array-block) and count($non-empty-results) gt 1"/>
+                  <if test="$array">new[] { </if>
+                  <for-each select="$non-empty-results">
+                     <if test="position() gt 1">, </if>
+                     <value-of select="."/>
+                  </for-each>
+                  <if test="$array"> }</if>
+               </when>
+            </choose>
+         </when>
+         <when test="$value or $text">
+            <if test="not($mode-expression)">
+               <call-template name="src:line-number">
+                  <with-param name="indent" select="$new-indent" tunnel="yes"/>
+               </call-template>
+               <call-template name="src:new-line-indented">
+                  <with-param name="indent" select="$new-indent" tunnel="yes"/>
+               </call-template>
+               <value-of select="$output"/>
+               <text>.WriteString(</text>
+            </if>
+            <value-of select="if ($value) then xcst:expression($value) else src:expand-text(., $text)"/>
+            <if test="not($mode-expression)">
+               <text>)</text>
+               <value-of select="$src:statement-delimiter"/>
+            </if>
+         </when>
+      </choose>
+      <if test="$use-block">
+         <call-template name="src:close-brace"/>
+      </if>
    </template>
 
    <function name="src:expand-text" as="xs:string">
@@ -2520,67 +2596,6 @@
 
       <value-of select="$src:new-line"/>
       <value-of select="for $p in (1 to ($indent + $increase)) return $src:indent" separator=""/>
-   </template>
-
-   <template name="src:apply-children">
-      <param name="children" select="node()"/>
-      <param name="value" as="node()?"/>
-      <param name="text" select="xcst:text(., true(), $children)"/>
-      <param name="ensure-block" select="false()"/>
-      <param name="omit-block" select="false()"/>
-      <param name="mode" select="()" as="xs:string?"/>
-      <param name="output" tunnel="yes"/>
-      <param name="indent" tunnel="yes"/>
-
-      <variable name="complex-content" select="boolean($children[self::*])"/>
-      <variable name="mode-expression" select="not(empty($mode)) and $mode eq 'expression'"/>
-      <variable name="use-block" select="not($omit-block) and ($ensure-block or ($complex-content and not($mode-expression)))"/>
-      <variable name="new-indent" select="if ($use-block) then $indent + 1 else $indent"/>
-
-      <if test="$use-block">
-         <call-template name="src:open-brace"/>
-      </if>
-      <choose>
-         <when test="$complex-content">
-            <choose>
-               <when test="empty($mode)">
-                  <apply-templates select="$children" mode="#current">
-                     <with-param name="indent" select="$new-indent" tunnel="yes"/>
-                  </apply-templates>
-               </when>
-               <when test="$mode eq 'statement'">
-                  <apply-templates select="$children" mode="src:statement">
-                     <with-param name="indent" select="$new-indent" tunnel="yes"/>
-                  </apply-templates>
-               </when>
-               <when test="$mode eq 'expression'">
-                  <apply-templates select="$children" mode="src:expression">
-                     <with-param name="indent" select="$new-indent" tunnel="yes"/>
-                  </apply-templates>
-               </when>
-            </choose>
-         </when>
-         <when test="$value or $text">
-            <if test="not($mode-expression)">
-               <call-template name="src:line-number">
-                  <with-param name="indent" select="$new-indent" tunnel="yes"/>
-               </call-template>
-               <call-template name="src:new-line-indented">
-                  <with-param name="indent" select="$new-indent" tunnel="yes"/>
-               </call-template>
-               <value-of select="$output"/>
-               <text>.WriteString(</text>
-            </if>
-            <value-of select="if ($value) then xcst:expression($value) else src:expand-text(., $text)"/>
-            <if test="not($mode-expression)">
-               <text>)</text>
-               <value-of select="$src:statement-delimiter"/>
-            </if>
-         </when>
-      </choose>
-      <if test="$use-block">
-         <call-template name="src:close-brace"/>
-      </if>
    </template>
 
    <template name="src:line-number">

@@ -1663,9 +1663,8 @@
                <with-param name="indent" select="$indent + 1" tunnel="yes"/>
                <with-param name="context-param" select="$context-param" tunnel="yes"/>
             </apply-templates>
-            <call-template name="src:apply-children">
+            <call-template name="src:sequence-constructor">
                <with-param name="children" select="$children"/>
-               <with-param name="mode" select="'statement'"/>
                <with-param name="omit-block" select="true()"/>
                <with-param name="indent" select="$indent + 1" tunnel="yes"/>
                <with-param name="context-param" select="$context-param" tunnel="yes"/>
@@ -1730,9 +1729,8 @@
          </when>
          <otherwise>
             <!-- TODO: $c:original -->
-            <call-template name="src:apply-children">
+            <call-template name="src:sequence-constructor">
                <with-param name="children" select="$children"/>
-               <with-param name="mode" select="'statement'"/>
                <with-param name="ensure-block" select="true()"/>
             </call-template>
          </otherwise>
@@ -1783,9 +1781,8 @@
                <with-param name="context-param" select="$context-param" tunnel="yes"/>
                <with-param name="output" select="concat($context-param, '.Output')" tunnel="yes"/>
             </call-template>
-            <call-template name="src:apply-children">
+            <call-template name="src:sequence-constructor">
                <with-param name="children" select="$children"/>
-               <with-param name="mode" select="'statement'"/>
                <with-param name="omit-block" select="true()"/>
                <with-param name="indent" select="$indent + 1" tunnel="yes"/>
                <with-param name="context-param" select="$context-param" tunnel="yes"/>

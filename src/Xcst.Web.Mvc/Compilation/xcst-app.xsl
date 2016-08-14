@@ -741,8 +741,7 @@
       <text>((</text>
       <value-of select="$new-helper, $new-context" separator=", "/>
       <text>) => </text>
-      <call-template name="src:apply-children">
-         <with-param name="mode" select="'statement'"/>
+      <call-template name="src:sequence-constructor">
          <with-param name="indent" select="$indent + 1" tunnel="yes"/>
          <with-param name="context-param" select="$new-context" tunnel="yes"/>
          <with-param name="output" select="concat($new-context, '.Output')" tunnel="yes"/>
@@ -914,9 +913,8 @@
       </if>
       <text>)</text>
       <value-of select="$src:statement-delimiter"/>
-      <call-template name="src:apply-children">
+      <call-template name="src:sequence-constructor">
          <with-param name="ensure-block" select="true()"/>
-         <with-param name="mode" select="'statement'"/>
          <with-param name="a:model-helper" select="$new-helper" tunnel="yes"/>
       </call-template>
    </template>
