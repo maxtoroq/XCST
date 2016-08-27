@@ -118,7 +118,7 @@ namespace Xcst.Runtime {
          if (paramsDict.TryGetValue(name, out value)) {
 
             if (!tunnel) {
-               this.templateParameters.Remove(name);
+               paramsDict.Remove(name);
             }
 
             // TODO: throw error if cast fails
