@@ -170,7 +170,8 @@ namespace Xcst {
       readonly IXcstPackage package;
       readonly Action primeFn;
       readonly QualifiedName name;
-      readonly IDictionary<string, ParameterArgument> parameters = new Dictionary<string, ParameterArgument>();
+      readonly IDictionary<string, object> templateParameters = new Dictionary<string, object>();
+      readonly IDictionary<string, object> tunnelParameters = new Dictionary<string, object>();
 
       internal XcstTemplateEvaluator(IXcstPackage package, Action primeFn, QualifiedName name) {
 
@@ -187,7 +188,12 @@ namespace Xcst {
 
          if (name == null) throw new ArgumentNullException(nameof(name));
 
-         this.parameters[name] = new ParameterArgument(value, tunnel);
+         if (tunnel) {
+            this.tunnelParameters[name] = value;
+         } else {
+            this.templateParameters[name] = value;
+         }
+
          return this;
       }
 
@@ -214,7 +220,8 @@ namespace Xcst {
 
       public XcstTemplateEvaluator ClearParams() {
 
-         this.parameters.Clear();
+         this.templateParameters.Clear();
+         this.tunnelParameters.Clear();
          return this;
       }
 
@@ -272,17 +279,22 @@ namespace Xcst {
 
       XcstOutputter CreateOutputter(Func<OutputParameters, IWriterFactory> writerFn) {
 
-         var templateParams = new Dictionary<string, ParameterArgument>(this.parameters);
+         var templateParams = new Dictionary<string, object>(this.templateParameters);
+         var tunnelParams = new Dictionary<string, object>(this.tunnelParameters);
 
-         Action<IXcstPackage, DynamicContext> executionFn = (p, c) => ExecuteTemplate(p, c, templateParams);
+         Action<IXcstPackage, DynamicContext> executionFn = (p, c) => ExecuteTemplate(p, c, templateParams, tunnelParams);
 
          return new XcstOutputter(this.package, this.primeFn, writerFn, executionFn);
       }
 
-      void ExecuteTemplate(IXcstPackage package, DynamicContext context, IDictionary<string, ParameterArgument> parameters) {
+      void ExecuteTemplate(IXcstPackage package, DynamicContext context, IDictionary<string, object> templateParams, IDictionary<string, object> tunnelParams) {
 
-         foreach (var param in parameters) {
-            context.WithParam(param.Key, param.Value.Value, param.Value.Tunnel);
+         foreach (var param in templateParams) {
+            context.WithParam(param.Key, param.Value);
+         }
+
+         foreach (var param in tunnelParams) {
+            context.WithParam(param.Key, param.Value, tunnel: true);
          }
 
          package.CallTemplate(this.name, context);

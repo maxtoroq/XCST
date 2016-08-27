@@ -52,7 +52,6 @@
     <Compile Include="Runtime\ExecutionContext.cs" />
     <Compile Include="IWriterFactory.cs" />
     <Compile Include="IXcstPackage.cs" />
-    <Compile Include="ParameterArgument.cs" />
     <Compile Include="Runtime\PrimingContext.cs" />
     <Compile Include="Runtime\SimpleContent.cs" />
     <Compile Include="Runtime\Sorting.cs" />

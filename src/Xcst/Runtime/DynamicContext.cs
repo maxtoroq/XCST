@@ -21,7 +21,8 @@ namespace Xcst.Runtime {
    /// <exclude/>
    public class DynamicContext : IDisposable {
 
-      readonly IDictionary<string, ParameterArgument> parameters = new Dictionary<string, ParameterArgument>();
+      readonly IDictionary<string, object> templateParameters = new Dictionary<string, object>();
+      readonly IDictionary<string, object> tunnelParameters = new Dictionary<string, object>();
       readonly bool keepWriterOpen;
       bool disposed;
 
@@ -60,8 +61,8 @@ namespace Xcst.Runtime {
             this.Output = currentContext.Output;
             this.keepWriterOpen = currentContext.keepWriterOpen;
 
-            foreach (var item in currentContext.parameters.Where(p => p.Value.Tunnel)) {
-               this.parameters.Add(item);
+            foreach (var item in currentContext.tunnelParameters) {
+               this.tunnelParameters.Add(item);
             }
          }
       }
@@ -72,7 +73,11 @@ namespace Xcst.Runtime {
 
          CheckDisposed();
 
-         this.parameters[name] = new ParameterArgument(value, tunnel);
+         if (tunnel) {
+            this.tunnelParameters[name] = value;
+         } else {
+            this.templateParameters[name] = value;
+         }
 
          return this;
       }
@@ -104,18 +109,21 @@ namespace Xcst.Runtime {
 
          CheckDisposed();
 
-         ParameterArgument param;
+         IDictionary<string, object> paramsDict = (tunnel) ?
+            this.tunnelParameters
+            : this.templateParameters;
 
-         if (this.parameters.TryGetValue(name, out param)
-            && param.Tunnel == tunnel) {
+         object value;
 
-            if (!param.Tunnel) {
-               this.parameters.Remove(name);
+         if (paramsDict.TryGetValue(name, out value)) {
+
+            if (!tunnel) {
+               this.templateParameters.Remove(name);
             }
 
             // TODO: throw error if cast fails
 
-            return (TValue)param.Value;
+            return (TValue)value;
          }
 
          if (defaultValue != null) {
