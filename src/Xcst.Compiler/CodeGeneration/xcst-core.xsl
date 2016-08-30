@@ -55,7 +55,11 @@
       </data>
    </variable>
 
-   <template match="*[* and not(text()[normalize-space()])]/text()" mode="src:statement src:expression"/>
+   <template match="*[* and not(text()[normalize-space()])]/text()" mode="src:statement src:expression">
+      <if test="xcst:preserve-whitespace(..)">
+         <next-match/>
+      </if>
+   </template>
 
    <template match="*" mode="src:statement">
       <param name="output" tunnel="yes"/>
@@ -298,7 +302,7 @@
          <with-param name="allowed" select="'disable-output-escaping'"/>
          <with-param name="required" select="()"/>
       </call-template>
-      <variable name="text" select="xcst:text(., false())"/>
+      <variable name="text" select="xcst:text(.)"/>
       <value-of select="
          if ($text) then src:expand-text(., $text) 
          else src:string('')"/>
@@ -2010,27 +2014,25 @@
    <function name="xcst:text" as="xs:string?">
       <param name="el" as="element()"/>
 
-      <sequence select="xcst:text($el, true())"/>
+      <sequence select="xcst:text($el, $el/node())"/>
    </function>
 
    <function name="xcst:text" as="xs:string?">
       <param name="el" as="element()"/>
-      <param name="ignore-whitespace" as="xs:boolean"/>
-
-      <sequence select="xcst:text($el, $ignore-whitespace, $el/node())"/>
-   </function>
-
-   <function name="xcst:text" as="xs:string?">
-      <param name="el" as="element()"/>
-      <param name="ignore-whitespace" as="xs:boolean"/>
       <param name="children" as="node()*"/>
 
       <if test="not($children[self::*]) and $children[self::text()]">
          <variable name="joined" select="string-join($children[self::text()], '')"/>
          <sequence select="
-            if (not($ignore-whitespace) or normalize-space($joined)) then 
+            if (xcst:preserve-whitespace($el) or normalize-space($joined)) then 
             $joined else ()"/>
       </if>
+   </function>
+
+   <function name="xcst:preserve-whitespace">
+      <param name="el" as="element()"/>
+
+      <sequence select="$el[self::c:text] or $el/ancestor-or-self::*[@xml:space][1]/@xml:space = 'preserve'"/>
    </function>
 
    <function name="xcst:non-string" as="xs:string">
@@ -2313,7 +2315,7 @@
    <template name="src:sequence-constructor">
       <param name="children" select="node()"/>
       <param name="value" as="node()?"/>
-      <param name="text" select="xcst:text(., true(), $children)"/>
+      <param name="text" select="xcst:text(., $children)"/>
       <param name="ensure-block" select="false()"/>
       <param name="omit-block" select="false()"/>
       <param name="omit-array-block" select="false()"/>

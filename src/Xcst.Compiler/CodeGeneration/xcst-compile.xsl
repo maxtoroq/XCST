@@ -1651,7 +1651,7 @@
       <variable name="children" select="node()[not(self::c:param or following-sibling::c:param)]"/>
       <choose>
          <when test="$meta/@visibility eq 'abstract'">
-            <variable name="text" select="xcst:text(., true(), $children)"/>
+            <variable name="text" select="xcst:text(., $children)"/>
             <if test="$text or $children[self::*]">
                <sequence select="error(xs:QName('err:XTSE0010'), 'No content is allowed when visibility=''abstract''.', src:error-object(.))"/>
             </if>
@@ -1721,7 +1721,7 @@
       <variable name="children" select="node()[not(self::c:param or following-sibling::c:param)]"/>
       <choose>
          <when test="$meta/@visibility eq 'abstract'">
-            <variable name="text" select="xcst:text(., true(), $children)"/>
+            <variable name="text" select="xcst:text(., $children)"/>
             <if test="$text or $children[self::*]">
                <sequence select="error(xs:QName('err:XTSE0010'), 'No content is allowed when visibility=''abstract''.', src:error-object(.))"/>
             </if>

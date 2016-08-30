@@ -93,6 +93,9 @@
     <Content Include="Language\DataModel\TextTransformation\NormalizeSpace.p.xml" />
     <Content Include="Language\DataModel\TextTransformation\TrimWithExpandText.p.xml" />
     <Content Include="Language\DataModel\TextTransformation\Trim.p.xml" />
+    <Content Include="Language\DataModel\WhitespaceStripping\Strip.p.xml" />
+    <Content Include="Language\DataModel\WhitespaceStripping\Preserve.p.xml" />
+    <Content Include="Language\DataModel\WhitespaceStripping\PreserveBetweenElements.p.xml" />
     <Content Include="Language\ExtensibilityAndFallback\ForwardsCompatibility\Fallback.p.xml" />
     <Content Include="Language\CallableComponents\UsingModule\CallTemplate\NameNoPrefix.p.xml" />
     <Content Include="Language\Grouping\ForEachGroup\GroupSize.p.xml" />
@@ -164,6 +167,9 @@
     <None Include="Language\DataModel\TextTransformation\MixedContent.c.xcst" />
     <None Include="Language\DataModel\TextTransformation\TrimWithExpandText.c.xcst" />
     <None Include="Language\DataModel\TextTransformation\Trim.c.xcst" />
+    <None Include="Language\DataModel\WhitespaceStripping\Strip.c.xcst" />
+    <None Include="Language\DataModel\WhitespaceStripping\Preserve.c.xcst" />
+    <None Include="Language\DataModel\WhitespaceStripping\PreserveBetweenElements.c.xcst" />
     <None Include="Language\ExtensibilityAndFallback\ForwardsCompatibility\Fallback.c.xcst" />
     <None Include="Language\Grouping\ForEachGroup\GroupSize.c.xcst" />
     <None Include="Language\Grouping\ForEachGroup\GroupBy.c.xcst" />
