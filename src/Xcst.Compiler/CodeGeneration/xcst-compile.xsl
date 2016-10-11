@@ -276,7 +276,7 @@
       </call-template>
 
       <variable name="attr-name" select="if (self::c:*) then QName('', 'language') else xs:QName('c:language')"/>
-      <variable name="language-attr" select="@*[node-name() eq $attr-name]"/>
+      <variable name="language-attr" select="@*[node-name(.) eq $attr-name]"/>
 
       <if test="not(xcst:language-equals($language-attr, 'C#'))">
          <sequence select="error(xs:QName('err:XTSE0020'), concat('This implementation supports only ''C#'' (@', $attr-name, ' attribute).'), src:error-object(.))"/>
