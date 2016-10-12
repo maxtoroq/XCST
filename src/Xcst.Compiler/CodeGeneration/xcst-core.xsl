@@ -451,6 +451,7 @@
          <with-param name="allowed" select="'name', 'in', 'as'"/>
          <with-param name="required" select="'name', 'in'"/>
       </call-template>
+      <variable name="name" select="xcst:name(@name)"/>
       <variable name="in" select="xcst:expression(@in)"/>
       <value-of select="$src:new-line"/>
       <call-template name="src:line-number"/>
@@ -458,11 +459,12 @@
       <text>foreach (</text>
       <value-of select="(@as/xcst:type(.), 'var')[1]"/>
       <text> </text>
-      <value-of select="xcst:name(@name)"/>
+      <value-of select="$name"/>
       <text> in </text>
       <choose>
          <when test="c:sort">
             <call-template name="src:sort">
+               <with-param name="name" select="$name"/>
                <with-param name="in" select="$in"/>
             </call-template>
          </when>
@@ -1128,12 +1130,21 @@
    -->
 
    <template name="src:sort">
+      <param name="name" required="yes"/>
       <param name="in" required="yes"/>
+      <param name="indent" tunnel="yes"/>
 
       <for-each select="c:sort">
          <call-template name="xcst:validate-attribs">
             <with-param name="allowed" select="'value', 'order'"/>
             <with-param name="required" select="()"/>
+         </call-template>
+         <variable name="indent-increase" select="2"/>
+         <call-template name="src:line-number">
+            <with-param name="indent" select="$indent + $indent-increase" tunnel="yes"/>
+         </call-template>
+         <call-template name="src:new-line-indented">
+            <with-param name="increase" select="if (position() eq 1) then $indent-increase else $indent-increase + 1"/>
          </call-template>
          <choose>
             <when test="position() eq 1">
@@ -1144,18 +1155,14 @@
             </when>
             <otherwise>.CreateOrderedEnumerable(</otherwise>
          </choose>
-         <variable name="param" select="src:aux-variable(generate-id())"/>
-         <value-of select="$param, '=>', $param"/>
-         <if test="@value">.</if>
-         <value-of select="@value/xcst:expression(.)"/>
+         <value-of select="$name, '=>', (@value/xcst:expression(.), $name)[1]"/>
          <if test="position() gt 1">, null</if>
          <text>, </text>
-         <variable name="descending-expr" select="
+         <value-of select="
             if (@order) then
                src:sort-order-descending(xcst:sort-order-descending(@order, true()), src:expand-attribute(@order))
             else
                src:sort-order-descending(false())"/>
-         <value-of select="$descending-expr"/>
          <text>)</text>
       </for-each>
    </template>
@@ -1192,16 +1199,18 @@
       </variable>
 
       <variable name="grouped" select="string($grouped-aux)"/>
+      <variable name="name" select="xcst:name(@name)"/>
 
       <value-of select="$src:new-line"/>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
       <text>foreach (var </text>
-      <value-of select="xcst:name(@name)"/>
+      <value-of select="$name"/>
       <text> in </text>
       <choose>
          <when test="c:sort">
             <call-template name="src:sort">
+               <with-param name="name" select="$name"/>
                <with-param name="in" select="$grouped"/>
             </call-template>
          </when>
