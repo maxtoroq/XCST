@@ -334,7 +334,12 @@ namespace Xcst.Web.Mvc.Html {
       static HtmlHelper MakeHtmlHelper(HtmlHelper html, ViewDataDictionary viewData) {
 
          var newHelper = new HtmlHelper(
-            new ViewContext(html.ViewContext, html.ViewContext.View, viewData, html.ViewContext.TempData, html.ViewContext.Writer),
+            new ViewContext(
+               html.ViewContext,
+#if !ASPNETLIB
+               html.ViewContext.View,
+#endif
+               viewData, html.ViewContext.TempData, html.ViewContext.Writer),
             new ViewDataContainer(viewData));
 
          newHelper.Html5DateRenderingMode = html.Html5DateRenderingMode;
@@ -348,13 +353,27 @@ namespace Xcst.Web.Mvc.Html {
          XcstView xcstView = view as XcstView;
 
          if (xcstView != null) {
-            xcstView.RenderXcstView(new ViewContext(html.ViewContext, view, viewData, html.ViewContext.TempData, html.ViewContext.Writer), output);
+            xcstView.RenderXcstView(
+               new ViewContext(
+                  html.ViewContext,
+#if !ASPNETLIB
+                  view,
+#endif
+                  viewData, html.ViewContext.TempData, html.ViewContext.Writer),
+               output);
 
          } else {
 
             using (StringWriter writer = new StringWriter(CultureInfo.InvariantCulture)) {
 
-               view.Render(new ViewContext(html.ViewContext, view, viewData, html.ViewContext.TempData, writer), writer);
+               view.Render(
+                  new ViewContext(
+                     html.ViewContext,
+#if !ASPNETLIB
+                     view,
+#endif
+                     viewData, html.ViewContext.TempData, writer),
+                  writer);
 
                output.WriteRaw(writer.ToString());
             }

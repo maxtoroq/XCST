@@ -38,10 +38,6 @@ namespace Xcst.Web.Mvc.Html {
 
       static readonly MethodInfo _strongTryGetValueImplInfo = typeof(TypeHelpers).GetMethod("StrongTryGetValueImpl", BindingFlags.NonPublic | BindingFlags.Static);
 
-      public static readonly Assembly MsCorLibAssembly = typeof(string).Assembly;
-      public static readonly Assembly MvcAssembly = typeof(Controller).Assembly;
-      public static readonly Assembly SystemWebAssembly = typeof(HttpContext).Assembly;
-
       // method is used primarily for lighting up new .NET Framework features even if MVC targets the previous version
       // thisParameter is the 'this' parameter if target method is instance method, should be null for static method
 

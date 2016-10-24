@@ -56,8 +56,11 @@ namespace Xcst.Web.Mvc {
       public virtual UrlHelper Url {
          get {
             if (_Url == null) {
-               _Url = (ViewContext?.Controller as Controller)?.Url
-                  ?? new UrlHelper(ViewContext?.RequestContext ?? Request.RequestContext);
+               _Url =
+#if !ASPNETLIB
+                  (ViewContext?.Controller as Controller)?.Url ??
+#endif
+                  new UrlHelper(ViewContext?.RequestContext ?? Request.RequestContext);
             }
             return _Url;
          }
@@ -130,7 +133,11 @@ namespace Xcst.Web.Mvc {
          }
 
          if (valueProvider == null) {
+#if ASPNETLIB
+            valueProvider = ValueProviderFactories.Factories.GetValueProvider(this.ViewContext);
+#else
             valueProvider = this.ViewContext.Controller?.ValueProvider;
+#endif
          }
 
          var bindingContext = new ModelBindingContext {
@@ -193,7 +200,9 @@ namespace Xcst.Web.Mvc {
 
             viewPage.ViewContext = new ViewContext(
                this.ViewContext,
+#if !ASPNETLIB
                new XcstView(this.ViewContext, viewPage.VirtualPath),
+#endif
                new ViewDataDictionary(this.ViewData),
                this.TempData,
                this.ViewContext.Writer

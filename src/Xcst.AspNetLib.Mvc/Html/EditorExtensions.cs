@@ -83,8 +83,13 @@ namespace Xcst.Web.Mvc.Html {
             return (bool)propertyMetadata.AdditionalValues[nameof(propertyMetadata.ShowForEdit)];
          }
 
-         return propertyMetadata.ModelType != typeof(EntityState)
-            && !propertyMetadata.IsComplexType;
+#if !ASPNETLIB
+         if (propertyMetadata.ModelType == typeof(EntityState)) {
+            return false;
+         } 
+#endif
+
+         return !propertyMetadata.IsComplexType;
       }
 
       /// <summary>

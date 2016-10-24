@@ -20,7 +20,11 @@ using System.Web.Routing;
 
 namespace Xcst.Web.Mvc {
 
-   public class XcstViewPageHttpHandler : XcstPageHttpHandler, IView {
+   public class XcstViewPageHttpHandler : XcstPageHttpHandler
+#if !ASPNETLIB
+      , IView 
+#endif
+      {
 
       readonly XcstViewPage page;
 
@@ -61,23 +65,44 @@ namespace Xcst.Web.Mvc {
                controllerTypeName.Substring(0, controllerTypeName.Length - "Controller".Length);
          }
 
-         var controller = new XcstViewPageController {
+         var controller = new XcstViewPageController();
 
-            // page's ViewData can depend on runtime type (TModel)
-            // since data is not coming from controller we can let page create it
-            ViewData = this.page.ViewData,
+         ControllerContext controllerContext;
+         TempDataDictionary tempData;
 
-            ValidateRequest = !this.DisableRequestValidation
-         };
+#if ASPNETLIB
+         controllerContext = new ControllerContext(requestContext);
+         controllerContext.ValidateRequest = !this.DisableRequestValidation;
+
+         tempData = new TempDataDictionary();
+#else
+         // page's ViewData can depend on runtime type (TModel)
+         // since data is not coming from controller we can let page create it
+         controller.ViewData = this.page.ViewData;
+         controller.ValidateRequest = !this.DisableRequestValidation;
 
          controller.Init(requestContext);
 
-         this.page.ViewContext = new ViewContext(controller.ControllerContext, this, this.page.ViewData, controller.TempData, context.Response.Output);
+         controllerContext = controller.ControllerContext;
+         tempData = controller.TempData;
+#endif
+
+         this.page.ViewContext = new ViewContext(
+            controllerContext,
+#if !ASPNETLIB
+            this,
+#endif
+            this.page.ViewData, tempData, context.Response.Output);
       }
 
       protected override void RenderPage(XcstPage page, HttpContextBase context) {
 
-         ITempDataProvider tempDataProvider = (this.page.ViewContext.Controller as Controller)?.TempDataProvider;
+         ITempDataProvider tempDataProvider =
+#if ASPNETLIB
+            this.page.ViewContext.TempDataProvider;
+#else
+            (this.page.ViewContext.Controller as Controller)?.TempDataProvider;
+#endif
 
          PossiblyLoadTempData(tempDataProvider);
 
@@ -102,6 +127,7 @@ namespace Xcst.Web.Mvc {
          }
       }
 
+#if !ASPNETLIB
       void IView.Render(ViewContext viewContext, TextWriter writer) {
 
          ViewContext oldViewContext = this.page.ViewContext;
@@ -115,12 +141,19 @@ namespace Xcst.Web.Mvc {
             this.page.ViewContext = oldViewContext;
          }
       }
+#endif
 
-      class XcstViewPageController : Controller {
+      class XcstViewPageController
+#if !ASPNETLIB
+         : Controller
+#endif
+      {
 
+#if !ASPNETLIB
          internal void Init(RequestContext requestContext) {
             Initialize(requestContext);
          }
+#endif
       }
    }
 }

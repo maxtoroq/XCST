@@ -18,7 +18,9 @@
 
 using System;
 using System.Collections.Generic;
+#if !ASPNETLIB
 using System.Data.Linq;
+#endif
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq.Expressions;
@@ -134,11 +136,13 @@ namespace Xcst.Web.Mvc.Html {
                                string expression,
                                IDictionary<string, object> htmlAttributes) {
 
+#if !ASPNETLIB
          Binary binaryValue = value as Binary;
 
          if (binaryValue != null) {
             value = binaryValue.ToArray();
          }
+#endif
 
          byte[] byteArrayValue = value as byte[];
 

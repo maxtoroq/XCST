@@ -19,7 +19,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data.Linq;
+#if !ASPNETLIB
+using System.Data.Linq; 
+#endif
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
@@ -132,17 +134,18 @@ namespace Xcst.Web.Mvc.Html {
 
          object model = viewData.Model;
 
+#if !ASPNETLIB
          Binary modelAsBinary = model as Binary;
 
          if (modelAsBinary != null) {
-            model = Convert.ToBase64String(modelAsBinary.ToArray());
-         } else {
+            model = modelAsBinary.ToArray();
+         } 
+#endif
 
-            byte[] modelAsByteArray = model as byte[];
+         byte[] modelAsByteArray = model as byte[];
 
-            if (modelAsByteArray != null) {
-               model = Convert.ToBase64String(modelAsByteArray);
-            }
+         if (modelAsByteArray != null) {
+            model = Convert.ToBase64String(modelAsByteArray);
          }
 
          string className = GetEditorCssClass(new EditorInfo("HiddenInput", "input", InputType.Hidden), null);

@@ -77,8 +77,10 @@ namespace Xcst.Web.Mvc {
          // new ViewContext resets FormContext
 
          var newViewContext = new ViewContext(
-            currentViewContext.Controller.ControllerContext,
+            currentViewContext,
+#if !ASPNETLIB
             currentViewContext.View,
+#endif
             container.ViewData,
             currentViewContext.TempData,
             currentViewContext.Writer

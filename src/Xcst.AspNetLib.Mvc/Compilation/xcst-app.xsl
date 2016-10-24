@@ -324,8 +324,8 @@
       </call-template>
 
       <variable name="expr">
-         <call-template name="a:html-helper"/>
-         <text>.AntiForgeryToken()</text>
+         <value-of select="src:global-identifier('System.Web.Helpers.AntiForgery')"/>
+         <text>.GetHtml().ToString()</text>
       </variable>
       <c:value-of value="{$expr}" disable-output-escaping="yes"/>
    </template>

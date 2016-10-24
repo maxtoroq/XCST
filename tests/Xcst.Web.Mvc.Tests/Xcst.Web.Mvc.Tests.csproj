@@ -201,13 +201,13 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Xcst.AspNetLib.Mvc\Xcst.AspNetLib.Mvc.csproj">
+      <Project>{5cb9aa5e-52b2-4fbb-8db3-d1d53193d34f}</Project>
+      <Name>Xcst.AspNetLib.Mvc</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\src\Xcst.Compiler\Xcst.Compiler.csproj">
       <Project>{1228fbc0-3a76-4152-9d34-07fc2f9c9f31}</Project>
       <Name>Xcst.Compiler</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\Xcst.Web.Mvc\Xcst.Web.Mvc.csproj">
-      <Project>{4201bbcb-dbbb-47db-8cd6-e62f697dea64}</Project>
-      <Name>Xcst.Web.Mvc</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\src\Xcst.Web\Xcst.Web.csproj">
       <Project>{e9805d4e-cd90-475c-b1a2-36e4e5032589}</Project>
