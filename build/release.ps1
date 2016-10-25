@@ -120,6 +120,7 @@ function script:NuSpec {
       "<references>"
          "<reference file='AspNetLib.AntiXsrf.dll'/>"
          "<reference file='AspNetLib.Mvc.dll'/>"
+         "<reference file='AspNetLib.Mvc.DataAnnotations.dll'/>"
          "<reference file='AspNetLib.Mvc.ModelBinding.dll'/>"
          "<reference file='AspNetLib.Mvc.ViewEngine.dll'/>"
          "<reference file='AspNetLib.Mvc.ViewEngine.Compilation.dll'/>"
