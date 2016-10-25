@@ -112,5 +112,7 @@ and limitations under the License.]]></license>
       </notice>
       <used-by-source path="src/Xcst.Web/"/>
       <used-by-source path="src/Xcst.Web.Mvc/"/>
+      <used-by-source path="src/Xcst.AspNet/"/>
+      <used-by-source path="src/Xcst.AspNetLib.Mvc/"/>
    </foreign-work>
 </notice>
