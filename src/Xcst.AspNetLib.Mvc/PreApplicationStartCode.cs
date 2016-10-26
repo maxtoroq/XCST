@@ -33,6 +33,11 @@ namespace Xcst.Web.Mvc {
 
             startWasCalled = true;
             Web.PreApplicationStartCode.Start();
+#if ASPNETLIB
+            AspNetLib.Mvc.PreApplicationStartCode.Start();
+#else
+            System.Web.Mvc.PreApplicationStartCode.Start();
+#endif
 
             XcstWebConfiguration config = XcstWebConfiguration.Instance;
 
@@ -41,6 +46,11 @@ namespace Xcst.Web.Mvc {
 
             BuildProvider.RegisterBuildProvider("." + XcstWebConfiguration.FileExtension, typeof(ViewPageBuildProvider<XcstViewPage>));
             ViewEngines.Engines.Add(new XcstViewEngine());
+
+#if ASPNETLIB
+            HtmlHelper.ClientValidationEnabled = true;
+            HtmlHelper.UnobtrusiveJavaScriptEnabled = true;
+#endif
          }
       }
    }
