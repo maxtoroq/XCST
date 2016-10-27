@@ -51,7 +51,7 @@ namespace Xcst.Web {
          if (webpageRouteMatch != null) {
 
             // If it matches then save some data for the WebPage's UrlData
-            context.Items[typeof(WebPageMatch)] = webpageRouteMatch;
+            SetWebPageMatch(context, webpageRouteMatch);
 
             string virtualPath = "~/" + webpageRouteMatch.MatchedPath;
 
@@ -82,6 +82,11 @@ namespace Xcst.Web {
       public static WebPageMatch GetWebPageMatch(HttpContextBase context) {
          WebPageMatch webPageMatch = (WebPageMatch)context.Items[typeof(WebPageMatch)];
          return webPageMatch;
+      }
+
+      static void SetWebPageMatch(HttpContextBase context, WebPageMatch pageMatch) {
+         context.Items[typeof(WebPageMatch)] = pageMatch;
+         XcstWebConfiguration.SetPathInfo(context, pageMatch.PathInfo);
       }
 
       public static WebPageMatch MatchRequest(string pathValue, string[] supportedExtensions, Func<string, bool> virtualPathExists, HttpContextBase context/*, DisplayModeProvider displayModes*/) {

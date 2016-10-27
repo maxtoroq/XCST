@@ -75,7 +75,7 @@ namespace Xcst.Web {
             if (_UrlData == null
                && Context != null) {
 
-               _UrlData = new UrlDataList(WebPageRoute.GetWebPageMatch(Context)?.PathInfo);
+               _UrlData = new UrlDataList(XcstWebConfiguration.GetPathInfo(Context));
             }
             return _UrlData;
          }

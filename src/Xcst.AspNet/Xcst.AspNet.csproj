@@ -47,8 +47,16 @@
       <Project>{5cb9aa5e-52b2-4fbb-8db3-d1d53193d34f}</Project>
       <Name>Xcst.AspNetLib.Mvc</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Xcst.Web.AutomaticRequestMapping\Xcst.Web.AutomaticRequestMapping.csproj">
+      <Project>{c3f82cea-9eb9-4549-8c51-c1bc115a8078}</Project>
+      <Name>Xcst.Web.AutomaticRequestMapping</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
@@ -56,6 +64,9 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

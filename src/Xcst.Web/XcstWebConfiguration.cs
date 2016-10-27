@@ -23,6 +23,8 @@ namespace Xcst.Web {
 
    public sealed class XcstWebConfiguration {
 
+      static readonly object pathInfoKey = new object();
+
       public const string FileExtension = "xcst";
 
       public static XcstWebConfiguration Instance { get; } = new XcstWebConfiguration();
@@ -40,6 +42,14 @@ namespace Xcst.Web {
 
       public void RegisterHandlerFactory(Func<object, IHttpHandler> handlerFactory) {
          this.HttpHandlerFactories.Insert(0, handlerFactory);
+      }
+
+      public static string GetPathInfo(HttpContextBase context) {
+         return (string)context.Items[pathInfoKey];
+      }
+
+      public static void SetPathInfo(HttpContextBase context, string pathInfo) {
+         context.Items[pathInfoKey] = pathInfo;
       }
    }
 }

@@ -1,4 +1,4 @@
-﻿// Copyright 2015 Max Toro Q.
+﻿// Copyright 2016 Max Toro Q.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,11 +14,9 @@
 
 using System;
 using System.ComponentModel;
-using System.Web.Compilation;
-using Xcst.Compiler;
-using Xcst.Web.Compilation;
+using Microsoft.Web.Infrastructure.DynamicModuleHelper;
 
-namespace Xcst.Web {
+namespace Xcst.Web.AutomaticRequestMapping {
 
    /// <exclude/>
    [EditorBrowsable(EditorBrowsableState.Never)]
@@ -32,12 +30,9 @@ namespace Xcst.Web {
 
             startWasCalled = true;
 
-            XcstWebConfiguration config = XcstWebConfiguration.Instance;
+            Web.PreApplicationStartCode.Start();
 
-            config.RegisterHandlerFactory(XcstPageHttpHandler.Create);
-            config.CompilerFactory.RegisterWebExtension();
-
-            BuildProvider.RegisterBuildProvider("." + XcstWebConfiguration.FileExtension, typeof(PageBuildProvider<XcstPage>));
+            DynamicModuleUtility.RegisterModule(typeof(XcstPageHttpModule));
          }
       }
    }

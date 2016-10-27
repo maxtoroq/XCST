@@ -81,26 +81,12 @@ function script:NuSpec {
          "<frameworkAssembly assemblyName='System.Xml'/>"
       "</frameworkAssemblies>"
 
-   } elseif ($projName -eq "Xcst.Web") {
+   } elseif ($projName -eq "Xcst.Web.Mvc") {
 
-      "<description>XCST pages for ASP.NET. This package provides only the most basic web functionality (e.g. Request/Response/Session ...). For new projects use the Xcst.AspNet package instead. For existing ASP.NET MVC 5 projects use the Xcst.Web.Mvc package.</description>"
+      "<description>XCST view engine for ASP.NET MVC 5.</description>"
 
       "<dependencies>"
          "<dependency id='Xcst.Compiler' version='$(DependencyVersionRange Xcst.Compiler)'/>"
-         "<dependency id='Microsoft.Web.Infrastructure' version='$($packagesDoc.DocumentElement.SelectSingleNode('package[@id=''Microsoft.Web.Infrastructure'']').Attributes['allowedVersions'].Value)'/>"
-      "</dependencies>"
-
-      "<frameworkAssemblies>"
-         "<frameworkAssembly assemblyName='System'/>"
-         "<frameworkAssembly assemblyName='System.Web'/>"
-      "</frameworkAssemblies>"
-
-   } elseif ($projName -eq "Xcst.Web.Mvc") {
-
-      "<description>XCST pages and views for ASP.NET MVC 5. Use this package for existing ASP.NET MVC projects. For new projects use the Xcst.AspNet package instead.</description>"
-
-      "<dependencies>"
-         "<dependency id='Xcst.Web' version='$(DependencyVersionRange Xcst.Web)'/>"
          "<dependency id='Microsoft.AspNet.Mvc' version='$($packagesDoc.DocumentElement.SelectSingleNode('package[@id=''Microsoft.AspNet.Mvc'']').Attributes['allowedVersions'].Value)'/>"
       "</dependencies>"
 
@@ -111,10 +97,11 @@ function script:NuSpec {
 	
    } elseif ($projName -eq "Xcst.AspNet") {
       
-      "<description>XCST pages and views for ASP.NET.</description>"
+      "<description>XCST pages for ASP.NET.</description>"
 
       "<dependencies>"
-         "<dependency id='Xcst.Web' version='$(DependencyVersionRange Xcst.Web)'/>"
+         "<dependency id='Xcst.Compiler' version='$(DependencyVersionRange Xcst.Compiler)'/>"
+         "<dependency id='Microsoft.Web.Infrastructure' version='$($packagesDoc.DocumentElement.SelectSingleNode('package[@id=''Microsoft.Web.Infrastructure'']').Attributes['allowedVersions'].Value)'/>"
       "</dependencies>"
 
       "<references>"
@@ -126,6 +113,7 @@ function script:NuSpec {
          "<reference file='AspNetLib.Mvc.ViewEngine.Compilation.dll'/>"
          "<reference file='Xcst.AspNet.dll'/>"
          "<reference file='Xcst.AspNetLib.Mvc.dll'/>"
+         "<reference file='Xcst.Web.dll'/>"
       "</references>"
 
       "<frameworkAssemblies>"
@@ -145,6 +133,10 @@ function script:NuSpec {
          
          "<file src='$projPath\bin\$configuration\AspNetLib.*' target='lib\$targetFxMoniker'/>"
          "<file src='$projPath\bin\$configuration\Xcst.AspNetLib.*' target='lib\$targetFxMoniker'/>"
+         "<file src='$projPath\bin\$configuration\Xcst.Web.*' target='lib\$targetFxMoniker'/>"
+      
+      } elseif ($projName -eq "Xcst.Web.Mvc") {
+         "<file src='$projPath\bin\$configuration\Xcst.Web.*' target='lib\$targetFxMoniker'/>"
       }
 
    "</files>"
@@ -200,7 +192,6 @@ try {
 
       NuPack Xcst
       NuPack Xcst.Compiler
-      NuPack Xcst.Web
       NuPack Xcst.Web.Mvc
       NuPack Xcst.AspNet
 
