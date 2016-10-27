@@ -114,6 +114,7 @@ function script:NuSpec {
          "<reference file='Xcst.AspNet.dll'/>"
          "<reference file='Xcst.AspNetLib.Mvc.dll'/>"
          "<reference file='Xcst.Web.dll'/>"
+         "<reference file='Xcst.Web.AutomaticRequestMapping.dll'/>"
       "</references>"
 
       "<frameworkAssemblies>"
