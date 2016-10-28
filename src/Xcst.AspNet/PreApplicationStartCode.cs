@@ -16,10 +16,12 @@ using System;
 using System.ComponentModel;
 using System.Web.Compilation;
 using System.Web.Mvc;
+using Microsoft.Web.Infrastructure.DynamicModuleHelper;
 using Xcst.Compiler;
-using Xcst.Web.Mvc.Compilation;
+using Xcst.Web.Compilation;
+using Xcst.Web.Mvc;
 
-namespace Xcst.Web.Mvc {
+namespace Xcst.Web {
 
    /// <exclude/>
    [EditorBrowsable(EditorBrowsableState.Never)]
@@ -32,22 +34,26 @@ namespace Xcst.Web.Mvc {
          if (!startWasCalled) {
 
             startWasCalled = true;
-            Web.PreApplicationStartCode.Start();
+
+            XcstWebConfiguration config = XcstWebConfiguration.Instance;
+
 #if ASPNETLIB
             AspNetLib.Mvc.PreApplicationStartCode.Start();
+
+            config.RegisterHandlerFactory(XcstPageHttpHandler.Create);
+            config.RegisterHandlerFactory(XcstViewPageHttpHandler.Create);
 #else
             System.Web.Mvc.PreApplicationStartCode.Start();
 #endif
 
-            XcstWebConfiguration config = XcstWebConfiguration.Instance;
-
-            config.RegisterHandlerFactory(XcstViewPageHttpHandler.Create);
             config.CompilerFactory.RegisterApplicationExtension();
 
             BuildProvider.RegisterBuildProvider("." + XcstWebConfiguration.FileExtension, typeof(ViewPageBuildProvider<XcstViewPage>));
             ViewEngines.Engines.Add(new XcstViewEngine());
 
 #if ASPNETLIB
+            DynamicModuleUtility.RegisterModule(typeof(XcstPageHttpModule));
+
             HtmlHelper.ClientValidationEnabled = true;
             HtmlHelper.UnobtrusiveJavaScriptEnabled = true;
 #endif

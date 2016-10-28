@@ -40,6 +40,7 @@ namespace Xcst.Web {
 
       private XcstWebConfiguration() { }
 
+#if ASPNETLIB
       public void RegisterHandlerFactory(Func<object, IHttpHandler> handlerFactory) {
          this.HttpHandlerFactories.Insert(0, handlerFactory);
       }
@@ -51,5 +52,6 @@ namespace Xcst.Web {
       public static void SetPathInfo(HttpContextBase context, string pathInfo) {
          context.Items[pathInfoKey] = pathInfo;
       }
+#endif
    }
 }

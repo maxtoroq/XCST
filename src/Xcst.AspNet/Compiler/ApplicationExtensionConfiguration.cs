@@ -13,27 +13,19 @@
 // limitations under the License.
 
 using System;
-using System.ComponentModel;
-using Microsoft.Web.Infrastructure.DynamicModuleHelper;
+using Xcst.Web;
+using Xcst.Web.Compilation;
 
-namespace Xcst.Web.AutomaticRequestMapping {
+namespace Xcst.Compiler {
 
-   /// <exclude/>
-   [EditorBrowsable(EditorBrowsableState.Never)]
-   public static class PreApplicationStartCode {
+   public static class ApplicationExtensionConfiguration {
 
-      static bool startWasCalled;
+      public static void RegisterApplicationExtension(this XcstCompilerFactory compilerFactory) {
 
-      public static void Start() {
-
-         if (!startWasCalled) {
-
-            startWasCalled = true;
-
-            Web.PreApplicationStartCode.Start();
-
-            DynamicModuleUtility.RegisterModule(typeof(XcstPageHttpModule));
-         }
+         compilerFactory.RegisterExtension(
+            new Uri(XmlNamespaces.XcstApplication),
+            () => typeof(PreApplicationStartCode).Assembly.GetManifestResourceStream($"{typeof(ViewPageBuildProvider<>).Namespace}.xcst-app.xsl")
+         );
       }
    }
 }

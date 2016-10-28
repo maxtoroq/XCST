@@ -36,7 +36,7 @@ namespace Xcst.Web.Mvc {
          this.page = page;
       }
 
-      internal static XcstViewPageHttpHandler Create(object instance) {
+      internal new static XcstViewPageHttpHandler Create(object instance) {
 
          XcstViewPage page = instance as XcstViewPage;
 

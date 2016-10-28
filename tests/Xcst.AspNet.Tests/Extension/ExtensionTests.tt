@@ -21,9 +21,9 @@
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using static Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
-using static Xcst.Web.Mvc.Tests.Extension.ExtensionTestsHelper;
+using static Xcst.Web.Tests.Extension.ExtensionTestsHelper;
 
-namespace Xcst.Web.Mvc.Tests {<#
+namespace Xcst.Web.Tests {<#
    var startDirectory = Directory.CreateDirectory(this.Host.ResolvePath(""));
    PushIndent(Indent);
    GenerateTests(startDirectory, startDirectory.Name);

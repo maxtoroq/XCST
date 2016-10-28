@@ -2,7 +2,7 @@
 using System.Reflection;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("Xcst.Web.Mvc.Tests.dll")]
-[assembly: AssemblyDescription("Xcst.Web.Mvc.Tests.dll")]
+[assembly: AssemblyTitle("Xcst.AspNet.Tests.dll")]
+[assembly: AssemblyDescription("Xcst.AspNet.Tests.dll")]
 [assembly: ComVisible(false)]
 [assembly: CLSCompliant(true)]

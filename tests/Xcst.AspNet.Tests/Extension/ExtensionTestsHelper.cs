@@ -10,7 +10,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
 using Xcst.Compiler;
 
-namespace Xcst.Web.Mvc.Tests.Extension {
+namespace Xcst.Web.Tests.Extension {
 
    static class ExtensionTestsHelper {
 
@@ -21,7 +21,6 @@ namespace Xcst.Web.Mvc.Tests.Extension {
       };
 
       static ExtensionTestsHelper() {
-         CompilerFactory.RegisterWebExtension();
          CompilerFactory.RegisterApplicationExtension();
       }
 
@@ -36,7 +35,7 @@ namespace Xcst.Web.Mvc.Tests.Extension {
             compiler.UsePackageBase = new StackFrame(1, true).GetMethod().DeclaringType.Namespace;
 
             compiler.SetParameter(
-               new QualifiedName("application-uri", XmlNamespaces.XcstWeb),
+               new QualifiedName("application-uri", XmlNamespaces.XcstApplication),
                new Uri(Directory.GetCurrentDirectory())
             );
 

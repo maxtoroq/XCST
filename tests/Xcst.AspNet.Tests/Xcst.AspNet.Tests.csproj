@@ -6,8 +6,8 @@
     <ProjectGuid>{9C2C8E13-E69D-4656-8554-11CD69147448}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Xcst.Web.Mvc.Tests</RootNamespace>
-    <AssemblyName>Xcst.Web.Mvc.Tests</AssemblyName>
+    <RootNamespace>Xcst.Web.Tests</RootNamespace>
+    <AssemblyName>Xcst.AspNet.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -201,17 +201,13 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Xcst.AspNetLib.Mvc\Xcst.AspNetLib.Mvc.csproj">
+    <ProjectReference Include="..\..\src\Xcst.AspNet\Xcst.AspNet.csproj">
       <Project>{5cb9aa5e-52b2-4fbb-8db3-d1d53193d34f}</Project>
-      <Name>Xcst.AspNetLib.Mvc</Name>
+      <Name>Xcst.AspNet</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\src\Xcst.Compiler\Xcst.Compiler.csproj">
       <Project>{1228fbc0-3a76-4152-9d34-07fc2f9c9f31}</Project>
       <Name>Xcst.Compiler</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\src\Xcst.Web\Xcst.Web.csproj">
-      <Project>{e9805d4e-cd90-475c-b1a2-36e4e5032589}</Project>
-      <Name>Xcst.Web</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\src\Xcst\Xcst.csproj">
       <Project>{4387c5be-1873-4060-b547-9467d5e2c779}</Project>

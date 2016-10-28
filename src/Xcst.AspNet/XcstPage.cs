@@ -29,7 +29,9 @@ namespace Xcst.Web {
       HttpSessionStateBase _Session;
       HttpServerUtilityBase _Server;
 
+#if ASPNETLIB
       IList<string> _UrlData;
+#endif
       IPrincipal _User;
 
       public virtual string VirtualPath { get; set; }
@@ -45,7 +47,9 @@ namespace Xcst.Web {
             _Response = null;
             _Session = null;
             _Server = null;
+#if ASPNETLIB
             _UrlData = null;
+#endif
          }
       }
 
@@ -70,6 +74,7 @@ namespace Xcst.Web {
          }
       }
 
+#if ASPNETLIB
       public virtual IList<string> UrlData {
          get {
             if (_UrlData == null
@@ -81,6 +86,7 @@ namespace Xcst.Web {
          }
          set { _UrlData = value; }
       }
+#endif
 
       public virtual IPrincipal User {
          get {

@@ -112,9 +112,6 @@ function script:NuSpec {
          "<reference file='AspNetLib.Mvc.ViewEngine.dll'/>"
          "<reference file='AspNetLib.Mvc.ViewEngine.Compilation.dll'/>"
          "<reference file='Xcst.AspNet.dll'/>"
-         "<reference file='Xcst.AspNetLib.Mvc.dll'/>"
-         "<reference file='Xcst.Web.dll'/>"
-         "<reference file='Xcst.Web.AutomaticRequestMapping.dll'/>"
       "</references>"
 
       "<frameworkAssemblies>"
@@ -131,13 +128,7 @@ function script:NuSpec {
       "<file src='$projPath\bin\$configuration\$projName.*' target='lib\$targetFxMoniker'/>"
 
       if ($projName -eq "Xcst.AspNet") {
-         
          "<file src='$projPath\bin\$configuration\AspNetLib.*' target='lib\$targetFxMoniker'/>"
-         "<file src='$projPath\bin\$configuration\Xcst.AspNetLib.*' target='lib\$targetFxMoniker'/>"
-         "<file src='$projPath\bin\$configuration\Xcst.Web.*' target='lib\$targetFxMoniker'/>"
-      
-      } elseif ($projName -eq "Xcst.Web.Mvc") {
-         "<file src='$projPath\bin\$configuration\Xcst.Web.*' target='lib\$targetFxMoniker'/>"
       }
 
    "</files>"

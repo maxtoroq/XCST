@@ -110,9 +110,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
 implied. See the License for the specific language governing permissions
 and limitations under the License.]]></license>
       </notice>
-      <used-by-source path="src/Xcst.Web/"/>
-      <used-by-source path="src/Xcst.Web.Mvc/"/>
       <used-by-source path="src/Xcst.AspNet/"/>
-      <used-by-source path="src/Xcst.AspNetLib.Mvc/"/>
+      <used-by-source path="src/Xcst.Web.Mvc/"/>
    </foreign-work>
 </notice>

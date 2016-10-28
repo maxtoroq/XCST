@@ -20,7 +20,6 @@ namespace Xcst {
       public const string XcstErrors = Xcst + "/errors";
       public const string XcstCompiled = Xcst + "/compiled";
       public const string XcstSyntax = Xcst + "/syntax";
-      public const string XcstWeb = Xcst + "/web";
       public const string XcstApplication = Xcst + "/application";
    }
 }

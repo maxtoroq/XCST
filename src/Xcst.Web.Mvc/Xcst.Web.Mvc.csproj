@@ -7,7 +7,7 @@
     <ProjectGuid>{4201BBCB-DBBB-47DB-8CD6-E62F697DEA64}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Xcst.Web.Mvc</RootNamespace>
+    <RootNamespace>Xcst.Web</RootNamespace>
     <AssemblyName>Xcst.Web.Mvc</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -72,89 +72,104 @@
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="..\Xcst.AspNetLib.Mvc\Compilation\ViewPageBuildProvider.cs">
+    <Compile Include="..\Xcst.AspNet\Compilation\BaseBuildProvider.cs">
+      <Link>Compilation\BaseBuildProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\Xcst.AspNet\Compilation\PageBuildProvider.cs">
+      <Link>Compilation\PageBuildProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\Xcst.AspNet\Compilation\ViewPageBuildProvider.cs">
       <Link>Compilation\ViewPageBuildProvider.cs</Link>
     </Compile>
-    <Compile Include="..\Xcst.AspNetLib.Mvc\Compiler\ApplicationExtensionConfiguration.cs">
+    <Compile Include="..\Xcst.AspNet\Compiler\ApplicationExtensionConfiguration.cs">
       <Link>Compiler\ApplicationExtensionConfiguration.cs</Link>
     </Compile>
-    <Compile Include="..\Xcst.AspNetLib.Mvc\Html\DefaultDisplayTemplates.cs">
-      <Link>Html\DefaultDisplayTemplates.cs</Link>
+    <Compile Include="..\Xcst.AspNet\IFileDependent.cs">
+      <Link>IFileDependent.cs</Link>
     </Compile>
-    <Compile Include="..\Xcst.AspNetLib.Mvc\Html\DefaultEditorTemplates.cs">
-      <Link>Html\DefaultEditorTemplates.cs</Link>
+    <Compile Include="..\Xcst.AspNet\Mvc.Html\DefaultDisplayTemplates.cs">
+      <Link>Mvc.Html\DefaultDisplayTemplates.cs</Link>
     </Compile>
-    <Compile Include="..\Xcst.AspNetLib.Mvc\Html\DictionaryExtensions.cs">
-      <Link>Html\DictionaryExtensions.cs</Link>
+    <Compile Include="..\Xcst.AspNet\Mvc.Html\DefaultEditorTemplates.cs">
+      <Link>Mvc.Html\DefaultEditorTemplates.cs</Link>
     </Compile>
-    <Compile Include="..\Xcst.AspNetLib.Mvc\Html\DisplayExtensions.cs">
-      <Link>Html\DisplayExtensions.cs</Link>
+    <Compile Include="..\Xcst.AspNet\Mvc.Html\DictionaryExtensions.cs">
+      <Link>Mvc.Html\DictionaryExtensions.cs</Link>
     </Compile>
-    <Compile Include="..\Xcst.AspNetLib.Mvc\Html\DisplayTextExtensions.cs">
-      <Link>Html\DisplayTextExtensions.cs</Link>
+    <Compile Include="..\Xcst.AspNet\Mvc.Html\DisplayExtensions.cs">
+      <Link>Mvc.Html\DisplayExtensions.cs</Link>
     </Compile>
-    <Compile Include="..\Xcst.AspNetLib.Mvc\Html\EditorExtensions.cs">
-      <Link>Html\EditorExtensions.cs</Link>
+    <Compile Include="..\Xcst.AspNet\Mvc.Html\DisplayTextExtensions.cs">
+      <Link>Mvc.Html\DisplayTextExtensions.cs</Link>
     </Compile>
-    <Compile Include="..\Xcst.AspNetLib.Mvc\Html\EditorInfo.cs">
-      <Link>Html\EditorInfo.cs</Link>
+    <Compile Include="..\Xcst.AspNet\Mvc.Html\EditorExtensions.cs">
+      <Link>Mvc.Html\EditorExtensions.cs</Link>
     </Compile>
-    <Compile Include="..\Xcst.AspNetLib.Mvc\Html\HtmlAttributesMerger.cs">
-      <Link>Html\HtmlAttributesMerger.cs</Link>
+    <Compile Include="..\Xcst.AspNet\Mvc.Html\EditorInfo.cs">
+      <Link>Mvc.Html\EditorInfo.cs</Link>
     </Compile>
-    <Compile Include="..\Xcst.AspNetLib.Mvc\Html\InputExtensions.cs">
-      <Link>Html\InputExtensions.cs</Link>
+    <Compile Include="..\Xcst.AspNet\Mvc.Html\HtmlAttributesMerger.cs">
+      <Link>Mvc.Html\HtmlAttributesMerger.cs</Link>
     </Compile>
-    <Compile Include="..\Xcst.AspNetLib.Mvc\Html\LabelExtensions.cs">
-      <Link>Html\LabelExtensions.cs</Link>
+    <Compile Include="..\Xcst.AspNet\Mvc.Html\InputExtensions.cs">
+      <Link>Mvc.Html\InputExtensions.cs</Link>
     </Compile>
-    <Compile Include="..\Xcst.AspNetLib.Mvc\Html\ModelMetadataExtensions.cs">
-      <Link>Html\ModelMetadataExtensions.cs</Link>
+    <Compile Include="..\Xcst.AspNet\Mvc.Html\LabelExtensions.cs">
+      <Link>Mvc.Html\LabelExtensions.cs</Link>
     </Compile>
-    <Compile Include="..\Xcst.AspNetLib.Mvc\Html\MvcReflectionExtensions.cs">
-      <Link>Html\MvcReflectionExtensions.cs</Link>
+    <Compile Include="..\Xcst.AspNet\Mvc.Html\ModelMetadataExtensions.cs">
+      <Link>Mvc.Html\ModelMetadataExtensions.cs</Link>
     </Compile>
-    <Compile Include="..\Xcst.AspNetLib.Mvc\Html\SelectExtensions.cs">
-      <Link>Html\SelectExtensions.cs</Link>
+    <Compile Include="..\Xcst.AspNet\Mvc.Html\MvcReflectionExtensions.cs">
+      <Link>Mvc.Html\MvcReflectionExtensions.cs</Link>
     </Compile>
-    <Compile Include="..\Xcst.AspNetLib.Mvc\Html\TemplateHelpers.cs">
-      <Link>Html\TemplateHelpers.cs</Link>
+    <Compile Include="..\Xcst.AspNet\Mvc.Html\SelectExtensions.cs">
+      <Link>Mvc.Html\SelectExtensions.cs</Link>
     </Compile>
-    <Compile Include="..\Xcst.AspNetLib.Mvc\Html\TextAreaExtensions.cs">
-      <Link>Html\TextAreaExtensions.cs</Link>
+    <Compile Include="..\Xcst.AspNet\Mvc.Html\TemplateHelpers.cs">
+      <Link>Mvc.Html\TemplateHelpers.cs</Link>
     </Compile>
-    <Compile Include="..\Xcst.AspNetLib.Mvc\Html\TypeHelpers.cs">
-      <Link>Html\TypeHelpers.cs</Link>
+    <Compile Include="..\Xcst.AspNet\Mvc.Html\TextAreaExtensions.cs">
+      <Link>Mvc.Html\TextAreaExtensions.cs</Link>
     </Compile>
-    <Compile Include="..\Xcst.AspNetLib.Mvc\Html\ValidationExtensions.cs">
-      <Link>Html\ValidationExtensions.cs</Link>
+    <Compile Include="..\Xcst.AspNet\Mvc.Html\TypeHelpers.cs">
+      <Link>Mvc.Html\TypeHelpers.cs</Link>
     </Compile>
-    <Compile Include="..\Xcst.AspNetLib.Mvc\ModelHelper.cs">
-      <Link>ModelHelper.cs</Link>
+    <Compile Include="..\Xcst.AspNet\Mvc.Html\ValidationExtensions.cs">
+      <Link>Mvc.Html\ValidationExtensions.cs</Link>
     </Compile>
-    <Compile Include="..\Xcst.AspNetLib.Mvc\ModelHelperOfTModel.cs">
-      <Link>ModelHelperOfTModel.cs</Link>
+    <Compile Include="..\Xcst.AspNet\Mvc\ModelHelper.cs">
+      <Link>Mvc\ModelHelper.cs</Link>
     </Compile>
-    <Compile Include="..\Xcst.AspNetLib.Mvc\PreApplicationStartCode.cs">
+    <Compile Include="..\Xcst.AspNet\Mvc\ModelHelperOfTModel.cs">
+      <Link>Mvc\ModelHelperOfTModel.cs</Link>
+    </Compile>
+    <Compile Include="..\Xcst.AspNet\PreApplicationStartCode.cs">
       <Link>PreApplicationStartCode.cs</Link>
     </Compile>
-    <Compile Include="..\Xcst.AspNetLib.Mvc\XcstView.cs">
-      <Link>XcstView.cs</Link>
+    <Compile Include="..\Xcst.AspNet\Mvc\XcstView.cs">
+      <Link>Mvc\XcstView.cs</Link>
     </Compile>
-    <Compile Include="..\Xcst.AspNetLib.Mvc\XcstViewEngine.cs">
-      <Link>XcstViewEngine.cs</Link>
+    <Compile Include="..\Xcst.AspNet\Mvc\XcstViewEngine.cs">
+      <Link>Mvc\XcstViewEngine.cs</Link>
     </Compile>
-    <Compile Include="..\Xcst.AspNetLib.Mvc\XcstViewPage.cs">
-      <Link>XcstViewPage.cs</Link>
+    <Compile Include="..\Xcst.AspNet\Mvc\XcstViewPage.cs">
+      <Link>Mvc\XcstViewPage.cs</Link>
     </Compile>
-    <Compile Include="..\Xcst.AspNetLib.Mvc\XcstViewPageHttpHandler.cs">
-      <Link>XcstViewPageHttpHandler.cs</Link>
+    <Compile Include="..\Xcst.AspNet\Mvc\XcstViewPageOfTModel.cs">
+      <Link>Mvc\XcstViewPageOfTModel.cs</Link>
     </Compile>
-    <Compile Include="..\Xcst.AspNetLib.Mvc\XcstViewPageOfTModel.cs">
-      <Link>XcstViewPageOfTModel.cs</Link>
+    <Compile Include="..\Xcst.AspNet\PropertyHelper.cs">
+      <Link>PropertyHelper.cs</Link>
     </Compile>
-    <Compile Include="..\Xcst.Web\PropertyHelper.cs">
-      <Link>Html\PropertyHelper.cs</Link>
+    <Compile Include="..\Xcst.AspNet\Runtime\UrlUtil.cs">
+      <Link>Runtime\UrlUtil.cs</Link>
+    </Compile>
+    <Compile Include="..\Xcst.AspNet\XcstPage.cs">
+      <Link>XcstPage.cs</Link>
+    </Compile>
+    <Compile Include="..\Xcst.AspNet\XcstWebConfiguration.cs">
+      <Link>XcstWebConfiguration.cs</Link>
     </Compile>
     <Compile Include="..\Xcst\XmlNamespaces.cs">
       <Link>XmlNamespaces.cs</Link>
@@ -166,17 +181,13 @@
       <Project>{1228fbc0-3a76-4152-9d34-07fc2f9c9f31}</Project>
       <Name>Xcst.Compiler</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Xcst.Web\Xcst.Web.csproj">
-      <Project>{e9805d4e-cd90-475c-b1a2-36e4e5032589}</Project>
-      <Name>Xcst.Web</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Xcst\Xcst.csproj">
       <Project>{4387c5be-1873-4060-b547-9467d5e2c779}</Project>
       <Name>Xcst</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="..\Xcst.AspNetLib.Mvc\Compilation\xcst-app.xsl">
+    <EmbeddedResource Include="..\Xcst.AspNet\Compilation\xcst-app.xsl">
       <Link>Compilation\xcst-app.xsl</Link>
     </EmbeddedResource>
   </ItemGroup>

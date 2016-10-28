@@ -19,7 +19,7 @@ using System.Xml;
 using Xcst.Compiler;
 using Xcst.Web.Compilation;
 
-namespace Xcst.Web.Mvc.Compilation {
+namespace Xcst.Web.Compilation {
 
    public class ViewPageBuildProvider<TViewPage> : PageBuildProvider<TViewPage> where TViewPage : class {
 
