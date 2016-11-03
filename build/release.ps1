@@ -9,24 +9,6 @@ $nuget = "..\.nuget\nuget.exe"
 $solutionPath = Resolve-Path ..
 $configuration = "Release"
 
-function script:DownloadNuGet {
-
-   $nugetDir = Split-Path $nuget
-
-   if (-not (Test-Path $nugetDir -PathType Container)) {
-      md $nugetDir | Out-Null
-   }
-
-   if (-not (Test-Path $nuget -PathType Leaf)) {
-      write "Downloading NuGet..."
-      Invoke-WebRequest https://www.nuget.org/nuget.exe -OutFile $nuget
-   }
-}
-
-function script:RestorePackages {
-   &$nuget restore $solutionPath\XCST.sln
-}
-
 function script:PackageVersion([string]$projName) {
    
    $assemblyPath = Resolve-Path $solutionPath\src\$projName\bin\$configuration\$projName.dll
@@ -51,7 +33,7 @@ function script:NuSpec {
    "<package xmlns='http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd'>"
       "<metadata>"
          "<id>$projName</id>"
-         "<version>$(PackageVersion $projName)</version>"
+         "<version>$pkgVersion</version>"
          "<authors>$($notice.authors)</authors>"
          "<licenseUrl>$($notice.license.url)</licenseUrl>"
          "<projectUrl>$($notice.website)</projectUrl>"
@@ -154,15 +136,10 @@ function script:NuPack([string]$projName) {
    $nuspecPath = "$tempPath\$projName.nuspec"
    $outputPath = Resolve-Path nupkg
 
-   $projPath = Resolve-Path $solutionPath\src\$projName
-   $projFile = "$projPath\$projName.csproj"
-
    [xml]$projDoc = Get-Content $projFile
 
    [string]$targetFx = $projDoc.Project.PropertyGroup.TargetFrameworkVersion
    $targetFxMoniker = "net" + $targetFx.Substring(1).Replace(".", "")
-
-   MSBuild $projFile /p:Configuration=$configuration
 
    NuSpec | Out-File $nuspecPath -Encoding utf8
 
@@ -172,24 +149,39 @@ function script:NuPack([string]$projName) {
    &$nuget pack $nuspecPath -OutputDirectory $outputPath
 }
 
+function script:Release([string]$projName) {
+   
+   $projPath = Resolve-Path $solutionPath\src\$projName
+   $projFile = "$projPath\$projName.csproj"
+
+   MSBuild $projFile /p:Configuration=$configuration
+
+   $lastTag = git describe --abbrev=0 --tags
+   $lastRelease = New-Object Version $lastTag.Substring(1)
+   $pkgVersion = PackageVersion $projName
+
+   if ($pkgVersion -lt $lastRelease) {
+      throw "The package version ($pkgVersion) cannot be less than the last tag ($lastTag). Don't forget to update the project's AssemblyInfo file."
+   }
+
+   NuPack $projName
+
+   if ($pkgVersion -gt $lastRelease) {
+      $newTag = "v$pkgVersion"
+      git tag -a $newTag -m $newTag
+      Write-Warning "Created tag: $newTag (don't forget to push)"
+   }
+}
+
 try {
 
-   DownloadNuGet
-   RestorePackages
+   ./ensure-nuget.ps1
+   ./restore-packages.ps1
    
    [xml]$noticeDoc = Get-Content $solutionPath\NOTICE.xml
    $notice = $noticeDoc.DocumentElement
 
-   if ($ProjectName -eq '*') {
-
-      NuPack Xcst
-      NuPack Xcst.Compiler
-      NuPack Xcst.Web.Mvc
-      NuPack Xcst.AspNet
-
-   } else {
-      NuPack $ProjectName
-   }
+   Release $ProjectName
 
 } finally {
    Pop-Location
