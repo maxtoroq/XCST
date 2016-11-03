@@ -26,6 +26,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Web.Mvc;
 using Xcst.Runtime;
+using Xcst.Web.Runtime;
 using EnumHelper = System.Web.Mvc.Html.EnumHelper;
 
 namespace Xcst.Web.Mvc.Html {
@@ -60,6 +61,15 @@ namespace Xcst.Web.Mvc.Html {
          string expressionString = ExpressionHelper.GetExpressionText(expression);
 
          DropDownListHelper(htmlHelper, context, metadata, expressionString, selectList, optionLabel, htmlAttributes);
+      }
+
+      public static void DropDownListForModel(this HtmlHelper htmlHelper,
+                                              DynamicContext context,
+                                              IEnumerable<SelectListItem> selectList = null,
+                                              string optionLabel = null,
+                                              IDictionary<string, object> htmlAttributes = null) {
+
+         DropDownListHelper(htmlHelper, context, htmlHelper.ViewData.ModelMetadata, "", selectList, optionLabel, htmlAttributes);
       }
 
       // Unable to constrain TEnum.  Cannot include IComparable, IConvertible, IFormattable because Nullable<T> does
@@ -153,6 +163,19 @@ namespace Xcst.Web.Mvc.Html {
                                               string optionLabel,
                                               IDictionary<string, object> htmlAttributes) {
 
+         if (optionLabel == null) {
+            if (selectList != null) {
+
+               var optionList = selectList as OptionList;
+
+               if (optionList != null
+                  && optionList.AddBlankOption) {
+
+                  optionLabel = "";
+               }
+            }
+         }
+
          SelectInternal(htmlHelper, context, metadata, optionLabel, expression, selectList, allowMultiple: false, htmlAttributes: htmlAttributes);
       }
 
@@ -172,8 +195,8 @@ namespace Xcst.Web.Mvc.Html {
       public static void ListBoxFor<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper,
                                                        DynamicContext context,
                                                        Expression<Func<TModel, TProperty>> expression,
-                                                       IEnumerable<SelectListItem> selectList,
-                                                       IDictionary<string, object> htmlAttributes) {
+                                                       IEnumerable<SelectListItem> selectList = null,
+                                                       IDictionary<string, object> htmlAttributes = null) {
 
          if (expression == null) throw new ArgumentNullException(nameof(expression));
 
@@ -183,12 +206,20 @@ namespace Xcst.Web.Mvc.Html {
          ListBoxHelper(htmlHelper, context, metadata, expressionString, selectList, htmlAttributes);
       }
 
-      static void ListBoxHelper(HtmlHelper htmlHelper,
-                                DynamicContext context,
-                                ModelMetadata metadata,
-                                string name,
-                                IEnumerable<SelectListItem> selectList,
-                                IDictionary<string, object> htmlAttributes) {
+      public static void ListBoxForModel(this HtmlHelper htmlHelper,
+                                         DynamicContext context,
+                                         IEnumerable<SelectListItem> selectList = null,
+                                         IDictionary<string, object> htmlAttributes = null) {
+
+         ListBoxHelper(htmlHelper, context, htmlHelper.ViewData.ModelMetadata, "", selectList, htmlAttributes);
+      }
+
+      internal static void ListBoxHelper(HtmlHelper htmlHelper,
+                                         DynamicContext context,
+                                         ModelMetadata metadata,
+                                         string name,
+                                         IEnumerable<SelectListItem> selectList,
+                                         IDictionary<string, object> htmlAttributes) {
 
          SelectInternal(htmlHelper, context, metadata, optionLabel: null, name: name, selectList: selectList, allowMultiple: true, htmlAttributes: htmlAttributes);
       }

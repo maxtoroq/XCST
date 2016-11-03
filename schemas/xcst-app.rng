@@ -216,11 +216,6 @@
       <define name="drop-down-list">
          <element name="drop-down-list">
             <ref name="select-common"/>
-            <optional>
-               <attribute name="option-label">
-                  <ref name="AVT"/>
-               </attribute>
-            </optional>
          </element>
       </define>
 
@@ -230,31 +225,31 @@
       </define>
 
       <define name="options">
-         <choice>
+         <optional>
             <attribute name="options">
                <ref name="Expression"/>
             </attribute>
-            <zeroOrMore>
-               <element name="option">
-                  <zeroOrMore>
-                     <choice>
-                        <attribute name="value">
-                           <ref name="Expression"/>
-                        </attribute>
-                        <attribute name="selected">
-                           <ref name="Expression"/>
-                        </attribute>
-                        <attribute name="disabled">
-                           <ref name="Expression"/>
-                        </attribute>
-                     </choice>
-                  </zeroOrMore>
-                  <optional>
-                     <ref name="sequence-constructor-node"/>
-                  </optional>
-               </element>
-            </zeroOrMore>
-         </choice>
+         </optional>
+         <zeroOrMore>
+            <element name="option">
+               <zeroOrMore>
+                  <choice>
+                     <attribute name="value">
+                        <ref name="Expression"/>
+                     </attribute>
+                     <attribute name="selected">
+                        <ref name="Expression"/>
+                     </attribute>
+                     <attribute name="disabled">
+                        <ref name="Expression"/>
+                     </attribute>
+                  </choice>
+               </zeroOrMore>
+               <optional>
+                  <ref name="sequence-constructor-node"/>
+               </optional>
+            </element>
+         </zeroOrMore>
       </define>
 
       <define name="input-attributes">

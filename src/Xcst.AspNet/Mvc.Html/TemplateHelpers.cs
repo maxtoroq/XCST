@@ -48,10 +48,10 @@ namespace Xcst.Web.Mvc.Html {
             { "Url", DefaultDisplayTemplates.UrlTemplate },
             { "ImageUrl", DefaultDisplayTemplates.ImageUrlTemplate },
             { "Collection", DefaultDisplayTemplates.CollectionTemplate },
-            { typeof(bool).Name, DefaultDisplayTemplates.BooleanTemplate },
-            { typeof(decimal).Name, DefaultDisplayTemplates.DecimalTemplate },
-            { typeof(string).Name, DefaultDisplayTemplates.StringTemplate },
-            { typeof(object).Name, DefaultDisplayTemplates.ObjectTemplate },
+            { nameof(Boolean), DefaultDisplayTemplates.BooleanTemplate },
+            { nameof(Decimal), DefaultDisplayTemplates.DecimalTemplate },
+            { nameof(String), DefaultDisplayTemplates.StringTemplate },
+            { nameof(Object), DefaultDisplayTemplates.ObjectTemplate },
          };
 
       static readonly Dictionary<string, Action<HtmlHelper, DynamicContext>> _defaultEditorActions =
@@ -70,17 +70,18 @@ namespace Xcst.Web.Mvc.Html {
             { "Time", DefaultEditorTemplates.TimeInputTemplate },
             { "Upload", DefaultEditorTemplates.UploadTemplate },
             { "DropDownList", DefaultEditorTemplates.DropDownListTemplate },
-            { typeof(Color).Name, DefaultEditorTemplates.ColorInputTemplate },
-            { typeof(byte).Name, DefaultEditorTemplates.ByteInputTemplate },
-            { typeof(sbyte).Name, DefaultEditorTemplates.SByteInputTemplate },
-            { typeof(int).Name, DefaultEditorTemplates.Int32InputTemplate },
-            { typeof(uint).Name, DefaultEditorTemplates.UInt32InputTemplate },
-            { typeof(long).Name, DefaultEditorTemplates.Int64InputTemplate },
-            { typeof(ulong).Name, DefaultEditorTemplates.UInt64InputTemplate },
-            { typeof(bool).Name, DefaultEditorTemplates.BooleanTemplate },
-            { typeof(decimal).Name, DefaultEditorTemplates.DecimalTemplate },
-            { typeof(string).Name, DefaultEditorTemplates.StringTemplate },
-            { typeof(object).Name, DefaultEditorTemplates.ObjectTemplate },
+            { "ListBox", DefaultEditorTemplates.ListBoxTemplate },
+            { nameof(Color), DefaultEditorTemplates.ColorInputTemplate },
+            { nameof(Byte), DefaultEditorTemplates.ByteInputTemplate },
+            { nameof(SByte), DefaultEditorTemplates.SByteInputTemplate },
+            { nameof(Int32), DefaultEditorTemplates.Int32InputTemplate },
+            { nameof(UInt32), DefaultEditorTemplates.UInt32InputTemplate },
+            { nameof(Int64), DefaultEditorTemplates.Int64InputTemplate },
+            { nameof(UInt64), DefaultEditorTemplates.UInt64InputTemplate },
+            { nameof(Boolean), DefaultEditorTemplates.BooleanTemplate },
+            { nameof(Decimal), DefaultEditorTemplates.DecimalTemplate },
+            { nameof(String), DefaultEditorTemplates.StringTemplate },
+            { nameof(Object), DefaultEditorTemplates.ObjectTemplate },
          };
 
       static string CacheItemId = Guid.NewGuid().ToString();
@@ -102,10 +103,20 @@ namespace Xcst.Web.Mvc.Html {
          Dictionary<string, Action<HtmlHelper, DynamicContext>> defaultActions = getDefaultActions(mode);
          string modeViewPath = _modeViewPaths[mode];
 
+         ModelMetadata metadata = viewData.ModelMetadata;
          var options = DefaultEditorTemplates.Options(viewData);
-         string[] templateHints = { templateName, viewData.ModelMetadata.TemplateHint, (options != null ? "DropDownList" : null), viewData.ModelMetadata.DataTypeName };
 
-         foreach (string viewName in getViewNames(viewData.ModelMetadata, templateHints)) {
+         string[] templateHints = {
+            templateName,
+            metadata.TemplateHint,
+            ((options != null) ?
+               TypeHelpers.IsIEnumerableNotString(metadata.ModelType) ? "ListBox"
+               : "DropDownList"
+               : null),
+            metadata.DataTypeName
+         };
+
+         foreach (string viewName in getViewNames(metadata, templateHints)) {
 
             string fullViewName = modeViewPath + "/" + viewName;
             ActionCacheItem cacheItem;
@@ -143,7 +154,7 @@ namespace Xcst.Web.Mvc.Html {
             }
          }
 
-         throw new InvalidOperationException($"Unable to locate an appropriate template for type {viewData.ModelMetadata.RealModelType().FullName}.");
+         throw new InvalidOperationException($"Unable to locate an appropriate template for type {metadata.RealModelType().FullName}.");
       }
 
       static Dictionary<string, ActionCacheItem> GetActionCache(HtmlHelper html) {

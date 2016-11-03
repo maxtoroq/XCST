@@ -356,11 +356,13 @@
 
    <template match="a:drop-down-list | a:list-box" mode="src:extension-instruction">
       <param name="context-param" tunnel="yes"/>
+      <param name="indent" tunnel="yes"/>
 
       <variable name="ddl" select="self::a:drop-down-list"/>
+      <variable name="for-model" select="empty((@for, @name))"/>
 
       <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="$a:input-attributes, 'options', 'option-label'[$ddl]"/>
+         <with-param name="allowed" select="$a:input-attributes, 'options'"/>
          <with-param name="required" select="()"/>
          <with-param name="extension" select="true()"/>
       </call-template>
@@ -373,27 +375,31 @@
          <value-of select="a:fully-qualified-helper-html('SelectExtensions')"/>
          <text>.</text>
          <value-of select="if ($ddl) then 'DropDownList' else 'ListBox'"/>
-         <if test="@for">For</if>
+         <if test="@for or $for-model">For</if>
+         <if test="$for-model">Model</if>
          <text>(</text>
          <call-template name="a:html-helper"/>
          <text>, </text>
          <value-of select="$context-param"/>
-         <text>, </text>
-         <choose>
-            <when test="@for">
-               <variable name="param" select="src:aux-variable(generate-id())"/>
-               <value-of select="$param"/>
-               <text> => </text>
-               <value-of select="$param, xcst:expression(@for)" separator="."/>
-            </when>
-            <otherwise>
-               <value-of select="(@name/src:expand-attribute(.), src:string(''))[1]"/>
-            </otherwise>
-         </choose>
+         <if test="not($for-model)">
+            <text>, </text>
+            <choose>
+               <when test="@for">
+                  <variable name="param" select="src:aux-variable(generate-id())"/>
+                  <value-of select="$param"/>
+                  <text> => </text>
+                  <value-of select="$param, xcst:expression(@for)" separator="."/>
+               </when>
+               <when test="@name">
+                  <value-of select="src:expand-attribute(@name)"/>
+               </when>
+            </choose>
+         </if>
          <text>, </text>
          <call-template name="a:options">
             <with-param name="value" select="@value"/>
             <with-param name="allowMultiple" select="not($ddl)"/>
+            <with-param name="indent" select="$indent + 1" tunnel="yes"/>
          </call-template>
          <if test="$ddl and @option-label">
             <text>, optionLabel: </text>
@@ -415,56 +421,56 @@
 
       <choose>
          <when test="a:option or @options">
-            <if test="$value">
-               <text>new </text>
-               <value-of select="src:global-identifier(concat('System.Web.Mvc.', (if ($allowMultiple) then 'Multi' else ''), 'SelectList'))"/>
-               <text>(</text>
-            </if>
+            <value-of select="a:fully-qualified-helper('OptionList')"/>
             <choose>
                <when test="a:option">
-                  <text>new[] { </text>
-                  <for-each select="a:option">
-                     <call-template name="xcst:validate-attribs">
-                        <with-param name="allowed" select="'value', 'selected', 'disabled'"/>
-                        <with-param name="required" select="()"/>
-                        <with-param name="extension" select="true()"/>
-                     </call-template>
-                     <if test="position() gt 1">, </if>
-                     <text>new </text>
-                     <value-of select="src:global-identifier('System.Web.Mvc.SelectListItem')"/>
-                     <text> { </text>
-                     <if test="@value or $value">
-                        <!--
-                           SelectList transforms null to empty string because dataValueField is always present (see below),
-                           therefore Value must be set. The same is true for @options.
-                        -->
-                        <text>Value = </text>
-                        <call-template name="src:simple-content">
-                           <with-param name="attribute" select="@value"/>
-                        </call-template>
-                        <text>, </text>
-                     </if>
-                     <text>Text = </text>
-                     <call-template name="src:simple-content"/>
-                     <if test="@selected">
-                        <text>, Selected = </text>
-                        <value-of select="xcst:expression(@selected)"/>
-                     </if>
-                     <if test="@disabled">
-                        <text>, Disabled = </text>
-                        <value-of select="xcst:expression(@disabled)"/>
-                     </if>
-                     <text>}</text>
-                  </for-each>
-                  <text> }</text>
+                  <text>.FromStaticList(</text>
+                  <value-of select="src:integer(count(a:option))"/>
+                  <text>)</text>
                </when>
-               <otherwise>
-                  <value-of select="xcst:expression(@options)"/>
-               </otherwise>
+               <otherwise>.Create()</otherwise>
             </choose>
             <if test="$value">
-               <text>, "Value", "Text", </text>
+               <call-template name="src:line-number"/>
+               <call-template name="src:new-line-indented"/>
+               <choose>
+                  <when test="$allowMultiple">.WithSelectedValues(</when>
+                  <otherwise>.WithSelectedValue(</otherwise>
+               </choose>
                <value-of select="xcst:expression($value)"/>
+               <text>)</text>
+            </if>
+            <for-each select="a:option">
+               <call-template name="xcst:validate-attribs">
+                  <with-param name="allowed" select="'value', 'selected', 'disabled'"/>
+                  <with-param name="required" select="()"/>
+                  <with-param name="extension" select="true()"/>
+               </call-template>
+               <call-template name="src:line-number"/>
+               <call-template name="src:new-line-indented"/>
+               <text>.AddStaticOption(</text>
+               <if test="@value">
+                  <text>value: </text>
+                  <value-of select="xcst:expression(@value)"/>
+                  <text>, </text>
+               </if>
+               <text>text: </text>
+               <call-template name="src:simple-content"/>
+               <if test="@selected">
+                  <text>, selected: </text>
+                  <value-of select="xcst:expression(@selected)"/>
+               </if>
+               <if test="@disabled">
+                  <text>, disabled: </text>
+                  <value-of select="xcst:expression(@disabled)"/>
+               </if>
+               <text>)</text>
+            </for-each>
+            <if test="@options">
+               <call-template name="src:line-number"/>
+               <call-template name="src:new-line-indented"/>
+               <text>.ConcatDynamicList(</text>
+               <value-of select="xcst:expression(@options)"/>
                <text>)</text>
             </if>
          </when>
@@ -693,6 +699,7 @@
    </template>
 
    <template match="a:with-options | a:*[@options]" mode="a:editor-additional-view-data">
+      <param name="indent" tunnel="yes"/>
 
       <if test="self::a:with-options">
          <call-template name="xcst:validate-attribs">
@@ -700,7 +707,9 @@
             <with-param name="required" select="()"/>
             <with-param name="extension" select="true()"/>
          </call-template>
-         <call-template name="a:validate-for"/>
+         <call-template name="a:validate-for">
+            <with-param name="indent" select="$indent + 1" tunnel="yes"/>
+         </call-template>
       </if>
 
       <text>[</text>
@@ -720,7 +729,9 @@
          </otherwise>
       </choose>
       <text>)] = </text>
-      <call-template name="a:options"/>
+      <call-template name="a:options">
+         <with-param name="indent" select="$indent + 1" tunnel="yes"/>
+      </call-template>
    </template>
 
    <template match="a:member-template" mode="a:editor-additional-view-data">
@@ -855,11 +866,8 @@
                <text> => </text>
                <value-of select="$param, xcst:expression(@for)" separator="."/>
             </when>
-            <when test="@name">
-               <value-of select="src:expand-attribute(@name)"/>
-            </when>
             <otherwise>
-               <value-of select="src:string('')"/>
+               <value-of select="(@name/src:expand-attribute(.), src:string(''))[1]"/>
             </otherwise>
          </choose>
          <text>)</text>
@@ -1055,7 +1063,7 @@
    <function name="a:fully-qualified-helper" as="xs:string">
       <param name="helper" as="xs:string"/>
 
-      <sequence select="concat(src:global-identifier('Xcst.Web.Mvc.Runtime'), '.', $helper)"/>
+      <sequence select="concat(src:global-identifier('Xcst.Web.Runtime'), '.', $helper)"/>
    </function>
 
    <function name="a:fully-qualified-helper-html" as="xs:string">

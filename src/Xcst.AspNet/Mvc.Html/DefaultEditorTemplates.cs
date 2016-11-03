@@ -29,6 +29,7 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using System.Web.UI.WebControls;
 using Xcst.Runtime;
+using Xcst.Web.Runtime;
 
 namespace Xcst.Web.Mvc.Html {
 
@@ -369,12 +370,29 @@ namespace Xcst.Web.Mvc.Html {
          IDictionary<string, object> htmlAttributes = CreateHtmlAttributes(html, className);
          ViewDataDictionary viewData = html.ViewData;
 
-         string optionLabel = viewData.ModelMetadata.Watermark
-            ?? String.Empty;
+         string optionLabel = null;
+
+         IEnumerable<SelectListItem> options = Options(viewData);
+         OptionList optionList = options as OptionList;
+
+         if (optionList != null
+            && optionList.AddBlankOption) {
+
+            optionLabel = viewData.ModelMetadata.Watermark ?? String.Empty;
+         }
+
+         SelectExtensions.DropDownListHelper(html, context, viewData.ModelMetadata, String.Empty, options, optionLabel, htmlAttributes);
+      }
+
+      public static void ListBoxTemplate(HtmlHelper html, DynamicContext context) {
+
+         string className = GetEditorCssClass(new EditorInfo("ListBox", "select"), null);
+         IDictionary<string, object> htmlAttributes = CreateHtmlAttributes(html, className);
+         ViewDataDictionary viewData = html.ViewData;
 
          IEnumerable<SelectListItem> options = Options(viewData);
 
-         SelectExtensions.DropDownListHelper(html, context, viewData.ModelMetadata, String.Empty, options, optionLabel: optionLabel, htmlAttributes: htmlAttributes);
+         SelectExtensions.ListBoxHelper(html, context, viewData.ModelMetadata, String.Empty, options, htmlAttributes);
       }
 
       static void ApplyRfc3339DateFormattingIfNeeded(HtmlHelper html, string format) {

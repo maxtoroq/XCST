@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#'
+   xmlns:c='http://maxtoroq.github.io/XCST'
+   xmlns:a='http://maxtoroq.github.io/XCST/application'
+   extension-element-prefixes='a'>
+
+   <c:template name='c:initial-template'>
+      <a:model value='new[] { "blue" }' html-field-prefix='color'>
+         <a:list-box>
+            <a:option>red</a:option>
+            <a:option>blue</a:option>
+         </a:list-box>
+      </a:model>
+   </c:template>
+
+   <c:template name='expected'>
+      <select name="color" id="color" multiple="multiple">
+         <option>red</option>
+         <option selected="selected">blue</option>
+      </select>
+   </c:template>
+
+</c:module>

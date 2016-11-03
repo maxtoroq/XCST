@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#'
+   xmlns:c='http://maxtoroq.github.io/XCST'
+   xmlns:a='http://maxtoroq.github.io/XCST/application'
+   extension-element-prefixes='a'>
+
+   <c:use-functions in='System.Linq'/>
+
+   <c:template name='c:initial-template'>
+      <a:drop-down-list name='number'
+         options='new[] { 1, 2, 3, 4, 5 }.GroupBy(i => (i % 2 == 0) ? "Even" : "Odd")'/>
+   </c:template>
+
+   <c:template name='expected'>
+      <select name="number" id="number">
+         <option value=""/>
+         <optgroup label="Odd">
+            <option>1</option>
+            <option>3</option>
+            <option>5</option>
+         </optgroup>
+         <optgroup label="Even">
+            <option>2</option>
+            <option>4</option>
+         </optgroup>
+      </select>      
+   </c:template>
+
+</c:module>

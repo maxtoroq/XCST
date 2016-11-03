@@ -35,12 +35,20 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Castle.Core, Version=3.3.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Castle.Core.3.3.3\lib\net45\Castle.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.CodeAnalysis, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.CodeAnalysis.Common.1.1.0\lib\net45\Microsoft.CodeAnalysis.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CodeAnalysis.CSharp, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.CodeAnalysis.CSharp.1.1.0\lib\net45\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Moq, Version=4.5.23.0, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Moq.4.5.23\lib\net45\Moq.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -52,6 +60,7 @@
       <HintPath>..\..\packages\System.Reflection.Metadata.1.1.0\lib\dotnet5.2\System.Reflection.Metadata.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
@@ -70,6 +79,9 @@
   <ItemGroup>
     <Compile Include="..\..\src\Xcst\XmlNamespaces.cs">
       <Link>XmlNamespaces.cs</Link>
+    </Compile>
+    <Compile Include="..\XDocumentNormalizer.cs">
+      <Link>XDocumentNormalizer.cs</Link>
     </Compile>
     <Compile Include="Extension\ExtensionTests.generated.cs">
       <DependentUpon>ExtensionTests.tt</DependentUpon>
@@ -100,10 +112,21 @@
     <None Include="Extension\Forms\DropDownList\drop-down-list.html-attributes.type.i.xcst" />
     <None Include="Extension\Forms\DropDownList\drop-down-list.options.type.i.xcst" />
     <None Include="Extension\Forms\DropDownList\drop-down-list.value.type.i.xcst" />
+    <None Include="Extension\Forms\DropDownList\DynamicListIGroupingKeyValuePair.c.xcst" />
+    <None Include="Extension\Forms\DropDownList\DynamicListIGrouping.c.xcst" />
+    <None Include="Extension\Forms\DropDownList\DynamicListIEnumerable.c.xcst" />
+    <None Include="Extension\Forms\DropDownList\DynamicListDictionary.c.xcst" />
+    <None Include="Extension\Forms\DropDownList\NullList.c.xcst" />
+    <None Include="Extension\Forms\DropDownList\StaticAndDynamicList.c.xcst" />
+    <None Include="Extension\Forms\DropDownList\StaticList.c.xcst" />
     <None Include="Extension\Forms\DropDownList\option.foo.i.xcst" />
     <None Include="Extension\Forms\DropDownList\option.disabled.type.i.xcst" />
     <None Include="Extension\Forms\DropDownList\option.selected.type.i.xcst" />
     <None Include="Extension\Forms\DropDownList\option.value.type.i.xcst" />
+    <None Include="Extension\Forms\DropDownList\DynamicList.c.xcst" />
+    <None Include="Extension\Forms\DropDownList\ValueResetsSelectedDynamic.c.xcst" />
+    <None Include="Extension\Forms\DropDownList\ModelSelected.c.xcst" />
+    <None Include="Extension\Forms\DropDownList\ValueResetsSelectedStatic.c.xcst" />
     <None Include="Extension\Forms\Hidden\hidden.foo.i.xcst" />
     <None Include="Extension\Forms\Hidden\hidden.for.type.i.xcst" />
     <None Include="Extension\Forms\Hidden\hidden.for_name.mutex.i.xcst" />
@@ -114,6 +137,9 @@
     <None Include="Extension\Forms\Label\label.foo.i.xcst" />
     <None Include="Extension\Forms\Label\label.for_name.mutex.i.xcst" />
     <None Include="Extension\Forms\Label\label.html-attributes.type.i.xcst" />
+    <None Include="Extension\Forms\ListBox\DynamicList.c.xcst" />
+    <None Include="Extension\Forms\ListBox\ModelSelected.c.xcst" />
+    <None Include="Extension\Forms\ListBox\NullList.c.xcst" />
     <None Include="Extension\Forms\ListBox\option.disabled.type.i.xcst" />
     <None Include="Extension\Forms\ListBox\option.selected.type.i.xcst" />
     <None Include="Extension\Forms\ListBox\option.value.type.i.xcst" />
@@ -125,6 +151,10 @@
     <None Include="Extension\Forms\ListBox\list-box.html-attributes.type.i.xcst" />
     <None Include="Extension\Forms\ListBox\list-box.options.type.i.xcst" />
     <None Include="Extension\Forms\ListBox\list-box.value.type.i.xcst" />
+    <None Include="Extension\Forms\ListBox\StaticAndDynamicList.c.xcst" />
+    <None Include="Extension\Forms\ListBox\StaticList.c.xcst" />
+    <None Include="Extension\Forms\ListBox\ValueResetsSelectedDynamic.c.xcst" />
+    <None Include="Extension\Forms\ListBox\ValueResetsSelectedStatic.c.xcst" />
     <None Include="Extension\Forms\Password\password.foo.i.xcst" />
     <None Include="Extension\Forms\Password\password.for.type.i.xcst" />
     <None Include="Extension\Forms\Password\password.for_name.mutex.i.xcst" />
@@ -177,11 +207,15 @@
     <None Include="Extension\Templates\Display\display.html-attributes.type.i.xcst" />
     <None Include="Extension\Templates\Display\display.with-params.type.i.xcst" />
     <None Include="Extension\Templates\Display\member-template.foo.i.xcst" />
+    <None Include="Extension\Templates\Editor\WithOptionsForCollection.c.xcst" />
+    <None Include="Extension\Templates\Editor\WithOptionsStaticAndDynamic.c.xcst" />
+    <None Include="Extension\Templates\Editor\WithOptionsDynamic.c.xcst" />
     <None Include="Extension\Templates\Editor\editor.options.type.i.xcst" />
     <None Include="Extension\Templates\Editor\option.disabled.type.i.xcst" />
     <None Include="Extension\Templates\Editor\option.foo.i.xcst" />
     <None Include="Extension\Templates\Editor\option.selected.type.i.xcst" />
     <None Include="Extension\Templates\Editor\option.value.type.i.xcst" />
+    <None Include="Extension\Templates\Editor\WithOptionsStatic.c.xcst" />
     <None Include="Extension\Templates\Editor\with-options.options.type.i.xcst" />
     <None Include="Extension\Templates\Editor\with-options.for.type.i.xcst" />
     <None Include="Extension\Templates\Editor\with-options.foo.i.xcst" />
@@ -201,6 +235,10 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\src\AspNetLib\src\AspNetLib.Mvc\AspNetLib.Mvc.csproj">
+      <Project>{3d3ffd8a-624d-4e9b-954b-e1c105507975}</Project>
+      <Name>AspNetLib.Mvc</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\src\Xcst.AspNet\Xcst.AspNet.csproj">
       <Project>{5cb9aa5e-52b2-4fbb-8db3-d1d53193d34f}</Project>
       <Name>Xcst.AspNet</Name>

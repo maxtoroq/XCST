@@ -187,23 +187,46 @@ namespace Xcst.Compiler {
 
          XdmNode docEl = destination.XdmNode.FirstElementOrSelf();
 
-         QName languageName = new QName("language"),
-            hrefName = new QName("href");
+         var compiled = new {
+            language = new QName("language"),
+            href = new QName("href"),
+            compilationUnit = CompilerQName("compilation-unit"),
+            @ref = CompilerQName("ref"),
+         };
+
+         var syntax = new {
+            packageManifest = new QName(XmlNamespaces.XcstSyntax, "package-manifest"),
+            template = new QName(XmlNamespaces.XcstSyntax, "template"),
+            visibility = new QName("visibility"),
+            name = new QName("name")
+         };
+
+
+         var publicVisibility = new List<string> { "public", "final", "abstract" };
 
          var result = new CompileResult {
-            Language = docEl.GetAttributeValue(languageName),
+            Language = docEl.GetAttributeValue(compiled.language),
             CompilationUnits =
-               ((IXdmEnumerator)docEl.EnumerateAxis(XdmAxis.Child, CompilerQName("compilation-unit")))
+               ((IXdmEnumerator)docEl.EnumerateAxis(XdmAxis.Child, compiled.compilationUnit))
                   .AsNodes()
                   .Select(n => n.StringValue)
                   .ToArray(),
             Dependencies =
                new HashSet<Uri>(resolver.ResolvedUris
-                  .Concat(((IXdmEnumerator)docEl.EnumerateAxis(XdmAxis.Child, CompilerQName("ref")))
+                  .Concat(((IXdmEnumerator)docEl.EnumerateAxis(XdmAxis.Child, compiled.@ref))
                      .AsNodes()
-                     .Select(n => new Uri(n.GetAttributeValue(hrefName), UriKind.Absolute))
+                     .Select(n => new Uri(n.GetAttributeValue(compiled.href), UriKind.Absolute))
                   )
-               ).ToArray()
+               ).ToArray(),
+            Templates =
+               ((IXdmEnumerator)((IXdmEnumerator)docEl.EnumerateAxis(XdmAxis.Child, syntax.packageManifest))
+                  .AsNodes()
+                  .Single()
+                  .EnumerateAxis(XdmAxis.Child, syntax.template))
+                  .AsNodes()
+                  .Where(n => publicVisibility.Contains(n.GetAttributeValue(syntax.visibility)))
+                  .Select(n => QualifiedName.Parse(n.GetAttributeValue(syntax.name)))
+                  .ToArray()
          };
 
          return result;
@@ -293,5 +316,7 @@ namespace Xcst.Compiler {
       public IReadOnlyList<string> CompilationUnits { get; internal set; }
 
       public IReadOnlyList<Uri> Dependencies { get; internal set; }
+
+      public IReadOnlyList<QualifiedName> Templates { get; internal set; }
    }
 }

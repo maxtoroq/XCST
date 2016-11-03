@@ -162,6 +162,9 @@
     <Compile Include="..\Xcst.AspNet\PropertyHelper.cs">
       <Link>PropertyHelper.cs</Link>
     </Compile>
+    <Compile Include="..\Xcst.AspNet\Runtime\OptionList.cs">
+      <Link>Runtime\OptionList.cs</Link>
+    </Compile>
     <Compile Include="..\Xcst.AspNet\Runtime\UrlUtil.cs">
       <Link>Runtime\UrlUtil.cs</Link>
     </Compile>

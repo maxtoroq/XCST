@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#'
+   xmlns:c='http://maxtoroq.github.io/XCST'
+   xmlns:a='http://maxtoroq.github.io/XCST/application'
+   extension-element-prefixes='a'>
+
+   <c:use-functions in='System.Web.Mvc'/>
+
+   <c:template name='c:initial-template'>
+      <a:list-box name='color' options='new[] { new SelectListItem { Text = "red" }, new SelectListItem { Text = "blue" } }'>
+         <a:option>random</a:option>
+      </a:list-box>
+   </c:template>
+
+   <c:template name='expected'>
+      <select name="color" id="color" multiple="multiple">
+         <option>random</option>
+         <option>red</option>
+         <option>blue</option>
+      </select>
+   </c:template>
+
+</c:module>

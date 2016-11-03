@@ -82,15 +82,7 @@
       </xs:complexType>
    </xs:element>
    <xs:element name="list-box" substitutionGroup="a:instruction-element" type="a:select-common"/>
-   <xs:element name="drop-down-list" substitutionGroup="a:instruction-element">
-      <xs:complexType>
-         <xs:complexContent>
-            <xs:extension base="a:select-common">
-               <xs:attribute name="option-label" type="a:AVT"/>
-            </xs:extension>
-         </xs:complexContent>
-      </xs:complexType>
-   </xs:element>
+   <xs:element name="drop-down-list" substitutionGroup="a:instruction-element" type="a:select-common"/>
    <xs:complexType name="select-common">
       <xs:complexContent>
          <xs:extension base="a:options">
