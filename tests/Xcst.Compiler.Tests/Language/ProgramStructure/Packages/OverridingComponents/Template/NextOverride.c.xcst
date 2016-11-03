@@ -13,4 +13,10 @@
 
    <c:import href='_NextOverride.xcst'/>
 
+   <c:template name='expected'>
+      <foo>
+         <bar>bar</bar>
+      </foo>
+   </c:template>
+
 </c:module>

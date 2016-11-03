@@ -7,4 +7,8 @@
       <foo c:use-attribute-sets='foo'/>
    </c:template>
 
+   <c:template name='expected'>
+      <foo foo="foo"/>
+   </c:template>
+
 </c:module>

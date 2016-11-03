@@ -14,4 +14,8 @@
       <c:value-of value='@class'/>
    </c:template>
 
+   <c:template name='expected'>
+      <foo>bar</foo>
+   </c:template>
+
 </c:module>

@@ -19,6 +19,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 using System;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using static Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 using static Xcst.Compiler.Tests.Language.LanguageTestsHelper;
@@ -57,8 +58,7 @@ void GenerateTests(DirectoryInfo directory, string category) {
    }
 
    WriteLine("");
-   WriteLine("");
-   Write("namespace {0} {{", directory.Name);
+   WriteLine("namespace {0} {{", directory.Name);
    PushIndent(Indent);
 
    var tests = directory.EnumerateFiles("*.xcst").ToArray();
@@ -66,9 +66,8 @@ void GenerateTests(DirectoryInfo directory, string category) {
    if (tests.Length > 0) {
 
       WriteLine("");
-      WriteLine("");
       WriteLine("[TestClass]");
-      Write("public class {0}Tests {{", directory.Name);
+      WriteLine("public class {0}Tests {{", directory.Name);
       PushIndent(Indent);
 
       foreach (FileInfo file in tests) { 
@@ -84,7 +83,6 @@ void GenerateTests(DirectoryInfo directory, string category) {
          string testName = Regex.Replace(fileName.Replace(".", "_").Replace("-", "_"), @"([a-z])([A-Z])", "$1_$2");
 
          WriteLine("");
-         WriteLine("");
          WriteLine("#line 1 \"{0}\"", file.FullName);
          WriteLine("[TestMethod, TestCategory(\"{0}\")]", category);
 
@@ -92,11 +90,11 @@ void GenerateTests(DirectoryInfo directory, string category) {
             WriteLine("[ExpectedException(typeof(Xcst.Compiler.CompileException))]");
          }
 
-         Write("public void {0}() {{", testName);
+         WriteLine("public void {0}() {{", testName);
          PushIndent(Indent);
          WriteLine("");
-
-         Write("var moduleType = CompileFromFile(@\"{0}\", correct: {1});", file.FullName, correct.ToString().ToLower());
+         WriteLine("var result = CompileFromFile(@\"{0}\", correct: {1});", file.FullName, correct.ToString().ToLower());
+         WriteLine("var moduleType = result.Item1;");
 
          if (correct) {
 
@@ -107,20 +105,24 @@ void GenerateTests(DirectoryInfo directory, string category) {
                if (testFileName.EndsWith(".p")
                   || testFileName.EndsWith(".f")) {
 
-                  WriteLine("");
-                  Write("Is{0}(OutputEqualsToDoc(moduleType, @\"{1}\"));", testFileName.EndsWith(".p"), testCase.FullName);
+                  WriteLine("Is{0}(OutputEqualsToDoc(moduleType, @\"{1}\"));", testFileName.EndsWith(".p"), testCase.FullName);
                }
             }
+
+            WriteLine("");
+            WriteLine("if (result.Item2.Templates.Contains(new QualifiedName(\"expected\"))) {");
+            PushIndent(Indent);
+            WriteLine("IsTrue(OutputEqualsToExpected(moduleType));");
+            PopIndent();
+            WriteLine("}");
          }
 
          PopIndent();
-         WriteLine("");
-         Write("}");
+         WriteLine("}");
       }
 
       PopIndent();
-      WriteLine("");
-      Write("}");
+      WriteLine("}");
    }
 
    foreach (DirectoryInfo subDirectory in directory.EnumerateDirectories()) {
@@ -128,8 +130,7 @@ void GenerateTests(DirectoryInfo directory, string category) {
    }
 
    PopIndent();
-   WriteLine("");
-   Write("}");
+   WriteLine("}");
 }
 
 #>

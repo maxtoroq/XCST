@@ -13,4 +13,8 @@
       <c:call-template name='foo'/>
    </c:template>
 
+   <c:template name='expected'>
+      <foo>bar</foo>
+   </c:template>
+
 </c:module>

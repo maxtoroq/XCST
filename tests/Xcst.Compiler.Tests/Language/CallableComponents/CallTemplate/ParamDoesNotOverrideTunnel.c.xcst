@@ -23,4 +23,8 @@
       <c:value-of value='a'/>
    </c:template>
 
+   <c:template name='expected'>
+      <foo>A</foo>
+   </c:template>
+
 </c:module>

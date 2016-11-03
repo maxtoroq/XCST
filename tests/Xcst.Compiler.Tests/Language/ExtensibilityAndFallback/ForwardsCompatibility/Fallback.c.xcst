@@ -10,4 +10,8 @@
       </c:foo>
    </c:template>
 
+   <c:template name='expected'>
+      <bar/>
+   </c:template>
+
 </c:module>

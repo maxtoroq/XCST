@@ -73,6 +73,9 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="..\XDocumentNormalizer.cs">
+      <Link>XDocumentNormalizer.cs</Link>
+    </Compile>
     <Compile Include="Compilation\CompilerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Language\LanguageTestsHelper.cs" />
@@ -83,10 +86,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Language\CallableComponents\AttributeSet\Hidden.p.xml" />
-    <Content Include="Language\CallableComponents\CallTemplate\ParamDoesNotOverrideTunnel.p.xml" />
-    <Content Include="Language\CallableComponents\Function\Hidden.p.xml" />
-    <Content Include="Language\CallableComponents\Template\Hidden.p.xml" />
     <Content Include="Language\CallableComponents\UsingModule\CallTemplate\NameUriQualified.p.xml" />
     <Content Include="Language\CreatingNodesAndObjects\LiteralResultElement\foo.foo.p.xml" />
     <Content Include="Language\DataModel\TextTransformation\MixedContent.p.xml" />
@@ -97,13 +96,7 @@
     <Content Include="Language\DataModel\WhitespaceStripping\Strip.p.xml" />
     <Content Include="Language\DataModel\WhitespaceStripping\Preserve.p.xml" />
     <Content Include="Language\DataModel\WhitespaceStripping\PreserveBetweenElements.p.xml" />
-    <Content Include="Language\ExtensibilityAndFallback\ForwardsCompatibility\Fallback.p.xml" />
     <Content Include="Language\CallableComponents\UsingModule\CallTemplate\NameNoPrefix.p.xml" />
-    <Content Include="Language\Grouping\ForEachGroup\GroupSize.p.xml" />
-    <Content Include="Language\Grouping\ForEachGroup\GroupBy.p.xml" />
-    <Content Include="Language\LanguageFeatures\SequenceConstructors\Raw\FromMultipleElements.p.xml" />
-    <Content Include="Language\LanguageFeatures\SequenceConstructors\SimpleContent\FromMixedContent.p.xml" />
-    <Content Include="Language\LanguageFeatures\SequenceConstructors\SimpleContent\FromMultipleElements.p.xml" />
     <Content Include="Language\Serialization\Output\NameUriQualified.p.xml" />
     <Content Include="Language\Serialization\Output\NameNoPrefix.p.xml" />
     <Content Include="Language\Serialization\Serialize\FormatUriQualified.p.xml" />
@@ -122,31 +115,8 @@
     <Content Include="Language\CreatingNodesAndObjects\Element\NameWithPrefixAndNamespace1.p.xml" />
     <Content Include="Language\CreatingNodesAndObjects\Element\NameWithPrefix.p.xml" />
     <Content Include="Language\CreatingNodesAndObjects\Element\NameNoPrefix.p.xml" />
-    <Content Include="Language\ProgramStructure\Packages\AcceptingComponents\AttributeSet\Accepted.p.xml" />
-    <Content Include="Language\ProgramStructure\Packages\AcceptingComponents\Function\Accepted.p.xml" />
-    <Content Include="Language\ProgramStructure\Packages\AcceptingComponents\Parameter\Accepted.p.xml" />
-    <Content Include="Language\ProgramStructure\Packages\AcceptingComponents\Template\Accepted.p.xml" />
-    <Content Include="Language\ProgramStructure\Packages\AcceptingComponents\Type\Accepted.p.xml" />
-    <Content Include="Language\ProgramStructure\Packages\AcceptingComponents\Variable\Accepted.p.xml" />
-    <Content Include="Language\ProgramStructure\Packages\OverridingComponents\AttributeSet\OverrideOverridden.p.xml" />
-    <Content Include="Language\ProgramStructure\Packages\OverridingComponents\AttributeSet\Overridden.p.xml" />
-    <Content Include="Language\ProgramStructure\Packages\OverridingComponents\AttributeSet\Original.p.xml" />
-    <Content Include="Language\ProgramStructure\Packages\OverridingComponents\Function\NextOverride.p.xml" />
-    <Content Include="Language\ProgramStructure\Packages\OverridingComponents\Function\OverrideOverridden.p.xml" />
-    <Content Include="Language\ProgramStructure\Packages\OverridingComponents\Function\Overridden.p.xml" />
-    <Content Include="Language\ProgramStructure\Packages\OverridingComponents\Template\Original.p.xml" />
-    <Content Include="Language\ProgramStructure\Packages\OverridingComponents\Template\NextOverride.p.xml" />
-    <Content Include="Language\ProgramStructure\Packages\OverridingComponents\Template\OverrideOverridden.p.xml" />
-    <Content Include="Language\ProgramStructure\Packages\OverridingComponents\Template\Overridden.p.xml" />
-    <Content Include="Language\ProgramStructure\Packages\OverridingComponents\Variable\Overridden.p.xml" />
-    <Content Include="Language\ProgramStructure\Packages\OverridingComponents\Variable\OverrideOverridden.p.xml" />
     <Content Include="Language\Serialization\Output\OverrideUnnamed.p.xml" />
     <Content Include="Language\Serialization\Output\OverrideNamed.p.xml" />
-    <Content Include="Language\Types\Hidden.p.xml" />
-    <Content Include="Language\VariablesAndParameters\Global\Hidden2.p.xml" />
-    <Content Include="Language\VariablesAndParameters\Global\Hidden1.p.xml" />
-    <Content Include="Language\VariablesAndParameters\Global\Hidden4.p.xml" />
-    <Content Include="Language\VariablesAndParameters\Global\Hidden3.p.xml" />
     <None Include="Language\CallableComponents\AttributeSet\UseAttributeSetsUriQualified.c.xcst" />
     <None Include="Language\CallableComponents\AttributeSet\NameUriQualified.c.xcst" />
     <None Include="Language\CallableComponents\AttributeSet\_Hidden.xcst" />
@@ -668,7 +638,6 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>LanguageTests.generated.cs</LastGenOutput>
     </None>
-    <Content Include="Language\CallableComponents\CallTemplate\VerbatimParameterName.p.xml" />
     <Content Include="Language\DataModel\WhitespaceStripping\PreserveText.p.xml" />
     <Content Include="Language\DataModel\WhitespaceStripping\StripDelegate.p.xml" />
     <Content Include="Language\DataModel\WhitespaceStripping\StripTry.p.xml" />

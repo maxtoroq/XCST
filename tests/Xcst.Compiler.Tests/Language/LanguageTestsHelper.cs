@@ -19,7 +19,7 @@ namespace Xcst.Compiler.Tests.Language {
             .GetType(typeName)
       };
 
-      public static Type CompileFromFile(string fileName, bool correct) {
+      public static Tuple<Type, CompileResult> CompileFromFile(string fileName, bool correct) {
 
          using (var fileStream = File.OpenRead(fileName)) {
 
@@ -93,7 +93,7 @@ namespace Xcst.Compiler.Tests.Language {
                   Assembly assembly = Assembly.Load(assemblyStream.ToArray());
                   Type type = assembly.GetType(compiler.TargetNamespace + "." + compiler.TargetClass);
 
-                  return type;
+                  return Tuple.Create(type, xcstResult);
                }
             }
          }
@@ -101,13 +101,10 @@ namespace Xcst.Compiler.Tests.Language {
 
       public static bool OutputEqualsToDoc(Type module, string fileName) {
 
-         // TODO: XNode.DeepEquals has quirks <http://blogs.msdn.com/b/ericwhite/archive/2009/01/28/equality-semantics-of-linq-to-xml-trees.aspx>
-         // use fn:deep-equals instead ?
+         var expectedDoc = XDocument.Load(fileName, LoadOptions.PreserveWhitespace);
+         var actualDoc = new XDocument();
 
-         XDocument comparingDoc = XDocument.Load(fileName, LoadOptions.PreserveWhitespace);
-         XDocument outputDoc = new XDocument();
-
-         using (XmlWriter outputWriter = outputDoc.CreateWriter()) {
+         using (XmlWriter outputWriter = actualDoc.CreateWriter()) {
 
             XcstEvaluator.Using(module)
                .CallInitialTemplate()
@@ -115,7 +112,31 @@ namespace Xcst.Compiler.Tests.Language {
                .Run();
          }
 
-         return XNode.DeepEquals(comparingDoc, outputDoc);
+         return XDocumentNormalizer.DeepEqualsWithNormalization(expectedDoc, actualDoc);
+      }
+
+      public static bool OutputEqualsToExpected(Type module) {
+
+         var expectedDoc = new XDocument();
+         var actualDoc = new XDocument();
+
+         XcstEvaluator evaluator = XcstEvaluator.Using(module);
+
+         using (XmlWriter actualWriter = actualDoc.CreateWriter()) {
+
+            evaluator.CallInitialTemplate()
+               .OutputTo(actualWriter)
+               .Run();
+         }
+
+         using (XmlWriter expectedWriter = expectedDoc.CreateWriter()) {
+
+            evaluator.CallTemplate("expected")
+               .OutputTo(expectedWriter)
+               .Run();
+         }
+
+         return XDocumentNormalizer.DeepEqualsWithNormalization(expectedDoc, actualDoc);
       }
    }
 }

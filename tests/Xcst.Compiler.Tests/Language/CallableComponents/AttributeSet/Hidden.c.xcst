@@ -1,12 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
+   <c:import href='_Hidden.xcst'/>
+   
    <c:attribute-set name='foo'>
       <c:attribute name='foo'>bar</c:attribute>
    </c:attribute-set>
 
    <c:template name='c:initial-template'>
       <foo c:use-attribute-sets='foo'/>
+   </c:template>
+
+   <c:template name='expected'>
+      <foo foo="bar"/>
    </c:template>
 
 </c:module>

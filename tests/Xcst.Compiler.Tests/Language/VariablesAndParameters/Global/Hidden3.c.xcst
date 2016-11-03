@@ -11,4 +11,8 @@
       </foo>
    </c:template>
 
+   <c:template name='expected'>
+      <foo>param</foo>
+   </c:template>
+
 </c:module>

@@ -11,4 +11,8 @@
 
    <c:import href='_OverrideOverridden.xcst'/>
 
+   <c:template name='expected'>
+      <foo>baz</foo>
+   </c:template>
+
 </c:module>

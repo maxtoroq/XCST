@@ -8,7 +8,7 @@ namespace Xcst.Compiler.Tests.Compilation {
    [TestClass]
    public class CompilerTests {
 
-      [TestMethod]
+      [TestMethod, TestCategory(nameof(Compilation))]
       public void CompileResult_Lists_Public_Templates_Only() {
 
          var compilerFactory = new XcstCompilerFactory();

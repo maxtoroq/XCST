@@ -7,7 +7,8 @@ namespace Xcst.Tests.Evaluation {
    [TestClass]
    public class EvaluatorTests {
 
-      [TestMethod, ExpectedException(typeof(InvalidOperationException))]
+      [TestMethod, TestCategory(nameof(Evaluation))]
+      [ExpectedException(typeof(InvalidOperationException))]
       public void Disallow_Re_Prime() {
 
          var evaluator = XcstEvaluator.Using<DisallowRePrime>()
@@ -23,7 +24,7 @@ namespace Xcst.Tests.Evaluation {
             .Run();
       }
 
-      [TestMethod]
+      [TestMethod, TestCategory(nameof(Evaluation))]
       public void Lock_Template_Params() {
 
          var template = XcstEvaluator.Using<LockTemplateParams>()

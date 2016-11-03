@@ -13,4 +13,8 @@
       <foo c:use-attribute-sets='foo'/>
    </c:template>
 
+   <c:template name='expected'>
+      <foo foo="foo" bar="bar"/>
+   </c:template>
+
 </c:module>

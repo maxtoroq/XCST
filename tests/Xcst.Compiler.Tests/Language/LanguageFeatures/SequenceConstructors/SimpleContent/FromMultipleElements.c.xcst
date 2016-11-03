@@ -10,4 +10,8 @@
       </foo>
    </c:template>
 
+   <c:template name='expected'>
+      <foo>A1</foo>
+   </c:template>
+
 </c:module>

@@ -19,4 +19,16 @@
       </table>
    </c:template>
 
+   <c:template name='expected'>
+      <table>
+         <tr>
+            <td>apple</td>
+         </tr>
+         <tr>
+            <td>apricot</td>
+            <td>banana</td>
+         </tr>
+      </table>
+   </c:template>
+
 </c:module>

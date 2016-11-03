@@ -95,7 +95,7 @@ void GenerateTests(DirectoryInfo directory, string category) {
          
          WriteLine("");
          WriteLine("var result = CompileFromFile(@\"{0}\", correct: {1});", file.FullName, correct.ToString().ToLower());
-         WriteLine("Type moduleType = result.Item1;");
+         WriteLine("var moduleType = result.Item1;");
          WriteLine("");
          
          WriteLine("if (result.Item2.Templates.Contains(new QualifiedName(\"expected\"))) {");
