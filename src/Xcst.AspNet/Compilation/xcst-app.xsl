@@ -421,6 +421,10 @@
 
       <choose>
          <when test="a:option or @options">
+            <!--
+               Casting of xcst:expression avoids turning into a dynamic object when one of the arguments is dynamic.
+               A long method chain on a dynamic object hurts performance.
+            -->
             <value-of select="a:fully-qualified-helper('OptionList')"/>
             <choose>
                <when test="a:option">
@@ -434,11 +438,16 @@
                <call-template name="src:line-number"/>
                <call-template name="src:new-line-indented"/>
                <choose>
-                  <when test="$allowMultiple">.WithSelectedValues(</when>
-                  <otherwise>.WithSelectedValue(</otherwise>
+                  <when test="$allowMultiple">
+                     <text>.WithSelectedValues((</text>
+                     <value-of select="src:global-identifier('System.Collections.IEnumerable')"/>
+                     <text>)</text>
+                  </when>
+                  <otherwise>.WithSelectedValue((object)</otherwise>
                </choose>
+               <text>(</text>
                <value-of select="xcst:expression($value)"/>
-               <text>)</text>
+               <text>))</text>
             </if>
             <for-each select="a:option">
                <call-template name="xcst:validate-attribs">
@@ -450,25 +459,28 @@
                <call-template name="src:new-line-indented"/>
                <text>.AddStaticOption(</text>
                <if test="@value">
-                  <text>value: </text>
+                  <text>value: (object)(</text>
                   <value-of select="xcst:expression(@value)"/>
-                  <text>, </text>
+                  <text>), </text>
                </if>
                <text>text: </text>
                <call-template name="src:simple-content"/>
                <if test="@selected">
-                  <text>, selected: </text>
+                  <text>, selected: (bool)(</text>
                   <value-of select="xcst:expression(@selected)"/>
+                  <text>)</text>
                </if>
                <if test="@disabled">
-                  <text>, disabled: </text>
+                  <text>, disabled: (bool)(</text>
                   <value-of select="xcst:expression(@disabled)"/>
+                  <text>)</text>
                </if>
                <text>)</text>
             </for-each>
             <if test="@options">
                <call-template name="src:line-number"/>
                <call-template name="src:new-line-indented"/>
+               <!-- Don't cast expression, behavior depends on overload resolution -->
                <text>.ConcatDynamicList(</text>
                <value-of select="xcst:expression(@options)"/>
                <text>)</text>
