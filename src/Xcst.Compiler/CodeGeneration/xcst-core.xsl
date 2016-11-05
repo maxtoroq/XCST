@@ -2284,16 +2284,28 @@
       <param name="attribute" as="attribute()?"/>
       <param name="separator" select="()"/>
 
-      <value-of select="$src:context-field, 'SimpleContent'" separator="."/>
-      <text>.Join(</text>
-      <value-of select="if ($attribute) then ($separator, src:string(' '))[1] else src:string('')"/>
-      <text>, </text>
-      <call-template name="src:value">
-         <with-param name="attribute" select="$attribute"/>
-         <with-param name="fallback" select="src:string('')"/>
-         <with-param name="omit-array-block" select="true()"/>
-      </call-template>
-      <text>)</text>
+      <variable name="text" select="xcst:text(.)"/>
+
+      <choose>
+         <when test="$text">
+            <value-of select="src:expand-text(., $text)"/>
+         </when>
+         <when test="$attribute or *">
+            <value-of select="$src:context-field, 'SimpleContent'" separator="."/>
+            <text>.Join(</text>
+            <value-of select="if ($attribute) then ($separator, src:string(' '))[1] else src:string('')"/>
+            <text>, </text>
+            <call-template name="src:value">
+               <with-param name="attribute" select="$attribute"/>
+               <with-param name="text" select="$text"/>
+               <with-param name="omit-array-block" select="true()"/>
+            </call-template>
+            <text>)</text>
+         </when>
+         <otherwise>
+            <value-of select="src:string('')"/>
+         </otherwise>
+      </choose>
    </template>
 
    <template name="src:value">
@@ -2452,7 +2464,16 @@
    <function name="src:verbatim-string" as="xs:string">
       <param name="item" as="item()"/>
 
-      <sequence select="concat('@', src:string(replace($item, '&quot;', '&quot;&quot;')))"/>
+      <variable name="str" select="string($item)"/>
+
+      <choose>
+         <when test="string-length($str) eq 0">
+            <sequence select="src:string($str)"/>
+         </when>
+         <otherwise>
+            <sequence select="concat('@', src:string(replace($str, '&quot;', '&quot;&quot;')))"/>
+         </otherwise>
+      </choose>
    </function>
 
    <function name="src:boolean" as="xs:string">
