@@ -500,6 +500,7 @@
             <variable name="tunnel" select="(@tunnel/xcst:boolean(.), false())[1]"/>
             <if test="$overriden-meta
                and not($overriden-meta/xcst:param[xcst:name-equals(string(@name), $param-name)])
+               and not($tunnel)
                and (not(@required) or $required)">
                <sequence select="error(xs:QName('err:XTSE3070'), 'Any parameter on the overriding template for which there is no corresponding parameter on the overridden template must specify required=&quot;no&quot;.', src:error-object(.))"/>
             </if>
