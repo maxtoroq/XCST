@@ -129,7 +129,7 @@ namespace Xcst.Web.Runtime {
          return this;
       }
 
-      public OptionList ConcatDynamicList<TKey, TValue>(IDictionary<TKey, TValue> list) {
+      public OptionList ConcatDynamicList<TKey, TValue>(IEnumerable<KeyValuePair<TKey, TValue>> list) {
 
          EnsureSingleCall();
 

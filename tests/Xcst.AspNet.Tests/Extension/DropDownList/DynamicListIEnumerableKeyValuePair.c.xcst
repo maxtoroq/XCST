@@ -7,14 +7,14 @@
    <c:use-functions in='System.Collections.Generic'/>
 
    <c:template name='c:initial-template'>
-      <a:drop-down-list name='color' options='new Dictionary&lt;string, string> { { "red", "red" }, { "blue", "blue" } }'/>
+      <a:drop-down-list name='color' options='(IEnumerable&lt;KeyValuePair&lt;string, string>>)new Dictionary&lt;string, string> { { "red", "Red" }, { "blue", "Blue" } }'/>
    </c:template>
 
    <c:template name='expected'>
       <select name="color" id="color">
          <option value=""/>
-         <option value="red">red</option>
-         <option value="blue">blue</option>
+         <option value="red">Red</option>
+         <option value="blue">Blue</option>
       </select>      
    </c:template>
 

@@ -115,7 +115,7 @@
     <None Include="Extension\DropDownList\DynamicListIGroupingKeyValuePair.c.xcst" />
     <None Include="Extension\DropDownList\DynamicListIGrouping.c.xcst" />
     <None Include="Extension\DropDownList\DynamicListIEnumerable.c.xcst" />
-    <None Include="Extension\DropDownList\DynamicListDictionary.c.xcst" />
+    <None Include="Extension\DropDownList\DynamicListIEnumerableKeyValuePair.c.xcst" />
     <None Include="Extension\DropDownList\NullList.c.xcst" />
     <None Include="Extension\DropDownList\StaticAndDynamicList.c.xcst" />
     <None Include="Extension\DropDownList\StaticList.c.xcst" />
