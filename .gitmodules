@@ -1,3 +1,0 @@
-[submodule "src/AspNetLib"]
-	path = src/AspNetLib
-	url = https://github.com/maxtoroq/AspNetLib.git

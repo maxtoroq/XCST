@@ -62,44 +62,6 @@ function script:NuSpec {
          "<frameworkAssembly assemblyName='System'/>"
          "<frameworkAssembly assemblyName='System.Xml'/>"
       "</frameworkAssemblies>"
-
-   } elseif ($projName -eq "Xcst.Web.Mvc") {
-
-      "<description>XCST view engine for ASP.NET MVC 5.</description>"
-
-      "<dependencies>"
-         "<dependency id='Xcst.Compiler' version='$(DependencyVersionRange Xcst.Compiler)'/>"
-         "<dependency id='Microsoft.AspNet.Mvc' version='$($packagesDoc.DocumentElement.SelectSingleNode('package[@id=''Microsoft.AspNet.Mvc'']').Attributes['allowedVersions'].Value)'/>"
-      "</dependencies>"
-
-      "<frameworkAssemblies>"
-         "<frameworkAssembly assemblyName='System'/>"
-         "<frameworkAssembly assemblyName='System.Web'/>"
-      "</frameworkAssemblies>"
-	
-   } elseif ($projName -eq "Xcst.AspNet") {
-      
-      "<description>XCST pages for ASP.NET.</description>"
-
-      "<dependencies>"
-         "<dependency id='Xcst.Compiler' version='$(DependencyVersionRange Xcst.Compiler)'/>"
-         "<dependency id='Microsoft.Web.Infrastructure' version='$($packagesDoc.DocumentElement.SelectSingleNode('package[@id=''Microsoft.Web.Infrastructure'']').Attributes['allowedVersions'].Value)'/>"
-      "</dependencies>"
-
-      "<references>"
-         "<reference file='AspNetLib.AntiXsrf.dll'/>"
-         "<reference file='AspNetLib.Mvc.dll'/>"
-         "<reference file='AspNetLib.Mvc.DataAnnotations.dll'/>"
-         "<reference file='AspNetLib.Mvc.ModelBinding.dll'/>"
-         "<reference file='AspNetLib.Mvc.ViewEngine.dll'/>"
-         "<reference file='AspNetLib.Mvc.ViewEngine.Compilation.dll'/>"
-         "<reference file='Xcst.AspNet.dll'/>"
-      "</references>"
-
-      "<frameworkAssemblies>"
-         "<frameworkAssembly assemblyName='System'/>"
-         "<frameworkAssembly assemblyName='System.Web'/>"
-      "</frameworkAssemblies>"
    }
 
    "</metadata>"
@@ -108,11 +70,6 @@ function script:NuSpec {
       "<file src='$tempPath\NOTICE.xml'/>"
       "<file src='$solutionPath\LICENSE.txt'/>"
       "<file src='$projPath\bin\$configuration\$projName.*' target='lib\$targetFxMoniker'/>"
-
-      if ($projName -eq "Xcst.AspNet") {
-         "<file src='$projPath\bin\$configuration\AspNetLib.*' target='lib\$targetFxMoniker'/>"
-      }
-
    "</files>"
 
    "</package>"

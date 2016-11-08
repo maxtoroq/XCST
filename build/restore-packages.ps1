@@ -8,7 +8,6 @@ try {
 
    ./ensure-nuget.ps1
 
-   &$nuget restore $solutionPath\src\AspNetLib\AspNetLib.sln
    &$nuget restore $solutionPath\XCST.sln
 
 } finally {
