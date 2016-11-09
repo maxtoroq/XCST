@@ -12,7 +12,7 @@ function PopIndent {
    $script:indent = $indent.Substring($singleIndent.Length)
 }
 
-function WriteLine($line) {
+function WriteLine($line = "") {
    $indent + $line
 }
 
@@ -88,7 +88,7 @@ function GenerateModulesForDirectory([IO.DirectoryInfo]$directory) {
       }
    }
 
-   WriteLine ""
+   WriteLine
    WriteLine "namespace $($directory.Name) {"
    PushIndent
 

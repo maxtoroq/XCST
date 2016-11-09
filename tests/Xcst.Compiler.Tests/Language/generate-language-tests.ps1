@@ -12,7 +12,7 @@ function PopIndent {
    $script:indent = $indent.Substring($singleIndent.Length)
 }
 
-function WriteLine($line) {
+function WriteLine($line = "") {
    $indent + $line
 }
 
@@ -71,7 +71,7 @@ function GenerateTestsForDirectory([IO.DirectoryInfo]$directory, $category) {
       }
    }
 
-   WriteLine ""
+   WriteLine
    WriteLine "namespace $($directory.Name) {"
    PushIndent
 
@@ -79,7 +79,7 @@ function GenerateTestsForDirectory([IO.DirectoryInfo]$directory, $category) {
 
    if ($tests.Length -gt 0) {
    
-      WriteLine ""
+      WriteLine
       WriteLine "[TestClass]"
       WriteLine "public class $($directory.Name)Tests {"
       PushIndent
@@ -96,7 +96,7 @@ function GenerateTestsForDirectory([IO.DirectoryInfo]$directory, $category) {
          $fileName2 = $fileName.Substring(0, $fileName.LastIndexOf("."))
          $testName = [Text.RegularExpressions.Regex]::Replace($fileName.Replace(".", "_").Replace("-", "_"), '([a-z])([A-Z])', '$1_$2')
 
-         WriteLine ""
+         WriteLine
          WriteLine "#line 1 ""$($file.FullName)"""
          WriteLine "[TestMethod, TestCategory(""$category"")]"
 
@@ -106,7 +106,7 @@ function GenerateTestsForDirectory([IO.DirectoryInfo]$directory, $category) {
 
          WriteLine "public void $testName() {"
          PushIndent
-         WriteLine ""
+         WriteLine
          WriteLine "var result = CompileFromFile(@""$($file.FullName)"", correct: $($correct.ToString().ToLower()));"
          WriteLine "var moduleType = result.Item1;"
 
@@ -122,7 +122,7 @@ function GenerateTestsForDirectory([IO.DirectoryInfo]$directory, $category) {
                }
             }
 
-            WriteLine ""
+            WriteLine
             WriteLine "if (result.Item2.Templates.Contains(new QualifiedName(""expected""))) {"
             PushIndent
             WriteLine "IsTrue(OutputEqualsToExpected(moduleType));"
