@@ -37,7 +37,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.XML" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -53,11 +53,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Evaluation\EvaluatorTests.cs" />
-    <Compile Include="Modules.generated.cs">
-      <DependentUpon>Modules.tt</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
+    <Compile Include="Modules.generated.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -65,15 +61,16 @@
     <None Include="Evaluation\DisallowRePrime.xcst" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Modules.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>Modules.generated.cs</LastGenOutput>
-    </None>
+    <None Include="generate-modules.ps1" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Xcst.Compiler\Xcst.Compiler.csproj">
+      <Project>{1228fbc0-3a76-4152-9d34-07fc2f9c9f31}</Project>
+      <Name>Xcst.Compiler</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\src\Xcst\Xcst.csproj">
       <Project>{4387c5be-1873-4060-b547-9467d5e2c779}</Project>
       <Name>Xcst</Name>
@@ -99,6 +96,9 @@
   </Choose>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>powershell -NoProfile -ExecutionPolicy RemoteSigned -File $(ProjectDir)generate-modules.ps1</PreBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

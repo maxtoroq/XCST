@@ -79,11 +79,8 @@
     <Compile Include="Compilation\CompilerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Language\LanguageTestsHelper.cs" />
-    <Compile Include="Language\LanguageTests.generated.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>LanguageTests.tt</DependentUpon>
-    </Compile>
+    <Compile Include="Language\LanguageTests.generated.cs" />
+    <None Include="Language\generate-language-tests.ps1" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Language\CallableComponents\UsingModule\CallTemplate\NameUriQualified.p.xml" />
@@ -635,10 +632,6 @@
     <None Include="Language\VariablesAndParameters\Global\TunnelParameter.i.xcst" />
     <None Include="Language\CallableComponents\Template\NameReservedNamespace.c.xcst" />
     <None Include="Language\Serialization\Output\NameReservedNamespace.i.xcst" />
-    <None Include="Language\LanguageTests.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>LanguageTests.generated.cs</LastGenOutput>
-    </None>
     <Content Include="Language\DataModel\WhitespaceStripping\PreserveText.p.xml" />
     <Content Include="Language\DataModel\WhitespaceStripping\StripDelegate.p.xml" />
     <Content Include="Language\DataModel\WhitespaceStripping\StripTry.p.xml" />
@@ -719,6 +712,9 @@
   </Choose>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>powershell -NoProfile -ExecutionPolicy RemoteSigned -File $(ProjectDir)Language\generate-language-tests.ps1</PreBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
