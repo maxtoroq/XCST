@@ -1,4 +1,8 @@
-﻿$ErrorActionPreference = "Stop"
+﻿param(
+   $Configuration = "Debug"
+)
+
+$ErrorActionPreference = "Stop"
 Push-Location (Split-Path $script:MyInvocation.MyCommand.Path)
 
 $singleIndent = "   "
@@ -18,7 +22,7 @@ function WriteLine($line = "") {
 
 function GenerateModules {
 
-   Add-Type -Path ..\..\src\Xcst.Compiler\bin\Debug\Xcst.Compiler.dll
+   Add-Type -Path ..\..\src\Xcst.Compiler\bin\$Configuration\Xcst.Compiler.dll
 
    $compilerFactory = New-Object Xcst.Compiler.XcstCompilerFactory
    $startDirectory = Get-Item .
