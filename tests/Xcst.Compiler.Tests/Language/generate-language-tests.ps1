@@ -20,6 +20,33 @@ function WriteLine($line = "") {
    $indent + $line
 }
 
+function IgnoreTest($file) {
+   
+   $readerSettings = New-Object Xml.XmlReaderSettings
+   $readerSettings.IgnoreComments = $true
+   $readerSettings.IgnoreWhitespace = $true
+
+   $reader = [Xml.XmlReader]::Create($file.FullName, $readerSettings)
+
+   try {
+
+      while ($reader.Read() `
+         -and $reader.NodeType -ne [Xml.XmlNodeType]::Element) {
+         
+         if ($reader.NodeType -eq [Xml.XmlNodeType]::ProcessingInstruction `
+            -and $reader.LocalName -eq "ignore-test") {
+
+            return $true
+         }
+      }
+
+   } finally {
+      $reader.Close()
+   }
+
+   return $false
+}
+
 function GenerateTests {
 
    Add-Type -Path ..\..\..\src\Xcst.Compiler\bin\$Configuration\Xcst.Compiler.dll
@@ -106,6 +133,10 @@ function GenerateTestsForDirectory([IO.DirectoryInfo]$directory, $category) {
 
          if (!$correct) {
             WriteLine "[ExpectedException(typeof(Xcst.Compiler.CompileException))]"
+         }
+
+         if (IgnoreTest($file)) {
+            WriteLine "[Ignore]"
          }
 
          WriteLine "public void $testName() {"
