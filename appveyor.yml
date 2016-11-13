@@ -1,4 +1,4 @@
 before_build:
   - ps: .\build\restore-packages.ps1
 
-version: '0.0.0.{build}'
+version: '{build}'
