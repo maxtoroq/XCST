@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:template name='c:initial-template'>
+
+      <c:variable name='foo'>
+         <c:delegate as='int'>
+            <c:param name='a' as='int'/>
+
+            <c:return value='a * -1'/>
+         </c:delegate>
+      </c:variable>
+
+      <c:variable name='fooResult'>
+         <c:evaluate-delegate value='foo'>
+            <c:with-param name='a' value='10'/>
+         </c:evaluate-delegate>
+      </c:variable>
+
+      <c:assert test='fooResult is int'/>
+      <c:assert test='fooResult == -10'/>
+   </c:template>
+
+</c:module>

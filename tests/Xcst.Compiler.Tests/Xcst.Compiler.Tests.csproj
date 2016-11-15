@@ -80,6 +80,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Language\LanguageTestsHelper.cs" />
     <Compile Include="Language\LanguageTests.generated.cs" />
+    <None Include="Language\CallableComponents\EvaluateDelegate\TunnelParamFromEvaluateDelegate.c.xcst" />
+    <None Include="Language\CallableComponents\EvaluateDelegate\TunnelParamFromCallTemplate.c.xcst" />
+    <None Include="Language\CallableComponents\EvaluateDelegate\TunnelParam.c.xcst" />
+    <None Include="Language\CallableComponents\EvaluateDelegate\Expression.c.xcst" />
+    <None Include="Language\CallableComponents\EvaluateDelegate\WithParamAndWithParams.c.xcst" />
+    <None Include="Language\CallableComponents\EvaluateDelegate\WithParams.c.xcst" />
+    <None Include="Language\CallableComponents\EvaluateDelegate\WithParam.c.xcst" />
     <None Include="Language\generate-language-tests.ps1" />
   </ItemGroup>
   <ItemGroup>
