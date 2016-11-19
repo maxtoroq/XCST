@@ -59,7 +59,9 @@
     <Compile Include="..\Xcst\XmlNamespaces.cs">
       <Link>XmlNamespaces.cs</Link>
     </Compile>
+    <Compile Include="CodeGeneration\CSharpExpression.cs" />
     <Compile Include="CodeGeneration\ExtensionFunctions.cs" />
+    <Compile Include="CodeGeneration\PackageManifest.cs" />
     <Compile Include="CompileException.cs" />
     <Compile Include="CodeGeneration\Helpers.cs" />
     <Compile Include="LoggingResolver.cs" />

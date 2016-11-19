@@ -75,7 +75,7 @@ namespace Xcst.Compiler {
          this.processor.SetProperty("http://saxon.sf.net/feature/xinclude-aware", "on");
 
          this.processor.RegisterExtensionFunction(new DocWithUrisFunction(this.processor));
-         this.processor.RegisterExtensionFunction(new EscapeValueTemplateFunction());
+         this.processor.RegisterExtensionFunction(new InterpolatedStringFunction());
          this.processor.RegisterExtensionFunction(new LineNumberFunction());
          this.processor.RegisterExtensionFunction(new LocalPathFunction());
          this.processor.RegisterExtensionFunction(new MakeRelativeUriFunction());

@@ -16,9 +16,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Xml;
 using Saxon.Api;
+using Xcst.Compiler.CodeGeneration;
 
 namespace Xcst.Compiler {
 
@@ -64,49 +64,8 @@ namespace Xcst.Compiler {
 
          this.TargetBaseTypes = targetBaseTypes?
             .Where(t => t != null)
-            .Select(t => TypeReferenceExpression(t))
+            .Select(t => CSharpExpression.TypeReference(t))
             .ToArray();
-      }
-
-      internal static string TypeReferenceExpression(Type type) {
-
-         var sb = new StringBuilder();
-         TypeReferenceExpression(type, sb);
-
-         return sb.ToString();
-      }
-
-      static void TypeReferenceExpression(Type type, StringBuilder sb) {
-
-         if (type.IsNested) {
-            TypeReferenceExpression(type.DeclaringType, sb);
-            sb.Append(".");
-         } else {
-            sb.Append(type.Namespace);
-            sb.Append(".");
-         }
-
-         Type[] typeArguments = type.GetGenericArguments();
-
-         if (typeArguments.Length > 0) {
-
-            sb.Append(type.Name.Substring(0, type.Name.IndexOf('`')));
-            sb.Append("<");
-
-            for (int i = 0; i < typeArguments.Length; i++) {
-
-               if (i > 0) {
-                  sb.Append(", ");
-               }
-
-               TypeReferenceExpression(typeArguments[i], sb);
-            }
-
-            sb.Append(">");
-
-         } else {
-            sb.Append(type.Name);
-         }
       }
 
       public void SetParameter(QualifiedName name, object value) {

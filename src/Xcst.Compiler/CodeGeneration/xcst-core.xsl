@@ -2452,7 +2452,7 @@
    <function name="src:format-value-template" as="xs:string">
       <param name="text" as="xs:string"/>
 
-      <sequence select="concat($src:context-field, '.SimpleContent.FormatValueTemplate(', '$@', src:string(src:escape-value-template($text)), ')')"/>
+      <sequence select="concat($src:context-field, '.SimpleContent.FormatValueTemplate(', src:interpolated-string($text), ')')"/>
    </function>
 
    <function name="src:string" as="xs:string">

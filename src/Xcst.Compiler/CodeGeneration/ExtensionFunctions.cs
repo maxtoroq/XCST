@@ -90,9 +90,9 @@ namespace Xcst.Compiler.CodeGeneration {
       }
    }
 
-   class EscapeValueTemplateFunction : ExtensionFunctionDefinition {
+   class InterpolatedStringFunction : ExtensionFunctionDefinition {
 
-      public override QName FunctionName { get; } = CompilerQName("escape-value-template");
+      public override QName FunctionName { get; } = CompilerQName("interpolated-string");
 
       public override XdmSequenceType[] ArgumentTypes { get; } = {
          new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_STRING), ' ')
@@ -116,7 +116,7 @@ namespace Xcst.Compiler.CodeGeneration {
 
             XdmAtomicValue value = arguments[0].AsAtomicValues().Single();
 
-            return ValueTemplateEscaper.EscapeValueTemplate(value.ToString())
+            return CSharpExpression.InterpolatedString(value.ToString())
                .ToXdmAtomicValue()
                .GetXdmEnumerator();
          }
@@ -329,7 +329,7 @@ namespace Xcst.Compiler.CodeGeneration {
 
             using (var output = new MemoryStream()) {
                using (XmlWriter writer = XmlWriter.Create(output)) {
-                  Helpers.PackageManifest(packageType, writer);
+                  PackageManifest.WriteManifest(packageType, writer);
                }
 
                output.Position = 0;
