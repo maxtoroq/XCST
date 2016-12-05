@@ -1539,6 +1539,7 @@
    </define>
 
    <define name="AVT">
+      <ann:documentation>Attribute value template</ann:documentation>
       <ref name="String"/>
    </define>
 
@@ -1582,6 +1583,7 @@
    </define>
 
    <define name="Expression">
+      <ann:documentation>Expression</ann:documentation>
       <data type="string">
          <param name="minLength">1</param>
       </data>

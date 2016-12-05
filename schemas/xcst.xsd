@@ -1133,6 +1133,9 @@
       </xs:restriction>
    </xs:simpleType>
    <xs:simpleType name="AVT">
+      <xs:annotation>
+         <xs:documentation>Attribute value template</xs:documentation>
+      </xs:annotation>
       <xs:restriction base="c:String"/>
    </xs:simpleType>
    <xs:simpleType name="AVTExpr">
@@ -1187,6 +1190,9 @@
       </xs:restriction>
    </xs:simpleType>
    <xs:simpleType name="Expression">
+      <xs:annotation>
+         <xs:documentation>Expression</xs:documentation>
+      </xs:annotation>
       <xs:restriction base="xs:string">
          <xs:minLength value="1"/>
       </xs:restriction>
