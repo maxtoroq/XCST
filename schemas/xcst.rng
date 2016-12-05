@@ -24,11 +24,11 @@
       <choice>
          <ref name="module"/>
          <ref name="package"/>
-         <ref name="simplified-module-element"/>
+         <ref name="simplified-module"/>
       </choice>
    </start>
 
-   <define name="declaration-element">
+   <define name="declaration">
       <choice>
          <ref name="attribute-set"/>
          <ref name="function"/>
@@ -43,7 +43,7 @@
       </choice>
    </define>
 
-   <define name="instruction-element">
+   <define name="instruction">
       <choice>
          <ref name="assert"/>
          <ref name="attribute"/>
@@ -104,11 +104,7 @@
                </list>
             </attribute>
             <attribute name="transform-text">
-               <choice>
-                  <value>none</value>
-                  <value>normalize-space</value>
-                  <value>trim</value>
-               </choice>
+               <ref name="TransformText"/>
             </attribute>
          </choice>
       </zeroOrMore>
@@ -152,6 +148,9 @@
                   </zeroOrMore>
                </list>
             </attribute>
+            <attribute name="c:transform-text">
+               <ref name="TransformText"/>
+            </attribute>
             <attribute name="c:use-attribute-sets">
                <list>
                   <zeroOrMore>
@@ -165,16 +164,12 @@
 
    <define name="sequence-constructor">
       <zeroOrMore>
-         <ref name="sequence-constructor-node"/>
+         <choice>
+            <ref name="instruction"/>
+            <ref name="literal-result-element"/>
+            <text/>
+         </choice>
       </zeroOrMore>
-   </define>
-
-   <define name="sequence-constructor-node">
-      <choice>
-         <ref name="instruction-element"/>
-         <ref name="literal-result-element"/>
-         <text/>
-      </choice>
    </define>
 
    <define name="value-attribute-or-content">
@@ -221,7 +216,7 @@
       </zeroOrMore>
    </define>
 
-   <define name="simplified-module-element">
+   <define name="simplified-module">
       <element>
          <anyName>
             <except>
@@ -269,7 +264,7 @@
       </zeroOrMore>
       <zeroOrMore>
          <choice>
-            <ref name="declaration-element"/>
+            <ref name="declaration"/>
             <ref name="user-defined-data-element"/>
          </choice>
       </zeroOrMore>
@@ -283,7 +278,7 @@
          <zeroOrMore>
             <choice>
                <attribute name="alias">
-                  <ref name="Type"/>
+                  <ref name="Name"/>
                </attribute>
                <attribute name="static-only">
                   <ref name="Boolean"/>
@@ -1518,6 +1513,14 @@
       </data>
    </define>
 
+   <define name="TransformText">
+      <choice>
+         <value>none</value>
+         <value>normalize-space</value>
+         <value>trim</value>
+      </choice>
+   </define>
+
    <define name="Visibility">
       <choice>
          <value>public</value>
@@ -1536,7 +1539,7 @@
    </define>
 
    <define name="AVT">
-      <data type="string"/>
+      <ref name="String"/>
    </define>
 
    <define name="AVTExpr">
