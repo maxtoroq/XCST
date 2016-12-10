@@ -19,11 +19,7 @@ namespace Xcst.Runtime {
    /// <exclude/>
    public static class Diagnostics {
 
-      public static Exception MessageException(string value) {
-
-         string message = (!String.IsNullOrEmpty(value)) ? value
-            : "Error signaled by application.";
-
+      public static Exception MessageException(string message) {
          return new RuntimeException(message, DynamicError.Code("XTMM9000"));
       }
    }

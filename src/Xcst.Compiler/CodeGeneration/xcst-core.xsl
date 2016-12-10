@@ -1409,20 +1409,14 @@
             src:boolean(xcst:boolean(@terminate, true()), src:expand-attribute(@terminate))
          else
             src:boolean(false())"/>
-      <variable name="value-var" select="concat(src:aux-variable('message'), '_', generate-id())"/>
 
-      <value-of select="$src:new-line"/>
       <call-template name="src:line-number"/>
-      <call-template name="src:new-line-indented"/>
-      <value-of select="'var', $value-var, '='"/>
-      <call-template name="src:simple-content">
-         <with-param name="attribute" select="@value"/>
-      </call-template>
-      <value-of select="$src:statement-delimiter"/>
       <call-template name="src:new-line-indented"/>
       <value-of select="src:global-identifier('System.Diagnostics.Trace')"/>
       <text>.WriteLine(</text>
-      <value-of select="$value-var"/>
+      <call-template name="src:simple-content">
+         <with-param name="attribute" select="@value"/>
+      </call-template>
       <text>)</text>
       <value-of select="$src:statement-delimiter"/>
 
@@ -1436,13 +1430,14 @@
          <call-template name="src:open-brace"/>
       </if>
       <if test="$use-if or $always-terminate">
+         <variable name="err-obj" select="src:error-object(.)"/>
          <call-template name="src:new-line-indented">
             <with-param name="increase" select="if ($use-if) then 1 else 0"/>
          </call-template>
          <text>throw </text>
          <value-of select="src:fully-qualified-helper('Diagnostics')"/>
          <text>.MessageException(</text>
-         <value-of select="$value-var"/>
+         <value-of select="src:verbatim-string(concat('Processing terminated by ', name(), ' at line ', $err-obj[2], ' in ', tokenize($err-obj[1], '/')[last()]))"/>
          <text>)</text>
          <value-of select="$src:statement-delimiter"/>
       </if>
