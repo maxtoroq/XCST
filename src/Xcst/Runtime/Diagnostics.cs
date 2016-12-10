@@ -19,28 +19,12 @@ namespace Xcst.Runtime {
    /// <exclude/>
    public static class Diagnostics {
 
-      public static Exception AssertFail(object value, QualifiedName errorCode = null) {
-         return new RuntimeException(ValueToString(value), errorCode ?? DynamicError.Code("XTMM9001"), value);
-      }
+      public static Exception MessageException(string value) {
 
-      public static Exception Message(object value, bool terminate, QualifiedName errorCode = null) {
+         string message = (!String.IsNullOrEmpty(value)) ? value
+            : "Error signaled by application.";
 
-         // TODO: log message
-
-         if (terminate) {
-            return new RuntimeException(ValueToString(value), errorCode ?? DynamicError.Code("XTMM9000"), value);
-         }
-
-         return null;
-      }
-
-      static string ValueToString(object value) {
-
-         if (value == null) {
-            return "Error signaled by application.";
-         }
-
-         return Convert.ToString(value);
+         return new RuntimeException(message, DynamicError.Code("XTMM9000"));
       }
    }
 }

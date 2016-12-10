@@ -21,17 +21,13 @@ namespace Xcst {
    public class RuntimeException : Exception {
 
       readonly QualifiedName _ErrorCode;
-      readonly object _Value;
 
       public QualifiedName ErrorCode => _ErrorCode;
 
-      public object Value => _Value;
-
-      public RuntimeException(string message, QualifiedName errorCode, object value = null)
+      public RuntimeException(string message, QualifiedName errorCode)
          : base(message) {
 
          _ErrorCode = errorCode;
-         _Value = value;
       }
 
       protected RuntimeException(SerializationInfo info, StreamingContext context)

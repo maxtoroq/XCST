@@ -24,7 +24,6 @@
 
    <import href="xcst-extensions.xsl"/>
 
-   <param name="src:omit-assertions" select="false()" as="xs:boolean"/>
    <param name="src:use-line-directive" select="false()" as="xs:boolean"/>
    <param name="src:new-line" select="'&#xD;&#xA;'" as="xs:string"/>
    <param name="src:indent" select="'    '" as="xs:string"/>
@@ -1377,40 +1376,29 @@
 
    <template match="c:assert" mode="src:statement">
       <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="'test', 'error-code', 'value'"/>
+         <with-param name="allowed" select="'test', 'value'"/>
          <with-param name="required" select="'test'"/>
       </call-template>
-      <if test="not($src:omit-assertions)">
-         <value-of select="$src:new-line"/>
-         <call-template name="src:line-number"/>
-         <call-template name="src:new-line-indented"/>
-         <text>if (!(</text>
-         <value-of select="xcst:expression(@test)"/>
-         <text>))</text>
-         <call-template name="src:open-brace"/>
-         <call-template name="src:new-line-indented">
-            <with-param name="increase" select="1"/>
+      <variable name="text" select="xcst:text(.)"/>
+      <call-template name="src:line-number"/>
+      <call-template name="src:new-line-indented"/>
+      <value-of select="src:global-identifier('System.Diagnostics.Debug')"/>
+      <text>.Assert(</text>
+      <value-of select="xcst:expression(@test)"/>
+      <if test="xcst:has-value(., $text)">
+         <text>, </text>
+         <call-template name="src:simple-content">
+            <with-param name="attribute" select="@value"/>
+            <with-param name="text" select="$text"/>
          </call-template>
-         <text>throw </text>
-         <value-of select="src:fully-qualified-helper('Diagnostics')"/>
-         <text>.AssertFail(</text>
-         <call-template name="src:value">
-            <with-param name="fallback" select="'null'"/>
-         </call-template>
-         <if test="@error-code">
-            <text>, </text>
-            <variable name="error-code" select="xcst:EQName(@error-code)"/>
-            <value-of select="src:QName($error-code)"/>
-         </if>
-         <text>)</text>
-         <value-of select="$src:statement-delimiter"/>
-         <call-template name="src:close-brace"/>
       </if>
+      <text>)</text>
+      <value-of select="$src:statement-delimiter"/>
    </template>
 
    <template match="c:message" mode="src:statement">
       <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="'terminate', 'error-code', 'value'"/>
+         <with-param name="allowed" select="'terminate', 'value'"/>
          <with-param name="required" select="()"/>
       </call-template>
       <variable name="never-terminate" select="not(@terminate) or xcst:boolean(@terminate, true()) eq false()"/>
@@ -1421,17 +1409,23 @@
             src:boolean(xcst:boolean(@terminate, true()), src:expand-attribute(@terminate))
          else
             src:boolean(false())"/>
-      <variable name="value-expr" as="text()">
-         <call-template name="src:value">
-            <with-param name="fallback" select="'null'"/>
-         </call-template>
-      </variable>
-      <variable name="error-code-expr">
-         <if test="@error-code">
-            <variable name="error-code" select="xcst:EQName(@error-code)"/>
-            <value-of select="src:QName($error-code)"/>
-         </if>
-      </variable>
+      <variable name="value-var" select="concat(src:aux-variable('message'), '_', generate-id())"/>
+
+      <value-of select="$src:new-line"/>
+      <call-template name="src:line-number"/>
+      <call-template name="src:new-line-indented"/>
+      <value-of select="'var', $value-var, '='"/>
+      <call-template name="src:simple-content">
+         <with-param name="attribute" select="@value"/>
+      </call-template>
+      <value-of select="$src:statement-delimiter"/>
+      <call-template name="src:new-line-indented"/>
+      <value-of select="src:global-identifier('System.Diagnostics.Trace')"/>
+      <text>.WriteLine(</text>
+      <value-of select="$value-var"/>
+      <text>)</text>
+      <value-of select="$src:statement-delimiter"/>
+
       <if test="$use-if">
          <value-of select="$src:new-line"/>
          <call-template name="src:line-number"/>
@@ -1441,45 +1435,18 @@
          <text>)</text>
          <call-template name="src:open-brace"/>
       </if>
-      <call-template name="src:new-line-indented">
-         <with-param name="increase" select="if ($use-if) then 1 else 0"/>
-      </call-template>
-      <if test="$use-if or $always-terminate">throw </if>
-      <value-of select="src:fully-qualified-helper('Diagnostics')"/>
-      <text>.Message(</text>
-      <value-of select="$value-expr"/>
-      <text>, </text>
-      <choose>
-         <when test="$use-if or $always-terminate">true</when>
-         <when test="$never-terminate">false</when>
-         <otherwise>
-            <value-of select="$terminate-expr"/>
-         </otherwise>
-      </choose>
-      <if test="@error-code">
-         <text>, </text>
-         <value-of select="$error-code-expr"/>
-      </if>
-      <text>)</text>
-      <value-of select="$src:statement-delimiter"/>
-      <if test="$use-if">
-         <call-template name="src:close-brace"/>
-         <call-template name="src:line-number"/>
-         <text> else</text>
-         <call-template name="src:open-brace"/>
+      <if test="$use-if or $always-terminate">
          <call-template name="src:new-line-indented">
-            <with-param name="increase" select="1"/>
+            <with-param name="increase" select="if ($use-if) then 1 else 0"/>
          </call-template>
+         <text>throw </text>
          <value-of select="src:fully-qualified-helper('Diagnostics')"/>
-         <text>.Message(</text>
-         <value-of select="$value-expr"/>
-         <text>, false</text>
-         <if test="@error-code">
-            <text>, </text>
-            <value-of select="$error-code-expr"/>
-         </if>
+         <text>.MessageException(</text>
+         <value-of select="$value-var"/>
          <text>)</text>
          <value-of select="$src:statement-delimiter"/>
+      </if>
+      <if test="$use-if">
          <call-template name="src:close-brace"/>
       </if>
    </template>
@@ -2282,9 +2249,8 @@
 
    <template name="src:simple-content">
       <param name="attribute" as="attribute()?"/>
+      <param name="text" select="xcst:text(.)"/>
       <param name="separator" select="()"/>
-
-      <variable name="text" select="xcst:text(.)"/>
 
       <choose>
          <when test="$text">

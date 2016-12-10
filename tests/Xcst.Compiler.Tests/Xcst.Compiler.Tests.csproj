@@ -87,6 +87,11 @@
     <None Include="Language\CallableComponents\EvaluateDelegate\WithParamAndWithParams.c.xcst" />
     <None Include="Language\CallableComponents\EvaluateDelegate\WithParams.c.xcst" />
     <None Include="Language\CallableComponents\EvaluateDelegate\WithParam.c.xcst" />
+    <None Include="Language\Diagnostics\AssertFail.c.xcst" />
+    <None Include="Language\Diagnostics\Assert.c.xcst" />
+    <None Include="Language\Diagnostics\MessageTerminateMaybe.c.xcst" />
+    <None Include="Language\Diagnostics\MessageTerminateAlways.c.xcst" />
+    <None Include="Language\Diagnostics\Message.c.xcst" />
     <None Include="Language\generate-language-tests.ps1" />
   </ItemGroup>
   <ItemGroup>
@@ -337,7 +342,6 @@
     <None Include="Language\CreatingNodesAndObjects\Text\value-of.value.type.i.xcst" />
     <None Include="Language\CreatingNodesAndObjects\Text\text.disable-output-escaping.type.i.xcst" />
     <None Include="Language\CreatingNodesAndObjects\Text\text.foo.i.xcst" />
-    <None Include="Language\Diagnostics\message.error-code.type.i.xcst" />
     <None Include="Language\Diagnostics\message.terminate.type.i.xcst" />
     <None Include="Language\Diagnostics\message.value.type.i.xcst" />
     <None Include="Language\Diagnostics\message.foo.i.xcst" />

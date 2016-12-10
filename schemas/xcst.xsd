@@ -531,11 +531,6 @@
          <xs:complexContent>
             <xs:extension base="c:value-attribute-or-content">
                <xs:attribute name="test" use="required" type="c:Expression"/>
-               <xs:attribute name="error-code">
-                  <xs:simpleType>
-                     <xs:union memberTypes="c:EQName c:AVTExpr"/>
-                  </xs:simpleType>
-               </xs:attribute>
                <xs:attributeGroup ref="c:standard-attributes"/>
             </xs:extension>
          </xs:complexContent>
@@ -712,11 +707,6 @@
                <xs:attribute name="terminate">
                   <xs:simpleType>
                      <xs:union memberTypes="c:Boolean c:AVTExpr"/>
-                  </xs:simpleType>
-               </xs:attribute>
-               <xs:attribute name="error-code">
-                  <xs:simpleType>
-                     <xs:union memberTypes="c:EQName c:AVTExpr"/>
                   </xs:simpleType>
                </xs:attribute>
                <xs:attributeGroup ref="c:standard-attributes"/>

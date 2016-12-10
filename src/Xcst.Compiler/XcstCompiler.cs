@@ -34,8 +34,6 @@ namespace Xcst.Compiler {
 
       public string[] TargetBaseTypes { get; set; }
 
-      public bool OmitAssertions { get; set; }
-
       public string AlternateFirstBaseType { get; set; }
 
       public string AlternateFirstBaseTypeIfExistsType { get; set; }
@@ -210,7 +208,6 @@ namespace Xcst.Compiler {
          }
 
          compiler.SetParameter(CompilerQName("base-types"), this.TargetBaseTypes.ToXdmValue());
-         compiler.SetParameter(CompilerQName("omit-assertions"), this.OmitAssertions.ToXdmItem());
 
          if (this.AlternateFirstBaseType != null) {
             compiler.SetParameter(CompilerQName("alternate-first-base-type"), this.AlternateFirstBaseType.ToXdmItem());
