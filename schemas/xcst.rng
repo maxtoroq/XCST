@@ -20,6 +20,8 @@
    ns="http://maxtoroq.github.io/XCST"
    datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
 
+   <ann:documentation>Schema for XCST 1.0 modules and packages</ann:documentation>
+
    <start>
       <choice>
          <ref name="module"/>
@@ -94,14 +96,11 @@
       <zeroOrMore>
          <choice>
             <attribute name="expand-text">
+               <ann:documentation>Enables text value templates for descendant text nodes.</ann:documentation>
                <ref name="Boolean"/>
             </attribute>
             <attribute name="extension-element-prefixes">
-               <list>
-                  <zeroOrMore>
-                     <ref name="Prefix"/>
-                  </zeroOrMore>
-               </list>
+               <ref name="ExtensionElementPrefixes"/>
             </attribute>
             <attribute name="transform-text">
                <ref name="TransformText"/>
@@ -142,21 +141,13 @@
                <ref name="Boolean"/>
             </attribute>
             <attribute name="c:extension-element-prefixes">
-               <list>
-                  <zeroOrMore>
-                     <ref name="Prefix"/>
-                  </zeroOrMore>
-               </list>
+               <ref name="ExtensionElementPrefixes"/>
             </attribute>
             <attribute name="c:transform-text">
                <ref name="TransformText"/>
             </attribute>
             <attribute name="c:use-attribute-sets">
-               <list>
-                  <zeroOrMore>
-                     <ref name="EQName"/>
-                  </zeroOrMore>
-               </list>
+               <ref name="UseAttributeSets"/>
             </attribute>
          </choice>
       </zeroOrMore>
@@ -389,11 +380,7 @@
          </attribute>
          <optional>
             <attribute name="use-attribute-sets">
-               <list>
-                  <zeroOrMore>
-                     <ref name="EQName"/>
-                  </zeroOrMore>
-               </list>
+               <ref name="UseAttributeSets"/>
             </attribute>
          </optional>
          <ref name="visibility-attribute"/>
@@ -620,11 +607,7 @@
                   <ref name="Boolean"/>
                </attribute>
                <attribute name="cdata-section-elements">
-                  <list>
-                     <zeroOrMore>
-                        <ref name="EQName-default"/>
-                     </zeroOrMore>
-                  </list>
+                  <ref name="CDataSectionElements"/>
                </attribute>
                <attribute name="doctype-public">
                   <ref name="String"/>
@@ -663,11 +646,7 @@
                   <ref name="OutputStandalone"/>
                </attribute>
                <attribute name="suppress-indentation">
-                  <list>
-                     <zeroOrMore>
-                        <ref name="EQName-default"/>
-                     </zeroOrMore>
-                  </list>
+                  <ref name="SuppressIndentation"/>
                </attribute>
                <attribute name="undeclare-prefixes">
                   <ref name="Boolean"/>
@@ -887,11 +866,7 @@
                   </choice>
                </attribute>
                <attribute name="use-attribute-sets">
-                  <list>
-                     <zeroOrMore>
-                        <ref name="EQName"/>
-                     </zeroOrMore>
-                  </list>
+                  <ref name="UseAttributeSets"/>
                </attribute>
             </choice>
          </zeroOrMore>
@@ -1322,11 +1297,7 @@
             </attribute>
             <attribute name="cdata-section-elements">
                <choice>
-                  <list>
-                     <zeroOrMore>
-                        <ref name="EQName-default"/>
-                     </zeroOrMore>
-                  </list>
+                  <ref name="CDataSectionElements"/>
                   <ref name="AVTExpr"/>
                </choice>
             </attribute>
@@ -1389,11 +1360,7 @@
             </attribute>
             <attribute name="suppress-indentation">
                <choice>
-                  <list>
-                     <zeroOrMore>
-                        <ref name="EQName-default"/>
-                     </zeroOrMore>
-                  </list>
+                  <ref name="SuppressIndentation"/>
                   <ref name="AVTExpr"/>
                </choice>
             </attribute>
@@ -1479,25 +1446,24 @@
       <data type="NCName"/>
    </define>
 
-   <define name="Prefix">
-      <data type="NCName"/>
-   </define>
-
    <define name="URI">
       <data type="anyURI"/>
    </define>
 
    <define name="Version">
+      <ann:documentation>The XCST version for the current and descendant elements (usually "1.0")</ann:documentation>
       <data type="decimal"/>
    </define>
 
    <define name="Language">
+      <ann:documentation>The expression language for this module (usually "C#")</ann:documentation>
       <data type="token">
          <param name="minLength">1</param>
       </data>
    </define>
 
    <define name="TransformText">
+      <ann:documentation>One of the values "none", "normalize-space" or "trim".</ann:documentation>
       <choice>
          <value>none</value>
          <value>normalize-space</value>
@@ -1505,7 +1471,29 @@
       </choice>
    </define>
 
+   <define name="ExtensionElementPrefixes">
+      <ann:documentation>A list of space separated namespace prefixes. Use "#default" to refer to the default namespace.</ann:documentation>
+      <list>
+         <zeroOrMore>
+            <choice>
+               <data type="NCName"/>
+               <value>#default</value>
+            </choice>
+         </zeroOrMore>
+      </list>
+   </define>
+
+   <define name="UseAttributeSets">
+      <ann:documentation>A list of space separated EQNames.</ann:documentation>
+      <list>
+         <zeroOrMore>
+            <ref name="EQName"/>
+         </zeroOrMore>
+      </list>
+   </define>
+
    <define name="Visibility">
+      <ann:documentation>One of the values "public", "private", "final" or "abstract".</ann:documentation>
       <choice>
          <value>public</value>
          <value>private</value>
@@ -1522,18 +1510,8 @@
       </choice>
    </define>
 
-   <define name="AVT">
-      <ann:documentation>Attribute value template</ann:documentation>
-      <ref name="String"/>
-   </define>
-
-   <define name="AVTExpr">
-      <data type="string">
-         <param name="pattern">.*\{.+\}.*</param>
-      </data>
-   </define>
-
    <define name="OutputMethod">
+      <ann:documentation>One of the values "xml", "html", "xhtml", "text", or an EQName that must not be in the null namespace.</ann:documentation>
       <choice>
          <value>xml</value>
          <value>html</value>
@@ -1544,14 +1522,46 @@
    </define>
 
    <define name="OutputVersion">
+      <ann:documentation>The version of the output method format (usually "1.0" for XML, "5.0" for HTML, etc.)</ann:documentation>
       <data type="NMTOKEN"/>
    </define>
 
    <define name="OutputStandalone">
+      <ann:documentation>One of the values "yes", "no", "true", "false", "1", "0", or "omit".</ann:documentation>
       <choice>
          <ref name="Boolean"/>
          <value>omit</value>
       </choice>
+   </define>
+
+   <define name="CDataSectionElements">
+      <ann:documentation>A list of space separated EQNames. Unprefixed QNames are in the default namespace.</ann:documentation>
+      <list>
+         <zeroOrMore>
+            <ref name="EQName-default"/>
+         </zeroOrMore>
+      </list>
+   </define>
+
+   <define name="SuppressIndentation">
+      <ann:documentation>A list of space separated EQNames. Unprefixed QNames are in the default namespace.</ann:documentation>
+      <list>
+         <zeroOrMore>
+            <ref name="EQName-default"/>
+         </zeroOrMore>
+      </list>
+   </define>
+
+   <define name="AVT">
+      <ann:documentation>Attribute value template</ann:documentation>
+      <ref name="String"/>
+   </define>
+
+   <define name="AVTExpr">
+      <ann:documentation>Attribute value template</ann:documentation>
+      <data type="string">
+         <param name="pattern">.*\{.+\}.*</param>
+      </data>
    </define>
 
    <define name="Name">

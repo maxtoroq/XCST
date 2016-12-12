@@ -57,12 +57,12 @@
       <xs:attribute name="version" type="c:Version"/>
    </xs:attributeGroup>
    <xs:attributeGroup name="standard-attributes-except-version">
-      <xs:attribute name="expand-text" type="c:Boolean"/>
-      <xs:attribute name="extension-element-prefixes">
-         <xs:simpleType>
-            <xs:list itemType="c:Prefix"/>
-         </xs:simpleType>
+      <xs:attribute name="expand-text" type="c:Boolean">
+         <xs:annotation>
+            <xs:documentation>Enables text value templates for descendant text nodes.</xs:documentation>
+         </xs:annotation>
       </xs:attribute>
+      <xs:attribute name="extension-element-prefixes" type="c:ExtensionElementPrefixes"/>
       <xs:attribute name="transform-text" type="c:TransformText"/>
    </xs:attributeGroup>
    <xs:group name="literal-result-element">
@@ -73,17 +73,9 @@
    </xs:group>
    <xs:attributeGroup name="literal-result-element-attributes-except-version">
       <xs:attribute name="expand-text" form="qualified" type="c:Boolean"/>
-      <xs:attribute name="extension-element-prefixes" form="qualified">
-         <xs:simpleType>
-            <xs:list itemType="c:Prefix"/>
-         </xs:simpleType>
-      </xs:attribute>
+      <xs:attribute name="extension-element-prefixes" form="qualified" type="c:ExtensionElementPrefixes"/>
       <xs:attribute name="transform-text" form="qualified" type="c:TransformText"/>
-      <xs:attribute name="use-attribute-sets" form="qualified">
-         <xs:simpleType>
-            <xs:list itemType="c:EQName"/>
-         </xs:simpleType>
-      </xs:attribute>
+      <xs:attribute name="use-attribute-sets" form="qualified" type="c:UseAttributeSets"/>
       <xs:anyAttribute processContents="skip"/>
    </xs:attributeGroup>
    <xs:group name="sequence-constructor">
@@ -220,11 +212,7 @@
             <xs:element minOccurs="0" maxOccurs="unbounded" ref="c:attribute"/>
          </xs:sequence>
          <xs:attribute name="name" use="required" type="c:EQName"/>
-         <xs:attribute name="use-attribute-sets">
-            <xs:simpleType>
-               <xs:list itemType="c:EQName"/>
-            </xs:simpleType>
-         </xs:attribute>
+         <xs:attribute name="use-attribute-sets" type="c:UseAttributeSets"/>
          <xs:attributeGroup ref="c:visibility-attribute"/>
          <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
@@ -426,11 +414,7 @@
          <xs:attribute name="name" type="c:EQName"/>
          <xs:attribute name="method" type="c:OutputMethod"/>
          <xs:attribute name="byte-order-mark" type="c:Boolean"/>
-         <xs:attribute name="cdata-section-elements">
-            <xs:simpleType>
-               <xs:list itemType="c:EQName-default"/>
-            </xs:simpleType>
-         </xs:attribute>
+         <xs:attribute name="cdata-section-elements" type="c:CDataSectionElements"/>
          <xs:attribute name="doctype-public" type="c:String"/>
          <xs:attribute name="doctype-system" type="c:String"/>
          <xs:attribute name="encoding" type="c:String"/>
@@ -443,11 +427,7 @@
          <xs:attribute name="media-type" type="c:String"/>
          <xs:attribute name="omit-xml-declaration" type="c:Boolean"/>
          <xs:attribute name="standalone" type="c:OutputStandalone"/>
-         <xs:attribute name="suppress-indentation">
-            <xs:simpleType>
-               <xs:list itemType="c:EQName-default"/>
-            </xs:simpleType>
-         </xs:attribute>
+         <xs:attribute name="suppress-indentation" type="c:SuppressIndentation"/>
          <xs:attribute name="undeclare-prefixes" type="c:Boolean"/>
          <xs:attribute name="version" type="c:OutputVersion"/>
          <xs:attributeGroup ref="c:standard-attributes-except-version"/>
@@ -638,11 +618,7 @@
                <xs:union memberTypes="c:URI c:AVTExpr"/>
             </xs:simpleType>
          </xs:attribute>
-         <xs:attribute name="use-attribute-sets">
-            <xs:simpleType>
-               <xs:list itemType="c:EQName"/>
-            </xs:simpleType>
-         </xs:attribute>
+         <xs:attribute name="use-attribute-sets" type="c:UseAttributeSets"/>
          <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
@@ -960,11 +936,7 @@
       </xs:attribute>
       <xs:attribute name="cdata-section-elements">
          <xs:simpleType>
-            <xs:union memberTypes="c:AVTExpr">
-               <xs:simpleType>
-                  <xs:list itemType="c:EQName-default"/>
-               </xs:simpleType>
-            </xs:union>
+            <xs:union memberTypes="c:CDataSectionElements c:AVTExpr"/>
          </xs:simpleType>
       </xs:attribute>
       <xs:attribute name="doctype-public" type="c:AVT"/>
@@ -1009,11 +981,7 @@
       </xs:attribute>
       <xs:attribute name="suppress-indentation">
          <xs:simpleType>
-            <xs:union memberTypes="c:AVTExpr">
-               <xs:simpleType>
-                  <xs:list itemType="c:EQName-default"/>
-               </xs:simpleType>
-            </xs:union>
+            <xs:union memberTypes="c:SuppressIndentation c:AVTExpr"/>
          </xs:simpleType>
       </xs:attribute>
       <xs:attribute name="undeclare-prefixes">
@@ -1084,28 +1052,59 @@
    <xs:simpleType name="NCName">
       <xs:restriction base="xs:NCName"/>
    </xs:simpleType>
-   <xs:simpleType name="Prefix">
-      <xs:restriction base="xs:NCName"/>
-   </xs:simpleType>
    <xs:simpleType name="URI">
       <xs:restriction base="xs:anyURI"/>
    </xs:simpleType>
    <xs:simpleType name="Version">
+      <xs:annotation>
+         <xs:documentation>The XCST version for the current and descendant elements (usually "1.0")</xs:documentation>
+      </xs:annotation>
       <xs:restriction base="xs:decimal"/>
    </xs:simpleType>
    <xs:simpleType name="Language">
+      <xs:annotation>
+         <xs:documentation>The expression language for this module (usually "C#")</xs:documentation>
+      </xs:annotation>
       <xs:restriction base="xs:token">
          <xs:minLength value="1"/>
       </xs:restriction>
    </xs:simpleType>
    <xs:simpleType name="TransformText">
+      <xs:annotation>
+         <xs:documentation>One of the values "none", "normalize-space" or "trim".</xs:documentation>
+      </xs:annotation>
       <xs:restriction base="xs:token">
          <xs:enumeration value="none"/>
          <xs:enumeration value="normalize-space"/>
          <xs:enumeration value="trim"/>
       </xs:restriction>
    </xs:simpleType>
+   <xs:simpleType name="ExtensionElementPrefixes">
+      <xs:annotation>
+         <xs:documentation>A list of space separated namespace prefixes. Use "#default" to refer to the default namespace.</xs:documentation>
+      </xs:annotation>
+      <xs:list>
+         <xs:simpleType>
+            <xs:union memberTypes="xs:NCName">
+               <xs:simpleType>
+                  <xs:restriction base="xs:token">
+                     <xs:enumeration value="#default"/>
+                  </xs:restriction>
+               </xs:simpleType>
+            </xs:union>
+         </xs:simpleType>
+      </xs:list>
+   </xs:simpleType>
+   <xs:simpleType name="UseAttributeSets">
+      <xs:annotation>
+         <xs:documentation>A list of space separated EQName.</xs:documentation>
+      </xs:annotation>
+      <xs:list itemType="c:EQName"/>
+   </xs:simpleType>
    <xs:simpleType name="Visibility">
+      <xs:annotation>
+         <xs:documentation>One of the values "public", "private", "final" or "abstract".</xs:documentation>
+      </xs:annotation>
       <xs:restriction base="xs:token">
          <xs:enumeration value="public"/>
          <xs:enumeration value="private"/>
@@ -1122,18 +1121,10 @@
          <xs:enumeration value="descending"/>
       </xs:restriction>
    </xs:simpleType>
-   <xs:simpleType name="AVT">
-      <xs:annotation>
-         <xs:documentation>Attribute value template</xs:documentation>
-      </xs:annotation>
-      <xs:restriction base="c:String"/>
-   </xs:simpleType>
-   <xs:simpleType name="AVTExpr">
-      <xs:restriction base="xs:string">
-         <xs:pattern value=".*\{.+\}.*"/>
-      </xs:restriction>
-   </xs:simpleType>
    <xs:simpleType name="OutputMethod">
+      <xs:annotation>
+         <xs:documentation>One of the values "xml", "html", "xhtml", "text", or an EQName that must not be in the null namespace.</xs:documentation>
+      </xs:annotation>
       <xs:union memberTypes="c:EQName">
          <xs:simpleType>
             <xs:restriction base="xs:token">
@@ -1158,9 +1149,15 @@
       </xs:union>
    </xs:simpleType>
    <xs:simpleType name="OutputVersion">
+      <xs:annotation>
+         <xs:documentation>The version of the output method format (usually "1.0" for XML, "5.0" for HTML, etc.)</xs:documentation>
+      </xs:annotation>
       <xs:restriction base="xs:NMTOKEN"/>
    </xs:simpleType>
    <xs:simpleType name="OutputStandalone">
+      <xs:annotation>
+         <xs:documentation>One of the values "yes", "no", "true", "false", "1", "0", or "omit".</xs:documentation>
+      </xs:annotation>
       <xs:union memberTypes="c:Boolean">
          <xs:simpleType>
             <xs:restriction base="xs:token">
@@ -1168,6 +1165,32 @@
             </xs:restriction>
          </xs:simpleType>
       </xs:union>
+   </xs:simpleType>
+   <xs:simpleType name="CDataSectionElements">
+      <xs:annotation>
+         <xs:documentation>A list of space separated EQNames. Unprefixed QNames are in the default namespace.</xs:documentation>
+      </xs:annotation>
+      <xs:list itemType="c:EQName-default"/>
+   </xs:simpleType>
+   <xs:simpleType name="SuppressIndentation">
+      <xs:annotation>
+         <xs:documentation>A list of space separated EQNames. Unprefixed QNames are in the default namespace.</xs:documentation>
+      </xs:annotation>
+      <xs:list itemType="c:EQName-default"/>
+   </xs:simpleType>
+   <xs:simpleType name="AVT">
+      <xs:annotation>
+         <xs:documentation>Attribute value template</xs:documentation>
+      </xs:annotation>
+      <xs:restriction base="c:String"/>
+   </xs:simpleType>
+   <xs:simpleType name="AVTExpr">
+      <xs:annotation>
+         <xs:documentation>Attribute value template</xs:documentation>
+      </xs:annotation>
+      <xs:restriction base="xs:string">
+         <xs:pattern value=".*\{.+\}.*"/>
+      </xs:restriction>
    </xs:simpleType>
    <xs:simpleType name="Name">
       <xs:restriction base="xs:token">
