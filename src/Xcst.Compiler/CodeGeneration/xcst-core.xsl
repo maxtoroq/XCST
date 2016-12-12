@@ -1472,11 +1472,23 @@
    <template name="src:unknown-element">
       <param name="current-mode" as="xs:QName" required="yes"/>
 
-      <variable name="extension-namespaces" select="distinct-values(
-         ancestor-or-self::*[(self::c:* and @extension-element-prefixes) or (not(self::c:*) and @c:extension-element-prefixes)]
-         /(if (self::c:*) then @extension-element-prefixes else @c:extension-element-prefixes)
-         /(for $prefix in tokenize(., '\s')[.] return namespace-uri-for-prefix((if ($prefix eq '#default') then '' else $prefix), ..))
-      )"/>
+      <variable name="extension-namespaces" as="xs:string*">
+         <variable name="ext-ns" as="xs:string*">
+            <for-each select="ancestor-or-self::*[(self::c:* and @extension-element-prefixes) or (not(self::c:*) and @c:extension-element-prefixes)]
+               /(if (self::c:*) then @extension-element-prefixes else @c:extension-element-prefixes)">
+               <variable name="el" select=".."/>
+               <for-each select="tokenize(., '\s')[.]">
+                  <variable name="default" select=". eq '#default'"/>
+                  <variable name="ns" select="namespace-uri-for-prefix((if ($default) then '' else .), $el)"/>
+                  <if test="empty($ns)">
+                     <sequence select="error(xs:QName('err:XTSE1430'), concat(if ($default) then 'Default namespace' else concat('Namespace prefix ', .), ' has not been declared.'), src:error-object($el))"/>
+                  </if>
+                  <sequence select="$ns"/>
+               </for-each>
+            </for-each>
+         </variable>
+         <sequence select="distinct-values($ext-ns)"/>
+      </variable>
       <choose>
          <when test="namespace-uri() = $extension-namespaces">
             <variable name="result" as="node()*">

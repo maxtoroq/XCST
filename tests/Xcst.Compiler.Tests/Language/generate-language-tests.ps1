@@ -143,9 +143,10 @@ function GenerateTestsForDirectory([IO.DirectoryInfo]$directory, $category) {
          PushIndent
          WriteLine
          WriteLine "var result = CompileFromFile(@""$($file.FullName)"", correct: $($correct.ToString().ToLower()));"
-         WriteLine "var moduleType = result.Item1;"
 
          if ($correct) {
+
+            WriteLine "var moduleType = result.Item1;"
 
             foreach ($testCase in ls $directory.FullName "$fileName2.*.xml") {
 
