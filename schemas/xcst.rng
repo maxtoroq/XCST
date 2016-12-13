@@ -87,6 +87,7 @@
       <ref name="standard-attributes-except-version"/>
       <optional>
          <attribute name="version">
+            <ann:documentation>The XCST version for the current and descendant elements (usually "1.0").</ann:documentation>
             <ref name="Version"/>
          </attribute>
       </optional>
@@ -96,13 +97,15 @@
       <zeroOrMore>
          <choice>
             <attribute name="expand-text">
-               <ann:documentation>Enables text value templates for descendant text nodes.</ann:documentation>
+               <ann:documentation>Enables or disables text value templates for descendant text nodes.</ann:documentation>
                <ref name="Boolean"/>
             </attribute>
             <attribute name="extension-element-prefixes">
+               <ann:documentation>Designates namespaces as extension namespaces.</ann:documentation>
                <ref name="ExtensionElementPrefixes"/>
             </attribute>
             <attribute name="transform-text">
+               <ann:documentation>Enables or disables text normalization for descendant text nodes.</ann:documentation>
                <ref name="TransformText"/>
             </attribute>
          </choice>
@@ -175,6 +178,7 @@
    <define name="visibility-attribute">
       <optional>
          <attribute name="visibility">
+            <ann:documentation>Indicates how the current component can be used in other (using) packages.</ann:documentation>
             <ref name="Visibility"/>
          </attribute>
       </optional>
@@ -235,6 +239,7 @@
       <element name="package">
          <optional>
             <attribute name="name">
+               <ann:documentation>The fully-qualified class name for the current package.</ann:documentation>
                <ref name="Name"/>
             </attribute>
          </optional>
@@ -244,9 +249,11 @@
 
    <define name="module-content">
       <attribute name="version">
+         <ann:documentation>The XCST version for the current and descendant elements (usually "1.0").</ann:documentation>
          <ref name="Version"/>
       </attribute>
       <attribute name="language">
+         <ann:documentation>The expression language for this module (usually "C#").</ann:documentation>
          <ref name="Language"/>
       </attribute>
       <ref name="standard-attributes-except-version"/>
@@ -1204,10 +1211,12 @@
    <define name="variable">
       <element name="variable">
          <attribute name="name">
+            <ann:documentation>The name of the variable.</ann:documentation>
             <ref name="Name"/>
          </attribute>
          <optional>
             <attribute name="as">
+               <ann:documentation>The type of the variable.</ann:documentation>
                <ref name="Type"/>
             </attribute>
          </optional>
@@ -1451,12 +1460,10 @@
    </define>
 
    <define name="Version">
-      <ann:documentation>The XCST version for the current and descendant elements (usually "1.0")</ann:documentation>
-      <data type="decimal"/>
+      <ref name="Decimal"/>
    </define>
 
    <define name="Language">
-      <ann:documentation>The expression language for this module (usually "C#")</ann:documentation>
       <data type="token">
          <param name="minLength">1</param>
       </data>
@@ -1476,7 +1483,7 @@
       <list>
          <zeroOrMore>
             <choice>
-               <data type="NCName"/>
+               <ref name="NCName"/>
                <value>#default</value>
             </choice>
          </zeroOrMore>

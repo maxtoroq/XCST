@@ -54,16 +54,28 @@
    </xs:group>
    <xs:attributeGroup name="standard-attributes">
       <xs:attributeGroup ref="c:standard-attributes-except-version"/>
-      <xs:attribute name="version" type="c:Version"/>
+      <xs:attribute name="version" type="c:Version">
+         <xs:annotation>
+            <xs:documentation>The XCST version for the current and descendant elements (usually "1.0").</xs:documentation>
+         </xs:annotation>
+      </xs:attribute>
    </xs:attributeGroup>
    <xs:attributeGroup name="standard-attributes-except-version">
       <xs:attribute name="expand-text" type="c:Boolean">
          <xs:annotation>
-            <xs:documentation>Enables text value templates for descendant text nodes.</xs:documentation>
+            <xs:documentation>Enables or disables text value templates for descendant text nodes.</xs:documentation>
          </xs:annotation>
       </xs:attribute>
-      <xs:attribute name="extension-element-prefixes" type="c:ExtensionElementPrefixes"/>
-      <xs:attribute name="transform-text" type="c:TransformText"/>
+      <xs:attribute name="extension-element-prefixes" type="c:ExtensionElementPrefixes">
+         <xs:annotation>
+            <xs:documentation>Designates namespaces as extension namespaces.</xs:documentation>
+         </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="transform-text" type="c:TransformText">
+         <xs:annotation>
+            <xs:documentation>Enables or disables text normalization for descendant text nodes.</xs:documentation>
+         </xs:annotation>
+      </xs:attribute>
    </xs:attributeGroup>
    <xs:group name="literal-result-element">
       <xs:choice>
@@ -91,7 +103,11 @@
       <xs:attribute name="value" type="c:Expression"/>
    </xs:complexType>
    <xs:attributeGroup name="visibility-attribute">
-      <xs:attribute name="visibility" type="c:Visibility"/>
+      <xs:attribute name="visibility" type="c:Visibility">
+         <xs:annotation>
+            <xs:documentation>Indicates how the current component can be used in other (using) packages.</xs:documentation>
+         </xs:annotation>
+      </xs:attribute>
    </xs:attributeGroup>
    <xs:group name="user-defined-data-element">
       <xs:sequence>
@@ -117,7 +133,11 @@
       <xs:complexType>
          <xs:complexContent>
             <xs:extension base="c:module-content">
-               <xs:attribute name="name" type="c:Name"/>
+               <xs:attribute name="name" type="c:Name">
+                  <xs:annotation>
+                     <xs:documentation>The fully-qualified class name for the current package.</xs:documentation>
+                  </xs:annotation>
+               </xs:attribute>
             </xs:extension>
          </xs:complexContent>
       </xs:complexType>
@@ -130,8 +150,16 @@
             <xs:group ref="c:user-defined-data-element"/>
          </xs:choice>
       </xs:sequence>
-      <xs:attribute name="version" use="required" type="c:Version"/>
-      <xs:attribute name="language" use="required" type="c:Language"/>
+      <xs:attribute name="version" use="required" type="c:Version">
+         <xs:annotation>
+            <xs:documentation>The XCST version for the current and descendant elements (usually "1.0").</xs:documentation>
+         </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="language" use="required" type="c:Language">
+         <xs:annotation>
+            <xs:documentation>The expression language for this module (usually "C#").</xs:documentation>
+         </xs:annotation>
+      </xs:attribute>
       <xs:attributeGroup ref="c:standard-attributes-except-version"/>
    </xs:complexType>
    <xs:element name="use-functions">
@@ -862,8 +890,16 @@
       <xs:complexType>
          <xs:complexContent>
             <xs:extension base="c:value-attribute-or-content">
-               <xs:attribute name="name" use="required" type="c:Name"/>
-               <xs:attribute name="as" type="c:Type"/>
+               <xs:attribute name="name" use="required" type="c:Name">
+                  <xs:annotation>
+                     <xs:documentation>The name of the variable.</xs:documentation>
+                  </xs:annotation>
+               </xs:attribute>
+               <xs:attribute name="as" type="c:Type">
+                  <xs:annotation>
+                     <xs:documentation>The type of the variable.</xs:documentation>
+                  </xs:annotation>
+               </xs:attribute>
                <xs:attributeGroup ref="c:visibility-attribute"/>
                <xs:attributeGroup ref="c:standard-attributes"/>
             </xs:extension>
@@ -1056,15 +1092,9 @@
       <xs:restriction base="xs:anyURI"/>
    </xs:simpleType>
    <xs:simpleType name="Version">
-      <xs:annotation>
-         <xs:documentation>The XCST version for the current and descendant elements (usually "1.0")</xs:documentation>
-      </xs:annotation>
-      <xs:restriction base="xs:decimal"/>
+      <xs:restriction base="c:Decimal"/>
    </xs:simpleType>
    <xs:simpleType name="Language">
-      <xs:annotation>
-         <xs:documentation>The expression language for this module (usually "C#")</xs:documentation>
-      </xs:annotation>
       <xs:restriction base="xs:token">
          <xs:minLength value="1"/>
       </xs:restriction>
@@ -1085,7 +1115,7 @@
       </xs:annotation>
       <xs:list>
          <xs:simpleType>
-            <xs:union memberTypes="xs:NCName">
+            <xs:union memberTypes="c:NCName">
                <xs:simpleType>
                   <xs:restriction base="xs:token">
                      <xs:enumeration value="#default"/>
@@ -1097,7 +1127,7 @@
    </xs:simpleType>
    <xs:simpleType name="UseAttributeSets">
       <xs:annotation>
-         <xs:documentation>A list of space separated EQName.</xs:documentation>
+         <xs:documentation>A list of space separated EQNames.</xs:documentation>
       </xs:annotation>
       <xs:list itemType="c:EQName"/>
    </xs:simpleType>
