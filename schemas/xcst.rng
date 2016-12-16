@@ -166,19 +166,10 @@
       </zeroOrMore>
    </define>
 
-   <define name="value-attribute-or-content">
-      <choice>
-         <attribute name="value">
-            <ref name="Expression"/>
-         </attribute>
-         <ref name="sequence-constructor"/>
-      </choice>
-   </define>
-
    <define name="visibility-attribute">
       <optional>
          <attribute name="visibility">
-            <ann:documentation>Indicates how the current component can be used in other (using) packages.</ann:documentation>
+            <ann:documentation>Specifies how the current component can be used in other (using) packages.</ann:documentation>
             <ref name="Visibility"/>
          </attribute>
       </optional>
@@ -231,12 +222,14 @@
 
    <define name="module">
       <element name="module">
+         <ann:documentation>Represents an XCST module.</ann:documentation>
          <ref name="module-content"/>
       </element>
    </define>
 
    <define name="package">
       <element name="package">
+         <ann:documentation>Represents an XCST package.</ann:documentation>
          <optional>
             <attribute name="name">
                <ann:documentation>The fully-qualified class name for the current package.</ann:documentation>
@@ -270,15 +263,19 @@
 
    <define name="use-functions">
       <element name="use-functions">
+         <ann:documentation>Imports functions from a function library.</ann:documentation>
          <attribute name="in">
+            <ann:documentation>The namespace or fully-qualified class name to import functions from.</ann:documentation>
             <ref name="Type"/>
          </attribute>
          <zeroOrMore>
             <choice>
                <attribute name="alias">
+                  <ann:documentation>A name to use as prefix for imported functions.</ann:documentation>
                   <ref name="Name"/>
                </attribute>
                <attribute name="static-only">
+                  <ann:documentation>Specifies whether to import static functions only. The in attribute must refer to a class.</ann:documentation>
                   <ref name="Boolean"/>
                </attribute>
             </choice>
@@ -289,7 +286,9 @@
 
    <define name="use-package">
       <element name="use-package">
+         <ann:documentation>Specifies a package dependency.</ann:documentation>
          <attribute name="name">
+            <ann:documentation>The class name of the package to use. Must be a fully-qualified name when using from implicit or unnamed packages.</ann:documentation>
             <ref name="Name"/>
          </attribute>
          <ref name="standard-attributes"/>
@@ -301,6 +300,7 @@
 
    <define name="override">
       <element name="override">
+         <ann:documentation>Container element for overriding components.</ann:documentation>
          <ref name="standard-attributes"/>
          <zeroOrMore>
             <choice>
@@ -317,7 +317,9 @@
 
    <define name="import">
       <element name="import">
+         <ann:documentation>Specifies a module dependency.</ann:documentation>
          <attribute name="href">
+            <ann:documentation>The relative or absolute URI of the module to import.</ann:documentation>
             <ref name="URI"/>
          </attribute>
          <ref name="standard-attributes"/>
@@ -326,7 +328,9 @@
 
    <define name="template">
       <element name="template">
+         <ann:documentation>Defines a template.</ann:documentation>
          <attribute name="name">
+            <ann:documentation>The name of the template.</ann:documentation>
             <ref name="EQName"/>
          </attribute>
          <ref name="visibility-attribute"/>
@@ -340,11 +344,14 @@
 
    <define name="function">
       <element name="function">
+         <ann:documentation>Defines a function.</ann:documentation>
          <attribute name="name">
+            <ann:documentation>The name of the function.</ann:documentation>
             <ref name="Name"/>
          </attribute>
          <optional>
             <attribute name="as">
+               <ann:documentation>The return type. Omit this attribute for void functions.</ann:documentation>
                <ref name="Type"/>
             </attribute>
          </optional>
@@ -359,34 +366,48 @@
 
    <define name="param">
       <element name="param">
+         <ann:documentation>Defines a package, template, function or delegate parameter.</ann:documentation>
          <attribute name="name">
+            <ann:documentation>The name of the parameter.</ann:documentation>
             <ref name="Name"/>
          </attribute>
+         <choice>
+            <attribute name="value">
+               <ann:documentation>The default value of the parameter.</ann:documentation>
+               <ref name="Expression"/>
+            </attribute>
+            <ref name="sequence-constructor"/>
+         </choice>
          <zeroOrMore>
             <choice>
                <attribute name="as">
+                  <ann:documentation>The type of the parameter.</ann:documentation>
                   <ref name="Type"/>
                </attribute>
                <attribute name="required">
+                  <ann:documentation>Specifies if the parameter is required.</ann:documentation>
                   <ref name="Boolean"/>
                </attribute>
                <attribute name="tunnel">
+                  <ann:documentation>Specifies if the parameter is a tunnel parameter.</ann:documentation>
                   <ref name="Boolean"/>
                </attribute>
             </choice>
          </zeroOrMore>
          <ref name="standard-attributes"/>
-         <ref name="value-attribute-or-content"/>
       </element>
    </define>
 
    <define name="attribute-set">
       <element name="attribute-set">
+         <ann:documentation>Defines an attribute set.</ann:documentation>
          <attribute name="name">
+            <ann:documentation>The name of the attribute set.</ann:documentation>
             <ref name="EQName"/>
          </attribute>
          <optional>
             <attribute name="use-attribute-sets">
+               <ann:documentation>Specifies other attribute sets to use before the current one.</ann:documentation>
                <ref name="UseAttributeSets"/>
             </attribute>
          </optional>
@@ -400,12 +421,14 @@
 
    <define name="type">
       <element name="type">
+         <ann:documentation>Defines a type.</ann:documentation>
          <attribute name="name">
+            <ann:documentation>The name of the type.</ann:documentation>
             <ref name="Name"/>
          </attribute>
          <ref name="visibility-attribute"/>
-         <ref name="standard-attributes"/>
          <ref name="type-or-member-attributes"/>
+         <ref name="standard-attributes"/>
          <zeroOrMore>
             <ref name="metadata"/>
          </zeroOrMore>
@@ -417,29 +440,168 @@
 
    <define name="member">
       <element name="member">
+         <ann:documentation>Defines a type member.</ann:documentation>
          <attribute name="name">
+            <ann:documentation>The name of the member.</ann:documentation>
             <ref name="Name"/>
          </attribute>
-         <ref name="standard-attributes"/>
-         <ref name="type-or-member-attributes"/>
-         <ref name="member-attributes"/>
-         <zeroOrMore>
-            <ref name="metadata"/>
-         </zeroOrMore>
          <choice>
             <attribute name="as">
+               <ann:documentation>The type of the member.</ann:documentation>
                <ref name="Type"/>
             </attribute>
             <oneOrMore>
                <ref name="member"/>
             </oneOrMore>
          </choice>
+         <optional>
+            <choice>
+               <attribute name="value">
+                  <ann:documentation>An initial value for this member.</ann:documentation>
+                  <ref name="Expression"/>
+               </attribute>
+               <attribute name="expression">
+                  <ann:documentation>An expression for computed members.</ann:documentation>
+                  <ref name="Expression"/>
+               </attribute>
+            </choice>
+         </optional>
+         <zeroOrMore>
+            <choice>
+               <attribute name="auto-initialize">
+                  <ann:documentation>Auto-assign an initial value to this member.</ann:documentation>
+                  <ref name="Boolean"/>
+               </attribute>
+               <attribute name="display">
+                  <ann:documentation>Specifies if this member should be displayed in a UI.</ann:documentation>
+                  <choice>
+                     <value>view-only</value>
+                     <ann:documentation>Indicates that this member should only be displayed in a viewing UI.</ann:documentation>
+
+                     <value>edit-only</value>
+                     <ann:documentation>Indicates that this member should only be displayed in an editing UI.</ann:documentation>
+
+                     <ref name="Boolean"/>
+                  </choice>
+               </attribute>
+               <attribute name="display-name">
+                  <ann:documentation>A name suitable for UI.</ann:documentation>
+                  <ref name="String"/>
+               </attribute>
+               <attribute name="description">
+                  <ann:documentation>A description of this member suitable for UI.</ann:documentation>
+                  <ref name="String"/>
+               </attribute>
+               <attribute name="short-name">
+                  <ann:documentation>A shorter name suitable for UI where the display name would be too long to fit (e.g. a table column).</ann:documentation>
+                  <ref name="String"/>
+               </attribute>
+               <attribute name="place-holder">
+                  <ann:documentation>A hint to the user of what can be entered in a control for this member.</ann:documentation>
+                  <ref name="String"/>
+               </attribute>
+               <attribute name="order">
+                  <ann:documentation>A number that indicates the relative position of this member in a UI.</ann:documentation>
+                  <ref name="Integer"/>
+               </attribute>
+               <attribute name="group">
+                  <ann:documentation>A name that is used to group members in a UI.</ann:documentation>
+                  <ref name="String"/>
+               </attribute>
+               <attribute name="format">
+                  <ann:documentation>A formatting string that specifies the display format for the value of this member.</ann:documentation>
+                  <ref name="String"/>
+               </attribute>
+               <attribute name="apply-format-in-edit-mode">
+                  <ann:documentation>Specifies if the display format should be used in an edit control for this member.</ann:documentation>
+                  <ref name="Boolean"/>
+               </attribute>
+               <attribute name="disable-output-escaping">
+                  <ann:documentation>Specifies if this member should not be escaped when displaying in a UI (e.g. HTML content).</ann:documentation>
+                  <ref name="Boolean"/>
+               </attribute>
+               <attribute name="null-display-text">
+                  <ann:documentation>A text that is displayed for this member when the value is null.</ann:documentation>
+                  <ref name="String"/>
+               </attribute>
+               <attribute name="template">
+                  <ann:documentation>The name of a template to use when displaying this member in a UI.</ann:documentation>
+                  <ref name="String"/>
+               </attribute>
+               <attribute name="read-only">
+                  <ann:documentation>Specifies if editing should be disabled for this member in an editing UI.</ann:documentation>
+                  <ref name="Boolean"/>
+               </attribute>
+               <attribute name="auto-generate-filter">
+                  <ann:documentation>Specifies if a filtering control should be automatically displayed for this member in a UI.</ann:documentation>
+                  <ref name="Boolean"/>
+               </attribute>
+               <attribute name="data-type">
+                  <choice>
+                     <value>CreditCard</value>
+                     <value>Currency</value>
+                     <value>Date</value>
+                     <value>DateTime</value>
+                     <value>Duration</value>
+                     <value>EmailAddress</value>
+                     <value>Html</value>
+                     <value>ImageUrl</value>
+                     <value>MultilineText</value>
+                     <value>Password</value>
+                     <value>PhoneNumber</value>
+                     <value>PostalCode</value>
+                     <value>Text</value>
+                     <value>Time</value>
+                     <value>Upload</value>
+                     <value>Url</value>
+                  </choice>
+               </attribute>
+               <attribute name="required">
+                  <ann:documentation>Specifies if this member is required.</ann:documentation>
+                  <ref name="Boolean"/>
+               </attribute>
+               <attribute name="max-length">
+                  <ann:documentation>A maximum valid string length for this member.</ann:documentation>
+                  <ref name="Expression"/>
+               </attribute>
+               <attribute name="min-length">
+                  <ann:documentation>A minimum valid string length for this member.</ann:documentation>
+                  <ref name="Expression"/>
+               </attribute>
+               <attribute name="pattern">
+                  <ann:documentation>A regular expression that a valid value for this member must conform to.</ann:documentation>
+                  <ref name="String"/>
+               </attribute>
+               <attribute name="min">
+                  <ann:documentation>A minimum valid value for this member.</ann:documentation>
+                  <ref name="Expression"/>
+               </attribute>
+               <attribute name="max">
+                  <ann:documentation>A maximum valid value for this member.</ann:documentation>
+                  <ref name="Expression"/>
+               </attribute>
+               <attribute name="range-type">
+                  <ref name="Type"/>
+               </attribute>
+               <attribute name="equal-to">
+                  <ann:documentation>The name of another member that a valid value for this member should be equal to.</ann:documentation>
+                  <ref name="Name"/>
+               </attribute>
+            </choice>
+         </zeroOrMore>
+         <ref name="type-or-member-attributes"/>
+         <ref name="standard-attributes"/>
+         <zeroOrMore>
+            <ref name="metadata"/>
+         </zeroOrMore>
       </element>
    </define>
 
    <define name="metadata">
       <element name="metadata">
+         <ann:documentation>Defines type or member custom metadata.</ann:documentation>
          <attribute name="value">
+            <ann:documentation>The metadata expression.</ann:documentation>
             <ref name="Expression"/>
          </attribute>
       </element>
@@ -453,11 +615,11 @@
                <ref name="Type"/>
             </attribute>
             <attribute name="disable-empty-string-to-null-conversion">
-               <ann:documentation>Indicates if empty strings should not be converted to null for this member.</ann:documentation>
+               <ann:documentation>Specifies if empty strings should not be converted to null for this member.</ann:documentation>
                <ref name="Boolean"/>
             </attribute>
             <attribute name="allow-empty-string">
-               <ann:documentation>Indicates if an empty string is a valid value for this member.</ann:documentation>
+               <ann:documentation>Specifies if an empty string is a valid value for this member.</ann:documentation>
                <ref name="Boolean"/>
             </attribute>
             <attribute name="display-text-member">
@@ -469,196 +631,85 @@
       <ref name="validation-attributes"/>
    </define>
 
-   <define name="member-attributes">
-      <zeroOrMore>
-         <choice>
-            <attribute name="auto-initialize">
-               <ann:documentation>Auto-assign an initial value to this member.</ann:documentation>
-               <ref name="Boolean"/>
-            </attribute>
-            <attribute name="display">
-               <ann:documentation>Indicates if this member should be displayed in a UI.</ann:documentation>
-               <choice>
-                  <value>view-only</value>
-                  <ann:documentation>Indicates that this member should only be displayed in a viewing UI.</ann:documentation>
-
-                  <value>edit-only</value>
-                  <ann:documentation>Indicates that this member should only be displayed in an editing UI.</ann:documentation>
-
-                  <ref name="Boolean"/>
-               </choice>
-            </attribute>
-            <attribute name="display-name">
-               <ann:documentation>A name suitable for UI.</ann:documentation>
-               <ref name="String"/>
-            </attribute>
-            <attribute name="description">
-               <ann:documentation>A description of this member suitable for UI.</ann:documentation>
-               <ref name="String"/>
-            </attribute>
-            <attribute name="short-name">
-               <ann:documentation>A shorter name suitable for UI where the display name would be too long to fit (e.g. a table column).</ann:documentation>
-               <ref name="String"/>
-            </attribute>
-            <attribute name="place-holder">
-               <ann:documentation>A hint to the user of what can be entered in a control for this member.</ann:documentation>
-               <ref name="String"/>
-            </attribute>
-            <attribute name="order">
-               <ann:documentation>A number that indicates the relative position of this member in a UI.</ann:documentation>
-               <ref name="Integer"/>
-            </attribute>
-            <attribute name="group">
-               <ann:documentation>A name that is used to group members in a UI.</ann:documentation>
-               <ref name="String"/>
-            </attribute>
-            <attribute name="format">
-               <ann:documentation>A formatting string that specifies the display format for the value of this member.</ann:documentation>
-               <ref name="String"/>
-            </attribute>
-            <attribute name="apply-format-in-edit-mode">
-               <ann:documentation>Indicates if the display format should be used in an edit control for this member.</ann:documentation>
-               <ref name="Boolean"/>
-            </attribute>
-            <attribute name="disable-output-escaping">
-               <ann:documentation>Indicates if this member should not be escaped when displaying in a UI (e.g. HTML content).</ann:documentation>
-               <ref name="Boolean"/>
-            </attribute>
-            <attribute name="null-display-text">
-               <ann:documentation>A text that is displayed for this member when the value is null.</ann:documentation>
-               <ref name="String"/>
-            </attribute>
-            <attribute name="template">
-               <ann:documentation>The name of a template to use when displaying this member in a UI.</ann:documentation>
-               <ref name="String"/>
-            </attribute>
-            <attribute name="read-only">
-               <ann:documentation>Indicates if editing should be disabled for this member in an editing UI.</ann:documentation>
-               <ref name="Boolean"/>
-            </attribute>
-            <attribute name="auto-generate-filter">
-               <ann:documentation>Indicates if a filtering control should be automatically displayed for this member in a UI.</ann:documentation>
-               <ref name="Boolean"/>
-            </attribute>
-            <attribute name="data-type">
-               <choice>
-                  <value>CreditCard</value>
-                  <value>Currency</value>
-                  <value>Date</value>
-                  <value>DateTime</value>
-                  <value>Duration</value>
-                  <value>EmailAddress</value>
-                  <value>Html</value>
-                  <value>ImageUrl</value>
-                  <value>MultilineText</value>
-                  <value>Password</value>
-                  <value>PhoneNumber</value>
-                  <value>PostalCode</value>
-                  <value>Text</value>
-                  <value>Time</value>
-                  <value>Upload</value>
-                  <value>Url</value>
-               </choice>
-            </attribute>
-            <attribute name="required">
-               <ref name="Boolean"/>
-            </attribute>
-            <attribute name="max-length">
-               <ref name="Expression"/>
-            </attribute>
-            <attribute name="min-length">
-               <ref name="Expression"/>
-            </attribute>
-            <attribute name="pattern">
-               <ref name="String"/>
-            </attribute>
-            <attribute name="min">
-               <ref name="Expression"/>
-            </attribute>
-            <attribute name="max">
-               <ref name="Expression"/>
-            </attribute>
-            <attribute name="range-type">
-               <ref name="Type"/>
-            </attribute>
-            <attribute name="equal-to">
-               <ref name="Name"/>
-            </attribute>
-         </choice>
-      </zeroOrMore>
-      <optional>
-         <choice>
-            <attribute name="value">
-               <ann:documentation>An initial value for this member.</ann:documentation>
-               <ref name="Expression"/>
-            </attribute>
-            <attribute name="expression">
-               <ann:documentation>An expression for computed members.</ann:documentation>
-               <ref name="Expression"/>
-            </attribute>
-         </choice>
-      </optional>
-   </define>
-
    <define name="output">
       <element name="output">
+         <ann:documentation>Defines serialization parameters.</ann:documentation>
          <zeroOrMore>
             <choice>
                <attribute name="name">
+                  <ann:documentation>The name of the output definition.</ann:documentation>
                   <ref name="EQName"/>
                </attribute>
                <attribute name="method">
+                  <ann:documentation>Specifies the output format.</ann:documentation>
                   <ref name="OutputMethod"/>
                </attribute>
                <attribute name="byte-order-mark">
+                  <ann:documentation>Specifies whether a byte order mark is written at the start of the file.</ann:documentation>
                   <ref name="Boolean"/>
                </attribute>
                <attribute name="cdata-section-elements">
+                  <ann:documentation>Specifies elements whose child text nodes should be wrapped in a CDATA section.</ann:documentation>
                   <ref name="CDataSectionElements"/>
                </attribute>
                <attribute name="doctype-public">
+                  <ann:documentation>Specifies a public document type declaration.</ann:documentation>
                   <ref name="String"/>
                </attribute>
                <attribute name="doctype-system">
+                  <ann:documentation>Specifies a system document type declaration.</ann:documentation>
                   <ref name="String"/>
                </attribute>
                <attribute name="encoding">
+                  <ann:documentation>Specifies the output encoding.</ann:documentation>
                   <ref name="String"/>
                </attribute>
                <attribute name="escape-uri-attributes">
+                  <ann:documentation>Specifies whether to escape URI attributes in HTML and XHTML documents.</ann:documentation>
                   <ref name="Boolean"/>
                </attribute>
                <attribute name="html-version">
+                  <ann:documentation>Specifies the HTML version.</ann:documentation>
                   <ref name="Decimal"/>
                </attribute>
                <attribute name="include-content-type">
+                  <ann:documentation>Specifies whether to include a meta element in the head of HTML and XHTML documents, specifying the used character encoding.</ann:documentation>
                   <ref name="Boolean"/>
                </attribute>
                <attribute name="indent">
+                  <ann:documentation>Specifies whether to indent the output.</ann:documentation>
                   <ref name="Boolean"/>
                </attribute>
                <attribute name="indent-spaces">
+                  <ann:documentation>The number of spaces to use for indenting.</ann:documentation>
                   <ref name="Integer"/>
                </attribute>
                <attribute name="item-separator">
+                  <ann:documentation>A string to intersperse when outputting multiple items.</ann:documentation>
                   <ref name="String"/>
                </attribute>
                <attribute name="media-type">
+                  <ann:documentation>The media type (MIME content type) of the output, to include in a meta element in the head of HTML and XHTML documents.</ann:documentation>
                   <ref name="String"/>
                </attribute>
                <attribute name="omit-xml-declaration">
+                  <ann:documentation>Specifies whether to omit the XML declaration.</ann:documentation>
                   <ref name="Boolean"/>
                </attribute>
                <attribute name="standalone">
+                  <ann:documentation>Specifies whether to include the standalone document declaration.</ann:documentation>
                   <ref name="OutputStandalone"/>
                </attribute>
                <attribute name="suppress-indentation">
+                  <ann:documentation>Specifies elements that should not be indented.</ann:documentation>
                   <ref name="SuppressIndentation"/>
                </attribute>
                <attribute name="undeclare-prefixes">
+                  <ann:documentation>Specifies whether to undeclare namespaces when outputting XML 1.1.</ann:documentation>
                   <ref name="Boolean"/>
                </attribute>
                <attribute name="version">
+                  <ann:documentation>The version of the output format.</ann:documentation>
                   <ref name="OutputVersion"/>
                </attribute>
                <ref name="standard-attributes-except-version"/>
@@ -669,6 +720,7 @@
 
    <define name="validation">
       <element name="validation">
+         <ann:documentation>Defines default values for validation messages.</ann:documentation>
          <ref name="validation-attributes"/>
       </element>
    </define>
@@ -738,113 +790,145 @@
 
    <define name="assert">
       <element name="assert">
+         <ann:documentation>Checks for a condition and signals a message if the condition is false.</ann:documentation>
          <attribute name="test">
+            <ann:documentation>The condition to check for.</ann:documentation>
             <ref name="Expression"/>
          </attribute>
+         <choice>
+            <attribute name="value">
+               <ann:documentation>A message to signal.</ann:documentation>
+               <ref name="Expression"/>
+            </attribute>
+            <ref name="sequence-constructor"/>
+         </choice>
          <ref name="standard-attributes"/>
-         <ref name="value-attribute-or-content"/>
       </element>
    </define>
 
    <define name="attribute">
       <element name="attribute">
+         <ann:documentation>Creates an attribute node.</ann:documentation>
          <attribute name="name">
+            <ann:documentation>The name of the attribute. Attribute value template (QName).</ann:documentation>
             <choice>
                <ref name="QName"/>
                <ref name="AVTExpr"/>
             </choice>
          </attribute>
+         <choice>
+            <attribute name="value">
+               <ann:documentation>The value of the attribute.</ann:documentation>
+               <ref name="Expression"/>
+            </attribute>
+            <ref name="sequence-constructor"/>
+         </choice>
          <zeroOrMore>
             <choice>
                <attribute name="namespace">
+                  <ann:documentation>The namespace of the attribute. Attribute value template (URI).</ann:documentation>
                   <choice>
                      <ref name="URI"/>
                      <ref name="AVTExpr"/>
                   </choice>
                </attribute>
                <attribute name="separator">
+                  <ann:documentation>A string to intersperse between values. Attribute value template.</ann:documentation>
                   <ref name="AVT"/>
                </attribute>
             </choice>
          </zeroOrMore>
          <ref name="standard-attributes"/>
-         <ref name="value-attribute-or-content"/>
       </element>
    </define>
 
    <define name="break">
       <element name="break">
+         <ann:documentation>Exits from a loop.</ann:documentation>
          <ref name="standard-attributes"/>
       </element>
    </define>
 
    <define name="call-template">
       <element name="call-template">
+         <ann:documentation>Invokes a template.</ann:documentation>
          <attribute name="name">
+            <ann:documentation>The name of the template to invoke.</ann:documentation>
             <ref name="EQName"/>
          </attribute>
          <ref name="standard-attributes"/>
          <zeroOrMore>
-            <ref name="with-param-for-templates"/>
+            <ref name="with-param"/>
          </zeroOrMore>
       </element>
    </define>
 
    <define name="catch">
       <element name="catch">
+         <ann:documentation>Catches an exception.</ann:documentation>
          <zeroOrMore>
             <choice>
                <attribute name="exception">
+                  <ann:documentation>The exception to catch.</ann:documentation>
                   <ref name="Expression"/>
                </attribute>
                <attribute name="when">
+                  <ann:documentation>An exception filter.</ann:documentation>
                   <ref name="Expression"/>
                </attribute>
             </choice>
          </zeroOrMore>
+         <choice>
+            <attribute name="value">
+               <ann:documentation>A value to output.</ann:documentation>
+               <ref name="Expression"/>
+            </attribute>
+            <ref name="sequence-constructor"/>
+         </choice>
          <ref name="standard-attributes"/>
-         <ref name="value-attribute-or-content"/>
       </element>
    </define>
 
    <define name="choose">
       <element name="choose">
+         <ann:documentation>Chooses between multiple alternatives.</ann:documentation>
          <ref name="standard-attributes"/>
          <oneOrMore>
-            <element name="when">
-               <attribute name="test">
-                  <ref name="Expression"/>
-               </attribute>
-               <ref name="standard-attributes"/>
-               <ref name="sequence-constructor"/>
-            </element>
+            <ref name="when"/>
          </oneOrMore>
          <optional>
-            <element name="otherwise">
-               <ref name="standard-attributes"/>
-               <ref name="sequence-constructor"/>
-            </element>
+            <ref name="otherwise"/>
          </optional>
       </element>
    </define>
 
    <define name="comment">
       <element name="comment">
+         <ann:documentation>Creates a comment node.</ann:documentation>
+         <choice>
+            <attribute name="value">
+               <ann:documentation>The comment.</ann:documentation>
+               <ref name="Expression"/>
+            </attribute>
+            <ref name="sequence-constructor"/>
+         </choice>
          <ref name="standard-attributes"/>
-         <ref name="value-attribute-or-content"/>
       </element>
    </define>
 
    <define name="continue">
       <element name="continue">
+         <ann:documentation>Interrupts the current loop iteration and advances to the next.</ann:documentation>
          <ref name="standard-attributes"/>
       </element>
    </define>
 
    <define name="delegate">
       <element name="delegate">
+         <ann:documentation>Creates a template delegate.</ann:documentation>
          <optional>
             <attribute name="as">
+               <ann:documentation>The return type of the template.</ann:documentation>
                <ref name="Type"/>
             </attribute>
          </optional>
@@ -858,7 +942,9 @@
 
    <define name="element">
       <element name="element">
+         <ann:documentation>Creates an element node.</ann:documentation>
          <attribute name="name">
+            <ann:documentation>The name of the element. Attribute value template (QName).</ann:documentation>
             <choice>
                <ref name="QName-default"/>
                <ref name="AVTExpr"/>
@@ -867,12 +953,14 @@
          <zeroOrMore>
             <choice>
                <attribute name="namespace">
+                  <ann:documentation>The namespace of the element. Attribute value template (URI).</ann:documentation>
                   <choice>
                      <ref name="URI"/>
                      <ref name="AVTExpr"/>
                   </choice>
                </attribute>
                <attribute name="use-attribute-sets">
+                  <ann:documentation>Specifies attribute sets to use on the element.</ann:documentation>
                   <ref name="UseAttributeSets"/>
                </attribute>
             </choice>
@@ -884,23 +972,27 @@
 
    <define name="evaluate-delegate">
       <element name="evaluate-delegate">
+         <ann:documentation>Evaluates a template delegate.</ann:documentation>
          <attribute name="value">
+            <ann:documentation>The template delegate instance.</ann:documentation>
             <ref name="Expression"/>
          </attribute>
          <optional>
             <attribute name="with-params">
+               <ann:documentation>An object with parameters.</ann:documentation>
                <ref name="Expression"/>
             </attribute>
          </optional>
          <ref name="standard-attributes"/>
          <zeroOrMore>
-            <ref name="with-param-for-templates"/>
+            <ref name="with-param"/>
          </zeroOrMore>
       </element>
    </define>
 
    <define name="fallback">
       <element name="fallback">
+         <ann:documentation>Defines fallback behavior for the parent element.</ann:documentation>
          <ref name="standard-attributes"/>
          <ref name="sequence-constructor"/>
       </element>
@@ -908,21 +1000,32 @@
 
    <define name="finally">
       <element name="finally">
+         <ann:documentation>Defines unconditional behavior for the c:try instruction.</ann:documentation>
+         <choice>
+            <attribute name="value">
+               <ann:documentation>A value to output.</ann:documentation>
+               <ref name="Expression"/>
+            </attribute>
+            <ref name="sequence-constructor"/>
+         </choice>
          <ref name="standard-attributes"/>
-         <ref name="value-attribute-or-content"/>
       </element>
    </define>
 
    <define name="for-each">
       <element name="for-each">
+         <ann:documentation>Processes each item in a sequence of items.</ann:documentation>
          <attribute name="name">
+            <ann:documentation>The name of the item.</ann:documentation>
             <ref name="Name"/>
          </attribute>
          <attribute name="in">
+            <ann:documentation>The source of the items.</ann:documentation>
             <ref name="Expression"/>
          </attribute>
          <optional>
             <attribute name="as">
+               <ann:documentation>The type of the item.</ann:documentation>
                <ref name="Type"/>
             </attribute>
          </optional>
@@ -936,17 +1039,22 @@
 
    <define name="for-each-group">
       <element name="for-each-group">
+         <ann:documentation>Processes a sequence of items in groups.</ann:documentation>
          <attribute name="name">
+            <ann:documentation>The name of the group.</ann:documentation>
             <ref name="Name"/>
          </attribute>
          <attribute name="in">
+            <ann:documentation>The source of the items.</ann:documentation>
             <ref name="Expression"/>
          </attribute>
          <choice>
             <attribute name="group-by">
+               <ann:documentation>An expression to use as grouping key.</ann:documentation>
                <ref name="Expression"/>
             </attribute>
             <attribute name="group-size">
+               <ann:documentation>The maximum number of items a group may have.</ann:documentation>
                <ref name="Expression"/>
             </attribute>
          </choice>
@@ -959,7 +1067,9 @@
 
    <define name="if">
       <element name="if">
+         <ann:documentation>Defines conditional behavior.</ann:documentation>
          <attribute name="test">
+            <ann:documentation>The condition to check for the contents to be processed.</ann:documentation>
             <ref name="Expression"/>
          </attribute>
          <ref name="standard-attributes"/>
@@ -969,8 +1079,17 @@
 
    <define name="message">
       <element name="message">
+         <ann:documentation>Signals a message.</ann:documentation>
+         <choice>
+            <attribute name="value">
+               <ann:documentation>The message.</ann:documentation>
+               <ref name="Expression"/>
+            </attribute>
+            <ref name="sequence-constructor"/>
+         </choice>
          <optional>
             <attribute name="terminate">
+               <ann:documentation>Specifies whether to stop the execution of the program. Attribute value template (Boolean).</ann:documentation>
                <choice>
                   <ref name="Boolean"/>
                   <ref name="AVTExpr"/>
@@ -978,25 +1097,33 @@
             </attribute>
          </optional>
          <ref name="standard-attributes"/>
-         <ref name="value-attribute-or-content"/>
       </element>
    </define>
 
    <define name="namespace">
       <element name="namespace">
+         <ann:documentation>Creates a namespace node.</ann:documentation>
          <attribute name="name">
+            <ann:documentation>The namespace prefix. Attribute value template (NCName).</ann:documentation>
             <choice>
                <ref name="NCName"/>
                <ref name="AVTExpr"/>
             </choice>
          </attribute>
+         <choice>
+            <attribute name="value">
+               <ann:documentation>The namespace URI.</ann:documentation>
+               <ref name="Expression"/>
+            </attribute>
+            <ref name="sequence-constructor"/>
+         </choice>
          <ref name="standard-attributes"/>
-         <ref name="value-attribute-or-content"/>
       </element>
    </define>
 
    <define name="next-function">
       <element name="next-function">
+         <ann:documentation>Invokes the overriden function.</ann:documentation>
          <ref name="standard-attributes"/>
          <zeroOrMore>
             <ref name="with-param-for-functions"/>
@@ -1006,36 +1133,62 @@
 
    <define name="next-template">
       <element name="next-template">
+         <ann:documentation>Invokes the overriden template.</ann:documentation>
          <ref name="standard-attributes"/>
          <zeroOrMore>
-            <ref name="with-param-for-templates"/>
+            <ref name="with-param"/>
          </zeroOrMore>
       </element>
    </define>
 
    <define name="object">
       <element name="object">
+         <ann:documentation>Appends a value to the current output.</ann:documentation>
+         <choice>
+            <attribute name="value">
+               <ann:documentation>The value to output.</ann:documentation>
+               <ref name="Expression"/>
+            </attribute>
+            <ref name="sequence-constructor"/>
+         </choice>
          <ref name="standard-attributes"/>
-         <ref name="value-attribute-or-content"/>
+      </element>
+   </define>
+
+   <define name="otherwise">
+      <element name="otherwise">
+         <ann:documentation>Represents a fallback in a c:choose instruction in case no other choice is selected.</ann:documentation>
+         <ref name="standard-attributes"/>
+         <ref name="sequence-constructor"/>
       </element>
    </define>
 
    <define name="processing-instruction">
       <element name="processing-instruction">
+         <ann:documentation>Creates a processing instruction node.</ann:documentation>
          <attribute name="name">
+            <ann:documentation>The name of the processing instruction. Attribute value template (NCName).</ann:documentation>
             <choice>
                <ref name="NCName"/>
                <ref name="AVTExpr"/>
             </choice>
          </attribute>
+         <choice>
+            <attribute name="value">
+               <ann:documentation>The processing instruction content.</ann:documentation>
+               <ref name="Expression"/>
+            </attribute>
+            <ref name="sequence-constructor"/>
+         </choice>
          <ref name="standard-attributes"/>
-         <ref name="value-attribute-or-content"/>
       </element>
    </define>
 
    <define name="result-document">
       <element name="result-document">
+         <ann:documentation>Creates a secondary result.</ann:documentation>
          <attribute name="href">
+            <ann:documentation>The relative or absolute URI to send the result to. Attribute value template (URI).</ann:documentation>
             <choice>
                <ref name="URI"/>
                <ref name="AVTExpr"/>
@@ -1049,16 +1202,25 @@
 
    <define name="return">
       <element name="return">
+         <ann:documentation>Exits from a template or function.</ann:documentation>
+         <choice>
+            <attribute name="value">
+               <ann:documentation>A value to return.</ann:documentation>
+               <ref name="Expression"/>
+            </attribute>
+            <ref name="sequence-constructor"/>
+         </choice>
          <ref name="standard-attributes"/>
-         <ref name="value-attribute-or-content"/>
       </element>
    </define>
 
    <define name="script">
       <element name="script">
+         <ann:documentation>Embeds or references a script of code.</ann:documentation>
          <ref name="standard-attributes"/>
          <choice>
             <attribute name="src">
+               <ann:documentation>The relative or absolute URI of the script of code.</ann:documentation>
                <ref name="URI"/>
             </attribute>
             <text/>
@@ -1068,6 +1230,7 @@
 
    <define name="serialize">
       <element name="serialize">
+         <ann:documentation>Creates a string representation of its contents.</ann:documentation>
          <ref name="output-avt-attributes"/>
          <ref name="standard-attributes"/>
          <ref name="sequence-constructor"/>
@@ -1077,21 +1240,31 @@
    <define name="set">
       <element name="set">
          <attribute name="member">
+            <ann:documentation>The reference to set.</ann:documentation>
             <ref name="Expression"/>
          </attribute>
+         <choice>
+            <attribute name="value">
+               <ann:documentation>The value to assign.</ann:documentation>
+               <ref name="Expression"/>
+            </attribute>
+            <ref name="sequence-constructor"/>
+         </choice>
          <ref name="standard-attributes"/>
-         <ref name="value-attribute-or-content"/>
       </element>
    </define>
 
    <define name="sort">
       <element name="sort">
+         <ann:documentation>Defines how to sort sequences of items.</ann:documentation>
          <zeroOrMore>
             <choice>
                <attribute name="value">
+                  <ann:documentation>An expression to use as sort key.</ann:documentation>
                   <ref name="Expression"/>
                </attribute>
                <attribute name="order">
+                  <ann:documentation>Specifies the sort direction ("ascending" or "descending"). Attribute value template.</ann:documentation>
                   <choice>
                      <ref name="SortOrder"/>
                      <ref name="AVTExpr"/>
@@ -1104,8 +1277,10 @@
 
    <define name="text">
       <element name="text">
+         <ann:documentation>Creates a text node or string.</ann:documentation>
          <optional>
             <attribute name="disable-output-escaping">
+               <ann:documentation>Specifies whether to omit output escaping.</ann:documentation>
                <ref name="Boolean"/>
             </attribute>
          </optional>
@@ -1116,13 +1291,21 @@
 
    <define name="try">
       <element name="try">
+         <ann:documentation>Recovers from exceptions or defines unconditional behavior.</ann:documentation>
+         <choice>
+            <attribute name="value">
+               <ann:documentation>A value to output.</ann:documentation>
+               <ref name="Expression"/>
+            </attribute>
+            <ref name="sequence-constructor"/>
+         </choice>
          <optional>
             <attribute name="rollback-output">
+               <ann:documentation>Specifies whether to discard the output when an exception occurs.</ann:documentation>
                <ref name="Boolean"/>
             </attribute>
          </optional>
          <ref name="standard-attributes"/>
-         <ref name="value-attribute-or-content"/>
          <choice>
             <group>
                <oneOrMore>
@@ -1139,15 +1322,19 @@
 
    <define name="using">
       <element name="using">
+         <ann:documentation>Facilitates the unconditional disposing of an object.</ann:documentation>
          <attribute name="value">
+            <ann:documentation>The disposable object.</ann:documentation>
             <ref name="Expression"/>
          </attribute>
          <zeroOrMore>
             <choice>
                <attribute name="name">
+                  <ann:documentation>The name of the disposable variable.</ann:documentation>
                   <ref name="Name"/>
                </attribute>
                <attribute name="as">
+                  <ann:documentation>The type of the disposable variable.</ann:documentation>
                   <ref name="Type"/>
                </attribute>
             </choice>
@@ -1159,20 +1346,25 @@
 
    <define name="using-module">
       <element name="using-module">
+         <ann:documentation>Defines an invocation on a dynamically loaded module.</ann:documentation>
          <attribute name="value">
+            <ann:documentation>An instance of a pre-compiled module.</ann:documentation>
             <ref name="Expression"/>
          </attribute>
          <optional>
             <attribute name="with-params">
+               <ann:documentation>An object with parameters.</ann:documentation>
                <ref name="Expression"/>
             </attribute>
          </optional>
          <ref name="standard-attributes"/>
          <zeroOrMore>
-            <ref name="with-param-for-templates"/>
+            <ref name="with-param"/>
          </zeroOrMore>
          <element name="call-template">
+            <ann:documentation>Invokes a template in the used module.</ann:documentation>
             <attribute name="name">
+               <ann:documentation>The name of the template. Attribute value template (EQName).</ann:documentation>
                <choice>
                   <ref name="EQName"/>
                   <ref name="AVTExpr"/>
@@ -1180,12 +1372,13 @@
             </attribute>
             <optional>
                <attribute name="with-params">
+                  <ann:documentation>An object with parameters.</ann:documentation>
                   <ref name="Expression"/>
                </attribute>
             </optional>
             <ref name="standard-attributes"/>
             <zeroOrMore>
-               <ref name="with-param-for-templates"/>
+               <ref name="with-param"/>
             </zeroOrMore>
          </element>
       </element>
@@ -1193,27 +1386,44 @@
 
    <define name="value-of">
       <element name="value-of">
+         <ann:documentation>Creates a text node or string.</ann:documentation>
+         <choice>
+            <attribute name="value">
+               <ann:documentation>The content of the text node or string.</ann:documentation>
+               <ref name="Expression"/>
+            </attribute>
+            <ref name="sequence-constructor"/>
+         </choice>
          <zeroOrMore>
             <choice>
                <attribute name="disable-output-escaping">
+                  <ann:documentation>Specifies whether to omit output escaping.</ann:documentation>
                   <ref name="Boolean"/>
                </attribute>
                <attribute name="separator">
+                  <ann:documentation>A string to intersperse between values. Attribute value template.</ann:documentation>
                   <ref name="AVT"/>
                </attribute>
             </choice>
          </zeroOrMore>
          <ref name="standard-attributes"/>
-         <ref name="value-attribute-or-content"/>
       </element>
    </define>
 
    <define name="variable">
       <element name="variable">
+         <ann:documentation>Defines a variable.</ann:documentation>
          <attribute name="name">
             <ann:documentation>The name of the variable.</ann:documentation>
             <ref name="Name"/>
          </attribute>
+         <choice>
+            <attribute name="value">
+               <ann:documentation>The initial value of the variable.</ann:documentation>
+               <ref name="Expression"/>
+            </attribute>
+            <ref name="sequence-constructor"/>
+         </choice>
          <optional>
             <attribute name="as">
                <ann:documentation>The type of the variable.</ann:documentation>
@@ -1222,20 +1432,28 @@
          </optional>
          <ref name="visibility-attribute"/>
          <ref name="standard-attributes"/>
-         <ref name="value-attribute-or-content"/>
       </element>
    </define>
 
    <define name="void">
       <element name="void">
+         <ann:documentation>Evaluates ignoring the result.</ann:documentation>
+         <choice>
+            <attribute name="value">
+               <ann:documentation>The expression to evaluate.</ann:documentation>
+               <ref name="Expression"/>
+            </attribute>
+            <ref name="sequence-constructor"/>
+         </choice>
          <ref name="standard-attributes"/>
-         <ref name="value-attribute-or-content"/>
       </element>
    </define>
 
-   <define name="while">
-      <element name="while">
+   <define name="when">
+      <element name="when">
+         <ann:documentation>Represents a choice in a c:choose instruction.</ann:documentation>
          <attribute name="test">
+            <ann:documentation>The condition to check for the current choice to be selected.</ann:documentation>
             <ref name="Expression"/>
          </attribute>
          <ref name="standard-attributes"/>
@@ -1243,43 +1461,77 @@
       </element>
    </define>
 
-   <define name="with-param-for-templates">
+   <define name="while">
+      <element name="while">
+         <ann:documentation>Repeateadly evaluates instructions until a condition is not met.</ann:documentation>
+         <attribute name="test">
+            <ann:documentation>The condition for the loop to continue.</ann:documentation>
+            <ref name="Expression"/>
+         </attribute>
+         <ref name="standard-attributes"/>
+         <ref name="sequence-constructor"/>
+      </element>
+   </define>
+
+   <define name="with-param">
       <element name="with-param">
+         <ann:documentation>Defines parameter arguments for a template or package.</ann:documentation>
          <attribute name="name">
+            <ann:documentation>The name of the parameter.</ann:documentation>
             <ref name="Name"/>
          </attribute>
+         <choice>
+            <attribute name="value">
+               <ann:documentation>The value of the parameter.</ann:documentation>
+               <ref name="Expression"/>
+            </attribute>
+            <ref name="sequence-constructor"/>
+         </choice>
          <zeroOrMore>
             <choice>
                <attribute name="as">
+                  <ann:documentation>The type of the parameter.</ann:documentation>
                   <ref name="Type"/>
                </attribute>
                <attribute name="tunnel">
+                  <ann:documentation>Specifies if the parameter should be tunneled.</ann:documentation>
                   <ref name="Boolean"/>
                </attribute>
             </choice>
          </zeroOrMore>
          <ref name="standard-attributes"/>
-         <ref name="value-attribute-or-content"/>
       </element>
    </define>
 
    <define name="with-param-for-functions">
       <element name="with-param">
+         <ann:documentation>Defines parameter arguments for a function.</ann:documentation>
+         <optional>
+            <attribute name="name">
+               <ann:documentation>The name of the parameter.</ann:documentation>
+               <ref name="Name"/>
+            </attribute>
+         </optional>
+         <choice>
+            <attribute name="value">
+               <ann:documentation>The value of the parameter.</ann:documentation>
+               <ref name="Expression"/>
+            </attribute>
+            <ref name="sequence-constructor"/>
+         </choice>
          <zeroOrMore>
             <choice>
-               <attribute name="name">
-                  <ref name="Name"/>
-               </attribute>
                <attribute name="as">
+                  <ann:documentation>The type of the parameter.</ann:documentation>
                   <ref name="Type"/>
                </attribute>
                <attribute name="tunnel">
+                  <ann:documentation>Specifies if the parameter should be tunneled.</ann:documentation>
                   <ref name="Boolean"/>
                </attribute>
             </choice>
          </zeroOrMore>
          <ref name="standard-attributes"/>
-         <ref name="value-attribute-or-content"/>
       </element>
    </define>
 
@@ -1287,99 +1539,118 @@
       <zeroOrMore>
          <choice>
             <attribute name="format">
+               <ann:documentation>The name of the output definition to get serialization parameters from. Attribute value template (EQName).</ann:documentation>
                <choice>
                   <ref name="EQName"/>
                   <ref name="AVTExpr"/>
                </choice>
             </attribute>
             <attribute name="method">
+               <ann:documentation>Specifies the output format. Attribute value template.</ann:documentation>
                <choice>
                   <ref name="OutputMethod"/>
                   <ref name="AVTExpr"/>
                </choice>
             </attribute>
             <attribute name="byte-order-mark">
+               <ann:documentation>Specifies whether a byte order mark is written at the start of the file. Attribute value template (Boolean).</ann:documentation>
                <choice>
                   <ref name="Boolean"/>
                   <ref name="AVTExpr"/>
                </choice>
             </attribute>
             <attribute name="cdata-section-elements">
+               <ann:documentation>Specifies elements whose child text nodes should be wrapped in a CDATA section. Attribute value template.</ann:documentation>
                <choice>
                   <ref name="CDataSectionElements"/>
                   <ref name="AVTExpr"/>
                </choice>
             </attribute>
             <attribute name="doctype-public">
+               <ann:documentation>Specifies a public document type declaration. Attribute value template.</ann:documentation>
                <ref name="AVT"/>
             </attribute>
             <attribute name="doctype-system">
+               <ann:documentation>Specifies a system document type declaration. Attribute value template.</ann:documentation>
                <ref name="AVT"/>
             </attribute>
             <attribute name="encoding">
+               <ann:documentation>Specifies the output encoding. Attribute value template.</ann:documentation>
                <ref name="AVT"/>
             </attribute>
             <attribute name="escape-uri-attributes">
+               <ann:documentation>Specifies whether to escape URI attributes in HTML and XHTML documents. Attribute value template (Boolean).</ann:documentation>
                <choice>
                   <ref name="Boolean"/>
                   <ref name="AVTExpr"/>
                </choice>
             </attribute>
             <attribute name="html-version">
+               <ann:documentation>Specifies the HTML version. Attribute value template (Decimal).</ann:documentation>
                <choice>
                   <ref name="Decimal"/>
                   <ref name="AVTExpr"/>
                </choice>
             </attribute>
             <attribute name="include-content-type">
+               <ann:documentation>Specifies whether to include a meta element in the head of HTML and XHTML documents, specifying the used character encoding. Attribute value template (Boolean).</ann:documentation>
                <choice>
                   <ref name="Boolean"/>
                   <ref name="AVTExpr"/>
                </choice>
             </attribute>
             <attribute name="indent">
+               <ann:documentation>Specifies whether to indent the output. Attribute value template (Boolean).</ann:documentation>
                <choice>
                   <ref name="Boolean"/>
                   <ref name="AVTExpr"/>
                </choice>
             </attribute>
             <attribute name="indent-spaces">
+               <ann:documentation>The number of spaces to use for indenting. Attribute value template (Integer).</ann:documentation>
                <choice>
                   <ref name="Integer"/>
                   <ref name="AVTExpr"/>
                </choice>
             </attribute>
             <attribute name="item-separator">
+               <ann:documentation>A string to intersperse when outputting multiple items. Attribute value template.</ann:documentation>
                <ref name="AVT"/>
             </attribute>
             <attribute name="media-type">
+               <ann:documentation>The media type (MIME content type) of the output, to include in a meta element in the head of HTML and XHTML documents. Attribute value template.</ann:documentation>
                <ref name="AVT"/>
             </attribute>
             <attribute name="omit-xml-declaration">
+               <ann:documentation>Specifies whether to omit the XML declaration. Attribute value template (Boolean).</ann:documentation>
                <choice>
                   <ref name="Boolean"/>
                   <ref name="AVTExpr"/>
                </choice>
             </attribute>
             <attribute name="standalone">
+               <ann:documentation>Specifies whether to include the standalone document declaration. Attribute value template.</ann:documentation>
                <choice>
                   <ref name="OutputStandalone"/>
                   <ref name="AVTExpr"/>
                </choice>
             </attribute>
             <attribute name="suppress-indentation">
+               <ann:documentation>Specifies elements that should not be indented. Attribute value template.</ann:documentation>
                <choice>
                   <ref name="SuppressIndentation"/>
                   <ref name="AVTExpr"/>
                </choice>
             </attribute>
             <attribute name="undeclare-prefixes">
+               <ann:documentation>Specifies whether to undeclare namespaces when outputting XML 1.1. Attribute value template (Boolean).</ann:documentation>
                <choice>
                   <ref name="Boolean"/>
                   <ref name="AVTExpr"/>
                </choice>
             </attribute>
             <attribute name="output-version">
+               <ann:documentation>The version of the output format. Attribute value template.</ann:documentation>
                <choice>
                   <ref name="OutputVersion"/>
                   <ref name="AVTExpr"/>

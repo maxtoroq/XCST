@@ -98,14 +98,10 @@
          </xs:choice>
       </xs:sequence>
    </xs:group>
-   <xs:complexType name="value-attribute-or-content" mixed="true">
-      <xs:group minOccurs="0" ref="c:sequence-constructor"/>
-      <xs:attribute name="value" type="c:Expression"/>
-   </xs:complexType>
    <xs:attributeGroup name="visibility-attribute">
       <xs:attribute name="visibility" type="c:Visibility">
          <xs:annotation>
-            <xs:documentation>Indicates how the current component can be used in other (using) packages.</xs:documentation>
+            <xs:documentation>Specifies how the current component can be used in other (using) packages.</xs:documentation>
          </xs:annotation>
       </xs:attribute>
    </xs:attributeGroup>
@@ -128,8 +124,15 @@
          <xs:any namespace="##local" processContents="lax"/>
       </xs:choice>
    </xs:group>
-   <xs:element name="module" type="c:module-content"/>
+   <xs:element name="module" type="c:module-content">
+      <xs:annotation>
+         <xs:documentation>Represents an XCST module.</xs:documentation>
+      </xs:annotation>
+   </xs:element>
    <xs:element name="package">
+      <xs:annotation>
+         <xs:documentation>Represents an XCST package.</xs:documentation>
+      </xs:annotation>
       <xs:complexType>
          <xs:complexContent>
             <xs:extension base="c:module-content">
@@ -163,23 +166,48 @@
       <xs:attributeGroup ref="c:standard-attributes-except-version"/>
    </xs:complexType>
    <xs:element name="use-functions">
+      <xs:annotation>
+         <xs:documentation>Imports functions from a function library.</xs:documentation>
+      </xs:annotation>
       <xs:complexType>
-         <xs:attribute name="in" use="required" type="c:Type"/>
-         <xs:attribute name="alias" type="c:Name"/>
-         <xs:attribute name="static-only" type="c:Boolean"/>
+         <xs:attribute name="in" use="required" type="c:Type">
+            <xs:annotation>
+               <xs:documentation>The namespace or fully-qualified class name to import functions from.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="alias" type="c:Name">
+            <xs:annotation>
+               <xs:documentation>A name to use as prefix for imported functions.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="static-only" type="c:Boolean">
+            <xs:annotation>
+               <xs:documentation>Specifies whether to import static functions only. The in attribute must refer to a class.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
    <xs:element name="use-package">
+      <xs:annotation>
+         <xs:documentation>Specifies a package dependency.</xs:documentation>
+      </xs:annotation>
       <xs:complexType>
          <xs:sequence>
             <xs:element minOccurs="0" maxOccurs="unbounded" ref="c:override"/>
          </xs:sequence>
-         <xs:attribute name="name" use="required" type="c:Name"/>
+         <xs:attribute name="name" use="required" type="c:Name">
+            <xs:annotation>
+               <xs:documentation>The class name of the package to use. Must be a fully-qualified name when using from implicit or unnamed packages.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
    <xs:element name="override">
+      <xs:annotation>
+         <xs:documentation>Container element for overriding components.</xs:documentation>
+      </xs:annotation>
       <xs:complexType>
          <xs:choice minOccurs="0" maxOccurs="unbounded">
             <xs:element ref="c:template"/>
@@ -193,86 +221,332 @@
       </xs:complexType>
    </xs:element>
    <xs:element name="import">
+      <xs:annotation>
+         <xs:documentation>Specifies a module dependency.</xs:documentation>
+      </xs:annotation>
       <xs:complexType>
-         <xs:attribute name="href" use="required" type="c:URI"/>
+         <xs:attribute name="href" use="required" type="c:URI">
+            <xs:annotation>
+               <xs:documentation>The relative or absolute URI of the module to import.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
    <xs:element name="template">
+      <xs:annotation>
+         <xs:documentation>Defines a template.</xs:documentation>
+      </xs:annotation>
       <xs:complexType mixed="true">
          <xs:sequence>
             <xs:element minOccurs="0" maxOccurs="unbounded" ref="c:param"/>
             <xs:group ref="c:sequence-constructor"/>
          </xs:sequence>
-         <xs:attribute name="name" use="required" type="c:EQName"/>
+         <xs:attribute name="name" use="required" type="c:EQName">
+            <xs:annotation>
+               <xs:documentation>The name of the template.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
          <xs:attributeGroup ref="c:visibility-attribute"/>
          <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
    <xs:element name="function">
+      <xs:annotation>
+         <xs:documentation>Defines a function.</xs:documentation>
+      </xs:annotation>
       <xs:complexType mixed="true">
          <xs:sequence>
             <xs:element minOccurs="0" maxOccurs="unbounded" ref="c:param"/>
             <xs:group ref="c:sequence-constructor"/>
          </xs:sequence>
-         <xs:attribute name="name" use="required" type="c:Name"/>
-         <xs:attribute name="as" type="c:Type"/>
+         <xs:attribute name="name" use="required" type="c:Name">
+            <xs:annotation>
+               <xs:documentation>The name of the function.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="as" type="c:Type">
+            <xs:annotation>
+               <xs:documentation>The return type. Omit this attribute for void functions.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
          <xs:attributeGroup ref="c:visibility-attribute"/>
          <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
    <xs:element name="param">
-      <xs:complexType>
-         <xs:complexContent>
-            <xs:extension base="c:value-attribute-or-content">
-               <xs:attribute name="name" use="required" type="c:Name"/>
-               <xs:attribute name="as" type="c:Type"/>
-               <xs:attribute name="required" type="c:Boolean"/>
-               <xs:attribute name="tunnel" type="c:Boolean"/>
-               <xs:attributeGroup ref="c:standard-attributes"/>
-            </xs:extension>
-         </xs:complexContent>
+      <xs:annotation>
+         <xs:documentation>Defines a package, template, function or delegate parameter.</xs:documentation>
+      </xs:annotation>
+      <xs:complexType mixed="true">
+         <xs:group minOccurs="0" ref="c:sequence-constructor"/>
+         <xs:attribute name="name" use="required" type="c:Name">
+            <xs:annotation>
+               <xs:documentation>The name of the parameter.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="value" type="c:Expression">
+            <xs:annotation>
+               <xs:documentation>The default value of the parameter.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="as" type="c:Type">
+            <xs:annotation>
+               <xs:documentation>The type of the parameter.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="required" type="c:Boolean">
+            <xs:annotation>
+               <xs:documentation>Specifies if the parameter is required.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="tunnel" type="c:Boolean">
+            <xs:annotation>
+               <xs:documentation>Specifies if the parameter is a tunnel parameter.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
    <xs:element name="attribute-set">
+      <xs:annotation>
+         <xs:documentation>Defines an attribute set.</xs:documentation>
+      </xs:annotation>
       <xs:complexType>
          <xs:sequence>
             <xs:element minOccurs="0" maxOccurs="unbounded" ref="c:attribute"/>
          </xs:sequence>
-         <xs:attribute name="name" use="required" type="c:EQName"/>
-         <xs:attribute name="use-attribute-sets" type="c:UseAttributeSets"/>
+         <xs:attribute name="name" use="required" type="c:EQName">
+            <xs:annotation>
+               <xs:documentation>The name of the attribute set.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="use-attribute-sets" type="c:UseAttributeSets">
+            <xs:annotation>
+               <xs:documentation>Specifies other attribute sets to use before the current one.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
          <xs:attributeGroup ref="c:visibility-attribute"/>
          <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
    <xs:element name="type">
+      <xs:annotation>
+         <xs:documentation>Defines a type.</xs:documentation>
+      </xs:annotation>
       <xs:complexType>
          <xs:sequence>
             <xs:element minOccurs="0" maxOccurs="unbounded" ref="c:metadata"/>
             <xs:element minOccurs="0" maxOccurs="unbounded" ref="c:member"/>
          </xs:sequence>
-         <xs:attribute name="name" use="required" type="c:Name"/>
+         <xs:attribute name="name" use="required" type="c:Name">
+            <xs:annotation>
+               <xs:documentation>The name of the type.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
          <xs:attributeGroup ref="c:visibility-attribute"/>
-         <xs:attributeGroup ref="c:standard-attributes"/>
          <xs:attributeGroup ref="c:type-or-member-attributes"/>
+         <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
    <xs:element name="member">
+      <xs:annotation>
+         <xs:documentation>Defines a type member.</xs:documentation>
+      </xs:annotation>
       <xs:complexType>
          <xs:sequence>
-            <xs:element minOccurs="0" maxOccurs="unbounded" ref="c:metadata"/>
             <xs:element minOccurs="0" maxOccurs="unbounded" ref="c:member"/>
+            <xs:element minOccurs="0" maxOccurs="unbounded" ref="c:metadata"/>
          </xs:sequence>
-         <xs:attribute name="name" use="required" type="c:Name"/>
-         <xs:attributeGroup ref="c:standard-attributes"/>
+         <xs:attribute name="name" use="required" type="c:Name">
+            <xs:annotation>
+               <xs:documentation>The name of the member.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="as" type="c:Type">
+            <xs:annotation>
+               <xs:documentation>The type of the member.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="value" type="c:Expression">
+            <xs:annotation>
+               <xs:documentation>An initial value for this member.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="expression" type="c:Expression">
+            <xs:annotation>
+               <xs:documentation>An expression for computed members.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="auto-initialize" type="c:Boolean">
+            <xs:annotation>
+               <xs:documentation>Auto-assign an initial value to this member.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="display">
+            <xs:annotation>
+               <xs:documentation>Specifies if this member should be displayed in a UI.</xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+               <xs:union memberTypes="c:Boolean">
+                  <xs:simpleType>
+                     <xs:restriction base="xs:token">
+                        <xs:enumeration value="view-only">
+                           <xs:annotation>
+                              <xs:documentation>Indicates that this member should only be displayed in a viewing UI.</xs:documentation>
+                           </xs:annotation>
+                        </xs:enumeration>
+                     </xs:restriction>
+                  </xs:simpleType>
+                  <xs:simpleType>
+                     <xs:restriction base="xs:token">
+                        <xs:enumeration value="edit-only">
+                           <xs:annotation>
+                              <xs:documentation>Indicates that this member should only be displayed in an editing UI.</xs:documentation>
+                           </xs:annotation>
+                        </xs:enumeration>
+                     </xs:restriction>
+                  </xs:simpleType>
+               </xs:union>
+            </xs:simpleType>
+         </xs:attribute>
+         <xs:attribute name="display-name" type="c:String">
+            <xs:annotation>
+               <xs:documentation>A name suitable for UI.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="description" type="c:String">
+            <xs:annotation>
+               <xs:documentation>A description of this member suitable for UI.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="short-name" type="c:String">
+            <xs:annotation>
+               <xs:documentation>A shorter name suitable for UI where the display name would be too long to fit (e.g. a table column).</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="place-holder" type="c:String">
+            <xs:annotation>
+               <xs:documentation>A hint to the user of what can be entered in a control for this member.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="order" type="c:Integer">
+            <xs:annotation>
+               <xs:documentation>A number that indicates the relative position of this member in a UI.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="group" type="c:String">
+            <xs:annotation>
+               <xs:documentation>A name that is used to group members in a UI.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="format" type="c:String">
+            <xs:annotation>
+               <xs:documentation>A formatting string that specifies the display format for the value of this member.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="apply-format-in-edit-mode" type="c:Boolean">
+            <xs:annotation>
+               <xs:documentation>Specifies if the display format should be used in an edit control for this member.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="disable-output-escaping" type="c:Boolean">
+            <xs:annotation>
+               <xs:documentation>Specifies if this member should not be escaped when displaying in a UI (e.g. HTML content).</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="null-display-text" type="c:String">
+            <xs:annotation>
+               <xs:documentation>A text that is displayed for this member when the value is null.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="template" type="c:String">
+            <xs:annotation>
+               <xs:documentation>The name of a template to use when displaying this member in a UI.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="read-only" type="c:Boolean">
+            <xs:annotation>
+               <xs:documentation>Specifies if editing should be disabled for this member in an editing UI.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="auto-generate-filter" type="c:Boolean">
+            <xs:annotation>
+               <xs:documentation>Specifies if a filtering control should be automatically displayed for this member in a UI.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="data-type">
+            <xs:simpleType>
+               <xs:restriction base="xs:token">
+                  <xs:enumeration value="CreditCard"/>
+                  <xs:enumeration value="Currency"/>
+                  <xs:enumeration value="Date"/>
+                  <xs:enumeration value="DateTime"/>
+                  <xs:enumeration value="Duration"/>
+                  <xs:enumeration value="EmailAddress"/>
+                  <xs:enumeration value="Html"/>
+                  <xs:enumeration value="ImageUrl"/>
+                  <xs:enumeration value="MultilineText"/>
+                  <xs:enumeration value="Password"/>
+                  <xs:enumeration value="PhoneNumber"/>
+                  <xs:enumeration value="PostalCode"/>
+                  <xs:enumeration value="Text"/>
+                  <xs:enumeration value="Time"/>
+                  <xs:enumeration value="Upload"/>
+                  <xs:enumeration value="Url"/>
+               </xs:restriction>
+            </xs:simpleType>
+         </xs:attribute>
+         <xs:attribute name="required" type="c:Boolean">
+            <xs:annotation>
+               <xs:documentation>Specifies if this member is required.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="max-length" type="c:Expression">
+            <xs:annotation>
+               <xs:documentation>A maximum valid string length for this member.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="min-length" type="c:Expression">
+            <xs:annotation>
+               <xs:documentation>A minimum valid string length for this member.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="pattern" type="c:String">
+            <xs:annotation>
+               <xs:documentation>A regular expression that a valid value for this member must conform to.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="min" type="c:Expression">
+            <xs:annotation>
+               <xs:documentation>A minimum valid value for this member.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="max" type="c:Expression">
+            <xs:annotation>
+               <xs:documentation>A maximum valid value for this member.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="range-type" type="c:Type"/>
+         <xs:attribute name="equal-to" type="c:Name">
+            <xs:annotation>
+               <xs:documentation>The name of another member that a valid value for this member should be equal to.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
          <xs:attributeGroup ref="c:type-or-member-attributes"/>
-         <xs:attributeGroup ref="c:member-attributes"/>
-         <xs:attribute name="as" type="c:Type"/>
+         <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
    <xs:element name="metadata">
+      <xs:annotation>
+         <xs:documentation>Defines type or member custom metadata.</xs:documentation>
+      </xs:annotation>
       <xs:complexType>
-         <xs:attribute name="value" use="required" type="c:Expression"/>
+         <xs:attribute name="value" use="required" type="c:Expression">
+            <xs:annotation>
+               <xs:documentation>The metadata expression.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
       </xs:complexType>
    </xs:element>
    <xs:attributeGroup name="type-or-member-attributes">
@@ -283,12 +557,12 @@
       </xs:attribute>
       <xs:attribute name="disable-empty-string-to-null-conversion" type="c:Boolean">
          <xs:annotation>
-            <xs:documentation>Indicates if empty strings should not be converted to null for this member.</xs:documentation>
+            <xs:documentation>Specifies if empty strings should not be converted to null for this member.</xs:documentation>
          </xs:annotation>
       </xs:attribute>
       <xs:attribute name="allow-empty-string" type="c:Boolean">
          <xs:annotation>
-            <xs:documentation>Indicates if an empty string is a valid value for this member.</xs:documentation>
+            <xs:documentation>Specifies if an empty string is a valid value for this member.</xs:documentation>
          </xs:annotation>
       </xs:attribute>
       <xs:attribute name="display-text-member" type="c:Name">
@@ -298,170 +572,113 @@
       </xs:attribute>
       <xs:attributeGroup ref="c:validation-attributes"/>
    </xs:attributeGroup>
-   <xs:attributeGroup name="member-attributes">
-      <xs:attribute name="auto-initialize" type="c:Boolean">
-         <xs:annotation>
-            <xs:documentation>Auto-assign an initial value to this member.</xs:documentation>
-         </xs:annotation>
-      </xs:attribute>
-      <xs:attribute name="display">
-         <xs:annotation>
-            <xs:documentation>Indicates if this member should be displayed in a UI.</xs:documentation>
-         </xs:annotation>
-         <xs:simpleType>
-            <xs:union memberTypes="c:Boolean">
-               <xs:simpleType>
-                  <xs:restriction base="xs:token">
-                     <xs:enumeration value="view-only">
-                        <xs:annotation>
-                           <xs:documentation>Indicates that this member should only be displayed in a viewing UI.</xs:documentation>
-                        </xs:annotation>
-                     </xs:enumeration>
-                  </xs:restriction>
-               </xs:simpleType>
-               <xs:simpleType>
-                  <xs:restriction base="xs:token">
-                     <xs:enumeration value="edit-only">
-                        <xs:annotation>
-                           <xs:documentation>Indicates that this member should only be displayed in an editing UI.</xs:documentation>
-                        </xs:annotation>
-                     </xs:enumeration>
-                  </xs:restriction>
-               </xs:simpleType>
-            </xs:union>
-         </xs:simpleType>
-      </xs:attribute>
-      <xs:attribute name="display-name" type="c:String">
-         <xs:annotation>
-            <xs:documentation>A name suitable for UI.</xs:documentation>
-         </xs:annotation>
-      </xs:attribute>
-      <xs:attribute name="description" type="c:String">
-         <xs:annotation>
-            <xs:documentation>A description of this member suitable for UI.</xs:documentation>
-         </xs:annotation>
-      </xs:attribute>
-      <xs:attribute name="short-name" type="c:String">
-         <xs:annotation>
-            <xs:documentation>A shorter name suitable for UI where the display name would be too long to fit (e.g. a table column).</xs:documentation>
-         </xs:annotation>
-      </xs:attribute>
-      <xs:attribute name="place-holder" type="c:String">
-         <xs:annotation>
-            <xs:documentation>A hint to the user of what can be entered in a control for this member.</xs:documentation>
-         </xs:annotation>
-      </xs:attribute>
-      <xs:attribute name="order" type="c:Integer">
-         <xs:annotation>
-            <xs:documentation>A number that indicates the relative position of this member in a UI.</xs:documentation>
-         </xs:annotation>
-      </xs:attribute>
-      <xs:attribute name="group" type="c:String">
-         <xs:annotation>
-            <xs:documentation>A name that is used to group members in a UI.</xs:documentation>
-         </xs:annotation>
-      </xs:attribute>
-      <xs:attribute name="format" type="c:String">
-         <xs:annotation>
-            <xs:documentation>A formatting string that specifies the display format for the value of this member.</xs:documentation>
-         </xs:annotation>
-      </xs:attribute>
-      <xs:attribute name="apply-format-in-edit-mode" type="c:Boolean">
-         <xs:annotation>
-            <xs:documentation>Indicates if the display format should be used in an edit control for this member.</xs:documentation>
-         </xs:annotation>
-      </xs:attribute>
-      <xs:attribute name="disable-output-escaping" type="c:Boolean">
-         <xs:annotation>
-            <xs:documentation>Indicates if this member should not be escaped when displaying in a UI (e.g. HTML content).</xs:documentation>
-         </xs:annotation>
-      </xs:attribute>
-      <xs:attribute name="null-display-text" type="c:String">
-         <xs:annotation>
-            <xs:documentation>A text that is displayed for this member when the value is null.</xs:documentation>
-         </xs:annotation>
-      </xs:attribute>
-      <xs:attribute name="template" type="c:String">
-         <xs:annotation>
-            <xs:documentation>The name of a template to use when displaying this member in a UI.</xs:documentation>
-         </xs:annotation>
-      </xs:attribute>
-      <xs:attribute name="read-only" type="c:Boolean">
-         <xs:annotation>
-            <xs:documentation>Indicates if editing should be disabled for this member in an editing UI.</xs:documentation>
-         </xs:annotation>
-      </xs:attribute>
-      <xs:attribute name="auto-generate-filter" type="c:Boolean">
-         <xs:annotation>
-            <xs:documentation>Indicates if a filtering control should be automatically displayed for this member in a UI.</xs:documentation>
-         </xs:annotation>
-      </xs:attribute>
-      <xs:attribute name="data-type">
-         <xs:simpleType>
-            <xs:restriction base="xs:token">
-               <xs:enumeration value="CreditCard"/>
-               <xs:enumeration value="Currency"/>
-               <xs:enumeration value="Date"/>
-               <xs:enumeration value="DateTime"/>
-               <xs:enumeration value="Duration"/>
-               <xs:enumeration value="EmailAddress"/>
-               <xs:enumeration value="Html"/>
-               <xs:enumeration value="ImageUrl"/>
-               <xs:enumeration value="MultilineText"/>
-               <xs:enumeration value="Password"/>
-               <xs:enumeration value="PhoneNumber"/>
-               <xs:enumeration value="PostalCode"/>
-               <xs:enumeration value="Text"/>
-               <xs:enumeration value="Time"/>
-               <xs:enumeration value="Upload"/>
-               <xs:enumeration value="Url"/>
-            </xs:restriction>
-         </xs:simpleType>
-      </xs:attribute>
-      <xs:attribute name="required" type="c:Boolean"/>
-      <xs:attribute name="max-length" type="c:Expression"/>
-      <xs:attribute name="min-length" type="c:Expression"/>
-      <xs:attribute name="pattern" type="c:String"/>
-      <xs:attribute name="min" type="c:Expression"/>
-      <xs:attribute name="max" type="c:Expression"/>
-      <xs:attribute name="range-type" type="c:Type"/>
-      <xs:attribute name="equal-to" type="c:Name"/>
-      <xs:attribute name="value" type="c:Expression">
-         <xs:annotation>
-            <xs:documentation>An initial value for this member.</xs:documentation>
-         </xs:annotation>
-      </xs:attribute>
-      <xs:attribute name="expression" type="c:Expression">
-         <xs:annotation>
-            <xs:documentation>An expression for computed members.</xs:documentation>
-         </xs:annotation>
-      </xs:attribute>
-   </xs:attributeGroup>
    <xs:element name="output">
+      <xs:annotation>
+         <xs:documentation>Defines serialization parameters.</xs:documentation>
+      </xs:annotation>
       <xs:complexType>
-         <xs:attribute name="name" type="c:EQName"/>
-         <xs:attribute name="method" type="c:OutputMethod"/>
-         <xs:attribute name="byte-order-mark" type="c:Boolean"/>
-         <xs:attribute name="cdata-section-elements" type="c:CDataSectionElements"/>
-         <xs:attribute name="doctype-public" type="c:String"/>
-         <xs:attribute name="doctype-system" type="c:String"/>
-         <xs:attribute name="encoding" type="c:String"/>
-         <xs:attribute name="escape-uri-attributes" type="c:Boolean"/>
-         <xs:attribute name="html-version" type="c:Decimal"/>
-         <xs:attribute name="include-content-type" type="c:Boolean"/>
-         <xs:attribute name="indent" type="c:Boolean"/>
-         <xs:attribute name="indent-spaces" type="c:Integer"/>
-         <xs:attribute name="item-separator" type="c:String"/>
-         <xs:attribute name="media-type" type="c:String"/>
-         <xs:attribute name="omit-xml-declaration" type="c:Boolean"/>
-         <xs:attribute name="standalone" type="c:OutputStandalone"/>
-         <xs:attribute name="suppress-indentation" type="c:SuppressIndentation"/>
-         <xs:attribute name="undeclare-prefixes" type="c:Boolean"/>
-         <xs:attribute name="version" type="c:OutputVersion"/>
+         <xs:attribute name="name" type="c:EQName">
+            <xs:annotation>
+               <xs:documentation>The name of the output definition.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="method" type="c:OutputMethod">
+            <xs:annotation>
+               <xs:documentation>Specifies the output format.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="byte-order-mark" type="c:Boolean">
+            <xs:annotation>
+               <xs:documentation>Specifies whether a byte order mark is written at the start of the file.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="cdata-section-elements" type="c:CDataSectionElements">
+            <xs:annotation>
+               <xs:documentation>Specifies elements whose child text nodes should be wrapped in a CDATA section.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="doctype-public" type="c:String">
+            <xs:annotation>
+               <xs:documentation>Specifies a public document type declaration.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="doctype-system" type="c:String">
+            <xs:annotation>
+               <xs:documentation>Specifies a system document type declaration.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="encoding" type="c:String">
+            <xs:annotation>
+               <xs:documentation>Specifies the output encoding.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="escape-uri-attributes" type="c:Boolean">
+            <xs:annotation>
+               <xs:documentation>Specifies whether to escape URI attributes in HTML and XHTML documents.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="html-version" type="c:Decimal">
+            <xs:annotation>
+               <xs:documentation>Specifies the HTML version.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="include-content-type" type="c:Boolean">
+            <xs:annotation>
+               <xs:documentation>Specifies whether to include a meta element in the head of HTML and XHTML documents, specifying the used character encoding.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="indent" type="c:Boolean">
+            <xs:annotation>
+               <xs:documentation>Specifies whether to indent the output.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="indent-spaces" type="c:Integer">
+            <xs:annotation>
+               <xs:documentation>The number of spaces to use for indenting.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="item-separator" type="c:String">
+            <xs:annotation>
+               <xs:documentation>A string to intersperse when outputting multiple items.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="media-type" type="c:String">
+            <xs:annotation>
+               <xs:documentation>The media type (MIME content type) of the output, to include in a meta element in the head of HTML and XHTML documents.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="omit-xml-declaration" type="c:Boolean">
+            <xs:annotation>
+               <xs:documentation>Specifies whether to omit the XML declaration.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="standalone" type="c:OutputStandalone">
+            <xs:annotation>
+               <xs:documentation>Specifies whether to include the standalone document declaration.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="suppress-indentation" type="c:SuppressIndentation">
+            <xs:annotation>
+               <xs:documentation>Specifies elements that should not be indented.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="undeclare-prefixes" type="c:Boolean">
+            <xs:annotation>
+               <xs:documentation>Specifies whether to undeclare namespaces when outputting XML 1.1.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="version" type="c:OutputVersion">
+            <xs:annotation>
+               <xs:documentation>The version of the output format.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes-except-version"/>
       </xs:complexType>
    </xs:element>
    <xs:element name="validation">
+      <xs:annotation>
+         <xs:documentation>Defines default values for validation messages.</xs:documentation>
+      </xs:annotation>
       <xs:complexType>
          <xs:attributeGroup ref="c:validation-attributes"/>
       </xs:complexType>
@@ -535,59 +752,109 @@
    </xs:attributeGroup>
    <!-- ## Instructions -->
    <xs:element name="assert">
-      <xs:complexType>
-         <xs:complexContent>
-            <xs:extension base="c:value-attribute-or-content">
-               <xs:attribute name="test" use="required" type="c:Expression"/>
-               <xs:attributeGroup ref="c:standard-attributes"/>
-            </xs:extension>
-         </xs:complexContent>
+      <xs:annotation>
+         <xs:documentation>Checks for a condition and signals a message if the condition is false.</xs:documentation>
+      </xs:annotation>
+      <xs:complexType mixed="true">
+         <xs:group minOccurs="0" ref="c:sequence-constructor"/>
+         <xs:attribute name="test" use="required" type="c:Expression">
+            <xs:annotation>
+               <xs:documentation>The condition to check for.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="value" type="c:Expression">
+            <xs:annotation>
+               <xs:documentation>A message to signal.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
    <xs:element name="attribute">
-      <xs:complexType>
-         <xs:complexContent>
-            <xs:extension base="c:value-attribute-or-content">
-               <xs:attribute name="name" use="required">
-                  <xs:simpleType>
-                     <xs:union memberTypes="c:QName c:AVTExpr"/>
-                  </xs:simpleType>
-               </xs:attribute>
-               <xs:attribute name="namespace">
-                  <xs:simpleType>
-                     <xs:union memberTypes="c:URI c:AVTExpr"/>
-                  </xs:simpleType>
-               </xs:attribute>
-               <xs:attribute name="separator" type="c:AVT"/>
-               <xs:attributeGroup ref="c:standard-attributes"/>
-            </xs:extension>
-         </xs:complexContent>
+      <xs:annotation>
+         <xs:documentation>Creates an attribute node.</xs:documentation>
+      </xs:annotation>
+      <xs:complexType mixed="true">
+         <xs:group minOccurs="0" ref="c:sequence-constructor"/>
+         <xs:attribute name="name" use="required">
+            <xs:annotation>
+               <xs:documentation>The name of the attribute. Attribute value template (QName).</xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+               <xs:union memberTypes="c:QName c:AVTExpr"/>
+            </xs:simpleType>
+         </xs:attribute>
+         <xs:attribute name="value" type="c:Expression">
+            <xs:annotation>
+               <xs:documentation>The value of the attribute.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="namespace">
+            <xs:annotation>
+               <xs:documentation>The namespace of the attribute. Attribute value template (URI).</xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+               <xs:union memberTypes="c:URI c:AVTExpr"/>
+            </xs:simpleType>
+         </xs:attribute>
+         <xs:attribute name="separator" type="c:AVT">
+            <xs:annotation>
+               <xs:documentation>A string to intersperse between values. Attribute value template.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
    <xs:element name="break">
+      <xs:annotation>
+         <xs:documentation>Exits from a loop.</xs:documentation>
+      </xs:annotation>
       <xs:complexType>
          <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
    <xs:element name="call-template">
+      <xs:annotation>
+         <xs:documentation>Invokes a template.</xs:documentation>
+      </xs:annotation>
       <xs:complexType>
-         <xs:group minOccurs="0" maxOccurs="unbounded" ref="c:with-param-for-templates"/>
-         <xs:attribute name="name" use="required" type="c:EQName"/>
+         <xs:group minOccurs="0" maxOccurs="unbounded" ref="c:with-param"/>
+         <xs:attribute name="name" use="required" type="c:EQName">
+            <xs:annotation>
+               <xs:documentation>The name of the template to invoke.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
    <xs:element name="catch">
-      <xs:complexType>
-         <xs:complexContent>
-            <xs:extension base="c:value-attribute-or-content">
-               <xs:attribute name="exception" type="c:Expression"/>
-               <xs:attribute name="when" type="c:Expression"/>
-               <xs:attributeGroup ref="c:standard-attributes"/>
-            </xs:extension>
-         </xs:complexContent>
+      <xs:annotation>
+         <xs:documentation>Catches an exception.</xs:documentation>
+      </xs:annotation>
+      <xs:complexType mixed="true">
+         <xs:group minOccurs="0" ref="c:sequence-constructor"/>
+         <xs:attribute name="exception" type="c:Expression">
+            <xs:annotation>
+               <xs:documentation>The exception to catch.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="when" type="c:Expression">
+            <xs:annotation>
+               <xs:documentation>An exception filter.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="value" type="c:Expression">
+            <xs:annotation>
+               <xs:documentation>A value to output.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
    <xs:element name="choose">
+      <xs:annotation>
+         <xs:documentation>Chooses between multiple alternatives.</xs:documentation>
+      </xs:annotation>
       <xs:complexType>
          <xs:sequence>
             <xs:element maxOccurs="unbounded" ref="c:when"/>
@@ -596,181 +863,306 @@
          <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
-   <xs:element name="when">
-      <xs:complexType mixed="true">
-         <xs:group ref="c:sequence-constructor"/>
-         <xs:attribute name="test" use="required" type="c:Expression"/>
-         <xs:attributeGroup ref="c:standard-attributes"/>
-      </xs:complexType>
-   </xs:element>
-   <xs:element name="otherwise">
-      <xs:complexType mixed="true">
-         <xs:group ref="c:sequence-constructor"/>
-         <xs:attributeGroup ref="c:standard-attributes"/>
-      </xs:complexType>
-   </xs:element>
    <xs:element name="comment">
-      <xs:complexType>
-         <xs:complexContent>
-            <xs:extension base="c:value-attribute-or-content">
-               <xs:attributeGroup ref="c:standard-attributes"/>
-            </xs:extension>
-         </xs:complexContent>
+      <xs:annotation>
+         <xs:documentation>Creates a comment node.</xs:documentation>
+      </xs:annotation>
+      <xs:complexType mixed="true">
+         <xs:group minOccurs="0" ref="c:sequence-constructor"/>
+         <xs:attribute name="value" type="c:Expression">
+            <xs:annotation>
+               <xs:documentation>The comment.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
    <xs:element name="continue">
+      <xs:annotation>
+         <xs:documentation>Interrupts the current loop iteration and advances to the next.</xs:documentation>
+      </xs:annotation>
       <xs:complexType>
          <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
    <xs:element name="delegate">
+      <xs:annotation>
+         <xs:documentation>Creates a template delegate.</xs:documentation>
+      </xs:annotation>
       <xs:complexType mixed="true">
          <xs:sequence>
             <xs:element minOccurs="0" maxOccurs="unbounded" ref="c:param"/>
             <xs:group ref="c:sequence-constructor"/>
          </xs:sequence>
-         <xs:attribute name="as" type="c:Type"/>
+         <xs:attribute name="as" type="c:Type">
+            <xs:annotation>
+               <xs:documentation>The return type of the template.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
    <xs:element name="element">
+      <xs:annotation>
+         <xs:documentation>Creates an element node.</xs:documentation>
+      </xs:annotation>
       <xs:complexType mixed="true">
          <xs:group ref="c:sequence-constructor"/>
          <xs:attribute name="name" use="required">
+            <xs:annotation>
+               <xs:documentation>The name of the element. Attribute value template (QName).</xs:documentation>
+            </xs:annotation>
             <xs:simpleType>
                <xs:union memberTypes="c:QName-default c:AVTExpr"/>
             </xs:simpleType>
          </xs:attribute>
          <xs:attribute name="namespace">
+            <xs:annotation>
+               <xs:documentation>The namespace of the element. Attribute value template (URI).</xs:documentation>
+            </xs:annotation>
             <xs:simpleType>
                <xs:union memberTypes="c:URI c:AVTExpr"/>
             </xs:simpleType>
          </xs:attribute>
-         <xs:attribute name="use-attribute-sets" type="c:UseAttributeSets"/>
+         <xs:attribute name="use-attribute-sets" type="c:UseAttributeSets">
+            <xs:annotation>
+               <xs:documentation>Specifies attribute sets to use on the element.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
    <xs:element name="evaluate-delegate">
+      <xs:annotation>
+         <xs:documentation>Evaluates a template delegate.</xs:documentation>
+      </xs:annotation>
       <xs:complexType>
-         <xs:group minOccurs="0" maxOccurs="unbounded" ref="c:with-param-for-templates"/>
-         <xs:attribute name="value" use="required" type="c:Expression"/>
-         <xs:attribute name="with-params" type="c:Expression"/>
+         <xs:group minOccurs="0" maxOccurs="unbounded" ref="c:with-param"/>
+         <xs:attribute name="value" use="required" type="c:Expression">
+            <xs:annotation>
+               <xs:documentation>The template delegate instance.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="with-params" type="c:Expression">
+            <xs:annotation>
+               <xs:documentation>An object with parameters.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
    <xs:element name="fallback">
+      <xs:annotation>
+         <xs:documentation>Defines fallback behavior for the parent element.</xs:documentation>
+      </xs:annotation>
       <xs:complexType mixed="true">
          <xs:group ref="c:sequence-constructor"/>
          <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
    <xs:element name="finally">
-      <xs:complexType>
-         <xs:complexContent>
-            <xs:extension base="c:value-attribute-or-content">
-               <xs:attributeGroup ref="c:standard-attributes"/>
-            </xs:extension>
-         </xs:complexContent>
+      <xs:annotation>
+         <xs:documentation>Defines unconditional behavior for the c:try instruction.</xs:documentation>
+      </xs:annotation>
+      <xs:complexType mixed="true">
+         <xs:group minOccurs="0" ref="c:sequence-constructor"/>
+         <xs:attribute name="value" type="c:Expression">
+            <xs:annotation>
+               <xs:documentation>A value to output.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
    <xs:element name="for-each">
+      <xs:annotation>
+         <xs:documentation>Processes each item in a sequence of items.</xs:documentation>
+      </xs:annotation>
       <xs:complexType mixed="true">
          <xs:sequence>
             <xs:element minOccurs="0" maxOccurs="unbounded" ref="c:sort"/>
             <xs:group ref="c:sequence-constructor"/>
          </xs:sequence>
-         <xs:attribute name="name" use="required" type="c:Name"/>
-         <xs:attribute name="in" use="required" type="c:Expression"/>
-         <xs:attribute name="as" type="c:Type"/>
+         <xs:attribute name="name" use="required" type="c:Name">
+            <xs:annotation>
+               <xs:documentation>The name of the item.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="in" use="required" type="c:Expression">
+            <xs:annotation>
+               <xs:documentation>The source of the items.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="as" type="c:Type">
+            <xs:annotation>
+               <xs:documentation>The type of the item.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
    <xs:element name="for-each-group">
+      <xs:annotation>
+         <xs:documentation>Processes a sequence of items in groups.</xs:documentation>
+      </xs:annotation>
       <xs:complexType mixed="true">
          <xs:sequence>
             <xs:element minOccurs="0" maxOccurs="unbounded" ref="c:sort"/>
             <xs:group ref="c:sequence-constructor"/>
          </xs:sequence>
-         <xs:attribute name="name" use="required" type="c:Name"/>
-         <xs:attribute name="in" use="required" type="c:Expression"/>
-         <xs:attribute name="group-by" type="c:Expression"/>
-         <xs:attribute name="group-size" type="c:Expression"/>
+         <xs:attribute name="name" use="required" type="c:Name">
+            <xs:annotation>
+               <xs:documentation>The name of the group.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="in" use="required" type="c:Expression">
+            <xs:annotation>
+               <xs:documentation>The source of the items.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="group-by" type="c:Expression">
+            <xs:annotation>
+               <xs:documentation>An expression to use as grouping key.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="group-size" type="c:Expression">
+            <xs:annotation>
+               <xs:documentation>The maximum number of items a group may have.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
       </xs:complexType>
    </xs:element>
    <xs:element name="if">
+      <xs:annotation>
+         <xs:documentation>Defines conditional behavior.</xs:documentation>
+      </xs:annotation>
       <xs:complexType mixed="true">
          <xs:group ref="c:sequence-constructor"/>
-         <xs:attribute name="test" use="required" type="c:Expression"/>
+         <xs:attribute name="test" use="required" type="c:Expression">
+            <xs:annotation>
+               <xs:documentation>The condition to check for the contents to be processed.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
    <xs:element name="message">
-      <xs:complexType>
-         <xs:complexContent>
-            <xs:extension base="c:value-attribute-or-content">
-               <xs:attribute name="terminate">
-                  <xs:simpleType>
-                     <xs:union memberTypes="c:Boolean c:AVTExpr"/>
-                  </xs:simpleType>
-               </xs:attribute>
-               <xs:attributeGroup ref="c:standard-attributes"/>
-            </xs:extension>
-         </xs:complexContent>
+      <xs:annotation>
+         <xs:documentation>Signals a message.</xs:documentation>
+      </xs:annotation>
+      <xs:complexType mixed="true">
+         <xs:group minOccurs="0" ref="c:sequence-constructor"/>
+         <xs:attribute name="value" type="c:Expression">
+            <xs:annotation>
+               <xs:documentation>The message.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="terminate">
+            <xs:annotation>
+               <xs:documentation>Specifies whether to stop the execution of the program. Attribute value template (Boolean).</xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+               <xs:union memberTypes="c:Boolean c:AVTExpr"/>
+            </xs:simpleType>
+         </xs:attribute>
+         <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
    <xs:element name="namespace">
-      <xs:complexType>
-         <xs:complexContent>
-            <xs:extension base="c:value-attribute-or-content">
-               <xs:attribute name="name" use="required">
-                  <xs:simpleType>
-                     <xs:union memberTypes="c:NCName c:AVTExpr"/>
-                  </xs:simpleType>
-               </xs:attribute>
-               <xs:attributeGroup ref="c:standard-attributes"/>
-            </xs:extension>
-         </xs:complexContent>
+      <xs:annotation>
+         <xs:documentation>Creates a namespace node.</xs:documentation>
+      </xs:annotation>
+      <xs:complexType mixed="true">
+         <xs:group minOccurs="0" ref="c:sequence-constructor"/>
+         <xs:attribute name="name" use="required">
+            <xs:annotation>
+               <xs:documentation>The namespace prefix. Attribute value template (NCName).</xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+               <xs:union memberTypes="c:NCName c:AVTExpr"/>
+            </xs:simpleType>
+         </xs:attribute>
+         <xs:attribute name="value" type="c:Expression">
+            <xs:annotation>
+               <xs:documentation>The namespace URI.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
    <xs:element name="next-function">
+      <xs:annotation>
+         <xs:documentation>Invokes the overriden function.</xs:documentation>
+      </xs:annotation>
       <xs:complexType>
          <xs:group minOccurs="0" maxOccurs="unbounded" ref="c:with-param-for-functions"/>
          <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
    <xs:element name="next-template">
+      <xs:annotation>
+         <xs:documentation>Invokes the overriden template.</xs:documentation>
+      </xs:annotation>
       <xs:complexType>
-         <xs:group minOccurs="0" maxOccurs="unbounded" ref="c:with-param-for-templates"/>
+         <xs:group minOccurs="0" maxOccurs="unbounded" ref="c:with-param"/>
          <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
    <xs:element name="object">
-      <xs:complexType>
-         <xs:complexContent>
-            <xs:extension base="c:value-attribute-or-content">
-               <xs:attributeGroup ref="c:standard-attributes"/>
-            </xs:extension>
-         </xs:complexContent>
+      <xs:annotation>
+         <xs:documentation>Appends a value to the current output.</xs:documentation>
+      </xs:annotation>
+      <xs:complexType mixed="true">
+         <xs:group minOccurs="0" ref="c:sequence-constructor"/>
+         <xs:attribute name="value" type="c:Expression">
+            <xs:annotation>
+               <xs:documentation>The value to output.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attributeGroup ref="c:standard-attributes"/>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="otherwise">
+      <xs:annotation>
+         <xs:documentation>Represents a fallback in a c:choose instruction in case no other choice is selected.</xs:documentation>
+      </xs:annotation>
+      <xs:complexType mixed="true">
+         <xs:group ref="c:sequence-constructor"/>
+         <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
    <xs:element name="processing-instruction">
-      <xs:complexType>
-         <xs:complexContent>
-            <xs:extension base="c:value-attribute-or-content">
-               <xs:attribute name="name" use="required">
-                  <xs:simpleType>
-                     <xs:union memberTypes="c:NCName c:AVTExpr"/>
-                  </xs:simpleType>
-               </xs:attribute>
-               <xs:attributeGroup ref="c:standard-attributes"/>
-            </xs:extension>
-         </xs:complexContent>
+      <xs:annotation>
+         <xs:documentation>Creates a processing instruction node.</xs:documentation>
+      </xs:annotation>
+      <xs:complexType mixed="true">
+         <xs:group minOccurs="0" ref="c:sequence-constructor"/>
+         <xs:attribute name="name" use="required">
+            <xs:annotation>
+               <xs:documentation>The name of the processing instruction. Attribute value template (NCName).</xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+               <xs:union memberTypes="c:NCName c:AVTExpr"/>
+            </xs:simpleType>
+         </xs:attribute>
+         <xs:attribute name="value" type="c:Expression">
+            <xs:annotation>
+               <xs:documentation>The processing instruction content.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
    <xs:element name="result-document">
+      <xs:annotation>
+         <xs:documentation>Creates a secondary result.</xs:documentation>
+      </xs:annotation>
       <xs:complexType mixed="true">
          <xs:group ref="c:sequence-constructor"/>
          <xs:attribute name="href" use="required">
+            <xs:annotation>
+               <xs:documentation>The relative or absolute URI to send the result to. Attribute value template (URI).</xs:documentation>
+            </xs:annotation>
             <xs:simpleType>
                <xs:union memberTypes="c:URI c:AVTExpr"/>
             </xs:simpleType>
@@ -780,21 +1172,36 @@
       </xs:complexType>
    </xs:element>
    <xs:element name="return">
-      <xs:complexType>
-         <xs:complexContent>
-            <xs:extension base="c:value-attribute-or-content">
-               <xs:attributeGroup ref="c:standard-attributes"/>
-            </xs:extension>
-         </xs:complexContent>
+      <xs:annotation>
+         <xs:documentation>Exits from a template or function.</xs:documentation>
+      </xs:annotation>
+      <xs:complexType mixed="true">
+         <xs:group minOccurs="0" ref="c:sequence-constructor"/>
+         <xs:attribute name="value" type="c:Expression">
+            <xs:annotation>
+               <xs:documentation>A value to return.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
    <xs:element name="script">
+      <xs:annotation>
+         <xs:documentation>Embeds or references a script of code.</xs:documentation>
+      </xs:annotation>
       <xs:complexType mixed="true">
          <xs:attributeGroup ref="c:standard-attributes"/>
-         <xs:attribute name="src" type="c:URI"/>
+         <xs:attribute name="src" type="c:URI">
+            <xs:annotation>
+               <xs:documentation>The relative or absolute URI of the script of code.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
       </xs:complexType>
    </xs:element>
    <xs:element name="serialize">
+      <xs:annotation>
+         <xs:documentation>Creates a string representation of its contents.</xs:documentation>
+      </xs:annotation>
       <xs:complexType mixed="true">
          <xs:group ref="c:sequence-constructor"/>
          <xs:attributeGroup ref="c:output-avt-attributes"/>
@@ -802,19 +1209,35 @@
       </xs:complexType>
    </xs:element>
    <xs:element name="set">
-      <xs:complexType>
-         <xs:complexContent>
-            <xs:extension base="c:value-attribute-or-content">
-               <xs:attribute name="member" use="required" type="c:Expression"/>
-               <xs:attributeGroup ref="c:standard-attributes"/>
-            </xs:extension>
-         </xs:complexContent>
+      <xs:complexType mixed="true">
+         <xs:group minOccurs="0" ref="c:sequence-constructor"/>
+         <xs:attribute name="member" use="required" type="c:Expression">
+            <xs:annotation>
+               <xs:documentation>The reference to set.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="value" type="c:Expression">
+            <xs:annotation>
+               <xs:documentation>The value to assign.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
    <xs:element name="sort">
+      <xs:annotation>
+         <xs:documentation>Defines how to sort sequences of items.</xs:documentation>
+      </xs:annotation>
       <xs:complexType>
-         <xs:attribute name="value" type="c:Expression"/>
+         <xs:attribute name="value" type="c:Expression">
+            <xs:annotation>
+               <xs:documentation>An expression to use as sort key.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
          <xs:attribute name="order">
+            <xs:annotation>
+               <xs:documentation>Specifies the sort direction ("ascending" or "descending"). Attribute value template.</xs:documentation>
+            </xs:annotation>
             <xs:simpleType>
                <xs:union memberTypes="c:SortOrder c:AVTExpr"/>
             </xs:simpleType>
@@ -822,118 +1245,233 @@
       </xs:complexType>
    </xs:element>
    <xs:element name="text">
+      <xs:annotation>
+         <xs:documentation>Creates a text node or string.</xs:documentation>
+      </xs:annotation>
       <xs:complexType mixed="true">
-         <xs:attribute name="disable-output-escaping" type="c:Boolean"/>
+         <xs:attribute name="disable-output-escaping" type="c:Boolean">
+            <xs:annotation>
+               <xs:documentation>Specifies whether to omit output escaping.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
    <xs:element name="try">
+      <xs:annotation>
+         <xs:documentation>Recovers from exceptions or defines unconditional behavior.</xs:documentation>
+      </xs:annotation>
       <xs:complexType mixed="true">
-         <xs:complexContent>
-            <xs:extension base="c:value-attribute-or-content">
-               <xs:choice>
-                  <xs:sequence>
-                     <xs:element maxOccurs="unbounded" ref="c:catch"/>
-                     <xs:element minOccurs="0" ref="c:finally"/>
-                  </xs:sequence>
-                  <xs:element ref="c:finally"/>
-               </xs:choice>
-               <xs:attribute name="rollback-output" type="c:Boolean"/>
-               <xs:attributeGroup ref="c:standard-attributes"/>
-            </xs:extension>
-         </xs:complexContent>
+         <xs:sequence>
+            <xs:group minOccurs="0" ref="c:sequence-constructor"/>
+            <xs:choice>
+               <xs:sequence>
+                  <xs:element maxOccurs="unbounded" ref="c:catch"/>
+                  <xs:element minOccurs="0" ref="c:finally"/>
+               </xs:sequence>
+               <xs:element ref="c:finally"/>
+            </xs:choice>
+         </xs:sequence>
+         <xs:attribute name="value" type="c:Expression">
+            <xs:annotation>
+               <xs:documentation>A value to output.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="rollback-output" type="c:Boolean">
+            <xs:annotation>
+               <xs:documentation>Specifies whether to discard the output when an exception occurs.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
    <xs:element name="using">
+      <xs:annotation>
+         <xs:documentation>Facilitates the unconditional disposing of an object.</xs:documentation>
+      </xs:annotation>
       <xs:complexType mixed="true">
          <xs:group ref="c:sequence-constructor"/>
-         <xs:attribute name="value" use="required" type="c:Expression"/>
-         <xs:attribute name="name" type="c:Name"/>
-         <xs:attribute name="as" type="c:Type"/>
+         <xs:attribute name="value" use="required" type="c:Expression">
+            <xs:annotation>
+               <xs:documentation>The disposable object.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="name" type="c:Name">
+            <xs:annotation>
+               <xs:documentation>The name of the disposable variable.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="as" type="c:Type">
+            <xs:annotation>
+               <xs:documentation>The type of the disposable variable.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
    <xs:element name="using-module">
+      <xs:annotation>
+         <xs:documentation>Defines an invocation on a dynamically loaded module.</xs:documentation>
+      </xs:annotation>
       <xs:complexType>
          <xs:sequence>
-            <xs:group minOccurs="0" maxOccurs="unbounded" ref="c:with-param-for-templates"/>
+            <xs:group minOccurs="0" maxOccurs="unbounded" ref="c:with-param"/>
             <xs:element name="call-template">
+               <xs:annotation>
+                  <xs:documentation>Invokes a template in the used module.</xs:documentation>
+               </xs:annotation>
                <xs:complexType>
-                  <xs:group minOccurs="0" maxOccurs="unbounded" ref="c:with-param-for-templates"/>
+                  <xs:group minOccurs="0" maxOccurs="unbounded" ref="c:with-param"/>
                   <xs:attribute name="name" use="required">
+                     <xs:annotation>
+                        <xs:documentation>The name of the template. Attribute value template (EQName).</xs:documentation>
+                     </xs:annotation>
                      <xs:simpleType>
                         <xs:union memberTypes="c:EQName c:AVTExpr"/>
                      </xs:simpleType>
                   </xs:attribute>
-                  <xs:attribute name="with-params" type="c:Expression"/>
+                  <xs:attribute name="with-params" type="c:Expression">
+                     <xs:annotation>
+                        <xs:documentation>An object with parameters.</xs:documentation>
+                     </xs:annotation>
+                  </xs:attribute>
                   <xs:attributeGroup ref="c:standard-attributes"/>
                </xs:complexType>
             </xs:element>
          </xs:sequence>
-         <xs:attribute name="value" use="required" type="c:Expression"/>
-         <xs:attribute name="with-params" type="c:Expression"/>
+         <xs:attribute name="value" use="required" type="c:Expression">
+            <xs:annotation>
+               <xs:documentation>An instance of a pre-compiled module.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="with-params" type="c:Expression">
+            <xs:annotation>
+               <xs:documentation>An object with parameters.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
    <xs:element name="value-of">
-      <xs:complexType>
-         <xs:complexContent>
-            <xs:extension base="c:value-attribute-or-content">
-               <xs:attribute name="disable-output-escaping" type="c:Boolean"/>
-               <xs:attribute name="separator" type="c:AVT"/>
-               <xs:attributeGroup ref="c:standard-attributes"/>
-            </xs:extension>
-         </xs:complexContent>
+      <xs:annotation>
+         <xs:documentation>Creates a text node or string.</xs:documentation>
+      </xs:annotation>
+      <xs:complexType mixed="true">
+         <xs:group minOccurs="0" ref="c:sequence-constructor"/>
+         <xs:attribute name="value" type="c:Expression">
+            <xs:annotation>
+               <xs:documentation>The content of the text node or string.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="disable-output-escaping" type="c:Boolean">
+            <xs:annotation>
+               <xs:documentation>Specifies whether to omit output escaping.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="separator" type="c:AVT">
+            <xs:annotation>
+               <xs:documentation>A string to intersperse between values. Attribute value template.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
    <xs:element name="variable">
-      <xs:complexType>
-         <xs:complexContent>
-            <xs:extension base="c:value-attribute-or-content">
+      <xs:annotation>
+         <xs:documentation>Defines a variable.</xs:documentation>
+      </xs:annotation>
+      <xs:complexType mixed="true">
+         <xs:group minOccurs="0" ref="c:sequence-constructor"/>
+         <xs:attribute name="name" use="required" type="c:Name">
+            <xs:annotation>
+               <xs:documentation>The name of the variable.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="value" type="c:Expression">
+            <xs:annotation>
+               <xs:documentation>The initial value of the variable.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="as" type="c:Type">
+            <xs:annotation>
+               <xs:documentation>The type of the variable.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attributeGroup ref="c:visibility-attribute"/>
+         <xs:attributeGroup ref="c:standard-attributes"/>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="void">
+      <xs:annotation>
+         <xs:documentation>Evaluates ignoring the result.</xs:documentation>
+      </xs:annotation>
+      <xs:complexType mixed="true">
+         <xs:group minOccurs="0" ref="c:sequence-constructor"/>
+         <xs:attribute name="value" type="c:Expression">
+            <xs:annotation>
+               <xs:documentation>The expression to evaluate.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attributeGroup ref="c:standard-attributes"/>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="when">
+      <xs:annotation>
+         <xs:documentation>Represents a choice in a c:choose instruction.</xs:documentation>
+      </xs:annotation>
+      <xs:complexType mixed="true">
+         <xs:group ref="c:sequence-constructor"/>
+         <xs:attribute name="test" use="required" type="c:Expression">
+            <xs:annotation>
+               <xs:documentation>The condition to check for the current choice to be selected.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attributeGroup ref="c:standard-attributes"/>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="while">
+      <xs:annotation>
+         <xs:documentation>Repeateadly evaluates instructions until a condition is not met.</xs:documentation>
+      </xs:annotation>
+      <xs:complexType mixed="true">
+         <xs:group ref="c:sequence-constructor"/>
+         <xs:attribute name="test" use="required" type="c:Expression">
+            <xs:annotation>
+               <xs:documentation>The condition for the loop to continue.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attributeGroup ref="c:standard-attributes"/>
+      </xs:complexType>
+   </xs:element>
+   <xs:group name="with-param">
+      <xs:sequence>
+         <xs:element name="with-param">
+            <xs:annotation>
+               <xs:documentation>Defines parameter arguments for a template or package.</xs:documentation>
+            </xs:annotation>
+            <xs:complexType mixed="true">
+               <xs:group minOccurs="0" ref="c:sequence-constructor"/>
                <xs:attribute name="name" use="required" type="c:Name">
                   <xs:annotation>
-                     <xs:documentation>The name of the variable.</xs:documentation>
+                     <xs:documentation>The name of the parameter.</xs:documentation>
+                  </xs:annotation>
+               </xs:attribute>
+               <xs:attribute name="value" type="c:Expression">
+                  <xs:annotation>
+                     <xs:documentation>The value of the parameter.</xs:documentation>
                   </xs:annotation>
                </xs:attribute>
                <xs:attribute name="as" type="c:Type">
                   <xs:annotation>
-                     <xs:documentation>The type of the variable.</xs:documentation>
+                     <xs:documentation>The type of the parameter.</xs:documentation>
                   </xs:annotation>
                </xs:attribute>
-               <xs:attributeGroup ref="c:visibility-attribute"/>
+               <xs:attribute name="tunnel" type="c:Boolean">
+                  <xs:annotation>
+                     <xs:documentation>Specifies if the parameter should be tunneled.</xs:documentation>
+                  </xs:annotation>
+               </xs:attribute>
                <xs:attributeGroup ref="c:standard-attributes"/>
-            </xs:extension>
-         </xs:complexContent>
-      </xs:complexType>
-   </xs:element>
-   <xs:element name="void">
-      <xs:complexType>
-         <xs:complexContent>
-            <xs:extension base="c:value-attribute-or-content">
-               <xs:attributeGroup ref="c:standard-attributes"/>
-            </xs:extension>
-         </xs:complexContent>
-      </xs:complexType>
-   </xs:element>
-   <xs:element name="while">
-      <xs:complexType mixed="true">
-         <xs:group ref="c:sequence-constructor"/>
-         <xs:attribute name="test" use="required" type="c:Expression"/>
-         <xs:attributeGroup ref="c:standard-attributes"/>
-      </xs:complexType>
-   </xs:element>
-   <xs:group name="with-param-for-templates">
-      <xs:sequence>
-         <xs:element name="with-param">
-            <xs:complexType>
-               <xs:complexContent>
-                  <xs:extension base="c:value-attribute-or-content">
-                     <xs:attribute name="name" use="required" type="c:Name"/>
-                     <xs:attribute name="as" type="c:Type"/>
-                     <xs:attribute name="tunnel" type="c:Boolean"/>
-                     <xs:attributeGroup ref="c:standard-attributes"/>
-                  </xs:extension>
-               </xs:complexContent>
             </xs:complexType>
          </xs:element>
       </xs:sequence>
@@ -941,91 +1479,170 @@
    <xs:group name="with-param-for-functions">
       <xs:sequence>
          <xs:element name="with-param">
-            <xs:complexType>
-               <xs:complexContent>
-                  <xs:extension base="c:value-attribute-or-content">
-                     <xs:attribute name="name" type="c:Name"/>
-                     <xs:attribute name="as" type="c:Type"/>
-                     <xs:attribute name="tunnel" type="c:Boolean"/>
-                     <xs:attributeGroup ref="c:standard-attributes"/>
-                  </xs:extension>
-               </xs:complexContent>
+            <xs:annotation>
+               <xs:documentation>Defines parameter arguments for a function.</xs:documentation>
+            </xs:annotation>
+            <xs:complexType mixed="true">
+               <xs:group minOccurs="0" ref="c:sequence-constructor"/>
+               <xs:attribute name="name" type="c:Name">
+                  <xs:annotation>
+                     <xs:documentation>The name of the parameter.</xs:documentation>
+                  </xs:annotation>
+               </xs:attribute>
+               <xs:attribute name="value" type="c:Expression">
+                  <xs:annotation>
+                     <xs:documentation>The value of the parameter.</xs:documentation>
+                  </xs:annotation>
+               </xs:attribute>
+               <xs:attribute name="as" type="c:Type">
+                  <xs:annotation>
+                     <xs:documentation>The type of the parameter.</xs:documentation>
+                  </xs:annotation>
+               </xs:attribute>
+               <xs:attribute name="tunnel" type="c:Boolean">
+                  <xs:annotation>
+                     <xs:documentation>Specifies if the parameter should be tunneled.</xs:documentation>
+                  </xs:annotation>
+               </xs:attribute>
+               <xs:attributeGroup ref="c:standard-attributes"/>
             </xs:complexType>
          </xs:element>
       </xs:sequence>
    </xs:group>
    <xs:attributeGroup name="output-avt-attributes">
       <xs:attribute name="format">
+         <xs:annotation>
+            <xs:documentation>The name of the output definition to get serialization parameters from. Attribute value template (EQName).</xs:documentation>
+         </xs:annotation>
          <xs:simpleType>
             <xs:union memberTypes="c:EQName c:AVTExpr"/>
          </xs:simpleType>
       </xs:attribute>
       <xs:attribute name="method">
+         <xs:annotation>
+            <xs:documentation>Specifies the output format. Attribute value template.</xs:documentation>
+         </xs:annotation>
          <xs:simpleType>
             <xs:union memberTypes="c:OutputMethod c:AVTExpr"/>
          </xs:simpleType>
       </xs:attribute>
       <xs:attribute name="byte-order-mark">
+         <xs:annotation>
+            <xs:documentation>Specifies whether a byte order mark is written at the start of the file. Attribute value template (Boolean).</xs:documentation>
+         </xs:annotation>
          <xs:simpleType>
             <xs:union memberTypes="c:Boolean c:AVTExpr"/>
          </xs:simpleType>
       </xs:attribute>
       <xs:attribute name="cdata-section-elements">
+         <xs:annotation>
+            <xs:documentation>Specifies elements whose child text nodes should be wrapped in a CDATA section. Attribute value template.</xs:documentation>
+         </xs:annotation>
          <xs:simpleType>
             <xs:union memberTypes="c:CDataSectionElements c:AVTExpr"/>
          </xs:simpleType>
       </xs:attribute>
-      <xs:attribute name="doctype-public" type="c:AVT"/>
-      <xs:attribute name="doctype-system" type="c:AVT"/>
-      <xs:attribute name="encoding" type="c:AVT"/>
+      <xs:attribute name="doctype-public" type="c:AVT">
+         <xs:annotation>
+            <xs:documentation>Specifies a public document type declaration. Attribute value template.</xs:documentation>
+         </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="doctype-system" type="c:AVT">
+         <xs:annotation>
+            <xs:documentation>Specifies a system document type declaration. Attribute value template.</xs:documentation>
+         </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="encoding" type="c:AVT">
+         <xs:annotation>
+            <xs:documentation>Specifies the output encoding. Attribute value template.</xs:documentation>
+         </xs:annotation>
+      </xs:attribute>
       <xs:attribute name="escape-uri-attributes">
+         <xs:annotation>
+            <xs:documentation>Specifies whether to escape URI attributes in HTML and XHTML documents. Attribute value template (Boolean).</xs:documentation>
+         </xs:annotation>
          <xs:simpleType>
             <xs:union memberTypes="c:Boolean c:AVTExpr"/>
          </xs:simpleType>
       </xs:attribute>
       <xs:attribute name="html-version">
+         <xs:annotation>
+            <xs:documentation>Specifies the HTML version. Attribute value template (Decimal).</xs:documentation>
+         </xs:annotation>
          <xs:simpleType>
             <xs:union memberTypes="c:Decimal c:AVTExpr"/>
          </xs:simpleType>
       </xs:attribute>
       <xs:attribute name="include-content-type">
+         <xs:annotation>
+            <xs:documentation>Specifies whether to include a meta element in the head of HTML and XHTML documents, specifying the used character encoding. Attribute value template (Boolean).</xs:documentation>
+         </xs:annotation>
          <xs:simpleType>
             <xs:union memberTypes="c:Boolean c:AVTExpr"/>
          </xs:simpleType>
       </xs:attribute>
       <xs:attribute name="indent">
+         <xs:annotation>
+            <xs:documentation>Specifies whether to indent the output. Attribute value template (Boolean).</xs:documentation>
+         </xs:annotation>
          <xs:simpleType>
             <xs:union memberTypes="c:Boolean c:AVTExpr"/>
          </xs:simpleType>
       </xs:attribute>
       <xs:attribute name="indent-spaces">
+         <xs:annotation>
+            <xs:documentation>The number of spaces to use for indenting. Attribute value template (Integer).</xs:documentation>
+         </xs:annotation>
          <xs:simpleType>
             <xs:union memberTypes="c:Integer c:AVTExpr"/>
          </xs:simpleType>
       </xs:attribute>
-      <xs:attribute name="item-separator" type="c:AVT"/>
-      <xs:attribute name="media-type" type="c:AVT"/>
+      <xs:attribute name="item-separator" type="c:AVT">
+         <xs:annotation>
+            <xs:documentation>A string to intersperse when outputting multiple items. Attribute value template.</xs:documentation>
+         </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="media-type" type="c:AVT">
+         <xs:annotation>
+            <xs:documentation>The media type (MIME content type) of the output, to include in a meta element in the head of HTML and XHTML documents. Attribute value template.</xs:documentation>
+         </xs:annotation>
+      </xs:attribute>
       <xs:attribute name="omit-xml-declaration">
+         <xs:annotation>
+            <xs:documentation>Specifies whether to omit the XML declaration. Attribute value template (Boolean).</xs:documentation>
+         </xs:annotation>
          <xs:simpleType>
             <xs:union memberTypes="c:Boolean c:AVTExpr"/>
          </xs:simpleType>
       </xs:attribute>
       <xs:attribute name="standalone">
+         <xs:annotation>
+            <xs:documentation>Specifies whether to include the standalone document declaration. Attribute value template.</xs:documentation>
+         </xs:annotation>
          <xs:simpleType>
             <xs:union memberTypes="c:OutputStandalone c:AVTExpr"/>
          </xs:simpleType>
       </xs:attribute>
       <xs:attribute name="suppress-indentation">
+         <xs:annotation>
+            <xs:documentation>Specifies elements that should not be indented. Attribute value template.</xs:documentation>
+         </xs:annotation>
          <xs:simpleType>
             <xs:union memberTypes="c:SuppressIndentation c:AVTExpr"/>
          </xs:simpleType>
       </xs:attribute>
       <xs:attribute name="undeclare-prefixes">
+         <xs:annotation>
+            <xs:documentation>Specifies whether to undeclare namespaces when outputting XML 1.1. Attribute value template (Boolean).</xs:documentation>
+         </xs:annotation>
          <xs:simpleType>
             <xs:union memberTypes="c:Boolean c:AVTExpr"/>
          </xs:simpleType>
       </xs:attribute>
       <xs:attribute name="output-version">
+         <xs:annotation>
+            <xs:documentation>The version of the output format. Attribute value template.</xs:documentation>
+         </xs:annotation>
          <xs:simpleType>
             <xs:union memberTypes="c:OutputVersion c:AVTExpr"/>
          </xs:simpleType>
