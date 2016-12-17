@@ -53,8 +53,10 @@ namespace Xcst.Compiler.Tests.Language {
                return null;
             }
 
+            var parseOptions = new CSharpParseOptions(preprocessorSymbols: new[] { "DEBUG", "TRACE" });
+
             SyntaxTree[] syntaxTrees = xcstResult.CompilationUnits
-               .Select(c => CSharpSyntaxTree.ParseText(c))
+               .Select(c => CSharpSyntaxTree.ParseText(c, parseOptions))
                .ToArray();
 
             // TODO: Should compiler give list of assembly references?

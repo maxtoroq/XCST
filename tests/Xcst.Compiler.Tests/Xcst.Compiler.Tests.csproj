@@ -86,7 +86,6 @@
     <None Include="Language\CallableComponents\EvaluateDelegate\WithParamAndWithParams.c.xcst" />
     <None Include="Language\CallableComponents\EvaluateDelegate\WithParams.c.xcst" />
     <None Include="Language\CallableComponents\EvaluateDelegate\WithParam.c.xcst" />
-    <None Include="Language\Diagnostics\AssertFail.c.xcst" />
     <None Include="Language\Diagnostics\Assert.c.xcst" />
     <None Include="Language\Diagnostics\MessageTerminateMaybe.c.xcst" />
     <None Include="Language\Diagnostics\MessageTerminateAlways.c.xcst" />
