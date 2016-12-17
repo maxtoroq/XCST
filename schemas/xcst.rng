@@ -926,12 +926,6 @@
    <define name="delegate">
       <element name="delegate">
          <ann:documentation>Creates a template delegate.</ann:documentation>
-         <optional>
-            <attribute name="as">
-               <ann:documentation>The return type of the template.</ann:documentation>
-               <ref name="Type"/>
-            </attribute>
-         </optional>
          <ref name="standard-attributes"/>
          <zeroOrMore>
             <ref name="param"/>

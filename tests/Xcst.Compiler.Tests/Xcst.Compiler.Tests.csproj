@@ -83,7 +83,6 @@
     <None Include="Language\CallableComponents\EvaluateDelegate\TunnelParamFromEvaluateDelegate.c.xcst" />
     <None Include="Language\CallableComponents\EvaluateDelegate\TunnelParamFromCallTemplate.c.xcst" />
     <None Include="Language\CallableComponents\EvaluateDelegate\TunnelParam.c.xcst" />
-    <None Include="Language\CallableComponents\EvaluateDelegate\Expression.c.xcst" />
     <None Include="Language\CallableComponents\EvaluateDelegate\WithParamAndWithParams.c.xcst" />
     <None Include="Language\CallableComponents\EvaluateDelegate\WithParams.c.xcst" />
     <None Include="Language\CallableComponents\EvaluateDelegate\WithParam.c.xcst" />
@@ -317,7 +316,6 @@
     <None Include="Language\CreatingNodesAndObjects\Attribute\attribute.name.req.i.xcst" />
     <None Include="Language\CreatingNodesAndObjects\Attribute\attribute.name.type.i.xcst" />
     <None Include="Language\CreatingNodesAndObjects\Attribute\attribute.value.type.i.xcst" />
-    <None Include="Language\CreatingNodesAndObjects\Delegate\delegate.as.type.i.xcst" />
     <None Include="Language\CreatingNodesAndObjects\Delegate\delegate.foo.i.xcst" />
     <None Include="Language\CreatingNodesAndObjects\Delegate\param.foo.i.xcst" />
     <None Include="Language\CreatingNodesAndObjects\Delegate\param.as.type.i.xcst" />

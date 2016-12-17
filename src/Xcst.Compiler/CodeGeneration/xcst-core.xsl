@@ -1770,14 +1770,14 @@
       <param name="indent" tunnel="yes"/>
 
       <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="'as'"/>
+         <with-param name="allowed" select="()"/>
          <with-param name="required" select="()"/>
       </call-template>
       <variable name="new-context" select="concat(src:aux-variable('context'), '_', generate-id())"/>
       <text>new </text>
-      <value-of select="src:global-identifier(concat('System.', if (@as) then 'Func' else 'Action'))"/>
+      <value-of select="src:global-identifier('System.Action')"/>
       <text>&lt;</text>
-      <value-of select="src:fully-qualified-helper('DynamicContext'), @as/xcst:type(.)" separator=", "/>
+      <value-of select="src:fully-qualified-helper('DynamicContext')"/>
       <text>>((</text>
       <value-of select="$new-context"/>
       <text>) => </text>

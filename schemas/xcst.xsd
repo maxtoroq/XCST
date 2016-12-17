@@ -894,11 +894,6 @@
             <xs:element minOccurs="0" maxOccurs="unbounded" ref="c:param"/>
             <xs:group ref="c:sequence-constructor"/>
          </xs:sequence>
-         <xs:attribute name="as" type="c:Type">
-            <xs:annotation>
-               <xs:documentation>The return type of the template.</xs:documentation>
-            </xs:annotation>
-         </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
