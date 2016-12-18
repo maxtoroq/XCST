@@ -17,6 +17,7 @@
 <grammar xmlns="http://relaxng.org/ns/structure/1.0"
    xmlns:ann="http://relaxng.org/ns/compatibility/annotations/1.0"
    xmlns:c="http://maxtoroq.github.io/XCST"
+   xmlns:docs="http://maxtoroq.github.io/XCST/docs"
    ns="http://maxtoroq.github.io/XCST"
    datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
 
@@ -224,6 +225,7 @@
       <element name="module">
          <ann:documentation>Represents an XCST module.</ann:documentation>
          <ref name="module-content"/>
+         <docs:seealso element-ref="package"/>
       </element>
    </define>
 
@@ -237,6 +239,7 @@
             </attribute>
          </optional>
          <ref name="module-content"/>
+         <docs:seealso element-ref="module"/>
       </element>
    </define>
 
@@ -339,6 +342,7 @@
             <ref name="param"/>
          </zeroOrMore>
          <ref name="sequence-constructor"/>
+         <docs:seealso element-ref="function"/>
       </element>
    </define>
 
@@ -361,6 +365,7 @@
             <ref name="param"/>
          </zeroOrMore>
          <ref name="sequence-constructor"/>
+         <docs:seealso element-ref="template"/>
       </element>
    </define>
 
@@ -395,6 +400,7 @@
             </choice>
          </zeroOrMore>
          <ref name="standard-attributes"/>
+         <docs:seealso element-ref="variable"/>
       </element>
    </define>
 
@@ -435,6 +441,7 @@
          <zeroOrMore>
             <ref name="member"/>
          </zeroOrMore>
+         <docs:seealso element-ref="validation"/>
       </element>
    </define>
 
@@ -594,6 +601,7 @@
          <zeroOrMore>
             <ref name="metadata"/>
          </zeroOrMore>
+         <docs:seealso element-ref="validation"/>
       </element>
    </define>
 
@@ -715,6 +723,8 @@
                <ref name="standard-attributes-except-version"/>
             </choice>
          </zeroOrMore>
+         <docs:seealso element-ref="result-document"/>
+         <docs:seealso element-ref="serialize"/>
       </element>
    </define>
 
@@ -722,6 +732,8 @@
       <element name="validation">
          <ann:documentation>Defines default values for validation messages.</ann:documentation>
          <ref name="validation-attributes"/>
+         <docs:seealso element-ref="member"/>
+         <docs:seealso element-ref="type"/>
       </element>
    </define>
 
@@ -803,6 +815,7 @@
             <ref name="sequence-constructor"/>
          </choice>
          <ref name="standard-attributes"/>
+         <docs:seealso element-ref="message"/>
       </element>
    </define>
 
@@ -839,6 +852,7 @@
             </choice>
          </zeroOrMore>
          <ref name="standard-attributes"/>
+         <docs:seealso element-ref="element"/>
       </element>
    </define>
 
@@ -860,6 +874,7 @@
          <zeroOrMore>
             <ref name="with-param"/>
          </zeroOrMore>
+         <docs:seealso element-ref="template"/>
       </element>
    </define>
 
@@ -899,6 +914,7 @@
          <optional>
             <ref name="otherwise"/>
          </optional>
+         <docs:seealso element-ref="if"/>
       </element>
    </define>
 
@@ -931,6 +947,7 @@
             <ref name="param"/>
          </zeroOrMore>
          <ref name="sequence-constructor"/>
+         <docs:seealso element-ref="evaluate-delegate"/>
       </element>
    </define>
 
@@ -961,6 +978,7 @@
          </zeroOrMore>
          <ref name="standard-attributes"/>
          <ref name="sequence-constructor"/>
+         <docs:seealso element-ref="attribute"/>
       </element>
    </define>
 
@@ -981,6 +999,7 @@
          <zeroOrMore>
             <ref name="with-param"/>
          </zeroOrMore>
+         <docs:seealso element-ref="delegate"/>
       </element>
    </define>
 
@@ -1028,6 +1047,8 @@
             <ref name="sort"/>
          </zeroOrMore>
          <ref name="sequence-constructor"/>
+         <docs:seealso element-ref="for-each-group"/>
+         <docs:seealso element-ref="while"/>
       </element>
    </define>
 
@@ -1056,6 +1077,7 @@
             <ref name="sort"/>
          </zeroOrMore>
          <ref name="sequence-constructor"/>
+         <docs:seealso element-ref="for-each"/>
       </element>
    </define>
 
@@ -1068,6 +1090,7 @@
          </attribute>
          <ref name="standard-attributes"/>
          <ref name="sequence-constructor"/>
+         <docs:seealso element-ref="choose"/>
       </element>
    </define>
 
@@ -1091,6 +1114,7 @@
             </attribute>
          </optional>
          <ref name="standard-attributes"/>
+         <docs:seealso element-ref="assert"/>
       </element>
    </define>
 
@@ -1122,6 +1146,7 @@
          <zeroOrMore>
             <ref name="with-param-for-functions"/>
          </zeroOrMore>
+         <docs:seealso element-ref="function"/>
       </element>
    </define>
 
@@ -1132,6 +1157,8 @@
          <zeroOrMore>
             <ref name="with-param"/>
          </zeroOrMore>
+         <docs:seealso element-ref="call-template"/>
+         <docs:seealso element-ref="template"/>
       </element>
    </define>
 
@@ -1191,6 +1218,8 @@
          <ref name="output-avt-attributes"/>
          <ref name="standard-attributes"/>
          <ref name="sequence-constructor"/>
+         <docs:seealso element-ref="output"/>
+         <docs:seealso element-ref="serialize"/>
       </element>
    </define>
 
@@ -1219,6 +1248,7 @@
             </attribute>
             <text/>
          </choice>
+         <docs:seealso element-ref="void"/>
       </element>
    </define>
 
@@ -1228,6 +1258,8 @@
          <ref name="output-avt-attributes"/>
          <ref name="standard-attributes"/>
          <ref name="sequence-constructor"/>
+         <docs:seealso element-ref="output"/>
+         <docs:seealso element-ref="result-document"/>
       </element>
    </define>
 
@@ -1245,6 +1277,7 @@
             <ref name="sequence-constructor"/>
          </choice>
          <ref name="standard-attributes"/>
+         <docs:seealso element-ref="variable"/>
       </element>
    </define>
 
@@ -1280,6 +1313,7 @@
          </optional>
          <ref name="standard-attributes"/>
          <text/>
+         <docs:seealso element-ref="value-of"/>
       </element>
    </define>
 
@@ -1311,6 +1345,7 @@
             </group>
             <ref name="finally"/>
          </choice>
+         <docs:seealso element-ref="using"/>
       </element>
    </define>
 
@@ -1335,6 +1370,7 @@
          </zeroOrMore>
          <ref name="standard-attributes"/>
          <ref name="sequence-constructor"/>
+         <docs:seealso element-ref="try"/>
       </element>
    </define>
 
@@ -1401,6 +1437,7 @@
             </choice>
          </zeroOrMore>
          <ref name="standard-attributes"/>
+         <docs:seealso element-ref="text"/>
       </element>
    </define>
 
@@ -1426,6 +1463,7 @@
          </optional>
          <ref name="visibility-attribute"/>
          <ref name="standard-attributes"/>
+         <docs:seealso element-ref="param"/>
       </element>
    </define>
 
@@ -1440,6 +1478,7 @@
             <ref name="sequence-constructor"/>
          </choice>
          <ref name="standard-attributes"/>
+         <docs:seealso element-ref="script"/>
       </element>
    </define>
 
@@ -1464,6 +1503,7 @@
          </attribute>
          <ref name="standard-attributes"/>
          <ref name="sequence-constructor"/>
+         <docs:seealso element-ref="for-each"/>
       </element>
    </define>
 
