@@ -452,6 +452,9 @@
             <ann:documentation>The name of the member.</ann:documentation>
             <ref name="Name"/>
          </attribute>
+         <zeroOrMore>
+            <ref name="metadata"/>
+         </zeroOrMore>
          <choice>
             <attribute name="as">
                <ann:documentation>The type of the member.</ann:documentation>
@@ -598,9 +601,6 @@
          </zeroOrMore>
          <ref name="type-or-member-attributes"/>
          <ref name="standard-attributes"/>
-         <zeroOrMore>
-            <ref name="metadata"/>
-         </zeroOrMore>
          <docs:seealso element-ref="validation"/>
       </element>
    </define>

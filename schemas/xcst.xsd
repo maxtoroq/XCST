@@ -355,8 +355,8 @@
       </xs:annotation>
       <xs:complexType>
          <xs:sequence>
-            <xs:element minOccurs="0" maxOccurs="unbounded" ref="c:member"/>
             <xs:element minOccurs="0" maxOccurs="unbounded" ref="c:metadata"/>
+            <xs:element minOccurs="0" maxOccurs="unbounded" ref="c:member"/>
          </xs:sequence>
          <xs:attribute name="name" use="required" type="c:Name">
             <xs:annotation>
