@@ -50,5 +50,9 @@ namespace Xcst.Runtime {
 
          return new RuntimeException($"No output definition exists named {outputName.ToString()}.", Code("XTDE1460"));
       }
+
+      public static Exception Terminate(string message) {
+         return new RuntimeException(message, Code("XTMM9000"));
+      }
    }
 }

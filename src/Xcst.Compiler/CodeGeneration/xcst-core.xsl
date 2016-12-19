@@ -1435,8 +1435,8 @@
             <with-param name="increase" select="if ($use-if) then 1 else 0"/>
          </call-template>
          <text>throw </text>
-         <value-of select="src:fully-qualified-helper('Diagnostics')"/>
-         <text>.MessageException(</text>
+         <value-of select="src:fully-qualified-helper('DynamicError')"/>
+         <text>.Terminate(</text>
          <value-of select="src:verbatim-string(concat('Processing terminated by ', name(), ' at line ', $err-obj[2], ' in ', tokenize($err-obj[1], '/')[last()]))"/>
          <text>)</text>
          <value-of select="$src:statement-delimiter"/>
