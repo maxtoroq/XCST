@@ -18,6 +18,7 @@ using System.Text;
 namespace Xcst.Runtime {
 
    /// <exclude/>
+
    public static class Serialization {
 
       public static string Serialize(IXcstPackage package, QualifiedName outputName, OutputParameters parameters, DynamicContext currentContext, Action<DynamicContext> action) {

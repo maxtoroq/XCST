@@ -18,6 +18,7 @@ using System.Globalization;
 namespace Xcst.Runtime {
 
    /// <exclude/>
+
    public class ExecutionContext {
 
       readonly IFormatProvider formatProvider;

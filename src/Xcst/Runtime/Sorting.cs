@@ -19,6 +19,7 @@ using System.Linq;
 namespace Xcst.Runtime {
 
    /// <exclude/>
+
    public static class Sorting {
 
       public static IOrderedEnumerable<TSource> SortBy<TSource, TKey>(IEnumerable<TSource> source, Func<TSource, TKey> keySelector, bool descending = false) {

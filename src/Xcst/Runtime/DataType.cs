@@ -18,6 +18,7 @@ using System.Globalization;
 namespace Xcst.Runtime {
 
    /// <exclude/>
+
    public static class DataType {
 
       public static bool Boolean(string value) {

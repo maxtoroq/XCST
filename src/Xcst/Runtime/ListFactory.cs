@@ -20,6 +20,7 @@ using System.Collections.ObjectModel;
 namespace Xcst.Runtime {
 
    /// <exclude/>
+
    public static class ListFactory {
 
       // Arrays implement IEnumerable<T>.GetEnumerator() explicitly

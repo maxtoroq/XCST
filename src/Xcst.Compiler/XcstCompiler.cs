@@ -265,6 +265,7 @@ namespace Xcst.Compiler {
    /// <summary>
    /// The result of the <see cref="XcstCompiler.Compile"/> method.
    /// </summary>
+
    public class CompileResult {
 
       public string Language { get; internal set; }

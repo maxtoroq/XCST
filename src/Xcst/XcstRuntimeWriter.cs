@@ -160,6 +160,7 @@ namespace Xcst {
       /// Ensure that attribute array has been created and is large enough for at least one
       /// additional entry.
       /// </summary>
+
       void EnsureAttributeCache() {
 
          if (this.arrAttrs == null) {
@@ -253,6 +254,7 @@ namespace Xcst {
          /// <summary>
          /// Cache an attribute's name and type.
          /// </summary>
+
          public void Init(string prefix, string localName, string ns, int hashCode) {
             this.localName = localName;
             this.prefix = prefix;
@@ -264,6 +266,7 @@ namespace Xcst {
          /// <summary>
          /// Cache all or part of the attribute's string value.
          /// </summary>
+
          public void Init(string text) {
             this.text = text;
          }
@@ -271,6 +274,7 @@ namespace Xcst {
          /// <summary>
          /// Returns true if this attribute has the specified name (and thus is a duplicate).
          /// </summary>
+
          public bool IsDuplicate(string localName, string ns, int hashCode) {
 
             // If attribute is not marked as deleted

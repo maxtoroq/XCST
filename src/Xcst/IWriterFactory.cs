@@ -27,6 +27,7 @@ namespace Xcst {
       bool KeepWriterOpen { get; }
 
       /// <param name="defaultParameters">Output definition (Usually the default definition, but can be a named definition when using <code>&lt;c:result-document format="name"></code>).</param>
+
       XcstWriter Create(OutputParameters defaultParameters);
    }
 

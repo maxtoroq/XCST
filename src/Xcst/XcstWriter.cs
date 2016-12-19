@@ -26,6 +26,7 @@ namespace Xcst {
       bool disposed;
 
       /// <exclude/>
+
       [EditorBrowsable(EditorBrowsableState.Never)]
       public SimpleContent SimpleContent { get; internal set; }
 
@@ -42,6 +43,7 @@ namespace Xcst {
       public abstract void WriteEndElement();
 
       /// <exclude/>
+
       [EditorBrowsable(EditorBrowsableState.Never)]
       public void WriteStartElementLexical(string lexical, string ns, string defaultNs) {
 
@@ -98,6 +100,7 @@ namespace Xcst {
       public abstract void WriteEndAttribute();
 
       /// <exclude/>
+
       [EditorBrowsable(EditorBrowsableState.Never)]
       public void WriteAttributeStringLexical(string lexical, string ns, string value) {
 
@@ -107,6 +110,7 @@ namespace Xcst {
       }
 
       /// <exclude/>
+
       [EditorBrowsable(EditorBrowsableState.Never)]
       public void WriteStartAttributeLexical(string lexical, string ns) {
 

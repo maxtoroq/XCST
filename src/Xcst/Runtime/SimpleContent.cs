@@ -30,6 +30,7 @@ using System.Text;
 namespace Xcst.Runtime {
 
    /// <exclude/>
+
    public class SimpleContent {
 
       public static string DefaultAttributeSeparator => " ";

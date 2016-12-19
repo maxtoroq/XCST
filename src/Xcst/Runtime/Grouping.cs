@@ -19,6 +19,7 @@ using System.Linq;
 namespace Xcst.Runtime {
 
    /// <exclude/>
+
    public static class Grouping {
 
       public static IEnumerable<IGrouping<TKey, TSource>> GroupBy<TSource, TKey>(IEnumerable<TSource> source, Func<TSource, TKey> keySelector) {

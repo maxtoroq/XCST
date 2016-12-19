@@ -19,6 +19,7 @@ using System.Linq;
 namespace Xcst.Runtime {
 
    /// <exclude/>
+
    public class DynamicContext : IDisposable {
 
       readonly IDictionary<string, object> templateParameters = new Dictionary<string, object>();

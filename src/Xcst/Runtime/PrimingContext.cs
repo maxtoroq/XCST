@@ -18,6 +18,7 @@ using System.Collections.Generic;
 namespace Xcst.Runtime {
 
    /// <exclude/>
+
    public class PrimingContext {
 
       readonly IDictionary<string, object> parameters = new Dictionary<string, object>();
