@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:template name='c:initial-template'>
+      <foo>
+         <c:call-template name='foo'/>
+      </foo>
+   </c:template>
+
+   <c:template name='foo' as='object'>
+      <c:call-template name='bar'/>
+   </c:template>
+
+   <c:template name='bar' as='string'>
+      <c:object value='"bar"'/>
+   </c:template>
+
+   <c:template name='expected'>
+      <foo>bar</foo>
+   </c:template>
+
+</c:module>

@@ -1165,13 +1165,10 @@
    <define name="object">
       <element name="object">
          <ann:documentation>Appends a value to the current output.</ann:documentation>
-         <choice>
-            <attribute name="value">
-               <ann:documentation>The value to output.</ann:documentation>
-               <ref name="Expression"/>
-            </attribute>
-            <ref name="sequence-constructor"/>
-         </choice>
+         <attribute name="value">
+            <ann:documentation>The value to output.</ann:documentation>
+            <ref name="Expression"/>
+         </attribute>
          <ref name="standard-attributes"/>
       </element>
    </define>
@@ -1276,6 +1273,12 @@
             </attribute>
             <ref name="sequence-constructor"/>
          </choice>
+         <optional>
+            <attribute name="as">
+               <ann:documentation>The type of the value.</ann:documentation>
+               <ref name="Type"/>
+            </attribute>
+         </optional>
          <ref name="standard-attributes"/>
          <docs:seealso element-ref="variable"/>
       </element>

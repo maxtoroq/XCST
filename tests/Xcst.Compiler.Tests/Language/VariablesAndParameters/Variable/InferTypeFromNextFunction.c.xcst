@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:import href='_InferTypeFromNextFunction.xcst'/>
+   
+   <c:template name='c:initial-template'>
+      <foo>
+         <c:value-of value='foo()'/>
+      </foo>
+   </c:template>
+
+   <c:function name='foo' as='bool'>
+      <c:variable name='a'>
+         <c:next-function/>
+      </c:variable>
+      <c:return value='a is int'/>
+   </c:function>
+
+   <c:template name='expected'>
+      <foo>True</foo>
+   </c:template>
+
+</c:module>

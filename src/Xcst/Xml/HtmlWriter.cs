@@ -17,7 +17,7 @@ using System.Xml;
 
 namespace Xcst.Xml {
 
-   class HtmlWriter : XmlWrappingWriter {
+   class HtmlWriter : WrappingXmlWriter {
 
       bool outputHtml5Doctype;
 

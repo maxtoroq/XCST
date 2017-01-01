@@ -52,7 +52,7 @@ using System.Xml;
 
 namespace Xcst.Xml {
 
-   class XHtmlWriter : XmlWrappingWriter {
+   class XHtmlWriter : WrappingXmlWriter {
       
       readonly Stack<XmlQualifiedName> elementStack = new Stack<XmlQualifiedName>();
 

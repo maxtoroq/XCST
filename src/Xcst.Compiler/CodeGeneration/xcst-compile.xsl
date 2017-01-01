@@ -53,7 +53,7 @@
 
       <if test="$library-package
          and not($package-name)">
-         <sequence select="error((), 'A library package is expected. Use the c:package element with a @name attribute.', src:error-object(.))"/>
+         <sequence select="error((), 'A library package is expected. Use the c:package element with a ''name'' attribute.', src:error-object(.))"/>
       </if>
 
       <variable name="ns" as="xs:string">
@@ -132,7 +132,7 @@
                         </apply-templates>
                      </variable>
                      <if test="not(xcst:language-equals($result/*/@language, $language))">
-                        <sequence select="error((), 'Used packages that are not pre-compiled must declare the same @language as the top-level package.', src:error-object(.))"/>
+                        <sequence select="error((), 'Used packages that are not pre-compiled must use the same value for the ''language'' attribute as the top-level package.', src:error-object(.))"/>
                      </if>
                      <sequence select="$result/*/xcst:package-manifest"/>
                   </otherwise>
@@ -224,7 +224,7 @@
       <apply-templates mode="xcst:check-top-level"/>
 
       <if test="not(xcst:language-equals(@language, $language))">
-         <sequence select="error(xs:QName('err:XTSE0020'), 'Imported modules must declare the same @language as the principal module.', src:error-object(.))"/>
+         <sequence select="error(xs:QName('err:XTSE0020'), 'Imported modules must use the same value for the ''language'' attribute as the principal module.', src:error-object(.))"/>
       </if>
 
       <apply-templates select="c:import" mode="#current"/>
@@ -279,7 +279,7 @@
       <variable name="language-attr" select="@*[node-name(.) eq $attr-name]"/>
 
       <if test="not(xcst:language-equals($language-attr, 'C#'))">
-         <sequence select="error(xs:QName('err:XTSE0020'), concat('This implementation supports only ''C#'' (@', $attr-name, ' attribute).'), src:error-object(.))"/>
+         <sequence select="error(xs:QName('err:XTSE0020'), concat('This implementation supports only ''C#'' (''', $attr-name, ''' attribute).'), src:error-object(.))"/>
       </if>
    </template>
 
@@ -428,7 +428,7 @@
       <param name="implicit-package" tunnel="yes"/>
 
       <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="'name', 'visibility'"/>
+         <with-param name="allowed" select="'as', 'name', 'visibility'"/>
          <with-param name="required" select="'name'"/>
       </call-template>
 
@@ -478,12 +478,17 @@
          else (@visibility/xcst:visibility(.), 'public'[$implicit-package], 'private')[1]"/>
 
       <variable name="public" select="$visibility = ('public', 'final', 'abstract')"/>
+      <variable name="as" select="@as/xcst:type(.)"/>
 
       <xcst:template name="{xcst:uri-qualified-name($qname)}"
             visibility="{$visibility}"
             member-name="{src:template-method-name(., $qname, 'tmpl', $public)}"
             declaration-id="{generate-id()}"
-            declaring-module-uri="{document-uri(root())}">
+            declaring-module-uri="{document-uri(root())}"
+            cardinality="{xcst:cardinality($as)}">
+         <if test="$as">
+            <attribute name="item-type" select="xcst:item-type($as)"/>
+         </if>
          <if test="$overriden-meta">
             <attribute name="overrides" select="generate-id($overriden-meta)"/>
          </if>
@@ -778,7 +783,7 @@
       <variable name="string" select="xcst:non-string($node)"/>
 
       <if test="not($string = ('public', 'private', 'final', 'abstract'))">
-         <sequence select="error(xs:QName('err:XTSE0020'), concat('Invalid value for ', '@'[$node instance of attribute()], name($node), '. Must be one of (public|private|final|abstract).'), src:error-object($node))"/>
+         <sequence select="error(xs:QName('err:XTSE0020'), concat('Invalid value for ''', name($node), '''. Must be one of (public|private|final|abstract).'), src:error-object($node))"/>
       </if>
 
       <sequence select="$string"/>
@@ -828,6 +833,16 @@
          '_',
          if ($deterministic and not(empty($qname))) then replace(string(src:qname-id($qname)), '-', '_') else generate-id($declaration)
       )"/>
+   </function>
+
+   <function name="src:template-output-type" as="xs:string">
+      <param name="meta" as="element()"/>
+
+      <sequence select="
+         if ($meta/@item-type) then
+            concat(src:fully-qualified-helper('ISequenceWriter'), '&lt;', $meta/@item-type, '>')
+         else
+            $src:output-type"/>
    </function>
 
    <function name="src:hidden-function-method-name" as="xs:string">
@@ -1026,6 +1041,7 @@
    <template match="xcst:template" mode="src:member">
 
       <variable name="context-param" select="src:aux-variable('context')"/>
+      <variable name="output-param" select="src:aux-variable('output')"/>
       <variable name="qname" select="xcst:EQName(@name)"/>
       <variable name="public" select="@visibility ne 'private'"/>
 
@@ -1058,7 +1074,9 @@
       <text>void </text>
       <value-of select="@member-name"/>
       <text>(</text>
-      <value-of select="src:fully-qualified-helper('DynamicContext'), $context-param"/>
+      <value-of select="$src:template-context-type, $context-param"/>
+      <text>, </text>
+      <value-of select="src:template-output-type(.), $output-param"/>
       <text>)</text>
       <call-template name="src:open-brace"/>
       <call-template name="src:new-line-indented">
@@ -1067,7 +1085,7 @@
       <text>this.</text>
       <value-of select="src:used-package-field-name(.), @member-name" separator="."/>
       <text>(</text>
-      <value-of select="$context-param"/>
+      <value-of select="$context-param, $output-param" separator=", "/>
       <text>)</text>
       <value-of select="$src:statement-delimiter"/>
       <call-template name="src:close-brace"/>
@@ -1121,6 +1139,7 @@
    <template match="xcst:attribute-set" mode="src:member">
 
       <variable name="context-param" select="src:aux-variable('context')"/>
+      <variable name="output-param" select="src:aux-variable('output')"/>
       <variable name="qname" select="xcst:EQName(@name)"/>
       <variable name="public" select="@visibility ne 'private'"/>
 
@@ -1140,7 +1159,9 @@
       <text>void </text>
       <value-of select="@member-name"/>
       <text>(</text>
-      <value-of select="src:fully-qualified-helper('DynamicContext'), $context-param"/>
+      <value-of select="$src:template-context-type, $context-param"/>
+      <text>, </text>
+      <value-of select="$src:output-type, $output-param"/>
       <text>)</text>
       <call-template name="src:open-brace"/>
       <call-template name="src:new-line-indented">
@@ -1149,7 +1170,7 @@
       <text>this.</text>
       <value-of select="src:used-package-field-name(.), @member-name" separator="."/>
       <text>(</text>
-      <value-of select="$context-param"/>
+      <value-of select="$context-param, $output-param" separator=", "/>
       <text>)</text>
       <value-of select="$src:statement-delimiter"/>
       <call-template name="src:close-brace"/>
@@ -1214,7 +1235,7 @@
    <template match="xcst:template | xcst:attribute-set" mode="src:used-package-overridden-type">
       <value-of select="src:global-identifier('System.Action')"/>
       <text>&lt;</text>
-      <value-of select="src:fully-qualified-helper('DynamicContext')"/>
+      <value-of select="$src:template-context-type, src:template-output-type(.)" separator=", "/>
       <text>></text>
    </template>
 
@@ -1257,12 +1278,15 @@
 
    <template match="xcst:template | xcst:attribute-set" mode="src:used-package-override">
       <variable name="context-param" select="src:aux-variable('context')"/>
+      <variable name="output-param" select="src:aux-variable('output')"/>
       <value-of select="$src:new-line"/>
       <call-template name="src:new-line-indented"/>
       <text>public override void </text>
       <value-of select="@member-name"/>
       <text>(</text>
-      <value-of select="src:fully-qualified-helper('DynamicContext'), $context-param"/>
+      <value-of select="$src:template-context-type, $context-param"/>
+      <text>, </text>
+      <value-of select="src:template-output-type(.), $output-param"/>
       <text>)</text>
       <call-template name="src:open-brace"/>
       <call-template name="src:new-line-indented">
@@ -1271,7 +1295,7 @@
       <text>this.</text>
       <value-of select="src:overridden-field-name(.)"/>
       <text>(</text>
-      <value-of select="$context-param"/>
+      <value-of select="$context-param, $output-param" separator=", "/>
       <text>)</text>
       <value-of select="$src:statement-delimiter"/>
       <call-template name="src:close-brace"/>
@@ -1311,15 +1335,16 @@
    </template>
 
    <template match="xcst:template | xcst:attribute-set" mode="src:used-package-original">
-
       <variable name="context-param" select="src:aux-variable('context')"/>
-
+      <variable name="output-param" select="src:aux-variable('output')"/>
       <value-of select="$src:new-line"/>
       <call-template name="src:new-line-indented"/>
       <text>internal void </text>
       <value-of select="src:original-member-name(.)"/>
       <text>(</text>
-      <value-of select="src:fully-qualified-helper('DynamicContext'), $context-param"/>
+      <value-of select="$src:template-context-type, $context-param"/>
+      <text>, </text>
+      <value-of select="src:template-output-type(.), $output-param"/>
       <text>)</text>
       <call-template name="src:open-brace"/>
       <call-template name="src:new-line-indented">
@@ -1328,7 +1353,7 @@
       <text>base.</text>
       <value-of select="@member-name"/>
       <text>(</text>
-      <value-of select="$context-param"/>
+      <value-of select="$context-param, $output-param" separator=", "/>
       <text>)</text>
       <value-of select="$src:statement-delimiter"/>
       <call-template name="src:close-brace"/>
@@ -1424,7 +1449,7 @@
       <text>using </text>
       <if test="@static-only/xcst:boolean(.)">
          <if test="@alias">
-            <sequence select="error(xs:QName('err:XTSE0020'), 'Cannot use both @alias and @static-only=''yes''.', src:error-object(.))"/>
+            <sequence select="error(xs:QName('err:XTSE0020'), 'Cannot use both ''alias'' and static-only=''yes''.', src:error-object(.))"/>
          </if>
          <text>static </text>
       </if>
@@ -1614,6 +1639,7 @@
       <variable name="meta" select="$package-manifest/xcst:template[@declaration-id eq current()/generate-id()]"/>
       <variable name="public" select="$meta/@visibility = ('public', 'final', 'abstract')"/>
       <variable name="context-param" select="src:aux-variable('context')"/>
+      <variable name="output-param" select="src:aux-variable('output')"/>
 
       <value-of select="$src:new-line"/>
 
@@ -1625,6 +1651,15 @@
          <value-of select="src:global-identifier('Xcst.Packages.XcstTemplate')"/>
          <text>(Name = </text>
          <value-of select="src:verbatim-string(xcst:uri-qualified-name($qname))"/>
+         <if test="$meta/@item-type">
+            <text>, ItemType = typeof(</text>
+            <value-of select="$meta/@item-type"/>
+            <text>)</text>
+         </if>
+         <if test="$meta/@cardinality[. ne 'ZeroOrMore']">
+            <text>, Cardinality = </text>
+            <value-of select="src:global-identifier('Xcst.Packages.XcstSequenceCardinality'), $meta/@cardinality" separator="."/>
+         </if>
          <text>)]</text>
 
          <for-each select="$meta/xcst:param">
@@ -1647,7 +1682,9 @@
       <text>void </text>
       <value-of select="$meta/@member-name"/>
       <text>(</text>
-      <value-of select="src:fully-qualified-helper('DynamicContext'), $context-param"/>
+      <value-of select="$src:template-context-type, $context-param"/>
+      <text>, </text>
+      <value-of select="src:template-output-type($meta), $output-param"/>
       <text>)</text>
       <variable name="children" select="node()[not(self::c:param or following-sibling::c:param)]"/>
       <choose>
@@ -1662,14 +1699,14 @@
             <call-template name="src:open-brace"/>
             <apply-templates select="c:param" mode="src:statement">
                <with-param name="indent" select="$indent + 1" tunnel="yes"/>
-               <with-param name="context-param" select="$context-param" tunnel="yes"/>
+               <with-param name="context" select="$context-param" tunnel="yes"/>
             </apply-templates>
             <call-template name="src:sequence-constructor">
                <with-param name="children" select="$children"/>
                <with-param name="omit-block" select="true()"/>
                <with-param name="indent" select="$indent + 1" tunnel="yes"/>
-               <with-param name="context-param" select="$context-param" tunnel="yes"/>
-               <with-param name="output" select="concat($context-param, '.Output')" tunnel="yes"/>
+               <with-param name="context" select="$context-param" tunnel="yes"/>
+               <with-param name="output" select="$output-param" tunnel="yes"/>
             </call-template>
             <call-template name="src:close-brace"/>
          </otherwise>
@@ -1745,6 +1782,7 @@
       <variable name="meta" select="$package-manifest/xcst:attribute-set[@declaration-id eq current()/generate-id()]"/>
       <variable name="public" select="$meta/@visibility = ('public', 'final', 'abstract')"/>
       <variable name="context-param" select="src:aux-variable('context')"/>
+      <variable name="output-param" select="src:aux-variable('output')"/>
 
       <value-of select="$src:new-line"/>
       <if test="$public">
@@ -1764,7 +1802,9 @@
       <text>void </text>
       <value-of select="$meta/@member-name"/>
       <text>(</text>
-      <value-of select="src:fully-qualified-helper('DynamicContext'), $context-param"/>
+      <value-of select="$src:template-context-type, $context-param"/>
+      <text>, </text>
+      <value-of select="$src:output-type, $output-param"/>
       <text>)</text>
       <variable name="children" select="c:attribute"/>
       <choose>
@@ -1779,15 +1819,15 @@
             <call-template name="src:use-attribute-sets">
                <with-param name="attr" select="@use-attribute-sets"/>
                <with-param name="indent" select="$indent + 1" tunnel="yes"/>
-               <with-param name="context-param" select="$context-param" tunnel="yes"/>
-               <with-param name="output" select="concat($context-param, '.Output')" tunnel="yes"/>
+               <with-param name="context" select="$context-param" tunnel="yes"/>
+               <with-param name="output" select="$output-param" tunnel="yes"/>
             </call-template>
             <call-template name="src:sequence-constructor">
                <with-param name="children" select="$children"/>
                <with-param name="omit-block" select="true()"/>
                <with-param name="indent" select="$indent + 1" tunnel="yes"/>
-               <with-param name="context-param" select="$context-param" tunnel="yes"/>
-               <with-param name="output" select="concat($context-param, '.Output')" tunnel="yes"/>
+               <with-param name="context" select="$context-param" tunnel="yes"/>
+               <with-param name="output" select="$output-param" tunnel="yes"/>
             </call-template>
             <call-template name="src:close-brace"/>
          </otherwise>
@@ -1851,7 +1891,7 @@
       <variable name="auto-init" select="(@auto-initialize/xcst:boolean(.), false())[1]"/>
 
       <if test="$auto-init and (@expression or @value)">
-         <sequence select="error(xs:QName('err:XTSE0020'), 'When @auto-initialize=''yes'' the @expression and @value attributes must be omitted.', src:error-object(@auto-initialize))"/>
+         <sequence select="error(xs:QName('err:XTSE0020'), 'When auto-initialize=''yes'' the ''expression'' and ''value'' attributes must be omitted.', src:error-object(@auto-initialize))"/>
       </if>
 
       <value-of select="$src:new-line"/>
@@ -2121,7 +2161,7 @@
          <if test="$package-manifest/xcst:*[@declaration-id eq current()/generate-id()]/@visibility ne 'hidden'">
             <apply-templates select="." mode="src:statement">
                <with-param name="indent" select="$indent + 1" tunnel="yes"/>
-               <with-param name="context-param" select="$context-param" tunnel="yes"/>
+               <with-param name="context" select="$context-param" tunnel="yes"/>
             </apply-templates>
          </if>
       </for-each>
@@ -2141,22 +2181,22 @@
       <call-template name="src:new-line-indented"/>
       <variable name="name-param" select="src:aux-variable('name')"/>
       <variable name="context-param" select="src:aux-variable('context')"/>
+      <variable name="output-param" select="src:aux-variable('output')"/>
       <text>void </text>
       <value-of select="src:global-identifier('Xcst.IXcstPackage')"/>
       <text>.CallTemplate(</text>
-      <value-of select="src:global-identifier('Xcst.QualifiedName')"/>
-      <text> </text>
-      <value-of select="$name-param"/>
+      <value-of select="src:global-identifier('Xcst.QualifiedName'), $name-param"/>
       <text>, </text>
-      <value-of select="src:fully-qualified-helper('DynamicContext')"/>
-      <text> </text>
-      <value-of select="$context-param"/>
+      <value-of select="$src:template-context-type, $context-param"/>
+      <text>, </text>
+      <value-of select="$src:output-type, $output-param"/>
       <text>)</text>
       <call-template name="src:open-brace"/>
       <call-template name="src:call-template-method-body">
          <with-param name="indent" select="$indent + 1" tunnel="yes"/>
          <with-param name="name-param" select="$name-param"/>
-         <with-param name="context-param" select="$context-param" tunnel="yes"/>
+         <with-param name="context" select="$context-param"/>
+         <with-param name="output" select="$output-param"/>
       </call-template>
       <call-template name="src:close-brace"/>
    </template>
@@ -2164,7 +2204,8 @@
    <template name="src:call-template-method-body">
       <param name="package-manifest" tunnel="yes"/>
       <param name="name-param"/>
-      <param name="context-param" tunnel="yes"/>
+      <param name="context"/>
+      <param name="output"/>
 
       <variable name="templates" select="$package-manifest/xcst:template[@visibility = ('public', 'final', 'absent')]"/>
 
@@ -2194,7 +2235,7 @@
          <text>this.</text>
          <value-of select="@member-name"/>
          <text>(</text>
-         <value-of select="$context-param"/>
+         <value-of select="$context, $output" separator=", "/>
          <text>)</text>
          <value-of select="$src:statement-delimiter"/>
          <call-template name="src:close-brace"/>

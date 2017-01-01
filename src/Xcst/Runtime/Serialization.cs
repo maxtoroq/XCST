@@ -21,7 +21,7 @@ namespace Xcst.Runtime {
 
    public static class Serialization {
 
-      public static string Serialize(IXcstPackage package, QualifiedName outputName, OutputParameters parameters, DynamicContext currentContext, Action<DynamicContext> action) {
+      public static string Serialize(IXcstPackage package, QualifiedName outputName, OutputParameters parameters, Action<XcstWriter> action) {
 
          if (package == null) throw new ArgumentNullException(nameof(package));
          if (parameters == null) throw new ArgumentNullException(nameof(parameters));
@@ -29,32 +29,30 @@ namespace Xcst.Runtime {
 
          var sb = new StringBuilder();
 
-         var defaultParameters = new OutputParameters();
+         var defaultParams = new OutputParameters();
 
          if (outputName != null) {
-            package.ReadOutputDefinition(outputName, defaultParameters);
+            package.ReadOutputDefinition(outputName, defaultParams);
          }
 
-         using (IWriterFactory writerFactory = WriterFactory.CreateFactory(sb, parameters)) {
-            using (var newContext = new DynamicContext(writerFactory, defaultParameters, package.Context, currentContext)) {
-               action(newContext);
-            }
+         using (XcstWriter writer = WriterFactory.CreateWriter(sb)(defaultParams, parameters, package.Context.SimpleContent)) {
+            action(writer);
          }
 
          return sb.ToString();
       }
 
-      public static DynamicContext ChangeOutput(IXcstPackage package, Uri outputUri, QualifiedName outputName, OutputParameters parameters, DynamicContext currentContext = null) {
+      public static XcstWriter ChangeOutput(IXcstPackage package, Uri outputUri, QualifiedName outputName, OutputParameters parameters, XcstWriter currentOutput = null) {
 
          if (package == null) throw new ArgumentNullException(nameof(package));
          if (outputUri == null) throw new ArgumentNullException(nameof(outputUri));
          if (parameters == null) throw new ArgumentNullException(nameof(parameters));
 
          if (!outputUri.IsAbsoluteUri
-            && currentContext != null
-            && currentContext.CurrentOutputUri.IsAbsoluteUri) {
+            && currentOutput != null
+            && currentOutput.OutputUri.IsAbsoluteUri) {
 
-            outputUri = new Uri(currentContext.CurrentOutputUri, outputUri);
+            outputUri = new Uri(currentOutput.OutputUri, outputUri);
          }
 
          if (!outputUri.IsAbsoluteUri) {
@@ -65,12 +63,10 @@ namespace Xcst.Runtime {
             throw new RuntimeException($"Can write to file URIs only ({outputUri.OriginalString}).", DynamicError.Code(""));
          }
 
-         var defaultParameters = new OutputParameters();
-         package.ReadOutputDefinition(outputName, defaultParameters);
+         var defaultParams = new OutputParameters();
+         package.ReadOutputDefinition(outputName, defaultParams);
 
-         IWriterFactory writerFactory = WriterFactory.CreateFactory(outputUri, parameters);
-
-         return new DynamicContext(writerFactory, defaultParameters, package.Context, currentContext);
+         return WriterFactory.CreateWriter(outputUri)(defaultParams, parameters, package.Context.SimpleContent);
       }
    }
 }

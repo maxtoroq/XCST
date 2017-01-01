@@ -63,7 +63,7 @@ namespace Xcst {
 
          // since there's no way to un-prime, a second prime would still use the values
          // of the first prime (for parameters not specified in the second prime)
-         // the workaround is to simple create a new evaluator
+         // the workaround is to simply create a new evaluator
 
          if (this.paramsLocked) {
             throw new InvalidOperationException($"Cannot modify parameters, use a new {nameof(XcstEvaluator)} object.");
@@ -165,8 +165,6 @@ namespace Xcst {
 
    public class XcstTemplateEvaluator {
 
-      static readonly Uri DefaultOuputUri = new Uri("", UriKind.Relative);
-
       readonly IXcstPackage package;
       readonly Action primeFn;
       readonly QualifiedName name;
@@ -231,63 +229,51 @@ namespace Xcst {
          if (!file.IsAbsoluteUri) throw new ArgumentException("file must be an absolute URI.", nameof(file));
          if (!file.IsFile) throw new ArgumentException("file must be a file URI", nameof(file));
 
-         Func<OutputParameters, IWriterFactory> writerFn = @params =>
-            WriterFactory.CreateFactory(file, @params);
-
-         return CreateOutputter(writerFn);
+         return CreateOutputter(WriterFactory.CreateWriter(file));
       }
 
-      public XcstOutputter OutputTo(Stream output, Uri outputUri = null, bool autoClose = false) {
+      public XcstOutputter OutputTo(Stream output, Uri outputUri = null) {
 
          if (output == null) throw new ArgumentNullException(nameof(output));
 
-         Func<OutputParameters, IWriterFactory> writerFn = @params =>
-            WriterFactory.CreateFactory(output, outputUri ?? DefaultOuputUri, @params, autoClose);
-
-         return CreateOutputter(writerFn);
+         return CreateOutputter(WriterFactory.CreateWriter(output, outputUri));
       }
 
-      public XcstOutputter OutputTo(TextWriter output, Uri outputUri = null, bool autoClose = false) {
+      public XcstOutputter OutputTo(TextWriter output, Uri outputUri = null) {
 
          if (output == null) throw new ArgumentNullException(nameof(output));
 
-         Func<OutputParameters, IWriterFactory> writerFn = @params =>
-            WriterFactory.CreateFactory(output, outputUri ?? DefaultOuputUri, @params, autoClose);
-
-         return CreateOutputter(writerFn);
+         return CreateOutputter(WriterFactory.CreateWriter(output, outputUri));
       }
 
-      public XcstOutputter OutputTo(XmlWriter output, Uri outputUri = null, bool autoClose = false) {
+      public XcstOutputter OutputTo(XmlWriter output, Uri outputUri = null) {
 
          if (output == null) throw new ArgumentNullException(nameof(output));
 
-         Func<OutputParameters, IWriterFactory> writerFn = @params =>
-            WriterFactory.CreateFactory(output, outputUri ?? DefaultOuputUri, autoClose);
-
-         return CreateOutputter(writerFn);
+         return CreateOutputter(WriterFactory.CreateWriter(output, outputUri));
       }
 
-      public XcstOutputter OutputTo(XcstWriter output, Uri outputUri = null, bool autoClose = false) {
+      public XcstOutputter OutputTo(XcstWriter output) {
 
          if (output == null) throw new ArgumentNullException(nameof(output));
 
-         Func<OutputParameters, IWriterFactory> writerFn = @params =>
-            WriterFactory.CreateFactory(output, outputUri ?? DefaultOuputUri, autoClose);
-
-         return CreateOutputter(writerFn);
+         return CreateOutputter(WriterFactory.CreateWriter(output));
       }
 
-      XcstOutputter CreateOutputter(Func<OutputParameters, IWriterFactory> writerFn) {
+      XcstOutputter CreateOutputter(CreateWriterDelegate writerFn) {
 
          var templateParams = new Dictionary<string, object>(this.templateParameters);
          var tunnelParams = new Dictionary<string, object>(this.tunnelParameters);
 
-         Action<IXcstPackage, DynamicContext> executionFn = (p, c) => ExecuteTemplate(p, c, templateParams, tunnelParams);
+         Action<IXcstPackage, XcstWriter> executionFn =
+            (p, o) => ExecuteTemplate(p, templateParams, tunnelParams, o);
 
          return new XcstOutputter(this.package, this.primeFn, writerFn, executionFn);
       }
 
-      void ExecuteTemplate(IXcstPackage package, DynamicContext context, IDictionary<string, object> templateParams, IDictionary<string, object> tunnelParams) {
+      void ExecuteTemplate(IXcstPackage package, IDictionary<string, object> templateParams, IDictionary<string, object> tunnelParams, XcstWriter output) {
+
+         var context = new TemplateContext();
 
          foreach (var param in templateParams) {
             context.WithParam(param.Key, param.Value);
@@ -297,7 +283,7 @@ namespace Xcst {
             context.WithParam(param.Key, param.Value, tunnel: true);
          }
 
-         package.CallTemplate(this.name, context);
+         package.CallTemplate(this.name, context, output);
       }
    }
 
@@ -305,13 +291,13 @@ namespace Xcst {
 
       readonly IXcstPackage package;
       readonly Action primeFn;
-      readonly Func<OutputParameters, IWriterFactory> writerFn;
-      readonly Action<IXcstPackage, DynamicContext> executionFn;
+      readonly CreateWriterDelegate writerFn;
+      readonly Action<IXcstPackage, XcstWriter> executionFn;
 
       OutputParameters parameters;
       IFormatProvider formatProvider;
 
-      internal XcstOutputter(IXcstPackage package, Action primeFn, Func<OutputParameters, IWriterFactory> writerFn, Action<IXcstPackage, DynamicContext> executionFn) {
+      internal XcstOutputter(IXcstPackage package, Action primeFn, CreateWriterDelegate writerFn, Action<IXcstPackage, XcstWriter> executionFn) {
 
          if (package == null) throw new ArgumentNullException(nameof(package));
          if (primeFn == null) throw new ArgumentNullException(nameof(primeFn));
@@ -336,7 +322,7 @@ namespace Xcst {
          return this;
       }
 
-      public void Run() {
+      public void Run(bool skipFlush = false) {
 
          var execContext = new ExecutionContext(this.package, this.formatProvider);
 
@@ -344,13 +330,24 @@ namespace Xcst {
 
          this.primeFn();
 
-         using (IWriterFactory writerFactory = writerFn(this.parameters)) {
+         var defaultParams = new OutputParameters();
+         this.package.ReadOutputDefinition(null, defaultParams);
 
-            var defaultParameters = new OutputParameters();
-            this.package.ReadOutputDefinition(null, defaultParameters);
+         RuntimeWriter writer = writerFn(defaultParams, this.parameters, execContext.SimpleContent);
 
-            using (var dynamicContext = new DynamicContext(writerFactory, defaultParameters, execContext)) {
-               this.executionFn(this.package, dynamicContext);
+         try {
+            this.executionFn(this.package, writer);
+
+            if (!writer.DisposeWriter
+               && !skipFlush) {
+
+               writer.Flush();
+            }
+
+         } finally {
+
+            if (writer.DisposeWriter) {
+               writer.Dispose();
             }
          }
       }

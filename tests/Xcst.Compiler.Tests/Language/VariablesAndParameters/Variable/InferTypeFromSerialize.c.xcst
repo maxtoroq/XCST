@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:template name='c:initial-template'>
+      <c:variable name='a'>
+         <c:serialize method='text'>foo</c:serialize>
+      </c:variable>
+      <foo>
+         <c:value-of value='a is string'/>
+      </foo>
+   </c:template>
+   
+   <c:template name='expected'>
+      <foo>True</foo>
+   </c:template>
+
+</c:module>

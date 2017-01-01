@@ -30,9 +30,11 @@ namespace Xcst.Compiler.Tests.Language {
             compiler.UsePackageBase = new StackFrame(1, true).GetMethod().DeclaringType.Namespace;
 
             CompileResult xcstResult;
+            bool failed = true;
 
             try {
                xcstResult = compiler.Compile(fileStream, baseUri: new Uri(fileName, UriKind.Absolute));
+               failed = false;
 
             } catch (CompileException ex) {
 
@@ -45,50 +47,53 @@ namespace Xcst.Compiler.Tests.Language {
                throw;
             }
 
-            foreach (string unit in xcstResult.CompilationUnits) {
-               Console.WriteLine(unit);
-            }
+            try {
 
-            if (!correct) {
-               return null;
-            }
+               if (!correct && failed) {
+                  return null;
+               }
 
-            var parseOptions = new CSharpParseOptions(preprocessorSymbols: new[] { "DEBUG", "TRACE" });
+               var parseOptions = new CSharpParseOptions(preprocessorSymbols: new[] { "DEBUG", "TRACE" });
 
-            SyntaxTree[] syntaxTrees = xcstResult.CompilationUnits
-               .Select(c => CSharpSyntaxTree.ParseText(c, parseOptions))
-               .ToArray();
+               SyntaxTree[] syntaxTrees = xcstResult.CompilationUnits
+                  .Select(c => CSharpSyntaxTree.ParseText(c, parseOptions))
+                  .ToArray();
 
-            // TODO: Should compiler give list of assembly references?
+               // TODO: Should compiler give list of assembly references?
 
-            MetadataReference[] references = {
-               MetadataReference.CreateFromFile(typeof(System.Object).Assembly.Location),
-               MetadataReference.CreateFromFile(typeof(System.Uri).Assembly.Location),
-               MetadataReference.CreateFromFile(typeof(System.Linq.Enumerable).Assembly.Location),
-               MetadataReference.CreateFromFile(typeof(System.Xml.XmlWriter).Assembly.Location),
-               MetadataReference.CreateFromFile(typeof(Xcst.IXcstPackage).Assembly.Location),
-               MetadataReference.CreateFromFile(Assembly.GetExecutingAssembly().Location)
-            };
+               MetadataReference[] references = {
+                  MetadataReference.CreateFromFile(typeof(System.Object).Assembly.Location),
+                  MetadataReference.CreateFromFile(typeof(System.Uri).Assembly.Location),
+                  MetadataReference.CreateFromFile(typeof(System.Linq.Enumerable).Assembly.Location),
+                  MetadataReference.CreateFromFile(typeof(System.Xml.XmlWriter).Assembly.Location),
+                  MetadataReference.CreateFromFile(typeof(Microsoft.CSharp.RuntimeBinder.RuntimeBinderException).Assembly.Location),
+                  MetadataReference.CreateFromFile(typeof(Xcst.IXcstPackage).Assembly.Location),
+                  MetadataReference.CreateFromFile(Assembly.GetExecutingAssembly().Location)
+               };
 
-            CSharpCompilation compilation = CSharpCompilation.Create(
-               Path.GetRandomFileName(),
-               syntaxTrees: syntaxTrees,
-               references: references,
-               options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+               CSharpCompilation compilation = CSharpCompilation.Create(
+                  Path.GetRandomFileName(),
+                  syntaxTrees: syntaxTrees,
+                  references: references,
+                  options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
-            using (var assemblyStream = new MemoryStream()) {
+               using (var assemblyStream = new MemoryStream()) {
 
-               EmitResult csharpResult = compilation.Emit(assemblyStream);
+                  EmitResult csharpResult = compilation.Emit(assemblyStream);
 
-               if (!csharpResult.Success) {
+                  if (!csharpResult.Success) {
 
-                  Diagnostic error = csharpResult.Diagnostics
-                     .Where(d => d.IsWarningAsError || d.Severity == DiagnosticSeverity.Error)
-                     .FirstOrDefault();
+                     Diagnostic error = csharpResult.Diagnostics
+                        .Where(d => d.IsWarningAsError || d.Severity == DiagnosticSeverity.Error)
+                        .FirstOrDefault();
 
-                  throw new ArgumentException($"{error?.Id}: {error?.GetMessage() ?? "C# compilation failed."}", nameof(fileName));
+                     if (error != null) {
+                        Console.WriteLine($"{error.Id}: {error.GetMessage()}");
+                        Console.WriteLine($"Line number: {error.Location.GetLineSpan().StartLinePosition.Line}");
+                     }
 
-               } else {
+                     throw new CompileException("C# compilation failed.");
+                  }
 
                   assemblyStream.Position = 0;
 
@@ -96,6 +101,12 @@ namespace Xcst.Compiler.Tests.Language {
                   Type type = assembly.GetType(compiler.TargetNamespace + "." + compiler.TargetClass);
 
                   return Tuple.Create(type, xcstResult);
+               }
+
+            } finally {
+
+               foreach (string unit in xcstResult.CompilationUnits) {
+                  Console.WriteLine(unit);
                }
             }
          }

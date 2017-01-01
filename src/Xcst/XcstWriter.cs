@@ -16,19 +16,27 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using Xcst.Runtime;
 
 namespace Xcst {
 
-   public abstract class XcstWriter : IDisposable {
+   public abstract class XcstWriter : ISequenceWriter<object>, IDisposable {
 
       bool disposed;
+
+      public virtual Uri OutputUri { get; }
 
       /// <exclude/>
 
       [EditorBrowsable(EditorBrowsableState.Never)]
-      public SimpleContent SimpleContent { get; internal set; }
+      public virtual SimpleContent SimpleContent { get; internal set; }
+
+      protected XcstWriter(Uri outputUri) {
+
+         if (outputUri == null) throw new ArgumentNullException(nameof(outputUri));
+
+         this.OutputUri = outputUri;
+      }
 
       public void WriteStartElement(string localName) {
          WriteStartElement(null, localName, default(string));
@@ -129,29 +137,39 @@ namespace Xcst {
          WriteStartAttribute(prefix, localName, ns);
       }
 
-      public void WriteString(IEnumerable text) {
-         WriteString(text?.Cast<object>());
-      }
-
-      public void WriteString(IEnumerable<object> text) {
-         WriteString(this.SimpleContent.Join(SimpleContent.DefaultTextSeparator, text));
-      }
-
-      public void WriteString(IEnumerable<string> text) {
-         WriteString(this.SimpleContent.Join(SimpleContent.DefaultTextSeparator, text));
-      }
+      public abstract void WriteString(string text);
 
       public void WriteString(object text) {
          WriteString(this.SimpleContent.Convert(text));
       }
 
-      public abstract void WriteString(string text);
-
       public abstract void WriteRaw(string data);
+
+      public void WriteRaw(object data) {
+         WriteRaw(this.SimpleContent.Convert(data));
+      }
 
       public abstract void WriteProcessingInstruction(string name, string text);
 
       public abstract void WriteComment(string text);
+
+      public void WriteObject(object value) {
+         WriteString(value);
+      }
+
+      public void WriteObject(IEnumerable<object> value) {
+         WriteString(this.SimpleContent.Join(SimpleContent.DefaultAttributeSeparator, value));
+      }
+
+      public void WriteObject(IEnumerable value) {
+         WriteString(this.SimpleContent.Join(SimpleContent.DefaultAttributeSeparator, value));
+      }
+
+      public void WriteObject(string value) {
+         WriteString(value);
+      }
+
+      public abstract void Flush();
 
       public void Dispose() {
 

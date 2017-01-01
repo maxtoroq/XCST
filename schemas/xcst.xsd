@@ -1107,9 +1107,8 @@
       <xs:annotation>
          <xs:documentation>Appends a value to the current output.</xs:documentation>
       </xs:annotation>
-      <xs:complexType mixed="true">
-         <xs:group minOccurs="0" ref="c:sequence-constructor"/>
-         <xs:attribute name="value" type="c:Expression">
+      <xs:complexType>
+         <xs:attribute name="value" use="required" type="c:Expression">
             <xs:annotation>
                <xs:documentation>The value to output.</xs:documentation>
             </xs:annotation>
@@ -1214,6 +1213,11 @@
          <xs:attribute name="value" type="c:Expression">
             <xs:annotation>
                <xs:documentation>The value to assign.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="as" type="c:Type">
+            <xs:annotation>
+               <xs:documentation>The type of the value.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>

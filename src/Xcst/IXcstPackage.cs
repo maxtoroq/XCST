@@ -23,7 +23,7 @@ namespace Xcst {
 
       void Prime(PrimingContext context);
 
-      void CallTemplate(QualifiedName name, DynamicContext context);
+      void CallTemplate(QualifiedName name, TemplateContext context, XcstWriter output);
 
       void ReadOutputDefinition(QualifiedName name, OutputParameters parameters);
    }
@@ -45,7 +45,17 @@ namespace Xcst {
       public class XcstParameterAttribute : XcstComponentAttribute { }
 
       [AttributeUsage(AttributeTargets.Method)]
-      public class XcstTemplateAttribute : XcstComponentAttribute { }
+      public class XcstTemplateAttribute : XcstComponentAttribute {
+
+         public Type ItemType { get; set; }
+
+         public XcstSequenceCardinality Cardinality { get; set; }
+      }
+
+      public enum XcstSequenceCardinality {
+         ZeroOrMore = 0,
+         One
+      }
 
       [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
       public class XcstTemplateParameterAttribute : Attribute {

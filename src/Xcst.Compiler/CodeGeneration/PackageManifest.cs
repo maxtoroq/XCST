@@ -96,6 +96,14 @@ namespace Xcst.Compiler.CodeGeneration {
                writer.WriteAttributeString("visibility", memberVisibility(member));
                writer.WriteAttributeString("member-name", member.Name);
 
+               XcstTemplateAttribute tmplAttr = (XcstTemplateAttribute)attr;
+
+               if (tmplAttr.ItemType != null) {
+                  writer.WriteAttributeString("item-type", tmplAttr.ItemType.FullName);
+               }
+
+               writer.WriteAttributeString("cardinality", tmplAttr.Cardinality.ToString());
+
                foreach (var param in member.GetCustomAttributes<XcstTemplateParameterAttribute>(inherit: true)) {
 
                   writer.WriteStartElement(prefix, "param", ns);

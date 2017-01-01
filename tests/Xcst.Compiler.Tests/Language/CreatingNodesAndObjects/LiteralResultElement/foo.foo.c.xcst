@@ -5,4 +5,8 @@
       <foo c:version='2.0' foo='foo'/>
    </c:template>
 
+   <c:template name='expected'>
+      <foo foo='foo'/>
+   </c:template>
+
 </c:module>
