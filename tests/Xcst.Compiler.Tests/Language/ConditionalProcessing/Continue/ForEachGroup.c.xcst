@@ -14,7 +14,7 @@
             <c:for-each name='item' in='group'>
                <dd>{item}</dd>
             </c:for-each>
-            <c:break/>
+            <c:continue/>
             <dd>!</dd>
          </c:for-each-group>
       </dl>
@@ -25,6 +25,8 @@
          <dt>1</dt>
          <dd>banana</dd>
          <dd>apricot</dd>
+         <dt>2</dt>
+         <dd>apple</dd>
       </dl>
    </c:template>
 

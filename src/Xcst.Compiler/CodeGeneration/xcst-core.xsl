@@ -1399,21 +1399,31 @@
    <template name="src:group-size-if">
       <param name="buff" required="yes"/>
       <param name="helper" required="yes"/>
+      <param name="indent" tunnel="yes"/>
 
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
       <value-of select="'var', xcst:name(@name), '=', concat($helper, '.CreateImmutable(', $buff, ')')"/>
       <value-of select="$src:statement-delimiter"/>
 
+      <value-of select="$src:new-line"/>
+      <call-template name="src:new-line-indented"/>
+      <text>try</text>
       <call-template name="src:sequence-constructor">
          <with-param name="children" select="node()[not(self::c:sort or following-sibling::c:sort)]"/>
-         <with-param name="omit-block" select="true()"/>
+         <with-param name="ensure-block" select="true()"/>
       </call-template>
-
-      <call-template name="src:line-hidden"/>
-      <call-template name="src:new-line-indented"/>
+      <text> finally</text>
+      <call-template name="src:open-brace"/>
+      <call-template name="src:line-hidden">
+         <with-param name="indent" select="$indent + 1" tunnel="yes"/>
+      </call-template>
+      <call-template name="src:new-line-indented">
+         <with-param name="increase" select="1"/>
+      </call-template>
       <value-of select="$buff, '.Clear()'" separator=""/>
       <value-of select="$src:statement-delimiter"/>
+      <call-template name="src:close-brace"/>
    </template>
 
    <template name="src:group-size-finally">

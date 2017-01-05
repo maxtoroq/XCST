@@ -106,6 +106,7 @@
     <None Include="Language\ConditionalProcessing\Break\ForEach.c.xcst" />
     <None Include="Language\ConditionalProcessing\Break\NotInLoop.i.xcst" />
     <None Include="Language\ConditionalProcessing\Continue\ForEach.c.xcst" />
+    <None Include="Language\ConditionalProcessing\Continue\ForEachGroup.c.xcst" />
     <None Include="Language\ConditionalProcessing\Continue\NotInLoop.i.xcst" />
     <None Include="Language\ConditionalProcessing\Continue\While.c.xcst" />
     <None Include="Language\ConditionalProcessing\Return\InSerialize.c.xcst" />
