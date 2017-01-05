@@ -80,7 +80,7 @@
    </template>
 
    <template match="*" mode="src:expression">
-      <sequence select="error((), concat('Element &lt;', name(), '> cannot be compiled into an expression.'), src:error-object(.))"/>
+      <sequence select="error((), concat('Element &lt;c:', local-name(), '> cannot be compiled into an expression.'), src:error-object(.))"/>
    </template>
 
    <template match="*" mode="src:expression-meta"/>
@@ -489,26 +489,6 @@
       </call-template>
    </template>
 
-   <template match="c:for-each//c:continue | c:while//c:continue" mode="src:statement">
-      <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="()"/>
-         <with-param name="required" select="()"/>
-      </call-template>
-      <call-template name="src:new-line-indented"/>
-      <text>continue</text>
-      <value-of select="$src:statement-delimiter"/>
-   </template>
-
-   <template match="c:for-each//c:break | c:while//c:break" mode="src:statement">
-      <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="()"/>
-         <with-param name="required" select="()"/>
-      </call-template>
-      <call-template name="src:new-line-indented"/>
-      <text>break</text>
-      <value-of select="$src:statement-delimiter"/>
-   </template>
-
    <template match="c:while" mode="src:statement">
       <call-template name="xcst:validate-attribs">
          <with-param name="allowed" select="'test'"/>
@@ -659,7 +639,7 @@
       <variable name="allowed-ancestor" select="ancestor::c:delegate[1]"/>
       <if test="$disallowed-ancestor
           and (not($allowed-ancestor) or $disallowed-ancestor >> $allowed-ancestor)">
-         <sequence select="error((), 'Cannot return while materializing a sequence constructor.', src:error-object(.))"/>
+         <sequence select="error(xs:QName('err:XTSE0010'), 'Cannot return while materializing a sequence constructor.', src:error-object(.))"/>
       </if>
 
       <choose>
@@ -686,6 +666,20 @@
             <value-of select="$src:statement-delimiter"/>
          </otherwise>
       </choose>
+   </template>
+
+   <template match="c:break | c:continue" mode="src:statement">
+      <call-template name="xcst:validate-attribs">
+         <with-param name="allowed" select="()"/>
+         <with-param name="required" select="()"/>
+      </call-template>
+      <if test="not(ancestor::c:for-each or ancestor::c:for-each-group or ancestor::c:while)">
+         <sequence select="error(xs:QName('err:XTSE0010'), concat('&lt;c:', local-name(), '> instruction can only be used within a &lt;c:for-each>, &lt;c:for-each-group> or &lt;c:while> instruction.'), src:error-object(.))"/>
+      </if>
+      <call-template name="src:line-number"/>
+      <call-template name="src:new-line-indented"/>
+      <value-of select="local-name()"/>
+      <value-of select="$src:statement-delimiter"/>
    </template>
 
    <!--
@@ -948,7 +942,7 @@
       <variable name="current-template" select="ancestor::c:template[1]"/>
 
       <if test="not($current-template)">
-         <sequence select="error(xs:QName('err:XTSE0010'), concat('&lt;', name(), '> instruction can only be used within a &lt;c:template> declaration.'), src:error-object(.))"/>
+         <sequence select="error(xs:QName('err:XTSE0010'), concat('&lt;c:', local-name(), '> instruction can only be used within a &lt;c:template> declaration.'), src:error-object(.))"/>
       </if>
 
       <variable name="current-meta" select="$package-manifest/xcst:template[@declaration-id eq generate-id($current-template)]"/>
@@ -1079,7 +1073,7 @@
       <variable name="current-function" select="ancestor::c:function[1]"/>
 
       <if test="not($current-function)">
-         <sequence select="error(xs:QName('err:XTSE0010'), concat('&lt;', name(), '> instruction can only be used within a &lt;c:function> declaration.'), src:error-object(.))"/>
+         <sequence select="error(xs:QName('err:XTSE0010'), concat('&lt;c:', local-name(), '> instruction can only be used within a &lt;c:function> declaration.'), src:error-object(.))"/>
       </if>
 
       <variable name="current-meta" select="$package-manifest/xcst:function[@declaration-id eq generate-id($current-function)]"/>
@@ -1498,7 +1492,7 @@
          <text>throw </text>
          <value-of select="src:fully-qualified-helper('DynamicError')"/>
          <text>.Terminate(</text>
-         <value-of select="src:verbatim-string(concat('Processing terminated by ', name(), ' at line ', $err-obj[2], ' in ', tokenize($err-obj[1], '/')[last()]))"/>
+         <value-of select="src:verbatim-string(concat('Processing terminated by c:', local-name(), ' at line ', $err-obj[2], ' in ', tokenize($err-obj[1], '/')[last()]))"/>
          <text>)</text>
          <value-of select="$src:statement-delimiter"/>
       </if>

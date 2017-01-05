@@ -101,6 +101,13 @@
     <None Include="Language\CallableComponents\Template\TypeCompatibleObjectToValueType.c.xcst" />
     <None Include="Language\CallableComponents\Template\TypeCompatibleUntypedToValueType.c.xcst" />
     <None Include="Language\CallableComponents\Template\TypeIncompatible.i.xcst" />
+    <None Include="Language\ConditionalProcessing\Break\ForEachGroup.c.xcst" />
+    <None Include="Language\ConditionalProcessing\Break\While.c.xcst" />
+    <None Include="Language\ConditionalProcessing\Break\ForEach.c.xcst" />
+    <None Include="Language\ConditionalProcessing\Break\NotInLoop.i.xcst" />
+    <None Include="Language\ConditionalProcessing\Continue\ForEach.c.xcst" />
+    <None Include="Language\ConditionalProcessing\Continue\NotInLoop.i.xcst" />
+    <None Include="Language\ConditionalProcessing\Continue\While.c.xcst" />
     <None Include="Language\ConditionalProcessing\Return\InSerialize.c.xcst" />
     <None Include="Language\ConditionalProcessing\Return\InValueOf.c.xcst" />
     <None Include="Language\ConditionalProcessing\Return\InSerialize.i.xcst" />
@@ -613,8 +620,8 @@
     <None Include="Language\Repetition\ForEach\for-each.name.type.i.xcst" />
     <None Include="Language\Repetition\ForEach\for-each.name.req.i.xcst" />
     <None Include="Language\Repetition\ForEach\for-each.foo.i.xcst" />
-    <None Include="Language\Repetition\continue.foo.i.xcst" />
-    <None Include="Language\Repetition\break.foo.i.xcst" />
+    <None Include="Language\ConditionalProcessing\Continue\continue.foo.i.xcst" />
+    <None Include="Language\ConditionalProcessing\Break\break.foo.i.xcst" />
     <None Include="Language\Serialization\Output\output.foo.i.xcst" />
     <None Include="Language\Serialization\Output\NonexistentFormat.i.xcst" />
     <None Include="Language\Serialization\Output\OverrideNamed.c.xcst" />

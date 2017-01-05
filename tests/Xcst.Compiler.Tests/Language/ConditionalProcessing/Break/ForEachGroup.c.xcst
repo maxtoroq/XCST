@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:use-functions in='System.Linq'/>
+
+   <c:template name='c:initial-template' expand-text='yes'>
+      <table>
+         <c:for-each-group name='group' in='new[] { "banana", "apricot", "apple" }' group-size='2'>
+            <tr>
+               <c:for-each name='item' in='group'>
+                  <td>{item}</td>
+               </c:for-each>
+               <c:break/>
+               <td>!</td>
+            </tr>
+         </c:for-each-group>
+      </table>
+   </c:template>
+
+   <c:template name='expected'>
+      <table>
+         <tr>
+            <td>banana</td>
+            <td>apricot</td>
+         </tr>
+      </table>
+   </c:template>
+
+</c:module>
