@@ -2389,60 +2389,6 @@
       </choose>
    </template>
 
-   <template name="src:sequence-constructor">
-      <param name="children" select="node()"/>
-      <param name="value" as="node()?"/>
-      <param name="text" select="xcst:text(., $children)"/>
-      <param name="ensure-block" select="false()"/>
-      <param name="omit-block" select="false()"/>
-      <param name="output" tunnel="yes"/>
-      <param name="indent" tunnel="yes"/>
-
-      <variable name="complex-content" select="boolean($children[self::*])"/>
-      <variable name="use-block" select="not($omit-block) and ($ensure-block or $complex-content)"/>
-      <variable name="new-indent" select="if ($use-block) then $indent + 1 else $indent"/>
-
-      <if test="$use-block">
-         <call-template name="src:open-brace"/>
-      </if>
-      <choose>
-         <when test="$complex-content">
-            <apply-templates select="$children" mode="src:statement">
-               <with-param name="indent" select="$new-indent" tunnel="yes"/>
-            </apply-templates>
-         </when>
-         <when test="$value">
-            <call-template name="src:line-number">
-               <with-param name="indent" select="$new-indent" tunnel="yes"/>
-            </call-template>
-            <call-template name="src:new-line-indented">
-               <with-param name="indent" select="$new-indent" tunnel="yes"/>
-            </call-template>
-            <value-of select="$output"/>
-            <text>.WriteObject(</text>
-            <value-of select="xcst:expression($value)"/>
-            <text>)</text>
-            <value-of select="$src:statement-delimiter"/>
-         </when>
-         <when test="$text">
-            <call-template name="src:line-number">
-               <with-param name="indent" select="$new-indent" tunnel="yes"/>
-            </call-template>
-            <call-template name="src:new-line-indented">
-               <with-param name="indent" select="$new-indent" tunnel="yes"/>
-            </call-template>
-            <value-of select="$output"/>
-            <text>.WriteString(</text>
-            <value-of select="src:expand-text(., $text)"/>
-            <text>)</text>
-            <value-of select="$src:statement-delimiter"/>
-         </when>
-      </choose>
-      <if test="$use-block">
-         <call-template name="src:close-brace"/>
-      </if>
-   </template>
-
    <function name="src:expand-text" as="xs:string">
       <param name="el" as="element()"/>
       <param name="text" as="xs:string"/>
@@ -2645,6 +2591,60 @@
    <!--
       ## Helpers
    -->
+
+   <template name="src:sequence-constructor">
+      <param name="children" select="node()"/>
+      <param name="value" as="node()?"/>
+      <param name="text" select="xcst:text(., $children)"/>
+      <param name="ensure-block" select="false()"/>
+      <param name="omit-block" select="false()"/>
+      <param name="output" tunnel="yes"/>
+      <param name="indent" tunnel="yes"/>
+
+      <variable name="complex-content" select="boolean($children[self::*])"/>
+      <variable name="use-block" select="not($omit-block) and ($ensure-block or $complex-content)"/>
+      <variable name="new-indent" select="if ($use-block) then $indent + 1 else $indent"/>
+
+      <if test="$use-block">
+         <call-template name="src:open-brace"/>
+      </if>
+      <choose>
+         <when test="$complex-content">
+            <apply-templates select="$children" mode="src:statement">
+               <with-param name="indent" select="$new-indent" tunnel="yes"/>
+            </apply-templates>
+         </when>
+         <when test="$value">
+            <call-template name="src:line-number">
+               <with-param name="indent" select="$new-indent" tunnel="yes"/>
+            </call-template>
+            <call-template name="src:new-line-indented">
+               <with-param name="indent" select="$new-indent" tunnel="yes"/>
+            </call-template>
+            <value-of select="$output"/>
+            <text>.WriteObject(</text>
+            <value-of select="xcst:expression($value)"/>
+            <text>)</text>
+            <value-of select="$src:statement-delimiter"/>
+         </when>
+         <when test="$text">
+            <call-template name="src:line-number">
+               <with-param name="indent" select="$new-indent" tunnel="yes"/>
+            </call-template>
+            <call-template name="src:new-line-indented">
+               <with-param name="indent" select="$new-indent" tunnel="yes"/>
+            </call-template>
+            <value-of select="$output"/>
+            <text>.WriteString(</text>
+            <value-of select="src:expand-text(., $text)"/>
+            <text>)</text>
+            <value-of select="$src:statement-delimiter"/>
+         </when>
+      </choose>
+      <if test="$use-block">
+         <call-template name="src:close-brace"/>
+      </if>
+   </template>
 
    <template name="src:open-brace">
       <choose>
