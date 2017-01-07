@@ -638,7 +638,7 @@
          select="ancestor::*[self::c:param or self::c:with-param or self::c:variable or self::c:value-of or self::c:serialize][1]"/>
       <variable name="allowed-ancestor" select="ancestor::c:delegate[1]"/>
       <if test="$disallowed-ancestor
-          and (not($allowed-ancestor) or $disallowed-ancestor >> $allowed-ancestor)">
+         and (not($allowed-ancestor) or $disallowed-ancestor >> $allowed-ancestor)">
          <sequence select="error(xs:QName('err:XTSE0010'), 'Cannot return while materializing a sequence constructor.', src:error-object(.))"/>
       </if>
 
@@ -673,7 +673,11 @@
          <with-param name="allowed" select="()"/>
          <with-param name="required" select="()"/>
       </call-template>
-      <if test="not(ancestor::c:for-each or ancestor::c:for-each-group or ancestor::c:while)">
+      <variable name="required-ancestor" select="ancestor::*[self::c:for-each or self::c:for-each-group or self::c:while][1]"/>
+      <variable name="disallowed-ancestor"
+         select="ancestor::*[self::c:with-param or self::c:variable or self::c:value-of or self::c:serialize][1]"/>
+      <if test="not($required-ancestor)
+         or ($disallowed-ancestor and $disallowed-ancestor >> $required-ancestor)">
          <sequence select="error(xs:QName('err:XTSE0010'), concat('&lt;c:', local-name(), '> instruction can only be used within a &lt;c:for-each>, &lt;c:for-each-group> or &lt;c:while> instruction.'), src:error-object(.))"/>
       </if>
       <call-template name="src:line-number"/>

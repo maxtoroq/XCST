@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:template name='foo'>
+      <c:for-each name='i' in='new[] { 1, 2 }'>
+         <c:call-template name='bar'>
+            <c:with-param name='a'>
+               <c:continue/>
+            </c:with-param>
+         </c:call-template>
+      </c:for-each>
+   </c:template>
+
+   <c:template name='bar'>
+      <c:param name='a'/>
+   </c:template>
+
+</c:module>
