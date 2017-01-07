@@ -2,8 +2,11 @@
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
    <c:template name='foo'>
-      <c:param name='a'/>
-      <c:param name='a'/>
+      <c:for-each name='c' in='"hello".ToCharArray()'>
+         <a/>
+         <c:sort/>
+         <c:sort/>
+      </c:for-each>
    </c:template>
 
 </c:module>

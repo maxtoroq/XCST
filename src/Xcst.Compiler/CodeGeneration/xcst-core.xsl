@@ -700,8 +700,13 @@
          or parent::c:package
          or parent::c:override"/>
 
-      <if test="not($global) and preceding-sibling::c:param[xcst:name-equals(@name, current()/@name)]">
-         <sequence select="error(xs:QName('err:XTSE0580'), 'The name of the parameter is not unique.', src:error-object(.))"/>
+      <if test="not($global)">
+         <if test="preceding-sibling::*[not(self::c:param)]">
+            <sequence select="error(xs:QName('err:XTSE0010'), concat('&lt;c:', local-name(), '> element cannot be preceded with a different element.'), src:error-object(.))"/>
+         </if>
+         <if test="preceding-sibling::c:param[xcst:name-equals(@name, current()/@name)]">
+            <sequence select="error(xs:QName('err:XTSE0580'), 'The name of the parameter is not unique.', src:error-object(.))"/>
+         </if>
       </if>
 
       <variable name="name" select="xcst:name(@name)"/>
@@ -1197,6 +1202,9 @@
             <with-param name="allowed" select="'value', 'order'"/>
             <with-param name="required" select="()"/>
          </call-template>
+         <if test="preceding-sibling::*[not(self::c:sort)]">
+            <sequence select="error(xs:QName('err:XTSE0010'), concat('&lt;c:', local-name(), '> element cannot be preceded with a different element.'), src:error-object(.))"/>
+         </if>
          <variable name="indent-increase" select="2"/>
          <call-template name="src:line-number">
             <with-param name="indent" select="$indent + $indent-increase" tunnel="yes"/>

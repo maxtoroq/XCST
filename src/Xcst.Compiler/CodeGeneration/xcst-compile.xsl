@@ -569,6 +569,9 @@
                <with-param name="allowed" select="'name', 'value', 'as', 'required', 'tunnel'"/>
                <with-param name="required" select="'name'"/>
             </call-template>
+            <if test="preceding-sibling::*[not(self::c:param)]">
+               <sequence select="error(xs:QName('err:XTSE0010'), concat('&lt;c:', local-name(), '> element cannot be preceded with a different element.'), src:error-object(.))"/>
+            </if>
             <variable name="param-name" select="src:strip-verbatim-prefix(xcst:name(@name))"/>
             <if test="preceding-sibling::c:param[xcst:name-equals(@name, $param-name)]">
                <sequence select="error(xs:QName('err:XTSE0580'), 'The name of the parameter is not unique.', src:error-object(.))"/>
@@ -1444,6 +1447,9 @@
          <with-param name="allowed" select="'in', 'alias', 'static-only'"/>
          <with-param name="required" select="'in'"/>
       </call-template>
+      <if test="preceding-sibling::*[not(self::c:use-functions)]">
+         <sequence select="error(xs:QName('err:XTSE0010'), concat('&lt;c:', local-name(), '> declaration cannot be preceded with a different element.'), src:error-object(.))"/>
+      </if>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
       <text>using </text>

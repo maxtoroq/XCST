@@ -2,8 +2,13 @@
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
    <c:template name='foo'>
-      <c:param name='a'/>
-      <c:param name='a'/>
+      <c:variable name='bar'>
+         <c:delegate>
+            <a/>
+            <c:param name='a'/>
+            <c:param name='b'/>
+         </c:delegate>
+      </c:variable>
    </c:template>
 
 </c:module>

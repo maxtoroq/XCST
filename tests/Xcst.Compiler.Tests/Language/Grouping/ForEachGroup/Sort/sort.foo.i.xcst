@@ -2,8 +2,8 @@
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
    <c:template name='foo'>
-      <c:for-each-group name='group' in='"hello".ToCharArray()' group-size='2'>
-         <c:sort value=''/>
+      <c:for-each-group name='group' in='new[] { "banana", "apricot", "apple" }' group-by='Substring(0, 1)'>
+         <c:sort foo='foo'/>
       </c:for-each-group>
    </c:template>
 
