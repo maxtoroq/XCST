@@ -675,7 +675,7 @@
       </call-template>
       <variable name="required-ancestor" select="ancestor::*[self::c:for-each or self::c:for-each-group or self::c:while][1]"/>
       <variable name="disallowed-ancestor"
-         select="ancestor::*[self::c:with-param or self::c:variable or self::c:value-of or self::c:serialize][1]"/>
+         select="ancestor::*[self::c:delegate or self::c:with-param or self::c:variable or self::c:value-of or self::c:serialize][1]"/>
       <if test="not($required-ancestor)
          or ($disallowed-ancestor and $disallowed-ancestor >> $required-ancestor)">
          <sequence select="error(xs:QName('err:XTSE0010'), concat('&lt;c:', local-name(), '> instruction can only be used within a &lt;c:for-each>, &lt;c:for-each-group> or &lt;c:while> instruction.'), src:error-object(.))"/>

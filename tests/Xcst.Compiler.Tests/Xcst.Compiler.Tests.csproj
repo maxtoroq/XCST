@@ -102,7 +102,9 @@
     <None Include="Language\CallableComponents\Template\TypeCompatibleUntypedToValueType.c.xcst" />
     <None Include="Language\CallableComponents\Template\TypeIncompatible.i.xcst" />
     <None Include="Language\ConditionalProcessing\Break\ForEachGroup.c.xcst" />
+    <None Include="Language\ConditionalProcessing\Break\InDelegate.c.xcst" />
     <None Include="Language\ConditionalProcessing\Break\InSerialize.c.xcst" />
+    <None Include="Language\ConditionalProcessing\Break\InDelegate.i.xcst" />
     <None Include="Language\ConditionalProcessing\Break\InSerialize.i.xcst" />
     <None Include="Language\ConditionalProcessing\Break\InValueOf.c.xcst" />
     <None Include="Language\ConditionalProcessing\Break\InValueOf.i.xcst" />
@@ -115,6 +117,8 @@
     <None Include="Language\ConditionalProcessing\Break\NotInLoop.i.xcst" />
     <None Include="Language\ConditionalProcessing\Continue\ForEach.c.xcst" />
     <None Include="Language\ConditionalProcessing\Continue\ForEachGroup.c.xcst" />
+    <None Include="Language\ConditionalProcessing\Continue\InDelegate.c.xcst" />
+    <None Include="Language\ConditionalProcessing\Continue\InDelegate.i.xcst" />
     <None Include="Language\ConditionalProcessing\Continue\InSerialize.c.xcst" />
     <None Include="Language\ConditionalProcessing\Continue\InSerialize.i.xcst" />
     <None Include="Language\ConditionalProcessing\Continue\InValueOf.c.xcst" />
