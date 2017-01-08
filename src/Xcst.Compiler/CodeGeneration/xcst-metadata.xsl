@@ -27,6 +27,7 @@
          <with-param name="allowed" select="'value'"/>
          <with-param name="required" select="'value'"/>
       </call-template>
+      <call-template name="xcst:no-other-preceding"/>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
       <text>[</text>

@@ -522,6 +522,7 @@
          <with-param name="allowed" select="'test'"/>
          <with-param name="required" select="'test'"/>
       </call-template>
+      <call-template name="xcst:no-other-preceding"/>
       <variable name="pos" select="position()"/>
       <if test="$pos eq 1">
          <value-of select="$src:new-line"/>
@@ -541,6 +542,9 @@
       <call-template name="xcst:validate-attribs">
          <with-param name="allowed" select="()"/>
          <with-param name="required" select="()"/>
+      </call-template>
+      <call-template name="xcst:no-other-following">
+         <with-param name="except" select="()"/>
       </call-template>
       <text> else</text>
       <call-template name="src:sequence-constructor">
@@ -594,6 +598,9 @@
          <with-param name="allowed" select="'exception', 'when', 'value'"/>
          <with-param name="required" select="()"/>
       </call-template>
+      <call-template name="xcst:no-other-following">
+         <with-param name="except" select="xs:QName('c:catch'), xs:QName('c:finally')"/>
+      </call-template>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
       <text>catch</text>
@@ -617,6 +624,9 @@
       <call-template name="xcst:validate-attribs">
          <with-param name="allowed" select="'value'"/>
          <with-param name="required" select="()"/>
+      </call-template>
+      <call-template name="xcst:no-other-following">
+         <with-param name="except" select="()"/>
       </call-template>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
@@ -701,9 +711,7 @@
          or parent::c:override"/>
 
       <if test="not($global)">
-         <if test="preceding-sibling::*[not(self::c:param)]">
-            <sequence select="error(xs:QName('err:XTSE0010'), concat('&lt;c:', local-name(), '> element cannot be preceded with a different element.'), src:error-object(.))"/>
-         </if>
+         <call-template name="xcst:no-other-preceding"/>
          <if test="preceding-sibling::c:param[xcst:name-equals(@name, current()/@name)]">
             <sequence select="error(xs:QName('err:XTSE0580'), 'The name of the parameter is not unique.', src:error-object(.))"/>
          </if>
@@ -1202,9 +1210,7 @@
             <with-param name="allowed" select="'value', 'order'"/>
             <with-param name="required" select="()"/>
          </call-template>
-         <if test="preceding-sibling::*[not(self::c:sort)]">
-            <sequence select="error(xs:QName('err:XTSE0010'), concat('&lt;c:', local-name(), '> element cannot be preceded with a different element.'), src:error-object(.))"/>
-         </if>
+         <call-template name="xcst:no-other-preceding"/>
          <variable name="indent-increase" select="2"/>
          <call-template name="src:line-number">
             <with-param name="indent" select="$indent + $indent-increase" tunnel="yes"/>
@@ -2033,6 +2039,35 @@
             <sequence select="error(xs:QName('err:XTSE0010'), concat('Element must have an ''', .,''' attribute.'), src:error-object($current))"/>
          </if>
       </for-each>
+   </template>
+
+   <template name="xcst:no-other-preceding">
+      <variable name="disallowed-preceding"
+         select="preceding-sibling::node()[self::text()[normalize-space()] or self::*[node-name(.) ne node-name(current())]][1]"/>
+      <if test="$disallowed-preceding">
+         <sequence select="error(
+            xs:QName('err:XTSE0010'),
+            concat('&lt;c:', local-name(), '> element cannot be preceded ',
+               if ($disallowed-preceding instance of element()) then 'by a different element' else 'with text', '.'),
+            src:error-object(.))"/>
+      </if>
+   </template>
+
+   <template name="xcst:no-other-following">
+      <param name="except" select="node-name(.)"/>
+
+      <variable name="disallowed-following"
+         select="following-sibling::node()[
+            self::text()[normalize-space()]
+               or self::*[not(node-name(.) = $except)]
+         ][1]"/>
+      <if test="$disallowed-following">
+         <sequence select="error(
+            xs:QName('err:XTSE0010'),
+            concat('&lt;c:', local-name(), '> element cannot be followed ',
+               if ($disallowed-following instance of element()) then 'by a different element' else 'with text', '.'),
+            src:error-object(.))"/>
+      </if>
    </template>
 
    <function name="xcst:has-value" as="xs:boolean">
