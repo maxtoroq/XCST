@@ -5,7 +5,7 @@
 
    <c:template name='foo'>
       <c:next-template>
-         <c:with-param name='a' value='null' tunnel=''/>
+         <c:with-param name='a' value='"foo"'>foo</c:with-param>
       </c:next-template>
    </c:template>
 

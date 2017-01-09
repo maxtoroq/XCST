@@ -365,6 +365,7 @@
          <with-param name="allowed" select="'name', 'value', 'as', ('required', 'tunnel')[current()/self::c:param], 'visibility'[current()/self::c:variable]"/>
          <with-param name="required" select="'name'"/>
       </call-template>
+      <call-template name="xcst:value-or-sequence-constructor"/>
 
       <variable name="name" select="src:strip-verbatim-prefix(xcst:name(@name))"/>
 
@@ -499,6 +500,7 @@
                <with-param name="allowed" select="'name', 'value', 'as', 'required', 'tunnel'"/>
                <with-param name="required" select="'name'"/>
             </call-template>
+            <call-template name="xcst:value-or-sequence-constructor"/>
             <variable name="param-name" select="src:strip-verbatim-prefix(xcst:name(@name))"/>
             <if test="preceding-sibling::c:param[xcst:name-equals(@name, $param-name)]">
                <sequence select="error(xs:QName('err:XTSE0580'), 'The name of the parameter is not unique.', src:error-object(.))"/>
@@ -571,6 +573,7 @@
                <with-param name="allowed" select="'name', 'value', 'as', 'required', 'tunnel'"/>
                <with-param name="required" select="'name'"/>
             </call-template>
+            <call-template name="xcst:value-or-sequence-constructor"/>
             <call-template name="xcst:no-other-preceding"/>
             <variable name="param-name" select="src:strip-verbatim-prefix(xcst:name(@name))"/>
             <if test="preceding-sibling::c:param[xcst:name-equals(@name, $param-name)]">
@@ -1892,6 +1895,9 @@
          <with-param name="allowed" select="'name', 'as', 'value', 'expression', 'auto-initialize', 'display', 'display-name', 'description', 'short-name', 'place-holder', 'order', 'group', 'format', 'apply-format-in-edit-mode', 'disable-output-escaping', 'null-display-text', 'template', 'read-only', 'auto-generate-filter', 'data-type', 'required', 'max-length', 'min-length', 'pattern', 'min', 'max', 'range-type', 'equal-to', $xcst:type-or-member-attributes"/>
          <with-param name="required" select="'name'"/>
       </call-template>
+      <if test="count((@value, @expression)) gt 1">
+         <sequence select="error((), 'The attributes ''value'' and ''expression'' are mutually exclusive.', src:error-object(.))"/>
+      </if>
       <call-template name="xcst:no-other-following"/>
 
       <variable name="type" select="(@as/xcst:type(.), src:anonymous-type-name(.))[1]"/>

@@ -7,7 +7,7 @@
       <c:param name='a'/>
 
       <c:next-function>
-         <c:with-param value='a' tunnel=''/>
+         <c:with-param value='"foo"'>foo</c:with-param>
       </c:next-function>
    </c:function>
 

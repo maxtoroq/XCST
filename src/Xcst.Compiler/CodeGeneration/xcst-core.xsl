@@ -96,6 +96,7 @@
          <with-param name="allowed" select="'name', 'namespace', 'separator', 'value'"/>
          <with-param name="required" select="'name'"/>
       </call-template>
+      <call-template name="xcst:value-or-sequence-constructor"/>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
       <value-of select="$output"/>
@@ -158,6 +159,7 @@
          <with-param name="allowed" select="'value'"/>
          <with-param name="required" select="()"/>
       </call-template>
+      <call-template name="xcst:value-or-sequence-constructor"/>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
       <value-of select="$output"/>
@@ -229,6 +231,7 @@
          <with-param name="allowed" select="'name', 'value'"/>
          <with-param name="required" select="'name'"/>
       </call-template>
+      <call-template name="xcst:value-or-sequence-constructor"/>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
       <value-of select="$output"/>
@@ -268,6 +271,7 @@
          <with-param name="allowed" select="'name', 'value'"/>
          <with-param name="required" select="'name'"/>
       </call-template>
+      <call-template name="xcst:value-or-sequence-constructor"/>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
       <value-of select="$output"/>
@@ -316,6 +320,7 @@
          <with-param name="allowed" select="'disable-output-escaping', 'value', 'separator'"/>
          <with-param name="required" select="()"/>
       </call-template>
+      <call-template name="xcst:value-or-sequence-constructor"/>
       <call-template name="src:simple-content">
          <with-param name="attribute" select="@value"/>
          <with-param name="separator" select="@separator/src:expand-attribute(.)"/>
@@ -574,6 +579,14 @@
          <with-param name="allowed" select="'rollback-output', 'value'"/>
          <with-param name="required" select="()"/>
       </call-template>
+      <variable name="children" select="
+         node()[not(self::c:catch
+            or preceding-sibling::c:catch
+            or self::c:finally
+            or preceding-sibling::c:finally)]"/>
+      <call-template name="xcst:value-or-sequence-constructor">
+         <with-param name="children" select="$children"/>
+      </call-template>
       <variable name="rollback" select="(@rollback-output/xcst:boolean(.), true())[1]"/>
       <if test="$rollback">
          <!-- TODO: Buffering -->
@@ -584,11 +597,7 @@
       <text>try</text>
       <call-template name="src:sequence-constructor">
          <with-param name="value" select="@value"/>
-         <with-param name="children" select="
-            node()[not(self::c:catch
-               or preceding-sibling::c:catch
-               or self::c:finally
-               or preceding-sibling::c:finally)]"/>
+         <with-param name="children" select="$children"/>
          <with-param name="ensure-block" select="true()"/>
       </call-template>
       <apply-templates select="c:catch, c:finally" mode="#current"/>
@@ -599,6 +608,7 @@
          <with-param name="allowed" select="'exception', 'when', 'value'"/>
          <with-param name="required" select="()"/>
       </call-template>
+      <call-template name="xcst:value-or-sequence-constructor"/>
       <call-template name="xcst:no-other-following">
          <with-param name="except" select="xs:QName('c:catch'), xs:QName('c:finally')"/>
       </call-template>
@@ -626,6 +636,7 @@
          <with-param name="allowed" select="'value'"/>
          <with-param name="required" select="()"/>
       </call-template>
+      <call-template name="xcst:value-or-sequence-constructor"/>
       <call-template name="xcst:no-other-following">
          <with-param name="except" select="()"/>
       </call-template>
@@ -645,6 +656,7 @@
          <with-param name="allowed" select="'value'"/>
          <with-param name="required" select="()"/>
       </call-template>
+      <call-template name="xcst:value-or-sequence-constructor"/>
       <variable name="disallowed-ancestor"
          select="ancestor::*[self::c:param or self::c:with-param or self::c:variable or self::c:value-of or self::c:serialize][1]"/>
       <variable name="allowed-ancestor" select="ancestor::c:delegate[1]"/>
@@ -713,6 +725,7 @@
          or parent::c:override"/>
 
       <if test="not($global)">
+         <call-template name="xcst:value-or-sequence-constructor"/>
          <call-template name="xcst:no-other-preceding"/>
          <if test="preceding-sibling::c:param[xcst:name-equals(@name, current()/@name)]">
             <sequence select="error(xs:QName('err:XTSE0580'), 'The name of the parameter is not unique.', src:error-object(.))"/>
@@ -790,6 +803,7 @@
          <with-param name="allowed" select="'name', 'value', 'as'"/>
          <with-param name="required" select="'name'"/>
       </call-template>
+      <call-template name="xcst:value-or-sequence-constructor"/>
 
       <variable name="text" select="xcst:text(.)"/>
       <variable name="has-value" select="xcst:has-value(., $text)"/>
@@ -840,6 +854,7 @@
          <with-param name="allowed" select="'as', 'member', 'value'"/>
          <with-param name="required" select="'member'"/>
       </call-template>
+      <call-template name="xcst:value-or-sequence-constructor"/>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
       <value-of select="xcst:expression(@member)"/>
@@ -896,6 +911,7 @@
             <with-param name="allowed" select="'name', 'value', 'as', 'tunnel'"/>
             <with-param name="required" select="'name'"/>
          </call-template>
+         <call-template name="xcst:value-or-sequence-constructor"/>
       </for-each>
 
       <variable name="qname" select="xcst:EQName(@name)"/>
@@ -956,6 +972,7 @@
             <with-param name="allowed" select="'name', 'value', 'as', 'tunnel'"/>
             <with-param name="required" select="'name'"/>
          </call-template>
+         <call-template name="xcst:value-or-sequence-constructor"/>
       </for-each>
 
       <variable name="current-template" select="ancestor::c:template[1]"/>
@@ -1065,6 +1082,7 @@
             <with-param name="allowed" select="'name', 'value', 'as', 'tunnel'"/>
             <with-param name="required" select="()"/>
          </call-template>
+         <call-template name="xcst:value-or-sequence-constructor"/>
          <if test="@name and preceding-sibling::c:with-param[@name and xcst:name-equals(@name, current()/@name)]">
             <sequence select="error(xs:QName('err:XTSE0670'), 'Duplicate parameter name.', src:error-object(.))"/>
          </if>
@@ -1130,6 +1148,7 @@
             <with-param name="allowed" select="'name', 'value', 'as', 'tunnel'"/>
             <with-param name="required" select="'name'"/>
          </call-template>
+         <call-template name="xcst:value-or-sequence-constructor"/>
          <if test="preceding-sibling::c:with-param[xcst:name-equals(@name, current()/@name)]">
             <sequence select="error(xs:QName('err:XTSE0670'), 'Duplicate parameter name.', src:error-object(.))"/>
          </if>
@@ -1183,6 +1202,7 @@
             <with-param name="allowed" select="'name', 'value', 'as', 'tunnel'"/>
             <with-param name="required" select="'name'"/>
          </call-template>
+         <call-template name="xcst:value-or-sequence-constructor"/>
          <apply-templates select="." mode="src:with-param"/>
       </for-each>
       <if test="@with-params">
@@ -1465,6 +1485,7 @@
          <with-param name="allowed" select="'test', 'value'"/>
          <with-param name="required" select="'test'"/>
       </call-template>
+      <call-template name="xcst:value-or-sequence-constructor"/>
       <variable name="text" select="xcst:text(.)"/>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
@@ -1487,6 +1508,7 @@
          <with-param name="allowed" select="'terminate', 'value'"/>
          <with-param name="required" select="()"/>
       </call-template>
+      <call-template name="xcst:value-or-sequence-constructor"/>
       <variable name="never-terminate" select="not(@terminate) or xcst:boolean(@terminate, true()) eq false()"/>
       <variable name="always-terminate" select="boolean(@terminate/xcst:boolean(., true()))"/>
       <variable name="use-if" select="not($never-terminate) and not($always-terminate)"/>
@@ -1914,6 +1936,7 @@
             <with-param name="allowed" select="'name', 'value', 'as', 'tunnel'"/>
             <with-param name="required" select="'name'"/>
          </call-template>
+         <call-template name="xcst:value-or-sequence-constructor"/>
          <apply-templates select="." mode="src:with-param">
             <with-param name="indent" select="$indent + 1" tunnel="yes"/>
          </apply-templates>
@@ -1944,6 +1967,7 @@
          <with-param name="allowed" select="'value'"/>
          <with-param name="required" select="()"/>
       </call-template>
+      <call-template name="xcst:value-or-sequence-constructor"/>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
       <call-template name="src:value"/>
@@ -2074,8 +2098,16 @@
    </template>
 
    <template name="xcst:no-children">
-      <if test="* or text()[normalize-space()]">
+      <if test="* or text()[normalize-space() or xcst:preserve-whitespace(..)]">
          <sequence select="error(xs:QName('err:XTSE0260'), 'Element must be empty.', src:error-object(.))"/>
+      </if>
+   </template>
+
+   <template name="xcst:value-or-sequence-constructor">
+      <param name="children" select="node()"/>
+
+      <if test="@value and $children[self::* or self::text()[normalize-space() or xcst:preserve-whitespace(..)]]">
+         <sequence select="error(xs:QName('err:XTSE0010'), 'The ''value'' attribute must be omitted if the element has content.', src:error-object(.))"/>
       </if>
    </template>
 

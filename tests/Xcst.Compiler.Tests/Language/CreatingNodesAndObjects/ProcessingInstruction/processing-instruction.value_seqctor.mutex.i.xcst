@@ -1,12 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
-   <c:import href='../_next-template.xcst'/>
-
    <c:template name='foo'>
-      <c:next-template>
-         <c:with-param name='a' value='null' tunnel=''/>
-      </c:next-template>
+      <c:processing-instruction name='foo' value='"foo"'>foo</c:processing-instruction>
    </c:template>
 
 </c:module>
