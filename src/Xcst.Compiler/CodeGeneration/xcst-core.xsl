@@ -445,6 +445,7 @@
          <with-param name="allowed" select="'value'"/>
          <with-param name="required" select="'value'"/>
       </call-template>
+      <call-template name="xcst:no-children"/>
       <call-template name="src:value"/>
    </template>
 
@@ -683,6 +684,7 @@
          <with-param name="allowed" select="()"/>
          <with-param name="required" select="()"/>
       </call-template>
+      <call-template name="xcst:no-children"/>
       <variable name="required-ancestor" select="ancestor::*[self::c:for-each or self::c:for-each-group or self::c:while][1]"/>
       <variable name="disallowed-ancestor"
          select="ancestor::*[self::c:delegate or self::c:with-param or self::c:variable or self::c:value-of or self::c:serialize][1]"/>
@@ -1210,6 +1212,7 @@
             <with-param name="allowed" select="'value', 'order'"/>
             <with-param name="required" select="()"/>
          </call-template>
+         <call-template name="xcst:no-children"/>
          <call-template name="xcst:no-other-preceding"/>
          <variable name="indent-increase" select="2"/>
          <call-template name="src:line-number">
@@ -2067,6 +2070,12 @@
             concat('&lt;c:', local-name(), '> element cannot be followed ',
                if ($disallowed-following instance of element()) then 'by a different element' else 'with text', '.'),
             src:error-object(.))"/>
+      </if>
+   </template>
+
+   <template name="xcst:no-children">
+      <if test="* or text()[normalize-space()]">
+         <sequence select="error(xs:QName('err:XTSE0260'), 'Element must be empty.', src:error-object(.))"/>
       </if>
    </template>
 

@@ -2,9 +2,7 @@
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
    <c:type name='foo'>
-      <c:member name='bar' as='string'>
-         <c:metadata/>
-      </c:member>
+      <c:metadata/>
    </c:type>
 
 </c:module>

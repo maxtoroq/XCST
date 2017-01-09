@@ -2,7 +2,9 @@
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
    <c:template name='foo'>
-      <c:object value='1' foo='foo'/>
+      <c:for-each name='c' in='"hello".ToCharArray()'>
+         <c:break>foo</c:break>
+      </c:for-each>
    </c:template>
 
 </c:module>

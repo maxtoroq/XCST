@@ -238,6 +238,7 @@
          <with-param name="allowed" select="'href'"/>
          <with-param name="required" select="'href'"/>
       </call-template>
+      <call-template name="xcst:no-children"/>
 
       <variable name="href" select="resolve-uri(@href, base-uri())"/>
 
@@ -302,6 +303,7 @@
          <with-param name="allowed" select="$xcst:validation-attributes"/>
          <with-param name="required" select="()"/>
       </call-template>
+      <call-template name="xcst:no-children"/>
    </template>
 
    <template match="c:*" mode="xcst:check-top-level">
@@ -760,6 +762,7 @@
                <with-param name="allowed" select="'name', $src:output-parameters/*[not(self::version) and not(self::output-version)]/local-name()"/>
                <with-param name="required" select="()"/>
             </call-template>
+            <call-template name="xcst:no-children"/>
             <if test="preceding-sibling::c:output[(empty($output-name) and empty(@name)) or (xcst:EQName(@name) eq $output-name)]">
                <sequence select="error((), 'Duplicate c:output declaration.', src:error-object(.))"/>
             </if>
@@ -1445,6 +1448,7 @@
          <with-param name="allowed" select="'in', 'alias', 'static-only'"/>
          <with-param name="required" select="'in'"/>
       </call-template>
+      <call-template name="xcst:no-children"/>
       <call-template name="xcst:no-other-preceding"/>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
