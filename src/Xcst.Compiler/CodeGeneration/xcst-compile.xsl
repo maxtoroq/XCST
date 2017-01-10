@@ -501,6 +501,7 @@
                <with-param name="required" select="'name'"/>
             </call-template>
             <call-template name="xcst:value-or-sequence-constructor"/>
+            <call-template name="xcst:no-other-preceding"/>
             <variable name="param-name" select="src:strip-verbatim-prefix(xcst:name(@name))"/>
             <if test="preceding-sibling::c:param[xcst:name-equals(@name, $param-name)]">
                <sequence select="error(xs:QName('err:XTSE0580'), 'The name of the parameter is not unique.', src:error-object(.))"/>
