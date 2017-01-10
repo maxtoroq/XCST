@@ -2,9 +2,7 @@
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
    <c:template name='foo'>
-      <c:using-module value='null'>
-         <c:call-template name='bar' with-params=''/>
-      </c:using-module>
+      <c:evaluate-package value='null' foo='foo'/>
    </c:template>
 
 </c:module>

@@ -5,12 +5,10 @@
 
    <c:use-functions in='System'/>
    
-   <c:import href='_NameNoPrefix.xcst'/>
+   <c:import href='_InitialTemplateNoPrefix.xcst'/>
 
    <c:template name='c:initial-template'>
-      <c:using-module value='Activator.CreateInstance(this.GetType())'>
-         <c:call-template name='foo'/>
-      </c:using-module>
+      <c:evaluate-package value='Activator.CreateInstance(this.GetType())' initial-template='foo'/>
    </c:template>
 
 </c:module>

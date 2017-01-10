@@ -1099,6 +1099,7 @@
          <with-param name="allowed" select="()"/>
          <with-param name="required" select="()"/>
       </call-template>
+      <call-template name="xcst:no-children"/>
 
       <variable name="current-function" select="ancestor::c:function[1]"/>
 
@@ -1123,92 +1124,80 @@
       <element name="src:expression-meta"/>
    </template>
 
-   <template match="c:using-module" mode="src:statement">
+   <template match="c:evaluate-package" mode="src:statement">
+      <param name="output" tunnel="yes"/>
       <param name="indent" tunnel="yes"/>
 
       <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="'value', 'with-params'"/>
-         <with-param name="required" select="'value'"/>
+         <with-param name="allowed" select="'global-params', 'initial-template', 'name', 'template-params', 'tunnel-params', 'value'"/>
+         <with-param name="required" select="()"/>
       </call-template>
+      <call-template name="xcst:no-children"/>
+      <if test="not(@name) and not(@value)">
+         <sequence select="error(xs:QName('err:XTSE0010'), concat('Either ''name'' or ''value'' attribute must be specified in &lt;c:', local-name(), '>.'), src:error-object(.))"/>
+      </if>
+      <if test="count((@name, @value)) gt 1">
+         <sequence select="error((), 'The attributes ''name'' and ''value'' are mutually exclusive.', src:error-object(.))"/>
+      </if>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
       <value-of select="src:global-identifier('Xcst.XcstEvaluator')"/>
-      <text>.Using(</text>
-      <value-of select="xcst:expression(@value)"/>
+      <text>.Using</text>
+      <if test="@name">
+         <text>&lt;</text>
+         <value-of select="xcst:name(@name)"/>
+         <text>></text>
+      </if>
+      <text>(</text>
+      <if test="@value">
+         <value-of select="xcst:expression(@value)"/>
+      </if>
       <text>)</text>
-      <for-each select="c:with-param">
-         <call-template name="xcst:validate-attribs">
-            <with-param name="allowed" select="'name', 'value', 'as', 'tunnel'"/>
-            <with-param name="required" select="'name'"/>
-         </call-template>
-         <call-template name="xcst:value-or-sequence-constructor"/>
-         <if test="preceding-sibling::c:with-param[xcst:name-equals(@name, current()/@name)]">
-            <sequence select="error(xs:QName('err:XTSE0670'), 'Duplicate parameter name.', src:error-object(.))"/>
-         </if>
-         <if test="@tunnel/xcst:boolean(.)">
-            <sequence select="error(xs:QName('err:XTSE0020'), 'For attribute ''tunnel'' on c:using-module/c:with-param, the only permitted values are: ''no'', ''false'', ''0''.', src:error-object(.))"/>
-         </if>
-         <call-template name="src:line-number">
-            <with-param name="indent" select="$indent + 1" tunnel="yes"/>
-         </call-template>
+      <if test="@global-params">
          <call-template name="src:new-line-indented">
             <with-param name="increase" select="1"/>
          </call-template>
-         <text>.WithParam(</text>
-         <value-of select="src:string(src:strip-verbatim-prefix(xcst:name(@name)))"/>
-         <text>, </text>
-         <call-template name="src:value"/>
-         <text>)</text>
-      </for-each>
-      <if test="@with-params">
-         <call-template name="src:line-number"/>
-         <call-template name="src:new-line-indented"/>
          <text>.WithParams(</text>
-         <value-of select="xcst:expression(@with-params)"/>
+         <value-of select="xcst:expression(@global-params)"/>
          <text>)</text>
       </if>
-      <apply-templates select="c:call-template" mode="src:call-template">
-         <with-param name="indent" select="$indent + 1" tunnel="yes"/>
-      </apply-templates>
+      <call-template name="src:new-line-indented">
+         <with-param name="increase" select="1"/>
+      </call-template>
+      <text>.Call</text>
+      <if test="not(@initial-template)">Initial</if>
+      <text>Template(</text>
+      <if test="@initial-template">
+         <value-of select="src:QName(xcst:EQName(@initial-template, (), false(), true()), src:expand-attribute(@initial-template))"/>
+      </if>
+      <text>)</text>
+      <if test="@template-params">
+         <call-template name="src:new-line-indented">
+            <with-param name="increase" select="1"/>
+         </call-template>
+         <text>.WithParams(</text>
+         <value-of select="xcst:expression(@template-params)"/>
+         <text>)</text>
+      </if>
+      <if test="@tunnel-params">
+         <call-template name="src:new-line-indented">
+            <with-param name="increase" select="1"/>
+         </call-template>
+         <text>.WithTunnelParams(</text>
+         <value-of select="xcst:expression(@tunnel-params)"/>
+         <text>)</text>
+      </if>
+      <call-template name="src:new-line-indented">
+         <with-param name="increase" select="1"/>
+      </call-template>
+      <text>.OutputTo(</text>
+      <value-of select="$output"/>
+      <text>)</text>
       <call-template name="src:new-line-indented">
          <with-param name="increase" select="1"/>
       </call-template>
       <text>.Run()</text>
       <value-of select="$src:statement-delimiter"/>
-   </template>
-
-   <template match="c:using-module/c:call-template" mode="src:call-template">
-      <param name="output" tunnel="yes"/>
-
-      <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="'name', 'with-params'"/>
-         <with-param name="required" select="'name'"/>
-      </call-template>
-
-      <call-template name="src:line-number"/>
-      <call-template name="src:new-line-indented"/>
-      <text>.CallTemplate(</text>
-      <value-of select="src:QName(xcst:EQName(@name, (), false(), true()), src:expand-attribute(@name))"/>
-      <text>)</text>
-      <for-each select="c:with-param">
-         <call-template name="xcst:validate-attribs">
-            <with-param name="allowed" select="'name', 'value', 'as', 'tunnel'"/>
-            <with-param name="required" select="'name'"/>
-         </call-template>
-         <call-template name="xcst:value-or-sequence-constructor"/>
-         <apply-templates select="." mode="src:with-param"/>
-      </for-each>
-      <if test="@with-params">
-         <call-template name="src:line-number"/>
-         <call-template name="src:new-line-indented"/>
-         <text>.WithParams(</text>
-         <value-of select="xcst:expression(@with-params)"/>
-         <text>)</text>
-      </if>
-      <call-template name="src:new-line-indented"/>
-      <text>.OutputTo(</text>
-      <value-of select="$output"/>
-      <text>)</text>
    </template>
 
    <!--

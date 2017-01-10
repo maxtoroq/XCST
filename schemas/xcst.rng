@@ -57,6 +57,7 @@
          <ref name="delegate"/>
          <ref name="element"/>
          <ref name="evaluate-delegate"/>
+         <ref name="evaluate-package"/>
          <ref name="fallback"/>
          <ref name="for-each"/>
          <ref name="for-each-group"/>
@@ -75,7 +76,6 @@
          <ref name="text"/>
          <ref name="try"/>
          <ref name="using"/>
-         <ref name="using-module"/>
          <ref name="value-of"/>
          <ref name="variable"/>
          <ref name="void"/>
@@ -984,6 +984,46 @@
       </element>
    </define>
 
+   <define name="evaluate-package">
+      <element name="evaluate-package">
+         <ann:documentation>Evaluates a dynamically loaded package.</ann:documentation>
+         <choice>
+            <attribute name="name">
+               <ann:documentation>The name of the package.</ann:documentation>
+               <ref name="Name"/>
+            </attribute>
+            <attribute name="value">
+               <ann:documentation>The package instance.</ann:documentation>
+               <ref name="Expression"/>
+            </attribute>
+         </choice>
+         <zeroOrMore>
+            <choice>
+               <attribute name="global-params">
+                  <ann:documentation>An object with global parameters.</ann:documentation>
+                  <ref name="Expression"/>
+               </attribute>
+               <attribute name="initial-template">
+                  <ann:documentation>The name of the initial template. Attribute value template (EQName).</ann:documentation>
+                  <choice>
+                     <ref name="EQName"/>
+                     <ref name="AVTExpr"/>
+                  </choice>
+               </attribute>
+               <attribute name="template-params">
+                  <ann:documentation>An object with template parameters.</ann:documentation>
+                  <ref name="Expression"/>
+               </attribute>
+               <attribute name="tunnel-params">
+                  <ann:documentation>An object with tunnel template parameters.</ann:documentation>
+                  <ref name="Expression"/>
+               </attribute>
+            </choice>
+         </zeroOrMore>
+         <ref name="standard-attributes"/>
+      </element>
+   </define>
+
    <define name="fallback">
       <element name="fallback">
          <ann:documentation>Defines fallback behavior for the parent element.</ann:documentation>
@@ -1120,6 +1160,7 @@
          <ann:documentation>Invokes the overriden function.</ann:documentation>
          <optional>
             <attribute name="arguments">
+               <ann:documentation>The function call arguments.</ann:documentation>
                <ref name="ArgumentList"/>
             </attribute>
          </optional>
@@ -1340,46 +1381,6 @@
          </zeroOrMore>
          <ref name="standard-attributes"/>
          <ref name="sequence-constructor"/>
-      </element>
-   </define>
-
-   <define name="using-module">
-      <element name="using-module">
-         <ann:documentation>Defines an invocation on a dynamically loaded module.</ann:documentation>
-         <attribute name="value">
-            <ann:documentation>An instance of a pre-compiled module.</ann:documentation>
-            <ref name="Expression"/>
-         </attribute>
-         <optional>
-            <attribute name="with-params">
-               <ann:documentation>An object with parameters.</ann:documentation>
-               <ref name="Expression"/>
-            </attribute>
-         </optional>
-         <ref name="standard-attributes"/>
-         <zeroOrMore>
-            <ref name="with-param"/>
-         </zeroOrMore>
-         <element name="call-template">
-            <ann:documentation>Invokes a template in the used module.</ann:documentation>
-            <attribute name="name">
-               <ann:documentation>The name of the template. Attribute value template (EQName).</ann:documentation>
-               <choice>
-                  <ref name="EQName"/>
-                  <ref name="AVTExpr"/>
-               </choice>
-            </attribute>
-            <optional>
-               <attribute name="with-params">
-                  <ann:documentation>An object with parameters.</ann:documentation>
-                  <ref name="Expression"/>
-               </attribute>
-            </optional>
-            <ref name="standard-attributes"/>
-            <zeroOrMore>
-               <ref name="with-param"/>
-            </zeroOrMore>
-         </element>
       </element>
    </define>
 

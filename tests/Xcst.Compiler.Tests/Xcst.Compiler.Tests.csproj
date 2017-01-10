@@ -92,9 +92,20 @@
     <None Include="Language\CallableComponents\EvaluateDelegate\WithParams.c.xcst" />
     <None Include="Language\CallableComponents\EvaluateDelegate\WithParam.c.xcst" />
     <None Include="Language\CallableComponents\EvaluateDelegate\WithParam\with-param.value_seqctor.mutex.i.xcst" />
+    <None Include="Language\CallableComponents\EvaluatePackage\evaluate-package.template-params.type.i.xcst" />
+    <None Include="Language\CallableComponents\EvaluatePackage\evaluate-package.tunnel-params.type.i.xcst" />
+    <None Include="Language\CallableComponents\EvaluatePackage\evaluate-package.name.type.i.xcst" />
+    <None Include="Language\CallableComponents\EvaluatePackage\ExamplePackage.pxcst" />
+    <None Include="Language\CallableComponents\EvaluatePackage\evaluate-package.name_value.mutex.i.xcst" />
+    <None Include="Language\CallableComponents\EvaluatePackage\evaluate-package.name_value.req.i.xcst" />
+    <None Include="Language\CallableComponents\EvaluatePackage\evaluate-package.global-params.type.i.xcst" />
+    <None Include="Language\CallableComponents\EvaluatePackage\NoChildrenText.i.xcst" />
+    <None Include="Language\CallableComponents\EvaluatePackage\NoChildren.i.xcst" />
     <None Include="Language\CallableComponents\Function\Param\NoOtherPreceding.i.xcst" />
     <None Include="Language\CallableComponents\Function\Param\param.value_seqctor.mutex.i.xcst" />
     <None Include="Language\CallableComponents\NextFunction\next-function.arguments.type.i.xcst" />
+    <None Include="Language\CallableComponents\NextFunction\NoChildrenText.i.xcst" />
+    <None Include="Language\CallableComponents\NextFunction\NoChildren.i.xcst" />
     <None Include="Language\CallableComponents\NextFunction\Output.c.xcst" />
     <None Include="Language\CallableComponents\NextFunction\NoOutput.c.xcst" />
     <None Include="Language\CallableComponents\NextFunction\_Output.xcst" />
@@ -110,8 +121,6 @@
     <None Include="Language\CallableComponents\Template\TypeCompatibleObjectToValueType.c.xcst" />
     <None Include="Language\CallableComponents\Template\TypeCompatibleUntypedToValueType.c.xcst" />
     <None Include="Language\CallableComponents\Template\TypeIncompatible.i.xcst" />
-    <None Include="Language\CallableComponents\UsingModule\CallTemplate\WithParam\with-param.value_seqctor.mutex.i.xcst" />
-    <None Include="Language\CallableComponents\UsingModule\WithParam\with-param.value_seqctor.mutex.i.xcst" />
     <None Include="Language\ConditionalProcessing\Break\NoChildrenText.i.xcst" />
     <None Include="Language\ConditionalProcessing\Break\NoChildren.i.xcst" />
     <None Include="Language\ConditionalProcessing\Break\ForEachGroup.c.xcst" />
@@ -215,7 +224,7 @@
     <None Include="Language\generate-language-tests.ps1" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Language\CallableComponents\UsingModule\CallTemplate\NameUriQualified.p.xml" />
+    <Content Include="Language\CallableComponents\EvaluatePackage\InitialTemplateUriQualified.p.xml" />
     <Content Include="Language\DataModel\TextTransformation\MixedContent.p.xml" />
     <Content Include="Language\DataModel\TextTransformation\NormalizeSpaceWithExpandText.p.xml" />
     <Content Include="Language\DataModel\TextTransformation\NormalizeSpace.p.xml" />
@@ -224,7 +233,7 @@
     <Content Include="Language\DataModel\WhitespaceStripping\Strip.p.xml" />
     <Content Include="Language\DataModel\WhitespaceStripping\Preserve.p.xml" />
     <Content Include="Language\DataModel\WhitespaceStripping\PreserveBetweenElements.p.xml" />
-    <Content Include="Language\CallableComponents\UsingModule\CallTemplate\NameNoPrefix.p.xml" />
+    <Content Include="Language\CallableComponents\EvaluatePackage\InitialTemplateNoPrefix.p.xml" />
     <Content Include="Language\Serialization\Output\NameUriQualified.p.xml" />
     <Content Include="Language\Serialization\Output\NameNoPrefix.p.xml" />
     <Content Include="Language\Serialization\Serialize\FormatUriQualified.p.xml" />
@@ -256,7 +265,7 @@
     <None Include="Language\CallableComponents\Template\Hidden.c.xcst" />
     <None Include="Language\CallableComponents\Template\NameUriQualified.c.xcst" />
     <None Include="Language\CallableComponents\Template\_Hidden.xcst" />
-    <None Include="Language\CallableComponents\UsingModule\CallTemplate\NameUriQualified.c.xcst" />
+    <None Include="Language\CallableComponents\EvaluatePackage\InitialTemplateUriQualified.c.xcst" />
     <None Include="Language\CreatingNodesAndObjects\LiteralResultElement\foo.foo.c.xcst" />
     <None Include="Language\CreatingNodesAndObjects\LiteralResultElement\foo.foo.i.xcst" />
     <None Include="Language\DataModel\TextTransformation\foo.transform-text.type.i.xcst" />
@@ -408,25 +417,9 @@
     <None Include="Language\CallableComponents\Template\template.name.req.i.xcst" />
     <None Include="Language\CallableComponents\Template\template.foo.i.xcst" />
     <None Include="Language\CallableComponents\Template\AbstractWithContent.i.xcst" />
-    <None Include="Language\CallableComponents\UsingModule\CallTemplate\call-template.foo.i.xcst" />
-    <None Include="Language\CallableComponents\UsingModule\CallTemplate\call-template.name.req.i.xcst" />
-    <None Include="Language\CallableComponents\UsingModule\CallTemplate\call-template.with-params.type.i.xcst" />
-    <None Include="Language\CallableComponents\UsingModule\CallTemplate\call-template.name.type.i.xcst" />
-    <None Include="Language\CallableComponents\UsingModule\CallTemplate\WithParam\with-param.as.type.i.xcst" />
-    <None Include="Language\CallableComponents\UsingModule\CallTemplate\WithParam\with-param.foo.i.xcst" />
-    <None Include="Language\CallableComponents\UsingModule\CallTemplate\WithParam\with-param.name.req.i.xcst" />
-    <None Include="Language\CallableComponents\UsingModule\CallTemplate\WithParam\with-param.name.type.i.xcst" />
-    <None Include="Language\CallableComponents\UsingModule\CallTemplate\WithParam\with-param.tunnel.type.i.xcst" />
-    <None Include="Language\CallableComponents\UsingModule\CallTemplate\WithParam\with-param.value.type.i.xcst" />
-    <None Include="Language\CallableComponents\UsingModule\using-module.value.type.i.xcst" />
-    <None Include="Language\CallableComponents\UsingModule\using-module.with-params.type.i.xcst" />
-    <None Include="Language\CallableComponents\UsingModule\using-module.foo.i.xcst" />
-    <None Include="Language\CallableComponents\UsingModule\WithParam\with-param.as.type.i.xcst" />
-    <None Include="Language\CallableComponents\UsingModule\WithParam\with-param.foo.i.xcst" />
-    <None Include="Language\CallableComponents\UsingModule\WithParam\with-param.name.req.i.xcst" />
-    <None Include="Language\CallableComponents\UsingModule\WithParam\with-param.name.type.i.xcst" />
-    <None Include="Language\CallableComponents\UsingModule\WithParam\with-param.tunnel.type.i.xcst" />
-    <None Include="Language\CallableComponents\UsingModule\WithParam\with-param.value.type.i.xcst" />
+    <None Include="Language\CallableComponents\EvaluatePackage\evaluate-package.initial-template.type.i.xcst" />
+    <None Include="Language\CallableComponents\EvaluatePackage\evaluate-package.value.type.i.xcst" />
+    <None Include="Language\CallableComponents\EvaluatePackage\evaluate-package.foo.i.xcst" />
     <None Include="Language\ConditionalProcessing\Choose\Otherwise\otherwise.foo.i.xcst" />
     <None Include="Language\ConditionalProcessing\Choose\When\when.test.type.i.xcst" />
     <None Include="Language\ConditionalProcessing\Choose\When\when.test.req.i.xcst" />
@@ -497,8 +490,8 @@
     <None Include="Language\CallableComponents\AttributeSet\NameNoPrefix.c.xcst" />
     <None Include="Language\Serialization\Output\NameNoPrefix.c.xcst" />
     <None Include="Language\Serialization\Serialize\FormatNoPrefix.c.xcst" />
-    <None Include="Language\CallableComponents\UsingModule\CallTemplate\_NameNoPrefix.xcst" />
-    <None Include="Language\CallableComponents\UsingModule\CallTemplate\NameNoPrefix.c.xcst" />
+    <None Include="Language\CallableComponents\EvaluatePackage\_InitialTemplateNoPrefix.xcst" />
+    <None Include="Language\CallableComponents\EvaluatePackage\InitialTemplateNoPrefix.c.xcst" />
     <None Include="Language\CallableComponents\AttributeSet\UseAttributeSetsNoPrefix.c.xcst" />
     <None Include="Language\CallableComponents\Template\NameNoPrefix.c.xcst" />
     <None Include="Language\CallableComponents\AttributeSet\_NameNoPrefix.xcst" />
@@ -815,8 +808,6 @@
     <None Include="Language\VariablesAndParameters\Global\DefaultValueAndRequired1.i.xcst" />
     <None Include="Language\VariablesAndParameters\Global\Duplicate1.i.xcst" />
     <None Include="Language\CallableComponents\Template\Param\DuplicateParameter.i.xcst" />
-    <None Include="Language\CallableComponents\UsingModule\WithParam\GlobalTunnelParameter.c.xcst" />
-    <None Include="Language\CallableComponents\UsingModule\WithParam\GlobalTunnelParameter.i.xcst" />
     <None Include="Language\DataModel\WhitespaceStripping\PreserveText.c.xcst" />
     <None Include="Language\DataModel\WhitespaceStripping\StripDelegate.c.xcst" />
     <None Include="Language\DataModel\WhitespaceStripping\StripTry.c.xcst" />

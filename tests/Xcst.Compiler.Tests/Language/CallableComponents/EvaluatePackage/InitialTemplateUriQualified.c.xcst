@@ -10,9 +10,7 @@
    </c:template>
 
    <c:template name='c:initial-template'>
-      <c:using-module value='Activator.CreateInstance(this.GetType())'>
-         <c:call-template name='Q{urn:foo}foo'/>
-      </c:using-module>
+      <c:evaluate-package value='Activator.CreateInstance(this.GetType())' initial-template='Q{urn:foo}foo'/>
    </c:template>
 
 </c:module>

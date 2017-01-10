@@ -27,6 +27,7 @@
          <xs:element ref="c:delegate"/>
          <xs:element ref="c:element"/>
          <xs:element ref="c:evaluate-delegate"/>
+         <xs:element ref="c:evaluate-package"/>
          <xs:element ref="c:fallback"/>
          <xs:element ref="c:for-each"/>
          <xs:element ref="c:for-each-group"/>
@@ -45,7 +46,6 @@
          <xs:element ref="c:text"/>
          <xs:element ref="c:try"/>
          <xs:element ref="c:using"/>
-         <xs:element ref="c:using-module"/>
          <xs:element ref="c:value-of"/>
          <xs:element ref="c:variable"/>
          <xs:element ref="c:void"/>
@@ -950,6 +950,47 @@
          <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
+   <xs:element name="evaluate-package">
+      <xs:annotation>
+         <xs:documentation>Evaluates a dynamically loaded package.</xs:documentation>
+      </xs:annotation>
+      <xs:complexType>
+         <xs:attribute name="name" type="c:Name">
+            <xs:annotation>
+               <xs:documentation>The name of the package.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="value" type="c:Expression">
+            <xs:annotation>
+               <xs:documentation>The package instance.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="global-params" type="c:Expression">
+            <xs:annotation>
+               <xs:documentation>An object with global parameters.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="initial-template">
+            <xs:annotation>
+               <xs:documentation>The name of the initial template. Attribute value template (EQName).</xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+               <xs:union memberTypes="c:EQName c:AVTExpr"/>
+            </xs:simpleType>
+         </xs:attribute>
+         <xs:attribute name="template-params" type="c:Expression">
+            <xs:annotation>
+               <xs:documentation>An object with template parameters.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="tunnel-params" type="c:Expression">
+            <xs:annotation>
+               <xs:documentation>An object with tunnel template parameters.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attributeGroup ref="c:standard-attributes"/>
+      </xs:complexType>
+   </xs:element>
    <xs:element name="fallback">
       <xs:annotation>
          <xs:documentation>Defines fallback behavior for the parent element.</xs:documentation>
@@ -1094,7 +1135,11 @@
          <xs:documentation>Invokes the overriden function.</xs:documentation>
       </xs:annotation>
       <xs:complexType>
-         <xs:attribute name="arguments" type="c:ArgumentList"/>
+         <xs:attribute name="arguments" type="c:ArgumentList">
+            <xs:annotation>
+               <xs:documentation>The function call arguments.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
@@ -1309,51 +1354,6 @@
          <xs:attribute name="as" type="c:Type">
             <xs:annotation>
                <xs:documentation>The type of the disposable variable.</xs:documentation>
-            </xs:annotation>
-         </xs:attribute>
-         <xs:attributeGroup ref="c:standard-attributes"/>
-      </xs:complexType>
-   </xs:element>
-   <xs:element name="using-module">
-      <xs:annotation>
-         <xs:documentation>Defines an invocation on a dynamically loaded module.</xs:documentation>
-      </xs:annotation>
-      <xs:complexType>
-         <xs:sequence>
-            <xs:element minOccurs="0" maxOccurs="unbounded" ref="c:with-param"/>
-            <xs:element name="call-template">
-               <xs:annotation>
-                  <xs:documentation>Invokes a template in the used module.</xs:documentation>
-               </xs:annotation>
-               <xs:complexType>
-                  <xs:sequence>
-                     <xs:element minOccurs="0" maxOccurs="unbounded" ref="c:with-param"/>
-                  </xs:sequence>
-                  <xs:attribute name="name" use="required">
-                     <xs:annotation>
-                        <xs:documentation>The name of the template. Attribute value template (EQName).</xs:documentation>
-                     </xs:annotation>
-                     <xs:simpleType>
-                        <xs:union memberTypes="c:EQName c:AVTExpr"/>
-                     </xs:simpleType>
-                  </xs:attribute>
-                  <xs:attribute name="with-params" type="c:Expression">
-                     <xs:annotation>
-                        <xs:documentation>An object with parameters.</xs:documentation>
-                     </xs:annotation>
-                  </xs:attribute>
-                  <xs:attributeGroup ref="c:standard-attributes"/>
-               </xs:complexType>
-            </xs:element>
-         </xs:sequence>
-         <xs:attribute name="value" use="required" type="c:Expression">
-            <xs:annotation>
-               <xs:documentation>An instance of a pre-compiled module.</xs:documentation>
-            </xs:annotation>
-         </xs:attribute>
-         <xs:attribute name="with-params" type="c:Expression">
-            <xs:annotation>
-               <xs:documentation>An object with parameters.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>

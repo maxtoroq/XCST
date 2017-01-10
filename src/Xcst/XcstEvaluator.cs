@@ -216,6 +216,27 @@ namespace Xcst {
          return this;
       }
 
+      public XcstTemplateEvaluator WithTunnelParams(object parameters) {
+
+         if (parameters != null) {
+            WithTunnelParams(XcstEvaluator.ObjectToDictionary(parameters));
+         }
+
+         return this;
+      }
+
+      public XcstTemplateEvaluator WithTunnelParams(IDictionary<string, object> parameters) {
+
+         if (parameters != null) {
+
+            foreach (var pair in parameters) {
+               WithParam(pair.Key, pair.Value, tunnel: true);
+            }
+         }
+
+         return this;
+      }
+
       public XcstTemplateEvaluator ClearParams() {
 
          this.templateParameters.Clear();
