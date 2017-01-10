@@ -818,7 +818,9 @@
          <xs:documentation>Invokes a template.</xs:documentation>
       </xs:annotation>
       <xs:complexType>
-         <xs:group minOccurs="0" maxOccurs="unbounded" ref="c:with-param"/>
+         <xs:sequence>
+            <xs:element minOccurs="0" maxOccurs="unbounded" ref="c:with-param"/>
+         </xs:sequence>
          <xs:attribute name="name" use="required" type="c:EQName">
             <xs:annotation>
                <xs:documentation>The name of the template to invoke.</xs:documentation>
@@ -932,7 +934,9 @@
          <xs:documentation>Evaluates a template delegate.</xs:documentation>
       </xs:annotation>
       <xs:complexType>
-         <xs:group minOccurs="0" maxOccurs="unbounded" ref="c:with-param"/>
+         <xs:sequence>
+            <xs:element minOccurs="0" maxOccurs="unbounded" ref="c:with-param"/>
+         </xs:sequence>
          <xs:attribute name="value" use="required" type="c:Expression">
             <xs:annotation>
                <xs:documentation>The template delegate instance.</xs:documentation>
@@ -1090,7 +1094,7 @@
          <xs:documentation>Invokes the overriden function.</xs:documentation>
       </xs:annotation>
       <xs:complexType>
-         <xs:group minOccurs="0" maxOccurs="unbounded" ref="c:with-param-for-functions"/>
+         <xs:attribute name="arguments" type="c:ArgumentList"/>
          <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
@@ -1099,7 +1103,9 @@
          <xs:documentation>Invokes the overriden template.</xs:documentation>
       </xs:annotation>
       <xs:complexType>
-         <xs:group minOccurs="0" maxOccurs="unbounded" ref="c:with-param"/>
+         <xs:sequence>
+            <xs:element minOccurs="0" maxOccurs="unbounded" ref="c:with-param"/>
+         </xs:sequence>
          <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
@@ -1314,13 +1320,15 @@
       </xs:annotation>
       <xs:complexType>
          <xs:sequence>
-            <xs:group minOccurs="0" maxOccurs="unbounded" ref="c:with-param"/>
+            <xs:element minOccurs="0" maxOccurs="unbounded" ref="c:with-param"/>
             <xs:element name="call-template">
                <xs:annotation>
                   <xs:documentation>Invokes a template in the used module.</xs:documentation>
                </xs:annotation>
                <xs:complexType>
-                  <xs:group minOccurs="0" maxOccurs="unbounded" ref="c:with-param"/>
+                  <xs:sequence>
+                     <xs:element minOccurs="0" maxOccurs="unbounded" ref="c:with-param"/>
+                  </xs:sequence>
                   <xs:attribute name="name" use="required">
                      <xs:annotation>
                         <xs:documentation>The name of the template. Attribute value template (EQName).</xs:documentation>
@@ -1442,72 +1450,35 @@
          <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
-   <xs:group name="with-param">
-      <xs:sequence>
-         <xs:element name="with-param">
+   <xs:element name="with-param">
+      <xs:annotation>
+         <xs:documentation>Defines parameter arguments for a template or package.</xs:documentation>
+      </xs:annotation>
+      <xs:complexType mixed="true">
+         <xs:group minOccurs="0" ref="c:sequence-constructor"/>
+         <xs:attribute name="name" use="required" type="c:Name">
             <xs:annotation>
-               <xs:documentation>Defines parameter arguments for a template or package.</xs:documentation>
+               <xs:documentation>The name of the parameter.</xs:documentation>
             </xs:annotation>
-            <xs:complexType mixed="true">
-               <xs:group minOccurs="0" ref="c:sequence-constructor"/>
-               <xs:attribute name="name" use="required" type="c:Name">
-                  <xs:annotation>
-                     <xs:documentation>The name of the parameter.</xs:documentation>
-                  </xs:annotation>
-               </xs:attribute>
-               <xs:attribute name="value" type="c:Expression">
-                  <xs:annotation>
-                     <xs:documentation>The value of the parameter.</xs:documentation>
-                  </xs:annotation>
-               </xs:attribute>
-               <xs:attribute name="as" type="c:Type">
-                  <xs:annotation>
-                     <xs:documentation>The type of the parameter.</xs:documentation>
-                  </xs:annotation>
-               </xs:attribute>
-               <xs:attribute name="tunnel" type="c:Boolean">
-                  <xs:annotation>
-                     <xs:documentation>Specifies if the parameter should be tunneled.</xs:documentation>
-                  </xs:annotation>
-               </xs:attribute>
-               <xs:attributeGroup ref="c:standard-attributes"/>
-            </xs:complexType>
-         </xs:element>
-      </xs:sequence>
-   </xs:group>
-   <xs:group name="with-param-for-functions">
-      <xs:sequence>
-         <xs:element name="with-param">
+         </xs:attribute>
+         <xs:attribute name="value" type="c:Expression">
             <xs:annotation>
-               <xs:documentation>Defines parameter arguments for a function.</xs:documentation>
+               <xs:documentation>The value of the parameter.</xs:documentation>
             </xs:annotation>
-            <xs:complexType mixed="true">
-               <xs:group minOccurs="0" ref="c:sequence-constructor"/>
-               <xs:attribute name="name" type="c:Name">
-                  <xs:annotation>
-                     <xs:documentation>The name of the parameter.</xs:documentation>
-                  </xs:annotation>
-               </xs:attribute>
-               <xs:attribute name="value" type="c:Expression">
-                  <xs:annotation>
-                     <xs:documentation>The value of the parameter.</xs:documentation>
-                  </xs:annotation>
-               </xs:attribute>
-               <xs:attribute name="as" type="c:Type">
-                  <xs:annotation>
-                     <xs:documentation>The type of the parameter.</xs:documentation>
-                  </xs:annotation>
-               </xs:attribute>
-               <xs:attribute name="tunnel" type="c:Boolean">
-                  <xs:annotation>
-                     <xs:documentation>Specifies if the parameter should be tunneled.</xs:documentation>
-                  </xs:annotation>
-               </xs:attribute>
-               <xs:attributeGroup ref="c:standard-attributes"/>
-            </xs:complexType>
-         </xs:element>
-      </xs:sequence>
-   </xs:group>
+         </xs:attribute>
+         <xs:attribute name="as" type="c:Type">
+            <xs:annotation>
+               <xs:documentation>The type of the parameter.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="tunnel" type="c:Boolean">
+            <xs:annotation>
+               <xs:documentation>Specifies if the parameter should be tunneled.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attributeGroup ref="c:standard-attributes"/>
+      </xs:complexType>
+   </xs:element>
    <xs:attributeGroup name="output-avt-attributes">
       <xs:attribute name="format">
          <xs:annotation>
@@ -1845,6 +1816,14 @@
    </xs:simpleType>
    <xs:simpleType name="Type">
       <xs:restriction base="xs:token">
+         <xs:minLength value="1"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="ArgumentList">
+      <xs:annotation>
+         <xs:documentation>Argument list</xs:documentation>
+      </xs:annotation>
+      <xs:restriction base="xs:string">
          <xs:minLength value="1"/>
       </xs:restriction>
    </xs:simpleType>

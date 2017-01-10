@@ -1083,32 +1083,12 @@
          <call-template name="src:validate-next-function"/>
       </param>
       <param name="statement" select="false()"/>
-
       <if test="not($statement) and not($meta/@as)">
          <sequence select="error((), 'Cannot compile a void function into an expression.', src:error-object(.))"/>
       </if>
-
       <value-of select="$meta/@member-name"/>
       <text>(</text>
-      <for-each select="c:with-param">
-         <call-template name="xcst:validate-attribs">
-            <with-param name="allowed" select="'name', 'value', 'as', 'tunnel'"/>
-            <with-param name="required" select="()"/>
-         </call-template>
-         <call-template name="xcst:value-or-sequence-constructor"/>
-         <if test="@name and preceding-sibling::c:with-param[@name and xcst:name-equals(@name, current()/@name)]">
-            <sequence select="error(xs:QName('err:XTSE0670'), 'Duplicate parameter name.', src:error-object(.))"/>
-         </if>
-         <if test="@tunnel/xcst:boolean(.)">
-            <sequence select="error(xs:QName('err:XTSE0020'), 'For attribute ''tunnel'' on c:next-function/c:with-param, the only permitted values are: ''no'', ''false'', ''0''.', src:error-object(.))"/>
-         </if>
-         <if test="position() gt 1">, </if>
-         <if test="@name">
-            <value-of select="xcst:name(@name)"/>
-            <text>: </text>
-         </if>
-         <call-template name="src:value"/>
-      </for-each>
+      <value-of select="@arguments/xcst:expression(.)"/>
       <text>)</text>
    </template>
 

@@ -1118,10 +1118,12 @@
    <define name="next-function">
       <element name="next-function">
          <ann:documentation>Invokes the overriden function.</ann:documentation>
+         <optional>
+            <attribute name="arguments">
+               <ref name="ArgumentList"/>
+            </attribute>
+         </optional>
          <ref name="standard-attributes"/>
-         <zeroOrMore>
-            <ref name="with-param-for-functions"/>
-         </zeroOrMore>
       </element>
    </define>
 
@@ -1500,38 +1502,6 @@
       </element>
    </define>
 
-   <define name="with-param-for-functions">
-      <element name="with-param">
-         <ann:documentation>Defines parameter arguments for a function.</ann:documentation>
-         <optional>
-            <attribute name="name">
-               <ann:documentation>The name of the parameter.</ann:documentation>
-               <ref name="Name"/>
-            </attribute>
-         </optional>
-         <choice>
-            <attribute name="value">
-               <ann:documentation>The value of the parameter.</ann:documentation>
-               <ref name="Expression"/>
-            </attribute>
-            <ref name="sequence-constructor"/>
-         </choice>
-         <zeroOrMore>
-            <choice>
-               <attribute name="as">
-                  <ann:documentation>The type of the parameter.</ann:documentation>
-                  <ref name="Type"/>
-               </attribute>
-               <attribute name="tunnel">
-                  <ann:documentation>Specifies if the parameter should be tunneled.</ann:documentation>
-                  <ref name="Boolean"/>
-               </attribute>
-            </choice>
-         </zeroOrMore>
-         <ref name="standard-attributes"/>
-      </element>
-   </define>
-
    <define name="output-avt-attributes">
       <zeroOrMore>
          <choice>
@@ -1847,6 +1817,13 @@
 
    <define name="Type">
       <data type="token">
+         <param name="minLength">1</param>
+      </data>
+   </define>
+
+   <define name="ArgumentList">
+      <ann:documentation>Argument list</ann:documentation>
+      <data type="string">
          <param name="minLength">1</param>
       </data>
    </define>
