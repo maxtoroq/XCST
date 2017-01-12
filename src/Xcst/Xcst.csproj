@@ -32,6 +32,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Xml" />
@@ -44,6 +45,7 @@
     <Compile Include="QualifiedName.cs" />
     <Compile Include="RuntimeException.cs" />
     <Compile Include="Runtime\ListFactory.cs" />
+    <Compile Include="Runtime\RangeAttribute.cs" />
     <Compile Include="Runtime\Serialization.cs" />
     <Compile Include="Runtime\Grouping.cs" />
     <Compile Include="Runtime\SequenceWriter.cs" />

@@ -52,6 +52,7 @@
       <HintPath>..\..\packages\System.Collections.Immutable.1.1.37\lib\dotnet\System.Collections.Immutable.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Reflection.Metadata, Version=1.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\System.Reflection.Metadata.1.1.0\lib\dotnet5.2\System.Reflection.Metadata.dll</HintPath>
       <Private>True</Private>
@@ -296,6 +297,8 @@
     <None Include="Language\CallableComponents\CallTemplate\TypeCompatible.c.xcst" />
     <None Include="Language\Serialization\Output\NoChildrenText.i.xcst" />
     <None Include="Language\Serialization\Output\NoChildren.i.xcst" />
+    <None Include="Language\Types\Member\ImplicitMax.c.xcst" />
+    <None Include="Language\Types\Member\ImplicitMin.c.xcst" />
     <None Include="Language\Types\Member\member.value_expression.mutex.i.xcst" />
     <None Include="Language\Types\Member\Metadata\NoOtherPreceding.i.xcst" />
     <None Include="Language\Types\Member\Metadata\NoOtherPrecedingText.i.xcst" />

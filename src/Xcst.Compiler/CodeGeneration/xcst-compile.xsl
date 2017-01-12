@@ -1893,7 +1893,7 @@
    <template match="c:member" mode="src:member">
 
       <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="'name', 'as', 'value', 'expression', 'auto-initialize', 'display', 'display-name', 'description', 'short-name', 'place-holder', 'order', 'group', 'format', 'apply-format-in-edit-mode', 'disable-output-escaping', 'null-display-text', 'template', 'read-only', 'auto-generate-filter', 'data-type', 'required', 'max-length', 'min-length', 'pattern', 'min', 'max', 'range-type', 'equal-to', $xcst:type-or-member-attributes"/>
+         <with-param name="allowed" select="'name', 'as', 'value', 'expression', 'auto-initialize', 'display', 'display-name', 'description', 'short-name', 'place-holder', 'order', 'group', 'format', 'apply-format-in-edit-mode', 'disable-output-escaping', 'null-display-text', 'template', 'read-only', 'auto-generate-filter', 'data-type', 'required', 'max-length', 'min-length', 'pattern', 'min', 'max', 'equal-to', $xcst:type-or-member-attributes"/>
          <with-param name="required" select="'name'"/>
       </call-template>
       <if test="count((@value, @expression)) gt 1">

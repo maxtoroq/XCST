@@ -577,14 +577,11 @@
                </attribute>
                <attribute name="min">
                   <ann:documentation>A minimum valid value for this member.</ann:documentation>
-                  <ref name="Expression"/>
+                  <ref name="String"/>
                </attribute>
                <attribute name="max">
                   <ann:documentation>A maximum valid value for this member.</ann:documentation>
-                  <ref name="Expression"/>
-               </attribute>
-               <attribute name="range-type">
-                  <ref name="Type"/>
+                  <ref name="String"/>
                </attribute>
                <attribute name="equal-to">
                   <ann:documentation>The name of another member that a valid value for this member should be equal to.</ann:documentation>

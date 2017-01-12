@@ -381,33 +381,27 @@
 
    <template name="src:range-attribute">
       <if test="@min or @max">
-         <if test="@range-type and not(count((@min, @max)) eq 2)">
-            <sequence select="error((), 'When ''range-type'' is used both ''min'' and ''max'' must be specified.', src:error-object(.))"/>
+         <if test="not(@as)">
+            <sequence select="error((), 'The ''min'' and ''max'' attributes can only be used on members that declare their type using the ''as'' attribute.', src:error-object(.))"/>
          </if>
          <variable name="setters" as="text()*">
             <call-template name="src:validation-setters">
                <with-param name="name" select="'range'"/>
             </call-template>
          </variable>
+         <variable name="type" select="xcst:type(@as)"/>
          <call-template name="src:line-number"/>
          <call-template name="src:new-line-indented"/>
          <text>[</text>
-         <value-of select="src:global-identifier('System.ComponentModel.DataAnnotations.Range')"/>
+         <value-of select="src:fully-qualified-helper('Range')"/>
          <text>(</text>
-         <choose>
-            <when test="@range-type">
-               <text>typeof(</text>
-               <value-of select="xcst:type(@range-type)"/>
-               <text>), </text>
-               <value-of select="(@min, @max)/src:verbatim-string(.), $setters/string()" separator=", "/>
-            </when>
-            <otherwise>
-               <value-of select="
-                  (@min/xcst:expression(.), concat(xcst:type(@as), '.MinValue'))[1],
-                  (@max/xcst:expression(.), concat(xcst:type(@as), '.MaxValue'))[1],
-                  $setters/string()" separator=", "/>
-            </otherwise>
-         </choose>
+         <text>typeof(</text>
+         <value-of select="$type"/>
+         <text>), </text>
+         <value-of select="
+            (@min/src:verbatim-string(.), concat($type, '.MinValue'))[1],
+            (@max/src:verbatim-string(.), concat($type, '.MaxValue'))[1],
+            $setters/string()" separator=", "/>
          <text>)]</text>
       </if>
    </template>

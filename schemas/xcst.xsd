@@ -517,17 +517,16 @@
                <xs:documentation>A regular expression that a valid value for this member must conform to.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
-         <xs:attribute name="min" type="c:Expression">
+         <xs:attribute name="min" type="c:String">
             <xs:annotation>
                <xs:documentation>A minimum valid value for this member.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
-         <xs:attribute name="max" type="c:Expression">
+         <xs:attribute name="max" type="c:String">
             <xs:annotation>
                <xs:documentation>A maximum valid value for this member.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
-         <xs:attribute name="range-type" type="c:Type"/>
          <xs:attribute name="equal-to" type="c:Name">
             <xs:annotation>
                <xs:documentation>The name of another member that a valid value for this member should be equal to.</xs:documentation>

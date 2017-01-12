@@ -2,23 +2,21 @@
 <?ignore-test ?>
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
+   <c:use-functions in='Microsoft.VisualStudio.TestTools.UnitTesting'/>
+
    <c:import href='_InferTypeFromTypedNextTemplate.xcst'/>
 
    <c:template name='c:initial-template'>
-      <foo>
-         <c:call-template name='foo'/>
-      </foo>
+      <c:call-template name='foo'/>
    </c:template>
 
-   <c:template name='foo' as='bool'>
+   <c:template name='foo'>
       <c:variable name='a'>
          <c:next-template/>
       </c:variable>
-      <c:object value='a is int'/>
+      <c:void value='Assert.IsTrue(a is int)'/>
    </c:template>
 
-   <c:template name='expected'>
-      <foo>True</foo>
-   </c:template>
+   <c:template name='expected'/>
 
 </c:module>

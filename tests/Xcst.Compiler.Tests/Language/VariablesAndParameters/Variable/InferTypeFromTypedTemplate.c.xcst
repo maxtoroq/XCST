@@ -2,21 +2,19 @@
 <?ignore-test ?>
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
+   <c:use-functions in='Microsoft.VisualStudio.TestTools.UnitTesting'/>
+
    <c:template name='c:initial-template'>
       <c:variable name='a'>
          <c:call-template name='foo'/>
       </c:variable>
-      <foo>
-         <c:value-of value='a is int'/>
-      </foo>
+      <c:void value='Assert.IsTrue(a is int)'/>
    </c:template>
 
    <c:template name='foo' as='int'>
       <c:object value='1'/>
    </c:template>
 
-   <c:template name='expected'>
-      <foo>True</foo>
-   </c:template>
+   <c:template name='expected'/>
 
 </c:module>
