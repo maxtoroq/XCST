@@ -66,7 +66,13 @@ namespace Xcst.Runtime {
          var defaultParams = new OutputParameters();
          package.ReadOutputDefinition(outputName, defaultParams);
 
-         return WriterFactory.CreateWriter(outputUri)(defaultParams, parameters, package.Context.SimpleContent);
+         return WriterFactory.CreateWriter(outputUri)
+            (defaultParams, parameters, package.Context.SimpleContent);
+      }
+
+      public static XcstWriter Void(IXcstPackage package) {
+         return WriterFactory.CreateWriter(new NullWriter(WriterFactory.DefaultOuputUri))
+            (null, null, package.Context.SimpleContent);
       }
    }
 }

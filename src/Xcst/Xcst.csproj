@@ -45,6 +45,7 @@
     <Compile Include="QualifiedName.cs" />
     <Compile Include="RuntimeException.cs" />
     <Compile Include="Runtime\ListFactory.cs" />
+    <Compile Include="Runtime\NullWriter.cs" />
     <Compile Include="Runtime\RangeAttribute.cs" />
     <Compile Include="Runtime\Serialization.cs" />
     <Compile Include="Runtime\Grouping.cs" />

@@ -196,6 +196,8 @@
     <None Include="Language\CreatingNodesAndObjects\ValueOf\value-of.value_seqctor.mutex.i.xcst" />
     <None Include="Language\Diagnostics\Assert\assert.value_seqctor.mutex.i.xcst" />
     <None Include="Language\Diagnostics\Message\message.value_seqctor.mutex.i.xcst" />
+    <None Include="Language\ExtensibilityAndFallback\Void\IgnoreContent.c.xcst" />
+    <None Include="Language\ExtensibilityAndFallback\Void\IgnoreValue.c.xcst" />
     <None Include="Language\ExtensibilityAndFallback\Void\void.value_seqctor.mutex.i.xcst" />
     <None Include="Language\Grouping\ForEachGroup\Sort\NoOtherPrecedingText.i.xcst" />
     <None Include="Language\Grouping\ForEachGroup\Sort\NoOtherPreceding.i.xcst" />

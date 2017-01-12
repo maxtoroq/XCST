@@ -25,7 +25,7 @@ namespace Xcst {
 
    static class WriterFactory {
 
-      static readonly Uri DefaultOuputUri = new Uri("", UriKind.Relative);
+      internal static readonly Uri DefaultOuputUri = new Uri("", UriKind.Relative);
 
       public static CreateWriterDelegate CreateWriter(Stream output, Uri outputUri) {
          return CreateWriter(p => CreateXmlWriter(output, p), outputUri);

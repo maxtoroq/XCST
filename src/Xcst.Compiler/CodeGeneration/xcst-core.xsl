@@ -1750,8 +1750,24 @@
       <call-template name="xcst:value-or-sequence-constructor"/>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
-      <call-template name="src:value"/>
-      <value-of select="$src:statement-delimiter"/>
+      <choose>
+         <when test="@value">
+            <value-of select="xcst:expression(@value)"/>
+            <value-of select="$src:statement-delimiter"/>
+         </when>
+         <otherwise>
+            <variable name="new-output" select="concat(src:aux-variable('output'), '_', generate-id())"/>
+            <text>using (var </text>
+            <value-of select="$new-output"/>
+            <text> = </text>
+            <value-of select="src:fully-qualified-helper('Serialization')"/>
+            <text>.Void(this))</text>
+            <call-template name="src:sequence-constructor">
+               <with-param name="ensure-block" select="true()"/>
+               <with-param name="output" select="$new-output" tunnel="yes"/>
+            </call-template>
+         </otherwise>
+      </choose>
    </template>
 
    <template match="c:script" mode="src:statement">
@@ -1797,9 +1813,7 @@
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
       <variable name="new-output" select="concat(src:aux-variable('output'), '_', generate-id())"/>
-      <text>using (</text>
-      <value-of select="$src:output-type"/>
-      <text> </text>
+      <text>using (var </text>
       <value-of select="$new-output"/>
       <text> = </text>
       <value-of select="src:fully-qualified-helper('Serialization')"/>
