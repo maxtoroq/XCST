@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:use-functions in='Microsoft.VisualStudio.TestTools.UnitTesting'/>
+
+   <c:type name='foo'>
+      <c:member name='bar'>
+         <c:member name='baz'/>
+      </c:member>
+   </c:type>
+
+   <c:template name='c:initial-template'>
+      <c:void value='Assert.IsTrue(typeof(foo).GetProperty("bar") != null)'/>
+      <c:void value='Assert.IsTrue(typeof(foo).GetProperty("bar").PropertyType.GetProperty("baz") != null)'/>
+   </c:template>
+
+   <c:template name='expected'/>
+
+</c:module>

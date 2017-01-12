@@ -448,15 +448,17 @@
          <zeroOrMore>
             <ref name="metadata"/>
          </zeroOrMore>
-         <choice>
-            <attribute name="as">
-               <ann:documentation>The type of the member.</ann:documentation>
-               <ref name="Type"/>
-            </attribute>
-            <oneOrMore>
-               <ref name="member"/>
-            </oneOrMore>
-         </choice>
+         <optional>
+            <choice>
+               <attribute name="as">
+                  <ann:documentation>The type of the member.</ann:documentation>
+                  <ref name="Type"/>
+               </attribute>
+               <oneOrMore>
+                  <ref name="member"/>
+               </oneOrMore>
+            </choice>
+         </optional>
          <optional>
             <choice>
                <attribute name="value">

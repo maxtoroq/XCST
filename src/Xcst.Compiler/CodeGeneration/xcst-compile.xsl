@@ -1882,7 +1882,7 @@
             <with-param name="indent" select="$indent + 1" tunnel="yes"/>
             <with-param name="src:validation-attributes" select="$validation-attributes" tunnel="yes"/>
          </apply-templates>
-         <apply-templates select="c:member[not(@as)]" mode="src:anonymous-type">
+         <apply-templates select="c:member[c:member]" mode="src:anonymous-type">
             <with-param name="indent" select="$indent + 1" tunnel="yes"/>
             <with-param name="src:validation-attributes" select="$validation-attributes" tunnel="yes"/>
          </apply-templates>
@@ -1896,12 +1896,17 @@
          <with-param name="allowed" select="'name', 'as', 'value', 'expression', 'auto-initialize', 'display', 'display-name', 'description', 'short-name', 'place-holder', 'order', 'group', 'format', 'apply-format-in-edit-mode', 'disable-output-escaping', 'null-display-text', 'template', 'read-only', 'auto-generate-filter', 'data-type', 'required', 'max-length', 'min-length', 'pattern', 'min', 'max', 'equal-to', $xcst:type-or-member-attributes"/>
          <with-param name="required" select="'name'"/>
       </call-template>
+      <if test="@as and c:member">
+         <sequence select="error((), 'The ''as'' attribute must be omitted when the member has child members.', src:error-object(.))"/>
+      </if>
       <if test="count((@value, @expression)) gt 1">
          <sequence select="error((), 'The attributes ''value'' and ''expression'' are mutually exclusive.', src:error-object(.))"/>
       </if>
       <call-template name="xcst:no-other-following"/>
 
-      <variable name="type" select="(@as/xcst:type(.), src:anonymous-type-name(.))[1]"/>
+      <variable name="type" select="
+         if (c:member) then src:anonymous-type-name(.)
+         else (@as/xcst:type(.), 'object')[1]"/>
       <variable name="auto-init" select="(@auto-initialize/xcst:boolean(.), false())[1]"/>
 
       <if test="$auto-init and (@expression or @value)">
@@ -1941,7 +1946,7 @@
       </choose>
    </template>
 
-   <template match="c:member[not(@as)]" mode="src:anonymous-type">
+   <template match="c:member[c:member]" mode="src:anonymous-type">
       <param name="indent" tunnel="yes"/>
 
       <value-of select="$src:new-line"/>
@@ -1954,7 +1959,7 @@
       <apply-templates select="c:member" mode="src:member">
          <with-param name="indent" select="$indent + 1" tunnel="yes"/>
       </apply-templates>
-      <apply-templates select="c:member[not(@as)]" mode="#current">
+      <apply-templates select="c:member[c:member]" mode="#current">
          <with-param name="indent" select="$indent + 1" tunnel="yes"/>
       </apply-templates>
       <call-template name="src:close-brace"/>

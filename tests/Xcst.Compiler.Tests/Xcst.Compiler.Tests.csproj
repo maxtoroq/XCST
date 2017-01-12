@@ -297,6 +297,9 @@
     <None Include="Language\CallableComponents\CallTemplate\TypeCompatible.c.xcst" />
     <None Include="Language\Serialization\Output\NoChildrenText.i.xcst" />
     <None Include="Language\Serialization\Output\NoChildren.i.xcst" />
+    <None Include="Language\Types\Member\ChildMember.c.xcst" />
+    <None Include="Language\Types\Member\AsAndChildMember.i.xcst" />
+    <None Include="Language\Types\Member\NoAs.c.xcst" />
     <None Include="Language\Types\Member\ImplicitMax.c.xcst" />
     <None Include="Language\Types\Member\ImplicitMin.c.xcst" />
     <None Include="Language\Types\Member\member.value_expression.mutex.i.xcst" />
