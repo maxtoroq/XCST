@@ -34,14 +34,46 @@ namespace Xcst {
       int idxLastName;                // The entry containing the name of the last attribute to be cached
       int hashCodeUnion;              // Set of hash bits that can quickly guarantee a name is not a duplicate
 
+      string itemSeparator;
+      int depth;
+      ItemType? lastItem;
+
       internal bool DisposeWriter { get; set; }
 
-      public RuntimeWriter(XcstWriter baseWriter)
-         : base(baseWriter) { }
+      public RuntimeWriter(XcstWriter baseWriter, OutputParameters parameters)
+         : base(baseWriter) {
 
-      public override void WriteStartAttribute(string prefix, string localName, string ns) {
+         this.itemSeparator = parameters?.ItemSeparator;
+      }
+
+      public override void WriteStartElement(string prefix, string localName, string ns) {
+
+         if (this.inAttr) {
+            throw new RuntimeException("Cannot create an element within an attribute.");
+         }
+
+         FlushAttributes();
+         ItemWriting(ItemType.Element);
+
+         base.WriteStartElement(prefix, localName, ns);
+      }
+
+      public override void WriteEndElement() {
+
+         FlushAttributes();
+
+         base.WriteEndElement();
+
+         ItemWritten(ItemType.Element);
+      }
+
+      public override void WriteStartAttribute(string prefix, string localName, string ns, string separator) {
 
          if (localName == null) throw new ArgumentNullException(nameof(localName));
+
+         if (this.inAttr) {
+            throw new RuntimeException("Cannot create an attribute within another attribute.");
+         }
 
          if (prefix == null) {
             prefix = String.Empty;
@@ -91,11 +123,39 @@ namespace Xcst {
          }
 
          this.idxLastName = this.numEntries++;
-         this.arrAttrs[this.idxLastName].Init(prefix, localName, ns, hashCode);
+         this.arrAttrs[this.idxLastName].Init(prefix, localName, ns, separator, hashCode);
       }
 
       public override void WriteEndAttribute() {
          this.inAttr = false;
+      }
+
+      public override void WriteComment(string text) {
+
+         if (this.inAttr) {
+            throw new RuntimeException("Cannot create a comment within an attribute.");
+         }
+
+         FlushAttributes();
+         ItemWriting(ItemType.Comment);
+
+         base.WriteComment(text);
+
+         ItemWritten(ItemType.Comment);
+      }
+
+      public override void WriteProcessingInstruction(string name, string text) {
+
+         if (this.inAttr) {
+            throw new RuntimeException("Cannot create a processing instruction an attribute.");
+         }
+
+         FlushAttributes();
+         ItemWriting(ItemType.ProcessingInstruction);
+
+         base.WriteProcessingInstruction(name, text);
+
+         ItemWritten(ItemType.ProcessingInstruction);
       }
 
       public override void WriteString(string text) {
@@ -108,35 +168,12 @@ namespace Xcst {
          } else {
 
             FlushAttributes();
+            ItemWriting(ItemType.Text);
+
             base.WriteString(text);
+
+            ItemWritten(ItemType.Text);
          }
-      }
-
-      public override void WriteComment(string text) {
-
-         if (!this.inAttr) {
-            FlushAttributes();
-         }
-
-         base.WriteComment(text);
-      }
-
-      public override void WriteEndElement() {
-
-         if (!this.inAttr) {
-            FlushAttributes();
-         }
-
-         base.WriteEndElement();
-      }
-
-      public override void WriteProcessingInstruction(string name, string text) {
-
-         if (!this.inAttr) {
-            FlushAttributes();
-         }
-
-         base.WriteProcessingInstruction(name, text);
       }
 
       public override void WriteRaw(string data) {
@@ -146,24 +183,41 @@ namespace Xcst {
          }
 
          FlushAttributes();
+         ItemWriting(ItemType.Raw);
+
          base.WriteRaw(data);
+
+         ItemWritten(ItemType.Raw);
       }
 
-      public override void WriteStartElement(string prefix, string localName, string ns) {
+      public override void WriteObject(object value) {
 
-         if (!this.inAttr) {
+         if (this.inAttr) {
+
+            if (value != null) {
+               EnsureAttributeCache();
+               this.arrAttrs[this.numEntries++].Init(value);
+            }
+
+         } else {
+
             FlushAttributes();
+
+            if (value != null) {
+
+               ItemWriting(ItemType.Object);
+
+               base.WriteObject(value);
+
+               ItemWritten(ItemType.Object);
+            }
          }
-
-         base.WriteStartElement(prefix, localName, ns);
       }
-
-      /// <summary>
-      /// Ensure that attribute array has been created and is large enough for at least one
-      /// additional entry.
-      /// </summary>
 
       void EnsureAttributeCache() {
+
+         // Ensure that attribute array has been created and is large enough for at least one
+         // additional entry.
 
          if (this.arrAttrs == null) {
 
@@ -201,13 +255,54 @@ namespace Xcst {
 
                string prefix = this.arrAttrs[idx].Prefix;
                string ns = this.arrAttrs[idx].Namespace;
+               string separator = this.arrAttrs[idx].Separator;
 
-               base.WriteStartAttribute(prefix, localName, ns);
+               base.WriteStartAttribute(prefix, localName, ns, null);
+
+               bool first = true;
+               bool lastWasText = false;
 
                // Output all of this attribute's text
                while (++idx != idxNext) {
-                  string text = this.arrAttrs[idx].Text;
-                  base.WriteString(text);
+
+                  object obj = this.arrAttrs[idx].Object;
+                  string sep = separator;
+
+                  if (obj != null) {
+
+                     if (!first) {
+
+                        if (!lastWasText
+                           && sep == null) {
+
+                           sep = " ";
+                        }
+
+                        if (!String.IsNullOrEmpty(sep)) {
+                           base.WriteString(sep);
+                        }
+                     }
+
+                     base.WriteObject(obj);
+
+                     lastWasText = false;
+
+                  } else {
+
+                     if (!first
+                        && !lastWasText
+                        && !String.IsNullOrEmpty(sep)) {
+
+                        base.WriteString(sep);
+                     }
+
+                     string text = this.arrAttrs[idx].Text;
+                     base.WriteString(text);
+
+                     lastWasText = true;
+                  }
+
+                  first = false;
                }
 
                base.WriteEndAttribute();
@@ -221,8 +316,9 @@ namespace Xcst {
          if (this.numEntries > 0) {
 
             for (int i = 0; i < this.arrAttrs.Length; i++) {
-               this.arrAttrs[i].Init(default(string), default(string), default(string), default(int));
+               this.arrAttrs[i].Init(default(string), default(string), default(string), default(string), default(int));
                this.arrAttrs[i].Init(default(string));
+               this.arrAttrs[i].Init(default(object));
             }
 
             this.numEntries = default(int);
@@ -231,12 +327,57 @@ namespace Xcst {
          }
       }
 
+      void ItemWriting(ItemType type) {
+
+         if (this.lastItem != null
+            && (this.lastItem.Value != ItemType.Text || type != ItemType.Text)) {
+
+            string separator = (this.depth == 0 ? this.itemSeparator : null);
+
+            if (separator == null
+               && this.lastItem.Value == ItemType.Object
+               && type == ItemType.Object) {
+
+               separator = " ";
+            }
+
+            if (!String.IsNullOrEmpty(separator)) {
+               base.WriteString(separator);
+            }
+         }
+
+         if (type == ItemType.Element) {
+            this.depth++;
+            this.lastItem = null;
+         }
+      }
+
+      void ItemWritten(ItemType type) {
+
+         if (type == ItemType.Element) {
+            this.depth--;
+         }
+
+         this.lastItem = type;
+      }
+
+      enum ItemType {
+         Element,
+         Text,
+         Raw,
+         Comment,
+         ProcessingInstruction,
+         Object
+      }
+
       struct AttrNameVal {
 
          string localName;
          string prefix;
          string namespaceName;
+         string separator;
          string text;
+         object obj;
          int hashCode;
          int nextNameIndex;
 
@@ -246,7 +387,11 @@ namespace Xcst {
 
          public string Namespace => this.namespaceName;
 
+         public string Separator => this.separator;
+
          public string Text => this.text;
+
+         public object Object => this.obj;
 
          public int NextNameIndex {
             get { return this.nextNameIndex; }
@@ -257,10 +402,11 @@ namespace Xcst {
          /// Cache an attribute's name and type.
          /// </summary>
 
-         public void Init(string prefix, string localName, string ns, int hashCode) {
+         public void Init(string prefix, string localName, string ns, string separator, int hashCode) {
             this.localName = localName;
             this.prefix = prefix;
             this.namespaceName = ns;
+            this.separator = separator;
             this.hashCode = hashCode;
             this.nextNameIndex = 0;
          }
@@ -271,6 +417,10 @@ namespace Xcst {
 
          public void Init(string text) {
             this.text = text;
+         }
+
+         public void Init(object obj) {
+            this.obj = obj;
          }
 
          /// <summary>

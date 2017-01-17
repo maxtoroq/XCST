@@ -33,9 +33,6 @@ namespace Xcst.Runtime {
 
    public class SimpleContent {
 
-      public static string DefaultAttributeSeparator => " ";
-      public static string DefaultTextSeparator => String.Empty;
-
       readonly IFormatProvider formatProvider;
 
       public SimpleContent(IFormatProvider formatProvider) {

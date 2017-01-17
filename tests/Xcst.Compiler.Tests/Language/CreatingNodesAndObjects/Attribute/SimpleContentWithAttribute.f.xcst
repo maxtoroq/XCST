@@ -3,15 +3,10 @@
 
    <c:template name='c:initial-template'>
       <foo>
-         <c:value-of separator='|'>
-            <c:text>1</c:text>
-            <c:text>2</c:text>
-         </c:value-of>
+         <c:attribute name='bar'>
+            <c:attribute name='baz'>baz</c:attribute>
+         </c:attribute>
       </foo>
-   </c:template>
-
-   <c:template name='expected'>
-      <foo>1|2</foo>
    </c:template>
 
 </c:module>

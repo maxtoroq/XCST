@@ -47,7 +47,7 @@ namespace Xcst.Xml {
          this.writer.WriteRaw(data);
       }
 
-      public override void WriteStartAttribute(string prefix, string localName, string ns) {
+      public override void WriteStartAttribute(string prefix, string localName, string ns, string separator) {
          this.writer.WriteStartAttribute(prefix, localName, ns);
       }
 

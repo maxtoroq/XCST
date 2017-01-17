@@ -114,28 +114,45 @@ namespace Xcst.Compiler.Tests.Language {
          }
       }
 
-      public static bool OutputEqualsToDoc(Type module, string fileName) {
+      public static bool OutputEqualsToDoc(Type packageType, string fileName) {
 
          var expectedDoc = XDocument.Load(fileName, LoadOptions.PreserveWhitespace);
          var actualDoc = new XDocument();
 
-         using (XmlWriter outputWriter = actualDoc.CreateWriter()) {
+         using (XmlWriter output = actualDoc.CreateWriter()) {
 
-            XcstEvaluator.Using(module)
+            XcstEvaluator.Using(packageType)
                .CallInitialTemplate()
-               .OutputTo(outputWriter)
+               .OutputTo(output)
                .Run();
          }
 
          return XDocumentNormalizer.DeepEqualsWithNormalization(expectedDoc, actualDoc);
       }
 
-      public static bool OutputEqualsToExpected(Type module) {
+      public static bool OutputEqualsToText(Type packageType, string fileName) {
+
+         string result;
+
+         using (var output = new StringWriter()) {
+
+            XcstEvaluator.Using(packageType)
+               .CallInitialTemplate()
+               .OutputTo(output)
+               .Run();
+
+            result = output.ToString();
+         }
+
+         return String.Equals(result, File.ReadAllText(fileName));
+      }
+
+      public static bool OutputEqualsToExpected(Type packageType) {
 
          var expectedDoc = new XDocument();
          var actualDoc = new XDocument();
 
-         XcstEvaluator evaluator = XcstEvaluator.Using(module);
+         XcstEvaluator evaluator = XcstEvaluator.Using(packageType);
 
          using (XmlWriter actualWriter = actualDoc.CreateWriter()) {
 
@@ -152,6 +169,14 @@ namespace Xcst.Compiler.Tests.Language {
          }
 
          return XDocumentNormalizer.DeepEqualsWithNormalization(expectedDoc, actualDoc);
+      }
+
+      public static void SimplyRun(Type packageType) {
+
+         XcstEvaluator.Using(packageType)
+            .CallInitialTemplate()
+            .OutputTo(TextWriter.Null)
+            .Run();
       }
    }
 }

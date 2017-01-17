@@ -60,8 +60,8 @@ namespace Xcst {
          this.baseWriter.WriteRaw(data);
       }
 
-      public override void WriteStartAttribute(string prefix, string localName, string ns) {
-         this.baseWriter.WriteStartAttribute(prefix, localName, ns);
+      public override void WriteStartAttribute(string prefix, string localName, string ns, string separator) {
+         this.baseWriter.WriteStartAttribute(prefix, localName, ns, separator);
       }
 
       public override void WriteStartElement(string prefix, string localName, string ns) {
@@ -70,6 +70,10 @@ namespace Xcst {
 
       public override void WriteString(string text) {
          this.baseWriter.WriteString(text);
+      }
+
+      public override void WriteObject(object value) {
+         this.baseWriter.WriteObject(value);
       }
 
       public override void Flush() {

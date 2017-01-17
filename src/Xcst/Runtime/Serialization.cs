@@ -42,6 +42,16 @@ namespace Xcst.Runtime {
          return sb.ToString();
       }
 
+      public static string SimpleContent(IXcstPackage package, string separator, Action<XcstWriter> action) {
+
+         return Serialize(
+            package,
+            null,
+            new OutputParameters { Method = new QualifiedName("text"), ItemSeparator = separator },
+            action
+         );
+      }
+
       public static XcstWriter ChangeOutput(IXcstPackage package, Uri outputUri, QualifiedName outputName, OutputParameters parameters, XcstWriter currentOutput = null) {
 
          if (package == null) throw new ArgumentNullException(nameof(package));
@@ -56,11 +66,11 @@ namespace Xcst.Runtime {
          }
 
          if (!outputUri.IsAbsoluteUri) {
-            throw new RuntimeException($"Cannot resolve {outputUri.OriginalString}. Specify an output URI.", DynamicError.Code(""));
+            throw new RuntimeException($"Cannot resolve {outputUri.OriginalString}. Specify an output URI.");
          }
 
          if (!outputUri.IsFile) {
-            throw new RuntimeException($"Can write to file URIs only ({outputUri.OriginalString}).", DynamicError.Code(""));
+            throw new RuntimeException($"Can write to file URIs only ({outputUri.OriginalString}).");
          }
 
          var defaultParams = new OutputParameters();
@@ -71,6 +81,7 @@ namespace Xcst.Runtime {
       }
 
       public static XcstWriter Void(IXcstPackage package) {
+
          return WriterFactory.CreateWriter(new NullWriter(WriterFactory.DefaultOuputUri))
             (null, null, package.Context.SimpleContent);
       }

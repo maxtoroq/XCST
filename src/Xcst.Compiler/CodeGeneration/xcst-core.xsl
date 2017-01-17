@@ -91,6 +91,7 @@
 
    <template match="c:attribute" mode="src:statement">
       <param name="output" tunnel="yes"/>
+      <param name="indent" tunnel="yes"/>
 
       <call-template name="xcst:validate-attribs">
          <with-param name="allowed" select="'name', 'namespace', 'separator', 'value'"/>
@@ -101,23 +102,27 @@
       <call-template name="src:new-line-indented"/>
       <value-of select="$output"/>
       <text>.</text>
-      <variable name="simple-content" select="@value or not(*)"/>
+      <variable name="attrib-string" select="@value or not(*)"/>
+      <variable name="separator" select="@separator/src:expand-attribute(.)"/>
+      <variable name="include-separator" select="not($attrib-string) and $separator"/>
       <choose>
-         <when test="$simple-content">WriteAttributeString</when>
+         <when test="$attrib-string">WriteAttributeString</when>
          <otherwise>WriteStartAttribute</otherwise>
       </choose>
       <choose>
          <when test="xcst:is-value-template(@name)">
             <text>Lexical(</text>
-            <value-of select="src:expand-attribute(@name), (@namespace/src:expand-attribute(.), 'null')[1]" separator=", "/>
+            <value-of select="src:expand-attribute(@name)"/>
+            <text>, </text>
+            <value-of select="src:expression-or-null(@namespace/src:expand-attribute(.))"/>
          </when>
          <otherwise>
             <text>(</text>
             <variable name="n" select="xcst:name(@name)"/>
             <variable name="name" select="if (@namespace) then QName('urn:foo', $n) else resolve-QName($n, .)"/>
             <variable name="prefix" select="prefix-from-QName($name)"/>
-            <if test="$prefix">
-               <value-of select="src:string($prefix)"/>
+            <if test="$prefix or $include-separator">
+               <value-of select="if ($prefix) then src:string($prefix) else 'null'"/>
                <text>, </text>
             </if>
             <value-of select="src:string(local-name-from-QName($name))"/>
@@ -130,19 +135,28 @@
                   <text>, </text>
                   <value-of select="src:verbatim-string(namespace-uri-from-QName($name))"/>
                </when>
+               <when test="$include-separator">
+                  <text>, null</text>
+               </when>
             </choose>
          </otherwise>
       </choose>
-      <if test="$simple-content">
-         <text>, </text>
-         <call-template name="src:simple-content">
-            <with-param name="attribute" select="@value"/>
-            <with-param name="separator" select="@separator/src:expand-attribute(.)"/>
-         </call-template>
-      </if>
+      <choose>
+         <when test="$attrib-string">
+            <text>, </text>
+            <call-template name="src:simple-content">
+               <with-param name="attribute" select="@value"/>
+               <with-param name="separator" select="$separator"/>
+            </call-template>
+         </when>
+         <when test="$include-separator">
+            <text>, </text>
+            <value-of select="$separator"/>
+         </when>
+      </choose>
       <text>)</text>
       <value-of select="$src:statement-delimiter"/>
-      <if test="not($simple-content)">
+      <if test="not($attrib-string)">
          <call-template name="src:sequence-constructor"/>
          <call-template name="src:new-line-indented"/>
          <value-of select="$output"/>
@@ -186,7 +200,7 @@
             <text>Lexical(</text>
             <value-of select="
                src:expand-attribute(@name),
-               (@namespace/src:expand-attribute(.), 'null')[1],
+               src:expression-or-null(@namespace/src:expand-attribute(.)),
                src:verbatim-string(namespace-uri-from-QName(resolve-QName('foo', .)))" separator=", "/>
          </when>
          <otherwise>
@@ -234,9 +248,9 @@
       <call-template name="src:new-line-indented"/>
       <value-of select="$output"/>
       <text>.</text>
-      <variable name="simple-content" select="@value or not(*)"/>
+      <variable name="attrib-string" select="@value or not(*)"/>
       <choose>
-         <when test="$simple-content">WriteAttributeString</when>
+         <when test="$attrib-string">WriteAttributeString</when>
          <otherwise>WriteStartAttribute</otherwise>
       </choose>
       <text>("xmlns", </text>
@@ -244,7 +258,7 @@
          if (xcst:is-value-template(@name)) then src:expand-attribute(@name)
          else src:string(xcst:name(@name))"/>
       <text>, null</text>
-      <if test="$simple-content">
+      <if test="$attrib-string">
          <text>, </text>
          <call-template name="src:simple-content">
             <with-param name="attribute" select="@value"/>
@@ -252,7 +266,7 @@
       </if>
       <text>)</text>
       <value-of select="$src:statement-delimiter"/>
-      <if test="not($simple-content)">
+      <if test="not($attrib-string)">
          <call-template name="src:sequence-constructor"/>
          <call-template name="src:new-line-indented"/>
          <value-of select="$output"/>
@@ -1036,11 +1050,9 @@
    </template>
 
    <template match="c:with-param" mode="src:with-param">
-
       <if test="preceding-sibling::c:with-param[xcst:name-equals(@name, current()/@name)]">
          <sequence select="error(xs:QName('err:XTSE0670'), 'Duplicate parameter name.', src:error-object(.))"/>
       </if>
-
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
       <text>.WithParam(</text>
@@ -2372,14 +2384,25 @@
          <when test="$text">
             <value-of select="src:expand-text(., $text)"/>
          </when>
-         <when test="$attribute or *">
+         <when test="$attribute">
             <value-of select="$src:context-field, 'SimpleContent'" separator="."/>
             <text>.Join(</text>
             <value-of select="($separator, src:string(' ')[$attribute], src:string('')[not($attribute)])[1]"/>
             <text>, </text>
-            <call-template name="src:value">
-               <with-param name="attribute" select="$attribute"/>
-               <with-param name="text" select="$text"/>
+            <value-of select="xcst:expression($attribute)"/>
+            <text>)</text>
+         </when>
+         <when test="*">
+            <variable name="new-output" select="concat(src:aux-variable('output'), '_', generate-id())"/>
+            <value-of select="src:fully-qualified-helper('Serialization')"/>
+            <text>.SimpleContent(this, </text>
+            <value-of select="($separator, src:string(''))[1]"/>
+            <text>, (</text>
+            <value-of select="$new-output"/>
+            <text>) => </text>
+            <call-template name="src:sequence-constructor">
+               <with-param name="ensure-block" select="true()"/>
+               <with-param name="output" select="$new-output" tunnel="yes"/>
             </call-template>
             <text>)</text>
          </when>

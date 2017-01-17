@@ -123,7 +123,8 @@ function GenerateTestsForDirectory([IO.DirectoryInfo]$directory, $category) {
             continue
          }
 
-         $correct = $fileName -like '*.c'
+         $fail = $fileName -like '*.f'
+         $correct = $fail -or $fileName -like '*.c'
          $fileName2 = $fileName.Substring(0, $fileName.LastIndexOf("."))
          $testName = ($fileName -replace '[.-]', '_') -creplace '([a-z])([A-Z])', '$1_$2'
 
@@ -133,6 +134,9 @@ function GenerateTestsForDirectory([IO.DirectoryInfo]$directory, $category) {
 
          if (!$correct) {
             WriteLine "[ExpectedException(typeof(Xcst.Compiler.CompileException))]"
+         
+         } elseif ($fail) {
+            WriteLine "[ExpectedException(typeof(Xcst.RuntimeException))]"
          }
 
          if (IgnoreTest($file)) {
@@ -146,24 +150,32 @@ function GenerateTestsForDirectory([IO.DirectoryInfo]$directory, $category) {
 
          if ($correct) {
 
-            WriteLine "var moduleType = result.Item1;"
+            WriteLine "var packageType = result.Item1;"
 
-            foreach ($testCase in ls $directory.FullName "$fileName2.*.xml") {
+            if ($fail) {
+               WriteLine "SimplyRun(packageType);"
+            } else {
 
-               $testFileName = [IO.Path]::GetFileNameWithoutExtension($testCase.Name)
+               $outputDoc = Join-Path $directory.FullName "$fileName2.xml"
 
-               if ($testFileName -like '*.p' -or $testFileName -like '*.f') {
-
-                  WriteLine "Is$($testFileName.EndsWith(".p"))(OutputEqualsToDoc(moduleType, @""$($testCase.FullName)""));"
+               if (Test-Path $outputDoc) {
+                  WriteLine "IsTrue(OutputEqualsToDoc(packageType, @""$($outputDoc)""));"
+               } else {
+               
+                  $outputText = Join-Path $directory.FullName "$fileName2.txt"
+               
+                  if (Test-Path $outputText) {
+                     WriteLine "IsTrue(OutputEqualsToText(packageType, @""$($outputText)""));"
+                  }
                }
-            }
 
-            WriteLine
-            WriteLine "if (result.Item2.Templates.Contains(new QualifiedName(""expected""))) {"
-            PushIndent
-            WriteLine "IsTrue(OutputEqualsToExpected(moduleType));"
-            PopIndent
-            WriteLine "}"
+               WriteLine
+               WriteLine "if (result.Item2.Templates.Contains(new QualifiedName(""expected""))) {"
+               PushIndent
+               WriteLine "IsTrue(OutputEqualsToExpected(packageType));"
+               PopIndent
+               WriteLine "}"
+            }
          }
 
          PopIndent

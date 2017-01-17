@@ -33,7 +33,7 @@ namespace Xcst.Runtime {
 
       public override void WriteRaw(string data) { }
 
-      public override void WriteStartAttribute(string prefix, string localName, string ns) { }
+      public override void WriteStartAttribute(string prefix, string localName, string ns, string separator) { }
 
       public override void WriteStartElement(string prefix, string localName, string ns) { }
 

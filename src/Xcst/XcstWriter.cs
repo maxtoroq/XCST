@@ -96,14 +96,18 @@ namespace Xcst {
       }
 
       public void WriteStartAttribute(string localName) {
-         WriteStartAttribute(null, localName, default(string));
+         WriteStartAttribute(null, localName, default(string), default(string));
       }
 
       public void WriteStartAttribute(string localName, string ns) {
-         WriteStartAttribute(null, localName, ns);
+         WriteStartAttribute(null, localName, ns, default(string));
       }
 
-      public abstract void WriteStartAttribute(string prefix, string localName, string ns);
+      public void WriteStartAttribute(string prefix, string localName, string ns) {
+         WriteStartAttribute(prefix, localName, ns, default(string));
+      }
+
+      public abstract void WriteStartAttribute(string prefix, string localName, string ns, string separator);
 
       public abstract void WriteEndAttribute();
 
@@ -112,7 +116,7 @@ namespace Xcst {
       [EditorBrowsable(EditorBrowsableState.Never)]
       public void WriteAttributeStringLexical(string lexical, string ns, string value) {
 
-         WriteStartAttributeLexical(lexical, ns);
+         WriteStartAttributeLexical(lexical, ns, null);
          WriteString(value);
          WriteEndAttribute();
       }
@@ -121,6 +125,13 @@ namespace Xcst {
 
       [EditorBrowsable(EditorBrowsableState.Never)]
       public void WriteStartAttributeLexical(string lexical, string ns) {
+         WriteStartAttributeLexical(lexical, ns, null);
+      }
+
+      /// <exclude/>
+
+      [EditorBrowsable(EditorBrowsableState.Never)]
+      public void WriteStartAttributeLexical(string lexical, string ns, string separator) {
 
          int prefixIndex = lexical.IndexOf(':');
          bool hasPrefix = prefixIndex > 0;
@@ -134,40 +145,16 @@ namespace Xcst {
             throw new NotSupportedException();
          }
 
-         WriteStartAttribute(prefix, localName, ns);
-      }
-
-      public abstract void WriteString(string text);
-
-      public void WriteString(object text) {
-         WriteString(this.SimpleContent.Convert(text));
-      }
-
-      public abstract void WriteRaw(string data);
-
-      public void WriteRaw(object data) {
-         WriteRaw(this.SimpleContent.Convert(data));
+         WriteStartAttribute(prefix, localName, ns, separator);
       }
 
       public abstract void WriteProcessingInstruction(string name, string text);
 
       public abstract void WriteComment(string text);
 
-      public void WriteObject(object value) {
-         WriteString(value);
-      }
+      public abstract void WriteString(string text);
 
-      public void WriteObject(IEnumerable<object> value) {
-         WriteString(this.SimpleContent.Join(SimpleContent.DefaultAttributeSeparator, value));
-      }
-
-      public void WriteObject(IEnumerable value) {
-         WriteString(this.SimpleContent.Join(SimpleContent.DefaultAttributeSeparator, value));
-      }
-
-      public void WriteObject(string value) {
-         WriteString(value);
-      }
+      public abstract void WriteRaw(string data);
 
       public abstract void Flush();
 
@@ -185,5 +172,48 @@ namespace Xcst {
 
          this.disposed = true;
       }
+
+      #region ISequenceWriter<object> Members
+
+      public void WriteString(object text) {
+         WriteString(this.SimpleContent.Convert(text));
+      }
+
+      public void WriteRaw(object data) {
+         WriteRaw(this.SimpleContent.Convert(data));
+      }
+
+      public virtual void WriteObject(object value) {
+
+         if (value != null) {
+            WriteString(value);
+         }
+      }
+
+      public void WriteObject(IEnumerable<object> value) {
+
+         if (value != null) {
+
+            foreach (var item in value) {
+               WriteObject(item);
+            }
+         }
+      }
+
+      public void WriteObject(IEnumerable value) {
+
+         if (value != null) {
+
+            foreach (var item in value) {
+               WriteObject(item);
+            }
+         }
+      }
+
+      public void WriteObject(string value) {
+         WriteObject((object)value);
+      }
+
+      #endregion
    }
 }

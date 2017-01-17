@@ -49,21 +49,29 @@ namespace Xcst {
 
       public static CreateWriterDelegate CreateWriter(XcstWriter output) {
 
-         return (defaultParams, overrideParams, simplContent) =>
-            CreateRuntimeWriter(output, simplContent);
+         return (defaultParams, overrideParams, simplContent) => {
+
+            OutputParameters parameters = MergedParameters(defaultParams, overrideParams);
+
+            return CreateRuntimeWriter(output, parameters, simplContent);
+         };
       }
 
       static CreateWriterDelegate CreateWriter(Func<OutputParameters, XmlWriter> writerFn, Uri outputUri, bool dispose = false) {
 
-         return (defaultParams, overrideParams, simplContent) =>
-            CreateRuntimeWriter(CreateXmlXcstWriter(MergedParameters(defaultParams, overrideParams), outputUri ?? DefaultOuputUri,
-               p => writerFn(p)), simplContent, dispose);
+         return (defaultParams, overrideParams, simplContent) => {
+
+            OutputParameters parameters = MergedParameters(defaultParams, overrideParams);
+
+            return CreateRuntimeWriter(CreateXmlXcstWriter(parameters, outputUri ?? DefaultOuputUri,
+               p => writerFn(p)), parameters, simplContent, dispose);
+         };
       }
 
-      static RuntimeWriter CreateRuntimeWriter(XcstWriter writer, SimpleContent simpleContent, bool dispose = false) {
+      static RuntimeWriter CreateRuntimeWriter(XcstWriter writer, OutputParameters parameters, SimpleContent simpleContent, bool dispose = false) {
 
          var runtimeWriter = writer as RuntimeWriter
-            ?? new RuntimeWriter(writer) {
+            ?? new RuntimeWriter(writer, parameters) {
                   SimpleContent = simpleContent,
                   DisposeWriter = dispose
                };
@@ -74,7 +82,7 @@ namespace Xcst {
       static OutputParameters MergedParameters(OutputParameters defaultParams, OutputParameters overrideParams) {
 
          if (overrideParams != null) {
-            defaultParams.Merge(overrideParams);
+            defaultParams?.Merge(overrideParams);
          }
 
          return defaultParams;

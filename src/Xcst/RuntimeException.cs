@@ -14,6 +14,7 @@
 
 using System;
 using System.Runtime.Serialization;
+using Xcst.Runtime;
 
 namespace Xcst {
 
@@ -24,10 +25,10 @@ namespace Xcst {
 
       public QualifiedName ErrorCode => _ErrorCode;
 
-      public RuntimeException(string message, QualifiedName errorCode)
+      public RuntimeException(string message, QualifiedName errorCode = null)
          : base(message) {
 
-         _ErrorCode = errorCode;
+         _ErrorCode = errorCode ?? DynamicError.Code("XTDE0000");
       }
 
       protected RuntimeException(SerializationInfo info, StreamingContext context)

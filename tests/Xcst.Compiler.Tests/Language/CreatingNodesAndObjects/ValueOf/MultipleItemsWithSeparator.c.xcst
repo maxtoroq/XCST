@@ -3,7 +3,7 @@
 
    <c:template name='c:initial-template'>
       <foo>
-         <c:value-of value='new[] { 1, 2 }' separator='|'/>
+         <c:value-of value='new[] { "1", null, "2" }' separator='|'/>
       </foo>
    </c:template>
 
