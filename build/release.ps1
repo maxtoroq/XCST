@@ -103,7 +103,9 @@ function script:NuPack([string]$projName) {
    $saxonPath = Resolve-Path $solutionPath\packages\Saxon-HE.*
    &"$saxonPath\tools\Transform" -s:$solutionPath\NOTICE.xml -xsl:pkg-notice.xsl -o:$tempPath\NOTICE.xml projectName=$projName
 
-   &$nuget pack $nuspecPath -OutputDirectory $outputPath
+   &$nuget pack $nuspecPath -OutputDirectory $outputPath | Out-Host
+
+   return Join-Path $outputPath "$projName.$($pkgVersion.ToString(3)).nupkg"
 }
 
 function script:Release([string]$projName) {
@@ -121,13 +123,33 @@ function script:Release([string]$projName) {
       throw "The package version ($pkgVersion) cannot be less than the last tag ($lastTag). Don't forget to update the project's AssemblyInfo file."
    }
 
-   NuPack $projName
+   $pkgPath = NuPack $projName
+   $createdTag = $false
 
    if ($pkgVersion -gt $lastRelease) {
       $newTag = "v$pkgVersion"
       git tag -a $newTag -m $newTag
-      Write-Warning "Created tag: $newTag (don't forget to push)"
+      Write-Warning "Created tag: $newTag"
+      $createdTag = $true
    }
+   
+   if ((Prompt-Choices -Message "Push package to gallery?" -Default 1) -eq 0) {
+      &$nuget push $pkgPath
+   }
+
+   if ($createdTag) {
+      if ((Prompt-Choices -Message "Push new tag $newTag to origin?" -Default 1) -eq 0) {
+         git push origin $newTag
+      }
+   }
+}
+
+function Prompt-Choices($Choices=("&Yes", "&No"), [string]$Title="Confirm", [string]$Message="Are you sure?", [int]$Default=0) {
+
+   $choicesArr = [Management.Automation.Host.ChoiceDescription[]] `
+      ($Choices | % {New-Object Management.Automation.Host.ChoiceDescription $_})
+
+   return $host.ui.PromptForChoice($Title, $Message, $choicesArr, $Default)
 }
 
 try {
