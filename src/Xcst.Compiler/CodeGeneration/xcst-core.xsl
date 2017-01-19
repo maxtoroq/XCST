@@ -80,7 +80,7 @@
    </template>
 
    <template match="*" mode="src:expression">
-      <sequence select="error((), concat('Element &lt;c:', local-name(), '> cannot be compiled into an expression.'), src:error-object(.))"/>
+      <sequence select="error((), concat('Element c:', local-name(), ' cannot be compiled into an expression.'), src:error-object(.))"/>
    </template>
 
    <template match="*" mode="src:expression-meta"/>
@@ -430,7 +430,7 @@
                      <variable name="current-meta" select="$package-manifest/xcst:attribute-set[@declaration-id eq generate-id($current)]"/>
                      <variable name="original-meta" select="$package-manifest/xcst:attribute-set[@id eq $current-meta/@overrides]"/>
                      <if test="$original-meta/@original-visibility eq 'abstract'">
-                        <sequence select="error(xs:QName('err:XTSE3075'), 'Cannot use the component reference c:original when the overridden component has visibility=&quot;abstract&quot;.', src:error-object($attr))"/>
+                        <sequence select="error(xs:QName('err:XTSE3075'), 'Cannot use the component reference c:original when the overridden component has visibility=''abstract''.', src:error-object($attr))"/>
                      </if>
                      <sequence select="src:original-member($original-meta)"/>
                   </when>
@@ -462,7 +462,7 @@
          <with-param name="required" select="'value'"/>
       </call-template>
       <call-template name="xcst:no-children"/>
-      <call-template name="src:value"/>
+      <value-of select="xcst:expression(@value)"/>
    </template>
 
    <template match="c:object" mode="src:expression-meta">
@@ -531,7 +531,13 @@
          <with-param name="allowed" select="()"/>
          <with-param name="required" select="()"/>
       </call-template>
-      <apply-templates select="c:when, c:otherwise" mode="#current"/>
+      <call-template name="xcst:validate-children">
+         <with-param name="allowed" select="'when', 'otherwise'"/>
+      </call-template>
+      <if test="not(c:when)">
+         <sequence select="error(xs:QName('err:XTSE0010'), 'At least one c:when element is required within c:choose', src:error-object(.))"/>
+      </if>
+      <apply-templates select="c:when | c:otherwise" mode="#current"/>
    </template>
 
    <template match="c:choose/c:when" mode="src:statement">
@@ -598,6 +604,9 @@
       <call-template name="xcst:value-or-sequence-constructor">
          <with-param name="children" select="$children"/>
       </call-template>
+      <if test="not(c:catch) and not(c:finally)">
+         <sequence select="error(xs:QName('err:XTSE0010'), 'At least one c:catch or c:finally element is required within c:try', src:error-object(.))"/>
+      </if>
       <variable name="rollback" select="(@rollback-output/xcst:boolean(.), true())[1]"/>
       <if test="$rollback">
          <!-- TODO: Buffering -->
@@ -611,7 +620,7 @@
          <with-param name="children" select="$children"/>
          <with-param name="ensure-block" select="true()"/>
       </call-template>
-      <apply-templates select="c:catch, c:finally" mode="#current"/>
+      <apply-templates select="c:catch | c:finally" mode="#current"/>
    </template>
 
    <template match="c:try/c:catch" mode="src:statement">
@@ -713,7 +722,7 @@
          select="ancestor::*[self::c:delegate or self::c:with-param or self::c:variable or self::c:value-of or self::c:serialize][1]"/>
       <if test="not($required-ancestor)
          or ($disallowed-ancestor and $disallowed-ancestor >> $required-ancestor)">
-         <sequence select="error(xs:QName('err:XTSE0010'), concat('&lt;c:', local-name(), '> instruction can only be used within a &lt;c:for-each>, &lt;c:for-each-group> or &lt;c:while> instruction.'), src:error-object(.))"/>
+         <sequence select="error(xs:QName('err:XTSE0010'), concat('c:', local-name(), ' instruction can only be used within a c:for-each, c:for-each-group or c:while instruction.'), src:error-object(.))"/>
       </if>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
@@ -785,7 +794,7 @@
       <text> = </text>
       <value-of select="$context"/>
       <text>.Param</text>
-      <if test="$required and not($has-default-value)">
+      <if test="$required">
          <text>&lt;</text>
          <value-of select="$type"/>
          <text>></text>
@@ -794,7 +803,7 @@
       <value-of select="src:string(src:strip-verbatim-prefix($name))"/>
       <text>, () => </text>
       <choose>
-         <when test="$required and not($has-default-value)">
+         <when test="$required">
             <call-template name="src:open-brace"/>
             <text> throw </text>
             <value-of select="src:fully-qualified-helper('DynamicError')"/>
@@ -812,7 +821,6 @@
          <otherwise>
             <call-template name="src:value">
                <with-param name="text" select="$text"/>
-               <with-param name="fallback" select="concat('default(', $type, ')')"/>
             </call-template>
          </otherwise>
       </choose>
@@ -932,6 +940,9 @@
          <with-param name="allowed" select="'name'"/>
          <with-param name="required" select="'name'"/>
       </call-template>
+      <call-template name="xcst:validate-children">
+         <with-param name="allowed" select="'with-param'"/>
+      </call-template>
 
       <for-each select="c:with-param">
          <call-template name="xcst:validate-attribs">
@@ -950,7 +961,7 @@
                <variable name="current-meta" select="$package-manifest/xcst:template[@declaration-id eq generate-id($current-template)]"/>
                <variable name="original-meta" select="$package-manifest/xcst:template[@id eq $current-meta/@overrides]"/>
                <if test="$original-meta/@original-visibility eq 'abstract'">
-                  <sequence select="error(xs:QName('err:XTSE3075'), 'Cannot use the component reference ''c:original'' when the overridden component has visibility=''abstract''.', src:error-object(.))"/>
+                  <sequence select="error(xs:QName('err:XTSE3075'), 'Cannot use the component reference c:original when the overridden component has visibility=''abstract''.', src:error-object(.))"/>
                </if>
                <sequence select="$original-meta"/>
             </when>
@@ -993,6 +1004,9 @@
          <with-param name="allowed" select="()"/>
          <with-param name="required" select="()"/>
       </call-template>
+      <call-template name="xcst:validate-children">
+         <with-param name="allowed" select="'with-param'"/>
+      </call-template>
 
       <for-each select="c:with-param">
          <call-template name="xcst:validate-attribs">
@@ -1005,7 +1019,7 @@
       <variable name="current-template" select="ancestor::c:template[1]"/>
 
       <if test="not($current-template)">
-         <sequence select="error(xs:QName('err:XTSE0010'), concat('&lt;c:', local-name(), '> instruction can only be used within a &lt;c:template> declaration.'), src:error-object(.))"/>
+         <sequence select="error(xs:QName('err:XTSE0010'), concat('c:', local-name(), ' instruction can only be used within a c:template declaration.'), src:error-object(.))"/>
       </if>
 
       <variable name="current-meta" select="$package-manifest/xcst:template[@declaration-id eq generate-id($current-template)]"/>
@@ -1116,7 +1130,7 @@
       <variable name="current-function" select="ancestor::c:function[1]"/>
 
       <if test="not($current-function)">
-         <sequence select="error(xs:QName('err:XTSE0010'), concat('&lt;c:', local-name(), '> instruction can only be used within a &lt;c:function> declaration.'), src:error-object(.))"/>
+         <sequence select="error(xs:QName('err:XTSE0010'), concat('c:', local-name(), ' instruction can only be used within a c:function declaration.'), src:error-object(.))"/>
       </if>
 
       <variable name="current-meta" select="$package-manifest/xcst:function[@declaration-id eq generate-id($current-function)]"/>
@@ -1146,7 +1160,7 @@
       </call-template>
       <call-template name="xcst:no-children"/>
       <if test="not(@name) and not(@value)">
-         <sequence select="error(xs:QName('err:XTSE0010'), concat('Either ''name'' or ''value'' attribute must be specified in &lt;c:', local-name(), '>.'), src:error-object(.))"/>
+         <sequence select="error(xs:QName('err:XTSE0010'), concat('Either ''name'' or ''value'' attribute must be specified in c:', local-name()), src:error-object(.))"/>
       </if>
       <if test="count((@name, @value)) gt 1">
          <sequence select="error((), 'The attributes ''name'' and ''value'' are mutually exclusive.', src:error-object(.))"/>
@@ -1271,6 +1285,9 @@
       <call-template name="xcst:validate-attribs">
          <with-param name="allowed" select="'value', 'with-params'"/>
          <with-param name="required" select="'value'"/>
+      </call-template>
+      <call-template name="xcst:validate-children">
+         <with-param name="allowed" select="'with-param'"/>
       </call-template>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
@@ -1417,7 +1434,7 @@
       <next-match/>
 
       <if test="c:sort">
-         <sequence select="error((), '&lt;c:sort> is currently not supported when using ''group-size''.', src:error-object(c:sort[1]))"/>
+         <sequence select="error((), 'c:sort is currently not supported when using ''group-size''.', src:error-object(c:sort[1]))"/>
       </if>
 
       <variable name="in" select="xcst:expression(@in)"/>
@@ -1680,7 +1697,7 @@
                   <variable name="default" select=". eq '#default'"/>
                   <variable name="ns" select="namespace-uri-for-prefix((if ($default) then '' else .), $el)"/>
                   <if test="empty($ns)">
-                     <sequence select="error(xs:QName('err:XTSE1430'), concat(if ($default) then 'Default namespace' else concat('Namespace prefix ', .), ' has not been declared.'), src:error-object($el))"/>
+                     <sequence select="error(xs:QName('err:XTSE1430'), concat(if ($default) then 'Default namespace' else concat('Namespace prefix ''', ., ''''), ' has not been declared.'), src:error-object($el))"/>
                   </if>
                   <sequence select="$ns"/>
                </for-each>
@@ -2042,7 +2059,7 @@
 
       <for-each select="$attribs">
          <if test="not(local-name() = $allowed)">
-            <sequence select="error(xs:QName('err:XTSE0090'), concat('Attribute ''', local-name(), ''' is not allowed on element &lt;', name($current), '>.'), src:error-object($current))"/>
+            <sequence select="error(xs:QName('err:XTSE0090'), concat('Attribute ''', local-name(), ''' is not allowed on element ', name($current)), src:error-object($current))"/>
          </if>
       </for-each>
 
@@ -2053,13 +2070,33 @@
       </for-each>
    </template>
 
+   <template name="xcst:validate-children">
+      <param name="allowed" as="xs:string+" required="yes"/>
+
+      <if test="*[not(self::c:*[local-name() = $allowed])] or text()[normalize-space()]">
+         <sequence select="error(
+            xs:QName('err:XTSE0010'),
+            concat('Only ',
+               string-join(
+                  for $p in 1 to count($allowed)
+                  return concat(
+                     if ($p[. gt 1] eq count($allowed)) then ' and '
+                     else if ($p gt 1) then ', '
+                     else '', 'c:', $allowed[$p])
+                  , ''),
+               ' allowed within c:',
+               local-name()),
+            src:error-object(.))"/>
+      </if>
+   </template>
+
    <template name="xcst:no-other-preceding">
       <variable name="disallowed-preceding"
          select="preceding-sibling::node()[self::text()[normalize-space()] or self::*[node-name(.) ne node-name(current())]][1]"/>
       <if test="$disallowed-preceding">
          <sequence select="error(
             xs:QName('err:XTSE0010'),
-            concat('&lt;c:', local-name(), '> element cannot be preceded ',
+            concat('c:', local-name(), ' element cannot be preceded ',
                if ($disallowed-preceding instance of element()) then 'by a different element' else 'with text', '.'),
             src:error-object(.))"/>
       </if>
@@ -2076,7 +2113,7 @@
       <if test="$disallowed-following">
          <sequence select="error(
             xs:QName('err:XTSE0010'),
-            concat('&lt;c:', local-name(), '> element cannot be followed ',
+            concat('c:', local-name(), ' element cannot be followed ',
                if ($disallowed-following instance of element()) then 'by a different element' else 'with text', '.'),
             src:error-object(.))"/>
       </if>
@@ -2415,7 +2452,6 @@
    <template name="src:value">
       <param name="attribute" select="@value" as="attribute()?"/>
       <param name="text" select="xcst:text(.)"/>
-      <param name="fallback"/>
 
       <variable name="as" select="(self::c:param, self::c:set, self::c:variable, self::c:with-param)/@as/xcst:type(.)"/>
 
@@ -2467,9 +2503,11 @@
                </otherwise>
             </choose>
          </when>
-         <when test="$fallback">
-            <value-of select="$fallback"/>
-         </when>
+         <otherwise>
+            <text>default(</text>
+            <value-of select="($as, 'object')[1]"/>
+            <text>)</text>
+         </otherwise>
       </choose>
    </template>
 

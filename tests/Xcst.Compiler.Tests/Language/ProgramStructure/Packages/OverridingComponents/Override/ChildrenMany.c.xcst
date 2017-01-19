@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:use-package name='Override'>
+      <c:override>
+         <c:attribute-set name='attributeSet'/>
+         <c:function name='function'/>
+         <c:param name='param'/>
+         <c:template name='template'/>
+         <c:variable name='variable'/>
+      </c:override>
+   </c:use-package>
+
+</c:module>

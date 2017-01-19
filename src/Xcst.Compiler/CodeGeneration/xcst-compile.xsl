@@ -123,7 +123,7 @@
                   <otherwise>
                      <variable name="package-uri" select="src:package-location($package-name)"/>
                      <if test="not($package-uri)">
-                        <sequence select="error(xs:QName('err:XTSE3000'), concat('Cannot find package ', $package-name, '.'), src:error-object(.))"/>
+                        <sequence select="error(xs:QName('err:XTSE3000'), concat('Cannot find package ''', $package-name, '''.'), src:error-object(.))"/>
                      </if>
                      <variable name="result">
                         <apply-templates select="doc($package-uri)/c:package" mode="src:main">
@@ -209,7 +209,7 @@
    </template>
 
    <template match="c:*" mode="src:main">
-      <sequence select="error(xs:QName('err:XTSE0010'), concat('Unknown XCST element: ', local-name(), '.'), src:error-object(.))"/>
+      <sequence select="error(xs:QName('err:XTSE0010'), concat('Unknown XCST element: ', local-name()), src:error-object(.))"/>
    </template>
 
    <template match="*[not(self::c:*)]" mode="src:main">
@@ -250,7 +250,7 @@
       </if>
 
       <if test="not($imported/c:module)">
-         <sequence select="error(xs:QName('err:XTSE0165'), 'Expecting &lt;c:module> element.', src:error-object(.))"/>
+         <sequence select="error(xs:QName('err:XTSE0165'), 'Expecting c:module element.', src:error-object(.))"/>
       </if>
 
       <apply-templates select="$imported/c:module" mode="#current">
@@ -307,7 +307,7 @@
    </template>
 
    <template match="c:*" mode="xcst:check-top-level">
-      <sequence select="error(xs:QName('err:XTSE0010'), concat('Unknown XCST element: ', local-name(), '.'), src:error-object(.))"/>
+      <sequence select="error(xs:QName('err:XTSE0010'), concat('Unknown XCST element: ', local-name()), src:error-object(.))"/>
    </template>
 
    <template match="*[not(self::c:*) and namespace-uri()]" mode="xcst:check-top-level"/>
@@ -345,6 +345,9 @@
          <with-param name="allowed" select="'name'"/>
          <with-param name="required" select="'name'"/>
       </call-template>
+      <call-template name="xcst:validate-children">
+         <with-param name="allowed" select="'override'"/>
+      </call-template>
       <if test="preceding-sibling::c:use-package[xcst:name-equals(@name, current()/@name)]">
          <sequence select="error((), 'Duplicate c:use-package declaration.', src:error-object(.))"/>
       </if>
@@ -352,6 +355,9 @@
          <call-template name="xcst:validate-attribs">
             <with-param name="allowed" select="()"/>
             <with-param name="required" select="()"/>
+         </call-template>
+         <call-template name="xcst:validate-children">
+            <with-param name="allowed" select="'template', 'function', 'attribute-set', 'param', 'variable', 'type'"/>
          </call-template>
          <apply-templates select="c:*" mode="#current"/>
       </for-each>
@@ -439,7 +445,7 @@
 
       <if test="not($qname eq xs:QName('c:initial-template'))
          and xcst:is-reserved-namespace(namespace-uri-from-QName($qname))">
-         <sequence select="error(xs:QName('err:XTSE0080'), concat('Namespace prefix ', prefix-from-QName($qname),' refers to a reserved namespace.'), src:error-object(.))"/>
+         <sequence select="error(xs:QName('err:XTSE0080'), concat('Namespace prefix ''', prefix-from-QName($qname), ''' refers to a reserved namespace.'), src:error-object(.))"/>
       </if>
 
       <if test="(preceding-sibling::c:*, (
@@ -512,7 +518,7 @@
                and not($overriden-meta/xcst:param[xcst:name-equals(string(@name), $param-name)])
                and not($tunnel)
                and (not(@required) or $required)">
-               <sequence select="error(xs:QName('err:XTSE3070'), 'Any parameter on the overriding template for which there is no corresponding parameter on the overridden template must specify required=&quot;no&quot;.', src:error-object(.))"/>
+               <sequence select="error(xs:QName('err:XTSE3070'), 'Any parameter on the overriding template for which there is no corresponding parameter on the overridden template must specify required=''no''.', src:error-object(.))"/>
             </if>
             <xcst:param name="{$param-name}" required="{$required}" tunnel="{$tunnel}"/>
          </for-each>
@@ -623,6 +629,9 @@
          <with-param name="allowed" select="'name', 'use-attribute-sets', 'visibility'"/>
          <with-param name="required" select="'name'"/>
       </call-template>
+      <call-template name="xcst:validate-children">
+         <with-param name="allowed" select="'attribute'"/>
+      </call-template>
 
       <variable name="qname" select="xcst:EQName(@name)"/>
 
@@ -674,11 +683,14 @@
          <with-param name="allowed" select="'name', 'visibility', $xcst:type-or-member-attributes"/>
          <with-param name="required" select="'name'"/>
       </call-template>
+      <call-template name="xcst:validate-children">
+         <with-param name="allowed" select="'metadata', 'member'"/>
+      </call-template>
 
       <variable name="name" select="src:strip-verbatim-prefix(xcst:name(@name))"/>
 
       <if test="preceding-sibling::c:type[xcst:homonymous(., current())]">
-         <sequence select="error(xs:QName('err:XTSE0220'), 'Duplicate type declaration.', src:error-object(.))"/>
+         <sequence select="error(xs:QName('err:XTSE0220'), 'Duplicate c:type declaration.', src:error-object(.))"/>
       </if>
 
       <if test="parent::c:override">
@@ -735,7 +747,7 @@
       <variable name="package-type" select="../@package-type"/>
 
       <for-each select="$modules/(., c:use-package/c:override)/c:*[generate-id() eq $local-duplicate/@declaration-id]">
-         <sequence select="error((), concat('Component is in conflict with an accepted component from ', $package-type, '.'), src:error-object(.))"/>
+         <sequence select="error((), concat('Component is in conflict with an accepted component from ''', $package-type, '''.'), src:error-object(.))"/>
       </for-each>
 
       <copy>
@@ -773,7 +785,7 @@
          </for-each>
 
          <if test="not(empty($output-name)) and xcst:is-reserved-namespace(namespace-uri-from-QName($output-name))">
-            <sequence select="error(xs:QName('err:XTSE0080'), concat('Namespace prefix ', prefix-from-QName($output-name), ' refers to a reserved namespace.'), src:error-object(.))"/>
+            <sequence select="error(xs:QName('err:XTSE0080'), concat('Namespace prefix ''', prefix-from-QName($output-name), ''' refers to a reserved namespace.'), src:error-object(.))"/>
          </if>
 
          <xcst:output member-name="{src:template-method-name(., $output-name, 'output', false())}" declaration-ids="{current-group()/generate-id(.)}">
@@ -1895,6 +1907,9 @@
       <call-template name="xcst:validate-attribs">
          <with-param name="allowed" select="'name', 'as', 'value', 'expression', 'auto-initialize', 'display', 'display-name', 'description', 'short-name', 'place-holder', 'order', 'group', 'format', 'apply-format-in-edit-mode', 'disable-output-escaping', 'null-display-text', 'template', 'read-only', 'auto-generate-filter', 'data-type', 'required', 'max-length', 'min-length', 'pattern', 'min', 'max', 'equal-to', $xcst:type-or-member-attributes"/>
          <with-param name="required" select="'name'"/>
+      </call-template>
+      <call-template name="xcst:validate-children">
+         <with-param name="allowed" select="'metadata', 'member'"/>
       </call-template>
       <if test="@as and c:member">
          <sequence select="error((), 'The ''as'' attribute must be omitted when the member has child members.', src:error-object(.))"/>

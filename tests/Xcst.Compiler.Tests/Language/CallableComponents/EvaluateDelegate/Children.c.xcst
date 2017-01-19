@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:template name='foo'>
+      <c:variable name='bar'>
+         <c:delegate>
+            <c:param name='a'/>
+            <c:param name='b'/>
+         </c:delegate>
+      </c:variable>
+      <c:evaluate-delegate value='bar'/>
+      <c:evaluate-delegate value='bar'>
+         <c:with-param name='a'>a</c:with-param>
+      </c:evaluate-delegate>
+      <c:evaluate-delegate value='bar'>
+         <c:with-param name='a'>a</c:with-param>
+         <c:with-param name='b'>b</c:with-param>
+      </c:evaluate-delegate>
+   </c:template>
+
+</c:module>

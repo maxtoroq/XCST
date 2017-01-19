@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:type name='foo1'/>
+
+   <c:type name='foo2'>
+      <c:member name='a'/>
+   </c:type>
+
+   <c:type name='foo3'>
+      <c:member name='a'/>
+      <c:member name='b'/>
+   </c:type>
+
+   <c:type name='foo4'>
+      <c:metadata value='System.Obsolete'/>
+   </c:type>
+
+   <c:type name='foo5'>
+      <c:metadata value='System.Obsolete'/>
+      <c:metadata value='System.CLSCompliant(true)'/>
+   </c:type>
+
+   <c:type name='foo6'>
+      <c:metadata value='System.Obsolete'/>
+      <c:member name='a'/>
+   </c:type>
+
+   <c:type name='foo7'>
+      <c:metadata value='System.Obsolete'/>
+      <c:metadata value='System.CLSCompliant(true)'/>
+      <c:member name='a'/>
+      <c:member name='b'/>
+   </c:type>
+
+</c:module>

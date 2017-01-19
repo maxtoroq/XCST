@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:template name='foo'>
+      <c:try rollback-output='no'>
+         <c:catch/>
+      </c:try>
+      <c:try rollback-output='no'>
+         <a/>
+         <c:catch/>
+      </c:try>
+      <c:try rollback-output='no'>
+         <c:finally/>
+      </c:try>
+      <c:try rollback-output='no'>
+         <a/>
+         <c:finally/>
+      </c:try>
+      <c:try rollback-output='no'>
+         <c:catch exception='System.Exception'/>
+         <c:catch/>
+      </c:try>
+      <c:try rollback-output='no'>
+         <a/>
+         <c:catch exception='System.Exception'/>
+         <c:catch/>
+      </c:try>
+      <c:try rollback-output='no'>
+         <c:catch/>
+         <c:finally/>
+      </c:try>
+      <c:try rollback-output='no'>
+         <a/>
+         <c:catch/>
+         <c:finally/>
+      </c:try>
+      <c:try rollback-output='no'>
+         <c:catch exception='System.Exception'/>
+         <c:catch/>
+         <c:finally/>
+      </c:try>
+      <c:try rollback-output='no'>
+         <a/>
+         <c:catch exception='System.Exception'/>
+         <c:catch/>
+         <c:finally/>
+      </c:try>
+   </c:template>
+
+</c:module>
