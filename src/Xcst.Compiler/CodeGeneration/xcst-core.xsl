@@ -320,6 +320,7 @@
          <with-param name="allowed" select="'disable-output-escaping'"/>
          <with-param name="required" select="()"/>
       </call-template>
+      <call-template name="xcst:text-only"/>
       <variable name="text" select="xcst:text(.)"/>
       <value-of select="
          if ($text) then src:expand-text(., $text) 
@@ -1804,27 +1805,34 @@
          <with-param name="allowed" select="'src'"/>
          <with-param name="required" select="()"/>
       </call-template>
-      <choose>
-         <when test="@src">
-            <variable name="src" select="resolve-uri(@src, base-uri())"/>
-            <if test="not(unparsed-text-available($src))">
-               <sequence select="error((), 'Cannot retrieve script.', src:error-object(.))"/>
-            </if>
-            <call-template name="src:line-number">
-               <with-param name="line-uri" select="$src" tunnel="yes"/>
-               <with-param name="line-number-offset" select="(src:line-number(.) * -1) + 1" tunnel="yes"/>
-            </call-template>
-            <value-of select="$src:new-line"/>
-            <value-of select="unparsed-text($src)"/>
-         </when>
-         <otherwise>
-            <call-template name="src:line-number"/>
-            <value-of select="$src:new-line"/>
-            <value-of select="text()"/>
-         </otherwise>
-      </choose>
-      <!-- Make sure following output is not on same line -->
-      <call-template name="src:new-line-indented"/>
+      <call-template name="xcst:text-only"/>
+      <variable name="text" select="xcst:text(.)"/>
+      <if test="@src or $text">
+         <choose>
+            <when test="@src">
+               <if test="$text">
+                  <sequence select="error(xs:QName('err:XTSE0010'), 'The ''src'' attribute must be omitted if the element has content.', src:error-object(.))"/>
+               </if>
+               <variable name="src" select="resolve-uri(@src, base-uri())"/>
+               <if test="not(unparsed-text-available($src))">
+                  <sequence select="error((), 'Cannot retrieve script.', src:error-object(.))"/>
+               </if>
+               <call-template name="src:line-number">
+                  <with-param name="line-uri" select="$src" tunnel="yes"/>
+                  <with-param name="line-number-offset" select="(src:line-number(.) * -1) + 1" tunnel="yes"/>
+               </call-template>
+               <value-of select="$src:new-line"/>
+               <value-of select="unparsed-text($src)"/>
+            </when>
+            <otherwise>
+               <call-template name="src:line-number"/>
+               <value-of select="$src:new-line"/>
+               <value-of select="$text"/>
+            </otherwise>
+         </choose>
+         <!-- Make sure following output is not on same line -->
+         <call-template name="src:new-line-indented"/>
+      </if>
    </template>
 
    <!--
@@ -2125,6 +2133,12 @@
       </if>
    </template>
 
+   <template name="xcst:text-only">
+      <if test="*">
+         <sequence select="error(xs:QName('err:XTSE0010'), 'Element can only contain text.', src:error-object(.))"/>
+      </if>
+   </template>
+
    <template name="xcst:value-or-sequence-constructor">
       <param name="children" select="node()"/>
 
@@ -2161,7 +2175,8 @@
    <function name="xcst:preserve-whitespace">
       <param name="el" as="element()"/>
 
-      <sequence select="$el[self::c:text] or $el/ancestor-or-self::*[@xml:space][1]/@xml:space = 'preserve'"/>
+      <sequence select="$el[self::c:text or self::c:script]
+         or $el/ancestor-or-self::*[@xml:space][1]/@xml:space = 'preserve'"/>
    </function>
 
    <function name="xcst:item-type" as="xs:string">

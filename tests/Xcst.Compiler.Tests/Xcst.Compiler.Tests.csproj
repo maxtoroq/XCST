@@ -221,10 +221,16 @@
     <None Include="Language\CreatingNodesAndObjects\Object\NoChildren.i.xcst" />
     <None Include="Language\CreatingNodesAndObjects\Object\object.value.req.i.xcst" />
     <None Include="Language\CreatingNodesAndObjects\ProcessingInstruction\processing-instruction.value_seqctor.mutex.i.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\Text\Children.c.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\Text\Children.i.xcst" />
     <None Include="Language\CreatingNodesAndObjects\ValueOf\SimpleContentWithSeparator.c.xcst" />
     <None Include="Language\CreatingNodesAndObjects\ValueOf\value-of.value_seqctor.mutex.i.xcst" />
     <None Include="Language\Diagnostics\Assert\assert.value_seqctor.mutex.i.xcst" />
     <None Include="Language\Diagnostics\Message\message.value_seqctor.mutex.i.xcst" />
+    <None Include="Language\ExtensibilityAndFallback\Script\Children.c.xcst" />
+    <None Include="Language\ExtensibilityAndFallback\Script\Children.i.xcst" />
+    <None Include="Language\ExtensibilityAndFallback\Script\foo.csx" />
+    <None Include="Language\ExtensibilityAndFallback\Script\script.src_text.mutex.i.xcst" />
     <None Include="Language\ExtensibilityAndFallback\Void\IgnoreContent.c.xcst" />
     <None Include="Language\ExtensibilityAndFallback\Void\IgnoreValue.c.xcst" />
     <None Include="Language\ExtensibilityAndFallback\Void\void.value_seqctor.mutex.i.xcst" />
