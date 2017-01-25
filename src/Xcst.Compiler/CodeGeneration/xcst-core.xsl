@@ -2439,7 +2439,7 @@
          <when test="$attribute">
             <value-of select="$src:context-field, 'SimpleContent'" separator="."/>
             <text>.Join(</text>
-            <value-of select="($separator, src:string(' ')[$attribute], src:string('')[not($attribute)])[1]"/>
+            <value-of select="($separator, src:string(' '))[1]"/>
             <text>, </text>
             <value-of select="xcst:expression($attribute)"/>
             <text>)</text>
