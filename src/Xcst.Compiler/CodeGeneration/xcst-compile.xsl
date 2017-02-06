@@ -1201,10 +1201,13 @@
       <param name="indent" tunnel="yes"/>
       <param name="overridden" select="src:overridden-components(., $package-manifest)"/>
 
+      <variable name="qualified-types" select="xs:boolean(@qualified-types)"/>
       <value-of select="$src:new-line"/>
-      <call-template name="src:editor-browsable-never"/>
+      <if test="$qualified-types">
+         <call-template name="src:editor-browsable-never"/>
+      </if>
       <call-template name="src:new-line-indented"/>
-      <if test="not(xs:boolean(@qualified-types))">partial </if>
+      <if test="not($qualified-types)">partial </if>
       <text>class </text>
       <value-of select="src:used-package-class-name(.)"/>
       <text> : </text>
