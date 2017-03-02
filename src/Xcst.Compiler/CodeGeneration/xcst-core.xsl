@@ -1843,7 +1843,7 @@
       <param name="output" tunnel="yes"/>
 
       <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="'format', $src:output-parameters/*[not(self::version)]/local-name()"/>
+         <with-param name="allowed" select="'href', 'format', $src:output-parameters/*[not(self::version)]/local-name()"/>
          <with-param name="required" select="'href'"/>
       </call-template>
       <value-of select="$src:new-line"/>
