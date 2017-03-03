@@ -1253,6 +1253,9 @@
       </xs:complexType>
    </xs:element>
    <xs:element name="set">
+      <xs:annotation>
+         <xs:documentation>Assigns a value to a variable or object member.</xs:documentation>
+      </xs:annotation>
       <xs:complexType mixed="true">
          <xs:group minOccurs="0" ref="c:sequence-constructor"/>
          <xs:attribute name="member" use="required" type="c:Expression">
