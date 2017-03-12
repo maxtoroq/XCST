@@ -187,7 +187,14 @@ namespace Xcst.Compiler {
 
       Uri FindLibraryPackage(string packageName) {
 
-         foreach (string path in Directory.EnumerateFiles(this.PackagesLocation, "*." + this.PackageFileExtension, SearchOption.AllDirectories)) {
+         string dir = this.PackagesLocation;
+         string search = "*." + this.PackageFileExtension;
+
+         if (!Directory.Exists(dir)) {
+            return null;
+         }
+
+         foreach (string path in Directory.EnumerateFiles(dir, search, SearchOption.AllDirectories)) {
 
             if (Path.GetFileNameWithoutExtension(path)[0] == '_') {
                continue;
