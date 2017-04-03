@@ -47,7 +47,10 @@ namespace Xcst.Runtime {
          return Serialize(
             package,
             null,
-            new OutputParameters { Method = new QualifiedName("text"), ItemSeparator = separator },
+            new OutputParameters {
+               Method = OutputParameters.StandardMethods.Text,
+               ItemSeparator = separator
+            },
             action
          );
       }

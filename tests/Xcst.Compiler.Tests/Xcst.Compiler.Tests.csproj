@@ -194,6 +194,7 @@
     <None Include="Language\ConditionalProcessing\Try\Catch\NoOtherFollowing.c.xcst" />
     <None Include="Language\ConditionalProcessing\Try\Catch\NoOtherFollowingText.i.xcst" />
     <None Include="Language\ConditionalProcessing\Try\Catch\NoOtherFollowing.i.xcst" />
+    <None Include="Language\ConditionalProcessing\Try\NoRollback.c.xcst" />
     <None Include="Language\ConditionalProcessing\Try\Finally\finally.value_seqctor.mutex.i.xcst" />
     <None Include="Language\ConditionalProcessing\Try\Finally\NoOtherFollowingUnique.i.xcst" />
     <None Include="Language\ConditionalProcessing\Try\Finally\NoOtherFollowingText.i.xcst" />
@@ -210,17 +211,23 @@
     <None Include="Language\CreatingNodesAndObjects\Attribute\SimpleContentWithElement.f.xcst" />
     <None Include="Language\CreatingNodesAndObjects\Attribute\SimpleContent.c.xcst" />
     <None Include="Language\CreatingNodesAndObjects\Attribute\SimpleContentWithSeparator.c.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\Attribute\UnconditionallyClose.c.xcst" />
     <None Include="Language\CreatingNodesAndObjects\Comment\comment.value_seqctor.mutex.i.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\Comment\UnconditionallyClose.c.xcst" />
     <None Include="Language\CreatingNodesAndObjects\Delegate\Param\NoOtherPrecedingText.i.xcst" />
     <None Include="Language\CreatingNodesAndObjects\Delegate\Param\NoOtherPreceding.i.xcst" />
     <None Include="Language\CreatingNodesAndObjects\Delegate\Param\param.value_seqctor.mutex.i.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\Element\UnconditionallyClose.c.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\LiteralResultElement\UnconditionallyClose.c.xcst" />
     <None Include="Language\CreatingNodesAndObjects\Element\ComplexContent2.c.xcst" />
     <None Include="Language\CreatingNodesAndObjects\Namespace\namespace.value_seqctor.mutex.i.xcst" />
     <None Include="Language\CreatingNodesAndObjects\Element\ComplexContent.c.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\Namespace\UnconditionallyClose.c.xcst" />
     <None Include="Language\CreatingNodesAndObjects\Object\NoChildrenText.i.xcst" />
     <None Include="Language\CreatingNodesAndObjects\Object\NoChildren.i.xcst" />
     <None Include="Language\CreatingNodesAndObjects\Object\object.value.req.i.xcst" />
     <None Include="Language\CreatingNodesAndObjects\ProcessingInstruction\processing-instruction.value_seqctor.mutex.i.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\ProcessingInstruction\UnconditionallyClose.c.xcst" />
     <None Include="Language\CreatingNodesAndObjects\Text\Children.c.xcst" />
     <None Include="Language\CreatingNodesAndObjects\Text\Children.i.xcst" />
     <None Include="Language\CreatingNodesAndObjects\ValueOf\SimpleContentWithSeparator.c.xcst" />
@@ -270,8 +277,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Language\CallableComponents\EvaluatePackage\InitialTemplateUriQualified.xml" />
+    <Content Include="Language\CreatingNodesAndObjects\Comment\UnconditionallyClose.xml" />
     <Content Include="Language\CreatingNodesAndObjects\Element\ComplexContent2.xml" />
     <Content Include="Language\CreatingNodesAndObjects\Element\ComplexContent.xml" />
+    <Content Include="Language\CreatingNodesAndObjects\Namespace\UnconditionallyClose.xml" />
+    <Content Include="Language\CreatingNodesAndObjects\ProcessingInstruction\UnconditionallyClose.xml" />
     <Content Include="Language\DataModel\TextTransformation\MixedContent.xml" />
     <Content Include="Language\DataModel\TextTransformation\NormalizeSpaceWithExpandText.xml" />
     <Content Include="Language\DataModel\TextTransformation\NormalizeSpace.xml" />

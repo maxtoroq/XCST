@@ -46,9 +46,9 @@ namespace Xcst {
 
          // trim comments and processing instructions from normalized tree
 
-         if (node is XComment || node is XProcessingInstruction) {
-            return null;
-         }
+         //if (node is XComment || node is XProcessingInstruction) {
+         //   return null;
+         //}
 
          XElement e = node as XElement;
 

@@ -157,11 +157,25 @@
       <text>)</text>
       <value-of select="$src:statement-delimiter"/>
       <if test="not($attrib-string)">
-         <call-template name="src:sequence-constructor"/>
+         <variable name="new-indent" select="$indent + 1"/>
+         <call-template name="src:line-hidden"/>
          <call-template name="src:new-line-indented"/>
+         <text>try</text>
+         <call-template name="src:sequence-constructor">
+            <with-param name="ensure-block" select="true()"/>
+         </call-template>
+         <text> finally</text>
+         <call-template name="src:open-brace"/>
+         <call-template name="src:line-hidden">
+            <with-param name="indent" select="$new-indent" tunnel="yes"/>
+         </call-template>
+         <call-template name="src:new-line-indented">
+            <with-param name="indent" select="$new-indent" tunnel="yes"/>
+         </call-template>
          <value-of select="$output"/>
          <text>.WriteEndAttribute()</text>
          <value-of select="$src:statement-delimiter"/>
+         <call-template name="src:close-brace"/>
       </if>
    </template>
 
@@ -186,6 +200,7 @@
 
    <template match="c:element" mode="src:statement">
       <param name="output" tunnel="yes"/>
+      <param name="indent" tunnel="yes"/>
 
       <call-template name="xcst:validate-attribs">
          <with-param name="allowed" select="'name', 'namespace', 'use-attribute-sets'"/>
@@ -226,18 +241,37 @@
       </choose>
       <text>)</text>
       <value-of select="$src:statement-delimiter"/>
+      <variable name="new-indent" select="$indent + 1"/>
+      <call-template name="src:line-hidden"/>
+      <call-template name="src:new-line-indented"/>
+      <text>try</text>
+      <call-template name="src:open-brace"/>
       <call-template name="src:use-attribute-sets">
          <with-param name="attr" select="@use-attribute-sets"/>
+         <with-param name="indent" select="$new-indent" tunnel="yes"/>
       </call-template>
-      <call-template name="src:sequence-constructor"/>
-      <call-template name="src:new-line-indented"/>
+      <call-template name="src:sequence-constructor">
+         <with-param name="omit-block" select="true()"/>
+         <with-param name="indent" select="$new-indent" tunnel="yes"/>
+      </call-template>
+      <call-template name="src:line-hidden">
+         <with-param name="indent" select="$new-indent" tunnel="yes"/>
+      </call-template>
+      <call-template name="src:close-brace"/>
+      <text> finally</text>
+      <call-template name="src:open-brace"/>
+      <call-template name="src:new-line-indented">
+         <with-param name="indent" select="$new-indent" tunnel="yes"/>
+      </call-template>
       <value-of select="$output"/>
       <text>.WriteEndElement()</text>
       <value-of select="$src:statement-delimiter"/>
+      <call-template name="src:close-brace"/>
    </template>
 
    <template match="c:namespace" mode="src:statement">
       <param name="output" tunnel="yes"/>
+      <param name="indent" tunnel="yes"/>
 
       <call-template name="xcst:validate-attribs">
          <with-param name="allowed" select="'name', 'value'"/>
@@ -267,11 +301,25 @@
       <text>)</text>
       <value-of select="$src:statement-delimiter"/>
       <if test="not($attrib-string)">
-         <call-template name="src:sequence-constructor"/>
+         <variable name="new-indent" select="$indent + 1"/>
+         <call-template name="src:line-hidden"/>
          <call-template name="src:new-line-indented"/>
+         <text>try</text>
+         <call-template name="src:sequence-constructor">
+            <with-param name="ensure-block" select="true()"/>
+         </call-template>
+         <text> finally</text>
+         <call-template name="src:open-brace"/>
+         <call-template name="src:line-hidden">
+            <with-param name="indent" select="$new-indent" tunnel="yes"/>
+         </call-template>
+         <call-template name="src:new-line-indented">
+            <with-param name="indent" select="$new-indent" tunnel="yes"/>
+         </call-template>
          <value-of select="$output"/>
          <text>.WriteEndAttribute()</text>
          <value-of select="$src:statement-delimiter"/>
+         <call-template name="src:close-brace"/>
       </if>
    </template>
 
@@ -365,6 +413,7 @@
 
    <template name="src:literal-result-element">
       <param name="output" tunnel="yes"/>
+      <param name="indent" tunnel="yes"/>
 
       <call-template name="xcst:validate-attribs">
          <with-param name="allowed" select="@*[not(namespace-uri())]/local-name()"/>
@@ -384,11 +433,19 @@
       <value-of select="src:verbatim-string(namespace-uri())"/>
       <text>)</text>
       <value-of select="$src:statement-delimiter"/>
+      <variable name="new-indent" select="$indent + 1"/>
+      <call-template name="src:line-hidden"/>
+      <call-template name="src:new-line-indented"/>
+      <text>try</text>
+      <call-template name="src:open-brace"/>
       <call-template name="src:use-attribute-sets">
          <with-param name="attr" select="@c:use-attribute-sets"/>
+         <with-param name="indent" select="$new-indent" tunnel="yes"/>
       </call-template>
       <for-each select="@* except @c:*">
-         <call-template name="src:new-line-indented"/>
+         <call-template name="src:new-line-indented">
+            <with-param name="indent" select="$new-indent" tunnel="yes"/>
+         </call-template>
          <value-of select="$output"/>
          <text>.WriteAttributeString(</text>
          <variable name="attr-prefix" select="prefix-from-QName(node-name(.))"/>
@@ -406,11 +463,23 @@
          <text>)</text>
          <value-of select="$src:statement-delimiter"/>
       </for-each>
-      <call-template name="src:sequence-constructor"/>
-      <call-template name="src:new-line-indented"/>
+      <call-template name="src:sequence-constructor">
+         <with-param name="omit-block" select="true()"/>
+         <with-param name="indent" select="$new-indent" tunnel="yes"/>
+      </call-template>
+      <call-template name="src:line-hidden">
+         <with-param name="indent" select="$new-indent" tunnel="yes"/>
+      </call-template>
+      <call-template name="src:close-brace"/>
+      <text> finally</text>
+      <call-template name="src:open-brace"/>
+      <call-template name="src:new-line-indented">
+         <with-param name="indent" select="$new-indent" tunnel="yes"/>
+      </call-template>
       <value-of select="$output"/>
       <text>.WriteEndElement()</text>
       <value-of select="$src:statement-delimiter"/>
+      <call-template name="src:close-brace"/>
    </template>
 
    <template name="src:use-attribute-sets">
@@ -614,6 +683,7 @@
          <sequence select="error((), 'Buffering not supported yet. Use rollback-output=''no''.', src:error-object(.))"/>
       </if>
       <value-of select="$src:new-line"/>
+      <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
       <text>try</text>
       <call-template name="src:sequence-constructor">

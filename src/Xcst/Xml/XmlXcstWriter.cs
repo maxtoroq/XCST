@@ -32,11 +32,23 @@ namespace Xcst.Xml {
       }
 
       public override void WriteEndAttribute() {
-         this.writer.WriteEndAttribute();
+
+         // WriteEndAttribute is called in a finally block
+         // checking for error to not overwhelm writer when something goes wrong
+
+         if (this.writer.WriteState != WriteState.Error) {
+            this.writer.WriteEndAttribute();
+         }
       }
 
       public override void WriteEndElement() {
-         this.writer.WriteEndElement();
+
+         // WriteEndElement is called in a finally block
+         // checking for error to not overwhelm writer when something goes wrong
+
+         if (this.writer.WriteState != WriteState.Error) {
+            this.writer.WriteEndElement();
+         }
       }
 
       public override void WriteProcessingInstruction(string name, string text) {
