@@ -1412,20 +1412,10 @@
       ## Grouping
    -->
 
-   <template match="c:for-each-group" mode="src:statement">
-      <call-template name="xcst:validate-attribs">
-         <with-param name="required" select="'name', 'in'"/>
-         <with-param name="optional" select="'group-by', 'group-size'"/>
-      </call-template>
-      <if test="count((@group-by, @group-size)) ne 1">
-         <sequence select="error(xs:QName('err:XTSE1080'), 'Exactly one of the attributes ''group-by'' and ''group-size'' must be specified.', src:error-object(.))"/>
-      </if>
-   </template>
-
-   <template match="c:for-each-group[@group-by]" mode="src:statement">
+   <template match="c:for-each-group[not(@group-size)]" mode="src:statement">
       <param name="indent" tunnel="yes"/>
 
-      <next-match/>
+      <call-template name="src:validate-for-each-group"/>
 
       <variable name="grouped-aux">
          <value-of select="src:fully-qualified-helper('Grouping')"/>
@@ -1434,8 +1424,10 @@
          <text>, </text>
          <variable name="param" select="src:aux-variable(generate-id())"/>
          <value-of select="$param, '=>', $param"/>
-         <text>.</text>
-         <value-of select="xcst:expression(@group-by)"/>
+         <if test="@group-by">
+            <text>.</text>
+            <value-of select="xcst:expression(@group-by)"/>
+         </if>
          <text>)</text>
       </variable>
 
@@ -1469,7 +1461,7 @@
    <template match="c:for-each-group[@group-size]" mode="src:statement">
       <param name="indent" tunnel="yes"/>
 
-      <next-match/>
+      <call-template name="src:validate-for-each-group"/>
 
       <if test="c:sort">
          <sequence select="error((), 'c:sort is currently not supported when using ''group-size''.', src:error-object(c:sort[1]))"/>
@@ -1504,6 +1496,16 @@
          <with-param name="indent" select="$indent + 1" tunnel="yes"/>
       </call-template>
       <call-template name="src:close-brace"/>
+   </template>
+
+   <template name="src:validate-for-each-group">
+      <call-template name="xcst:validate-attribs">
+         <with-param name="required" select="'name', 'in'"/>
+         <with-param name="optional" select="'group-by', 'group-size'"/>
+      </call-template>
+      <if test="count((@group-by, @group-size)) gt 1">
+         <sequence select="error(xs:QName('err:XTSE1080'), 'The attributes ''group-by'' and ''group-size'' are mutually exclusive.', src:error-object(.))"/>
+      </if>
    </template>
 
    <template name="src:group-size-try">
@@ -2071,7 +2073,7 @@
       <param name="required" as="xs:string*"/>
       <param name="optional" as="xs:string*"/>
       <param name="extension" select="false()"/>
-      
+
       <variable name="allowed" select="$required, $optional"/>
 
       <variable name="std-names" select="

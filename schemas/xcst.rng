@@ -1081,16 +1081,18 @@
             <ann:documentation>The source of the items.</ann:documentation>
             <ref name="Expression"/>
          </attribute>
-         <choice>
-            <attribute name="group-by">
-               <ann:documentation>An expression to use as grouping key.</ann:documentation>
-               <ref name="Expression"/>
-            </attribute>
-            <attribute name="group-size">
-               <ann:documentation>The maximum number of items a group may have.</ann:documentation>
-               <ref name="Expression"/>
-            </attribute>
-         </choice>
+         <optional>
+            <choice>
+               <attribute name="group-by">
+                  <ann:documentation>An expression to use as grouping key.</ann:documentation>
+                  <ref name="Expression"/>
+               </attribute>
+               <attribute name="group-size">
+                  <ann:documentation>The maximum number of items a group may have.</ann:documentation>
+                  <ref name="Expression"/>
+               </attribute>
+            </choice>
+         </optional>
          <zeroOrMore>
             <ref name="sort"/>
          </zeroOrMore>

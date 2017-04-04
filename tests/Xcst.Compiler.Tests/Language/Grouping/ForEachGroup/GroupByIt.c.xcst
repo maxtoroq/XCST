@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:use-functions in='System.Linq'/>
+
+   <c:template name='c:initial-template' expand-text='yes'>
+      <ul>
+         <c:for-each-group name='group' in='"hello".ToCharArray()'>
+            <li>{group.Key}: {group.Count()}</li>
+         </c:for-each-group>
+      </ul>
+   </c:template>
+
+   <c:template name='expected'>
+      <ul>
+         <li>h: 1</li>
+         <li>e: 1</li>
+         <li>l: 2</li>
+         <li>o: 1</li>
+      </ul>
+   </c:template>
+
+</c:module>

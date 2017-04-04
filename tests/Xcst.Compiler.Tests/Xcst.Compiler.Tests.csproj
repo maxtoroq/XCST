@@ -241,6 +241,7 @@
     <None Include="Language\ExtensibilityAndFallback\Void\IgnoreContent.c.xcst" />
     <None Include="Language\ExtensibilityAndFallback\Void\IgnoreValue.c.xcst" />
     <None Include="Language\ExtensibilityAndFallback\Void\void.value_seqctor.mutex.i.xcst" />
+    <None Include="Language\Grouping\ForEachGroup\GroupByIt.c.xcst" />
     <None Include="Language\Grouping\ForEachGroup\Sort\NoOtherPrecedingText.i.xcst" />
     <None Include="Language\Grouping\ForEachGroup\Sort\NoOtherPreceding.i.xcst" />
     <None Include="Language\ProgramStructure\CombiningModules\NoChildrenText.i.xcst" />
@@ -339,7 +340,6 @@
     <None Include="Language\ExtensibilityAndFallback\ForwardsCompatibility\Fallback.c.xcst" />
     <None Include="Language\Grouping\ForEachGroup\GroupSize.c.xcst" />
     <None Include="Language\Grouping\ForEachGroup\GroupBy.c.xcst" />
-    <None Include="Language\Grouping\ForEachGroup\for-each-group.group-by_group-size.req.i.xcst" />
     <None Include="Language\Grouping\ForEachGroup\for-each-group.group-by_group-size.mutex.i.xcst" />
     <None Include="Language\Grouping\ForEachGroup\for-each-group.group-size.type.i.xcst" />
     <None Include="Language\Grouping\ForEachGroup\for-each-group.foo.i.xcst" />
