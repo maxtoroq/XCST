@@ -235,7 +235,6 @@
       <param name="module-docs" as="document-node()+" tunnel="yes"/>
 
       <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="'href'"/>
          <with-param name="required" select="'href'"/>
       </call-template>
       <call-template name="xcst:no-children"/>
@@ -272,8 +271,8 @@
    <template name="xcst:check-document-element-attributes">
 
       <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="'version', 'language', 'name'[current()/self::c:package]"/>
          <with-param name="required" select="'version', 'language'"/>
+         <with-param name="optional" select="'name'[current()/self::c:package]"/>
       </call-template>
 
       <variable name="attr-name" select="if (self::c:*) then QName('', 'language') else xs:QName('c:language')"/>
@@ -300,8 +299,7 @@
 
    <template match="c:validation" mode="xcst:check-top-level">
       <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="$xcst:validation-attributes"/>
-         <with-param name="required" select="()"/>
+         <with-param name="optional" select="$xcst:validation-attributes"/>
       </call-template>
       <call-template name="xcst:no-children"/>
    </template>
@@ -342,7 +340,6 @@
 
    <template match="c:use-package" mode="xcst:package-manifest">
       <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="'name'"/>
          <with-param name="required" select="'name'"/>
       </call-template>
       <call-template name="xcst:validate-children">
@@ -352,10 +349,7 @@
          <sequence select="error((), 'Duplicate c:use-package declaration.', src:error-object(.))"/>
       </if>
       <for-each select="c:override">
-         <call-template name="xcst:validate-attribs">
-            <with-param name="allowed" select="()"/>
-            <with-param name="required" select="()"/>
-         </call-template>
+         <call-template name="xcst:validate-attribs"/>
          <call-template name="xcst:validate-children">
             <with-param name="allowed" select="'template', 'function', 'attribute-set', 'param', 'variable', 'type'"/>
          </call-template>
@@ -368,8 +362,8 @@
       <param name="module-pos" tunnel="yes"/>
 
       <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="'name', 'value', 'as', ('required', 'tunnel')[current()/self::c:param], 'visibility'[current()/self::c:variable]"/>
          <with-param name="required" select="'name'"/>
+         <with-param name="optional" select="'value', 'as', ('required', 'tunnel')[current()/self::c:param], 'visibility'[current()/self::c:variable]"/>
       </call-template>
       <call-template name="xcst:value-or-sequence-constructor"/>
 
@@ -437,8 +431,8 @@
       <param name="implicit-package" tunnel="yes"/>
 
       <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="'as', 'name', 'visibility'"/>
          <with-param name="required" select="'name'"/>
+         <with-param name="optional" select="'as', 'visibility'"/>
       </call-template>
 
       <variable name="qname" select="xcst:EQName(@name)"/>
@@ -503,8 +497,8 @@
          </if>
          <for-each select="c:param">
             <call-template name="xcst:validate-attribs">
-               <with-param name="allowed" select="'name', 'value', 'as', 'required', 'tunnel'"/>
                <with-param name="required" select="'name'"/>
+               <with-param name="optional" select="'value', 'as', 'required', 'tunnel'"/>
             </call-template>
             <call-template name="xcst:value-or-sequence-constructor"/>
             <call-template name="xcst:no-other-preceding"/>
@@ -530,8 +524,8 @@
       <param name="module-pos" tunnel="yes"/>
 
       <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="'name', 'as', 'visibility'"/>
          <with-param name="required" select="'name'"/>
+         <with-param name="optional" select="'as', 'visibility'"/>
       </call-template>
 
       <variable name="name" select="src:strip-verbatim-prefix(xcst:name(@name))"/>
@@ -577,8 +571,8 @@
          </if>
          <for-each select="c:param">
             <call-template name="xcst:validate-attribs">
-               <with-param name="allowed" select="'name', 'value', 'as', 'required', 'tunnel'"/>
                <with-param name="required" select="'name'"/>
+               <with-param name="optional" select="'value', 'as', 'required', 'tunnel'"/>
             </call-template>
             <call-template name="xcst:value-or-sequence-constructor"/>
             <call-template name="xcst:no-other-preceding"/>
@@ -626,8 +620,8 @@
       <param name="module-pos" tunnel="yes"/>
 
       <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="'name', 'use-attribute-sets', 'visibility'"/>
          <with-param name="required" select="'name'"/>
+         <with-param name="optional" select="'use-attribute-sets', 'visibility'"/>
       </call-template>
       <call-template name="xcst:validate-children">
          <with-param name="allowed" select="'attribute'"/>
@@ -680,8 +674,8 @@
       <param name="module-pos" tunnel="yes"/>
 
       <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="'name', 'visibility', $xcst:type-or-member-attributes"/>
          <with-param name="required" select="'name'"/>
+         <with-param name="optional" select="'visibility', $xcst:type-or-member-attributes"/>
       </call-template>
       <call-template name="xcst:validate-children">
          <with-param name="allowed" select="'metadata', 'member'"/>
@@ -775,8 +769,7 @@
 
          <for-each select="current-group()">
             <call-template name="xcst:validate-attribs">
-               <with-param name="allowed" select="'name', $src:output-parameters/*[not(self::version) and not(self::output-version)]/local-name()"/>
-               <with-param name="required" select="()"/>
+               <with-param name="optional" select="'name', $src:output-parameters/*[not(self::version) and not(self::output-version)]/local-name()"/>
             </call-template>
             <call-template name="xcst:no-children"/>
             <if test="preceding-sibling::c:output[(empty($output-name) and empty(@name)) or (xcst:EQName(@name) eq $output-name)]">
@@ -1464,8 +1457,8 @@
 
    <template match="c:use-functions" mode="src:import-namespace">
       <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="'in', 'alias', 'static-only'"/>
          <with-param name="required" select="'in'"/>
+         <with-param name="optional" select="'alias', 'static-only'"/>
       </call-template>
       <call-template name="xcst:no-children"/>
       <call-template name="xcst:no-other-preceding"/>
@@ -1908,8 +1901,8 @@
    <template match="c:member" mode="src:member">
 
       <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="'name', 'as', 'value', 'expression', 'auto-initialize', 'display', 'display-name', 'description', 'short-name', 'place-holder', 'order', 'group', 'format', 'apply-format-in-edit-mode', 'disable-output-escaping', 'null-display-text', 'template', 'read-only', 'auto-generate-filter', 'data-type', 'required', 'max-length', 'min-length', 'pattern', 'min', 'max', 'equal-to', $xcst:type-or-member-attributes"/>
          <with-param name="required" select="'name'"/>
+         <with-param name="optional" select="'as', 'value', 'expression', 'auto-initialize', 'display', 'display-name', 'description', 'short-name', 'place-holder', 'order', 'group', 'format', 'apply-format-in-edit-mode', 'disable-output-escaping', 'null-display-text', 'template', 'read-only', 'auto-generate-filter', 'data-type', 'required', 'max-length', 'min-length', 'pattern', 'min', 'max', 'equal-to', $xcst:type-or-member-attributes"/>
       </call-template>
       <call-template name="xcst:validate-children">
          <with-param name="allowed" select="'metadata', 'member'"/>

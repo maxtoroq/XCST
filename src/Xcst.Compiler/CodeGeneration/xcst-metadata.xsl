@@ -24,7 +24,6 @@
 
    <template match="c:metadata" mode="src:attribute">
       <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="'value'"/>
          <with-param name="required" select="'value'"/>
       </call-template>
       <call-template name="xcst:no-children"/>

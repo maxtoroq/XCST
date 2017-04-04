@@ -94,8 +94,8 @@
       <param name="indent" tunnel="yes"/>
 
       <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="'name', 'namespace', 'separator', 'value'"/>
          <with-param name="required" select="'name'"/>
+         <with-param name="optional" select="'namespace', 'separator', 'value'"/>
       </call-template>
       <call-template name="xcst:value-or-sequence-constructor"/>
       <call-template name="src:line-number"/>
@@ -183,8 +183,7 @@
       <param name="output" tunnel="yes"/>
 
       <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="'value'"/>
-         <with-param name="required" select="()"/>
+         <with-param name="optional" select="'value'"/>
       </call-template>
       <call-template name="xcst:value-or-sequence-constructor"/>
       <call-template name="src:line-number"/>
@@ -203,8 +202,8 @@
       <param name="indent" tunnel="yes"/>
 
       <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="'name', 'namespace', 'use-attribute-sets'"/>
          <with-param name="required" select="'name'"/>
+         <with-param name="optional" select="'namespace', 'use-attribute-sets'"/>
       </call-template>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
@@ -274,8 +273,8 @@
       <param name="indent" tunnel="yes"/>
 
       <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="'name', 'value'"/>
          <with-param name="required" select="'name'"/>
+         <with-param name="optional" select="'value'"/>
       </call-template>
       <call-template name="xcst:value-or-sequence-constructor"/>
       <call-template name="src:line-number"/>
@@ -327,8 +326,8 @@
       <param name="output" tunnel="yes"/>
 
       <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="'name', 'value'"/>
          <with-param name="required" select="'name'"/>
+         <with-param name="optional" select="'value'"/>
       </call-template>
       <call-template name="xcst:value-or-sequence-constructor"/>
       <call-template name="src:line-number"/>
@@ -365,8 +364,7 @@
 
    <template match="c:text" mode="src:expression">
       <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="'disable-output-escaping'"/>
-         <with-param name="required" select="()"/>
+         <with-param name="optional" select="'disable-output-escaping'"/>
       </call-template>
       <call-template name="xcst:text-only"/>
       <variable name="text" select="xcst:text(.)"/>
@@ -377,8 +375,7 @@
 
    <template match="c:value-of" mode="src:expression">
       <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="'disable-output-escaping', 'value', 'separator'"/>
-         <with-param name="required" select="()"/>
+         <with-param name="optional" select="'disable-output-escaping', 'value', 'separator'"/>
       </call-template>
       <call-template name="xcst:value-or-sequence-constructor"/>
       <call-template name="src:simple-content">
@@ -416,8 +413,7 @@
       <param name="indent" tunnel="yes"/>
 
       <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="@*[not(namespace-uri())]/local-name()"/>
-         <with-param name="required" select="()"/>
+         <with-param name="optional" select="@*[not(namespace-uri())]/local-name()"/>
       </call-template>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
@@ -528,7 +524,6 @@
 
    <template match="c:object" mode="src:expression">
       <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="'value'"/>
          <with-param name="required" select="'value'"/>
       </call-template>
       <call-template name="xcst:no-children"/>
@@ -545,8 +540,8 @@
 
    <template match="c:for-each" mode="src:statement">
       <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="'name', 'in', 'as'"/>
          <with-param name="required" select="'name', 'in'"/>
+         <with-param name="optional" select="'as'"/>
       </call-template>
       <variable name="name" select="xcst:name(@name)"/>
       <variable name="in" select="xcst:expression(@in)"/>
@@ -578,7 +573,6 @@
 
    <template match="c:while" mode="src:statement">
       <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="'test'"/>
          <with-param name="required" select="'test'"/>
       </call-template>
       <value-of select="$src:new-line"/>
@@ -597,10 +591,7 @@
    -->
 
    <template match="c:choose" mode="src:statement">
-      <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="()"/>
-         <with-param name="required" select="()"/>
-      </call-template>
+      <call-template name="xcst:validate-attribs"/>
       <call-template name="xcst:validate-children">
          <with-param name="allowed" select="'when', 'otherwise'"/>
       </call-template>
@@ -612,7 +603,6 @@
 
    <template match="c:choose/c:when" mode="src:statement">
       <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="'test'"/>
          <with-param name="required" select="'test'"/>
       </call-template>
       <call-template name="xcst:no-other-preceding"/>
@@ -632,10 +622,7 @@
    </template>
 
    <template match="c:choose/c:otherwise" mode="src:statement">
-      <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="()"/>
-         <with-param name="required" select="()"/>
-      </call-template>
+      <call-template name="xcst:validate-attribs"/>
       <call-template name="xcst:no-other-following">
          <with-param name="except" select="()"/>
       </call-template>
@@ -647,7 +634,6 @@
 
    <template match="c:if" mode="src:statement">
       <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="'test'"/>
          <with-param name="required" select="'test'"/>
       </call-template>
       <value-of select="$src:new-line"/>
@@ -663,8 +649,7 @@
 
    <template match="c:try" mode="src:statement">
       <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="'rollback-output', 'value'"/>
-         <with-param name="required" select="()"/>
+         <with-param name="optional" select="'rollback-output', 'value'"/>
       </call-template>
       <variable name="children" select="
          node()[not(self::c:catch
@@ -696,8 +681,7 @@
 
    <template match="c:try/c:catch" mode="src:statement">
       <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="'exception', 'when', 'value'"/>
-         <with-param name="required" select="()"/>
+         <with-param name="optional" select="'exception', 'when', 'value'"/>
       </call-template>
       <call-template name="xcst:value-or-sequence-constructor"/>
       <call-template name="xcst:no-other-following">
@@ -724,8 +708,7 @@
 
    <template match="c:try/c:finally" mode="src:statement">
       <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="'value'"/>
-         <with-param name="required" select="()"/>
+         <with-param name="optional" select="'value'"/>
       </call-template>
       <call-template name="xcst:value-or-sequence-constructor"/>
       <call-template name="xcst:no-other-following">
@@ -744,8 +727,7 @@
       <param name="output" tunnel="yes"/>
 
       <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="'value'"/>
-         <with-param name="required" select="()"/>
+         <with-param name="optional" select="'value'"/>
       </call-template>
       <call-template name="xcst:value-or-sequence-constructor"/>
       <variable name="disallowed-ancestor"
@@ -783,10 +765,7 @@
    </template>
 
    <template match="c:break | c:continue" mode="src:statement">
-      <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="()"/>
-         <with-param name="required" select="()"/>
-      </call-template>
+      <call-template name="xcst:validate-attribs"/>
       <call-template name="xcst:no-children"/>
       <variable name="required-ancestor" select="ancestor::*[self::c:for-each or self::c:for-each-group or self::c:while][1]"/>
       <variable name="disallowed-ancestor"
@@ -803,8 +782,8 @@
 
    <template match="c:using" mode="src:statement">
       <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="'name', 'as', 'value'"/>
          <with-param name="required" select="'value'"/>
+         <with-param name="optional" select="'name', 'as'"/>
       </call-template>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
@@ -906,8 +885,8 @@
    <template match="c:variable" mode="src:statement">
 
       <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="'name', 'value', 'as'"/>
          <with-param name="required" select="'name'"/>
+         <with-param name="optional" select="'value', 'as'"/>
       </call-template>
       <call-template name="xcst:value-or-sequence-constructor"/>
 
@@ -957,8 +936,8 @@
 
    <template match="c:set" mode="src:statement">
       <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="'as', 'member', 'value'"/>
          <with-param name="required" select="'member'"/>
+         <with-param name="optional" select="'as', 'value'"/>
       </call-template>
       <call-template name="xcst:value-or-sequence-constructor"/>
       <call-template name="src:line-number"/>
@@ -1008,7 +987,6 @@
       <param name="package-manifest" tunnel="yes"/>
 
       <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="'name'"/>
          <with-param name="required" select="'name'"/>
       </call-template>
       <call-template name="xcst:validate-children">
@@ -1017,8 +995,8 @@
 
       <for-each select="c:with-param">
          <call-template name="xcst:validate-attribs">
-            <with-param name="allowed" select="'name', 'value', 'as', 'tunnel'"/>
             <with-param name="required" select="'name'"/>
+            <with-param name="optional" select="'value', 'as', 'tunnel'"/>
          </call-template>
          <call-template name="xcst:value-or-sequence-constructor"/>
       </for-each>
@@ -1071,18 +1049,15 @@
       <param name="context" tunnel="yes"/>
       <param name="output" tunnel="yes"/>
 
-      <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="()"/>
-         <with-param name="required" select="()"/>
-      </call-template>
+      <call-template name="xcst:validate-attribs"/>
       <call-template name="xcst:validate-children">
          <with-param name="allowed" select="'with-param'"/>
       </call-template>
 
       <for-each select="c:with-param">
          <call-template name="xcst:validate-attribs">
-            <with-param name="allowed" select="'name', 'value', 'as', 'tunnel'"/>
             <with-param name="required" select="'name'"/>
+            <with-param name="optional" select="'value', 'as', 'tunnel'"/>
          </call-template>
          <call-template name="xcst:value-or-sequence-constructor"/>
       </for-each>
@@ -1192,10 +1167,7 @@
    <template name="src:validate-next-function">
       <param name="package-manifest" tunnel="yes"/>
 
-      <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="()"/>
-         <with-param name="required" select="()"/>
-      </call-template>
+      <call-template name="xcst:validate-attribs"/>
       <call-template name="xcst:no-children"/>
 
       <variable name="current-function" select="ancestor::c:function[1]"/>
@@ -1226,8 +1198,7 @@
       <param name="indent" tunnel="yes"/>
 
       <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="'global-params', 'initial-template', 'name', 'template-params', 'tunnel-params', 'value'"/>
-         <with-param name="required" select="()"/>
+         <with-param name="optional" select="'global-params', 'initial-template', 'name', 'template-params', 'tunnel-params', 'value'"/>
       </call-template>
       <call-template name="xcst:no-children"/>
       <if test="not(@name) and not(@value)">
@@ -1304,10 +1275,7 @@
    <template match="c:delegate" mode="src:expression">
       <param name="indent" tunnel="yes"/>
 
-      <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="()"/>
-         <with-param name="required" select="()"/>
-      </call-template>
+      <call-template name="xcst:validate-attribs"/>
       <variable name="new-context" select="concat(src:aux-variable('context'), '_', generate-id())"/>
       <variable name="new-output" select="concat(src:aux-variable('output'), '_', generate-id())"/>
       <text>new </text>
@@ -1320,8 +1288,8 @@
       <call-template name="src:open-brace"/>
       <for-each select="c:param">
          <call-template name="xcst:validate-attribs">
-            <with-param name="allowed" select="'name', 'value', 'as', 'required', 'tunnel'"/>
             <with-param name="required" select="'name'"/>
+            <with-param name="optional" select="'value', 'as', 'required', 'tunnel'"/>
          </call-template>
          <call-template name="xcst:value-or-sequence-constructor"/>
          <call-template name="xcst:no-other-preceding"/>
@@ -1354,8 +1322,8 @@
       <param name="output" tunnel="yes"/>
 
       <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="'value', 'with-params'"/>
          <with-param name="required" select="'value'"/>
+         <with-param name="optional" select="'with-params'"/>
       </call-template>
       <call-template name="xcst:validate-children">
          <with-param name="allowed" select="'with-param'"/>
@@ -1372,8 +1340,8 @@
       <text>)</text>
       <for-each select="c:with-param">
          <call-template name="xcst:validate-attribs">
-            <with-param name="allowed" select="'name', 'value', 'as', 'tunnel'"/>
             <with-param name="required" select="'name'"/>
+            <with-param name="optional" select="'value', 'as', 'tunnel'"/>
          </call-template>
          <call-template name="xcst:value-or-sequence-constructor"/>
          <apply-templates select="." mode="src:with-param">
@@ -1408,8 +1376,7 @@
 
       <for-each select="c:sort">
          <call-template name="xcst:validate-attribs">
-            <with-param name="allowed" select="'value', 'order'"/>
-            <with-param name="required" select="()"/>
+            <with-param name="optional" select="'value', 'order'"/>
          </call-template>
          <call-template name="xcst:no-children"/>
          <call-template name="xcst:no-other-preceding"/>
@@ -1447,8 +1414,8 @@
 
    <template match="c:for-each-group" mode="src:statement">
       <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="'name', 'in', 'group-by', 'group-size'"/>
          <with-param name="required" select="'name', 'in'"/>
+         <with-param name="optional" select="'group-by', 'group-size'"/>
       </call-template>
       <if test="count((@group-by, @group-size)) ne 1">
          <sequence select="error(xs:QName('err:XTSE1080'), 'Exactly one of the attributes ''group-by'' and ''group-size'' must be specified.', src:error-object(.))"/>
@@ -1661,8 +1628,8 @@
 
    <template match="c:assert" mode="src:statement">
       <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="'test', 'value'"/>
          <with-param name="required" select="'test'"/>
+         <with-param name="optional" select="'value'"/>
       </call-template>
       <call-template name="xcst:value-or-sequence-constructor"/>
       <variable name="text" select="xcst:text(.)"/>
@@ -1684,8 +1651,7 @@
 
    <template match="c:message" mode="src:statement">
       <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="'terminate', 'value'"/>
-         <with-param name="required" select="()"/>
+         <with-param name="optional" select="'terminate', 'value'"/>
       </call-template>
       <call-template name="xcst:value-or-sequence-constructor"/>
       <variable name="never-terminate" select="not(@terminate) or xcst:boolean(@terminate, true()) eq false()"/>
@@ -1738,10 +1704,7 @@
    -->
 
    <template match="c:fallback" mode="src:statement src:expression">
-      <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="()"/>
-         <with-param name="required" select="()"/>
-      </call-template>
+      <call-template name="xcst:validate-attribs"/>
    </template>
 
    <template match="*[not(self::c:*)]" mode="src:statement">
@@ -1812,10 +1775,7 @@
                </when>
                <when test="c:fallback">
                   <for-each select="c:fallback">
-                     <call-template name="xcst:validate-attribs">
-                        <with-param name="allowed" select="()"/>
-                        <with-param name="required" select="()"/>
-                     </call-template>
+                     <call-template name="xcst:validate-attribs"/>
                      <call-template name="src:sequence-constructor"/>
                   </for-each>
                </when>
@@ -1844,8 +1804,7 @@
 
    <template match="c:void" mode="src:statement">
       <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="'value'"/>
-         <with-param name="required" select="()"/>
+         <with-param name="optional" select="'value'"/>
       </call-template>
       <call-template name="xcst:value-or-sequence-constructor"/>
       <call-template name="src:line-number"/>
@@ -1872,8 +1831,7 @@
 
    <template match="c:script" mode="src:statement">
       <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="'src'"/>
-         <with-param name="required" select="()"/>
+         <with-param name="optional" select="'src'"/>
       </call-template>
       <call-template name="xcst:text-only"/>
       <variable name="text" select="xcst:text(.)"/>
@@ -1913,8 +1871,8 @@
       <param name="output" tunnel="yes"/>
 
       <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="'href', 'format', $src:output-parameters/*[not(self::version)]/local-name()"/>
          <with-param name="required" select="'href'"/>
+         <with-param name="optional" select="'format', $src:output-parameters/*[not(self::version)]/local-name()"/>
       </call-template>
       <value-of select="$src:new-line"/>
       <call-template name="src:line-number"/>
@@ -1958,8 +1916,7 @@
 
    <template match="c:serialize" mode="src:expression">
       <call-template name="xcst:validate-attribs">
-         <with-param name="allowed" select="'format', $src:output-parameters/*[not(self::version)]/local-name()"/>
-         <with-param name="required" select="()"/>
+         <with-param name="optional" select="'format', $src:output-parameters/*[not(self::version)]/local-name()"/>
       </call-template>
       <variable name="new-output" select="concat(src:aux-variable('output'), '_', generate-id())"/>
       <value-of select="src:fully-qualified-helper('Serialization')"/>
@@ -2111,9 +2068,11 @@
    -->
 
    <template name="xcst:validate-attribs">
-      <param name="allowed" as="xs:string*" required="yes"/>
-      <param name="required" as="xs:string*" required="yes"/>
+      <param name="required" as="xs:string*"/>
+      <param name="optional" as="xs:string*"/>
       <param name="extension" select="false()"/>
+      
+      <variable name="allowed" select="$required, $optional"/>
 
       <variable name="std-names" select="
          if (self::c:*) then (QName('', 'version')[not(current()/self::c:output)], QName('', 'expand-text'), QName('', 'extension-element-prefixes'), QName('', 'transform-text'))
