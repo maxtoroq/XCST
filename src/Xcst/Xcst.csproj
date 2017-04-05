@@ -42,23 +42,23 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="OutputParameters.cs" />
+    <Compile Include="PackageModel\ISequenceWriter.cs" />
+    <Compile Include="PackageModel\ComponentAttributes.cs" />
     <Compile Include="QualifiedName.cs" />
     <Compile Include="RuntimeException.cs" />
-    <Compile Include="Runtime\ListFactory.cs" />
-    <Compile Include="Runtime\NullWriter.cs" />
-    <Compile Include="Runtime\RangeAttribute.cs" />
+    <Compile Include="PackageModel\RangeAttribute.cs" />
     <Compile Include="Runtime\Serialization.cs" />
     <Compile Include="Runtime\Grouping.cs" />
     <Compile Include="Runtime\SequenceWriter.cs" />
     <Compile Include="XcstEvaluator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Runtime\DataType.cs" />
-    <Compile Include="Runtime\TemplateContext.cs" />
+    <Compile Include="PackageModel\TemplateContext.cs" />
     <Compile Include="Runtime\DynamicError.cs" />
-    <Compile Include="Runtime\ExecutionContext.cs" />
+    <Compile Include="PackageModel\ExecutionContext.cs" />
     <Compile Include="WriterFactory.cs" />
     <Compile Include="IXcstPackage.cs" />
-    <Compile Include="Runtime\PrimingContext.cs" />
+    <Compile Include="PackageModel\PrimingContext.cs" />
     <Compile Include="Runtime\SimpleContent.cs" />
     <Compile Include="Runtime\Sorting.cs" />
     <Compile Include="RuntimeWriter.cs" />

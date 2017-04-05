@@ -15,7 +15,7 @@
 using System;
 using System.Reflection;
 using System.Xml;
-using Xcst.Packages;
+using Xcst.PackageModel;
 
 namespace Xcst.Compiler.CodeGeneration {
 

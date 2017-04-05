@@ -35,6 +35,7 @@
    <param name="src:use-package-base" as="xs:string?"/>
    <param name="src:manifest-only" select="false()" as="xs:boolean"/>
 
+   <variable name="src:package-interface" select="src:global-identifier('Xcst.IXcstPackage')"/>
    <variable name="src:context-field" select="concat('this.', src:aux-variable('execution_context'))"/>
    <variable name="xcst:validation-attributes" select="'error-resource-type', 'data-type-error-message', 'data-type-error-resource', 'required-error-message', 'required-error-resource', 'length-error-message', 'length-error-resource', 'pattern-error-message', 'pattern-error-resource', 'range-error-message', 'range-error-resource', 'equal-to-error-message', 'equal-to-error-resource'"/>
    <variable name="xcst:type-or-member-attributes" select="'resource-type', 'disable-empty-string-to-null-conversion', 'allow-empty-string', 'display-text-member', $xcst:validation-attributes"/>
@@ -853,7 +854,7 @@
 
       <sequence select="
          if ($meta/@item-type) then
-            concat(src:fully-qualified-helper('ISequenceWriter'), '&lt;', $meta/@item-type, '>')
+            concat(src:package-model-type('ISequenceWriter'), '&lt;', $meta/@item-type, '>')
          else
             $src:output-type"/>
    </function>
@@ -1025,7 +1026,7 @@
       <if test="$public">
          <call-template name="src:new-line-indented"/>
          <text>[</text>
-         <value-of select="src:global-identifier(concat('Xcst.Packages.Xcst', (if (self::xcst:param) then 'Parameter' else 'Variable')))"/>
+         <value-of select="src:package-model-type(concat('Xcst', (if (self::xcst:param) then 'Parameter' else 'Variable')))"/>
          <text>]</text>
       </if>
       <call-template name="src:new-line-indented"/>
@@ -1063,7 +1064,7 @@
       <if test="$public">
          <call-template name="src:new-line-indented"/>
          <text>[</text>
-         <value-of select="src:global-identifier('Xcst.Packages.XcstTemplate')"/>
+         <value-of select="src:package-model-type('XcstTemplate')"/>
          <text>(Name = </text>
          <value-of select="src:verbatim-string(xcst:uri-qualified-name($qname))"/>
          <text>)]</text>
@@ -1071,7 +1072,7 @@
          <for-each select="xcst:param">
             <call-template name="src:new-line-indented"/>
             <text>[</text>
-            <value-of select="src:global-identifier('Xcst.Packages.XcstTemplateParameter')"/>
+            <value-of select="src:package-model-type('XcstTemplateParameter')"/>
             <text>(</text>
             <value-of select="src:string(@name)"/>
             <if test="@required/xs:boolean(.)">, Required = true</if>
@@ -1111,7 +1112,7 @@
       <if test="$public">
          <call-template name="src:new-line-indented"/>
          <text>[</text>
-         <value-of select="src:global-identifier('Xcst.Packages.XcstFunction')"/>
+         <value-of select="src:package-model-type('XcstFunction')"/>
          <text>]</text>
       </if>
       <call-template name="src:new-line-indented"/>
@@ -1160,7 +1161,7 @@
       <if test="$public">
          <call-template name="src:new-line-indented"/>
          <text>[</text>
-         <value-of select="src:global-identifier('Xcst.Packages.XcstAttributeSet')"/>
+         <value-of select="src:package-model-type('XcstAttributeSet')"/>
          <text>(Name = </text>
          <value-of select="src:verbatim-string(xcst:uri-qualified-name($qname))"/>
          <text>)]</text>
@@ -1511,7 +1512,7 @@
                   <sequence select="$src:base-types"/>
                </otherwise>
             </choose>
-            <sequence select="src:global-identifier('Xcst.IXcstPackage')"/>
+            <sequence select="$src:package-interface"/>
          </variable>
          <value-of select="$base-types" separator=", "/>
       </if>
@@ -1612,7 +1613,7 @@
       <if test="$public">
          <call-template name="src:new-line-indented"/>
          <text>[</text>
-         <value-of select="src:global-identifier(concat('Xcst.Packages.Xcst', (if (self::c:param) then 'Parameter' else 'Variable')))"/>
+         <value-of select="src:package-model-type(concat('Xcst', (if (self::c:param) then 'Parameter' else 'Variable')))"/>
          <text>]</text>
       </if>
       <call-template name="src:line-number"/>
@@ -1666,7 +1667,7 @@
 
          <call-template name="src:new-line-indented"/>
          <text>[</text>
-         <value-of select="src:global-identifier('Xcst.Packages.XcstTemplate')"/>
+         <value-of select="src:package-model-type('XcstTemplate')"/>
          <text>(Name = </text>
          <value-of select="src:verbatim-string(xcst:uri-qualified-name($qname))"/>
          <if test="$meta/@item-type">
@@ -1676,14 +1677,14 @@
          </if>
          <if test="$meta/@cardinality[. ne 'ZeroOrMore']">
             <text>, Cardinality = </text>
-            <value-of select="src:global-identifier('Xcst.Packages.XcstSequenceCardinality'), $meta/@cardinality" separator="."/>
+            <value-of select="src:package-model-type('XcstSequenceCardinality'), $meta/@cardinality" separator="."/>
          </if>
          <text>)]</text>
 
          <for-each select="$meta/xcst:param">
             <call-template name="src:new-line-indented"/>
             <text>[</text>
-            <value-of select="src:global-identifier('Xcst.Packages.XcstTemplateParameter')"/>
+            <value-of select="src:package-model-type('XcstTemplateParameter')"/>
             <text>(</text>
             <value-of select="src:string(@name)"/>
             <if test="@required/xs:boolean(.)">, Required = true</if>
@@ -1742,7 +1743,7 @@
       <if test="$public">
          <call-template name="src:new-line-indented"/>
          <text>[</text>
-         <value-of select="src:global-identifier('Xcst.Packages.XcstFunction')"/>
+         <value-of select="src:package-model-type('XcstFunction')"/>
          <text>]</text>
       </if>
       <if test="$meta/@visibility eq 'hidden'">
@@ -1807,7 +1808,7 @@
          <variable name="qname" select="xcst:EQName($meta/@name)"/>
          <call-template name="src:new-line-indented"/>
          <text>[</text>
-         <value-of select="src:global-identifier('Xcst.Packages.XcstAttributeSet')"/>
+         <value-of select="src:package-model-type('XcstAttributeSet')"/>
          <text>(Name = </text>
          <value-of select="src:verbatim-string(xcst:uri-qualified-name($qname))"/>
          <text>)]</text>
@@ -1873,7 +1874,7 @@
          <if test="$public">
             <call-template name="src:new-line-indented"/>
             <text>[</text>
-            <value-of select="src:global-identifier('Xcst.Packages.XcstType')"/>
+            <value-of select="src:package-model-type('XcstType')"/>
             <text>]</text>
          </if>
          <call-template name="src:type-attributes"/>
@@ -2070,18 +2071,19 @@
    <template name="src:execution-context">
       <param name="used-packages" tunnel="yes"/>
 
+      <variable name="type" select="src:package-model-type('ExecutionContext')"/>
       <value-of select="$src:new-line"/>
       <call-template name="src:editor-browsable-never"/>
       <call-template name="src:new-line-indented"/>
-      <value-of select="src:fully-qualified-helper('ExecutionContext')"/>
+      <value-of select="$type"/>
       <text> </text>
       <value-of select="substring-after($src:context-field, 'this.')"/>
       <value-of select="$src:statement-delimiter"/>
       <value-of select="$src:new-line"/>
       <call-template name="src:new-line-indented"/>
-      <value-of select="src:fully-qualified-helper('ExecutionContext')"/>
+      <value-of select="$type"/>
       <text> </text>
-      <value-of select="src:global-identifier('Xcst.IXcstPackage')"/>
+      <value-of select="$src:package-interface"/>
       <text>.Context</text>
       <call-template name="src:open-brace"/>
       <call-template name="src:new-line-indented">
@@ -2101,7 +2103,7 @@
                <with-param name="increase" select="2"/>
             </call-template>
             <text>((</text>
-            <value-of select="src:global-identifier('Xcst.IXcstPackage')"/>
+            <value-of select="$src:package-interface"/>
             <text>)this.</text>
             <value-of select="src:used-package-field-name(.)"/>
             <text>).Context = value</text>
@@ -2143,7 +2145,7 @@
       <text>void </text>
       <choose>
          <when test="$principal-module">
-            <value-of select="src:global-identifier('Xcst.IXcstPackage')"/>
+            <value-of select="$src:package-interface"/>
             <text>.Prime</text>
          </when>
          <otherwise>
@@ -2151,7 +2153,7 @@
          </otherwise>
       </choose>
       <text>(</text>
-      <value-of select="src:fully-qualified-helper('PrimingContext')"/>
+      <value-of select="src:package-model-type('PrimingContext')"/>
       <text> </text>
       <value-of select="$context-param"/>
       <text>)</text>
@@ -2167,7 +2169,7 @@
                <with-param name="increase" select="1"/>
             </call-template>
             <text>((</text>
-            <value-of select="src:global-identifier('Xcst.IXcstPackage')"/>
+            <value-of select="$src:package-interface"/>
             <text>)this.</text>
             <value-of select="src:used-package-field-name(.)"/>
             <text>).Prime(</text>
@@ -2213,7 +2215,7 @@
       <variable name="context-param" select="src:aux-variable('context')"/>
       <variable name="output-param" select="src:aux-variable('output')"/>
       <text>void </text>
-      <value-of select="src:global-identifier('Xcst.IXcstPackage')"/>
+      <value-of select="$src:package-interface"/>
       <text>.CallTemplate(</text>
       <value-of select="src:global-identifier('Xcst.QualifiedName'), $name-param"/>
       <text>, </text>
@@ -2296,7 +2298,7 @@
       <variable name="name-param" select="src:aux-variable('name')"/>
       <variable name="parameters-param" select="src:aux-variable('parameters')"/>
       <text>void </text>
-      <value-of select="src:global-identifier('Xcst.IXcstPackage')"/>
+      <value-of select="$src:package-interface"/>
       <text>.ReadOutputDefinition(</text>
       <value-of select="src:global-identifier('Xcst.QualifiedName')"/>
       <text> </text>
@@ -2429,6 +2431,12 @@
       <sequence select="src:aux-variable(concat('backing_field_', $meta/@name))"/>
    </function>
 
+   <function name="src:package-model-type" as="xs:string">
+      <param name="type" as="xs:string"/>
+
+      <sequence select="concat(src:global-identifier('Xcst.PackageModel'), '.', $type)"/>
+   </function>
+   
    <template name="src:editor-browsable-never">
       <call-template name="src:new-line-indented"/>
       <text>[</text>

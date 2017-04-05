@@ -15,7 +15,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Xcst.Runtime {
+namespace Xcst.PackageModel {
 
    /// <exclude/>
 

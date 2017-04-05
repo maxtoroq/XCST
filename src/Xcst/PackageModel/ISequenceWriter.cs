@@ -1,4 +1,4 @@
-﻿// Copyright 2015 Max Toro Q.
+﻿// Copyright 2016 Max Toro Q.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,18 +13,20 @@
 // limitations under the License.
 
 using System;
-using Xcst.PackageModel;
+using System.Collections.Generic;
 
-namespace Xcst {
+namespace Xcst.PackageModel {
 
-   public interface IXcstPackage {
+   /// <exclude/>
 
-      ExecutionContext Context { get; set; }
+   public interface ISequenceWriter<in TItem> {
 
-      void Prime(PrimingContext context);
+      void WriteObject(TItem value);
 
-      void CallTemplate(QualifiedName name, TemplateContext context, XcstWriter output);
+      void WriteObject(IEnumerable<TItem> value);
 
-      void ReadOutputDefinition(QualifiedName name, OutputParameters parameters);
+      void WriteString(TItem text);
+
+      void WriteRaw(TItem data);
    }
 }

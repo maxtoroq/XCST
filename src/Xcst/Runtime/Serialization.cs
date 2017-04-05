@@ -89,4 +89,28 @@ namespace Xcst.Runtime {
             (null, null, package.Context.SimpleContent);
       }
    }
+
+   class NullWriter : XcstWriter {
+
+      public NullWriter(Uri outputUri)
+         : base(outputUri) { }
+
+      public override void Flush() { }
+
+      public override void WriteComment(string text) { }
+
+      public override void WriteEndAttribute() { }
+
+      public override void WriteEndElement() { }
+
+      public override void WriteProcessingInstruction(string name, string text) { }
+
+      public override void WriteRaw(string data) { }
+
+      public override void WriteStartAttribute(string prefix, string localName, string ns, string separator) { }
+
+      public override void WriteStartElement(string prefix, string localName, string ns) { }
+
+      public override void WriteString(string text) { }
+   }
 }

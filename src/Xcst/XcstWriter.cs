@@ -16,6 +16,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using Xcst.PackageModel;
 using Xcst.Runtime;
 
 namespace Xcst {

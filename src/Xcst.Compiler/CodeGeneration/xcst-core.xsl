@@ -53,7 +53,7 @@
          <version>Version</version>
       </data>
    </variable>
-   <variable name="src:template-context-type" select="src:fully-qualified-helper('TemplateContext')"/>
+   <variable name="src:template-context-type" select="src:package-model-type('TemplateContext')"/>
    <variable name="src:output-type" select="src:global-identifier('Xcst.XcstWriter')"/>
 
    <template match="*[* and not(text()[normalize-space()])]/text()" mode="src:statement src:expression">
@@ -1469,7 +1469,7 @@
 
       <variable name="in" select="xcst:expression(@in)"/>
       <variable name="iter" select="concat(src:aux-variable('iter'), '_', generate-id())"/>
-      <variable name="helper" select="src:fully-qualified-helper('ListFactory')"/>
+      <variable name="helper" select="src:fully-qualified-helper('Grouping')"/>
 
       <value-of select="$src:new-line"/>
       <call-template name="src:line-number"/>

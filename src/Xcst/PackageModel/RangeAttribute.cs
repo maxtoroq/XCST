@@ -1,4 +1,4 @@
-﻿// Copyright 2015 Max Toro Q.
+﻿// Copyright 2017 Max Toro Q.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,25 +15,25 @@
 using System;
 using System.Globalization;
 
-namespace Xcst.Runtime {
+namespace Xcst.PackageModel {
 
    /// <exclude/>
 
-   public class ExecutionContext {
+   public class RangeAttribute : System.ComponentModel.DataAnnotations.RangeAttribute {
 
-      readonly IFormatProvider formatProvider;
+      public RangeAttribute(Type type, object minimum, object maximum)
+         : base(type, ValueToString(minimum), ValueToString(maximum)) { }
 
-      public IXcstPackage TopLevelPackage { get; }
+      static string ValueToString(object value) {
 
-      public SimpleContent SimpleContent { get; }
+         if (value == null) {
+            return null;
+         }
 
-      internal ExecutionContext(IXcstPackage topLevelPackage, IFormatProvider formatProvider) {
+         // format provider must be the same used by base class
+         // to convert the string back to the operand type
 
-         if (topLevelPackage == null) throw new ArgumentNullException(nameof(topLevelPackage));
-
-         this.TopLevelPackage = topLevelPackage;
-         this.formatProvider = formatProvider ?? CultureInfo.CurrentCulture;
-         this.SimpleContent = new SimpleContent(this.formatProvider);
+         return Convert.ToString(value, CultureInfo.CurrentCulture);
       }
    }
 }

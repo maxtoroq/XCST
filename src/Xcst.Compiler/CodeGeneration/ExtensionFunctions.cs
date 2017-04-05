@@ -328,6 +328,7 @@ namespace Xcst.Compiler.CodeGeneration {
             }
 
             using (var output = new MemoryStream()) {
+
                using (XmlWriter writer = XmlWriter.Create(output)) {
                   PackageManifest.WriteManifest(packageType, writer);
                }

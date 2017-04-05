@@ -392,7 +392,7 @@
          <call-template name="src:line-number"/>
          <call-template name="src:new-line-indented"/>
          <text>[</text>
-         <value-of select="src:fully-qualified-helper('Range')"/>
+         <value-of select="src:package-model-type('Range')"/>
          <text>(</text>
          <text>typeof(</text>
          <value-of select="$type"/>

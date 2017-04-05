@@ -7,7 +7,7 @@
       <c:variable name='a'>
          <c:delegate/>
       </c:variable>
-      <c:void value='Assert.IsTrue(a is System.Action&lt;Xcst.Runtime.TemplateContext, Xcst.XcstWriter>)'/>
+      <c:void value='Assert.IsTrue(a is System.Delegate)'/>
    </c:template>
 
    <c:template name='expected'/>

@@ -15,21 +15,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Xcst.PackageModel;
 
 namespace Xcst.Runtime {
-
-   /// <exclude/>
-
-   public interface ISequenceWriter<in TItem> {
-
-      void WriteObject(TItem value);
-
-      void WriteObject(IEnumerable<TItem> value);
-
-      void WriteString(TItem text);
-
-      void WriteRaw(TItem data);
-   }
 
    /// <exclude/>
 
