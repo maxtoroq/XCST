@@ -978,7 +978,19 @@
          <with-param name="indent" select="$indent + 1" tunnel="yes"/>
       </apply-templates>
       <text>, </text>
-      <value-of select="$output"/>
+      <choose>
+         <when test="$meta/@item-type">
+            <value-of select="src:fully-qualified-helper('SequenceWriter'), 'AdjustWriter'" separator="."/>
+            <text>(</text>
+            <value-of select="$output"/>
+            <text>, </text>
+            <value-of select="src:global-identifier($meta/(@package-type, ../@package-type)[1]), src:item-type-inference-member-name($meta/@member-name)" separator="."/>
+            <text>)</text>
+         </when>
+         <otherwise>
+            <value-of select="$output"/>
+         </otherwise>
+      </choose>
       <text>)</text>
       <value-of select="$src:statement-delimiter"/>
    </template>

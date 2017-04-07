@@ -849,16 +849,6 @@
       )"/>
    </function>
 
-   <function name="src:template-output-type" as="xs:string">
-      <param name="meta" as="element()"/>
-
-      <sequence select="
-         if ($meta/@item-type) then
-            concat(src:package-model-type('ISequenceWriter'), '&lt;', $meta/@item-type, '>')
-         else
-            $src:output-type"/>
-   </function>
-
    <function name="src:hidden-function-method-name" as="xs:string">
       <param name="function" as="element(c:function)"/>
 
@@ -882,6 +872,45 @@
             <with-param name="indent" select="0" tunnel="yes"/>
          </apply-templates>
       </src:compilation-unit>
+   </template>
+
+   <function name="src:package-model-type" as="xs:string">
+      <param name="type" as="xs:string"/>
+
+      <sequence select="concat(src:global-identifier('Xcst.PackageModel'), '.', $type)"/>
+   </function>
+
+   <function name="src:template-output-type" as="xs:string">
+      <param name="meta" as="element()"/>
+
+      <sequence select="
+         if ($meta/@item-type) then
+            concat(src:package-model-type('ISequenceWriter'), '&lt;', src:global-identifier-meta($meta/@item-type), '>')
+         else
+            $src:output-type"/>
+   </function>
+
+   <function name="src:item-type-inference-member-name" as="xs:string">
+      <param name="member-name" as="item()"/>
+
+      <sequence select="concat($member-name, '_infer')"/>
+   </function>
+
+   <function name="src:global-identifier-meta" as="xs:string">
+      <param name="attr" as="attribute()"/>
+
+      <sequence select="
+         if ($attr/../xs:boolean(@qualified-types)) then src:global-identifier($attr)
+         else $attr"/>
+   </function>
+
+   <template name="src:editor-browsable-never">
+      <call-template name="src:new-line-indented"/>
+      <text>[</text>
+      <value-of select="src:global-identifier('System.ComponentModel.EditorBrowsable')"/>
+      <text>(</text>
+      <value-of select="src:global-identifier('System.ComponentModel.EditorBrowsableState.Never')"/>
+      <text>)]</text>
    </template>
 
    <!--
@@ -1032,7 +1061,7 @@
       <call-template name="src:new-line-indented"/>
       <if test="$public">public </if>
       <if test="@visibility eq 'public'">virtual </if>
-      <value-of select="if (xs:boolean(@qualified-types)) then src:global-identifier(@as) else @as, @member-name"/>
+      <value-of select="src:global-identifier-meta(@as), @member-name"/>
       <call-template name="src:open-brace"/>
       <call-template name="src:new-line-indented">
          <with-param name="increase" select="1"/>
@@ -1103,11 +1132,30 @@
       <text>)</text>
       <value-of select="$src:statement-delimiter"/>
       <call-template name="src:close-brace"/>
+
+      <if test="@item-type">
+         <value-of select="$src:new-line"/>
+         <call-template name="src:line-hidden"/>
+         <call-template name="src:editor-browsable-never"/>
+         <call-template name="src:new-line-indented"/>
+         <if test="$public">public </if>
+         <text>static </text>
+         <value-of select="src:global-identifier-meta(@item-type), src:item-type-inference-member-name(@member-name)" separator=" "/>
+         <text>()</text>
+         <call-template name="src:open-brace"/>
+         <call-template name="src:new-line-indented">
+            <with-param name="increase" select="1"/>
+         </call-template>
+         <text>return default(</text>
+         <value-of select="src:global-identifier-meta(@item-type)"/>
+         <text>)</text>
+         <value-of select="$src:statement-delimiter"/>
+         <call-template name="src:close-brace"/>
+      </if>
    </template>
 
    <template match="xcst:function" mode="src:member">
       <variable name="public" select="@visibility ne 'private'"/>
-      <variable name="qualified-types" select="xs:boolean(@qualified-types)"/>
       <value-of select="$src:new-line"/>
       <if test="$public">
          <call-template name="src:new-line-indented"/>
@@ -1118,13 +1166,13 @@
       <call-template name="src:new-line-indented"/>
       <if test="$public">public </if>
       <if test="@visibility eq 'public'">virtual </if>
-      <value-of select="(@as/(if ($qualified-types) then src:global-identifier(.) else .), 'void')[1]"/>
+      <value-of select="(@as/src:global-identifier-meta(.), 'void')[1]"/>
       <text> </text>
       <value-of select="@member-name"/>
       <text>(</text>
       <for-each select="xcst:param">
          <if test="position() gt 1">, </if>
-         <value-of select="if ($qualified-types) then src:global-identifier(@as) else @as, @name"/>
+         <value-of select="src:global-identifier-meta(@as), @name"/>
          <if test="@value">
             <text> = </text>
             <value-of select="@value"/>
@@ -1236,7 +1284,7 @@
    </template>
 
    <template match="xcst:param | xcst:variable" mode="src:used-package-overridden-type">
-      <variable name="type" select="if (xs:boolean(@qualified-types)) then src:global-identifier(@as) else @as"/>
+      <variable name="type" select="src:global-identifier-meta(@as)"/>
       <value-of select="src:global-identifier('System.Tuple')"/>
       <text>&lt;</text>
       <value-of select="src:global-identifier('System.Func')"/>
@@ -1257,12 +1305,11 @@
    </template>
 
    <template match="xcst:function" mode="src:used-package-overridden-type">
-      <variable name="qualified-types" select="xs:boolean(@qualified-types)"/>
       <value-of select="src:global-identifier(if (@as) then 'System.Func' else 'System.Action')"/>
       <if test="@as or xcst:param">
          <text>&lt;</text>
          <value-of select="
-            xcst:param/(if ($qualified-types) then src:global-identifier(@as) else @as), if ($qualified-types) then src:global-identifier(@as) else @as" separator=", "/>
+            xcst:param/(src:global-identifier-meta(@as)), @as/src:global-identifier-meta(.)" separator=", "/>
          <text>></text>
       </if>
    </template>
@@ -1272,7 +1319,7 @@
       <value-of select="$src:new-line"/>
       <call-template name="src:new-line-indented"/>
       <text>public override </text>
-      <value-of select="if (xs:boolean(@qualified-types)) then src:global-identifier(@as) else @as, @member-name"/>
+      <value-of select="src:global-identifier-meta(@as), @member-name"/>
       <call-template name="src:open-brace"/>
       <call-template name="src:new-line-indented">
          <with-param name="increase" select="1"/>
@@ -1319,17 +1366,16 @@
    </template>
 
    <template match="xcst:function" mode="src:used-package-override">
-      <variable name="qualified-types" select="xs:boolean(@qualified-types)"/>
       <value-of select="$src:new-line"/>
       <call-template name="src:new-line-indented"/>
       <text>public override </text>
-      <value-of select="(@as/(if ($qualified-types) then src:global-identifier(.) else .), 'void')[1]"/>
+      <value-of select="(@as/src:global-identifier-meta(.), 'void')[1]"/>
       <text> </text>
       <value-of select="@member-name"/>
       <text>(</text>
       <for-each select="xcst:param">
          <if test="position() gt 1">, </if>
-         <value-of select="if ($qualified-types) then src:global-identifier(@as) else @as, @name"/>
+         <value-of select="src:global-identifier-meta(@as), @name"/>
       </for-each>
       <text>)</text>
       <call-template name="src:open-brace"/>
@@ -1730,6 +1776,26 @@
             <call-template name="src:close-brace"/>
          </otherwise>
       </choose>
+
+      <if test="$meta/@item-type">
+         <value-of select="$src:new-line"/>
+         <call-template name="src:line-hidden"/>
+         <call-template name="src:editor-browsable-never"/>
+         <call-template name="src:new-line-indented"/>
+         <if test="$public">public </if>
+         <text>static </text>
+         <value-of select="$meta/@item-type, src:item-type-inference-member-name($meta/@member-name)" separator=" "/>
+         <text>()</text>
+         <call-template name="src:open-brace"/>
+         <call-template name="src:new-line-indented">
+            <with-param name="increase" select="1"/>
+         </call-template>
+         <text>return default(</text>
+         <value-of select="$meta/@item-type"/>
+         <text>)</text>
+         <value-of select="$src:statement-delimiter"/>
+         <call-template name="src:close-brace"/>
+      </if>
    </template>
 
    <template match="c:function" mode="src:member">
@@ -1981,6 +2047,12 @@
       <param name="member" as="element(c:member)"/>
 
       <sequence select="concat($member/@name/xcst:name(.), '_', generate-id($member))"/>
+   </function>
+
+   <function name="src:backing-field" as="xs:string">
+      <param name="meta" as="element()"/>
+
+      <sequence select="src:aux-variable(concat('backing_field_', $meta/@name))"/>
    </function>
 
    <!--
@@ -2264,12 +2336,15 @@
          <call-template name="src:new-line-indented">
             <with-param name="increase" select="1"/>
          </call-template>
-         <text>this.</text>
-         <value-of select="@member-name"/>
-         <text>(</text>
-         <value-of select="$context, $output" separator=", "/>
-         <text>)</text>
-         <value-of select="$src:statement-delimiter"/>
+         <!-- TODO: typed templates -->
+         <if test="not(@item-type)">
+            <text>this.</text>
+            <value-of select="@member-name"/>
+            <text>(</text>
+            <value-of select="$context, $output" separator=", "/>
+            <text>)</text>
+            <value-of select="$src:statement-delimiter"/>
+         </if>
          <call-template name="src:close-brace"/>
       </for-each>
       <if test="$templates">
@@ -2423,27 +2498,6 @@
          <value-of select="$src:statement-delimiter"/>
       </for-each-group>
       <call-template name="src:close-brace"/>
-   </template>
-
-   <function name="src:backing-field" as="xs:string">
-      <param name="meta" as="element()"/>
-
-      <sequence select="src:aux-variable(concat('backing_field_', $meta/@name))"/>
-   </function>
-
-   <function name="src:package-model-type" as="xs:string">
-      <param name="type" as="xs:string"/>
-
-      <sequence select="concat(src:global-identifier('Xcst.PackageModel'), '.', $type)"/>
-   </function>
-   
-   <template name="src:editor-browsable-never">
-      <call-template name="src:new-line-indented"/>
-      <text>[</text>
-      <value-of select="src:global-identifier('System.ComponentModel.EditorBrowsable')"/>
-      <text>(</text>
-      <value-of select="src:global-identifier('System.ComponentModel.EditorBrowsableState.Never')"/>
-      <text>)]</text>
    </template>
 
 </stylesheet>
