@@ -1,0 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<foo c:language='C#' bar='bar' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+</foo>

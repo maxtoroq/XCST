@@ -2087,12 +2087,13 @@
       <param name="extension" select="false()"/>
 
       <variable name="allowed" select="$required, $optional"/>
+      <variable name="root" select="not(parent::*)"/>
 
       <variable name="std-names" select="
          if (self::c:*) then (QName('', 'version')[not(current()/self::c:output)], QName('', 'expand-text'), QName('', 'extension-element-prefixes'), QName('', 'transform-text'))
          else (xs:QName('c:version'), xs:QName('c:expand-text'), xs:QName('c:extension-element-prefixes'), xs:QName('c:transform-text'), xs:QName('c:use-attribute-sets')[not($extension)])"/>
 
-      <for-each select="if (self::c:*) then @*[node-name(.) = $std-names] else @c:*">
+      <for-each select="if (self::c:*) then @*[node-name(.) = $std-names] else @c:*[not(local-name() eq 'language' and $root)]">
          <if test="not(node-name(.) = $std-names)">
             <sequence select="error(xs:QName('err:XTSE0805'), concat('Unknown XCST attribute ''', name(), '''.'), src:error-object(.))"/>
          </if>
@@ -2104,7 +2105,7 @@
       </for-each>
 
       <variable name="attribs" select="@*[not(namespace-uri())]
-         except (if (self::c:*) then @*[node-name(.) = $std-names and (not(local-name() eq 'version') or current()/parent::*)] else ())"/>
+         except (if (self::c:*) then @*[node-name(.) = $std-names and not(local-name() eq 'version' and $root)] else ())"/>
 
       <variable name="current" select="."/>
 

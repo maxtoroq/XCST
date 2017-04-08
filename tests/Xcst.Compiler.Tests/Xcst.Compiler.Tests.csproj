@@ -250,6 +250,10 @@
     <None Include="Language\Grouping\ForEachGroup\Sort\NoOtherPreceding.i.xcst" />
     <None Include="Language\ProgramStructure\CombiningModules\NoChildrenText.i.xcst" />
     <None Include="Language\ProgramStructure\CombiningModules\NoChildren.i.xcst" />
+    <None Include="Language\ProgramStructure\SimplifiedModules\foo.version.req.i.xcst" />
+    <None Include="Language\ProgramStructure\SimplifiedModules\foo.version.type.i.xcst" />
+    <None Include="Language\ProgramStructure\SimplifiedModules\foo.language.type.i.xcst" />
+    <None Include="Language\ProgramStructure\SimplifiedModules\foo.language.req.i.xcst" />
     <None Include="Language\ProgramStructure\Packages\Dependencies\ChildrenText.i.xcst" />
     <None Include="Language\ProgramStructure\Packages\Dependencies\Children.i.xcst" />
     <None Include="Language\ProgramStructure\Packages\Dependencies\ChildrenMultiple.c.xcst" />

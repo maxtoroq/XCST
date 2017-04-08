@@ -271,10 +271,28 @@
 
    <template name="xcst:check-document-element-attributes">
 
-      <call-template name="xcst:validate-attribs">
-         <with-param name="required" select="'version', 'language'"/>
-         <with-param name="optional" select="'name'[current()/self::c:package]"/>
-      </call-template>
+      <variable name="required" select="'version', 'language'"/>
+
+      <choose>
+         <when test="self::c:*">
+            <call-template name="xcst:validate-attribs">
+               <with-param name="required" select="$required"/>
+               <with-param name="optional" select="'name'[current()/self::c:package]"/>
+            </call-template>
+         </when>
+         <otherwise>
+            <call-template name="xcst:validate-attribs">
+               <with-param name="optional" select="@*[not(namespace-uri())]/local-name()"/>
+            </call-template>
+            <variable name="current" select="."/>
+            <variable name="attribs" select="@c:*"/>
+            <for-each select="$required">
+               <if test="not(some $a in $attribs satisfies . eq local-name($a))">
+                  <sequence select="error(xs:QName('err:XTSE0010'), concat('Element must have an ''c:', .,''' attribute.'), src:error-object($current))"/>
+               </if>
+            </for-each>
+         </otherwise>
+      </choose>
 
       <variable name="attr-name" select="if (self::c:*) then QName('', 'language') else xs:QName('c:language')"/>
       <variable name="language-attr" select="@*[node-name(.) eq $attr-name]"/>
