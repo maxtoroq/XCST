@@ -68,16 +68,13 @@ using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using static Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 using static Xcst.Compiler.Tests.Language.LanguageTestsHelper;
-
-namespace Xcst.Compiler.Tests {
 "@
-   PushIndent
    GenerateTestsForDirectory $startDirectory $startDirectory.Name
-   PopIndent
-   "}"
 }
 
-function GenerateTestsForDirectory([IO.DirectoryInfo]$directory, $category) {
+function GenerateTestsForDirectory([IO.DirectoryInfo]$directory, $relativeNs) {
+
+   $ns = "Xcst.Compiler.Tests.$relativeNs"
 
    foreach ($file in ls $directory.FullName *.pxcst) {
 
@@ -86,7 +83,7 @@ function GenerateTestsForDirectory([IO.DirectoryInfo]$directory, $category) {
       try {
 
          $compiler = $compilerFactory.CreateCompiler()
-         $compiler.TargetNamespace = $directory.Name
+         $compiler.TargetNamespace = $ns
          $compiler.LibraryPackage = $true
          $compiler.IndentChars = $singleIndent
 
@@ -103,7 +100,7 @@ function GenerateTestsForDirectory([IO.DirectoryInfo]$directory, $category) {
    }
 
    WriteLine
-   WriteLine "namespace $($directory.Name) {"
+   WriteLine "namespace $ns {"
    PushIndent
 
    $tests = ls $directory.FullName *.xcst
@@ -130,7 +127,7 @@ function GenerateTestsForDirectory([IO.DirectoryInfo]$directory, $category) {
 
          WriteLine
          WriteLine "#line 1 ""$($file.FullName)"""
-         WriteLine "[TestMethod, TestCategory(""$category"")]"
+         WriteLine "[TestMethod, TestCategory(""$relativeNs"")]"
 
          if (!$correct) {
             WriteLine "[ExpectedException(typeof(Xcst.Compiler.CompileException))]"
@@ -186,12 +183,12 @@ function GenerateTestsForDirectory([IO.DirectoryInfo]$directory, $category) {
       WriteLine "}"
    }
 
-   foreach ($subDirectory in ls $directory.FullName -Directory) {
-      GenerateTestsForDirectory $subDirectory ($category + "." + $subDirectory.Name)
-   }
-
    PopIndent
    WriteLine "}"
+
+   foreach ($subDirectory in ls $directory.FullName -Directory) {
+      GenerateTestsForDirectory $subDirectory ($relativeNs + "." + $subDirectory.Name)
+   }
 }
 
 try {

@@ -25,6 +25,8 @@ namespace Xcst {
 
       void CallTemplate(QualifiedName name, TemplateContext context, XcstWriter output);
 
+      Action<TemplateContext> GetTypedTemplate<TBase>(QualifiedName name, ISequenceWriter<TBase> output);
+
       void ReadOutputDefinition(QualifiedName name, OutputParameters parameters);
    }
 }

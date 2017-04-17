@@ -114,6 +114,9 @@
     <None Include="Language\CallableComponents\EvaluatePackage\evaluate-package.name_value.mutex.i.xcst" />
     <None Include="Language\CallableComponents\EvaluatePackage\evaluate-package.name_value.req.i.xcst" />
     <None Include="Language\CallableComponents\EvaluatePackage\evaluate-package.global-params.type.i.xcst" />
+    <None Include="Language\CallableComponents\EvaluatePackage\TypeIncompatible.f.xcst" />
+    <None Include="Language\CallableComponents\EvaluatePackage\TypeCompatible.c.xcst" />
+    <None Include="Language\CallableComponents\EvaluatePackage\UntypedToValueType.c.xcst" />
     <None Include="Language\CallableComponents\EvaluatePackage\NoChildrenText.i.xcst" />
     <None Include="Language\CallableComponents\EvaluatePackage\NoChildren.i.xcst" />
     <None Include="Language\CallableComponents\Function\Param\NoOtherPreceding.i.xcst" />
@@ -128,6 +131,8 @@
     <None Include="Language\CallableComponents\NextTemplate\Children.c.xcst" />
     <None Include="Language\CallableComponents\NextTemplate\Children.i.xcst" />
     <None Include="Language\CallableComponents\NextTemplate\ChildrenText.i.xcst" />
+    <None Include="Language\CallableComponents\NextTemplate\_TypeCompatibleUntypedToValueType.xcst" />
+    <None Include="Language\CallableComponents\NextTemplate\TypeCompatibleUntypedToValueType.c.xcst" />
     <None Include="Language\CallableComponents\NextTemplate\WithParam\with-param.value_seqctor.mutex.i.xcst" />
     <None Include="Language\CallableComponents\NextTemplate\_Children.xcst" />
     <None Include="Language\CallableComponents\Template\Param\NoOtherPrecedingText.i.xcst" />

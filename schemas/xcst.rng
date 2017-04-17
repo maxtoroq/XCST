@@ -333,6 +333,12 @@
             <ann:documentation>The name of the template.</ann:documentation>
             <ref name="EQName"/>
          </attribute>
+         <optional>
+            <attribute name="as">
+               <ann:documentation>The return type.</ann:documentation>
+               <ref name="Type"/>
+            </attribute>
+         </optional>
          <ref name="visibility-attribute"/>
          <ref name="standard-attributes"/>
          <zeroOrMore>

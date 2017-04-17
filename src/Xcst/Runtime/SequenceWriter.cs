@@ -104,10 +104,14 @@ namespace Xcst.Runtime {
             ?? new CastingSequenceWriter<TDerived, TBase>(output);
       }
 
-      static ISequenceWriter<TDerived> AdjustWriterDynamically<TBase, TDerived>(ISequenceWriter<TBase> output) {
+      public static ISequenceWriter<TDerived> AdjustWriterDynamically<TBase, TDerived>(
+            ISequenceWriter<TBase> output,
+            Func<TDerived> forTypeInference = null) {
 
-         if (output is ISequenceWriter<TDerived>) {
-            return (ISequenceWriter<TDerived>)output;
+         var derivedWriter = output as ISequenceWriter<TDerived>;
+
+         if (derivedWriter != null) {
+            return derivedWriter;
          }
 
          if (typeof(TBase).IsAssignableFrom(typeof(TDerived))) {
@@ -116,7 +120,7 @@ namespace Xcst.Runtime {
                .MakeGenericType(typeof(TDerived), typeof(TBase)), output);
          }
 
-         throw new ArgumentException(nameof(output));
+         throw new RuntimeException($"{typeof(TDerived).FullName} is not compatible with {typeof(TBase).FullName}.");
       }
    }
 

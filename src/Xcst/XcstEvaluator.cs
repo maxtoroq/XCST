@@ -281,18 +281,41 @@ namespace Xcst {
          return CreateOutputter(WriterFactory.CreateWriter(output));
       }
 
+      /// <exclude/>
+
+      [EditorBrowsable(EditorBrowsableState.Never)]
+      public XcstOutputter OutputTo<TBase>(ISequenceWriter<TBase> output) {
+
+         if (output == null) throw new ArgumentNullException(nameof(output));
+
+         Action<TemplateContext> tmplFn = this.package.GetTypedTemplate<TBase>(this.name, output);
+
+         // it's important to keep template parameters' variables outside the execution delegate
+         // so subsequent modifications do not affect previously created outputters
+
+         var templateParams = new Dictionary<string, object>(this.templateParameters);
+         var tunnelParams = new Dictionary<string, object>(this.tunnelParameters);
+
+         Action executionFn = () => tmplFn(CreateTemplateContext(templateParams, tunnelParams));
+
+         return new XcstOutputter(this.package, this.primeFn, executionFn);
+      }
+
       XcstOutputter CreateOutputter(CreateWriterDelegate writerFn) {
+
+         // it's important to keep template parameters' variables outside the execution delegate
+         // so subsequent modifications do not affect previously created outputters
 
          var templateParams = new Dictionary<string, object>(this.templateParameters);
          var tunnelParams = new Dictionary<string, object>(this.tunnelParameters);
 
          Action<IXcstPackage, XcstWriter> executionFn =
-            (p, o) => ExecuteTemplate(p, templateParams, tunnelParams, o);
+            (p, o) => p.CallTemplate(this.name, CreateTemplateContext(templateParams, tunnelParams), o);
 
          return new XcstOutputter(this.package, this.primeFn, writerFn, executionFn);
       }
 
-      void ExecuteTemplate(IXcstPackage package, IDictionary<string, object> templateParams, IDictionary<string, object> tunnelParams, XcstWriter output) {
+      static TemplateContext CreateTemplateContext(IDictionary<string, object> templateParams, IDictionary<string, object> tunnelParams) {
 
          var context = new TemplateContext();
 
@@ -304,7 +327,7 @@ namespace Xcst {
             context.WithParam(param.Key, param.Value, tunnel: true);
          }
 
-         package.CallTemplate(this.name, context, output);
+         return context;
       }
    }
 
@@ -314,6 +337,7 @@ namespace Xcst {
       readonly Action primeFn;
       readonly CreateWriterDelegate writerFn;
       readonly Action<IXcstPackage, XcstWriter> executionFn;
+      readonly Action typedExecutionFn;
 
       OutputParameters parameters;
       IFormatProvider formatProvider;
@@ -329,6 +353,17 @@ namespace Xcst {
          this.primeFn = primeFn;
          this.writerFn = writerFn;
          this.executionFn = executionFn;
+      }
+
+      internal XcstOutputter(IXcstPackage package, Action primeFn, Action typedExecutionFn) {
+
+         if (package == null) throw new ArgumentNullException(nameof(package));
+         if (primeFn == null) throw new ArgumentNullException(nameof(primeFn));
+         if (typedExecutionFn == null) throw new ArgumentNullException(nameof(typedExecutionFn));
+
+         this.package = package;
+         this.primeFn = primeFn;
+         this.typedExecutionFn = typedExecutionFn;
       }
 
       public XcstOutputter WithParams(OutputParameters parameters) {
@@ -351,24 +386,31 @@ namespace Xcst {
 
          this.primeFn();
 
-         var defaultParams = new OutputParameters();
-         this.package.ReadOutputDefinition(null, defaultParams);
+         if (this.typedExecutionFn != null) {
 
-         RuntimeWriter writer = this.writerFn(defaultParams, this.parameters, execContext.SimpleContent);
+            this.typedExecutionFn();
 
-         try {
-            this.executionFn(this.package, writer);
+         } else {
 
-            if (!writer.DisposeWriter
-               && !skipFlush) {
+            var defaultParams = new OutputParameters();
+            this.package.ReadOutputDefinition(null, defaultParams);
 
-               writer.Flush();
-            }
+            RuntimeWriter writer = this.writerFn(defaultParams, this.parameters, execContext.SimpleContent);
 
-         } finally {
+            try {
+               this.executionFn(this.package, writer);
 
-            if (writer.DisposeWriter) {
-               writer.Dispose();
+               if (!writer.DisposeWriter
+                  && !skipFlush) {
+
+                  writer.Flush();
+               }
+
+            } finally {
+
+               if (writer.DisposeWriter) {
+                  writer.Dispose();
+               }
             }
          }
       }

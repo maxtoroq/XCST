@@ -247,6 +247,11 @@
                <xs:documentation>The name of the template.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
+         <xs:attribute name="as" type="c:Type">
+            <xs:annotation>
+               <xs:documentation>The return type.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
          <xs:attributeGroup ref="c:visibility-attribute"/>
          <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>

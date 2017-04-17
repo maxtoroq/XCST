@@ -1635,6 +1635,9 @@
          <call-template name="src:call-template-method">
             <with-param name="indent" select="$indent + 1" tunnel="yes"/>
          </call-template>
+         <call-template name="src:get-typed-template-method">
+            <with-param name="indent" select="$indent + 1" tunnel="yes"/>
+         </call-template>
          <call-template name="src:read-output-definition-method">
             <with-param name="indent" select="$indent + 1" tunnel="yes"/>
          </call-template>
@@ -2354,15 +2357,108 @@
          <call-template name="src:new-line-indented">
             <with-param name="increase" select="1"/>
          </call-template>
-         <!-- TODO: typed templates -->
-         <if test="not(@item-type)">
-            <text>this.</text>
-            <value-of select="@member-name"/>
-            <text>(</text>
-            <value-of select="$context, $output" separator=", "/>
-            <text>)</text>
-            <value-of select="$src:statement-delimiter"/>
-         </if>
+         <text>this.</text>
+         <value-of select="@member-name"/>
+         <text>(</text>
+         <value-of select="$context"/>
+         <text>, </text>
+         <call-template name="src:call-template-output">
+            <with-param name="meta" select="."/>
+            <with-param name="output" select="$output" tunnel="yes"/>
+         </call-template>
+         <text>)</text>
+         <value-of select="$src:statement-delimiter"/>
+         <call-template name="src:close-brace"/>
+      </for-each>
+      <if test="$templates">
+         <text> else</text>
+         <call-template name="src:open-brace"/>
+      </if>
+      <call-template name="src:new-line-indented">
+         <with-param name="increase" select="if ($templates) then 1 else 0"/>
+      </call-template>
+      <text>throw </text>
+      <value-of select="src:fully-qualified-helper('DynamicError')"/>
+      <text>.UnknownTemplate(</text>
+      <value-of select="$name-param"/>
+      <text>)</text>
+      <value-of select="$src:statement-delimiter"/>
+      <if test="$templates">
+         <call-template name="src:close-brace"/>
+      </if>
+   </template>
+
+   <template name="src:get-typed-template-method">
+      <param name="indent" tunnel="yes"/>
+
+      <value-of select="$src:new-line"/>
+      <call-template name="src:new-line-indented"/>
+      <variable name="name-param" select="src:aux-variable('name')"/>
+      <variable name="output-param" select="src:aux-variable('output')"/>
+      <value-of select="src:global-identifier('System.Action')"/>
+      <text>&lt;</text>
+      <value-of select="$src:template-context-type"/>
+      <text>> </text>
+      <value-of select="$src:package-interface"/>
+      <text>.GetTypedTemplate&lt;TBase>(</text>
+      <value-of select="src:global-identifier('Xcst.QualifiedName'), $name-param"/>
+      <text>, </text>
+      <value-of select="concat(src:package-model-type('ISequenceWriter'), '&lt;TBase>'), $output-param"/>
+      <text>)</text>
+      <call-template name="src:open-brace"/>
+      <call-template name="src:get-typed-template-method-body">
+         <with-param name="indent" select="$indent + 1" tunnel="yes"/>
+         <with-param name="name-param" select="$name-param"/>
+         <with-param name="output" select="$output-param"/>
+      </call-template>
+      <call-template name="src:close-brace"/>
+   </template>
+
+   <template name="src:get-typed-template-method-body">
+      <param name="package-manifest" tunnel="yes"/>
+      <param name="name-param"/>
+      <param name="output"/>
+
+      <variable name="templates" select="$package-manifest/xcst:template[@visibility = ('public', 'final', 'absent') and @item-type]"/>
+
+      <value-of select="$src:new-line"/>
+      <for-each select="$templates">
+         <sort select="xcst:EQName(@name) eq xs:QName('c:initial-template')" order="descending"/>
+
+         <variable name="qname" select="xcst:EQName(@name)"/>
+         <variable name="context" select="src:aux-variable('context')"/>
+         <choose>
+            <when test="position() eq 1">
+               <call-template name="src:new-line-indented"/>
+            </when>
+            <otherwise> else </otherwise>
+         </choose>
+         <text>if (</text>
+         <value-of select="$name-param"/>
+         <text>.Name</text>
+         <text> == </text>
+         <value-of select="src:string(local-name-from-QName($qname))"/>
+         <text> &amp;&amp; </text>
+         <value-of select="src:string-equals-literal(concat($name-param, '.Namespace'), namespace-uri-from-QName($qname))"/>
+         <text>)</text>
+         <call-template name="src:open-brace"/>
+         <call-template name="src:new-line-indented">
+            <with-param name="increase" select="1"/>
+         </call-template>
+         <text>return </text>
+         <value-of select="$context"/>
+         <text> => this.</text>
+         <value-of select="@member-name"/>
+         <text>(</text>
+         <value-of select="$context"/>
+         <text>, </text>
+         <call-template name="src:call-template-output">
+            <with-param name="meta" select="."/>
+            <with-param name="dynamic" select="true()"/>
+            <with-param name="output" select="$output" tunnel="yes"/>
+         </call-template>
+         <text>)</text>
+         <value-of select="$src:statement-delimiter"/>
          <call-template name="src:close-brace"/>
       </for-each>
       <if test="$templates">

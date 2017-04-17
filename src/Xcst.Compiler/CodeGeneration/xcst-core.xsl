@@ -978,19 +978,9 @@
          <with-param name="indent" select="$indent + 1" tunnel="yes"/>
       </apply-templates>
       <text>, </text>
-      <choose>
-         <when test="$meta/@item-type">
-            <value-of select="src:fully-qualified-helper('SequenceWriter'), 'AdjustWriter'" separator="."/>
-            <text>(</text>
-            <value-of select="$output"/>
-            <text>, </text>
-            <value-of select="src:global-identifier($meta/(@package-type, ../@package-type)[1]), src:item-type-inference-member-name($meta/@member-name)" separator="."/>
-            <text>)</text>
-         </when>
-         <otherwise>
-            <value-of select="$output"/>
-         </otherwise>
-      </choose>
+      <call-template name="src:call-template-output">
+         <with-param name="meta" select="$meta"/>
+      </call-template>
       <text>)</text>
       <value-of select="$src:statement-delimiter"/>
    </template>
@@ -1055,6 +1045,28 @@
       <sequence select="$meta, $original"/>
    </template>
 
+   <template name="src:call-template-output">
+      <param name="meta" as="element()"/>
+      <param name="dynamic" select="false()" as="xs:boolean"/>
+      <param name="output" tunnel="yes"/>
+
+      <choose>
+         <when test="$meta/@item-type">
+            <value-of select="src:fully-qualified-helper('SequenceWriter')"/>
+            <text>.AdjustWriter</text>
+            <if test="$dynamic">Dynamically</if>
+            <text>(</text>
+            <value-of select="$output"/>
+            <text>, </text>
+            <value-of select="src:global-identifier($meta/(@package-type, ../@package-type)[1]), src:item-type-inference-member-name($meta/@member-name)" separator="."/>
+            <text>)</text>
+         </when>
+         <otherwise>
+            <value-of select="$output"/>
+         </otherwise>
+      </choose>
+   </template>
+
    <template match="c:next-template" mode="src:statement">
       <param name="package-manifest" tunnel="yes"/>
       <param name="indent" tunnel="yes"/>
@@ -1116,7 +1128,9 @@
          <with-param name="indent" select="$indent + 1" tunnel="yes"/>
       </apply-templates>
       <text>, </text>
-      <value-of select="$output"/>
+      <call-template name="src:call-template-output">
+         <with-param name="meta" select="$meta"/>
+      </call-template>
       <text>)</text>
       <value-of select="$src:statement-delimiter"/>
    </template>
