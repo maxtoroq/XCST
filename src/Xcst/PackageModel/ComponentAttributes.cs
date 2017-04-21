@@ -33,8 +33,6 @@ namespace Xcst.PackageModel {
    [AttributeUsage(AttributeTargets.Method)]
    public class XcstTemplateAttribute : XcstComponentAttribute {
 
-      public Type ItemType { get; set; }
-
       public XcstSequenceCardinality Cardinality { get; set; }
    }
 

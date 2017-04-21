@@ -1114,6 +1114,10 @@
          <value-of select="src:package-model-type('XcstTemplate')"/>
          <text>(Name = </text>
          <value-of select="src:verbatim-string(xcst:uri-qualified-name($qname))"/>
+         <if test="@cardinality[. ne 'ZeroOrMore']">
+            <text>, Cardinality = </text>
+            <value-of select="src:package-model-type('XcstSequenceCardinality'), @cardinality" separator="."/>
+         </if>
          <text>)]</text>
 
          <for-each select="xcst:param">
@@ -1737,11 +1741,6 @@
          <value-of select="src:package-model-type('XcstTemplate')"/>
          <text>(Name = </text>
          <value-of select="src:verbatim-string(xcst:uri-qualified-name($qname))"/>
-         <if test="$meta/@item-type">
-            <text>, ItemType = typeof(</text>
-            <value-of select="$meta/@item-type"/>
-            <text>)</text>
-         </if>
          <if test="$meta/@cardinality[. ne 'ZeroOrMore']">
             <text>, Cardinality = </text>
             <value-of select="src:package-model-type('XcstSequenceCardinality'), $meta/@cardinality" separator="."/>

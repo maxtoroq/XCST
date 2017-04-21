@@ -37,7 +37,7 @@ namespace Xcst.Compiler.CodeGeneration {
             methodVisibility(m as MethodBase ?? ((PropertyInfo)m).GetGetMethod());
 
          writer.WriteStartElement(prefix, "package-manifest", ns);
-         writer.WriteAttributeString("package-type", packageType.FullName);
+         writer.WriteAttributeString("package-type", TypeReference(packageType));
          writer.WriteAttributeString("qualified-types", "true");
 
          foreach (MemberInfo member in packageType.GetMembers(BindingFlags.Instance | BindingFlags.Public)) {
@@ -97,9 +97,12 @@ namespace Xcst.Compiler.CodeGeneration {
                writer.WriteAttributeString("member-name", member.Name);
 
                XcstTemplateAttribute tmplAttr = (XcstTemplateAttribute)attr;
+               MethodInfo method = ((MethodInfo)member);
 
-               if (tmplAttr.ItemType != null) {
-                  writer.WriteAttributeString("item-type", tmplAttr.ItemType.FullName);
+               Type outputType = method.GetParameters()[1].ParameterType;
+
+               if (outputType.IsGenericType) {
+                  writer.WriteAttributeString("item-type", TypeReference(outputType.GetGenericArguments()[0]));
                }
 
                writer.WriteAttributeString("cardinality", tmplAttr.Cardinality.ToString());
