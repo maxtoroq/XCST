@@ -95,6 +95,9 @@
     <None Include="Language\CallableComponents\CallTemplate\TypeCompatibleObjectToValueTypeUsedPackage.pxcst" />
     <None Include="Language\CallableComponents\CallTemplate\TypeCompatibleObjectToValueTypeUsedPackage.c.xcst" />
     <None Include="Language\CallableComponents\CallTemplate\TypeCompatibleObjectToValueType.c.xcst" />
+    <None Include="Language\CallableComponents\CallTemplate\WithParam\TypeIncompatible.f.xcst" />
+    <None Include="Language\CallableComponents\CallTemplate\WithParam\TypeIncompatible.c.xcst" />
+    <None Include="Language\CallableComponents\CallTemplate\WithParam\TypeIncompatible.i.xcst" />
     <None Include="Language\CallableComponents\CallTemplate\WithParam\NoValue.c.xcst" />
     <None Include="Language\CallableComponents\CallTemplate\WithParam\with-param.value_seqctor.mutex.i.xcst" />
     <None Include="Language\CallableComponents\EvaluateDelegate\Children.c.xcst" />

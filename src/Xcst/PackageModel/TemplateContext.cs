@@ -14,6 +14,7 @@
 
 using System;
 using System.Collections.Generic;
+using Xcst.Runtime;
 
 namespace Xcst.PackageModel {
 
@@ -24,14 +25,12 @@ namespace Xcst.PackageModel {
       readonly IDictionary<string, object> templateParameters = new Dictionary<string, object>();
       readonly IDictionary<string, object> tunnelParameters = new Dictionary<string, object>();
 
-      public TemplateContext() { }
+      public TemplateContext(TemplateContext currentContext = null) {
 
-      public TemplateContext(TemplateContext currentContext) {
-
-         if (currentContext == null) throw new ArgumentNullException(nameof(currentContext));
-
-         foreach (var item in currentContext.tunnelParameters) {
-            this.tunnelParameters.Add(item);
+         if (currentContext != null) {
+            foreach (var item in currentContext.tunnelParameters) {
+               this.tunnelParameters.Add(item);
+            }
          }
       }
 
@@ -69,7 +68,11 @@ namespace Xcst.PackageModel {
          return this;
       }
 
-      public TValue Param<TValue>(string name, Func<TValue> defaultValue, bool tunnel = false) {
+      public bool HasParam(string name) {
+         return this.templateParameters.ContainsKey(name);
+      }
+
+      public TDefault Param<TDefault>(string name, Func<TDefault> defaultValue = null, bool tunnel = false) {
 
          if (name == null) throw new ArgumentNullException(nameof(name));
 
@@ -85,16 +88,53 @@ namespace Xcst.PackageModel {
                paramsDict.Remove(name);
             }
 
-            // TODO: throw error if cast fails
+            try {
+               return (TDefault)value;
 
-            return (TValue)value;
+            } catch (InvalidCastException) {
+               throw DynamicError.InvalidParameterCast(name);
+            }
          }
 
          if (defaultValue != null) {
             return defaultValue();
          }
 
-         return default(TValue);
+         return default(TDefault);
+      }
+
+      public static TDefault TypedParam<TValue, TDefault>(string name, bool valueSet, TValue value, Func<TDefault> defaultValue) where TDefault : TValue {
+
+         if (valueSet) {
+
+            try {
+               return (TDefault)value;
+
+            } catch (InvalidCastException) {
+               throw DynamicError.InvalidParameterCast(name);
+            }
+         }
+
+         return defaultValue();
+      }
+   }
+
+   public class TemplateContext<TParams> : TemplateContext {
+
+      public TParams Parameters { get; }
+
+      public TemplateContext(TParams parameters, TemplateContext currentContext = null)
+         : base(currentContext) {
+
+         if (parameters == null) throw new ArgumentNullException(nameof(parameters));
+
+         this.Parameters = parameters;
+      }
+
+      public new TemplateContext<TParams> WithParam(string name, object value, bool tunnel = false) {
+
+         base.WithParam(name, value, tunnel);
+         return this;
       }
    }
 }

@@ -35,14 +35,21 @@ namespace Xcst.Runtime {
 
          if (parameterName == null) throw new ArgumentNullException(nameof(parameterName));
 
-         return new RuntimeException($"No value supplied for required parameter {parameterName}.", Code("XTDE0050"));
+         return new RuntimeException($"No value supplied for required parameter '{parameterName}'.", Code("XTDE0050"));
       }
 
       public static Exception RequiredTemplateParameter(string parameterName) {
 
          if (parameterName == null) throw new ArgumentNullException(nameof(parameterName));
 
-         return new RuntimeException($"No value supplied for required parameter {parameterName}.", Code("XTDE0700"));
+         return new RuntimeException($"No value supplied for required parameter '{parameterName}'.", Code("XTDE0700"));
+      }
+
+      public static Exception InvalidParameterCast(string parameterName) {
+
+         if (parameterName == null) throw new ArgumentNullException(nameof(parameterName));
+
+         return new RuntimeException($"Couldn't cast parameter '{parameterName}' to the required type.", Code("XTTE0590"));
       }
 
       public static Exception UnknownOutputDefinition(QualifiedName outputName) {

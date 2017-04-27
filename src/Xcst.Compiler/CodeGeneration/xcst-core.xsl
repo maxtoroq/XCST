@@ -53,8 +53,6 @@
          <version>Version</version>
       </data>
    </variable>
-   <variable name="src:template-context-type" select="src:package-model-type('TemplateContext')"/>
-   <variable name="src:output-type" select="src:global-identifier('Xcst.XcstWriter')"/>
 
    <template match="*[* and not(text()[normalize-space()])]/text()" mode="src:statement src:expression">
       <if test="xcst:preserve-whitespace(..)">
@@ -819,14 +817,47 @@
          or parent::c:override"/>
 
       <variable name="name" select="xcst:name(@name)"/>
+      <variable name="name-str" select="src:string(src:strip-verbatim-prefix($name))"/>
       <variable name="text" select="xcst:text(.)"/>
       <variable name="has-default-value" select="xcst:has-value(., $text)"/>
       <variable name="type" select="(@as/xcst:type(.), 'object')[1]"/>
       <variable name="required" select="(@required/xcst:boolean(.), false())[1]"/>
+      <variable name="tunnel" select="(@tunnel/xcst:boolean(.), false())[1]"/>
+      <variable name="template-meta" select="
+         if (parent::c:template) then
+            $package-manifest/xcst:template[@declaration-id eq generate-id(current()/..)]
+         else ()"/>
 
-      <if test="$has-default-value and $required">
-         <sequence select="error(xs:QName('err:XTSE0010'), 'The ''value'' attribute or child element/text should be omitted when required=''yes''.', src:error-object(.))"/>
+      <if test="parent::c:delegate">
+         <if test="$has-default-value and $required">
+            <sequence select="error(xs:QName('err:XTSE0010'), 'The ''value'' attribute or child element/text should be omitted when required=''yes''.', src:error-object(.))"/>
+         </if>
       </if>
+
+      <variable name="default-value-lambda-body">
+         <choose>
+            <when test="$required">
+               <call-template name="src:open-brace"/>
+               <text> throw </text>
+               <value-of select="src:fully-qualified-helper('DynamicError')"/>
+               <text>.</text>
+               <choose>
+                  <when test="$global">RequiredGlobalParameter</when>
+                  <otherwise>RequiredTemplateParameter</otherwise>
+               </choose>
+               <text>(</text>
+               <value-of select="$name-str"/>
+               <text>)</text>
+               <value-of select="$src:statement-delimiter"/>
+               <call-template name="src:close-brace"/>
+            </when>
+            <otherwise>
+               <call-template name="src:value">
+                  <with-param name="text" select="$text"/>
+               </call-template>
+            </otherwise>
+         </choose>
+      </variable>
 
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
@@ -842,43 +873,51 @@
          </otherwise>
       </choose>
       <text> = </text>
-      <value-of select="$context"/>
-      <text>.Param</text>
-      <if test="$required">
-         <text>&lt;</text>
-         <value-of select="$type"/>
-         <text>></text>
-      </if>
-      <text>(</text>
-      <value-of select="src:string(src:strip-verbatim-prefix($name))"/>
-      <text>, () => </text>
       <choose>
-         <when test="$required">
-            <call-template name="src:open-brace"/>
-            <text> throw </text>
-            <value-of select="src:fully-qualified-helper('DynamicError')"/>
-            <text>.</text>
+         <when test="$template-meta/xcst:typed-params(.) and not($tunnel)">
             <choose>
-               <when test="$global">RequiredGlobalParameter</when>
-               <otherwise>RequiredTemplateParameter</otherwise>
+               <when test="not($required) and not($has-default-value)">
+                  <value-of select="$context, 'Parameters', $name" separator="."/>
+               </when>
+               <otherwise>
+                  <value-of select="src:template-context-type(())"/>
+                  <text>.TypedParam</text>
+                  <if test="$required">
+                     <text>&lt;</text>
+                     <value-of select="$type, $type" separator=", "/>
+                     <text>></text>
+                  </if>
+                  <text>(</text>
+                  <value-of select="$name-str"/>
+                  <text>, </text>
+                  <value-of select="$context, 'Parameters', src:params-type-set-name(src:strip-verbatim-prefix($name))" separator="."/>
+                  <text>, </text>
+                  <value-of select="$context, 'Parameters', $name" separator="."/>
+                  <text>, () => </text>
+                  <value-of select="$default-value-lambda-body"/>
+                  <text>)</text>
+               </otherwise>
             </choose>
-            <text>(</text>
-            <value-of select="src:string($name)"/>
-            <text>)</text>
-            <value-of select="$src:statement-delimiter"/>
-            <call-template name="src:close-brace"/>
          </when>
          <otherwise>
-            <call-template name="src:value">
-               <with-param name="text" select="$text"/>
-            </call-template>
+            <value-of select="$context"/>
+            <text>.Param</text>
+            <if test="$required">
+               <text>&lt;</text>
+               <value-of select="$type"/>
+               <text>></text>
+            </if>
+            <text>(</text>
+            <value-of select="$name-str"/>
+            <text>, () => </text>
+            <value-of select="$default-value-lambda-body"/>
+            <if test="$tunnel">
+               <text>, tunnel: </text>
+               <value-of select="src:boolean(true())"/>
+            </if>
+            <text>)</text>
          </otherwise>
       </choose>
-      <if test="@tunnel/xcst:boolean(.)">
-         <text>, tunnel: </text>
-         <value-of select="src:boolean(true())"/>
-      </if>
-      <text>)</text>
       <value-of select="$src:statement-delimiter"/>
    </template>
 
@@ -895,16 +934,7 @@
 
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
-      <choose>
-         <when test="@as">
-            <value-of select="xcst:type(@as)"/>
-         </when>
-         <when test="not(@value) and $text">string</when>
-         <when test="$has-value">var</when>
-         <otherwise>object</otherwise>
-      </choose>
-      <text> </text>
-      <value-of select="xcst:name(@name)"/>
+      <value-of select="(xcst:variable-type(., $text), 'var')[1], xcst:name(@name)"/>
       <if test="$has-value">
          <text> = </text>
          <call-template name="src:value">
@@ -967,16 +997,10 @@
       <call-template name="src:new-line-indented"/>
       <text>this.</text>
       <value-of select="if ($original) then src:original-member($meta) else $meta/@member-name"/>
-      <text>(new </text>
-      <value-of select="$src:template-context-type"/>
       <text>(</text>
-      <if test="$context">
-         <value-of select="$context"/>
-      </if>
-      <text>)</text>
-      <apply-templates select="c:with-param" mode="src:with-param">
-         <with-param name="indent" select="$indent + 1" tunnel="yes"/>
-      </apply-templates>
+      <call-template name="src:call-template-context">
+         <with-param name="meta" select="$meta"/>
+      </call-template>
       <text>, </text>
       <call-template name="src:call-template-output">
          <with-param name="meta" select="$meta"/>
@@ -1001,6 +1025,9 @@
             <with-param name="optional" select="'value', 'as', 'tunnel'"/>
          </call-template>
          <call-template name="xcst:value-or-sequence-constructor"/>
+         <if test="preceding-sibling::c:with-param[xcst:name-equals(@name, current()/@name)]">
+            <sequence select="error(xs:QName('err:XTSE0670'), 'Duplicate parameter name.', src:error-object(.))"/>
+         </if>
       </for-each>
 
       <variable name="qname" select="xcst:EQName(@name)"/>
@@ -1045,6 +1072,45 @@
       <sequence select="$meta, $original"/>
    </template>
 
+   <template name="src:call-template-context">
+      <param name="meta" as="element()?"/>
+      <param name="context" tunnel="yes"/>
+      <param name="indent" tunnel="yes"/>
+
+      <variable name="typed-params" select="boolean($meta/xcst:typed-params(.))"/>
+
+      <text>new </text>
+      <value-of select="src:template-context-type($meta)"/>
+      <text>(</text>
+      <if test="$typed-params">
+         <text>new </text>
+         <value-of select="src:params-type($meta)"/>
+         <call-template name="src:open-brace"/>
+         <for-each select="c:with-param[not(@tunnel/xcst:boolean(.))]">
+            <call-template name="src:line-number">
+               <with-param name="indent" select="$indent + 2" tunnel="yes"/>
+            </call-template>
+            <call-template name="src:new-line-indented">
+               <with-param name="increase" select="2"/>
+            </call-template>
+            <text>@</text>
+            <value-of select="src:strip-verbatim-prefix(xcst:name(@name))"/>
+            <text> = </text>
+            <call-template name="src:value"/>
+            <if test="position() ne last()">,</if>
+         </for-each>
+         <call-template name="src:close-brace">
+            <with-param name="indent" select="$indent + 1" tunnel="yes"/>
+         </call-template>
+         <if test="$context">, </if>
+      </if>
+      <value-of select="$context"/>
+      <text>)</text>
+      <apply-templates select="c:with-param[not($typed-params) or @tunnel/xcst:boolean(.)]" mode="src:with-param">
+         <with-param name="indent" select="$indent + 1" tunnel="yes"/>
+      </apply-templates>
+   </template>
+
    <template name="src:call-template-output">
       <param name="meta" as="element()"/>
       <param name="dynamic" select="false()" as="xs:boolean"/>
@@ -1084,6 +1150,9 @@
             <with-param name="optional" select="'value', 'as', 'tunnel'"/>
          </call-template>
          <call-template name="xcst:value-or-sequence-constructor"/>
+         <if test="preceding-sibling::c:with-param[xcst:name-equals(@name, current()/@name)]">
+            <sequence select="error(xs:QName('err:XTSE0670'), 'Duplicate parameter name.', src:error-object(.))"/>
+         </if>
       </for-each>
 
       <variable name="current-template" select="ancestor::c:template[1]"/>
@@ -1119,14 +1188,10 @@
       <call-template name="src:new-line-indented"/>
       <text>this.</text>
       <value-of select="$meta/@member-name"/>
-      <text>(new </text>
-      <value-of select="$src:template-context-type"/>
       <text>(</text>
-      <value-of select="$context"/>
-      <text>)</text>
-      <apply-templates select="c:with-param" mode="src:with-param">
-         <with-param name="indent" select="$indent + 1" tunnel="yes"/>
-      </apply-templates>
+      <call-template name="src:call-template-context">
+         <with-param name="meta" select="$meta"/>
+      </call-template>
       <text>, </text>
       <call-template name="src:call-template-output">
          <with-param name="meta" select="$meta"/>
@@ -1136,9 +1201,6 @@
    </template>
 
    <template match="c:with-param" mode="src:with-param">
-      <if test="preceding-sibling::c:with-param[xcst:name-equals(@name, current()/@name)]">
-         <sequence select="error(xs:QName('err:XTSE0670'), 'Duplicate parameter name.', src:error-object(.))"/>
-      </if>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
       <text>.WithParam(</text>
@@ -1307,7 +1369,7 @@
       <text>new </text>
       <value-of select="src:global-identifier('System.Action')"/>
       <text>&lt;</text>
-      <value-of select="$src:template-context-type, $src:output-type" separator=", "/>
+      <value-of select="src:template-context-type(()), src:template-output-type(())" separator=", "/>
       <text>>((</text>
       <value-of select="$new-context, $new-output" separator=", "/>
       <text>) => </text>
@@ -1354,26 +1416,21 @@
       <call-template name="xcst:validate-children">
          <with-param name="allowed" select="'with-param'"/>
       </call-template>
-      <call-template name="src:line-number"/>
-      <call-template name="src:new-line-indented"/>
-      <value-of select="xcst:expression(@value)"/>
-      <text>(new </text>
-      <value-of select="$src:template-context-type"/>
-      <text>(</text>
-      <if test="$context">
-         <value-of select="$context"/>
-      </if>
-      <text>)</text>
       <for-each select="c:with-param">
          <call-template name="xcst:validate-attribs">
             <with-param name="required" select="'name'"/>
             <with-param name="optional" select="'value', 'as', 'tunnel'"/>
          </call-template>
          <call-template name="xcst:value-or-sequence-constructor"/>
-         <apply-templates select="." mode="src:with-param">
-            <with-param name="indent" select="$indent + 1" tunnel="yes"/>
-         </apply-templates>
+         <if test="preceding-sibling::c:with-param[xcst:name-equals(@name, current()/@name)]">
+            <sequence select="error(xs:QName('err:XTSE0670'), 'Duplicate parameter name.', src:error-object(.))"/>
+         </if>
       </for-each>
+      <call-template name="src:line-number"/>
+      <call-template name="src:new-line-indented"/>
+      <value-of select="xcst:expression(@value)"/>
+      <text>(</text>
+      <call-template name="src:call-template-context"/>
       <if test="@with-params">
          <call-template name="src:line-number">
             <with-param name="indent" select="$indent + 1" tunnel="yes"/>

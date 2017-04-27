@@ -36,25 +36,20 @@ function GenerateModules {
 //     the code is regenerated.
 // </auto-generated>
 //------------------------------------------------------------------------------
-
-namespace Xcst.Tests {
 "@
-   PushIndent
-
    foreach ($subDirectory in ls -Directory) {
       
       if ($subDirectory.Name -in "bin", "obj", "Properties") {
          continue
       }
 
-      GenerateModulesForDirectory $subDirectory
+      GenerateModulesForDirectory $subDirectory $subDirectory.Name
    }
-
-   PopIndent
-   "}"
 }
 
-function GenerateModulesForDirectory([IO.DirectoryInfo]$directory) {
+function GenerateModulesForDirectory([IO.DirectoryInfo]$directory, $relativeNs) {
+
+   $ns = "Xcst.Tests.$relativeNs"
 
    foreach ($file in ls $directory.FullName) {
 
@@ -72,7 +67,7 @@ function GenerateModulesForDirectory([IO.DirectoryInfo]$directory) {
       try {
 
          $compiler = $compilerFactory.CreateCompiler()
-         $compiler.TargetNamespace = $directory.Name
+         $compiler.TargetNamespace = $ns
          $compiler.LibraryPackage = $libraryPackage
          $compiler.IndentChars = $singleIndent
 
@@ -93,11 +88,11 @@ function GenerateModulesForDirectory([IO.DirectoryInfo]$directory) {
    }
 
    WriteLine
-   WriteLine "namespace $($directory.Name) {"
+   WriteLine "namespace $ns {"
    PushIndent
 
    foreach ($subDirectory in ls $directory.FullName -Directory) {
-      GenerateModulesForDirectory $subDirectory
+      GenerateModulesForDirectory $subDirectory ($relativeNs + "." + $subDirectory.Name)
    }
 
    PopIndent

@@ -46,12 +46,16 @@ namespace Xcst.PackageModel {
 
       public string Name { get; }
 
+      public Type Type { get; }
+
       public bool Required { get; set; }
 
       public bool Tunnel { get; set; }
 
-      public XcstTemplateParameterAttribute(string name) {
+      public XcstTemplateParameterAttribute(string name, Type type) {
+
          this.Name = name;
+         this.Type = type;
       }
    }
 
