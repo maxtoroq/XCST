@@ -103,6 +103,7 @@
     <None Include="Language\CallableComponents\EvaluateDelegate\Children.c.xcst" />
     <None Include="Language\CallableComponents\EvaluateDelegate\Children.i.xcst" />
     <None Include="Language\CallableComponents\EvaluateDelegate\ChildrenText.i.xcst" />
+    <None Include="Language\CallableComponents\EvaluateDelegate\RequiredParameter.f.xcst" />
     <None Include="Language\CallableComponents\EvaluateDelegate\TunnelParamFromEvaluateDelegate.c.xcst" />
     <None Include="Language\CallableComponents\EvaluateDelegate\TunnelParamFromCallTemplate.c.xcst" />
     <None Include="Language\CallableComponents\EvaluateDelegate\TunnelParam.c.xcst" />
@@ -258,6 +259,8 @@
     <None Include="Language\Grouping\ForEachGroup\Sort\NoOtherPreceding.i.xcst" />
     <None Include="Language\ProgramStructure\CombiningModules\NoChildrenText.i.xcst" />
     <None Include="Language\ProgramStructure\CombiningModules\NoChildren.i.xcst" />
+    <None Include="Language\ProgramStructure\Packages\AcceptingComponents\Parameter\Required.pxcst" />
+    <None Include="Language\ProgramStructure\Packages\AcceptingComponents\Parameter\Required.f.xcst" />
     <None Include="Language\ProgramStructure\SimplifiedModules\foo.version.req.i.xcst" />
     <None Include="Language\ProgramStructure\SimplifiedModules\foo.version.type.i.xcst" />
     <None Include="Language\ProgramStructure\SimplifiedModules\foo.language.type.i.xcst" />
@@ -396,6 +399,7 @@
     <None Include="Language\Types\Metadata\NoOtherPreceding.i.xcst" />
     <None Include="Language\Validation\NoChildrenText.i.xcst" />
     <None Include="Language\Validation\NoChildren.i.xcst" />
+    <None Include="Language\VariablesAndParameters\Global\RequiredParameter.f.xcst" />
     <None Include="Language\VariablesAndParameters\Global\param.value_seqctor.mutex.i.xcst" />
     <None Include="Language\VariablesAndParameters\Global\variable.value_seqctor.mutex.i.xcst" />
     <None Include="Language\VariablesAndParameters\Set\set.as.type.i.xcst" />
@@ -482,7 +486,7 @@
     <None Include="Language\CallableComponents\NextFunction\next-function.foo.i.xcst" />
     <None Include="Language\CallableComponents\NextTemplate\next-template.foo.i.xcst" />
     <None Include="Language\CallableComponents\NextTemplate\NonexistentParameter.i.xcst" />
-    <None Include="Language\CallableComponents\NextTemplate\MissingRequiredTunnelParameter.c.xcst" />
+    <None Include="Language\CallableComponents\NextTemplate\RequiredTunnelParameter.c.xcst" />
     <None Include="Language\CallableComponents\NextTemplate\WithParam\with-param.as.type.i.xcst" />
     <None Include="Language\CallableComponents\NextTemplate\WithParam\with-param.foo.i.xcst" />
     <None Include="Language\CallableComponents\NextTemplate\WithParam\with-param.name.type.i.xcst" />
@@ -490,9 +494,9 @@
     <None Include="Language\CallableComponents\NextTemplate\WithParam\with-param.value.type.i.xcst" />
     <None Include="Language\CallableComponents\NextTemplate\_next-template.xcst" />
     <None Include="Language\CallableComponents\NextTemplate\_NonexistentParameter.xcst" />
-    <None Include="Language\CallableComponents\NextTemplate\_MissingRequiredTunnelParameter.xcst" />
-    <None Include="Language\CallableComponents\NextTemplate\_MissingRequiredParameter.xcst" />
-    <None Include="Language\CallableComponents\NextTemplate\MissingRequiredParameter.i.xcst" />
+    <None Include="Language\CallableComponents\NextTemplate\_RequiredTunnelParameter.xcst" />
+    <None Include="Language\CallableComponents\NextTemplate\_RequiredParameter.xcst" />
+    <None Include="Language\CallableComponents\NextTemplate\RequiredParameter.i.xcst" />
     <None Include="Language\CallableComponents\Template\Param\param.foo.i.xcst" />
     <None Include="Language\CallableComponents\Template\Param\param.value.type.i.xcst" />
     <None Include="Language\CallableComponents\Template\Param\param.tunnel.type.i.xcst" />
@@ -877,10 +881,10 @@
     <None Include="Language\VariablesAndParameters\Set\set.foo.i.xcst" />
     <None Include="Language\CallableComponents\Template\Param\DefaultValueAndRequired.c.xcst" />
     <None Include="Language\CallableComponents\Template\Param\DefaultValueAndRequired.i.xcst" />
-    <None Include="Language\CallableComponents\CallTemplate\MissingRequiredTunnelParameter.c.xcst" />
+    <None Include="Language\CallableComponents\CallTemplate\RequiredTunnelParameter.c.xcst" />
     <None Include="Language\CallableComponents\CallTemplate\NonexistentTunnelParameter.c.xcst" />
     <None Include="Language\CallableComponents\CallTemplate\NonexistentParameter.i.xcst" />
-    <None Include="Language\CallableComponents\CallTemplate\MissingRequiredParameter.i.xcst" />
+    <None Include="Language\CallableComponents\CallTemplate\RequiredParameter.i.xcst" />
     <None Include="Language\CallableComponents\NextTemplate\LastTemplate.i.xcst" />
     <None Include="Language\ProgramStructure\Modules\UserDefinedDataElement.c.xcst" />
     <None Include="Language\ProgramStructure\Modules\UserDefinedDataElement.i.xcst" />
