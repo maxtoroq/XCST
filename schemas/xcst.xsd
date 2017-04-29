@@ -1459,7 +1459,7 @@
    </xs:element>
    <xs:element name="with-param">
       <xs:annotation>
-         <xs:documentation>Defines parameter arguments for a template or package.</xs:documentation>
+         <xs:documentation>Defines parameter arguments for a template or delegate.</xs:documentation>
       </xs:annotation>
       <xs:complexType mixed="true">
          <xs:group minOccurs="0" ref="c:sequence-constructor"/>

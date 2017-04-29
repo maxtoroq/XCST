@@ -1483,7 +1483,7 @@
 
    <define name="with-param">
       <element name="with-param">
-         <ann:documentation>Defines parameter arguments for a template or package.</ann:documentation>
+         <ann:documentation>Defines parameter arguments for a template or delegate.</ann:documentation>
          <attribute name="name">
             <ann:documentation>The name of the parameter.</ann:documentation>
             <ref name="Name"/>
