@@ -14,6 +14,7 @@
 
 using System;
 using System.Text;
+using Xcst.PackageModel;
 
 namespace Xcst.Runtime {
 

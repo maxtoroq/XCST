@@ -13,9 +13,8 @@
 // limitations under the License.
 
 using System;
-using Xcst.PackageModel;
 
-namespace Xcst {
+namespace Xcst.PackageModel {
 
    public interface IXcstPackage {
 

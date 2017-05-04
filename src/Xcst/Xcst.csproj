@@ -57,7 +57,7 @@
     <Compile Include="Runtime\DynamicError.cs" />
     <Compile Include="PackageModel\ExecutionContext.cs" />
     <Compile Include="WriterFactory.cs" />
-    <Compile Include="IXcstPackage.cs" />
+    <Compile Include="PackageModel\IXcstPackage.cs" />
     <Compile Include="PackageModel\PrimingContext.cs" />
     <Compile Include="Runtime\SimpleContent.cs" />
     <Compile Include="Runtime\Sorting.cs" />

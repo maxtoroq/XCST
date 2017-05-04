@@ -35,7 +35,7 @@
    <param name="src:use-package-base" as="xs:string?"/>
    <param name="src:manifest-only" select="false()" as="xs:boolean"/>
 
-   <variable name="src:package-interface" select="src:global-identifier('Xcst.IXcstPackage')"/>
+   <variable name="src:package-interface" select="src:package-model-type('IXcstPackage')"/>
    <variable name="src:context-field" select="concat('this.', src:aux-variable('execution_context'))"/>
    <variable name="xcst:validation-attributes" select="'error-resource-type', 'data-type-error-message', 'data-type-error-resource', 'required-error-message', 'required-error-resource', 'length-error-message', 'length-error-resource', 'pattern-error-message', 'pattern-error-resource', 'range-error-message', 'range-error-resource', 'equal-to-error-message', 'equal-to-error-resource'"/>
    <variable name="xcst:type-or-member-attributes" select="'resource-type', 'disable-empty-string-to-null-conversion', 'allow-empty-string', 'display-text-member', $xcst:validation-attributes"/>

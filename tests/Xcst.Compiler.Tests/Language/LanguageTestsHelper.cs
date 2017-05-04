@@ -68,7 +68,7 @@ namespace Xcst.Compiler.Tests.Language {
                   MetadataReference.CreateFromFile(typeof(System.Xml.XmlWriter).Assembly.Location),
                   MetadataReference.CreateFromFile(typeof(System.ComponentModel.DataAnnotations.ValidationAttribute).Assembly.Location),
                   MetadataReference.CreateFromFile(typeof(Microsoft.CSharp.RuntimeBinder.RuntimeBinderException).Assembly.Location),
-                  MetadataReference.CreateFromFile(typeof(Xcst.IXcstPackage).Assembly.Location),
+                  MetadataReference.CreateFromFile(typeof(Xcst.PackageModel.IXcstPackage).Assembly.Location),
                   MetadataReference.CreateFromFile(typeof(Microsoft.VisualStudio.TestTools.UnitTesting.Assert).Assembly.Location),
                   MetadataReference.CreateFromFile(Assembly.GetExecutingAssembly().Location)
                };
@@ -121,7 +121,7 @@ namespace Xcst.Compiler.Tests.Language {
 
          using (XmlWriter output = actualDoc.CreateWriter()) {
 
-            XcstEvaluator.Using(packageType)
+            XcstEvaluator.Using(Activator.CreateInstance(packageType))
                .CallInitialTemplate()
                .OutputTo(output)
                .Run();
@@ -136,7 +136,7 @@ namespace Xcst.Compiler.Tests.Language {
 
          using (var output = new StringWriter()) {
 
-            XcstEvaluator.Using(packageType)
+            XcstEvaluator.Using(Activator.CreateInstance(packageType))
                .CallInitialTemplate()
                .OutputTo(output)
                .Run();
@@ -152,7 +152,7 @@ namespace Xcst.Compiler.Tests.Language {
          var expectedDoc = new XDocument();
          var actualDoc = new XDocument();
 
-         XcstEvaluator evaluator = XcstEvaluator.Using(packageType);
+         XcstEvaluator evaluator = XcstEvaluator.Using(Activator.CreateInstance(packageType));
 
          using (XmlWriter actualWriter = actualDoc.CreateWriter()) {
 
@@ -173,7 +173,7 @@ namespace Xcst.Compiler.Tests.Language {
 
       public static void SimplyRun(Type packageType) {
 
-         XcstEvaluator.Using(packageType)
+         XcstEvaluator.Using(Activator.CreateInstance(packageType))
             .CallInitialTemplate()
             .OutputTo(TextWriter.Null)
             .Run();

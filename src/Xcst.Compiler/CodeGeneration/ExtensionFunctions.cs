@@ -17,9 +17,11 @@ using System.IO;
 using System.Linq;
 using System.Xml;
 using Saxon.Api;
-using static Xcst.Compiler.XcstCompiler;
+using Xcst.PackageModel;
 
 namespace Xcst.Compiler.CodeGeneration {
+
+   using static XcstCompiler;
 
    class LineNumberFunction : ExtensionFunctionDefinition {
 

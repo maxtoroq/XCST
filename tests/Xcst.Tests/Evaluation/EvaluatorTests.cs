@@ -11,7 +11,7 @@ namespace Xcst.Tests.Evaluation {
       [ExpectedException(typeof(InvalidOperationException))]
       public void Disallow_Re_Prime() {
 
-         var evaluator = XcstEvaluator.Using<DisallowRePrime>()
+         var evaluator = XcstEvaluator.Using(new DisallowRePrime())
             .WithParam("foo", "foo");
 
          evaluator.CallInitialTemplate()
@@ -27,7 +27,7 @@ namespace Xcst.Tests.Evaluation {
       [TestMethod, TestCategory(nameof(Evaluation))]
       public void Lock_Template_Params() {
 
-         var template = XcstEvaluator.Using<LockTemplateParams>()
+         var template = XcstEvaluator.Using(new LockTemplateParams())
             .CallInitialTemplate();
 
          var output1 = new StringWriter();
