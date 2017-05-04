@@ -1286,24 +1286,14 @@
       <param name="indent" tunnel="yes"/>
 
       <call-template name="xcst:validate-attribs">
-         <with-param name="optional" select="'global-params', 'initial-template', 'name', 'template-params', 'tunnel-params', 'value'"/>
+         <with-param name="required" select="'value'"/>
+         <with-param name="optional" select="'global-params', 'initial-template', 'template-params', 'tunnel-params', 'value'"/>
       </call-template>
       <call-template name="xcst:no-children"/>
-      <if test="not(@name) and not(@value)">
-         <sequence select="error(xs:QName('err:XTSE0010'), concat('Either ''name'' or ''value'' attribute must be specified in c:', local-name()), src:error-object(.))"/>
-      </if>
-      <if test="count((@name, @value)) gt 1">
-         <sequence select="error((), 'The attributes ''name'' and ''value'' are mutually exclusive.', src:error-object(.))"/>
-      </if>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
       <value-of select="src:global-identifier('Xcst.XcstEvaluator')"/>
       <text>.Using</text>
-      <if test="@name">
-         <text>&lt;</text>
-         <value-of select="xcst:name(@name)"/>
-         <text>></text>
-      </if>
       <text>(</text>
       <if test="@value">
          <value-of select="xcst:expression(@value)"/>
