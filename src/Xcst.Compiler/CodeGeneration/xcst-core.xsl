@@ -1400,7 +1400,7 @@
       <param name="output" tunnel="yes"/>
 
       <call-template name="xcst:validate-attribs">
-         <with-param name="required" select="'value'"/>
+         <with-param name="required" select="'delegate'"/>
          <with-param name="optional" select="'with-params'"/>
       </call-template>
       <call-template name="xcst:validate-children">
@@ -1418,7 +1418,7 @@
       </for-each>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
-      <value-of select="xcst:expression(@value)"/>
+      <value-of select="xcst:expression(@delegate)"/>
       <text>(</text>
       <call-template name="src:call-template-context"/>
       <if test="@with-params">

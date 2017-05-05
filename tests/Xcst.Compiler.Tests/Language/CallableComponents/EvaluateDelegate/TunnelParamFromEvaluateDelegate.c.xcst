@@ -13,15 +13,15 @@
 
       <c:variable name='bar'>
          <c:delegate>
-            <c:evaluate-delegate value='foo'/>
+            <c:evaluate-delegate delegate='foo'/>
          </c:delegate>
       </c:variable>
 
       <doc>
-         <c:evaluate-delegate value='bar'>
+         <c:evaluate-delegate delegate='bar'>
             <c:with-param name='a' value='2'/>
          </c:evaluate-delegate>
-         <c:evaluate-delegate value='bar'>
+         <c:evaluate-delegate delegate='bar'>
             <c:with-param name='a' value='2' tunnel='yes'/>
          </c:evaluate-delegate>
       </doc>

@@ -972,7 +972,7 @@
    <define name="evaluate-delegate">
       <element name="evaluate-delegate">
          <ann:documentation>Evaluates a template delegate.</ann:documentation>
-         <attribute name="value">
+         <attribute name="delegate">
             <ann:documentation>The template delegate instance.</ann:documentation>
             <ref name="Expression"/>
          </attribute>

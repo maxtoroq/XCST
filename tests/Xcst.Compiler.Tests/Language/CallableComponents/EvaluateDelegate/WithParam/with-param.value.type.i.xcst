@@ -7,7 +7,7 @@
             <c:param name='a'/>
          </c:delegate>
       </c:variable>
-      <c:evaluate-delegate value='bar'>
+      <c:evaluate-delegate delegate='bar'>
          <c:with-param name='a' value=''/>
       </c:evaluate-delegate>
    </c:template>

@@ -18,7 +18,7 @@
             <foo>{a}</foo>
          </c:delegate>
       </c:variable>
-      <c:evaluate-delegate value='foo'/>
+      <c:evaluate-delegate delegate='foo'/>
    </c:template>
 
    <c:template name='expected'>

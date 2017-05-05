@@ -8,11 +8,11 @@
             <c:param name='b'/>
          </c:delegate>
       </c:variable>
-      <c:evaluate-delegate value='bar'/>
-      <c:evaluate-delegate value='bar'>
+      <c:evaluate-delegate delegate='bar'/>
+      <c:evaluate-delegate delegate='bar'>
          <c:with-param name='a'>a</c:with-param>
       </c:evaluate-delegate>
-      <c:evaluate-delegate value='bar'>
+      <c:evaluate-delegate delegate='bar'>
          <c:with-param name='a'>a</c:with-param>
          <c:with-param name='b'>b</c:with-param>
       </c:evaluate-delegate>

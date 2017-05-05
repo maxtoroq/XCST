@@ -456,8 +456,8 @@
     <None Include="Language\CallableComponents\CallTemplate\VerbatimParameterName.c.xcst" />
     <None Include="Language\CallableComponents\EvaluateDelegate\WithParam\DuplicateParameter.i.xcst" />
     <None Include="Language\CallableComponents\EvaluateDelegate\evaluate-delegate.with-params.type.i.xcst" />
-    <None Include="Language\CallableComponents\EvaluateDelegate\evaluate-delegate.value.type.i.xcst" />
-    <None Include="Language\CallableComponents\EvaluateDelegate\evaluate-delegate.value.req.i.xcst" />
+    <None Include="Language\CallableComponents\EvaluateDelegate\evaluate-delegate.delegate.type.i.xcst" />
+    <None Include="Language\CallableComponents\EvaluateDelegate\evaluate-delegate.delegate.req.i.xcst" />
     <None Include="Language\CallableComponents\EvaluateDelegate\evaluate-delegate.foo.i.xcst" />
     <None Include="Language\CallableComponents\EvaluateDelegate\WithParam\with-param.as.type.i.xcst" />
     <None Include="Language\CallableComponents\EvaluateDelegate\WithParam\with-param.foo.i.xcst" />

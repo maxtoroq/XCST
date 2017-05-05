@@ -12,10 +12,10 @@
       </c:variable>
 
       <doc>
-         <c:evaluate-delegate value='foo'>
+         <c:evaluate-delegate delegate='foo'>
             <c:with-param name='a' value='1'/>
          </c:evaluate-delegate>
-         <c:evaluate-delegate value='foo'>
+         <c:evaluate-delegate delegate='foo'>
             <c:with-param name='a' value='2'/>
          </c:evaluate-delegate>
       </doc>

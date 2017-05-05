@@ -941,7 +941,7 @@
          <xs:sequence>
             <xs:element minOccurs="0" maxOccurs="unbounded" ref="c:with-param"/>
          </xs:sequence>
-         <xs:attribute name="value" use="required" type="c:Expression">
+         <xs:attribute name="delegate" use="required" type="c:Expression">
             <xs:annotation>
                <xs:documentation>The template delegate instance.</xs:documentation>
             </xs:annotation>

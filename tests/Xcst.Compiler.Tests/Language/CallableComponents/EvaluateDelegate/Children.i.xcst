@@ -5,7 +5,7 @@
       <c:variable name='bar'>
          <c:delegate/>
       </c:variable>
-      <c:evaluate-delegate value='bar'>
+      <c:evaluate-delegate delegate='bar'>
          <a/>
       </c:evaluate-delegate>
    </c:template>

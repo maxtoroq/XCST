@@ -5,7 +5,7 @@
 
    <c:template name='c:initial-template'>
       <foo>
-         <c:evaluate-delegate value='foo()'/>
+         <c:evaluate-delegate delegate='foo()'/>
       </foo>
    </c:template>
 

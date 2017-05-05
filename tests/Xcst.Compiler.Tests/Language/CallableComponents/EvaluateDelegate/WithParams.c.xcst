@@ -12,8 +12,8 @@
       </c:variable>
 
       <doc>
-         <c:evaluate-delegate value='foo' with-params='new { a = 1 }'/>
-         <c:evaluate-delegate value='foo' with-params='new { a = 2 }'/>
+         <c:evaluate-delegate delegate='foo' with-params='new { a = 1 }'/>
+         <c:evaluate-delegate delegate='foo' with-params='new { a = 2 }'/>
       </doc>
    </c:template>
 
