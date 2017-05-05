@@ -1286,7 +1286,7 @@
       <param name="indent" tunnel="yes"/>
 
       <call-template name="xcst:validate-attribs">
-         <with-param name="required" select="'value'"/>
+         <with-param name="required" select="'package'"/>
          <with-param name="optional" select="'global-params', 'initial-template', 'template-params', 'tunnel-params', 'value'"/>
       </call-template>
       <call-template name="xcst:no-children"/>
@@ -1295,9 +1295,7 @@
       <value-of select="src:global-identifier('Xcst.XcstEvaluator')"/>
       <text>.Using</text>
       <text>(</text>
-      <if test="@value">
-         <value-of select="xcst:expression(@value)"/>
-      </if>
+      <value-of select="xcst:expression(@package)"/>
       <text>)</text>
       <if test="@global-params">
          <call-template name="src:new-line-indented">

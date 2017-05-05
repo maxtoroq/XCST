@@ -8,7 +8,7 @@
    <c:import href='_InitialTemplateNoPrefix.xcst'/>
 
    <c:template name='c:initial-template'>
-      <c:evaluate-package value='Activator.CreateInstance(GetType())' initial-template='foo'/>
+      <c:evaluate-package package='Activator.CreateInstance(GetType())' initial-template='foo'/>
    </c:template>
 
 </c:module>

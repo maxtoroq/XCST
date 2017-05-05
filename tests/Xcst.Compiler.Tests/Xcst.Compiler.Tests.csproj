@@ -114,7 +114,7 @@
     <None Include="Language\CallableComponents\EvaluatePackage\evaluate-package.template-params.type.i.xcst" />
     <None Include="Language\CallableComponents\EvaluatePackage\evaluate-package.tunnel-params.type.i.xcst" />
     <None Include="Language\CallableComponents\EvaluatePackage\ExamplePackage.pxcst" />
-    <None Include="Language\CallableComponents\EvaluatePackage\evaluate-package.value.req.i.xcst" />
+    <None Include="Language\CallableComponents\EvaluatePackage\evaluate-package.package.req.i.xcst" />
     <None Include="Language\CallableComponents\EvaluatePackage\evaluate-package.global-params.type.i.xcst" />
     <None Include="Language\CallableComponents\EvaluatePackage\TypeIncompatible.f.xcst" />
     <None Include="Language\CallableComponents\EvaluatePackage\TypeCompatible.c.xcst" />
@@ -508,7 +508,7 @@
     <None Include="Language\CallableComponents\Template\template.foo.i.xcst" />
     <None Include="Language\CallableComponents\Template\AbstractWithContent.i.xcst" />
     <None Include="Language\CallableComponents\EvaluatePackage\evaluate-package.initial-template.type.i.xcst" />
-    <None Include="Language\CallableComponents\EvaluatePackage\evaluate-package.value.type.i.xcst" />
+    <None Include="Language\CallableComponents\EvaluatePackage\evaluate-package.package.type.i.xcst" />
     <None Include="Language\CallableComponents\EvaluatePackage\evaluate-package.foo.i.xcst" />
     <None Include="Language\ConditionalProcessing\Choose\Otherwise\otherwise.foo.i.xcst" />
     <None Include="Language\ConditionalProcessing\Choose\When\when.test.type.i.xcst" />

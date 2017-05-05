@@ -992,7 +992,7 @@
    <define name="evaluate-package">
       <element name="evaluate-package">
          <ann:documentation>Evaluates a dynamically loaded package.</ann:documentation>
-         <attribute name="value">
+         <attribute name="package">
             <ann:documentation>The package instance.</ann:documentation>
             <ref name="Expression"/>
          </attribute>

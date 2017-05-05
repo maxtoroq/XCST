@@ -959,7 +959,7 @@
          <xs:documentation>Evaluates a dynamically loaded package.</xs:documentation>
       </xs:annotation>
       <xs:complexType>
-         <xs:attribute name="value" use="required" type="c:Expression">
+         <xs:attribute name="package" use="required" type="c:Expression">
             <xs:annotation>
                <xs:documentation>The package instance.</xs:documentation>
             </xs:annotation>

@@ -10,7 +10,7 @@
    </c:template>
 
    <c:template name='foo' as='int'>
-      <c:evaluate-package value='Activator.CreateInstance(GetType())' initial-template='bar'/>
+      <c:evaluate-package package='Activator.CreateInstance(GetType())' initial-template='bar'/>
    </c:template>
 
    <c:template name='bar' as='int'>
