@@ -227,7 +227,6 @@ namespace Xcst.Compiler {
          public static readonly string UriSchemeClires = "clires";
 
          readonly Assembly assembly;
-         readonly Uri principalModuleUri;
          readonly Uri extensionsModuleUri;
 
          readonly Action<Stream> buildExtensionsModuleFn;
@@ -243,7 +242,6 @@ namespace Xcst.Compiler {
             if (loadExtensionXslt == null) throw new ArgumentNullException(nameof(loadExtensionXslt));
 
             this.assembly = assembly;
-            this.principalModuleUri = principalModuleUri;
             this.extensionsModuleUri = new Uri(principalModuleUri, "xcst-extensions.xsl");
 
             this.buildExtensionsModuleFn = buildExtensionsModuleFn;
