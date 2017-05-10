@@ -984,7 +984,6 @@
 
    <template match="c:call-template" mode="src:statement">
       <param name="indent" tunnel="yes"/>
-      <param name="context" tunnel="yes"/>
       <param name="output" tunnel="yes"/>
 
       <variable name="result" as="item()+">
@@ -1136,7 +1135,6 @@
    <template match="c:next-template" mode="src:statement">
       <param name="package-manifest" tunnel="yes"/>
       <param name="indent" tunnel="yes"/>
-      <param name="context" tunnel="yes"/>
       <param name="output" tunnel="yes"/>
 
       <call-template name="xcst:validate-attribs"/>
@@ -1394,7 +1392,6 @@
 
    <template match="c:evaluate-delegate" mode="src:statement">
       <param name="indent" tunnel="yes"/>
-      <param name="context" tunnel="yes"/>
       <param name="output" tunnel="yes"/>
 
       <call-template name="xcst:validate-attribs">
@@ -1416,8 +1413,10 @@
       </for-each>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
-      <value-of select="xcst:expression(@delegate)"/>
+      <value-of select="src:fully-qualified-helper('EvaluateDelegate'), 'Invoke'" separator="."/>
       <text>(</text>
+      <value-of select="xcst:expression(@delegate)"/>
+      <text>, </text>
       <call-template name="src:call-template-context"/>
       <if test="@with-params">
          <call-template name="src:line-number">

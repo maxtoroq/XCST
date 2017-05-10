@@ -104,6 +104,7 @@
     <None Include="Language\CallableComponents\EvaluateDelegate\Children.i.xcst" />
     <None Include="Language\CallableComponents\EvaluateDelegate\ChildrenText.i.xcst" />
     <None Include="Language\CallableComponents\EvaluateDelegate\RequiredParameter.f.xcst" />
+    <None Include="Language\CallableComponents\EvaluateDelegate\DynamicInvoke.c.xcst" />
     <None Include="Language\CallableComponents\EvaluateDelegate\TunnelParamFromEvaluateDelegate.c.xcst" />
     <None Include="Language\CallableComponents\EvaluateDelegate\TunnelParamFromCallTemplate.c.xcst" />
     <None Include="Language\CallableComponents\EvaluateDelegate\TunnelParam.c.xcst" />

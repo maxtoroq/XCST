@@ -1,6 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
+   <c:use-functions in='System'/>
+
    <c:import href='_Output.xcst'/>
 
    <c:template name='c:initial-template'>
@@ -13,7 +15,7 @@
       <foo>1</foo>
    </c:template>
 
-   <c:function name='foo' as='dynamic'>
+   <c:function name='foo' as='Delegate'>
       <c:return>
          <c:delegate>
             <c:next-function/>

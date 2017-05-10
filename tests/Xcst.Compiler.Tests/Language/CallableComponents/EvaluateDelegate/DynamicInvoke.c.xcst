@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:use-functions in='System'/>
+
+   <c:template name='c:initial-template'>
+
+      <c:variable name='del'>
+         <c:delegate>
+            <foo/>
+         </c:delegate>
+      </c:variable>
+
+      <c:call-template name='t1'>
+         <c:with-param name='del' value='del'/>
+      </c:call-template>
+   </c:template>
+
+   <c:template name='t1'>
+      <c:param name='del' as='Delegate'/>
+
+      <c:evaluate-delegate delegate='del'/>
+   </c:template>
+
+   <c:template name='expected'>
+      <foo/>
+   </c:template>
+
+</c:module>
