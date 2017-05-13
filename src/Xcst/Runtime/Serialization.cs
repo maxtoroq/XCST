@@ -134,21 +134,24 @@ namespace Xcst.Runtime {
          if (package == null) throw new ArgumentNullException(nameof(package));
          if (parameters == null) throw new ArgumentNullException(nameof(parameters));
 
-         if (!outputUri.IsAbsoluteUri
-            && currentOutput != null
-            && currentOutput.OutputUri.IsAbsoluteUri) {
+         if (outputUri != null) {
 
-            outputUri = new Uri(currentOutput.OutputUri, outputUri);
-         }
+            if (!outputUri.IsAbsoluteUri
+               && currentOutput != null
+               && currentOutput.OutputUri.IsAbsoluteUri) {
 
-         if (!customOutput) {
-
-            if (!outputUri.IsAbsoluteUri) {
-               throw new RuntimeException($"Cannot resolve {outputUri.OriginalString}. Specify an output URI.");
+               outputUri = new Uri(currentOutput.OutputUri, outputUri);
             }
 
-            if (!outputUri.IsFile) {
-               throw new RuntimeException($"Can write to file URIs only ({outputUri.OriginalString}).");
+            if (!customOutput) {
+
+               if (!outputUri.IsAbsoluteUri) {
+                  throw new RuntimeException($"Cannot resolve {outputUri.OriginalString}. Specify an output URI.");
+               }
+
+               if (!outputUri.IsFile) {
+                  throw new RuntimeException($"Can write to file URIs only ({outputUri.OriginalString}).");
+               }
             }
          }
 
