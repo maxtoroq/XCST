@@ -280,6 +280,8 @@
     <None Include="Language\Repetition\ForEach\Sort\NoOtherPrecedingText.i.xcst" />
     <None Include="Language\Repetition\ForEach\Sort\NoOtherPreceding.i.xcst" />
     <None Include="Language\Repetition\ForEach\Sort\NoChildren.i.xcst" />
+    <None Include="Language\Serialization\ResultDocument\Output.c.xcst" />
+    <None Include="Language\Serialization\ResultDocument\result-document.output.type.i.xcst" />
     <None Include="Language\Serialization\WithItemSeparator.c.xcst" />
     <None Include="Language\Serialization\WithoutItemSeparator.c.xcst" />
     <None Include="Language\CreatingNodesAndObjects\ValueOf\SimpleContent.c.xcst" />
@@ -796,7 +798,7 @@
     <None Include="Language\Serialization\Output\_OverrideUnnamed.xcst" />
     <None Include="Language\Serialization\Output\OverrideUnnamed.c.xcst" />
     <None Include="Language\Serialization\Output\_OverrideNamed.xcst" />
-    <None Include="Language\Serialization\ResultDocument\result-document.href.req.i.xcst" />
+    <None Include="Language\Serialization\ResultDocument\result-document.href_output.req.i.xcst" />
     <None Include="Language\Serialization\ResultDocument\result-document.foo.i.xcst" />
     <None Include="Language\Serialization\Serialize\serialize.foo.i.xcst" />
     <None Include="Language\Types\Abstract.i.xcst" />

@@ -1943,9 +1943,11 @@
       <param name="output" tunnel="yes"/>
 
       <call-template name="xcst:validate-attribs">
-         <with-param name="required" select="'href'"/>
-         <with-param name="optional" select="'format', $src:output-parameters/*[not(self::version)]/local-name()"/>
+         <with-param name="optional" select="'href', 'output', 'format', $src:output-parameters/*[not(self::version)]/local-name()"/>
       </call-template>
+      <if test="not(@href) and not(@output)">
+         <sequence select="error(xs:QName('err:XTSE0010'), 'At least one of the attributes ''href'' and ''output'' must be specified.', src:error-object(.))"/>
+      </if>
       <value-of select="$src:new-line"/>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
@@ -1955,12 +1957,7 @@
       <text> = </text>
       <value-of select="src:fully-qualified-helper('Serialization')"/>
       <text>.ChangeOutput(this, </text>
-      <value-of select="src:fully-qualified-helper('DataType')"/>
-      <text>.Uri(</text>
-      <value-of select="src:expand-attribute(@href)"/>
-      <text>), </text>
-      <call-template name="src:format-QName"/>
-      <text>, new </text>
+      <text>new </text>
       <value-of select="src:global-identifier('Xcst.OutputParameters')"/>
       <call-template name="src:open-brace"/>
       <for-each select="@* except (@format, @href, @version)">
@@ -1978,7 +1975,23 @@
       </for-each>
       <call-template name="src:close-brace"/>
       <text>, </text>
+      <call-template name="src:format-QName"/>
+      <text>, </text>
       <value-of select="src:expression-or-null($output)"/>
+      <text>, </text>
+      <choose>
+         <when test="@href">
+            <value-of select="src:fully-qualified-helper('DataType')"/>
+            <text>.Uri(</text>
+            <value-of select="src:expand-attribute(@href)"/>
+            <text>)</text>
+         </when>
+         <otherwise>null</otherwise>
+      </choose>
+      <if test="@output">
+         <text>, </text>
+         <value-of select="xcst:expression(@output)"/>
+      </if>
       <text>))</text>
       <call-template name="src:sequence-constructor">
          <with-param name="ensure-block" select="true()"/>

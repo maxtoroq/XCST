@@ -13,7 +13,9 @@
 // limitations under the License.
 
 using System;
+using System.IO;
 using System.Text;
+using System.Xml;
 using Xcst.PackageModel;
 
 namespace Xcst.Runtime {
@@ -56,10 +58,80 @@ namespace Xcst.Runtime {
          );
       }
 
-      public static XcstWriter ChangeOutput(IXcstPackage package, Uri outputUri, QualifiedName outputName, OutputParameters parameters, XcstWriter currentOutput = null) {
+      public static XcstWriter ChangeOutput(
+            IXcstPackage package,
+            OutputParameters parameters,
+            QualifiedName outputName,
+            XcstWriter currentOutput,
+            Uri outputUri) {
+
+         if (outputUri == null) throw new ArgumentNullException(nameof(outputUri));
+
+         return ChangeOutputImpl(u => WriterFactory.CreateWriter(u), false, package, parameters, outputName, currentOutput, outputUri);
+      }
+
+      public static XcstWriter ChangeOutput(
+            IXcstPackage package,
+            OutputParameters parameters,
+            QualifiedName outputName,
+            XcstWriter currentOutput,
+            Uri outputUri,
+            Stream output) {
+
+         if (output == null) throw new ArgumentNullException(nameof(output));
+
+         return ChangeOutputImpl(u => WriterFactory.CreateWriter(output, u), true, package, parameters, outputName, currentOutput, outputUri);
+      }
+
+      public static XcstWriter ChangeOutput(
+            IXcstPackage package,
+            OutputParameters parameters,
+            QualifiedName outputName,
+            XcstWriter currentOutput,
+            Uri outputUri,
+            TextWriter output) {
+
+         if (output == null) throw new ArgumentNullException(nameof(output));
+
+         return ChangeOutputImpl(u => WriterFactory.CreateWriter(output, u), true, package, parameters, outputName, currentOutput, outputUri);
+      }
+
+      public static XcstWriter ChangeOutput(
+            IXcstPackage package,
+            OutputParameters parameters,
+            QualifiedName outputName,
+            XcstWriter currentOutput,
+            Uri outputUri,
+            XmlWriter output) {
+
+         if (output == null) throw new ArgumentNullException(nameof(output));
+
+         return ChangeOutputImpl(u => WriterFactory.CreateWriter(output, u), true, package, parameters, outputName, currentOutput, outputUri);
+      }
+
+      public static XcstWriter ChangeOutput(
+            IXcstPackage package,
+            OutputParameters parameters,
+            QualifiedName outputName,
+            XcstWriter currentOutput,
+            Uri outputUri,
+            XcstWriter output) {
+
+         if (output == null) throw new ArgumentNullException(nameof(output));
+
+         return ChangeOutputImpl(u => WriterFactory.CreateWriter(output), true, package, parameters, outputName, currentOutput, outputUri);
+      }
+
+      static XcstWriter ChangeOutputImpl(
+            Func<Uri, CreateWriterDelegate> writerFn,
+            bool customOutput,
+            IXcstPackage package,
+            OutputParameters parameters,
+            QualifiedName outputName,
+            XcstWriter currentOutput,
+            Uri outputUri) {
 
          if (package == null) throw new ArgumentNullException(nameof(package));
-         if (outputUri == null) throw new ArgumentNullException(nameof(outputUri));
          if (parameters == null) throw new ArgumentNullException(nameof(parameters));
 
          if (!outputUri.IsAbsoluteUri
@@ -69,18 +141,21 @@ namespace Xcst.Runtime {
             outputUri = new Uri(currentOutput.OutputUri, outputUri);
          }
 
-         if (!outputUri.IsAbsoluteUri) {
-            throw new RuntimeException($"Cannot resolve {outputUri.OriginalString}. Specify an output URI.");
-         }
+         if (!customOutput) {
 
-         if (!outputUri.IsFile) {
-            throw new RuntimeException($"Can write to file URIs only ({outputUri.OriginalString}).");
+            if (!outputUri.IsAbsoluteUri) {
+               throw new RuntimeException($"Cannot resolve {outputUri.OriginalString}. Specify an output URI.");
+            }
+
+            if (!outputUri.IsFile) {
+               throw new RuntimeException($"Can write to file URIs only ({outputUri.OriginalString}).");
+            }
          }
 
          var defaultParams = new OutputParameters();
          package.ReadOutputDefinition(outputName, defaultParams);
 
-         return WriterFactory.CreateWriter(outputUri)
+         return writerFn(outputUri)
             (defaultParams, parameters, package.Context.SimpleContent);
       }
 

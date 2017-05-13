@@ -1203,13 +1203,18 @@
       </xs:annotation>
       <xs:complexType mixed="true">
          <xs:group ref="c:sequence-constructor"/>
-         <xs:attribute name="href" use="required">
+         <xs:attribute name="href">
             <xs:annotation>
                <xs:documentation>The relative or absolute URI to send the result to. Attribute value template (URI).</xs:documentation>
             </xs:annotation>
             <xs:simpleType>
                <xs:union memberTypes="c:URI c:AVTExpr"/>
             </xs:simpleType>
+         </xs:attribute>
+         <xs:attribute name="output" type="c:Expression">
+            <xs:annotation>
+               <xs:documentation>A stream or writer to output to.</xs:documentation>
+            </xs:annotation>
          </xs:attribute>
          <xs:attributeGroup ref="c:output-avt-attributes"/>
          <xs:attributeGroup ref="c:standard-attributes"/>

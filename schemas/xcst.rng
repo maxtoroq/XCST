@@ -1222,13 +1222,21 @@
    <define name="result-document">
       <element name="result-document">
          <ann:documentation>Creates a secondary result.</ann:documentation>
-         <attribute name="href">
-            <ann:documentation>The relative or absolute URI to send the result to. Attribute value template (URI).</ann:documentation>
+         <oneOrMore>
             <choice>
-               <ref name="URI"/>
-               <ref name="AVTExpr"/>
+               <attribute name="href">
+                  <ann:documentation>The relative or absolute URI to send the result to. Attribute value template (URI).</ann:documentation>
+                  <choice>
+                     <ref name="URI"/>
+                     <ref name="AVTExpr"/>
+                  </choice>
+               </attribute>
+               <attribute name="output">
+                  <ann:documentation>A stream or writer to output to.</ann:documentation>
+                  <ref name="Expression"/>
+               </attribute>
             </choice>
-         </attribute>
+         </oneOrMore>
          <ref name="output-avt-attributes"/>
          <ref name="standard-attributes"/>
          <ref name="sequence-constructor"/>
