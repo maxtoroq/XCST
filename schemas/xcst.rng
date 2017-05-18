@@ -1711,6 +1711,10 @@
       <data type="anyURI"/>
    </define>
 
+   <define name="nmtoken">
+      <data type="NMTOKEN"/>
+   </define>
+
    <define name="avt">
       <ann:documentation>Attribute value template</ann:documentation>
       <ref name="string"/>
@@ -1798,7 +1802,7 @@
 
    <define name="output-version">
       <ann:documentation>The version of the output method format (usually "1.0" for XML, "5.0" for HTML, etc.)</ann:documentation>
-      <data type="NMTOKEN"/>
+      <ref name="nmtoken"/>
    </define>
 
    <define name="standalone">

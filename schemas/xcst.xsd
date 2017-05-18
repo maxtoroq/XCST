@@ -1688,6 +1688,9 @@
    <xs:simpleType name="uri">
       <xs:restriction base="xs:anyURI"/>
    </xs:simpleType>
+   <xs:simpleType name="nmtoken">
+      <xs:restriction base="xs:NMTOKEN"/>
+   </xs:simpleType>
    <xs:simpleType name="avt">
       <xs:annotation>
          <xs:documentation>Attribute value template</xs:documentation>
@@ -1794,7 +1797,7 @@
       <xs:annotation>
          <xs:documentation>The version of the output method format (usually "1.0" for XML, "5.0" for HTML, etc.)</xs:documentation>
       </xs:annotation>
-      <xs:restriction base="xs:NMTOKEN"/>
+      <xs:restriction base="c:nmtoken"/>
    </xs:simpleType>
    <xs:simpleType name="standalone">
       <xs:annotation>
