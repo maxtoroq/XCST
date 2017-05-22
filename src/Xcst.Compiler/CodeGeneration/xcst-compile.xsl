@@ -1559,7 +1559,7 @@
          <with-param name="indent" select="$indent + 1" tunnel="yes"/>
       </apply-templates>
 
-      <apply-templates select="$overridden" mode="src:used-package-original">
+      <apply-templates select="$overridden[@original-visibility ne 'abstract']" mode="src:used-package-original">
          <with-param name="indent" select="$indent + 1" tunnel="yes"/>
       </apply-templates>
 

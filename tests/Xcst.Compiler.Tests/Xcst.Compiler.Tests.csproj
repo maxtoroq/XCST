@@ -260,6 +260,14 @@
     <None Include="Language\ProgramStructure\CombiningModules\NoChildren.i.xcst" />
     <None Include="Language\ProgramStructure\Packages\AcceptingComponents\Parameter\Required.pxcst" />
     <None Include="Language\ProgramStructure\Packages\AcceptingComponents\Parameter\Required.f.xcst" />
+    <None Include="Language\ProgramStructure\Packages\OverridingComponents\AttributeSet\OverriddenAbstract.pxcst" />
+    <None Include="Language\ProgramStructure\Packages\OverridingComponents\AttributeSet\OverriddenAbstract.c.xcst" />
+    <None Include="Language\ProgramStructure\Packages\OverridingComponents\Function\OverriddenAbstract.pxcst" />
+    <None Include="Language\ProgramStructure\Packages\OverridingComponents\Function\OverriddenAbstract.c.xcst" />
+    <None Include="Language\ProgramStructure\Packages\OverridingComponents\Template\OverriddenAbstract.pxcst" />
+    <None Include="Language\ProgramStructure\Packages\OverridingComponents\Template\OverriddenAbstract.c.xcst" />
+    <None Include="Language\ProgramStructure\Packages\OverridingComponents\Variable\OverriddenAbstract.pxcst" />
+    <None Include="Language\ProgramStructure\Packages\OverridingComponents\Variable\OverriddenAbstract.c.xcst" />
     <None Include="Language\ProgramStructure\SimplifiedModules\foo.version.req.i.xcst" />
     <None Include="Language\ProgramStructure\SimplifiedModules\foo.version.type.i.xcst" />
     <None Include="Language\ProgramStructure\SimplifiedModules\foo.language.type.i.xcst" />

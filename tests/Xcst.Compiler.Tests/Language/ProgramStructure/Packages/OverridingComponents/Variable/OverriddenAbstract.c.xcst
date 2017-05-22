@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:use-package name='OverriddenAbstract'>
+      <c:override>
+         <c:variable name='foo' as='string'>bar</c:variable>
+      </c:override>
+   </c:use-package>
+
+   <c:template name='c:initial-template'>
+      <c:call-template name='foo'/>
+   </c:template>
+
+   <c:template name='expected'>
+      <foo>bar</foo>
+   </c:template>
+
+</c:module>

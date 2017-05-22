@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:package name='OverriddenAbstract' version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:attribute-set name='foo' visibility='abstract'/>
+
+   <c:template name='foo' visibility='public'>
+      <foo c:use-attribute-sets='foo'/>
+   </c:template>
+
+</c:package>
