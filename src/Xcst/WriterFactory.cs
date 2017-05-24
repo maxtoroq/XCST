@@ -96,7 +96,7 @@ namespace Xcst {
             ?? WrapXHtmlWriter(writer, parameters)
             ?? writer;
 
-         return new XmlXcstWriter(finalWriter, outputUri);
+         return new XmlXcstWriter(finalWriter, outputUri, parameters);
       }
 
       static XmlWriter WrapHtmlWriter(XmlWriter writer, OutputParameters parameters) {

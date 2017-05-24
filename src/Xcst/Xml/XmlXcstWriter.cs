@@ -20,11 +20,20 @@ namespace Xcst.Xml {
    class XmlXcstWriter : XcstWriter {
 
       readonly XmlWriter writer;
+      readonly bool outputXmlDecl;
+      readonly XmlStandalone standalone;
+      bool xmlDeclWritten;
 
-      public XmlXcstWriter(XmlWriter writer, Uri outputUri)
+      public XmlXcstWriter(XmlWriter writer, Uri outputUri, OutputParameters parameters)
          : base(outputUri) {
 
          this.writer = writer;
+         this.outputXmlDecl = !parameters.OmitXmlDeclaration.GetValueOrDefault()
+            && (parameters.Method == null
+               || parameters.Method == OutputParameters.StandardMethods.Xml
+               || parameters.Method == OutputParameters.StandardMethods.XHtml);
+
+         this.standalone = parameters.Standalone.GetValueOrDefault();
       }
 
       public override void WriteComment(string text) {
@@ -64,6 +73,20 @@ namespace Xcst.Xml {
       }
 
       public override void WriteStartElement(string prefix, string localName, string ns) {
+
+         if (this.outputXmlDecl
+            && !this.xmlDeclWritten
+            && this.writer.WriteState == WriteState.Start) {
+
+            if (this.standalone == XmlStandalone.Omit) {
+               this.writer.WriteStartDocument();
+            } else {
+               this.writer.WriteStartDocument(this.standalone == XmlStandalone.Yes);
+            }
+
+            this.xmlDeclWritten = true;
+         }
+
          this.writer.WriteStartElement(prefix, localName, ns);
       }
 
