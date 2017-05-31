@@ -838,7 +838,7 @@
                   </choice>
                </attribute>
                <attribute name="separator">
-                  <ann:documentation>A string to intersperse between values. Attribute value template.</ann:documentation>
+                  <ann:documentation>A string to intersperse between values.</ann:documentation>
                   <ref name="avt"/>
                </attribute>
             </choice>
@@ -1411,7 +1411,7 @@
                   <ref name="boolean"/>
                </attribute>
                <attribute name="separator">
-                  <ann:documentation>A string to intersperse between values. Attribute value template.</ann:documentation>
+                  <ann:documentation>A string to intersperse between values.</ann:documentation>
                   <ref name="avt"/>
                </attribute>
             </choice>
@@ -1545,15 +1545,15 @@
                </choice>
             </attribute>
             <attribute name="doctype-public">
-               <ann:documentation>Specifies a public document type declaration. Attribute value template.</ann:documentation>
+               <ann:documentation>Specifies a public document type declaration.</ann:documentation>
                <ref name="avt"/>
             </attribute>
             <attribute name="doctype-system">
-               <ann:documentation>Specifies a system document type declaration. Attribute value template.</ann:documentation>
+               <ann:documentation>Specifies a system document type declaration.</ann:documentation>
                <ref name="avt"/>
             </attribute>
             <attribute name="encoding">
-               <ann:documentation>Specifies the output encoding. Attribute value template.</ann:documentation>
+               <ann:documentation>Specifies the output encoding.</ann:documentation>
                <ref name="avt"/>
             </attribute>
             <attribute name="escape-uri-attributes">

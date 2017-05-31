@@ -803,7 +803,7 @@
          </xs:attribute>
          <xs:attribute name="separator" type="c:avt">
             <xs:annotation>
-               <xs:documentation>A string to intersperse between values. Attribute value template.</xs:documentation>
+               <xs:documentation>A string to intersperse between values.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>
@@ -1384,7 +1384,7 @@
          </xs:attribute>
          <xs:attribute name="separator" type="c:avt">
             <xs:annotation>
-               <xs:documentation>A string to intersperse between values. Attribute value template.</xs:documentation>
+               <xs:documentation>A string to intersperse between values.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>
@@ -1521,17 +1521,17 @@
       </xs:attribute>
       <xs:attribute name="doctype-public" type="c:avt">
          <xs:annotation>
-            <xs:documentation>Specifies a public document type declaration. Attribute value template.</xs:documentation>
+            <xs:documentation>Specifies a public document type declaration.</xs:documentation>
          </xs:annotation>
       </xs:attribute>
       <xs:attribute name="doctype-system" type="c:avt">
          <xs:annotation>
-            <xs:documentation>Specifies a system document type declaration. Attribute value template.</xs:documentation>
+            <xs:documentation>Specifies a system document type declaration.</xs:documentation>
          </xs:annotation>
       </xs:attribute>
       <xs:attribute name="encoding" type="c:avt">
          <xs:annotation>
-            <xs:documentation>Specifies the output encoding. Attribute value template.</xs:documentation>
+            <xs:documentation>Specifies the output encoding.</xs:documentation>
          </xs:annotation>
       </xs:attribute>
       <xs:attribute name="escape-uri-attributes">
