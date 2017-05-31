@@ -16,6 +16,7 @@
 -->
 <grammar xmlns="http://relaxng.org/ns/structure/1.0"
    xmlns:ann="http://relaxng.org/ns/compatibility/annotations/1.0"
+   xmlns:docs="http://maxtoroq.github.io/XCST/docs"
    xmlns:c="http://maxtoroq.github.io/XCST"
    ns="http://maxtoroq.github.io/XCST"
    datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
@@ -573,11 +574,15 @@
                </attribute>
                <attribute name="max-length">
                   <ann:documentation>A maximum valid string length for this member.</ann:documentation>
-                  <ref name="expression"/>
+                  <ref name="expression">
+                     <docs:expression-type name="System.Int32"/>
+                  </ref>
                </attribute>
                <attribute name="min-length">
                   <ann:documentation>A minimum valid string length for this member.</ann:documentation>
-                  <ref name="expression"/>
+                  <ref name="expression">
+                     <docs:expression-type name="System.Int32"/>
+                  </ref>
                </attribute>
                <attribute name="pattern">
                   <ann:documentation>A regular expression that a valid value for this member must conform to.</ann:documentation>
@@ -798,7 +803,9 @@
          <ann:documentation>Checks for a condition and signals a message if the condition is false.</ann:documentation>
          <attribute name="test">
             <ann:documentation>The condition to check for.</ann:documentation>
-            <ref name="expression"/>
+            <ref name="expression">
+               <docs:expression-type name="System.Boolean"/>
+            </ref>
          </attribute>
          <choice>
             <attribute name="value">
@@ -974,7 +981,9 @@
          <ann:documentation>Evaluates a template delegate.</ann:documentation>
          <attribute name="delegate">
             <ann:documentation>The template delegate instance.</ann:documentation>
-            <ref name="expression"/>
+            <ref name="expression">
+               <docs:expression-type name="System.Delegate"/>
+            </ref>
          </attribute>
          <optional>
             <attribute name="with-params">
@@ -1089,7 +1098,9 @@
                </attribute>
                <attribute name="group-size">
                   <ann:documentation>The maximum number of items a group may have.</ann:documentation>
-                  <ref name="expression"/>
+                  <ref name="expression">
+                     <docs:expression-type name="System.Int32"/>
+                  </ref>
                </attribute>
             </choice>
          </optional>
@@ -1233,7 +1244,12 @@
                </attribute>
                <attribute name="output">
                   <ann:documentation>A stream or writer to output to.</ann:documentation>
-                  <ref name="expression"/>
+                  <ref name="expression">
+                     <docs:expression-type name="System.IO.Stream"/>
+                     <docs:expression-type name="System.IO.TextWriter"/>
+                     <docs:expression-type name="System.Xml.XmlWriter"/>
+                     <docs:expression-type name="Xcst.XcstWriter"/>
+                  </ref>
                </attribute>
             </choice>
          </oneOrMore>
@@ -1716,12 +1732,12 @@
    </define>
 
    <define name="avt">
-      <ann:documentation>Attribute value template</ann:documentation>
+      <ann:documentation>Attribute value template.</ann:documentation>
       <ref name="string"/>
    </define>
 
    <define name="avt-expr">
-      <ann:documentation>Attribute value template</ann:documentation>
+      <ann:documentation>Attribute value template.</ann:documentation>
       <data type="string">
          <param name="pattern">.*\{.+\}.*</param>
       </data>
@@ -1801,7 +1817,7 @@
    </define>
 
    <define name="output-version">
-      <ann:documentation>The version of the output method format (usually "1.0" for XML, "5.0" for HTML, etc.)</ann:documentation>
+      <ann:documentation>The version of the output method format (usually "1.0" for XML and "5.0" for HTML).</ann:documentation>
       <ref name="nmtoken"/>
    </define>
 
@@ -1836,38 +1852,38 @@
    -->
 
    <define name="expression">
-      <ann:documentation>Expression</ann:documentation>
+      <ann:documentation>Expression.</ann:documentation>
       <data type="string">
          <param name="minLength">1</param>
       </data>
    </define>
 
    <define name="identifier">
-      <ann:documentation>Identifier</ann:documentation>
+      <ann:documentation>Identifier.</ann:documentation>
       <data type="token">
          <param name="minLength">1</param>
       </data>
    </define>
 
    <define name="type_name">
-      <ann:documentation>Type name</ann:documentation>
+      <ann:documentation>Type name.</ann:documentation>
       <ref name="namespace_or_type_name"/>
    </define>
 
    <define name="namespace_or_type_name">
-      <ann:documentation>Namespace or type name</ann:documentation>
+      <ann:documentation>Namespace or type name.</ann:documentation>
       <data type="token">
          <param name="minLength">1</param>
       </data>
    </define>
 
    <define name="boolean_expression">
-      <ann:documentation>Boolean expression</ann:documentation>
+      <ann:documentation>Boolean expression.</ann:documentation>
       <ref name="expression"/>
    </define>
 
    <define name="argument_list">
-      <ann:documentation>Argument list</ann:documentation>
+      <ann:documentation>Argument list.</ann:documentation>
       <data type="string">
          <param name="minLength">1</param>
       </data>

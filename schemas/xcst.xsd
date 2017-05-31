@@ -292,7 +292,7 @@
          </xs:attribute>
          <xs:attribute name="value" type="c:expression">
             <xs:annotation>
-               <xs:documentation>The default value of the parameter.</xs:documentation>
+               <xs:documentation>The default value of the parameter. Expression.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attribute name="as" type="c:type_name">
@@ -375,12 +375,12 @@
          </xs:attribute>
          <xs:attribute name="value" type="c:expression">
             <xs:annotation>
-               <xs:documentation>An initial value for this member.</xs:documentation>
+               <xs:documentation>An initial value for this member. Expression.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attribute name="expression" type="c:expression">
             <xs:annotation>
-               <xs:documentation>An expression for computed members.</xs:documentation>
+               <xs:documentation>An expression for computed members. Expression.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attribute name="auto-initialize" type="c:boolean">
@@ -509,12 +509,12 @@
          </xs:attribute>
          <xs:attribute name="max-length" type="c:expression">
             <xs:annotation>
-               <xs:documentation>A maximum valid string length for this member.</xs:documentation>
+               <xs:documentation>A maximum valid string length for this member. Expression (System.Int32).</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attribute name="min-length" type="c:expression">
             <xs:annotation>
-               <xs:documentation>A minimum valid string length for this member.</xs:documentation>
+               <xs:documentation>A minimum valid string length for this member. Expression (System.Int32).</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attribute name="pattern" type="c:string">
@@ -548,7 +548,7 @@
       <xs:complexType>
          <xs:attribute name="value" use="required" type="c:expression">
             <xs:annotation>
-               <xs:documentation>The metadata expression.</xs:documentation>
+               <xs:documentation>The metadata expression. Expression.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
       </xs:complexType>
@@ -763,12 +763,12 @@
          <xs:group minOccurs="0" ref="c:sequence-constructor"/>
          <xs:attribute name="test" use="required" type="c:expression">
             <xs:annotation>
-               <xs:documentation>The condition to check for.</xs:documentation>
+               <xs:documentation>The condition to check for. Expression (System.Boolean).</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attribute name="value" type="c:expression">
             <xs:annotation>
-               <xs:documentation>A message to signal.</xs:documentation>
+               <xs:documentation>A message to signal. Expression.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>
@@ -790,7 +790,7 @@
          </xs:attribute>
          <xs:attribute name="value" type="c:expression">
             <xs:annotation>
-               <xs:documentation>The value of the attribute.</xs:documentation>
+               <xs:documentation>The value of the attribute. Expression.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attribute name="namespace">
@@ -841,17 +841,17 @@
          <xs:group minOccurs="0" ref="c:sequence-constructor"/>
          <xs:attribute name="exception" type="c:expression">
             <xs:annotation>
-               <xs:documentation>The exception to catch.</xs:documentation>
+               <xs:documentation>The exception to catch. Expression.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attribute name="when" type="c:expression">
             <xs:annotation>
-               <xs:documentation>An exception filter.</xs:documentation>
+               <xs:documentation>An exception filter. Expression.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attribute name="value" type="c:expression">
             <xs:annotation>
-               <xs:documentation>A value to output.</xs:documentation>
+               <xs:documentation>A value to output. Expression.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>
@@ -877,7 +877,7 @@
          <xs:group minOccurs="0" ref="c:sequence-constructor"/>
          <xs:attribute name="value" type="c:expression">
             <xs:annotation>
-               <xs:documentation>The comment.</xs:documentation>
+               <xs:documentation>The comment. Expression.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>
@@ -943,12 +943,12 @@
          </xs:sequence>
          <xs:attribute name="delegate" use="required" type="c:expression">
             <xs:annotation>
-               <xs:documentation>The template delegate instance.</xs:documentation>
+               <xs:documentation>The template delegate instance. Expression (System.Delegate).</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attribute name="with-params" type="c:expression">
             <xs:annotation>
-               <xs:documentation>An object with parameters.</xs:documentation>
+               <xs:documentation>An object with parameters. Expression.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>
@@ -961,12 +961,12 @@
       <xs:complexType>
          <xs:attribute name="package" use="required" type="c:expression">
             <xs:annotation>
-               <xs:documentation>The package instance.</xs:documentation>
+               <xs:documentation>The package instance. Expression.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attribute name="global-params" type="c:expression">
             <xs:annotation>
-               <xs:documentation>An object with global parameters.</xs:documentation>
+               <xs:documentation>An object with global parameters. Expression.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attribute name="initial-template">
@@ -979,12 +979,12 @@
          </xs:attribute>
          <xs:attribute name="template-params" type="c:expression">
             <xs:annotation>
-               <xs:documentation>An object with template parameters.</xs:documentation>
+               <xs:documentation>An object with template parameters. Expression.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attribute name="tunnel-params" type="c:expression">
             <xs:annotation>
-               <xs:documentation>An object with tunnel template parameters.</xs:documentation>
+               <xs:documentation>An object with tunnel template parameters. Expression.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>
@@ -1007,7 +1007,7 @@
          <xs:group minOccurs="0" ref="c:sequence-constructor"/>
          <xs:attribute name="value" type="c:expression">
             <xs:annotation>
-               <xs:documentation>A value to output.</xs:documentation>
+               <xs:documentation>A value to output. Expression.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>
@@ -1029,7 +1029,7 @@
          </xs:attribute>
          <xs:attribute name="in" use="required" type="c:expression">
             <xs:annotation>
-               <xs:documentation>The source of the items.</xs:documentation>
+               <xs:documentation>The source of the items. Expression.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attribute name="as" type="c:type_name">
@@ -1056,17 +1056,17 @@
          </xs:attribute>
          <xs:attribute name="in" use="required" type="c:expression">
             <xs:annotation>
-               <xs:documentation>The source of the items.</xs:documentation>
+               <xs:documentation>The source of the items. Expression.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attribute name="group-by" type="c:expression">
             <xs:annotation>
-               <xs:documentation>An expression to use as grouping key.</xs:documentation>
+               <xs:documentation>An expression to use as grouping key. Expression.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attribute name="group-size" type="c:expression">
             <xs:annotation>
-               <xs:documentation>The maximum number of items a group may have.</xs:documentation>
+               <xs:documentation>The maximum number of items a group may have. Expression (System.Int32).</xs:documentation>
             </xs:annotation>
          </xs:attribute>
       </xs:complexType>
@@ -1093,7 +1093,7 @@
          <xs:group minOccurs="0" ref="c:sequence-constructor"/>
          <xs:attribute name="value" type="c:expression">
             <xs:annotation>
-               <xs:documentation>The message.</xs:documentation>
+               <xs:documentation>The message. Expression.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attribute name="terminate">
@@ -1123,7 +1123,7 @@
          </xs:attribute>
          <xs:attribute name="value" type="c:expression">
             <xs:annotation>
-               <xs:documentation>The namespace URI.</xs:documentation>
+               <xs:documentation>The namespace URI. Expression.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>
@@ -1160,7 +1160,7 @@
       <xs:complexType>
          <xs:attribute name="value" use="required" type="c:expression">
             <xs:annotation>
-               <xs:documentation>The value to output.</xs:documentation>
+               <xs:documentation>The value to output. Expression.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>
@@ -1191,7 +1191,7 @@
          </xs:attribute>
          <xs:attribute name="value" type="c:expression">
             <xs:annotation>
-               <xs:documentation>The processing instruction content.</xs:documentation>
+               <xs:documentation>The processing instruction content. Expression.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>
@@ -1213,7 +1213,7 @@
          </xs:attribute>
          <xs:attribute name="output" type="c:expression">
             <xs:annotation>
-               <xs:documentation>A stream or writer to output to.</xs:documentation>
+               <xs:documentation>A stream or writer to output to. Expression (System.IO.Stream | System.IO.TextWriter | System.Xml.XmlWriter | Xcst.XcstWriter).</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attributeGroup ref="c:output-avt-attributes"/>
@@ -1228,7 +1228,7 @@
          <xs:group minOccurs="0" ref="c:sequence-constructor"/>
          <xs:attribute name="value" type="c:expression">
             <xs:annotation>
-               <xs:documentation>A value to return.</xs:documentation>
+               <xs:documentation>A value to return. Expression.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>
@@ -1265,12 +1265,12 @@
          <xs:group minOccurs="0" ref="c:sequence-constructor"/>
          <xs:attribute name="member" use="required" type="c:expression">
             <xs:annotation>
-               <xs:documentation>The reference to set.</xs:documentation>
+               <xs:documentation>The reference to set. Expression.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attribute name="value" type="c:expression">
             <xs:annotation>
-               <xs:documentation>The value to assign.</xs:documentation>
+               <xs:documentation>The value to assign. Expression.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attribute name="as" type="c:type_name">
@@ -1288,7 +1288,7 @@
       <xs:complexType>
          <xs:attribute name="value" type="c:expression">
             <xs:annotation>
-               <xs:documentation>An expression to use as sort key.</xs:documentation>
+               <xs:documentation>An expression to use as sort key. Expression.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attribute name="order">
@@ -1331,7 +1331,7 @@
          </xs:sequence>
          <xs:attribute name="value" type="c:expression">
             <xs:annotation>
-               <xs:documentation>A value to output.</xs:documentation>
+               <xs:documentation>A value to output. Expression.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attribute name="rollback-output" type="c:boolean">
@@ -1350,7 +1350,7 @@
          <xs:group ref="c:sequence-constructor"/>
          <xs:attribute name="value" use="required" type="c:expression">
             <xs:annotation>
-               <xs:documentation>The disposable object.</xs:documentation>
+               <xs:documentation>The disposable object. Expression.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attribute name="name" type="c:identifier">
@@ -1374,7 +1374,7 @@
          <xs:group minOccurs="0" ref="c:sequence-constructor"/>
          <xs:attribute name="value" type="c:expression">
             <xs:annotation>
-               <xs:documentation>The content of the text node or string.</xs:documentation>
+               <xs:documentation>The content of the text node or string. Expression.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attribute name="disable-output-escaping" type="c:boolean">
@@ -1403,7 +1403,7 @@
          </xs:attribute>
          <xs:attribute name="value" type="c:expression">
             <xs:annotation>
-               <xs:documentation>The initial value of the variable.</xs:documentation>
+               <xs:documentation>The initial value of the variable. Expression.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attribute name="as" type="c:type_name">
@@ -1423,7 +1423,7 @@
          <xs:group minOccurs="0" ref="c:sequence-constructor"/>
          <xs:attribute name="value" type="c:expression">
             <xs:annotation>
-               <xs:documentation>The expression to evaluate.</xs:documentation>
+               <xs:documentation>The expression to evaluate. Expression.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>
@@ -1470,7 +1470,7 @@
          </xs:attribute>
          <xs:attribute name="value" type="c:expression">
             <xs:annotation>
-               <xs:documentation>The value of the parameter.</xs:documentation>
+               <xs:documentation>The value of the parameter. Expression.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attribute name="as" type="c:type_name">
@@ -1792,7 +1792,7 @@
    </xs:simpleType>
    <xs:simpleType name="output-version">
       <xs:annotation>
-         <xs:documentation>The version of the output method format (usually "1.0" for XML, "5.0" for HTML, etc.)</xs:documentation>
+         <xs:documentation>The version of the output method format (usually "1.0" for XML and "5.0" for HTML).</xs:documentation>
       </xs:annotation>
       <xs:restriction base="c:nmtoken"/>
    </xs:simpleType>
@@ -1822,16 +1822,13 @@
    </xs:simpleType>
    <!-- ## Expressions -->
    <xs:simpleType name="expression">
-      <xs:annotation>
-         <xs:documentation>Expression</xs:documentation>
-      </xs:annotation>
       <xs:restriction base="xs:string">
          <xs:minLength value="1"/>
       </xs:restriction>
    </xs:simpleType>
    <xs:simpleType name="identifier">
       <xs:annotation>
-         <xs:documentation>Identifier</xs:documentation>
+         <xs:documentation>Identifier.</xs:documentation>
       </xs:annotation>
       <xs:restriction base="xs:token">
          <xs:minLength value="1"/>
@@ -1839,13 +1836,13 @@
    </xs:simpleType>
    <xs:simpleType name="type_name">
       <xs:annotation>
-         <xs:documentation>Type name</xs:documentation>
+         <xs:documentation>Type name.</xs:documentation>
       </xs:annotation>
       <xs:restriction base="c:namespace_or_type_name"/>
    </xs:simpleType>
    <xs:simpleType name="namespace_or_type_name">
       <xs:annotation>
-         <xs:documentation>Namespace or type name</xs:documentation>
+         <xs:documentation>Namespace or type name.</xs:documentation>
       </xs:annotation>
       <xs:restriction base="xs:token">
          <xs:minLength value="1"/>
@@ -1853,13 +1850,13 @@
    </xs:simpleType>
    <xs:simpleType name="boolean_expression">
       <xs:annotation>
-         <xs:documentation>Boolean expression</xs:documentation>
+         <xs:documentation>Boolean expression.</xs:documentation>
       </xs:annotation>
       <xs:restriction base="c:expression"/>
    </xs:simpleType>
    <xs:simpleType name="argument_list">
       <xs:annotation>
-         <xs:documentation>Argument list</xs:documentation>
+         <xs:documentation>Argument list.</xs:documentation>
       </xs:annotation>
       <xs:restriction base="xs:string">
          <xs:minLength value="1"/>
