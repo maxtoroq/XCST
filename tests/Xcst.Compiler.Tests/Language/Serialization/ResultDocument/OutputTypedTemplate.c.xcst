@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:use-functions in='System.Xml'/>
+   <c:use-functions in='Microsoft.VisualStudio.TestTools.UnitTesting'/>
+
+   <c:template name='c:initial-template'>
+      <c:call-template name='foo'/>
+   </c:template>
+
+   <c:template name='foo' as='object'>
+      <c:variable name='doc' value='new XmlDocument()'/>
+      <c:using name='output' value='doc.CreateNavigator().AppendChild()'>
+         <c:result-document output='output'>
+            <foo bar='123'>baz</foo>
+         </c:result-document>
+      </c:using>
+      <c:void value='Assert.AreEqual("foo", doc.DocumentElement.LocalName)'/>
+      <c:void value='Assert.AreEqual("123", doc.DocumentElement.GetAttribute("bar"))'/>
+      <c:void value='Assert.AreEqual("baz", doc.DocumentElement.InnerText)'/>
+   </c:template>
+
+   <c:template name='expected'/>
+
+</c:module>

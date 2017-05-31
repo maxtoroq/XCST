@@ -292,6 +292,7 @@
     <None Include="Language\Serialization\MethodXHtml.c.xcst" />
     <None Include="Language\Serialization\MethodText.c.xcst" />
     <None Include="Language\Serialization\MethodXml.c.xcst" />
+    <None Include="Language\Serialization\ResultDocument\OutputTypedTemplate.c.xcst" />
     <None Include="Language\Serialization\ResultDocument\Output.c.xcst" />
     <None Include="Language\Serialization\ResultDocument\result-document.output.type.i.xcst" />
     <None Include="Language\Serialization\MethodDefault.c.xcst" />

@@ -1976,8 +1976,10 @@
       <call-template name="src:close-brace"/>
       <text>, </text>
       <call-template name="src:format-QName"/>
-      <text>, </text>
+      <text>, (</text>
       <value-of select="src:expression-or-null($output)"/>
+      <text>) as </text>
+      <value-of select="src:global-identifier('Xcst.XcstWriter')"/>
       <text>, </text>
       <choose>
          <when test="@href">
