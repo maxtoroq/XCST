@@ -815,7 +815,7 @@
       <element name="attribute">
          <ann:documentation>Creates an attribute node.</ann:documentation>
          <attribute name="name">
-            <ann:documentation>The name of the attribute. Attribute value template (qname).</ann:documentation>
+            <ann:documentation>The name of the attribute.</ann:documentation>
             <choice>
                <ref name="qname"/>
                <ref name="avt-expr"/>
@@ -831,7 +831,7 @@
          <zeroOrMore>
             <choice>
                <attribute name="namespace">
-                  <ann:documentation>The namespace of the attribute. Attribute value template (uri).</ann:documentation>
+                  <ann:documentation>The namespace of the attribute.</ann:documentation>
                   <choice>
                      <ref name="uri"/>
                      <ref name="avt-expr"/>
@@ -943,7 +943,7 @@
       <element name="element">
          <ann:documentation>Creates an element node.</ann:documentation>
          <attribute name="name">
-            <ann:documentation>The name of the element. Attribute value template (qname).</ann:documentation>
+            <ann:documentation>The name of the element.</ann:documentation>
             <choice>
                <ref name="qname-default"/>
                <ref name="avt-expr"/>
@@ -952,7 +952,7 @@
          <zeroOrMore>
             <choice>
                <attribute name="namespace">
-                  <ann:documentation>The namespace of the element. Attribute value template (uri).</ann:documentation>
+                  <ann:documentation>The namespace of the element.</ann:documentation>
                   <choice>
                      <ref name="uri"/>
                      <ref name="avt-expr"/>
@@ -1003,7 +1003,7 @@
                   <ref name="expression"/>
                </attribute>
                <attribute name="initial-template">
-                  <ann:documentation>The name of the initial template. Attribute value template (eqname).</ann:documentation>
+                  <ann:documentation>The name of the initial template.</ann:documentation>
                   <choice>
                      <ref name="eqname"/>
                      <ref name="avt-expr"/>
@@ -1124,7 +1124,7 @@
          </choice>
          <optional>
             <attribute name="terminate">
-               <ann:documentation>Specifies whether to stop the execution of the program. Attribute value template (boolean).</ann:documentation>
+               <ann:documentation>Specifies whether to stop the execution of the program.</ann:documentation>
                <choice>
                   <ref name="boolean"/>
                   <ref name="avt-expr"/>
@@ -1139,7 +1139,7 @@
       <element name="namespace">
          <ann:documentation>Creates a namespace node.</ann:documentation>
          <attribute name="name">
-            <ann:documentation>The namespace prefix. Attribute value template (ncname).</ann:documentation>
+            <ann:documentation>The namespace prefix.</ann:documentation>
             <choice>
                <ref name="ncname"/>
                <ref name="avt-expr"/>
@@ -1202,7 +1202,7 @@
       <element name="processing-instruction">
          <ann:documentation>Creates a processing instruction node.</ann:documentation>
          <attribute name="name">
-            <ann:documentation>The name of the processing instruction. Attribute value template (ncname).</ann:documentation>
+            <ann:documentation>The name of the processing instruction.</ann:documentation>
             <choice>
                <ref name="ncname"/>
                <ref name="avt-expr"/>
@@ -1225,7 +1225,7 @@
          <oneOrMore>
             <choice>
                <attribute name="href">
-                  <ann:documentation>The relative or absolute URI to send the result to. Attribute value template (uri).</ann:documentation>
+                  <ann:documentation>The relative or absolute URI to send the result to.</ann:documentation>
                   <choice>
                      <ref name="uri"/>
                      <ref name="avt-expr"/>
@@ -1314,7 +1314,7 @@
                   <ref name="expression"/>
                </attribute>
                <attribute name="order">
-                  <ann:documentation>Specifies the sort direction ("ascending" or "descending"). Attribute value template.</ann:documentation>
+                  <ann:documentation>Specifies the sort direction ("ascending" or "descending").</ann:documentation>
                   <choice>
                      <ref name="order"/>
                      <ref name="avt-expr"/>
@@ -1517,28 +1517,28 @@
       <zeroOrMore>
          <choice>
             <attribute name="format">
-               <ann:documentation>The name of the output definition to get serialization parameters from. Attribute value template (eqname).</ann:documentation>
+               <ann:documentation>The name of the output definition to get serialization parameters from.</ann:documentation>
                <choice>
                   <ref name="eqname"/>
                   <ref name="avt-expr"/>
                </choice>
             </attribute>
             <attribute name="method">
-               <ann:documentation>Specifies the output format. Attribute value template.</ann:documentation>
+               <ann:documentation>Specifies the output format.</ann:documentation>
                <choice>
                   <ref name="method"/>
                   <ref name="avt-expr"/>
                </choice>
             </attribute>
             <attribute name="byte-order-mark">
-               <ann:documentation>Specifies whether a byte order mark is written at the start of the file. Attribute value template (boolean).</ann:documentation>
+               <ann:documentation>Specifies whether a byte order mark is written at the start of the file.</ann:documentation>
                <choice>
                   <ref name="boolean"/>
                   <ref name="avt-expr"/>
                </choice>
             </attribute>
             <attribute name="cdata-section-elements">
-               <ann:documentation>Specifies elements whose child text nodes should be wrapped in a CDATA section. Attribute value template.</ann:documentation>
+               <ann:documentation>Specifies elements whose child text nodes should be wrapped in a CDATA section.</ann:documentation>
                <choice>
                   <ref name="cdata-section-elements"/>
                   <ref name="avt-expr"/>
@@ -1557,78 +1557,78 @@
                <ref name="avt"/>
             </attribute>
             <attribute name="escape-uri-attributes">
-               <ann:documentation>Specifies whether to escape URI attributes in HTML and XHTML documents. Attribute value template (boolean).</ann:documentation>
+               <ann:documentation>Specifies whether to escape URI attributes in HTML and XHTML documents.</ann:documentation>
                <choice>
                   <ref name="boolean"/>
                   <ref name="avt-expr"/>
                </choice>
             </attribute>
             <attribute name="html-version">
-               <ann:documentation>Specifies the HTML version. Attribute value template (decimal).</ann:documentation>
+               <ann:documentation>Specifies the HTML version.</ann:documentation>
                <choice>
                   <ref name="decimal"/>
                   <ref name="avt-expr"/>
                </choice>
             </attribute>
             <attribute name="include-content-type">
-               <ann:documentation>Specifies whether to include a meta element in the head of HTML and XHTML documents, specifying the used character encoding. Attribute value template (boolean).</ann:documentation>
+               <ann:documentation>Specifies whether to include a meta element in the head of HTML and XHTML documents, specifying the used character encoding.</ann:documentation>
                <choice>
                   <ref name="boolean"/>
                   <ref name="avt-expr"/>
                </choice>
             </attribute>
             <attribute name="indent">
-               <ann:documentation>Specifies whether to indent the output. Attribute value template (boolean).</ann:documentation>
+               <ann:documentation>Specifies whether to indent the output.</ann:documentation>
                <choice>
                   <ref name="boolean"/>
                   <ref name="avt-expr"/>
                </choice>
             </attribute>
             <attribute name="indent-spaces">
-               <ann:documentation>The number of spaces to use for indenting. Attribute value template (integer).</ann:documentation>
+               <ann:documentation>The number of spaces to use for indenting.</ann:documentation>
                <choice>
                   <ref name="integer"/>
                   <ref name="avt-expr"/>
                </choice>
             </attribute>
             <attribute name="item-separator">
-               <ann:documentation>A string to intersperse when outputting multiple items. Attribute value template.</ann:documentation>
+               <ann:documentation>A string to intersperse when outputting multiple items.</ann:documentation>
                <ref name="avt"/>
             </attribute>
             <attribute name="media-type">
-               <ann:documentation>The media type (MIME content type) of the output, to include in a meta element in the head of HTML and XHTML documents. Attribute value template.</ann:documentation>
+               <ann:documentation>The media type (MIME content type) of the output, to include in a meta element in the head of HTML and XHTML documents.</ann:documentation>
                <ref name="avt"/>
             </attribute>
             <attribute name="omit-xml-declaration">
-               <ann:documentation>Specifies whether to omit the XML declaration. Attribute value template (boolean).</ann:documentation>
+               <ann:documentation>Specifies whether to omit the XML declaration.</ann:documentation>
                <choice>
                   <ref name="boolean"/>
                   <ref name="avt-expr"/>
                </choice>
             </attribute>
             <attribute name="standalone">
-               <ann:documentation>Specifies whether to include the standalone document declaration. Attribute value template.</ann:documentation>
+               <ann:documentation>Specifies whether to include the standalone document declaration.</ann:documentation>
                <choice>
                   <ref name="standalone"/>
                   <ref name="avt-expr"/>
                </choice>
             </attribute>
             <attribute name="suppress-indentation">
-               <ann:documentation>Specifies elements that should not be indented. Attribute value template.</ann:documentation>
+               <ann:documentation>Specifies elements that should not be indented.</ann:documentation>
                <choice>
                   <ref name="suppress-indentation"/>
                   <ref name="avt-expr"/>
                </choice>
             </attribute>
             <attribute name="undeclare-prefixes">
-               <ann:documentation>Specifies whether to undeclare namespaces when outputting XML 1.1. Attribute value template (boolean).</ann:documentation>
+               <ann:documentation>Specifies whether to undeclare namespaces when outputting XML 1.1.</ann:documentation>
                <choice>
                   <ref name="boolean"/>
                   <ref name="avt-expr"/>
                </choice>
             </attribute>
             <attribute name="output-version">
-               <ann:documentation>The version of the output format. Attribute value template.</ann:documentation>
+               <ann:documentation>The version of the output format.</ann:documentation>
                <choice>
                   <ref name="output-version"/>
                   <ref name="avt-expr"/>

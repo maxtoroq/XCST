@@ -1,16 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<stylesheet version="2.0" xmlns="http://www.w3.org/1999/XSL/Transform">
 
-   <xsl:template match="@* | node()">
-      <xsl:copy>
-         <xsl:apply-templates select="@* | node()"/>
-      </xsl:copy>
-   </xsl:template>
+   <template match="@* | node()">
+      <copy>
+         <apply-templates select="@* | node()"/>
+      </copy>
+   </template>
 
-   <xsl:template match="/comment()">
-      <xsl:text>&#xA;</xsl:text>
-      <xsl:comment> Converted from Relax NG schema, using Trang. Use only with code completion tools that do not support Relax NG. </xsl:comment>
-      <xsl:text>&#xA;</xsl:text>
-   </xsl:template>
+   <template match="/comment()">
+      <text>&#xA;</text>
+      <comment> Converted from Relax NG schema, using Trang. Use only with code completion tools that do not support Relax NG. </comment>
+      <text>&#xA;</text>
+   </template>
 
-</xsl:stylesheet>
+</stylesheet>

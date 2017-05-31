@@ -1576,12 +1576,12 @@
       </xs:attribute>
       <xs:attribute name="item-separator" type="c:avt">
          <xs:annotation>
-            <xs:documentation>A string to intersperse when outputting multiple items. Attribute value template.</xs:documentation>
+            <xs:documentation>A string to intersperse when outputting multiple items.</xs:documentation>
          </xs:annotation>
       </xs:attribute>
       <xs:attribute name="media-type" type="c:avt">
          <xs:annotation>
-            <xs:documentation>The media type (MIME content type) of the output, to include in a meta element in the head of HTML and XHTML documents. Attribute value template.</xs:documentation>
+            <xs:documentation>The media type (MIME content type) of the output, to include in a meta element in the head of HTML and XHTML documents.</xs:documentation>
          </xs:annotation>
       </xs:attribute>
       <xs:attribute name="omit-xml-declaration">
@@ -1693,14 +1693,11 @@
    </xs:simpleType>
    <xs:simpleType name="avt">
       <xs:annotation>
-         <xs:documentation>Attribute value template</xs:documentation>
+         <xs:documentation>Attribute value template.</xs:documentation>
       </xs:annotation>
       <xs:restriction base="c:string"/>
    </xs:simpleType>
    <xs:simpleType name="avt-expr">
-      <xs:annotation>
-         <xs:documentation>Attribute value template</xs:documentation>
-      </xs:annotation>
       <xs:restriction base="xs:string">
          <xs:pattern value=".*\{.+\}.*"/>
       </xs:restriction>
