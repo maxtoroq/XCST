@@ -1077,7 +1077,7 @@
       </xs:annotation>
       <xs:complexType mixed="true">
          <xs:group ref="c:sequence-constructor"/>
-         <xs:attribute name="test" use="required" type="c:expression">
+         <xs:attribute name="test" use="required" type="c:boolean_expression">
             <xs:annotation>
                <xs:documentation>The condition to check for the contents to be processed.</xs:documentation>
             </xs:annotation>
@@ -1435,7 +1435,7 @@
       </xs:annotation>
       <xs:complexType mixed="true">
          <xs:group ref="c:sequence-constructor"/>
-         <xs:attribute name="test" use="required" type="c:expression">
+         <xs:attribute name="test" use="required" type="c:boolean_expression">
             <xs:annotation>
                <xs:documentation>The condition to check for the current choice to be selected.</xs:documentation>
             </xs:annotation>
@@ -1449,7 +1449,7 @@
       </xs:annotation>
       <xs:complexType mixed="true">
          <xs:group ref="c:sequence-constructor"/>
-         <xs:attribute name="test" use="required" type="c:expression">
+         <xs:attribute name="test" use="required" type="c:boolean_expression">
             <xs:annotation>
                <xs:documentation>The condition for the loop to continue.</xs:documentation>
             </xs:annotation>
@@ -1844,9 +1844,7 @@
       <xs:annotation>
          <xs:documentation>Type name</xs:documentation>
       </xs:annotation>
-      <xs:restriction base="xs:token">
-         <xs:minLength value="1"/>
-      </xs:restriction>
+      <xs:restriction base="c:namespace_or_type_name"/>
    </xs:simpleType>
    <xs:simpleType name="namespace_or_type_name">
       <xs:annotation>
@@ -1855,6 +1853,12 @@
       <xs:restriction base="xs:token">
          <xs:minLength value="1"/>
       </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="boolean_expression">
+      <xs:annotation>
+         <xs:documentation>Boolean expression</xs:documentation>
+      </xs:annotation>
+      <xs:restriction base="c:expression"/>
    </xs:simpleType>
    <xs:simpleType name="argument_list">
       <xs:annotation>

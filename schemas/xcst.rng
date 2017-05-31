@@ -1105,7 +1105,7 @@
          <ann:documentation>Defines conditional behavior.</ann:documentation>
          <attribute name="test">
             <ann:documentation>The condition to check for the contents to be processed.</ann:documentation>
-            <ref name="expression"/>
+            <ref name="boolean_expression"/>
          </attribute>
          <ref name="standard-attributes"/>
          <ref name="sequence-constructor"/>
@@ -1464,7 +1464,7 @@
          <ann:documentation>Represents a choice in a c:choose instruction.</ann:documentation>
          <attribute name="test">
             <ann:documentation>The condition to check for the current choice to be selected.</ann:documentation>
-            <ref name="expression"/>
+            <ref name="boolean_expression"/>
          </attribute>
          <ref name="standard-attributes"/>
          <ref name="sequence-constructor"/>
@@ -1476,7 +1476,7 @@
          <ann:documentation>Repeateadly evaluates instructions until a condition is not met.</ann:documentation>
          <attribute name="test">
             <ann:documentation>The condition for the loop to continue.</ann:documentation>
-            <ref name="expression"/>
+            <ref name="boolean_expression"/>
          </attribute>
          <ref name="standard-attributes"/>
          <ref name="sequence-constructor"/>
@@ -1851,9 +1851,7 @@
 
    <define name="type_name">
       <ann:documentation>Type name</ann:documentation>
-      <data type="token">
-         <param name="minLength">1</param>
-      </data>
+      <ref name="namespace_or_type_name"/>
    </define>
 
    <define name="namespace_or_type_name">
@@ -1861,6 +1859,11 @@
       <data type="token">
          <param name="minLength">1</param>
       </data>
+   </define>
+
+   <define name="boolean_expression">
+      <ann:documentation>Boolean expression</ann:documentation>
+      <ref name="expression"/>
    </define>
 
    <define name="argument_list">
