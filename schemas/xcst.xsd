@@ -1056,7 +1056,7 @@
          </xs:attribute>
          <xs:attribute name="in" use="required" type="c:expression">
             <xs:annotation>
-               <xs:documentation>The source of the items. Expression.</xs:documentation>
+               <xs:documentation>The source of the items. Expression (System.Collections.Generic.IEnumerable&lt;T&gt;).</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attribute name="group-by" type="c:expression">

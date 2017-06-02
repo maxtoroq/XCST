@@ -1088,7 +1088,9 @@
          </attribute>
          <attribute name="in">
             <ann:documentation>The source of the items.</ann:documentation>
-            <ref name="expression"/>
+            <ref name="expression">
+               <docs:expression-type name="System.Collections.Generic.IEnumerable&lt;T>" topic="9eekhta0"/>
+            </ref>
          </attribute>
          <optional>
             <choice>
