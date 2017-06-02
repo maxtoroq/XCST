@@ -768,7 +768,7 @@
          </xs:attribute>
          <xs:attribute name="value" type="c:expression">
             <xs:annotation>
-               <xs:documentation>A message to signal. Expression.</xs:documentation>
+               <xs:documentation>A message to signal. Expression (System.Object).</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>
@@ -790,7 +790,7 @@
          </xs:attribute>
          <xs:attribute name="value" type="c:expression">
             <xs:annotation>
-               <xs:documentation>The value of the attribute. Expression.</xs:documentation>
+               <xs:documentation>The value of the attribute. Expression (System.Object).</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attribute name="namespace">
@@ -877,7 +877,7 @@
          <xs:group minOccurs="0" ref="c:sequence-constructor"/>
          <xs:attribute name="value" type="c:expression">
             <xs:annotation>
-               <xs:documentation>The comment. Expression.</xs:documentation>
+               <xs:documentation>The comment. Expression (System.Object).</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>
@@ -948,7 +948,7 @@
          </xs:attribute>
          <xs:attribute name="with-params" type="c:expression">
             <xs:annotation>
-               <xs:documentation>An object with parameters. Expression.</xs:documentation>
+               <xs:documentation>An object with parameters. Expression (System.Object | System.Collections.Generic.IDictionary&lt;System.String, System.Object&gt;).</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>
@@ -966,7 +966,7 @@
          </xs:attribute>
          <xs:attribute name="global-params" type="c:expression">
             <xs:annotation>
-               <xs:documentation>An object with global parameters. Expression.</xs:documentation>
+               <xs:documentation>An object with global parameters. Expression (System.Object | System.Collections.Generic.IDictionary&lt;System.String, System.Object&gt;).</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attribute name="initial-template">
@@ -979,12 +979,12 @@
          </xs:attribute>
          <xs:attribute name="template-params" type="c:expression">
             <xs:annotation>
-               <xs:documentation>An object with template parameters. Expression.</xs:documentation>
+               <xs:documentation>An object with template parameters. Expression (System.Object | System.Collections.Generic.IDictionary&lt;System.String, System.Object&gt;).</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attribute name="tunnel-params" type="c:expression">
             <xs:annotation>
-               <xs:documentation>An object with tunnel template parameters. Expression.</xs:documentation>
+               <xs:documentation>An object with tunnel template parameters. Expression (System.Object | System.Collections.Generic.IDictionary&lt;System.String, System.Object&gt;).</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>
@@ -1093,7 +1093,7 @@
          <xs:group minOccurs="0" ref="c:sequence-constructor"/>
          <xs:attribute name="value" type="c:expression">
             <xs:annotation>
-               <xs:documentation>The message. Expression.</xs:documentation>
+               <xs:documentation>The message. Expression (System.Object).</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attribute name="terminate">
@@ -1123,7 +1123,7 @@
          </xs:attribute>
          <xs:attribute name="value" type="c:expression">
             <xs:annotation>
-               <xs:documentation>The namespace URI. Expression.</xs:documentation>
+               <xs:documentation>The namespace URI. Expression (System.Object).</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>
@@ -1191,7 +1191,7 @@
          </xs:attribute>
          <xs:attribute name="value" type="c:expression">
             <xs:annotation>
-               <xs:documentation>The processing instruction content. Expression.</xs:documentation>
+               <xs:documentation>The processing instruction content. Expression (System.Object).</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>
@@ -1374,7 +1374,7 @@
          <xs:group minOccurs="0" ref="c:sequence-constructor"/>
          <xs:attribute name="value" type="c:expression">
             <xs:annotation>
-               <xs:documentation>The content of the text node or string. Expression.</xs:documentation>
+               <xs:documentation>The content of the text node or string. Expression (System.Object).</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attribute name="disable-output-escaping" type="c:boolean">

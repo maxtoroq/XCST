@@ -40,7 +40,7 @@
             <text> (</text>
             <for-each select="../rng:ref/docs:expression-type">
                <if test="position() gt 1"> | </if>
-               <value-of select="@name"/>
+               <apply-templates select="." mode="type-display"/>
             </for-each>
             <text>)</text>
          </if>
@@ -49,5 +49,17 @@
    </template>
 
    <template match="rng:define[@name = ('expression')]/ann:documentation"/>
+
+   <template match="docs:expression-type | docs:type-param" mode="type-display">
+      <value-of select="@name"/>
+      <if test="docs:type-param">
+         <text>&lt;</text>
+         <for-each select="docs:type-param">
+            <if test="position() gt 1">, </if>
+            <apply-templates select="." mode="#current"/>
+         </for-each>
+         <text>></text>
+      </if>
+   </template>
 
 </stylesheet>
