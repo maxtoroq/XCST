@@ -1588,7 +1588,7 @@
       <variable name="eof" select="concat(src:aux-variable('eof'), '_', generate-id())"/>
 
       <call-template name="src:new-line-indented"/>
-      <value-of select="'int', $cols, '=', src:integer(xcst:integer(@group-size, true()), src:expand-attribute(@group-size))"/>
+      <value-of select="'int', $cols, '=', @group-size/src:integer(xcst:integer(., true()), src:expand-attribute(.))"/>
       <value-of select="$src:statement-delimiter"/>
 
       <call-template name="src:new-line-indented"/>
