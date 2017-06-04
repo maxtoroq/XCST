@@ -47,7 +47,7 @@ namespace Xcst.Runtime {
          return System.Decimal.Parse(value, NumberStyles.Number, CultureInfo.InvariantCulture);
       }
 
-      public static decimal Integer(string value) {
+      public static int Integer(string value) {
          return System.Int32.Parse(value, NumberStyles.Integer, CultureInfo.InvariantCulture);
       }
 
