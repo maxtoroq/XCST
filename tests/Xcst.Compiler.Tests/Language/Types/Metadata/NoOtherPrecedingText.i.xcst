@@ -3,8 +3,8 @@
 
    <c:type name='foo'>
       foo
-      <c:metadata value='System.Obsolete'/>
-      <c:metadata value='System.CLSCompliant(true)'/>
+      <c:metadata name='System.Obsolete'/>
+      <c:metadata name='System.CLSCompliant' value='true'/>
    </c:type>
 
 </c:module>

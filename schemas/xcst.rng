@@ -606,10 +606,16 @@
    <define name="metadata">
       <element name="metadata">
          <ann:documentation>Defines type or member custom metadata.</ann:documentation>
-         <attribute name="value">
-            <ann:documentation>The metadata expression.</ann:documentation>
-            <ref name="expression"/>
+         <attribute name="name">
+            <ann:documentation>The metadata name.</ann:documentation>
+            <ref name="type_name"/>
          </attribute>
+         <optional>
+            <attribute name="value">
+               <ann:documentation>The metadata expression.</ann:documentation>
+               <ref name="expression"/>
+            </attribute>
+         </optional>
       </element>
    </define>
 

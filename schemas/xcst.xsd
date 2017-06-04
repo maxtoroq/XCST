@@ -546,7 +546,12 @@
          <xs:documentation>Defines type or member custom metadata.</xs:documentation>
       </xs:annotation>
       <xs:complexType>
-         <xs:attribute name="value" use="required" type="c:expression">
+         <xs:attribute name="name" use="required" type="c:type_name">
+            <xs:annotation>
+               <xs:documentation>The metadata name.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="value" type="c:expression">
             <xs:annotation>
                <xs:documentation>The metadata expression. Expression.</xs:documentation>
             </xs:annotation>

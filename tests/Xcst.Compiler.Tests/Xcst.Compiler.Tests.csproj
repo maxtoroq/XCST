@@ -412,6 +412,8 @@
     <None Include="Language\Types\Member\Metadata\NoOtherPrecedingText.i.xcst" />
     <None Include="Language\Types\Member\NoOtherFollowingText.i.xcst" />
     <None Include="Language\Types\Member\NoOtherFollowing.i.xcst" />
+    <None Include="Language\Types\Metadata\metadata.name.req.i.xcst" />
+    <None Include="Language\Types\Metadata\metadata.name.type.i.xcst" />
     <None Include="Language\Types\Metadata\NoChildrenText.i.xcst" />
     <None Include="Language\Types\Metadata\NoChildren.i.xcst" />
     <None Include="Language\Types\Metadata\metadata.foo.i.xcst" />
@@ -822,7 +824,6 @@
     <None Include="Language\Serialization\Serialize\serialize.foo.i.xcst" />
     <None Include="Language\Types\Abstract.i.xcst" />
     <None Include="Language\Types\Member\member.foo.i.xcst" />
-    <None Include="Language\Types\Metadata\metadata.value.req.i.xcst" />
     <None Include="Language\Types\Metadata\metadata.value.type.i.xcst" />
     <None Include="Language\Types\type.foo.i.xcst" />
     <None Include="Language\Types\Member\member.name.req.i.xcst" />

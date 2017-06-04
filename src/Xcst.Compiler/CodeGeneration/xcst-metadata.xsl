@@ -24,14 +24,20 @@
 
    <template match="c:metadata" mode="src:attribute">
       <call-template name="xcst:validate-attribs">
-         <with-param name="required" select="'value'"/>
+         <with-param name="required" select="'name'"/>
+         <with-param name="optional" select="'value'"/>
       </call-template>
       <call-template name="xcst:no-children"/>
       <call-template name="xcst:no-other-preceding"/>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
       <text>[</text>
-      <value-of select="xcst:expression(@value)"/>
+      <value-of select="xcst:type(@name)"/>
+      <if test="@value">
+         <text>(</text>
+         <value-of select="xcst:expression(@value)"/>
+         <text>)</text>
+      </if>
       <text>]</text>
    </template>
 
