@@ -574,15 +574,11 @@
                </attribute>
                <attribute name="max-length">
                   <ann:documentation>A maximum valid string length for this member.</ann:documentation>
-                  <ref name="expression">
-                     <docs:expression-type name="System.Int32"/>
-                  </ref>
+                  <ref name="integer"/>
                </attribute>
                <attribute name="min-length">
                   <ann:documentation>A minimum valid string length for this member.</ann:documentation>
-                  <ref name="expression">
-                     <docs:expression-type name="System.Int32"/>
-                  </ref>
+                  <ref name="integer"/>
                </attribute>
                <attribute name="pattern">
                   <ann:documentation>A regular expression that a valid value for this member must conform to.</ann:documentation>
@@ -1130,9 +1126,10 @@
                </attribute>
                <attribute name="group-size">
                   <ann:documentation>The maximum number of items a group may have.</ann:documentation>
-                  <ref name="expression">
-                     <docs:expression-type name="System.Int32"/>
-                  </ref>
+                  <choice>
+                     <ref name="integer"/>
+                     <ref name="avt-expr"/>
+                  </choice>
                </attribute>
             </choice>
          </optional>

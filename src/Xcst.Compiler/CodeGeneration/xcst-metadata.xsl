@@ -117,7 +117,7 @@
    </template>
 
    <template match="@order" mode="src:display-setter">
-      <value-of select="'Order', ." separator=" = "/>
+      <value-of select="'Order', src:integer(xcst:integer(.))" separator=" = "/>
    </template>
 
    <template match="@group" mode="src:display-setter">
@@ -341,11 +341,11 @@
    </template>
 
    <template match="@max-length" mode="src:string-length-setter">
-      <value-of select="xcst:expression(.)"/>
+      <value-of select="src:integer(xcst:integer(.))"/>
    </template>
 
    <template match="@min-length" mode="src:string-length-setter">
-      <value-of select="'MinimumLength', xcst:expression(.)" separator=" = "/>
+      <value-of select="'MinimumLength', src:integer(xcst:integer(.))" separator=" = "/>
    </template>
 
    <!--

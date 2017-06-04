@@ -507,14 +507,14 @@
                <xs:documentation>Specifies if this member is required.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
-         <xs:attribute name="max-length" type="c:expression">
+         <xs:attribute name="max-length" type="c:integer">
             <xs:annotation>
-               <xs:documentation>A maximum valid string length for this member. Expression (System.Int32).</xs:documentation>
+               <xs:documentation>A maximum valid string length for this member.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
-         <xs:attribute name="min-length" type="c:expression">
+         <xs:attribute name="min-length" type="c:integer">
             <xs:annotation>
-               <xs:documentation>A minimum valid string length for this member. Expression (System.Int32).</xs:documentation>
+               <xs:documentation>A minimum valid string length for this member.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attribute name="pattern" type="c:string">
@@ -1064,10 +1064,13 @@
                <xs:documentation>An expression to use as grouping key. Expression.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
-         <xs:attribute name="group-size" type="c:expression">
+         <xs:attribute name="group-size">
             <xs:annotation>
-               <xs:documentation>The maximum number of items a group may have. Expression (System.Int32).</xs:documentation>
+               <xs:documentation>The maximum number of items a group may have. Attribute value template (integer).</xs:documentation>
             </xs:annotation>
+            <xs:simpleType>
+               <xs:union memberTypes="c:integer c:avt-expr"/>
+            </xs:simpleType>
          </xs:attribute>
       </xs:complexType>
    </xs:element>
