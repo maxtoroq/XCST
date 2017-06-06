@@ -812,9 +812,7 @@
          <choice>
             <attribute name="value">
                <ann:documentation>A message to signal.</ann:documentation>
-               <ref name="expression">
-                  <docs:expression-type name="System.Object"/>
-               </ref>
+               <ref name="expression"/>
             </attribute>
             <ref name="sequence-constructor"/>
          </choice>
@@ -835,9 +833,7 @@
          <choice>
             <attribute name="value">
                <ann:documentation>The value of the attribute.</ann:documentation>
-               <ref name="expression">
-                  <docs:expression-type name="System.Object"/>
-               </ref>
+               <ref name="expression"/>
             </attribute>
             <ref name="sequence-constructor"/>
          </choice>
@@ -926,9 +922,7 @@
          <choice>
             <attribute name="value">
                <ann:documentation>The comment.</ann:documentation>
-               <ref name="expression">
-                  <docs:expression-type name="System.Object"/>
-               </ref>
+               <ref name="expression"/>
             </attribute>
             <ref name="sequence-constructor"/>
          </choice>
@@ -1164,9 +1158,7 @@
          <choice>
             <attribute name="value">
                <ann:documentation>The message.</ann:documentation>
-               <ref name="expression">
-                  <docs:expression-type name="System.Object"/>
-               </ref>
+               <ref name="expression"/>
             </attribute>
             <ref name="sequence-constructor"/>
          </choice>
@@ -1196,9 +1188,7 @@
          <choice>
             <attribute name="value">
                <ann:documentation>The namespace URI.</ann:documentation>
-               <ref name="expression">
-                  <docs:expression-type name="System.Object"/>
-               </ref>
+               <ref name="expression"/>
             </attribute>
             <ref name="sequence-constructor"/>
          </choice>
@@ -1261,9 +1251,7 @@
          <choice>
             <attribute name="value">
                <ann:documentation>The processing instruction content.</ann:documentation>
-               <ref name="expression">
-                  <docs:expression-type name="System.Object"/>
-               </ref>
+               <ref name="expression"/>
             </attribute>
             <ref name="sequence-constructor"/>
          </choice>
@@ -1457,9 +1445,7 @@
          <choice>
             <attribute name="value">
                <ann:documentation>The content of the text node or string.</ann:documentation>
-               <ref name="expression">
-                  <docs:expression-type name="System.Object"/>
-               </ref>
+               <ref name="expression"/>
             </attribute>
             <ref name="sequence-constructor"/>
          </choice>
