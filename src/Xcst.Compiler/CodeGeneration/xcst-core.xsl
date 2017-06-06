@@ -2357,8 +2357,10 @@
       <sequence select="
          if ($avt and xcst:is-value-template($node)) then
             ()
-         else
+         else if ($string castable as xs:decimal) then
             xs:decimal($string)
+         else
+            error(xs:QName('err:XTSE0020'), concat('Invalid value for ''', name($node), '''.'), src:error-object($node))
       "/>
    </function>
 
@@ -2376,8 +2378,10 @@
       <sequence select="
          if ($avt and xcst:is-value-template($node)) then
             ()
-         else
+         else if ($string castable as xs:integer) then
             xs:integer($string)
+         else
+            error(xs:QName('err:XTSE0020'), concat('Invalid value for ''', name($node), '''.'), src:error-object($node))
       "/>
    </function>
 
