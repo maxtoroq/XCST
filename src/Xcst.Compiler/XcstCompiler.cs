@@ -74,16 +74,27 @@ namespace Xcst.Compiler {
          this.parameters.Add(name, value);
       }
 
-      public CompileResult Compile(Stream module, Uri baseUri = null) {
-         return Compile(docb => docb.Build(module), baseUri);
+      public CompileResult Compile(Uri file) {
+
+         if (file == null) throw new ArgumentNullException(nameof(file));
+         if (!file.IsAbsoluteUri) throw new ArgumentException("file must be an absolute URI.", nameof(file));
+         if (!file.IsFile) throw new ArgumentException("file must be a file URI", nameof(file));
+
+         using (var source = File.OpenRead(file.LocalPath)) {
+            return Compile(source, file);
+         }
       }
 
-      public CompileResult Compile(TextReader module, Uri baseUri = null) {
-         return Compile(docb => docb.Build(module), baseUri);
+      public CompileResult Compile(Stream source, Uri baseUri = null) {
+         return Compile(docb => docb.Build(source), baseUri);
       }
 
-      public CompileResult Compile(XmlReader module) {
-         return Compile(docb => docb.Build(module));
+      public CompileResult Compile(TextReader source, Uri baseUri = null) {
+         return Compile(docb => docb.Build(source), baseUri);
+      }
+
+      public CompileResult Compile(XmlReader source) {
+         return Compile(docb => docb.Build(source));
       }
 
       CompileResult Compile(Func<DocumentBuilder, XdmNode> buildFn, Uri baseUri = null) {
@@ -158,7 +169,6 @@ namespace Xcst.Compiler {
             name = new QName("name")
          };
 
-
          var publicVisibility = new List<string> { "public", "final", "abstract" };
 
          var result = new CompileResult {
@@ -189,11 +199,11 @@ namespace Xcst.Compiler {
          return result;
       }
 
-      XsltTransformer GetCompiler(XdmNode moduleDoc) {
+      XsltTransformer GetCompiler(XdmNode sourceDoc) {
 
          XsltTransformer compiler = this.compilerExec.Value.Load();
          compiler.InitialMode = CompilerQName("main");
-         compiler.InitialContextNode = moduleDoc;
+         compiler.InitialContextNode = sourceDoc;
 
          foreach (var pair in this.parameters) {
             compiler.SetParameter(pair.Key.ToQName(), pair.Value.ToXdmValue());
