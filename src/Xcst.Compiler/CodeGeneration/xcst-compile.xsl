@@ -2877,7 +2877,7 @@
          <if test="not(namespace-uri())">.</if>
          <apply-templates select="." mode="src:output-parameter-setter">
             <with-param name="indent" select="$indent + 2" tunnel="yes"/>
-            <with-param name="list-value" as="xs:QName*">
+            <with-param name="merged-list" as="xs:QName*">
                <if test="self::attribute(cdata-section-elements) 
                   or self::attribute(suppress-indentation)">
                   <sequence select="distinct-values(

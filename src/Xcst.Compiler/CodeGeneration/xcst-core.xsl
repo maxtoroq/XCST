@@ -2071,20 +2071,35 @@
    </template>
 
    <template match="@cdata-section-elements | @suppress-indentation" mode="src:output-parameter-setter">
-      <param name="list-value" select="
-         for $s in tokenize(., '\s')[.]
-         return xcst:EQName(., $s, true())"/>
+      <param name="merged-list" as="xs:QName*"/>
 
-      <!-- TODO: AVT -->
       <value-of select="src:output-parameter-property(.)"/>
-      <text> = new </text>
-      <value-of select="src:global-identifier('Xcst.QualifiedName')"/>
-      <text>[] { </text>
-      <for-each select="$list-value">
-         <if test="position() gt 1">, </if>
-         <sequence select="src:QName(.)"/>
-      </for-each>
-      <text> }</text>
+      <text> = </text>
+      <choose>
+         <when test="parent::c:output or not(xcst:is-value-template(.))">
+            <variable name="list" select="
+               if (parent::c:output) then $merged-list
+               else for $s in tokenize(., '\s')[.]
+                  return xcst:EQName(., $s, true())
+            "/>
+            <text>new </text>
+            <value-of select="src:global-identifier('Xcst.QualifiedName')"/>
+            <text>[] { </text>
+            <for-each select="$list">
+               <if test="position() gt 1">, </if>
+               <sequence select="src:QName(.)"/>
+            </for-each>
+            <text> }</text>
+         </when>
+         <otherwise>
+            <value-of select="src:fully-qualified-helper('DataType')"/>
+            <text>.List(</text>
+            <value-of select="src:expand-attribute(.)"/>
+            <text>, </text>
+            <value-of select="src:fully-qualified-helper('DataType'), 'QName'" separator="."/>
+            <text>)</text>
+         </otherwise>
+      </choose>
    </template>
 
    <template match="@doctype-public | @doctype-system | @item-separator | @media-type" mode="src:output-parameter-setter">

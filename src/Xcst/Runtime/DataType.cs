@@ -13,7 +13,9 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 
 namespace Xcst.Runtime {
 
@@ -25,7 +27,7 @@ namespace Xcst.Runtime {
 
          if (value == null) throw new ArgumentNullException(nameof(value));
 
-         switch (value.Trim()) {
+         switch (SimpleContent.Trim(value)) {
             case "yes":
             case "true":
             case "True":
@@ -55,7 +57,7 @@ namespace Xcst.Runtime {
 
          if (order == null) throw new ArgumentNullException(nameof(order));
 
-         switch (order.Trim()) {
+         switch (SimpleContent.Trim(order)) {
             case "ascending":
                return false;
 
@@ -83,7 +85,7 @@ namespace Xcst.Runtime {
 
          if (value == null) throw new ArgumentNullException(nameof(value));
 
-         if (value.Trim() == "omit") {
+         if (SimpleContent.Trim(value) == "omit") {
             return XmlStandalone.Omit;
          }
 
@@ -92,6 +94,20 @@ namespace Xcst.Runtime {
          }
 
          return XmlStandalone.No;
+      }
+
+      public static IList<TItem> List<TItem>(string list, Func<string, TItem> parseFn) {
+
+         string normalized = SimpleContent.NormalizeSpace(list);
+
+         if (String.IsNullOrEmpty(normalized)) {
+            return new TItem[0];
+         }
+
+         return normalized
+            .Split(' ')
+            .Select(i => parseFn(i))
+            .ToArray();
       }
    }
 }

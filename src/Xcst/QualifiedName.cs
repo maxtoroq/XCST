@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using Xcst.Runtime;
 
 namespace Xcst {
 
@@ -90,7 +91,7 @@ namespace Xcst {
                throw new ArgumentException("Closing brace not found.", nameof(localOrUriQualifiedName));
             }
 
-            string ns = localOrUriQualifiedName.Substring(2, closeIndex - 2).Trim();
+            string ns = SimpleContent.Trim(localOrUriQualifiedName.Substring(2, closeIndex - 2));
             string local = localOrUriQualifiedName.Substring(closeIndex + 1);
 
             return new QualifiedName(local, ns);

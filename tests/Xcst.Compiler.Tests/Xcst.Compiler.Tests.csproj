@@ -294,6 +294,7 @@
     <None Include="Language\Serialization\MethodXml.c.xcst" />
     <None Include="Language\Serialization\ResultDocument\OutputTypedTemplate.c.xcst" />
     <None Include="Language\Serialization\ResultDocument\Output.c.xcst" />
+    <None Include="Language\Serialization\ResultDocument\result-document.cdata-section-elements.avt.c.xcst" />
     <None Include="Language\Serialization\ResultDocument\result-document.standalone.avt.c.xcst" />
     <None Include="Language\Serialization\ResultDocument\result-document.output.type.i.xcst" />
     <None Include="Language\Serialization\MethodDefault.c.xcst" />

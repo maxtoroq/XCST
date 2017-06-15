@@ -14,6 +14,7 @@
 
 using System;
 using System.Reflection;
+using System.Linq;
 using System.Text;
 using System.Xml;
 
@@ -25,6 +26,7 @@ namespace Xcst.Xml {
       static readonly Action<XmlWriterSettings, string> setDocTypePublic;
       static readonly Action<XmlWriterSettings, string> setDocTypeSystem;
       static readonly Action<XmlWriterSettings, string> setMediaType;
+      static readonly FieldInfo cdataSectionsField;
 
       static XmlWriterSettingsFactory() {
 
@@ -41,6 +43,8 @@ namespace Xcst.Xml {
 
          setMediaType = (Action<XmlWriterSettings, string>)
             Delegate.CreateDelegate(typeof(Action<XmlWriterSettings, string>), settingsType.GetProperty("MediaType", BindingFlags.Instance | BindingFlags.NonPublic).GetSetMethod(true));
+
+         cdataSectionsField = settingsType.GetField("cdataSections", BindingFlags.Instance | BindingFlags.NonPublic);
       }
 
       public static XmlWriterSettings Create(OutputParameters parameters) {
@@ -58,6 +62,16 @@ namespace Xcst.Xml {
             } else if (parameters.Method == OutputParameters.StandardMethods.Text) {
                setOutputMethod(settings, XmlOutputMethod.Text);
             }
+         }
+
+         if (parameters.CdataSectionElements?.Count > 0) {
+
+            cdataSectionsField.SetValue(
+               settings,
+               parameters.CdataSectionElements
+                  .Select(qn => new XmlQualifiedName(qn.Name, qn.Namespace))
+                  .ToList()
+            );
          }
 
          if (parameters.DoctypePublic != null) {

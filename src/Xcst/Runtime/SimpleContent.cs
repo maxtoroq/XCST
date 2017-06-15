@@ -33,6 +33,7 @@ namespace Xcst.Runtime {
 
    public class SimpleContent {
 
+      static readonly char[] whiteSpaceChars = { (char)0x20, (char)0x9, (char)0xD, (char)0xA };
       readonly IFormatProvider formatProvider;
 
       public SimpleContent(IFormatProvider formatProvider) {
@@ -103,7 +104,7 @@ namespace Xcst.Runtime {
             return String.Empty;
          }
 
-         return value.Trim();
+         return value.Trim(whiteSpaceChars);
       }
 
       public static string NormalizeSpace(string value) {
@@ -178,10 +179,7 @@ namespace Xcst.Runtime {
       }
 
       static bool IsWhiteSpace(char c) {
-         return c == 0x20
-            || c == 0x9
-            || c == 0xD
-            || c == 0xA;
+         return Array.IndexOf(whiteSpaceChars, c) != -1;
       }
    }
 }
