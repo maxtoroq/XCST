@@ -14,6 +14,7 @@
 
 using System;
 using System.Collections.Generic;
+using Xcst.Runtime;
 
 namespace Xcst.PackageModel {
 
@@ -40,9 +41,12 @@ namespace Xcst.PackageModel {
 
             this.parameters.Remove(name);
 
-            // TODO: throw error if cast fails
+            try {
+               return (TValue)value;
 
-            return (TValue)value;
+            } catch (InvalidCastException) {
+               throw DynamicError.InvalidParameterCast(name);
+            }
          }
 
          if (defaultValue != null) {
