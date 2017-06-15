@@ -2126,15 +2126,21 @@
    </template>
 
    <template match="@standalone" mode="src:output-parameter-setter">
-      <!-- TODO: AVT -->
       <value-of select="src:output-parameter-property(.)"/>
       <text> = </text>
-      <value-of select="src:global-identifier('Xcst.XmlStandalone')"/>
-      <text>.</text>
       <choose>
-         <when test="xcst:non-string(.) eq 'omit'">Omit</when>
-         <when test="xcst:boolean(.)">Yes</when>
-         <otherwise>No</otherwise>
+         <when test="parent::c:output or not(xcst:is-value-template(.))">
+            <value-of select="src:global-identifier('Xcst.XmlStandalone')"/>
+            <text>.</text>
+            <choose>
+               <when test="xcst:non-string(.) eq 'omit'">Omit</when>
+               <when test="xcst:boolean(.)">Yes</when>
+               <otherwise>No</otherwise>
+            </choose>
+         </when>
+         <otherwise>
+            <sequence select="concat(src:fully-qualified-helper('DataType'), '.Standalone(', src:expand-attribute(.), ')')"/>
+         </otherwise>
       </choose>
    </template>
 

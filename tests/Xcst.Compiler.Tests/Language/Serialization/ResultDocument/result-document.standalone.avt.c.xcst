@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:use-functions in='System.IO' />
+
+   <c:template name='c:initial-template'>
+      <c:variable name='output' value='new StringWriter()'/>
+      <c:result-document output='output' standalone='{"omit"}'>
+         <foo>foo</foo>
+      </c:result-document>
+      <c:result-document output='output' standalone='{"yes"}'>
+         <foo>foo</foo>
+      </c:result-document>
+      <result>
+         <c:value-of value='output.ToString()'/>
+      </result>
+   </c:template>
+
+   <c:template name='expected'>
+      <result><![CDATA[<?xml version="1.0" encoding="utf-16"?><foo>foo</foo><?xml version="1.0" encoding="utf-16" standalone="yes"?><foo>foo</foo>]]></result>
+   </c:template>
+
+</c:module>

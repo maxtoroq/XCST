@@ -78,5 +78,20 @@ namespace Xcst.Runtime {
       public static Uri Uri(string uri) {
          return new Uri(uri, UriKind.RelativeOrAbsolute);
       }
+
+      public static XmlStandalone Standalone(string value) {
+
+         if (value == null) throw new ArgumentNullException(nameof(value));
+
+         if (value.Trim() == "omit") {
+            return XmlStandalone.Omit;
+         }
+
+         if (Boolean(value)) {
+            return XmlStandalone.Yes;
+         }
+
+         return XmlStandalone.No;
+      }
    }
 }
