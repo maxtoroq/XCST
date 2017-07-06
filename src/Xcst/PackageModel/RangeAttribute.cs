@@ -96,17 +96,16 @@ namespace Xcst.PackageModel {
 
          string minimum = (string)this.Minimum;
          string maximum = (string)this.Maximum;
+         Type type = this.OperandType;
 
          if (minimum == null
             || maximum == null
-            || this.OperandType == null
-            || !typeof(IComparable).IsAssignableFrom(this.OperandType)) {
+            || type == null
+            || !typeof(IComparable).IsAssignableFrom(type)) {
 
             // let base throw
             return;
          }
-
-         Type type = this.OperandType;
 
          TypeConverter converter = TypeDescriptor.GetConverter(type);
          IComparable min = (IComparable)converter.ConvertFromString(null, MinMaxFormatCulture, minimum);
