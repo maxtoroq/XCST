@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:use-functions in='System.ComponentModel.DataAnnotations'/>
+   <c:use-functions in='Microsoft.VisualStudio.TestTools.UnitTesting'/>
+
+   <c:type name='foo'>
+      <c:member name='bar' as='int?' min='5'/>
+   </c:type>
+
+   <c:function name='IsValid' as='bool'>
+      <c:param name='value'/>
+
+      <c:variable name='context' value='new ValidationContext(value, null, null)'/>
+      <c:return value='Validator.TryValidateObject(value, context, null, validateAllProperties: true)'/>
+   </c:function>
+
+   <c:template name='c:initial-template'>
+      <c:void value='Assert.IsTrue(IsValid(new foo { bar = null }))'/>
+      <c:void value='Assert.IsTrue(IsValid(new foo { bar = 5 }))'/>
+      <c:void value='Assert.IsFalse(IsValid(new foo { bar = 4 }))'/>
+   </c:template>
+
+   <c:template name='expected'/>
+
+</c:module>

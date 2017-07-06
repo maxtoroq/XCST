@@ -404,8 +404,8 @@
          <value-of select="$type"/>
          <text>), </text>
          <value-of select="
-            (@min/src:verbatim-string(.), concat($type, '.MinValue'))[1],
-            (@max/src:verbatim-string(.), concat($type, '.MaxValue'))[1],
+            @min/concat('minimum: ', src:verbatim-string(.)),
+            @max/concat('maximum: ', src:verbatim-string(.)),
             $setters/string()" separator=", "/>
          <text>)]</text>
       </if>

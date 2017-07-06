@@ -13,27 +13,112 @@
 // limitations under the License.
 
 using System;
+using System.ComponentModel;
 using System.Globalization;
+using System.Reflection;
+using BaseRangeAttribute = System.ComponentModel.DataAnnotations.RangeAttribute;
 
 namespace Xcst.PackageModel {
 
+   // .NET's RangeAttribute parses minimum and maximum arguments using the current culture
+   // this class uses invariant culture instead
+   // 
+   // see also <https://github.com/dotnet/corefx/issues/2648>
+
+   using BaseInitializeAction = Action<BaseRangeAttribute, IComparable, IComparable, Func<object, object>>;
+
    /// <exclude/>
 
-   public class RangeAttribute : System.ComponentModel.DataAnnotations.RangeAttribute {
+   public class RangeAttribute : BaseRangeAttribute {
 
-      public RangeAttribute(Type type, object minimum, object maximum)
-         : base(type, ValueToString(minimum), ValueToString(maximum)) { }
+      private static CultureInfo MinMaxFormatCulture => CultureInfo.InvariantCulture;
 
-      static string ValueToString(object value) {
+      private static BaseInitializeAction BaseInitialize { get; }
 
-         if (value == null) {
-            return null;
+      static RangeAttribute() {
+
+         BaseInitialize = (BaseInitializeAction)
+            Delegate.CreateDelegate(
+               typeof(BaseInitializeAction),
+               typeof(BaseRangeAttribute).GetMethod("Initialize",
+                  BindingFlags.Instance | BindingFlags.NonPublic,
+                  null,
+                  new[] { typeof(IComparable), typeof(IComparable), typeof(Func<object, object>) },
+                  null));
+      }
+
+      bool conversionInit = false;
+
+      public RangeAttribute(Type type, string minimum = null, string maximum = null)
+         : base(
+            GetUnderlyingType(type),
+            minimum ?? DefaultMinMax(type, "MinValue"),
+            maximum ?? DefaultMinMax(type, "MaxValue")) { }
+
+      static Type GetUnderlyingType(Type type) {
+
+         // base class expects type to be IComparable
+         // this excludes Nullable<T>
+
+         return Nullable.GetUnderlyingType(type)
+            ?? type;
+      }
+
+      static string DefaultMinMax(Type type, string minOrMax) {
+
+         type = GetUnderlyingType(type);
+         FieldInfo fld = type.GetField(minOrMax, BindingFlags.Public | BindingFlags.Static);
+
+         if (fld == null) {
+            throw new ArgumentException(
+               $"Could not find a '{minOrMax}' static field on type '{type.FullName}'. Specify an explicit value.",
+               nameof(type));
          }
 
-         // format provider must be the same used by base class
-         // to convert the string back to the operand type
+         return Convert.ToString(fld.GetValue(null), MinMaxFormatCulture);
+      }
 
-         return Convert.ToString(value, CultureInfo.CurrentCulture);
+      public override bool IsValid(object value) {
+         SetupConversion();
+         return base.IsValid(value);
+      }
+
+      public override string FormatErrorMessage(string name) {
+         SetupConversion();
+         return base.FormatErrorMessage(name);
+      }
+
+      void SetupConversion() {
+
+         if (this.conversionInit) {
+            return;
+         }
+
+         string minimum = (string)this.Minimum;
+         string maximum = (string)this.Maximum;
+
+         if (minimum == null
+            || maximum == null
+            || this.OperandType == null
+            || !typeof(IComparable).IsAssignableFrom(this.OperandType)) {
+
+            // let base throw
+            return;
+         }
+
+         Type type = this.OperandType;
+
+         TypeConverter converter = TypeDescriptor.GetConverter(type);
+         IComparable min = (IComparable)converter.ConvertFromString(null, MinMaxFormatCulture, minimum);
+         IComparable max = (IComparable)converter.ConvertFromString(null, MinMaxFormatCulture, maximum);
+
+         Func<object, object> conversion = value =>
+            (value != null && value.GetType() == type) ? value
+            : converter.ConvertFrom(value); // uses current culture
+
+         BaseInitialize(this, min, max, conversion);
+
+         this.conversionInit = true;
       }
    }
 }

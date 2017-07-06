@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:use-functions in='System.ComponentModel.DataAnnotations'/>
+   <c:use-functions in='System.Globalization'/>
+   <c:use-functions in='System.Threading'/>
+   <c:use-functions in='Microsoft.VisualStudio.TestTools.UnitTesting'/>
+
+   <c:type name='foo'>
+      <c:member name='bar' as='decimal' min='-0.5' max='0.5'/>
+   </c:type>
+
+   <c:function name='IsValid' as='bool'>
+      <c:param name='value'/>
+
+      <c:variable name='context' value='new ValidationContext(value, null, null)'/>
+      <c:return value='Validator.TryValidateObject(value, context, null, validateAllProperties: true)'/>
+   </c:function>
+
+   <c:template name='c:initial-template'>
+      <c:set member='Thread.CurrentThread.CurrentCulture' value='new CultureInfo("es")'/>
+      <c:void value='Assert.IsTrue(IsValid(new foo { bar = -0.5m }))'/>
+      <c:void value='Assert.IsFalse(IsValid(new foo { bar = 0.6m }))'/>
+      <c:void value='Assert.IsTrue(new Xcst.PackageModel.RangeAttribute(typeof(decimal), "-0.5", "0.5").IsValid("-0,5"))'/>
+   </c:template>
+
+   <c:template name='expected'/>
+
+</c:module>

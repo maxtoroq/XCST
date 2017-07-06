@@ -404,6 +404,9 @@
     <None Include="Language\Types\Member\Children.c.xcst" />
     <None Include="Language\Types\Member\Children.i.xcst" />
     <None Include="Language\Types\Member\ChildrenText.i.xcst" />
+    <None Include="Language\Types\Member\ImplicitMaxNullable.c.xcst" />
+    <None Include="Language\Types\Member\MinMaxInvariant.c.xcst" />
+    <None Include="Language\Types\Member\ImplicitMinNullable.c.xcst" />
     <None Include="Language\Types\Member\Member\NoOtherFollowing.i.xcst" />
     <None Include="Language\Types\Member\Member\NoOtherFollowingText.i.xcst" />
     <None Include="Language\Types\Member\NoAs.c.xcst" />
