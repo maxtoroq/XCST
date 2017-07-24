@@ -34,10 +34,6 @@ namespace Xcst.Compiler {
 
       public string[] TargetBaseTypes { get; set; }
 
-      public string AlternateFirstBaseType { get; set; }
-
-      public string AlternateFirstBaseTypeIfExistsType { get; set; }
-
       public bool UseLineDirective { get; set; }
 
       public string NewLineChars { get; set; }
@@ -218,14 +214,6 @@ namespace Xcst.Compiler {
          }
 
          compiler.SetParameter(CompilerQName("base-types"), this.TargetBaseTypes.ToXdmValue());
-
-         if (this.AlternateFirstBaseType != null) {
-            compiler.SetParameter(CompilerQName("alternate-first-base-type"), this.AlternateFirstBaseType.ToXdmItem());
-         }
-
-         if (this.AlternateFirstBaseTypeIfExistsType != null) {
-            compiler.SetParameter(CompilerQName("alternate-first-base-type-if-exists-type"), this.AlternateFirstBaseTypeIfExistsType.ToXdmItem());
-         }
 
          compiler.SetParameter(CompilerQName("use-line-directive"), this.UseLineDirective.ToXdmValue());
 

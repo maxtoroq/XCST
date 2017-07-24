@@ -28,8 +28,6 @@
    <param name="src:namespace" as="xs:string?"/>
    <param name="src:class" as="xs:string?"/>
    <param name="src:base-types" as="xs:string*"/>
-   <param name="src:alternate-first-base-type" as="xs:string?"/>
-   <param name="src:alternate-first-base-type-if-exists-type" as="xs:string?"/>
 
    <param name="src:library-package" select="false()" as="xs:boolean"/>
    <param name="src:use-package-base" as="xs:string?"/>
@@ -1842,20 +1840,13 @@
       <value-of select="$class"/>
       <if test="$principal-module">
          <text> : </text>
-         <variable name="base-types" as="xs:string+">
-            <choose>
-               <when test="$src:alternate-first-base-type
-                  and $src:alternate-first-base-type-if-exists-type
-                  and $package-manifest/xcst:type[xcst:name-equals(@name, $src:alternate-first-base-type-if-exists-type)]">
-                  <sequence select="$src:alternate-first-base-type, $src:base-types[position() gt 1]"/>
-               </when>
-               <otherwise>
-                  <sequence select="$src:base-types"/>
-               </otherwise>
-            </choose>
-            <sequence select="$src:package-interface"/>
+         <variable name="base-types" as="xs:string*">
+            <variable name="custom" as="xs:string*">
+               <apply-templates select="." mode="src:base-types"/>
+            </variable>
+            <sequence select="if (not(empty($custom))) then $custom else $src:base-types"/>
          </variable>
-         <value-of select="$base-types" separator=", "/>
+         <value-of select="$base-types, $src:package-interface" separator=", "/>
       </if>
       <call-template name="src:open-brace"/>
 
@@ -1932,6 +1923,8 @@
       <text>#endregion </text>
       <call-template name="src:close-brace"/>
    </template>
+
+   <template match="c:module/node() | c:package/node()" mode="src:base-types"/>
 
    <template match="c:module/node() | c:package/node()" mode="src:infrastructure-extra"/>
 
