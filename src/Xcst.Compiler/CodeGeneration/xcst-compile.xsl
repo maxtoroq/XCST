@@ -29,7 +29,7 @@
    <param name="src:class" as="xs:string?"/>
    <param name="src:base-types" as="xs:string*"/>
 
-   <param name="src:library-package" select="false()" as="xs:boolean"/>
+   <param name="src:named-package" select="false()" as="xs:boolean"/>
    <param name="src:use-package-base" as="xs:string?"/>
    <param name="src:manifest-only" select="false()" as="xs:boolean"/>
 
@@ -43,16 +43,16 @@
    <template match="c:module | c:package" mode="src:main">
       <param name="namespace" select="$src:namespace" as="xs:string?"/>
       <param name="class" select="$src:class" as="xs:string?"/>
-      <param name="library-package" select="$src:library-package"/>
+      <param name="named-package" select="$src:named-package"/>
       <param name="manifest-only" select="$src:manifest-only"/>
 
       <variable name="package-name" select="self::c:package/@name/xcst:name(.)"/>
       <variable name="package-name-parts" select="tokenize($package-name, '\.')"/>
       <variable name="language" select="@language/xcst:non-string(.)"/>
 
-      <if test="$library-package
+      <if test="$named-package
          and not($package-name)">
-         <sequence select="error((), 'A library package is expected. Use the c:package element with a ''name'' attribute.', src:error-object(.))"/>
+         <sequence select="error((), 'A named package is expected. Use the c:package element with a ''name'' attribute.', src:error-object(.))"/>
       </if>
 
       <variable name="ns" as="xs:string">
@@ -61,13 +61,13 @@
                <choose>
                   <when test="count($package-name-parts) eq 1">
                      <if test="not($namespace)">
-                        <sequence select="error((), 'The namespace parameter is required if the package name is not multipart.', src:error-object(.))"/>
+                        <sequence select="error((), 'The ''namespace'' parameter is required if the package name is not multipart.', src:error-object(.))"/>
                      </if>
                      <sequence select="$namespace"/>
                   </when>
                   <otherwise>
                      <if test="$namespace">
-                        <sequence select="error((), 'The namespace parameter should be omitted if the package name is multipart.', src:error-object(.))"/>
+                        <sequence select="error((), 'The ''namespace'' parameter should be omitted if the package name is multipart.', src:error-object(.))"/>
                      </if>
                      <sequence select="string-join($package-name-parts[position() ne last()], '.')"/>
                   </otherwise>
@@ -75,7 +75,7 @@
             </when>
             <otherwise>
                <if test="not($namespace)">
-                  <sequence select="error((), 'The namespace parameter is required for implicit and unnamed packages.', src:error-object(.))"/>
+                  <sequence select="error((), 'The ''namespace'' parameter is required for implicit and unnamed packages.', src:error-object(.))"/>
                </if>
                <sequence select="$namespace"/>
             </otherwise>
@@ -86,13 +86,13 @@
          <choose>
             <when test="$package-name">
                <if test="$class">
-                  <sequence select="error((), 'The class parameter should be omitted for library packages.', src:error-object(.))"/>
+                  <sequence select="error((), 'The ''class'' parameter should be omitted for named packages.', src:error-object(.))"/>
                </if>
                <sequence select="$package-name-parts[last()]"/>
             </when>
             <otherwise>
                <if test="not($class)">
-                  <sequence select="error((), 'The class parameter is required for implicit and unnamed packages.', src:error-object(.))"/>
+                  <sequence select="error((), 'The ''class'' parameter is required for implicit and unnamed packages.', src:error-object(.))"/>
                </if>
                <sequence select="$class"/>
             </otherwise>
@@ -126,7 +126,7 @@
                      </if>
                      <variable name="result">
                         <apply-templates select="doc($package-uri)/c:package" mode="src:main">
-                           <with-param name="library-package" select="true()"/>
+                           <with-param name="named-package" select="true()"/>
                            <with-param name="manifest-only" select="true()"/>
                         </apply-templates>
                      </variable>
@@ -201,7 +201,6 @@
                <with-param name="modules" select="$modules" tunnel="yes"/>
                <with-param name="package-manifest" select="$package-manifest" tunnel="yes"/>
                <with-param name="used-packages" select="$used-packages" tunnel="yes"/>
-               <with-param name="library-package" select="$library-package" tunnel="yes"/>
             </call-template>
          </if>
       </src:program>

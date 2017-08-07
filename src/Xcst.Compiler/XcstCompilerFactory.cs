@@ -59,7 +59,7 @@ namespace Xcst.Compiler {
             if (!String.IsNullOrEmpty(PackagesLocation)
                && !String.IsNullOrEmpty(PackageFileExtension)) {
 
-               return FindLibraryPackage;
+               return FindNamedPackage;
             }
             return null;
          }
@@ -185,7 +185,7 @@ namespace Xcst.Compiler {
          return loader();
       }
 
-      Uri FindLibraryPackage(string packageName) {
+      Uri FindNamedPackage(string packageName) {
 
          string dir = this.PackagesLocation;
          string search = "*." + this.PackageFileExtension;

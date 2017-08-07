@@ -42,7 +42,7 @@ namespace Xcst.Compiler {
 
       public bool OpenBraceOnNewLine { get; set; }
 
-      public bool LibraryPackage { get; set; }
+      public bool NamedPackage { get; set; }
 
       public string UsePackageBase { get; set; }
 
@@ -227,7 +227,7 @@ namespace Xcst.Compiler {
 
          compiler.SetParameter(CompilerQName("open-brace-on-new-line"), this.OpenBraceOnNewLine.ToXdmItem());
 
-         compiler.SetParameter(CompilerQName("library-package"), this.LibraryPackage.ToXdmItem());
+         compiler.SetParameter(CompilerQName("named-package"), this.NamedPackage.ToXdmItem());
 
          if (this.UsePackageBase != null) {
             compiler.SetParameter(CompilerQName("use-package-base"), this.UsePackageBase.ToXdmItem());

@@ -61,29 +61,19 @@ function GenerateModulesForDirectory([IO.DirectoryInfo]$directory, $relativeNs) 
 
       $libraryPackage = $file.Extension -eq ".pxcst"
 
-         
-      $fileStream = [IO.File]::OpenRead($file.FullName)
+      $compiler = $compilerFactory.CreateCompiler()
+      $compiler.TargetNamespace = $ns
+      $compiler.NamedPackage = $libraryPackage
+      $compiler.IndentChars = $singleIndent
 
-      try {
+      if (!$libraryPackage) {
+         $compiler.TargetClass = [IO.Path]::GetFileNameWithoutExtension($file.Name)
+      }
 
-         $compiler = $compilerFactory.CreateCompiler()
-         $compiler.TargetNamespace = $ns
-         $compiler.LibraryPackage = $libraryPackage
-         $compiler.IndentChars = $singleIndent
+      $xcstResult = $compiler.Compile((New-Object Uri $file.FullName))
 
-         if (!$libraryPackage) {
-            $compiler.TargetClass = [IO.Path]::GetFileNameWithoutExtension($file.Name)
-         }
-
-         $xcstResult = $compiler.Compile($fileStream, (New-Object Uri $file.FullName))
-
-         foreach ($src in $xcstResult.CompilationUnits) {
-            WriteLine $src
-         }
-
-      } finally {
-         
-         $fileStream.Dispose()
+      foreach ($src in $xcstResult.CompilationUnits) {
+         WriteLine $src
       }
    }
 
