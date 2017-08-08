@@ -281,9 +281,9 @@
     <None Include="Language\ProgramStructure\Packages\OverridingComponents\Override\Children.c.xcst" />
     <None Include="Language\ProgramStructure\Packages\OverridingComponents\Override\Children.i.xcst" />
     <None Include="Language\ProgramStructure\Packages\OverridingComponents\Override\ChildrenText.i.xcst" />
-    <None Include="Language\ProgramStructure\UseFunctions\NoChildrenText.i.xcst" />
-    <None Include="Language\ProgramStructure\UseFunctions\NoOtherPreceding.i.xcst" />
-    <None Include="Language\ProgramStructure\UseFunctions\NoChildren.i.xcst" />
+    <None Include="Language\ProgramStructure\ImportNamespace\NoChildrenText.i.xcst" />
+    <None Include="Language\ProgramStructure\ImportNamespace\NoOtherPreceding.i.xcst" />
+    <None Include="Language\ProgramStructure\ImportNamespace\NoChildren.i.xcst" />
     <None Include="Language\Repetition\ForEach\Sort\NoChildrenText.i.xcst" />
     <None Include="Language\Repetition\ForEach\Sort\NoOtherPrecedingText.i.xcst" />
     <None Include="Language\Repetition\ForEach\Sort\NoOtherPreceding.i.xcst" />
@@ -653,11 +653,10 @@
     <None Include="Language\ProgramStructure\Packages\Dependencies\use-package.name.type.i.xcst" />
     <None Include="Language\ProgramStructure\Packages\Dependencies\use-package.pxcst" />
     <None Include="Language\ProgramStructure\Packages\Dependencies\use-package.name.req.i.xcst" />
-    <None Include="Language\ProgramStructure\UseFunctions\use-functions.alias.type.i.xcst" />
-    <None Include="Language\ProgramStructure\UseFunctions\use-functions.static-only_alias.mutex.i.xcst" />
-    <None Include="Language\ProgramStructure\UseFunctions\use-functions.foo.i.xcst" />
-    <None Include="Language\ProgramStructure\UseFunctions\use-functions.in.type.i.xcst" />
-    <None Include="Language\ProgramStructure\UseFunctions\use-functions.in.req.i.xcst" />
+    <None Include="Language\ProgramStructure\ImportNamespace\import-namespace.alias.type.i.xcst" />
+    <None Include="Language\ProgramStructure\ImportNamespace\import-namespace.foo.i.xcst" />
+    <None Include="Language\ProgramStructure\ImportNamespace\import-namespace.ns.type.i.xcst" />
+    <None Include="Language\ProgramStructure\ImportNamespace\import-namespace.ns.req.i.xcst" />
     <None Include="Language\ProgramStructure\Modules\module.version.type.i.xcst" />
     <None Include="Language\ProgramStructure\Packages\Dependencies\Duplicate2.c.xcst" />
     <None Include="Language\ProgramStructure\Packages\Dependencies\_Duplicate2.xcst" />
@@ -838,7 +837,6 @@
     <None Include="Language\Types\type.name.type.i.xcst" />
     <None Include="Language\Types\type.visibility.type.i.xcst" />
     <None Include="Language\Types\Duplicate.i.xcst" />
-    <None Include="Language\ProgramStructure\UseFunctions\use-functions.static-only.type.i.xcst" />
     <None Include="Language\Validation\validation.foo.i.xcst" />
     <None Include="Language\CreatingNodesAndObjects\Delegate\Param\DefaultValueAndRequired.c.xcst" />
     <None Include="Language\CreatingNodesAndObjects\Delegate\Param\DefaultValueAndRequired.i.xcst" />

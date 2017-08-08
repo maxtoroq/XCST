@@ -252,7 +252,7 @@
       </attribute>
       <ref name="standard-attributes-except-version"/>
       <zeroOrMore>
-         <ref name="use-functions"/>
+         <ref name="import-namespace"/>
       </zeroOrMore>
       <zeroOrMore>
          <choice>
@@ -262,25 +262,19 @@
       </zeroOrMore>
    </define>
 
-   <define name="use-functions">
-      <element name="use-functions">
-         <ann:documentation>Imports functions from a function library.</ann:documentation>
-         <attribute name="in">
-            <ann:documentation>The namespace or fully-qualified class name to import functions from.</ann:documentation>
-            <ref name="namespace_or_type_name"/>
+   <define name="import-namespace">
+      <element name="import-namespace">
+         <ann:documentation>Imports a namespace.</ann:documentation>
+         <attribute name="ns">
+            <ann:documentation>The namespace to import.</ann:documentation>
+            <ref name="namespace_name"/>
          </attribute>
-         <zeroOrMore>
-            <choice>
-               <attribute name="alias">
-                  <ann:documentation>A name to use as prefix for imported functions.</ann:documentation>
-                  <ref name="identifier"/>
-               </attribute>
-               <attribute name="static-only">
-                  <ann:documentation>Specifies whether to import static functions only. The in attribute must refer to a class.</ann:documentation>
-                  <ref name="boolean"/>
-               </attribute>
-            </choice>
-         </zeroOrMore>
+         <optional>
+            <attribute name="alias">
+               <ann:documentation>An alias for the namespace.</ann:documentation>
+               <ref name="identifier"/>
+            </attribute>
+         </optional>
          <ref name="standard-attributes"/>
       </element>
    </define>
@@ -1896,11 +1890,13 @@
 
    <define name="type_name">
       <ann:documentation>Type name.</ann:documentation>
-      <ref name="namespace_or_type_name"/>
+      <data type="token">
+         <param name="minLength">1</param>
+      </data>
    </define>
 
-   <define name="namespace_or_type_name">
-      <ann:documentation>Namespace or type name.</ann:documentation>
+   <define name="namespace_name">
+      <ann:documentation>Namespace name.</ann:documentation>
       <data type="token">
          <param name="minLength">1</param>
       </data>

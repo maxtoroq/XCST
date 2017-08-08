@@ -311,7 +311,7 @@
       <sequence select="upper-case($strings[1]) eq upper-case($strings[2])"/>
    </function>
 
-   <template match="c:attribute-set | c:function | c:import | c:output | c:param | c:template | c:type | c:use-functions | c:use-package | c:variable" mode="xcst:check-top-level"/>
+   <template match="c:attribute-set | c:function | c:import | c:output | c:param | c:template | c:type | c:import-namespace | c:use-package | c:variable" mode="xcst:check-top-level"/>
 
    <template match="c:validation" mode="xcst:check-top-level">
       <call-template name="xcst:validate-attribs">
@@ -1340,7 +1340,7 @@
                <with-param name="indent" select="$indent + 1" tunnel="yes"/>
             </apply-templates>
          </if>
-         <apply-templates select="if ($module-uri) then doc($module-uri)/*/c:use-functions else ()" mode="src:import-namespace">
+         <apply-templates select="if ($module-uri) then doc($module-uri)/*/c:import-namespace else ()" mode="src:import-namespace">
             <with-param name="indent" select="$indent + 1" tunnel="yes"/>
          </apply-templates>
 
@@ -1770,7 +1770,7 @@
       <apply-templates select="$package-manifest/xcst:type[@accepted/xs:boolean(.) and @visibility ne 'hidden']" mode="src:import-namespace">
          <with-param name="indent" select="$indent + 1" tunnel="yes"/>
       </apply-templates>
-      <apply-templates select="c:use-functions" mode="src:import-namespace">
+      <apply-templates select="c:import-namespace" mode="src:import-namespace">
          <with-param name="indent" select="$indent + 1" tunnel="yes"/>
       </apply-templates>
       <apply-templates select="." mode="src:import-namespace-extra">
@@ -1794,27 +1794,21 @@
       <value-of select="$src:statement-delimiter"/>
    </template>
 
-   <template match="c:use-functions" mode="src:import-namespace">
+   <template match="c:import-namespace" mode="src:import-namespace">
       <call-template name="xcst:validate-attribs">
-         <with-param name="required" select="'in'"/>
-         <with-param name="optional" select="'alias', 'static-only'"/>
+         <with-param name="required" select="'ns'"/>
+         <with-param name="optional" select="'alias'"/>
       </call-template>
       <call-template name="xcst:no-children"/>
       <call-template name="xcst:no-other-preceding"/>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
       <text>using </text>
-      <if test="@static-only/xcst:boolean(.)">
-         <if test="@alias">
-            <sequence select="error(xs:QName('err:XTSE0020'), 'Cannot use both ''alias'' and static-only=''yes''.', src:error-object(.))"/>
-         </if>
-         <text>static </text>
-      </if>
       <if test="@alias">
          <value-of select="xcst:type(@alias)"/>
          <text> = </text>
       </if>
-      <value-of select="xcst:type(@in)"/>
+      <value-of select="xcst:type(@ns)"/>
       <value-of select="$src:statement-delimiter"/>
    </template>
 

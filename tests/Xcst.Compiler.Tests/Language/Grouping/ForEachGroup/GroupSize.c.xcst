@@ -2,7 +2,7 @@
 <?ignore-test ?>
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
-   <c:use-functions in='System.Linq'/>
+   <c:import-namespace ns='System.Linq'/>
 
    <c:template name='c:initial-template' expand-text='yes'>
       <table>

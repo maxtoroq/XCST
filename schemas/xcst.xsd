@@ -147,7 +147,7 @@
    </xs:element>
    <xs:complexType name="module-content">
       <xs:sequence>
-         <xs:element minOccurs="0" maxOccurs="unbounded" ref="c:use-functions"/>
+         <xs:element minOccurs="0" maxOccurs="unbounded" ref="c:import-namespace"/>
          <xs:choice minOccurs="0" maxOccurs="unbounded">
             <xs:group ref="c:declaration"/>
             <xs:group ref="c:user-defined-data-element"/>
@@ -165,24 +165,19 @@
       </xs:attribute>
       <xs:attributeGroup ref="c:standard-attributes-except-version"/>
    </xs:complexType>
-   <xs:element name="use-functions">
+   <xs:element name="import-namespace">
       <xs:annotation>
-         <xs:documentation>Imports functions from a function library.</xs:documentation>
+         <xs:documentation>Imports a namespace.</xs:documentation>
       </xs:annotation>
       <xs:complexType>
-         <xs:attribute name="in" use="required" type="c:namespace_or_type_name">
+         <xs:attribute name="ns" use="required" type="c:namespace_name">
             <xs:annotation>
-               <xs:documentation>The namespace or fully-qualified class name to import functions from.</xs:documentation>
+               <xs:documentation>The namespace to import.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attribute name="alias" type="c:identifier">
             <xs:annotation>
-               <xs:documentation>A name to use as prefix for imported functions.</xs:documentation>
-            </xs:annotation>
-         </xs:attribute>
-         <xs:attribute name="static-only" type="c:boolean">
-            <xs:annotation>
-               <xs:documentation>Specifies whether to import static functions only. The in attribute must refer to a class.</xs:documentation>
+               <xs:documentation>An alias for the namespace.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>
@@ -1846,11 +1841,13 @@
       <xs:annotation>
          <xs:documentation>Type name.</xs:documentation>
       </xs:annotation>
-      <xs:restriction base="c:namespace_or_type_name"/>
+      <xs:restriction base="xs:token">
+         <xs:minLength value="1"/>
+      </xs:restriction>
    </xs:simpleType>
-   <xs:simpleType name="namespace_or_type_name">
+   <xs:simpleType name="namespace_name">
       <xs:annotation>
-         <xs:documentation>Namespace or type name.</xs:documentation>
+         <xs:documentation>Namespace name.</xs:documentation>
       </xs:annotation>
       <xs:restriction base="xs:token">
          <xs:minLength value="1"/>

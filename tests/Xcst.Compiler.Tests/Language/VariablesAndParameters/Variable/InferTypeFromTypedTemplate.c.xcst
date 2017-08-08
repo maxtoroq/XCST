@@ -2,7 +2,7 @@
 <?ignore-test ?>
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
-   <c:use-functions in='Microsoft.VisualStudio.TestTools.UnitTesting'/>
+   <c:import-namespace ns='Microsoft.VisualStudio.TestTools.UnitTesting'/>
 
    <c:template name='c:initial-template'>
       <c:variable name='a'>

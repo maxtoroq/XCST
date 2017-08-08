@@ -3,7 +3,7 @@
    xmlns:c='http://maxtoroq.github.io/XCST'
    xmlns:foo='urn:foo'>
 
-   <c:use-functions in='System'/>
+   <c:import-namespace ns='System'/>
 
    <c:template name='foo:foo'>
       <foo/>

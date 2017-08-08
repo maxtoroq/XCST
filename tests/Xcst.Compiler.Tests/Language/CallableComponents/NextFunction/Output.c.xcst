@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
-   <c:use-functions in='System'/>
+   <c:import-namespace ns='System'/>
 
    <c:import href='_Output.xcst'/>
 
