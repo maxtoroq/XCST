@@ -166,7 +166,23 @@ try {
    [xml]$noticeDoc = Get-Content $solutionPath\NOTICE.xml
    $notice = $noticeDoc.DocumentElement
 
-   Release $ProjectName
+   $projects = "Xcst", "Xcst.Compiler"
+
+   if ($ProjectName -eq '*') {
+      
+      foreach ($p in $projects) {
+         if ((PackageVersion $p).Build -ne 0) {
+            throw "Patch number should be reset to 0 (Project: $p)."
+         }
+      }
+
+      foreach ($p in $projects) {
+         Release $p
+      }
+
+   } else {
+      Release $ProjectName
+   }
 
 } finally {
    Pop-Location
