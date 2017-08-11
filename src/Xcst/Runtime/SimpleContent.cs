@@ -86,6 +86,10 @@ namespace Xcst.Runtime {
          return Convert(value);
       }
 
+      public string Format(string format, params object[] args) {
+         return String.Format(this.formatProvider, format, args);
+      }
+
       public string FormatValueTemplate(IFormattable value) {
          return value.ToString(null, this.formatProvider);
       }
