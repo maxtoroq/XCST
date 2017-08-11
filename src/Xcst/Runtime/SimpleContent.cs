@@ -52,7 +52,7 @@ namespace Xcst.Runtime {
          return Join(separator, value.Cast<object>());
       }
 
-      public string Join(string separator, params object[] value) {
+      public string Join(string separator, object[] value) {
          return Join(separator, value as IEnumerable<object>);
       }
 
@@ -65,7 +65,7 @@ namespace Xcst.Runtime {
          return Join(separator, value.Where(v => v != null).Select(v => Convert(v)));
       }
 
-      public string Join(string separator, params string[] value) {
+      public string Join(string separator, string[] value) {
          return Join(separator, value as IEnumerable<string>);
       }
 

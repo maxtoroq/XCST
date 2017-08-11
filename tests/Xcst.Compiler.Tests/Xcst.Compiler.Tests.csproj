@@ -301,7 +301,6 @@
     <None Include="Language\Serialization\WithItemSeparator.c.xcst" />
     <None Include="Language\Serialization\WithoutItemSeparator.c.xcst" />
     <None Include="Language\CreatingNodesAndObjects\ValueOf\SimpleContent.c.xcst" />
-    <None Include="Language\CreatingNodesAndObjects\ValueOf\MultipleItemsImplicitArray.c.xcst" />
     <None Include="Language\CreatingNodesAndObjects\ValueOf\MultipleItems.c.xcst" />
     <None Include="Language\CreatingNodesAndObjects\ValueOf\MultipleItemsWithSeparator.c.xcst" />
     <None Include="Language\Diagnostics\Assert\Assert.c.xcst" />
