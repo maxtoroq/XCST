@@ -4,11 +4,17 @@
    <c:import-namespace ns='Microsoft.VisualStudio.TestTools.UnitTesting'/>
 
    <c:template name='c:initial-template'>
-      <c:variable name='foo'>
-         <c:text>A</c:text>
-         <c:object value='"1"'/>
+      <c:variable name='a'>
+         <c:object value='"A"'/>
+         <c:assert test='true'/>
       </c:variable>
-      <c:void value='Assert.IsTrue(foo is object[])'/>
+      <c:void value='Assert.IsTrue(CompileType(a) == typeof(object[]))'/>
+      <c:variable name='b'>
+         <c:object value='"A"'/>
+         <c:object value='"1"'/>
+         <c:assert test='true'/>
+      </c:variable>
+      <c:void value='Assert.IsTrue(CompileType(b) == typeof(object[]))'/>
    </c:template>
 
    <c:template name='expected'/>

@@ -125,7 +125,7 @@
                         <sequence select="error(xs:QName('err:XTSE3000'), concat('Cannot find package ''', $package-name, '''.'), src:error-object(.))"/>
                      </if>
                      <variable name="result">
-                        <apply-templates select="doc($package-uri)/c:package" mode="src:main">
+                        <apply-templates select="doc(string($package-uri))/c:package" mode="src:main">
                            <with-param name="named-package" select="true()"/>
                            <with-param name="manifest-only" select="true()"/>
                         </apply-templates>
@@ -426,11 +426,16 @@
          <sequence select="error(xs:QName('err:XTSE0010'), 'The ''value'' attribute or child element/text should be omitted when visibility=''abstract''.', src:error-object(.))"/>
       </if>
 
-      <variable name="as" select="(xcst:variable-type(., $text), 'object')[1]"/>
+      <variable name="type" as="xs:string?">
+         <call-template name="xcst:variable-type">
+            <with-param name="el" select="."/>
+            <with-param name="text" select="$text"/>
+         </call-template>
+      </variable>
 
       <element name="xcst:{local-name()}">
          <attribute name="name" select="$name"/>
-         <attribute name="as" select="$as"/>
+         <attribute name="as" select="($type, 'object')[1]"/>
          <if test="self::c:param">
             <attribute name="required" select="$required"/>
          </if>
@@ -538,7 +543,17 @@
                and (not(@required) or $required)">
                <sequence select="error(xs:QName('err:XTSE3070'), 'Any parameter on the overriding template for which there is no corresponding parameter on the overridden template must specify required=''no''.', src:error-object(.))"/>
             </if>
-            <xcst:param name="{$param-name}" as="{(xcst:variable-type(.), 'object')[1]}" required="{$required}" tunnel="{$tunnel}"/>
+            <xcst:param name="{$param-name}" required="{$required}" tunnel="{$tunnel}">
+               <attribute name="as">
+                  <variable name="type" as="xs:string?">
+                     <call-template name="xcst:variable-type">
+                        <with-param name="el" select="."/>
+                        <with-param name="text" select="$text"/>
+                     </call-template>
+                  </variable>
+                  <sequence select="($type, 'object')[1]"/>
+               </attribute>
+            </xcst:param>
          </for-each>
       </xcst:template>
    </template>
@@ -621,8 +636,7 @@
                   </if>
                </otherwise>
             </choose>
-            <variable name="as" select="(xcst:variable-type(., $text), 'object')[1]"/>
-            <xcst:param name="{$param-name}" as="{$as}">
+            <xcst:param name="{$param-name}">
                <if test="$has-value">
                   <attribute name="value">
                      <call-template name="src:value">
@@ -630,6 +644,15 @@
                      </call-template>
                   </attribute>
                </if>
+               <attribute name="as">
+                  <variable name="type" as="xs:string?">
+                     <call-template name="xcst:variable-type">
+                        <with-param name="el" select="."/>
+                        <with-param name="text" select="$text"/>
+                     </call-template>
+                  </variable>
+                  <sequence select="($type, 'object')[1]"/>
+               </attribute>
             </xcst:param>
          </for-each>
       </xcst:function>
@@ -854,22 +877,41 @@
       </choose>
    </function>
 
-   <function name="xcst:variable-type" as="xs:string?">
-      <param name="el" as="element()"/>
+   <template name="xcst:variable-type" as="xs:string?">
+      <param name="el" as="element()" required="yes"/>
+      <param name="text" select="xcst:text($el)" as="xs:string?"/>
+      <param name="ignore-seqctor" select="false()"/>
 
-      <sequence select="xcst:variable-type($el, xcst:text($el))"/>
-   </function>
+      <!-- This is a template and not a function to allow access to tunnel parameters -->
 
-   <function name="xcst:variable-type" as="xs:string?">
-      <param name="el" as="element()"/>
-      <param name="text" as="xs:string?"/>
-
-      <sequence select="
-         if ($el/@as) then xcst:type($el/@as)
-         else if ($text) then 'string'
-         else if (xcst:has-value($el, $text)) then ()
-         else 'object'"/>
-   </function>
+      <choose>
+         <when test="$el/@as">
+            <sequence select="xcst:type($el/@as)"/>
+         </when>
+         <when test="$text">
+            <sequence select="'string'"/>
+         </when>
+         <when test="xcst:has-value($el, $text)">
+            <choose>
+               <when test="$el/@value"/>
+               <when test="not($ignore-seqctor)">
+                  <variable name="seqctor-meta" as="element()">
+                     <call-template name="xcst:sequence-constructor">
+                        <with-param name="text" select="$text"/>
+                     </call-template>
+                  </variable>
+                  <sequence select="concat(
+                     ($seqctor-meta/@item-type/src:global-identifier(.), 'object')[1],
+                     if ($seqctor-meta/@cardinality eq 'ZeroOrMore') then '[]' else ''
+                  )"/>
+               </when>
+            </choose>
+         </when>
+         <otherwise>
+            <sequence select="'object'"/>
+         </otherwise>
+      </choose>
+   </template>
 
    <function name="src:template-method-name" as="xs:string">
       <param name="declaration" as="element()"/>
@@ -897,7 +939,6 @@
 
    <template name="src:compilation-units">
       <param name="modules" tunnel="yes"/>
-      <param name="package-manifest" tunnel="yes"/>
       <param name="used-packages" tunnel="yes"/>
 
       <src:compilation-unit>
@@ -965,7 +1006,7 @@
 
    <template name="src:template-additional-members">
       <param name="meta" required="yes"/>
-      <param name="package-manifest" tunnel="yes"/>
+      <param name="package-manifest" required="yes" tunnel="yes"/>
       <param name="indent" tunnel="yes"/>
 
       <variable name="public" select="$meta/@visibility = ('public', 'final', 'abstract')"/>
@@ -1259,7 +1300,7 @@
    -->
 
    <template match="xcst:package-manifest[xs:boolean(@qualified-types)]" mode="src:namespace">
-      <param name="package-manifest" tunnel="yes"/>
+      <param name="package-manifest" required="yes" tunnel="yes"/>
       <param name="namespace" tunnel="yes"/>
       <param name="class" tunnel="yes"/>
       <param name="indent" tunnel="yes"/>
@@ -1315,7 +1356,7 @@
    </template>
 
    <template match="xcst:package-manifest[not(xs:boolean(@qualified-types))]" mode="src:namespace">
-      <param name="package-manifest" tunnel="yes"/>
+      <param name="package-manifest" required="yes" tunnel="yes"/>
       <param name="namespace" tunnel="yes"/>
       <param name="class" tunnel="yes"/>
       <param name="indent" tunnel="yes"/>
@@ -1531,7 +1572,7 @@
    </template>
 
    <template match="xcst:package-manifest" mode="src:used-package-class">
-      <param name="package-manifest" tunnel="yes"/>
+      <param name="package-manifest" required="yes" tunnel="yes"/>
       <param name="indent" tunnel="yes"/>
       <param name="overridden" select="src:overridden-components(., $package-manifest)"/>
 
@@ -1759,7 +1800,7 @@
 
    <template match="c:module | c:package" mode="src:namespace">
       <param name="namespace" tunnel="yes"/>
-      <param name="package-manifest" tunnel="yes"/>
+      <param name="package-manifest" required="yes" tunnel="yes"/>
       <param name="indent" tunnel="yes"/>
 
       <value-of select="$src:new-line"/>
@@ -1815,7 +1856,7 @@
    <template match="c:module | c:package" mode="src:class">
       <param name="class" tunnel="yes"/>
       <param name="modules" tunnel="yes"/>
-      <param name="package-manifest" tunnel="yes"/>
+      <param name="package-manifest" required="yes" tunnel="yes"/>
       <param name="used-packages" tunnel="yes"/>
       <param name="indent" tunnel="yes"/>
 
@@ -1922,7 +1963,7 @@
    <template match="c:module/node() | c:package/node()" mode="src:infrastructure-extra"/>
 
    <template match="c:param | c:variable" mode="src:member">
-      <param name="package-manifest" tunnel="yes"/>
+      <param name="package-manifest" required="yes" tunnel="yes"/>
 
       <variable name="meta" select="$package-manifest/xcst:*[@declaration-id eq current()/generate-id()]"/>
       <variable name="public" select="$meta/@visibility = ('public', 'final', 'abstract')"/>
@@ -1982,7 +2023,7 @@
    </template>
 
    <template match="c:template" mode="src:member">
-      <param name="package-manifest" tunnel="yes"/>
+      <param name="package-manifest" required="yes" tunnel="yes"/>
       <param name="indent" tunnel="yes"/>
 
       <variable name="meta" select="$package-manifest/xcst:template[@declaration-id eq current()/generate-id()]"/>
@@ -2029,7 +2070,7 @@
    </template>
 
    <template match="c:function" mode="src:member">
-      <param name="package-manifest" tunnel="yes"/>
+      <param name="package-manifest" required="yes" tunnel="yes"/>
       <param name="indent" tunnel="yes"/>
 
       <variable name="meta" select="$package-manifest/xcst:function[@declaration-id eq current()/generate-id()]"/>
@@ -2091,7 +2132,7 @@
    </template>
 
    <template match="c:attribute-set" mode="src:member">
-      <param name="package-manifest" tunnel="yes"/>
+      <param name="package-manifest" required="yes" tunnel="yes"/>
       <param name="indent" tunnel="yes"/>
 
       <variable name="meta" select="$package-manifest/xcst:attribute-set[@declaration-id eq current()/generate-id()]"/>
@@ -2151,7 +2192,7 @@
 
    <template match="c:type" mode="src:member">
       <param name="modules" tunnel="yes"/>
-      <param name="package-manifest" tunnel="yes"/>
+      <param name="package-manifest" required="yes" tunnel="yes"/>
       <param name="indent" tunnel="yes"/>
 
       <variable name="meta" select="$package-manifest/xcst:type[@declaration-id eq current()/generate-id()]"/>
@@ -2291,7 +2332,7 @@
 
    <template name="src:constructor">
       <param name="class" tunnel="yes"/>
-      <param name="package-manifest" tunnel="yes"/>
+      <param name="package-manifest" required="yes" tunnel="yes"/>
       <param name="used-packages" tunnel="yes"/>
       <param name="indent" tunnel="yes"/>
 
@@ -2471,7 +2512,7 @@
 
    <template name="src:prime-method">
       <param name="modules" tunnel="yes"/>
-      <param name="package-manifest" tunnel="yes"/>
+      <param name="package-manifest" required="yes" tunnel="yes"/>
       <param name="used-packages" tunnel="yes"/>
       <param name="indent" tunnel="yes"/>
 
@@ -2577,9 +2618,9 @@
    </template>
 
    <template name="src:call-template-method-body">
-      <param name="package-manifest" tunnel="yes"/>
-      <param name="name-param"/>
-      <param name="context"/>
+      <param name="package-manifest" required="yes" tunnel="yes"/>
+      <param name="name-param" required="yes"/>
+      <param name="context" required="yes"/>
       <param name="output"/>
 
       <variable name="templates" select="$package-manifest/xcst:template[@visibility = ('public', 'final', 'absent')]"/>
@@ -2680,8 +2721,8 @@
    </template>
 
    <template name="src:get-typed-template-method-body">
-      <param name="package-manifest" tunnel="yes"/>
-      <param name="name-param"/>
+      <param name="package-manifest" required="yes" tunnel="yes"/>
+      <param name="name-param" required="yes"/>
       <param name="output"/>
 
       <variable name="templates" select="$package-manifest/xcst:template[@visibility = ('public', 'final', 'absent') and @item-type]"/>
@@ -2773,7 +2814,7 @@
 
    <template name="src:read-output-definition-method-body">
       <param name="indent" tunnel="yes"/>
-      <param name="package-manifest" tunnel="yes"/>
+      <param name="package-manifest" required="yes" tunnel="yes"/>
       <param name="name-param"/>
       <param name="parameters-param"/>
 

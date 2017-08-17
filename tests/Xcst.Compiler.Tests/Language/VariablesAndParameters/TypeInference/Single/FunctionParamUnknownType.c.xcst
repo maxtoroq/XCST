@@ -1,14 +1,15 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
-   <c:import-namespace ns='Microsoft.VisualStudio.TestTools.UnitTesting'/>
-
    <c:template name='c:initial-template'>
-      <c:variable name='a'>
-         <c:value-of>foo</c:value-of>
-      </c:variable>
-      <c:void value='Assert.IsTrue(a is string)'/>
+      <c:void value='foo(2)'/>
    </c:template>
+
+   <c:function name='foo'>
+      <c:param name='a'>
+         <c:object value='null'/>
+      </c:param>
+   </c:function>
 
    <c:template name='expected'/>
 

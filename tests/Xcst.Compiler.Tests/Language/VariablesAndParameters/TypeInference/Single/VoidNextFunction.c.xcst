@@ -1,12 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
-   <c:import href='_InferTypeFromVoidNextFunction.xcst'/>
+   <c:import-namespace ns='Microsoft.VisualStudio.TestTools.UnitTesting'/>
+
+   <c:import href='_VoidNextFunction.xcst'/>
 
    <c:function name='foo'>
       <c:variable name='a'>
          <c:next-function/>
       </c:variable>
+      <c:void value='Assert.IsTrue(CompileType(a) == typeof(object[]))'/>
+      <c:void value='Assert.IsTrue(a.Length == 0)'/>
    </c:function>
 
 </c:module>

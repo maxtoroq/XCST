@@ -29,6 +29,8 @@ namespace Xcst.Compiler.Tests.Language {
             compiler.UseLineDirective = true;
             compiler.UsePackageBase = new StackFrame(1, true).GetMethod().DeclaringType.Namespace;
 
+            compiler.SetTargetBaseTypes(typeof(TestBase));
+
             CompileResult xcstResult;
             bool failed = true;
 
@@ -176,6 +178,13 @@ namespace Xcst.Compiler.Tests.Language {
             .CallInitialTemplate()
             .OutputTo(TextWriter.Null)
             .Run();
+      }
+   }
+
+   public abstract class TestBase {
+
+      protected Type CompileType<T>(T obj) {
+         return typeof(T);
       }
    }
 }

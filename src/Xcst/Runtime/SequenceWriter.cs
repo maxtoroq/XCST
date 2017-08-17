@@ -100,6 +100,8 @@ namespace Xcst.Runtime {
             ISequenceWriter<TBase> output,
             Func<TDerived> forTypeInference = null) where TDerived : TBase {
 
+         if (output == null) throw new ArgumentNullException(nameof(output));
+
          return output as ISequenceWriter<TDerived>
             ?? new CastingSequenceWriter<TDerived, TBase>(output);
       }
@@ -107,6 +109,8 @@ namespace Xcst.Runtime {
       public static ISequenceWriter<TDerived> AdjustWriterDynamically<TBase, TDerived>(
             ISequenceWriter<TBase> output,
             Func<TDerived> forTypeInference = null) {
+
+         if (output == null) throw new ArgumentNullException(nameof(output));
 
          var derivedWriter = output as ISequenceWriter<TDerived>;
 
@@ -129,6 +133,9 @@ namespace Xcst.Runtime {
       readonly ISequenceWriter<TBase> baseWriter;
 
       public CastingSequenceWriter(ISequenceWriter<TBase> baseWriter) {
+
+         if (baseWriter == null) throw new ArgumentNullException(nameof(baseWriter));
+
          this.baseWriter = baseWriter;
       }
 

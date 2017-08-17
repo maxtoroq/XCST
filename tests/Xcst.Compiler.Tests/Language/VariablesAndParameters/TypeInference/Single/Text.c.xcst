@@ -1,20 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<?ignore-test ?>
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
    <c:import-namespace ns='Microsoft.VisualStudio.TestTools.UnitTesting'/>
 
-   <c:import href='_InferTypeFromTypedNextTemplate.xcst'/>
-
    <c:template name='c:initial-template'>
-      <c:call-template name='foo'/>
-   </c:template>
-
-   <c:template name='foo'>
       <c:variable name='a'>
-         <c:next-template/>
+         <c:text>foo</c:text>
       </c:variable>
-      <c:void value='Assert.IsTrue(a is int)'/>
+      <c:void value='Assert.IsTrue(CompileType(a) == typeof(string))'/>
    </c:template>
 
    <c:template name='expected'/>

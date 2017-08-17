@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:import-namespace ns='Microsoft.VisualStudio.TestTools.UnitTesting'/>
+
+   <c:param name='a'>
+      <c:value-of>1</c:value-of>
+   </c:param>
+
+   <c:variable name='b'>
+      <c:value-of>1</c:value-of>
+   </c:variable>
+
+   <c:template name='c:initial-template'>
+      <c:void value='Assert.IsTrue(CompileType(a) == typeof(string))'/>
+      <c:void value='Assert.IsTrue(CompileType(b) == typeof(string))'/>
+   </c:template>
+
+   <c:template name='expected'/>
+
+</c:module>

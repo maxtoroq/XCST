@@ -3,18 +3,18 @@
 
    <c:import-namespace ns='Microsoft.VisualStudio.TestTools.UnitTesting'/>
 
-   <c:import href='_InferTypeFromNextFunction.xcst'/>
+   <c:param name='a'>
+      <c:object value='1'/>
+   </c:param>
+
+   <c:variable name='b'>
+      <c:object value='1'/>
+   </c:variable>
 
    <c:template name='c:initial-template'>
-      <c:void value='foo()'/>
+      <c:void value='Assert.IsTrue(CompileType(a) == typeof(object))'/>
+      <c:void value='Assert.IsTrue(CompileType(b) == typeof(object))'/>
    </c:template>
-
-   <c:function name='foo'>
-      <c:variable name='a'>
-         <c:next-function/>
-      </c:variable>
-      <c:void value='Assert.IsTrue(a is int)'/>
-   </c:function>
 
    <c:template name='expected'/>
 
