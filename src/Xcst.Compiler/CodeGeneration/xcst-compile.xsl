@@ -2621,7 +2621,7 @@
       <param name="package-manifest" required="yes" tunnel="yes"/>
       <param name="name-param" required="yes"/>
       <param name="context" required="yes"/>
-      <param name="output"/>
+      <param name="output" required="yes"/>
 
       <variable name="templates" select="$package-manifest/xcst:template[@visibility = ('public', 'final', 'absent')]"/>
 
@@ -2723,7 +2723,7 @@
    <template name="src:get-typed-template-method-body">
       <param name="package-manifest" required="yes" tunnel="yes"/>
       <param name="name-param" required="yes"/>
-      <param name="output"/>
+      <param name="output" required="yes"/>
 
       <variable name="templates" select="$package-manifest/xcst:template[@visibility = ('public', 'final', 'absent') and @item-type]"/>
 
