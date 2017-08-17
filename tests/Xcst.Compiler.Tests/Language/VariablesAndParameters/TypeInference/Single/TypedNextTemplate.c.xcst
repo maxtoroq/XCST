@@ -2,8 +2,6 @@
 <?ignore-test ?>
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
-   <c:import-namespace ns='Microsoft.VisualStudio.TestTools.UnitTesting'/>
-
    <c:import href='_TypedNextTemplate.xcst'/>
 
    <c:template name='c:initial-template'>

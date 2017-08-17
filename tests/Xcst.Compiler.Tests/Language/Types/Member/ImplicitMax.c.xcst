@@ -2,7 +2,6 @@
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
    <c:import-namespace ns='System.ComponentModel.DataAnnotations'/>
-   <c:import-namespace ns='Microsoft.VisualStudio.TestTools.UnitTesting'/>
 
    <c:type name='foo'>
       <c:member name='bar' as='int' min='5'/>

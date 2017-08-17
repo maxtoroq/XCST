@@ -8,6 +8,7 @@ using System.Xml.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
+using TestAssert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 
 namespace Xcst.Compiler.Tests.Language {
 
@@ -185,6 +186,25 @@ namespace Xcst.Compiler.Tests.Language {
 
       protected Type CompileType<T>(T obj) {
          return typeof(T);
+      }
+
+      public static class Assert {
+
+         public static void IsTrue(bool condition) {
+            TestAssert.IsTrue(condition);
+         }
+
+         public static void IsFalse(bool condition) {
+            TestAssert.IsFalse(condition);
+         }
+
+         public static void AreEqual<T>(T expected, T actual) {
+            TestAssert.AreEqual(expected, actual);
+         }
+
+         public static void IsNull(object value) {
+            TestAssert.IsNull(value);
+         }
       }
    }
 }

@@ -4,7 +4,6 @@
    <c:import-namespace ns='System.ComponentModel.DataAnnotations'/>
    <c:import-namespace ns='System.Globalization'/>
    <c:import-namespace ns='System.Threading'/>
-   <c:import-namespace ns='Microsoft.VisualStudio.TestTools.UnitTesting'/>
 
    <c:type name='foo'>
       <c:member name='bar' as='decimal' min='-0.5' max='0.5'/>
