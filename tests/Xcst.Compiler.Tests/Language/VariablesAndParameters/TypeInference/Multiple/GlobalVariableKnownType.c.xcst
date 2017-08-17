@@ -6,10 +6,10 @@
       <c:value-of>2</c:value-of>
    </c:param>
 
-   <c:param name='b'>
+   <c:variable name='b'>
       <c:value-of>1</c:value-of>
       <c:value-of>2</c:value-of>
-   </c:param>
+   </c:variable>
 
    <c:template name='c:initial-template'>
       <c:void value='Assert.IsTrue(CompileType(a) == typeof(string[]))'/>
