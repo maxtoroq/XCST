@@ -2,11 +2,13 @@
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
    <c:template name='c:initial-template'>
-      <c:variable name='foo'>
+      <c:variable name='a'>
          <c:text>A</c:text>
          <c:value-of>1</c:value-of>
       </c:variable>
-      <c:void value='Assert.IsTrue(CompileType(foo) == typeof(string[]))'/>
+      <c:void value='Assert.IsTrue(CompileType(a) == typeof(string[]))'/>
+      <c:variable name='b'><c:text>A</c:text>1</c:variable>
+      <c:void value='Assert.IsTrue(CompileType(b) == typeof(string[]))'/>
    </c:template>
 
    <c:template name='expected'/>
