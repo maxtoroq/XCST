@@ -1015,10 +1015,9 @@
    -->
 
    <template match="c:call-template" mode="src:statement">
-      <param name="indent" tunnel="yes"/>
 
       <variable name="result" as="item()+">
-         <call-template name="src:validate-call-template"/>
+         <call-template name="xcst:validate-call-template"/>
       </variable>
       <variable name="meta" select="$result[1]" as="element(xcst:template)"/>
       <variable name="original" select="$result[2]" as="xs:boolean"/>
@@ -1039,7 +1038,7 @@
       <value-of select="$src:statement-delimiter"/>
    </template>
 
-   <template name="src:validate-call-template">
+   <template name="xcst:validate-call-template">
       <param name="package-manifest" required="yes" tunnel="yes"/>
 
       <call-template name="xcst:validate-attribs">
@@ -1164,8 +1163,49 @@
    </template>
 
    <template match="c:next-template" mode="src:statement">
+
+      <variable name="meta" as="element(xcst:template)">
+         <call-template name="xcst:validate-next-template"/>
+      </variable>
+
+      <call-template name="src:line-number"/>
+      <call-template name="src:new-line-indented"/>
+      <text>this.</text>
+      <value-of select="$meta/@member-name"/>
+      <text>(</text>
+      <call-template name="src:call-template-context">
+         <with-param name="meta" select="$meta"/>
+      </call-template>
+      <text>, </text>
+      <call-template name="src:call-template-output">
+         <with-param name="meta" select="$meta"/>
+      </call-template>
+      <text>)</text>
+      <value-of select="$src:statement-delimiter"/>
+   </template>
+
+   <template match="c:next-template" mode="src:expression">
+
+      <variable name="meta" as="element(xcst:template)">
+         <call-template name="xcst:validate-next-template"/>
+      </variable>
+
+      <value-of select="src:fully-qualified-helper('SequenceWriter'), 'Create'" separator="."/>
+      <text>(</text>
+      <value-of select="src:global-identifier($meta/(@package-type, ../@package-type)[1]), src:item-type-inference-member-name($meta/@member-name)" separator="."/>
+      <text>).WriteTemplate(this.</text>
+      <value-of select="$meta/@member-name"/>
+      <text>, </text>
+      <call-template name="src:call-template-context">
+         <with-param name="meta" select="$meta"/>
+      </call-template>
+      <text>).Flush</text>
+      <if test="$meta/@cardinality eq 'One'">Single</if>
+      <text>()</text>
+   </template>
+
+   <template name="xcst:validate-next-template">
       <param name="package-manifest" required="yes" tunnel="yes"/>
-      <param name="indent" tunnel="yes"/>
 
       <call-template name="xcst:validate-attribs"/>
       <call-template name="xcst:validate-children">
@@ -1211,21 +1251,18 @@
             <sequence select="error(xs:QName('err:XTSE0680'), concat('Parameter ''', $param-name, ''' is not declared in the called template.'), src:error-object(.))"/>
          </if>
       </for-each>
+      <sequence select="$meta"/>
+   </template>
 
-      <call-template name="src:line-number"/>
-      <call-template name="src:new-line-indented"/>
-      <text>this.</text>
-      <value-of select="$meta/@member-name"/>
-      <text>(</text>
-      <call-template name="src:call-template-context">
-         <with-param name="meta" select="$meta"/>
-      </call-template>
-      <text>, </text>
-      <call-template name="src:call-template-output">
-         <with-param name="meta" select="$meta"/>
-      </call-template>
-      <text>)</text>
-      <value-of select="$src:statement-delimiter"/>
+   <template match="c:next-template" mode="xcst:instruction">
+      <variable name="meta" as="element(xcst:template)">
+         <call-template name="xcst:validate-next-template"/>
+      </variable>
+      <element name="xcst:instruction">
+         <if test="$meta/@item-type">
+            <attribute name="expression" select="true()"/>
+         </if>
+      </element>
    </template>
 
    <template match="c:with-param" mode="src:with-param">
@@ -1246,7 +1283,7 @@
       <param name="output" tunnel="yes"/>
 
       <variable name="meta" as="element()">
-         <call-template name="src:validate-next-function"/>
+         <call-template name="xcst:validate-next-function"/>
       </variable>
       <variable name="write-object" select="$output and $meta/@as"/>
 
@@ -1268,7 +1305,7 @@
 
    <template match="c:next-function" mode="src:expression">
       <param name="meta" as="element()">
-         <call-template name="src:validate-next-function"/>
+         <call-template name="xcst:validate-next-function"/>
       </param>
       <param name="statement" select="false()"/>
 
@@ -1281,7 +1318,7 @@
       <text>)</text>
    </template>
 
-   <template name="src:validate-next-function">
+   <template name="xcst:validate-next-function">
       <param name="package-manifest" required="yes" tunnel="yes"/>
 
       <call-template name="xcst:validate-attribs"/>
@@ -1308,7 +1345,7 @@
 
    <template match="c:next-function" mode="xcst:instruction">
       <variable name="function-meta" as="element()">
-         <call-template name="src:validate-next-function"/>
+         <call-template name="xcst:validate-next-function"/>
       </variable>
       <element name="xcst:instruction">
          <choose>
@@ -1324,7 +1361,6 @@
 
    <template match="c:evaluate-package" mode="src:statement">
       <param name="output" tunnel="yes"/>
-      <param name="indent" tunnel="yes"/>
 
       <call-template name="xcst:validate-attribs">
          <with-param name="required" select="'package'"/>
@@ -1529,9 +1565,8 @@
    -->
 
    <template match="c:for-each-group[not(@group-size)]" mode="src:statement">
-      <param name="indent" tunnel="yes"/>
 
-      <call-template name="src:validate-for-each-group"/>
+      <call-template name="xcst:validate-for-each-group"/>
 
       <variable name="grouped-aux">
          <value-of select="src:fully-qualified-helper('Grouping')"/>
@@ -1577,7 +1612,7 @@
    <template match="c:for-each-group[@group-size]" mode="src:statement">
       <param name="indent" tunnel="yes"/>
 
-      <call-template name="src:validate-for-each-group"/>
+      <call-template name="xcst:validate-for-each-group"/>
 
       <if test="c:sort">
          <sequence select="error((), 'c:sort is currently not supported when using ''group-size''.', src:error-object(c:sort[1]))"/>
@@ -1614,7 +1649,7 @@
       <call-template name="src:close-brace"/>
    </template>
 
-   <template name="src:validate-for-each-group">
+   <template name="xcst:validate-for-each-group">
       <call-template name="xcst:validate-attribs">
          <with-param name="required" select="'name', 'in'"/>
          <with-param name="optional" select="'group-by', 'group-size'"/>
