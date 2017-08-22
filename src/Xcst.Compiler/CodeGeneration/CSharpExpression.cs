@@ -219,20 +219,28 @@ namespace Xcst.Compiler.CodeGeneration {
          return "$@\"" + sb.ToString() + "\"";
       }
 
-      public static string TypeReference(Type type) {
+      public static string TypeReference(Type type, string namespaceAlias = null) {
 
          var sb = new StringBuilder();
-         TypeReference(type, sb);
+         TypeReference(type, namespaceAlias, sb);
 
          return sb.ToString();
       }
 
-      static void TypeReference(Type type, StringBuilder sb) {
+      static void TypeReference(Type type, string namespaceAlias, StringBuilder sb) {
 
          if (type.IsNested) {
-            TypeReference(type.DeclaringType, sb);
+
+            TypeReference(type.DeclaringType, namespaceAlias, sb);
             sb.Append(".");
+
          } else {
+
+            if (namespaceAlias != null) {
+               sb.Append(namespaceAlias);
+               sb.Append("::");
+            }
+
             sb.Append(type.Namespace);
             sb.Append(".");
          }
@@ -250,7 +258,7 @@ namespace Xcst.Compiler.CodeGeneration {
                   sb.Append(", ");
                }
 
-               TypeReference(typeArguments[i], sb);
+               TypeReference(typeArguments[i], namespaceAlias, sb);
             }
 
             sb.Append(">");

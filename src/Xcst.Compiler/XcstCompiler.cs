@@ -55,10 +55,14 @@ namespace Xcst.Compiler {
       }
 
       public void SetTargetBaseTypes(params Type[] targetBaseTypes) {
+         SetTargetBaseTypes("global", targetBaseTypes);
+      }
+
+      public void SetTargetBaseTypes(string namespaceAlias, params Type[] targetBaseTypes) {
 
          this.TargetBaseTypes = targetBaseTypes?
             .Where(t => t != null)
-            .Select(t => CSharpExpression.TypeReference(t))
+            .Select(t => CSharpExpression.TypeReference(t, namespaceAlias))
             .ToArray();
       }
 
