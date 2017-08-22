@@ -1038,6 +1038,28 @@
       <value-of select="$src:statement-delimiter"/>
    </template>
 
+   <template match="c:call-template" mode="src:expression">
+
+      <variable name="result" as="item()+">
+         <call-template name="xcst:validate-call-template"/>
+      </variable>
+      <variable name="meta" select="$result[1]" as="element(xcst:template)"/>
+      <variable name="original" select="$result[2]" as="xs:boolean"/>
+
+      <value-of select="src:fully-qualified-helper('SequenceWriter'), 'Create'" separator="."/>
+      <text>(</text>
+      <value-of select="src:global-identifier($meta/(@package-type, ../@package-type)[1]), src:item-type-inference-member-name($meta/@member-name)" separator="."/>
+      <text>).WriteTemplate(this.</text>
+      <value-of select="if ($original) then src:original-member($meta) else $meta/@member-name"/>
+      <text>, </text>
+      <call-template name="src:call-template-context">
+         <with-param name="meta" select="$meta"/>
+      </call-template>
+      <text>).Flush</text>
+      <if test="$meta/@cardinality eq 'One'">Single</if>
+      <text>()</text>
+   </template>
+
    <template name="xcst:validate-call-template">
       <param name="package-manifest" required="yes" tunnel="yes"/>
 
@@ -1099,6 +1121,22 @@
       </for-each>
 
       <sequence select="$meta, $original"/>
+   </template>
+
+   <template match="c:call-template" mode="xcst:instruction">
+      <variable name="result" as="item()+">
+         <call-template name="xcst:validate-call-template"/>
+      </variable>
+      <variable name="meta" select="$result[1]" as="element(xcst:template)"/>
+      <variable name="original" select="$result[2]" as="xs:boolean"/>
+      <element name="xcst:instruction">
+         <if test="$meta/@item-type">
+            <attribute name="expression" select="true()"/>
+            <if test="$meta/(@qualified-types, ../@qualified-types)[1]/xs:boolean(.)">
+               <attribute name="as" select="$meta/@item-type"/>
+            </if>
+         </if>
+      </element>
    </template>
 
    <template name="src:call-template-context">
