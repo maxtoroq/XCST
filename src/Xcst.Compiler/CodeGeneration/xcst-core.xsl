@@ -409,13 +409,6 @@
             src:verbatim-string(string())"/>
    </template>
 
-   <template match="text()" mode="xcst:instruction">
-      <element name="xcst:instruction">
-         <attribute name="as" select="'System.String'"/>
-         <attribute name="expression" select="true()"/>
-      </element>
-   </template>
-
    <template name="src:literal-result-element">
       <param name="output" tunnel="yes"/>
       <param name="indent" tunnel="yes"/>
@@ -1925,25 +1918,8 @@
    <template name="src:unknown-element">
       <param name="current-mode" as="xs:QName" required="yes"/>
 
-      <variable name="extension-namespaces" as="xs:string*">
-         <variable name="ext-ns" as="xs:string*">
-            <for-each select="ancestor-or-self::*[(self::c:* and @extension-element-prefixes) or (not(self::c:*) and @c:extension-element-prefixes)]
-               /(if (self::c:*) then @extension-element-prefixes else @c:extension-element-prefixes)">
-               <variable name="el" select=".."/>
-               <for-each select="tokenize(., '\s')[.]">
-                  <variable name="default" select=". eq '#default'"/>
-                  <variable name="ns" select="namespace-uri-for-prefix((if ($default) then '' else .), $el)"/>
-                  <if test="empty($ns)">
-                     <sequence select="error(xs:QName('err:XTSE1430'), concat(if ($default) then 'Default namespace' else concat('Namespace prefix ''', ., ''''), ' has not been declared.'), src:error-object($el))"/>
-                  </if>
-                  <sequence select="$ns"/>
-               </for-each>
-            </for-each>
-         </variable>
-         <sequence select="distinct-values($ext-ns)"/>
-      </variable>
       <choose>
-         <when test="namespace-uri() = $extension-namespaces">
+         <when test="xcst:is-extension-instruction(.)">
             <variable name="result" as="node()*">
                <apply-templates select="." mode="src:extension-instruction">
                   <with-param name="src:current-mode" select="$current-mode" tunnel="yes"/>
@@ -2493,23 +2469,37 @@
 
       <!-- This is a template and not a function to allow access to tunnel parameters -->
 
+      <variable name="text-meta" as="element()">
+         <element name="xcst:instruction">
+            <attribute name="as" select="'System.String'"/>
+            <attribute name="expression" select="true()"/>
+         </element>
+      </variable>
+
+      <variable name="default-meta" as="element()">
+         <element name="xcst:instruction"/>
+      </variable>
+
       <variable name="instructions" as="element(xcst:instruction)*">
          <choose>
             <when test="$text">
-               <variable name="t" as="text()">foo</variable>
-               <apply-templates select="$t" mode="xcst:instruction"/>
+               <sequence select="$text-meta"/>
             </when>
             <otherwise>
                <for-each select="$children[self::* or self::text()[not(xcst:insignificant-whitespace(.)) or xcst:preserve-whitespace(..)]]">
-                  <variable name="i" as="element(xcst:instruction)?">
-                     <apply-templates select="." mode="xcst:instruction"/>
-                  </variable>
                   <choose>
-                     <when test="$i">
-                        <sequence select="$i"/>
+                     <when test="self::text()">
+                        <sequence select="$text-meta"/>
+                     </when>
+                     <when test="self::c:* or xcst:is-extension-instruction(.)">
+                        <variable name="i" as="element(xcst:instruction)?">
+                           <apply-templates select="." mode="xcst:instruction"/>
+                        </variable>
+                        <sequence select="($i, $default-meta)[1]"/>
                      </when>
                      <otherwise>
-                        <element name="xcst:instruction"/>
+                        <!-- Literal result element -->
+                        <sequence select="$default-meta"/>
                      </otherwise>
                   </choose>
                </for-each>
@@ -2709,6 +2699,29 @@
       <variable name="core-ns" select="namespace-uri-from-QName(xs:QName('c:foo'))"/>
       <sequence select="$ns eq $core-ns
          or starts-with($ns, concat($ns, '/'))"/>
+   </function>
+
+   <function name="xcst:is-extension-instruction" as="xs:boolean">
+      <param name="elem" as="element()"/>
+
+      <variable name="extension-namespaces" as="xs:string*">
+         <variable name="ext-ns" as="xs:string*">
+            <for-each select="$elem/ancestor-or-self::*[(self::c:* and @extension-element-prefixes) or (not(self::c:*) and @c:extension-element-prefixes)]
+               /(if (self::c:*) then @extension-element-prefixes else @c:extension-element-prefixes)">
+               <variable name="el" select=".."/>
+               <for-each select="tokenize(., '\s')[.]">
+                  <variable name="default" select=". eq '#default'"/>
+                  <variable name="ns" select="namespace-uri-for-prefix((if ($default) then '' else .), $el)"/>
+                  <if test="empty($ns)">
+                     <sequence select="error(xs:QName('err:XTSE1430'), concat(if ($default) then 'Default namespace' else concat('Namespace prefix ''', ., ''''), ' has not been declared.'), src:error-object($el))"/>
+                  </if>
+                  <sequence select="$ns"/>
+               </for-each>
+            </for-each>
+         </variable>
+         <sequence select="distinct-values($ext-ns)"/>
+      </variable>
+      <sequence select="namespace-uri($elem) = $extension-namespaces"/>
    </function>
 
    <function name="xcst:EQName" as="xs:QName?">
