@@ -54,7 +54,7 @@
       </data>
    </variable>
 
-   <template match="*" mode="src:statement">
+   <template match="c:*" mode="src:statement">
       <param name="output" tunnel="yes"/>
 
       <!--
@@ -71,11 +71,11 @@
       <value-of select="$src:statement-delimiter"/>
    </template>
 
-   <template match="*" mode="src:expression">
+   <template match="c:*" mode="src:expression">
       <sequence select="error((), concat('Element c:', local-name(), ' cannot be compiled into an expression.'), src:error-object(.))"/>
    </template>
 
-   <template match="*" mode="xcst:instruction"/>
+   <template match="c:*" mode="xcst:instruction"/>
 
    <!--
       ## Creating Nodes and Objects
@@ -1969,7 +1969,7 @@
       </choose>
    </template>
 
-   <template match="*" mode="src:extension-instruction">
+   <template match="*" mode="xcst:extension-instruction src:extension-instruction">
       <param name="src:extension-recurse" select="false()"/>
 
       <if test="not($src:extension-recurse)">
@@ -1979,7 +1979,7 @@
       </if>
    </template>
 
-   <template match="text()" mode="src:extension-instruction"/>
+   <template match="text()" mode="xcst:extension-instruction src:extension-instruction"/>
 
    <template match="c:void" mode="src:statement">
       <call-template name="xcst:validate-attribs">
@@ -2491,15 +2491,18 @@
                      <when test="self::text()">
                         <sequence select="$text-meta"/>
                      </when>
-                     <when test="self::c:* or xcst:is-extension-instruction(.)">
+                     <otherwise>
                         <variable name="i" as="element(xcst:instruction)?">
-                           <apply-templates select="." mode="xcst:instruction"/>
+                           <choose>
+                              <when test="self::c:*">
+                                 <apply-templates select="." mode="xcst:instruction"/>
+                              </when>
+                              <when test="xcst:is-extension-instruction(.)">
+                                 <apply-templates select="." mode="xcst:extension-instruction"/>
+                              </when>
+                           </choose>
                         </variable>
                         <sequence select="($i, $default-meta)[1]"/>
-                     </when>
-                     <otherwise>
-                        <!-- Literal result element -->
-                        <sequence select="$default-meta"/>
                      </otherwise>
                   </choose>
                </for-each>
