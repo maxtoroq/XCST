@@ -22,7 +22,9 @@ namespace Xcst.Runtime {
 
       readonly XcstWriter baseWriter;
 
-      public override Encoding Encoding => throw new NotImplementedException();
+      public override Encoding Encoding {
+         get { throw new NotImplementedException(); }
+      }
 
       public XcstTextWriter(XcstWriter baseWriter)
          : base(baseWriter.SimpleContent.FormatProvider) {
