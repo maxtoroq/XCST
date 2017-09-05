@@ -537,6 +537,209 @@
       </element>
    </template>
 
+   <template match="c:map" mode="src:statement">
+      <param name="output" tunnel="yes"/>
+      <param name="indent" tunnel="yes"/>
+
+      <call-template name="xcst:validate-attribs"/>
+
+      <variable name="output-is-map" select="src:output-is-map($output)"/>
+      <variable name="map-output" select="src:map-output(., $output)"/>
+      <variable name="new-indent" select="$indent + 1"/>
+
+      <if test="not($output-is-map)">
+         <value-of select="$src:new-line"/>
+         <call-template name="src:line-hidden"/>
+         <call-template name="src:new-line-indented"/>
+         <text>var </text>
+         <value-of select="$map-output"/>
+         <text> = </text>
+         <value-of select="src:fully-qualified-helper('MapWriter')"/>
+         <text>.Create(</text>
+         <value-of select="$output"/>
+         <text>)</text>
+         <value-of select="$src:statement-delimiter"/>
+         <value-of select="$src:new-line"/>
+      </if>
+      <call-template name="src:line-number"/>
+      <call-template name="src:new-line-indented"/>
+      <value-of select="$map-output"/>
+      <text>.WriteStartMap()</text>
+      <value-of select="$src:statement-delimiter"/>
+      <call-template name="src:line-hidden"/>
+      <call-template name="src:new-line-indented"/>
+      <text>try</text>
+      <call-template name="src:open-brace"/>
+      <call-template name="src:sequence-constructor">
+         <with-param name="omit-block" select="true()"/>
+         <with-param name="indent" select="$new-indent" tunnel="yes"/>
+         <with-param name="output" select="$map-output" tunnel="yes"/>
+      </call-template>
+      <call-template name="src:line-hidden">
+         <with-param name="indent" select="$new-indent" tunnel="yes"/>
+      </call-template>
+      <call-template name="src:close-brace"/>
+      <text> finally</text>
+      <call-template name="src:open-brace"/>
+      <call-template name="src:new-line-indented">
+         <with-param name="indent" select="$new-indent" tunnel="yes"/>
+      </call-template>
+      <value-of select="$map-output"/>
+      <text>.WriteEndMap()</text>
+      <value-of select="$src:statement-delimiter"/>
+      <call-template name="src:close-brace"/>
+   </template>
+
+   <template match="c:map" mode="xcst:instruction">
+      <element name="xcst:instruction">
+         <attribute name="as" select="'System.Object'"/>
+      </element>
+   </template>
+
+   <template match="c:map-entry" mode="src:statement">
+      <param name="output" tunnel="yes"/>
+      <param name="indent" tunnel="yes"/>
+
+      <call-template name="xcst:validate-attribs">
+         <with-param name="required" select="'key'"/>
+         <with-param name="optional" select="'value'"/>
+      </call-template>
+      <call-template name="xcst:value-or-sequence-constructor"/>
+
+      <variable name="output-is-map" select="src:output-is-map($output)"/>
+      <variable name="map-output" select="src:map-output(., $output)"/>
+      <variable name="new-indent" select="$indent + 1"/>
+
+      <if test="not($output-is-map)">
+         <value-of select="$src:new-line"/>
+         <call-template name="src:line-number"/>
+         <call-template name="src:new-line-indented"/>
+         <text>var </text>
+         <value-of select="$map-output"/>
+         <text> = </text>
+         <value-of select="src:fully-qualified-helper('MapWriter')"/>
+         <text>.Cast(</text>
+         <value-of select="$output"/>
+         <text>)</text>
+         <value-of select="$src:statement-delimiter"/>
+         <value-of select="$src:new-line"/>
+      </if>
+      <call-template name="src:line-number"/>
+      <call-template name="src:new-line-indented"/>
+      <value-of select="$map-output"/>
+      <text>.WriteStartMapEntry(</text>
+      <value-of select="xcst:expression(@key)"/>
+      <text>)</text>
+      <value-of select="$src:statement-delimiter"/>
+      <call-template name="src:line-hidden"/>
+      <call-template name="src:new-line-indented"/>
+      <text>try</text>
+      <call-template name="src:open-brace"/>
+      <call-template name="src:sequence-constructor">
+         <with-param name="omit-block" select="true()"/>
+         <with-param name="indent" select="$new-indent" tunnel="yes"/>
+         <with-param name="value" select="@value"/>
+         <with-param name="output" select="$map-output" tunnel="yes"/>
+      </call-template>
+      <call-template name="src:line-hidden">
+         <with-param name="indent" select="$new-indent" tunnel="yes"/>
+      </call-template>
+      <call-template name="src:close-brace"/>
+      <text> finally</text>
+      <call-template name="src:open-brace"/>
+      <call-template name="src:new-line-indented">
+         <with-param name="indent" select="$new-indent" tunnel="yes"/>
+      </call-template>
+      <value-of select="$map-output"/>
+      <text>.WriteEndMapEntry()</text>
+      <value-of select="$src:statement-delimiter"/>
+      <call-template name="src:close-brace"/>
+   </template>
+
+   <template match="c:array" mode="src:statement">
+      <param name="output" tunnel="yes"/>
+      <param name="indent" tunnel="yes"/>
+
+      <call-template name="xcst:validate-attribs"/>
+
+      <variable name="output-is-map" select="src:output-is-map($output)"/>
+      <variable name="map-output" select="src:map-output(., $output)"/>
+      <variable name="new-indent" select="$indent + 1"/>
+
+      <if test="not($output-is-map)">
+         <value-of select="$src:new-line"/>
+         <call-template name="src:line-hidden"/>
+         <call-template name="src:new-line-indented"/>
+         <text>var </text>
+         <value-of select="$map-output"/>
+         <text> = </text>
+         <value-of select="src:fully-qualified-helper('MapWriter')"/>
+         <text>.CreateArray(</text>
+         <value-of select="$output"/>
+         <text>)</text>
+         <value-of select="$src:statement-delimiter"/>
+         <value-of select="$src:new-line"/>
+      </if>
+      <call-template name="src:line-number"/>
+      <call-template name="src:new-line-indented"/>
+      <value-of select="$map-output"/>
+      <text>.WriteStartArray()</text>
+      <value-of select="$src:statement-delimiter"/>
+      <call-template name="src:line-hidden"/>
+      <call-template name="src:new-line-indented"/>
+      <text>try</text>
+      <call-template name="src:open-brace"/>
+      <call-template name="src:sequence-constructor">
+         <with-param name="omit-block" select="true()"/>
+         <with-param name="indent" select="$new-indent" tunnel="yes"/>
+         <with-param name="output" select="$map-output" tunnel="yes"/>
+      </call-template>
+      <call-template name="src:line-hidden">
+         <with-param name="indent" select="$new-indent" tunnel="yes"/>
+      </call-template>
+      <call-template name="src:close-brace"/>
+      <text> finally</text>
+      <call-template name="src:open-brace"/>
+      <call-template name="src:new-line-indented">
+         <with-param name="indent" select="$new-indent" tunnel="yes"/>
+      </call-template>
+      <value-of select="$map-output"/>
+      <text>.WriteEndArray()</text>
+      <value-of select="$src:statement-delimiter"/>
+      <call-template name="src:close-brace"/>
+   </template>
+
+   <template match="c:array" mode="xcst:instruction">
+      <element name="xcst:instruction">
+         <attribute name="as" select="'System.Object'"/>
+      </element>
+   </template>
+
+   <function name="src:map-output" as="item()">
+      <param name="el" as="element()"/>
+      <param name="output" as="item()"/>
+
+      <choose>
+         <when test="src:output-is-map($output)">
+            <sequence select="$output"/>
+         </when>
+         <otherwise>
+            <element name="output">
+               <attribute name="map" select="true()"/>
+               <value-of select="concat(src:aux-variable('output'), '_', generate-id($el))"/>
+            </element>
+         </otherwise>
+      </choose>
+   </function>
+
+   <function name="src:output-is-map" as="xs:boolean">
+      <param name="output" as="item()"/>
+
+      <sequence select="
+         if ($output instance of element()) then boolean($output/@map/xs:boolean(.))
+         else false()"/>
+   </function>
+
    <!--
       ## Repetition
    -->

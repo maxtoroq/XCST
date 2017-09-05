@@ -6,9 +6,9 @@
          <c:text>A</c:text>
          <c:value-of>1</c:value-of>
       </c:variable>
-      <c:void value='Assert.IsTrue(CompileType(a) == typeof(string[]))'/>
+      <c:void value='Assert.AreEqual(typeof(string[]), CompileType(a))'/>
       <c:variable name='b'><c:text>A</c:text>1</c:variable>
-      <c:void value='Assert.IsTrue(CompileType(b) == typeof(string[]))'/>
+      <c:void value='Assert.AreEqual(typeof(string[]), CompileType(b))'/>
    </c:template>
 
    <c:template name='expected'/>

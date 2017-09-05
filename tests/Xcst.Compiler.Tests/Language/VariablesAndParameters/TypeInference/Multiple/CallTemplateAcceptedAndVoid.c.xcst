@@ -8,13 +8,13 @@
          <c:call-template name='foo'/>
          <c:assert test='true'/>
       </c:variable>
-      <c:void value='Assert.IsTrue(CompileType(a) == typeof(int))'/>
+      <c:void value='Assert.AreEqual(typeof(int), CompileType(a))'/>
       <c:variable name='b'>
          <c:call-template name='foo'/>
          <c:call-template name='foo'/>
          <c:assert test='true'/>
       </c:variable>
-      <c:void value='Assert.IsTrue(CompileType(b) == typeof(int[]))'/>
+      <c:void value='Assert.AreEqual(typeof(int[]), CompileType(b))'/>
    </c:template>
 
    <c:template name='expected'/>

@@ -134,14 +134,14 @@ function GenerateTestsForDirectory([IO.DirectoryInfo]$directory, $relativeNs) {
          WriteLine "public void $testName() {"
          PushIndent
          WriteLine
-         WriteLine "var result = CompileFromFile(@""$($file.FullName)"", correct: $($correct.ToString().ToLower()));"
+         WriteLine "var result = CompileFromFile(@""$($file.FullName)"", correct: $($correct.ToString().ToLower()), skipSourceLog: $($fail.ToString().ToLower()));"
 
          if ($correct) {
 
             WriteLine "var packageType = result.Item1;"
 
             if ($fail) {
-               WriteLine "SimplyRun(packageType);"
+               WriteLine "SimplyRun(packageType, result.Item2, expectedToFail: true);"
             } else {
 
                $outputDoc = Join-Path $directory.FullName "$fileName2.xml"

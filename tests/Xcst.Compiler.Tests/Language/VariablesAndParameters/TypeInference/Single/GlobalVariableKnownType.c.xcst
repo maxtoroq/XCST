@@ -10,8 +10,8 @@
    </c:variable>
 
    <c:template name='c:initial-template'>
-      <c:void value='Assert.IsTrue(CompileType(a) == typeof(string))'/>
-      <c:void value='Assert.IsTrue(CompileType(b) == typeof(string))'/>
+      <c:void value='Assert.AreEqual(typeof(string), CompileType(a))'/>
+      <c:void value='Assert.AreEqual(typeof(string), CompileType(b))'/>
    </c:template>
 
    <c:template name='expected'/>

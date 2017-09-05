@@ -14,6 +14,7 @@
 
 using System;
 using System.Collections.Generic;
+using Xcst.Runtime;
 
 namespace Xcst.PackageModel {
 
@@ -28,5 +29,9 @@ namespace Xcst.PackageModel {
       void WriteString(TItem text);
 
       void WriteRaw(TItem data);
+
+      XcstWriter TryCastToFullWriter();
+
+      MapWriter TryCastToMapWriter();
    }
 }

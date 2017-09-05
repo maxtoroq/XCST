@@ -7,8 +7,8 @@
       <c:variable name='a'>
          <c:next-function/>
       </c:variable>
-      <c:void value='Assert.IsTrue(CompileType(a) == typeof(object[]))'/>
-      <c:void value='Assert.IsTrue(a.Length == 0)'/>
+      <c:void value='Assert.AreEqual(typeof(object[]), CompileType(a))'/>
+      <c:void value='Assert.AreEqual(0, a.Length)'/>
    </c:function>
 
 </c:module>

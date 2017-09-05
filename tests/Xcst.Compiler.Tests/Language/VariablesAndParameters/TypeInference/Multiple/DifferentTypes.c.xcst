@@ -6,7 +6,7 @@
          <c:text>A</c:text>
          <c:object value='1'/>
       </c:variable>
-      <c:void value='Assert.IsTrue(CompileType(foo) == typeof(object[]))'/>
+      <c:void value='Assert.AreEqual(typeof(object[]), CompileType(foo))'/>
    </c:template>
 
    <c:template name='expected'/>

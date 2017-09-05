@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:template name='c:initial-template'>
+      <c:variable name='map' as='dynamic'>
+         <c:map>
+            <c:call-template name='foo'/>
+         </c:map>
+      </c:variable>
+      <c:void value='Assert.AreEqual("foo", map.foo)'/>
+   </c:template>
+
+   <c:template name='foo' as='object[]'>
+      <c:map-entry key='"foo"'>foo</c:map-entry>
+   </c:template>
+
+   <c:template name='expected'/>
+
+</c:module>

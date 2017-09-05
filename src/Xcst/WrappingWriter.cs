@@ -40,6 +40,10 @@ namespace Xcst {
          this.baseWriter = baseWriter;
       }
 
+      public override void WriteChars(char[] buffer, int index, int count) {
+         this.baseWriter.WriteChars(buffer, index, count);
+      }
+
       public override void WriteComment(string text) {
          this.baseWriter.WriteComment(text);
       }

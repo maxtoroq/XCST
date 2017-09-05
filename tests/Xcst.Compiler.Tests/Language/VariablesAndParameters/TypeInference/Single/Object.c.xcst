@@ -5,11 +5,11 @@
       <c:variable name='a'>
          <c:object value='1'/>
       </c:variable>
-      <c:void value='Assert.IsTrue(CompileType(a) == typeof(int))'/>
+      <c:void value='Assert.AreEqual(typeof(int), CompileType(a))'/>
       <c:variable name='b'>
          <c:object value='new[] { 1, 2 }'/>
       </c:variable>
-      <c:void value='Assert.IsTrue(CompileType(b) == typeof(int[]))'/>
+      <c:void value='Assert.AreEqual(typeof(int[]), CompileType(b))'/>
    </c:template>
 
    <c:template name='expected'/>

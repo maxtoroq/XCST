@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:template name='c:initial-template'>
+      <foo>
+         <c:array>
+            <c:object value='new[] { 1, 2 }'/>
+            <c:text>3</c:text>
+         </c:array>
+      </foo>
+   </c:template>
+
+   <c:template name='expected'>
+      <foo>[1,2,"3"]</foo>
+   </c:template>
+
+</c:module>

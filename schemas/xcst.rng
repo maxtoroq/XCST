@@ -48,6 +48,7 @@
 
    <define name="instruction">
       <choice>
+         <ref name="array"/>
          <ref name="assert"/>
          <ref name="attribute"/>
          <ref name="break"/>
@@ -63,6 +64,8 @@
          <ref name="for-each"/>
          <ref name="for-each-group"/>
          <ref name="if"/>
+         <ref name="map"/>
+         <ref name="map-entry"/>
          <ref name="message"/>
          <ref name="namespace"/>
          <ref name="next-function"/>
@@ -794,6 +797,14 @@
       ## Instructions
    -->
 
+   <define name="array">
+      <element name="array">
+         <ann:documentation>Creates an array.</ann:documentation>
+         <ref name="standard-attributes"/>
+         <ref name="sequence-constructor"/>
+      </element>
+   </define>
+
    <define name="assert">
       <element name="assert">
          <ann:documentation>Checks for a condition and signals a message if the condition is false.</ann:documentation>
@@ -1143,6 +1154,32 @@
          </attribute>
          <ref name="standard-attributes"/>
          <ref name="sequence-constructor"/>
+      </element>
+   </define>
+
+   <define name="map">
+      <element name="map">
+         <ann:documentation>Creates an expando object.</ann:documentation>
+         <ref name="standard-attributes"/>
+         <ref name="sequence-constructor"/>
+      </element>
+   </define>
+
+   <define name="map-entry">
+      <element name="map-entry">
+         <ann:documentation>Creates a map entry.</ann:documentation>
+         <attribute name="key">
+            <ann:documentation>The key of the entry.</ann:documentation>
+            <ref name="expression"/>
+         </attribute>
+         <choice>
+            <attribute name="value">
+               <ann:documentation>The value of the entry.</ann:documentation>
+               <ref name="expression"/>
+            </attribute>
+            <ref name="sequence-constructor"/>
+         </choice>
+         <ref name="standard-attributes"/>
       </element>
    </define>
 

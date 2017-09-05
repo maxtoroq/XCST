@@ -53,6 +53,10 @@ function script:NuSpec {
 
       "<description>XCST runtime API. For compilation install the Xcst.Compiler package.</description>"
 
+      "<dependencies>"
+         "<dependency id='Newtonsoft.Json' version='$($packagesDoc.DocumentElement.SelectSingleNode('package[@id=''Newtonsoft.Json'']').Attributes['version'].Value)'/>"
+      "</dependencies>"
+
       "<frameworkAssemblies>"
          "<frameworkAssembly assemblyName='System'/>"
          "<frameworkAssembly assemblyName='System.Xml'/>"

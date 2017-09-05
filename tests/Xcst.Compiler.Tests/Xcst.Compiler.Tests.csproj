@@ -47,6 +47,10 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\src\Xcst\bin\Debug\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Collections.Immutable, Version=1.1.37.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\System.Collections.Immutable.1.1.37\lib\dotnet\System.Collections.Immutable.dll</HintPath>
@@ -215,6 +219,23 @@
     <None Include="Language\ConditionalProcessing\Try\NoCatchOrFinally.i.xcst" />
     <None Include="Language\ConditionalProcessing\Try\try.value_seqctor.mutex.c.xcst" />
     <None Include="Language\ConditionalProcessing\Try\try.value_seqctor.mutex.i.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\Array\Expando\EntryImplicit.c.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\Array\Expando\Entry.c.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\Array\Expando\Maps.c.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\Array\Expando\Nested.c.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\Array\Expando\Empty.c.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\Array\Expando\NoFlat.c.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\Array\Expando\Simple.c.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\Array\Json\CompatibleOutput.c.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\Array\Json\ComplexContent.c.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\Array\Expando\CompatibleOutput.c.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\Array\Expando\ParentMap.f.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\Array\Expando\CrossTemplate.c.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\Array\Expando\UnconditionallyClose.c.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\Array\Expando\ValueTypeOutput.i.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\Array\Json\ExpandoAndJson.f.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\Array\Json\UnconditionallyClose.c.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\Array\array.foo.i.xcst" />
     <None Include="Language\CreatingNodesAndObjects\Attribute\attribute.value_seqctor.mutex.i.xcst" />
     <None Include="Language\CreatingNodesAndObjects\Attribute\Override.c.xcst" />
     <None Include="Language\CreatingNodesAndObjects\Attribute\SimpleContentWithProcessingInstruction.f.xcst" />
@@ -232,6 +253,32 @@
     <None Include="Language\CreatingNodesAndObjects\Element\UnconditionallyClose.c.xcst" />
     <None Include="Language\CreatingNodesAndObjects\LiteralResultElement\UnconditionallyClose.c.xcst" />
     <None Include="Language\CreatingNodesAndObjects\Element\ComplexContent2.c.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\MapEntry\Expando\CompatibleOutput.c.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\MapEntry\Expando\NoValue.c.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\MapEntry\Expando\ParentArray.f.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\Map\Expando\ValueWithoutEntry.f.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\Map\Expando\ParentMap.f.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\Map\Json\CompatibleOutput.c.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\Map\Json\ExpandoAndJson.f.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\MapEntry\Json\NoValue.c.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\Map\Expando\UnconditionallyClose.c.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\Map\Expando\ValueTypeOutput.i.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\MapEntry\Expando\DefaultOutput.i.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\MapEntry\Json\CompatibleOutput.c.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\Map\Expando\CompatibleOutput.c.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\Map\Expando\CrossTemplate.c.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\MapEntry\Expando\Parentless.f.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\MapEntry\Expando\CrossTemplate.c.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\Map\Json\ComplexContent.c.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\MapEntry\Expando\UnconditionallyClose.c.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\MapEntry\Json\UnconditionallyClose.c.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\Map\Json\UnconditionallyClose.c.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\Map\map.foo.i.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\MapEntry\map-entry.foo.i.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\MapEntry\map-entry.key.req.i.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\MapEntry\map-entry.key.type.i.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\MapEntry\map-entry.value.type.i.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\MapEntry\map-entry.value_seqctor.mutex.i.xcst" />
     <None Include="Language\CreatingNodesAndObjects\Namespace\namespace.value_seqctor.mutex.i.xcst" />
     <None Include="Language\CreatingNodesAndObjects\Element\ComplexContent.c.xcst" />
     <None Include="Language\CreatingNodesAndObjects\Namespace\UnconditionallyClose.c.xcst" />
@@ -313,9 +360,13 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Language\CallableComponents\EvaluatePackage\InitialTemplateUriQualified.xml" />
+    <Content Include="Language\CreatingNodesAndObjects\Array\Json\UnconditionallyClose.txt" />
     <Content Include="Language\CreatingNodesAndObjects\Comment\UnconditionallyClose.xml" />
     <Content Include="Language\CreatingNodesAndObjects\Element\ComplexContent2.xml" />
     <Content Include="Language\CreatingNodesAndObjects\Element\ComplexContent.xml" />
+    <Content Include="Language\CreatingNodesAndObjects\MapEntry\Json\NoValue.txt" />
+    <Content Include="Language\CreatingNodesAndObjects\MapEntry\Json\UnconditionallyClose.txt" />
+    <Content Include="Language\CreatingNodesAndObjects\Map\Json\UnconditionallyClose.txt" />
     <Content Include="Language\CreatingNodesAndObjects\Namespace\UnconditionallyClose.xml" />
     <Content Include="Language\CreatingNodesAndObjects\ProcessingInstruction\UnconditionallyClose.xml" />
     <Content Include="Language\DataModel\TextTransformation\MixedContent.xml" />
@@ -460,6 +511,8 @@
     <None Include="Language\VariablesAndParameters\Global\Hidden1.c.xcst" />
     <None Include="Language\VariablesAndParameters\TypeInference\Multiple\TemplateParamKnownType.i.xcst" />
     <None Include="Language\VariablesAndParameters\TypeInference\Multiple\TemplateParamUnknownType.i.xcst" />
+    <None Include="Language\VariablesAndParameters\TypeInference\Single\Array.c.xcst" />
+    <None Include="Language\VariablesAndParameters\TypeInference\Single\Map.c.xcst" />
     <None Include="Language\VariablesAndParameters\TypeInference\Single\FunctionParamKnownType.i.xcst" />
     <None Include="Language\VariablesAndParameters\TypeInference\Single\FunctionParamUnknownType.c.xcst" />
     <None Include="Language\VariablesAndParameters\TypeInference\Single\DelegateParamKnownType.f.xcst" />

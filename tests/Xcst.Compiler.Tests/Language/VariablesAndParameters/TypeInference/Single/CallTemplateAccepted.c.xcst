@@ -7,7 +7,7 @@
       <c:variable name='a'>
          <c:call-template name='foo'/>
       </c:variable>
-      <c:void value='Assert.IsTrue(CompileType(a) == typeof(int))'/>
+      <c:void value='Assert.AreEqual(typeof(int), CompileType(a))'/>
    </c:template>
 
    <c:template name='expected'/>

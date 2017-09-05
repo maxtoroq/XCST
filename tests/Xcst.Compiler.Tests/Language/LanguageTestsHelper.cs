@@ -20,7 +20,7 @@ namespace Xcst.Compiler.Tests.Language {
             .GetType(typeName)
       };
 
-      public static Tuple<Type, CompileResult> CompileFromFile(string fileName, bool correct) {
+      public static Tuple<Type, CompileResult> CompileFromFile(string fileName, bool correct, bool skipSourceLog = false) {
 
          using (var fileStream = File.OpenRead(fileName)) {
 
@@ -42,9 +42,9 @@ namespace Xcst.Compiler.Tests.Language {
             } catch (CompileException ex) {
 
                if (!correct) {
-                  Console.WriteLine(ex.Message);
-                  Console.WriteLine($"Module URI: {ex.ModuleUri}");
-                  Console.WriteLine($"Line number: {ex.LineNumber}");
+                  Console.WriteLine($"// {ex.Message}");
+                  Console.WriteLine($"// Module URI: {ex.ModuleUri}");
+                  Console.WriteLine($"// Line number: {ex.LineNumber}");
                }
 
                throw;
@@ -70,7 +70,9 @@ namespace Xcst.Compiler.Tests.Language {
                   MetadataReference.CreateFromFile(typeof(System.Linq.Enumerable).Assembly.Location),
                   MetadataReference.CreateFromFile(typeof(System.Xml.XmlWriter).Assembly.Location),
                   MetadataReference.CreateFromFile(typeof(System.ComponentModel.DataAnnotations.ValidationAttribute).Assembly.Location),
+                  MetadataReference.CreateFromFile(typeof(Newtonsoft.Json.JsonWriter).Assembly.Location),
                   MetadataReference.CreateFromFile(typeof(Xcst.PackageModel.IXcstPackage).Assembly.Location),
+                  MetadataReference.CreateFromFile(typeof(Microsoft.CSharp.RuntimeBinder.RuntimeBinderException).Assembly.Location),
                   MetadataReference.CreateFromFile(typeof(Microsoft.VisualStudio.TestTools.UnitTesting.Assert).Assembly.Location),
                   MetadataReference.CreateFromFile(Assembly.GetExecutingAssembly().Location)
                };
@@ -92,9 +94,11 @@ namespace Xcst.Compiler.Tests.Language {
                         .FirstOrDefault();
 
                      if (error != null) {
-                        Console.WriteLine($"{error.Id}: {error.GetMessage()}");
-                        Console.WriteLine($"Line number: {error.Location.GetLineSpan().StartLinePosition.Line}");
+                        Console.WriteLine($"// {error.Id}: {error.GetMessage()}");
+                        Console.WriteLine($"// Line number: {error.Location.GetLineSpan().StartLinePosition.Line}");
                      }
+
+                     failed = true;
 
                      throw new CompileException("C# compilation failed.");
                   }
@@ -109,8 +113,11 @@ namespace Xcst.Compiler.Tests.Language {
 
             } finally {
 
-               foreach (string unit in xcstResult.CompilationUnits) {
-                  Console.WriteLine(unit);
+               if (!skipSourceLog || failed) {
+
+                  foreach (string unit in xcstResult.CompilationUnits) {
+                     Console.WriteLine(unit);
+                  }
                }
             }
          }
@@ -173,12 +180,28 @@ namespace Xcst.Compiler.Tests.Language {
          return XDocumentNormalizer.DeepEqualsWithNormalization(expectedDoc, actualDoc);
       }
 
-      public static void SimplyRun(Type packageType) {
+      public static void SimplyRun(Type packageType, CompileResult compileResult, bool expectedToFail = false) {
 
-         XcstEvaluator.Using(Activator.CreateInstance(packageType))
-            .CallInitialTemplate()
-            .OutputTo(TextWriter.Null)
-            .Run();
+         try {
+
+            XcstEvaluator.Using(Activator.CreateInstance(packageType))
+               .CallInitialTemplate()
+               .OutputTo(TextWriter.Null)
+               .Run();
+
+         } catch (RuntimeException ex) {
+
+            if (expectedToFail) {
+
+               Console.WriteLine($"// {ex.Message}");
+
+               foreach (string unit in compileResult.CompilationUnits) {
+                  Console.WriteLine(unit);
+               }
+            }
+
+            throw;
+         }
       }
    }
 

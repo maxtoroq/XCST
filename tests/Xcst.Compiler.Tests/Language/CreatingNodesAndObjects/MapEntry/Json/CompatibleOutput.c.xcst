@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:template name='JToken' as='Newtonsoft.Json.Linq.JToken'>
+      <c:map-entry key='"foo"'/>
+   </c:template>
+
+   <c:template name='JContainer' as='Newtonsoft.Json.Linq.JContainer'>
+      <c:map-entry key='"foo"'/>
+   </c:template>
+
+   <c:template name='JProperty' as='Newtonsoft.Json.Linq.JProperty'>
+      <c:map-entry key='"foo"'/>
+   </c:template>
+
+</c:module>

@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:template name='c:initial-template'>
+      <c:variable name='arr'>
+         <c:array>
+            <c:object value='1'/>
+            <c:object value='2'/>
+         </c:array>
+      </c:variable>
+      <c:variable name='arr2' as='dynamic[]'>
+         <c:object value='arr'/>
+         <c:object value='3'/>
+      </c:variable>
+      <c:void value='Assert.AreEqual(2, arr2.Length)'/>
+      <c:void value='Assert.AreEqual(2, arr2[0].Length)'/>
+      <c:void value='Assert.AreEqual(1, arr2[0][0])'/>
+      <c:void value='Assert.AreEqual(2, arr2[0][1])'/>
+      <c:void value='Assert.AreEqual(3, arr2[1])'/>
+   </c:template>
+
+   <c:template name='expected'/>
+
+</c:module>

@@ -7,7 +7,9 @@
       <c:void value='Assert.IsNull(a)'/>
       <c:variable name='b' as='int'/>
       <c:set member='b' as='int'/>
-      <c:void value='Assert.AreEqual(b, default(int))'/>
+      <c:void value='Assert.AreEqual(default(int), b)'/>
    </c:template>
+
+   <c:template name='expected'/>
 
 </c:module>

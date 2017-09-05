@@ -176,6 +176,8 @@ namespace Xcst.Runtime {
 
       public override void Flush() { }
 
+      public override void WriteChars(char[] buffer, int index, int count) { }
+
       public override void WriteComment(string text) { }
 
       public override void WriteEndAttribute() { }

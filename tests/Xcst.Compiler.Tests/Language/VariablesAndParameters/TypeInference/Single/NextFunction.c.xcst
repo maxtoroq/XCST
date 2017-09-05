@@ -11,7 +11,7 @@
       <c:variable name='a'>
          <c:next-function/>
       </c:variable>
-      <c:void value='Assert.IsTrue(CompileType(a) == typeof(int))'/>
+      <c:void value='Assert.AreEqual(typeof(int), CompileType(a))'/>
    </c:function>
 
    <c:template name='expected'/>

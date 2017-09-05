@@ -155,6 +155,8 @@ namespace Xcst {
 
       public abstract void WriteString(string text);
 
+      public abstract void WriteChars(char[] buffer, int index, int count);
+
       public abstract void WriteRaw(string data);
 
       public abstract void Flush();
@@ -201,6 +203,19 @@ namespace Xcst {
          }
       }
 
+      public XcstWriter TryCastToFullWriter() {
+         return this;
+      }
+
+      public MapWriter TryCastToMapWriter() {
+         return null;
+      }
+
+      #endregion
+
+      // IEnumerable<object> works for reference types only
+      // IEnumerable for any type
+
       public void WriteObject(IEnumerable value) {
 
          if (value != null) {
@@ -211,10 +226,10 @@ namespace Xcst {
          }
       }
 
+      // string implements IEnumerable, treat as single value
+
       public void WriteObject(string value) {
          WriteObject((object)value);
       }
-
-      #endregion
    }
 }

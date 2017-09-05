@@ -6,13 +6,13 @@
          <c:object value='"A"'/>
          <c:assert test='true'/>
       </c:variable>
-      <c:void value='Assert.IsTrue(CompileType(a) == typeof(object[]))'/>
+      <c:void value='Assert.AreEqual(typeof(object[]), CompileType(a))'/>
       <c:variable name='b'>
          <c:object value='"A"'/>
          <c:object value='"1"'/>
          <c:assert test='true'/>
       </c:variable>
-      <c:void value='Assert.IsTrue(CompileType(b) == typeof(object[]))'/>
+      <c:void value='Assert.AreEqual(typeof(object[]), CompileType(b))'/>
    </c:template>
 
    <c:template name='expected'/>

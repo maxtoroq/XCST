@@ -43,7 +43,7 @@ namespace Xcst.Xml {
       public override void WriteEndAttribute() {
 
          // WriteEndAttribute is called in a finally block
-         // checking for error to not overwhelm writer when something goes wrong
+         // Checking for error to not overwhelm writer when something goes wrong
 
          if (this.writer.WriteState != WriteState.Error) {
             this.writer.WriteEndAttribute();
@@ -53,7 +53,7 @@ namespace Xcst.Xml {
       public override void WriteEndElement() {
 
          // WriteEndElement is called in a finally block
-         // checking for error to not overwhelm writer when something goes wrong
+         // Checking for error to not overwhelm writer when something goes wrong
 
          if (this.writer.WriteState != WriteState.Error) {
             this.writer.WriteEndElement();
@@ -92,6 +92,10 @@ namespace Xcst.Xml {
 
       public override void WriteString(string text) {
          this.writer.WriteString(text);
+      }
+
+      public override void WriteChars(char[] buffer, int index, int count) {
+         this.writer.WriteChars(buffer, index, count);
       }
 
       public override void Flush() {

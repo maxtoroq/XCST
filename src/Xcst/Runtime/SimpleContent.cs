@@ -34,13 +34,14 @@ namespace Xcst.Runtime {
    public class SimpleContent {
 
       static readonly char[] whiteSpaceChars = { (char)0x20, (char)0x9, (char)0xD, (char)0xA };
-      readonly IFormatProvider formatProvider;
+
+      internal IFormatProvider FormatProvider { get; }
 
       public SimpleContent(IFormatProvider formatProvider) {
 
          if (formatProvider == null) throw new ArgumentNullException(nameof(formatProvider));
 
-         this.formatProvider = formatProvider;
+         this.FormatProvider = formatProvider;
       }
 
       public string Join(string separator, IEnumerable value) {
@@ -87,15 +88,15 @@ namespace Xcst.Runtime {
       }
 
       public string Format(string format, params object[] args) {
-         return String.Format(this.formatProvider, format, args);
+         return String.Format(this.FormatProvider, format, args);
       }
 
       public string FormatValueTemplate(IFormattable value) {
-         return value.ToString(null, this.formatProvider);
+         return value.ToString(null, this.FormatProvider);
       }
 
       public string Convert(object value) {
-         return System.Convert.ToString(value, this.formatProvider);
+         return System.Convert.ToString(value, this.FormatProvider);
       }
 
       public static string Trim(string value) {

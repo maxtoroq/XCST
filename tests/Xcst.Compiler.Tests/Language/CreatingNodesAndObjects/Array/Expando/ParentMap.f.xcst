@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:template name='c:initial-template'>
+      <c:variable name='map'>
+         <c:map>
+            <c:call-template name='foo'/>
+         </c:map>
+      </c:variable>
+   </c:template>
+
+   <c:template name='foo' as='object'>
+      <c:array/>
+   </c:template>
+
+</c:module>

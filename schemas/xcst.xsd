@@ -17,6 +17,7 @@
    </xs:group>
    <xs:group name="instruction">
       <xs:choice>
+         <xs:element ref="c:array"/>
          <xs:element ref="c:assert"/>
          <xs:element ref="c:attribute"/>
          <xs:element ref="c:break"/>
@@ -32,6 +33,8 @@
          <xs:element ref="c:for-each"/>
          <xs:element ref="c:for-each-group"/>
          <xs:element ref="c:if"/>
+         <xs:element ref="c:map"/>
+         <xs:element ref="c:map-entry"/>
          <xs:element ref="c:message"/>
          <xs:element ref="c:namespace"/>
          <xs:element ref="c:next-function"/>
@@ -755,6 +758,15 @@
       </xs:attribute>
    </xs:attributeGroup>
    <!-- ## Instructions -->
+   <xs:element name="array">
+      <xs:annotation>
+         <xs:documentation>Creates an array.</xs:documentation>
+      </xs:annotation>
+      <xs:complexType mixed="true">
+         <xs:group ref="c:sequence-constructor"/>
+         <xs:attributeGroup ref="c:standard-attributes"/>
+      </xs:complexType>
+   </xs:element>
    <xs:element name="assert">
       <xs:annotation>
          <xs:documentation>Checks for a condition and signals a message if the condition is false.</xs:documentation>
@@ -1083,6 +1095,34 @@
          <xs:attribute name="test" use="required" type="c:boolean_expression">
             <xs:annotation>
                <xs:documentation>The condition to check for the contents to be processed.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attributeGroup ref="c:standard-attributes"/>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="map">
+      <xs:annotation>
+         <xs:documentation>Creates an expando object.</xs:documentation>
+      </xs:annotation>
+      <xs:complexType mixed="true">
+         <xs:group ref="c:sequence-constructor"/>
+         <xs:attributeGroup ref="c:standard-attributes"/>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="map-entry">
+      <xs:annotation>
+         <xs:documentation>Creates a map entry.</xs:documentation>
+      </xs:annotation>
+      <xs:complexType mixed="true">
+         <xs:group minOccurs="0" ref="c:sequence-constructor"/>
+         <xs:attribute name="key" use="required" type="c:expression">
+            <xs:annotation>
+               <xs:documentation>The key of the entry. Expression.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="value" type="c:expression">
+            <xs:annotation>
+               <xs:documentation>The value of the entry. Expression.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>

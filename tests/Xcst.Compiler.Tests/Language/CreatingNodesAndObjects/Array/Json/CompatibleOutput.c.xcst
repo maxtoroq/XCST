@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:template name='default'>
+      <c:array/>
+   </c:template>
+
+   <c:template name='JToken' as='Newtonsoft.Json.Linq.JToken'>
+      <c:array/>
+   </c:template>
+
+   <c:template name='JContainer' as='Newtonsoft.Json.Linq.JContainer'>
+      <c:array/>
+   </c:template>
+
+   <c:template name='JArray' as='Newtonsoft.Json.Linq.JArray'>
+      <c:array/>
+   </c:template>
+
+</c:module>

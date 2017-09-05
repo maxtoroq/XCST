@@ -47,6 +47,14 @@ namespace Xcst.Runtime {
          WriteObject(data);
       }
 
+      public XcstWriter TryCastToFullWriter() {
+         return null;
+      }
+
+      public MapWriter TryCastToMapWriter() {
+         return null;
+      }
+
       public SequenceWriter<TItem> WriteSequenceConstructor(Action<ISequenceWriter<TItem>> seqCtor) {
 
          seqCtor(this);
@@ -159,6 +167,14 @@ namespace Xcst.Runtime {
 
       public void WriteRaw(TDerived data) {
          this.baseWriter.WriteRaw(data);
+      }
+
+      public XcstWriter TryCastToFullWriter() {
+         return this.baseWriter.TryCastToFullWriter();
+      }
+
+      public MapWriter TryCastToMapWriter() {
+         return this.baseWriter.TryCastToMapWriter();
       }
    }
 }
