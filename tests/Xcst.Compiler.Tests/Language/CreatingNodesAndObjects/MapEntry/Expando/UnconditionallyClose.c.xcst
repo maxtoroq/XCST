@@ -18,6 +18,4 @@
       </c:map-entry>
    </c:template>
 
-   <c:template name='expected'/>
-
 </c:module>

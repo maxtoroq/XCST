@@ -26,6 +26,4 @@
       <c:void value='Assert.AreEqual(4, map.bar[1][0])'/>
    </c:template>
 
-   <c:template name='expected'/>
-
 </c:module>

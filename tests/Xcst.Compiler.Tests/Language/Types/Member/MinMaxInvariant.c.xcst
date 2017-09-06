@@ -23,6 +23,4 @@
       <c:void value='Assert.IsTrue(new Xcst.PackageModel.RangeAttribute(typeof(decimal), "-0.5", "0.5").IsValid("-0,5"))'/>
    </c:template>
 
-   <c:template name='expected'/>
-
 </c:module>

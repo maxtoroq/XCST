@@ -352,19 +352,20 @@
     <None Include="Language\CreatingNodesAndObjects\ValueOf\MultipleItems.c.xcst" />
     <None Include="Language\CreatingNodesAndObjects\ValueOf\MultipleItemsWithSeparator.c.xcst" />
     <None Include="Language\Diagnostics\Assert\Assert.c.xcst" />
-    <None Include="Language\Diagnostics\Message\MessageTerminateMaybe.c.xcst" />
-    <None Include="Language\Diagnostics\Message\MessageTerminateAlways.c.xcst" />
+    <None Include="Language\Diagnostics\Message\MessageTerminateMaybe.f.xcst" />
+    <None Include="Language\Diagnostics\Message\MessageTerminateAlways.f.xcst" />
     <None Include="Language\Diagnostics\Message\Message.c.xcst" />
     <None Include="Language\ExtensibilityAndFallback\ExtensionInstructions\UnknownDefault.i.xcst" />
     <None Include="Language\ExtensibilityAndFallback\ExtensionInstructions\UnknownPrefix.i.xcst" />
     <None Include="Language\generate-language-tests.ps1" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Language\CallableComponents\EvaluatePackage\InitialTemplateUriQualified.xml" />
     <Content Include="Language\CreatingNodesAndObjects\Array\Json\UnconditionallyClose.txt" />
+    <Content Include="Language\CreatingNodesAndObjects\Attribute\NameWithPrefixAndNamespace2.xml" />
     <Content Include="Language\CreatingNodesAndObjects\Comment\UnconditionallyClose.xml" />
     <Content Include="Language\CreatingNodesAndObjects\Element\ComplexContent2.xml" />
     <Content Include="Language\CreatingNodesAndObjects\Element\ComplexContent.xml" />
+    <Content Include="Language\CreatingNodesAndObjects\Element\NameWithPrefixAndNamespace2.xml" />
     <Content Include="Language\CreatingNodesAndObjects\MapEntry\Json\NoValue.txt" />
     <Content Include="Language\CreatingNodesAndObjects\MapEntry\Json\UnconditionallyClose.txt" />
     <Content Include="Language\CreatingNodesAndObjects\Map\Json\UnconditionallyClose.txt" />
@@ -378,7 +379,6 @@
     <Content Include="Language\DataModel\WhitespaceStripping\Strip.xml" />
     <Content Include="Language\DataModel\WhitespaceStripping\Preserve.xml" />
     <Content Include="Language\DataModel\WhitespaceStripping\PreserveBetweenElements.xml" />
-    <Content Include="Language\CallableComponents\EvaluatePackage\InitialTemplateNoPrefix.xml" />
     <Content Include="Language\Serialization\MethodHtml.txt" />
     <Content Include="Language\Serialization\MethodXHtml.txt" />
     <Content Include="Language\Serialization\MethodText.txt" />

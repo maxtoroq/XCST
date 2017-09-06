@@ -9,7 +9,7 @@
       </c:override>
    </c:use-package>
 
-   <c:template name='c:initial-template'>
+   <c:template name='main'>
       <foo c:use-attribute-sets='foo'/>
    </c:template>
 

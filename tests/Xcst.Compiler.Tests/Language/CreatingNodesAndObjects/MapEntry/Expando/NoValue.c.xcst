@@ -10,6 +10,4 @@
       <c:void value='Assert.IsNull(map.foo)'/>
    </c:template>
 
-   <c:template name='expected'/>
-
 </c:module>

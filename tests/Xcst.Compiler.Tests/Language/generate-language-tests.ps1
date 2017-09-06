@@ -66,7 +66,6 @@ function GenerateTests {
 using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using static Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 using static Xcst.Compiler.Tests.Language.LanguageTestsHelper;
 "@
    GenerateTestsForDirectory $startDirectory $startDirectory.Name
@@ -113,7 +112,6 @@ function GenerateTestsForDirectory([IO.DirectoryInfo]$directory, $relativeNs) {
 
          $fail = $fileName -like '*.f'
          $correct = $fail -or $fileName -like '*.c'
-         $fileName2 = $fileName.Substring(0, $fileName.LastIndexOf("."))
          $testName = ($fileName -replace '[.-]', '_') -creplace '([a-z])([A-Z])', '$1_$2'
 
          WriteLine
@@ -133,39 +131,7 @@ function GenerateTestsForDirectory([IO.DirectoryInfo]$directory, $relativeNs) {
 
          WriteLine "public void $testName() {"
          PushIndent
-         WriteLine
-         WriteLine "var result = CompileFromFile(@""$($file.FullName)"", correct: $($correct.ToString().ToLower()), skipSourceLog: $($fail.ToString().ToLower()));"
-
-         if ($correct) {
-
-            WriteLine "var packageType = result.Item1;"
-
-            if ($fail) {
-               WriteLine "SimplyRun(packageType, result.Item2, expectedToFail: true);"
-            } else {
-
-               $outputDoc = Join-Path $directory.FullName "$fileName2.xml"
-
-               if (Test-Path $outputDoc) {
-                  WriteLine "IsTrue(OutputEqualsToDoc(packageType, @""$($outputDoc)""));"
-               } else {
-               
-                  $outputText = Join-Path $directory.FullName "$fileName2.txt"
-               
-                  if (Test-Path $outputText) {
-                     WriteLine "IsTrue(OutputEqualsToText(packageType, @""$($outputText)""));"
-                  }
-               }
-
-               WriteLine
-               WriteLine "if (result.Item2.Templates.Contains(new QualifiedName(""expected""))) {"
-               PushIndent
-               WriteLine "IsTrue(OutputEqualsToExpected(packageType));"
-               PopIndent
-               WriteLine "}"
-            }
-         }
-
+         WriteLine "RunXcstTest(@""$($file.FullName)"", correct: $($correct.ToString().ToLower()), fail: $($fail.ToString().ToLower()));"
          PopIndent
          WriteLine "}"
       }

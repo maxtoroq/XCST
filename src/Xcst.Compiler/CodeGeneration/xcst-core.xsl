@@ -2378,7 +2378,7 @@
          <when test="@format">
             <variable name="format" select="xcst:EQName(@format, (), false(), true())"/>
             <if test="not(empty($format)) and not($package-manifest/xcst:output[xcst:EQName(@name) eq $format])">
-               <sequence select="error(xs:QName('err:XTDE1460'), concat('No output definition exists named ', $format, '.'), src:error-object(.))"/>
+               <sequence select="error(xs:QName('err:XTDE1460'), concat('No output definition exists named ''', $format, '''.'), src:error-object(.))"/>
             </if>
             <value-of select="src:QName($format, src:expand-attribute(@format))"/>
          </when>

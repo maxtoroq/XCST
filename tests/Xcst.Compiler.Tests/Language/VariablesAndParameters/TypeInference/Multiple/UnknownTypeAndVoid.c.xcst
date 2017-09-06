@@ -15,6 +15,4 @@
       <c:void value='Assert.AreEqual(typeof(object[]), CompileType(b))'/>
    </c:template>
 
-   <c:template name='expected'/>
-
 </c:module>

@@ -8,6 +8,4 @@
       <c:void value='Assert.AreEqual(typeof(string), CompileType(b))'/>
    </c:template>
 
-   <c:template name='expected'/>
-
 </c:module>

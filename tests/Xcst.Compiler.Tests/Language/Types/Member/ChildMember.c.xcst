@@ -12,6 +12,4 @@
       <c:void value='Assert.IsTrue(typeof(foo).GetProperty("bar").PropertyType.GetProperty("baz") != null)'/>
    </c:template>
 
-   <c:template name='expected'/>
-
 </c:module>

@@ -17,6 +17,4 @@
       <c:void value='Assert.AreEqual(2, arr[1].foo)'/>
    </c:template>
 
-   <c:template name='expected'/>
-
 </c:module>

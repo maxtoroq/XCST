@@ -9,6 +9,4 @@
       <c:void value='Assert.IsTrue(typeof(foo).GetProperty("bar").PropertyType == typeof(object))'/>
    </c:template>
 
-   <c:template name='expected'/>
-
 </c:module>

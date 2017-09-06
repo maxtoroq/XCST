@@ -7,7 +7,7 @@
       <foo/>
    </c:template>
 
-   <c:template name='c:initial-template'>
+   <c:template name='main'>
       <c:call-template name='Q{urn:foo}foo'/>
    </c:template>
 

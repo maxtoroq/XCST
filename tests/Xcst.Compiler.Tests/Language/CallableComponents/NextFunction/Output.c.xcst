@@ -11,10 +11,6 @@
       </foo>
    </c:template>
 
-   <c:template name='expected'>
-      <foo>1</foo>
-   </c:template>
-
    <c:function name='foo' as='Delegate'>
       <c:return>
          <c:delegate>
@@ -22,5 +18,9 @@
          </c:delegate>
       </c:return>
    </c:function>
+
+   <c:template name='expected'>
+      <foo>1</foo>
+   </c:template>
 
 </c:module>

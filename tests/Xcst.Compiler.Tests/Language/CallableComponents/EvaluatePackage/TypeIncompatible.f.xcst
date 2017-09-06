@@ -4,9 +4,7 @@
    <c:import-namespace ns='System'/>
 
    <c:template name='c:initial-template'>
-      <foo>
-         <c:call-template name='foo'/>
-      </foo>
+      <c:call-template name='foo'/>
    </c:template>
 
    <c:template name='foo' as='int'>
@@ -15,10 +13,6 @@
 
    <c:template name='bar' as='string'>
       <c:object value='"1"'/>
-   </c:template>
-
-   <c:template name='expected'>
-      <foo>1</foo>
    </c:template>
 
 </c:module>

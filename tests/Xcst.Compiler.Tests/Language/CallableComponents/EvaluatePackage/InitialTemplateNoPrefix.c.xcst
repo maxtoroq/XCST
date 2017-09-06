@@ -4,7 +4,7 @@
    xmlns='http://www.w3.org/1999/xhtml'>
 
    <c:import-namespace ns='System'/>
-   
+
    <c:import href='_InitialTemplateNoPrefix.xcst'/>
 
    <c:template name='c:initial-template'>

@@ -15,6 +15,4 @@
       <c:void value='Assert.AreEqual("baz", doc.DocumentElement.InnerText)'/>
    </c:template>
 
-   <c:template name='expected'/>
-
 </c:module>

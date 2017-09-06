@@ -20,110 +20,178 @@ namespace Xcst.Compiler.Tests.Language {
             .GetType(typeName)
       };
 
-      public static Tuple<Type, CompileResult> CompileFromFile(string fileName, bool correct, bool skipSourceLog = false) {
+      static readonly QualifiedName InitialName = new QualifiedName("initial-template", "http://maxtoroq.github.io/XCST");
+      static readonly QualifiedName ExpectedName = new QualifiedName("expected");
 
-         using (var fileStream = File.OpenRead(fileName)) {
+      public static void RunXcstTest(string packageFile, bool correct, bool fail) {
 
-            XcstCompiler compiler = CompilerFactory.CreateCompiler();
-            compiler.TargetNamespace = typeof(LanguageTestsHelper).Namespace + ".Runtime";
-            compiler.TargetClass = "TestModule";
-            compiler.UseLineDirective = true;
-            compiler.UsePackageBase = new StackFrame(1, true).GetMethod().DeclaringType.Namespace;
+         string usePackageBase = new StackFrame(1, true).GetMethod().DeclaringType.Namespace;
 
-            compiler.SetTargetBaseTypes(typeof(TestBase));
+         CompileResult xcstResult;
+         string packageName;
 
-            CompileResult xcstResult;
-            bool failed = true;
+         try {
+            var codegenResult = GenerateCode(packageFile, usePackageBase);
+            xcstResult = codegenResult.Item1;
+            packageName = codegenResult.Item2;
 
-            try {
-               xcstResult = compiler.Compile(fileStream, baseUri: new Uri(fileName, UriKind.Absolute));
-               failed = false;
+         } catch (CompileException ex) {
 
-            } catch (CompileException ex) {
+            Console.WriteLine($"// {ex.Message}");
+            Console.WriteLine($"// Module URI: {ex.ModuleUri}");
+            Console.WriteLine($"// Line number: {ex.LineNumber}");
 
-               if (!correct) {
-                  Console.WriteLine($"// {ex.Message}");
-                  Console.WriteLine($"// Module URI: {ex.ModuleUri}");
-                  Console.WriteLine($"// Line number: {ex.LineNumber}");
-               }
+            throw;
+         }
 
-               throw;
+         try {
+
+            Type packageType = CompileCode(xcstResult, packageName);
+
+            if (!correct) {
+               return;
             }
 
             try {
 
-               if (!correct && failed) {
-                  return null;
-               }
+               if (fail) {
 
-               var parseOptions = new CSharpParseOptions(preprocessorSymbols: new[] { "DEBUG", "TRACE" });
+                  if (!xcstResult.Templates.Contains(InitialName)) {
+                     TestAssert.Fail("A failing package should define an initial template.");
+                  } else if (xcstResult.Templates.Contains(ExpectedName)) {
+                     TestAssert.Fail("A failing package should not define an 'expected' template.");
+                  }
 
-               SyntaxTree[] syntaxTrees = xcstResult.CompilationUnits
-                  .Select(c => CSharpSyntaxTree.ParseText(c, parseOptions))
-                  .ToArray();
+                  SimplyRun(packageType);
 
-               // TODO: Should compiler give list of assembly references?
+               } else {
 
-               MetadataReference[] references = {
-                  MetadataReference.CreateFromFile(typeof(System.Object).Assembly.Location),
-                  MetadataReference.CreateFromFile(typeof(System.Uri).Assembly.Location),
-                  MetadataReference.CreateFromFile(typeof(System.Linq.Enumerable).Assembly.Location),
-                  MetadataReference.CreateFromFile(typeof(System.Xml.XmlWriter).Assembly.Location),
-                  MetadataReference.CreateFromFile(typeof(System.ComponentModel.DataAnnotations.ValidationAttribute).Assembly.Location),
-                  MetadataReference.CreateFromFile(typeof(Newtonsoft.Json.JsonWriter).Assembly.Location),
-                  MetadataReference.CreateFromFile(typeof(Xcst.PackageModel.IXcstPackage).Assembly.Location),
-                  MetadataReference.CreateFromFile(typeof(Microsoft.CSharp.RuntimeBinder.RuntimeBinderException).Assembly.Location),
-                  MetadataReference.CreateFromFile(typeof(Microsoft.VisualStudio.TestTools.UnitTesting.Assert).Assembly.Location),
-                  MetadataReference.CreateFromFile(Assembly.GetExecutingAssembly().Location)
-               };
+                  string packageFileWithoutExt = packageFile.Substring(0, packageFile.LastIndexOf('.'));
+                  string outputFileXml = packageFileWithoutExt + ".xml";
+                  string outputFileTxt = packageFileWithoutExt + ".xml";
 
-               CSharpCompilation compilation = CSharpCompilation.Create(
-                  Path.GetRandomFileName(),
-                  syntaxTrees: syntaxTrees,
-                  references: references,
-                  options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+                  char outputOpt = File.Exists(outputFileXml) ? 'x'
+                     : File.Exists(outputFileTxt) ? 't'
+                     : ' ';
 
-               using (var assemblyStream = new MemoryStream()) {
+                  if (outputOpt != ' ') {
 
-                  EmitResult csharpResult = compilation.Emit(assemblyStream);
-
-                  if (!csharpResult.Success) {
-
-                     Diagnostic error = csharpResult.Diagnostics
-                        .Where(d => d.IsWarningAsError || d.Severity == DiagnosticSeverity.Error)
-                        .FirstOrDefault();
-
-                     if (error != null) {
-                        Console.WriteLine($"// {error.Id}: {error.GetMessage()}");
-                        Console.WriteLine($"// Line number: {error.Location.GetLineSpan().StartLinePosition.Line}");
+                     if (!xcstResult.Templates.Contains(InitialName)) {
+                        TestAssert.Fail("When an output document exists the package should define an initial template.");
+                     } else if (xcstResult.Templates.Contains(ExpectedName)) {
+                        TestAssert.Fail("When an output document exists the package should not define an 'expected' template.");
                      }
 
-                     failed = true;
+                     switch (outputOpt) {
+                        case 'x':
+                           TestAssert.IsTrue(OutputEqualsToDoc(packageType, outputFileXml));
+                           break;
+                        case 't':
+                           TestAssert.IsTrue(OutputEqualsToText(packageType, outputFileTxt));
+                           break;
+                     }
 
-                     throw new CompileException("C# compilation failed.");
+                  } else {
+
+                     if (xcstResult.Templates.Contains(InitialName)) {
+
+                        if (xcstResult.Templates.Contains(ExpectedName)) {
+                           TestAssert.IsTrue(OutputEqualsToExpected(packageType));
+                        } else {
+                           SimplyRun(packageType);
+                        }
+
+                     } else if (xcstResult.Templates.Contains(ExpectedName)) {
+                        TestAssert.Fail("A package that defines an 'expected' template without an initial template makes no sense.");
+                     }
                   }
-
-                  assemblyStream.Position = 0;
-
-                  Assembly assembly = Assembly.Load(assemblyStream.ToArray());
-                  Type type = assembly.GetType(compiler.TargetNamespace + "." + compiler.TargetClass);
-
-                  return Tuple.Create(type, xcstResult);
                }
 
-            } finally {
+            } catch (RuntimeException ex) {
 
-               if (!skipSourceLog || failed) {
+               Console.WriteLine($"// {ex.Message}");
+               throw;
+            }
 
-                  foreach (string unit in xcstResult.CompilationUnits) {
-                     Console.WriteLine(unit);
-                  }
-               }
+         } finally {
+
+            foreach (string unit in xcstResult.CompilationUnits) {
+               Console.WriteLine(unit);
             }
          }
       }
 
-      public static bool OutputEqualsToDoc(Type packageType, string fileName) {
+      static Tuple<CompileResult, string> GenerateCode(string packageFile, string usePackageBase) {
+
+         XcstCompiler compiler = CompilerFactory.CreateCompiler();
+         compiler.TargetNamespace = typeof(LanguageTestsHelper).Namespace + ".Runtime";
+         compiler.TargetClass = "TestModule";
+         compiler.UseLineDirective = true;
+         compiler.UsePackageBase = usePackageBase;
+         compiler.SetTargetBaseTypes(typeof(TestBase));
+
+         CompileResult result = compiler.Compile(new Uri(packageFile, UriKind.Absolute));
+
+         return Tuple.Create(result, compiler.TargetNamespace + "." + compiler.TargetClass);
+      }
+
+      static Type CompileCode(CompileResult result, string packageName) {
+
+         var parseOptions = new CSharpParseOptions(preprocessorSymbols: new[] { "DEBUG", "TRACE" });
+
+         SyntaxTree[] syntaxTrees = result.CompilationUnits
+            .Select(c => CSharpSyntaxTree.ParseText(c, parseOptions))
+            .ToArray();
+
+         // TODO: Should compiler give list of assembly references?
+
+         MetadataReference[] references = {
+            MetadataReference.CreateFromFile(typeof(System.Object).Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(System.Uri).Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(System.Linq.Enumerable).Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(System.Xml.XmlWriter).Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(System.ComponentModel.DataAnnotations.ValidationAttribute).Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(Newtonsoft.Json.JsonWriter).Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(Xcst.PackageModel.IXcstPackage).Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(Microsoft.CSharp.RuntimeBinder.RuntimeBinderException).Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(Microsoft.VisualStudio.TestTools.UnitTesting.Assert).Assembly.Location),
+            MetadataReference.CreateFromFile(Assembly.GetExecutingAssembly().Location)
+         };
+
+         CSharpCompilation compilation = CSharpCompilation.Create(
+            Path.GetRandomFileName(),
+            syntaxTrees: syntaxTrees,
+            references: references,
+            options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+
+         using (var assemblyStream = new MemoryStream()) {
+
+            EmitResult csharpResult = compilation.Emit(assemblyStream);
+
+            if (!csharpResult.Success) {
+
+               Diagnostic error = csharpResult.Diagnostics
+                  .Where(d => d.IsWarningAsError || d.Severity == DiagnosticSeverity.Error)
+                  .FirstOrDefault();
+
+               if (error != null) {
+                  Console.WriteLine($"// {error.Id}: {error.GetMessage()}");
+                  Console.WriteLine($"// Line number: {error.Location.GetLineSpan().StartLinePosition.Line}");
+               }
+
+               throw new CompileException("C# compilation failed.");
+            }
+
+            assemblyStream.Position = 0;
+
+            Assembly assembly = Assembly.Load(assemblyStream.ToArray());
+            Type type = assembly.GetType(packageName);
+
+            return type;
+         }
+      }
+
+      static bool OutputEqualsToDoc(Type packageType, string fileName) {
 
          var expectedDoc = XDocument.Load(fileName, LoadOptions.PreserveWhitespace);
          var actualDoc = new XDocument();
@@ -139,7 +207,7 @@ namespace Xcst.Compiler.Tests.Language {
          return XDocumentNormalizer.DeepEqualsWithNormalization(expectedDoc, actualDoc);
       }
 
-      public static bool OutputEqualsToText(Type packageType, string fileName) {
+      static bool OutputEqualsToText(Type packageType, string fileName) {
 
          string result;
 
@@ -156,7 +224,7 @@ namespace Xcst.Compiler.Tests.Language {
          return String.Equals(result, File.ReadAllText(fileName));
       }
 
-      public static bool OutputEqualsToExpected(Type packageType) {
+      static bool OutputEqualsToExpected(Type packageType) {
 
          var expectedDoc = new XDocument();
          var actualDoc = new XDocument();
@@ -180,28 +248,12 @@ namespace Xcst.Compiler.Tests.Language {
          return XDocumentNormalizer.DeepEqualsWithNormalization(expectedDoc, actualDoc);
       }
 
-      public static void SimplyRun(Type packageType, CompileResult compileResult, bool expectedToFail = false) {
+      static void SimplyRun(Type packageType) {
 
-         try {
-
-            XcstEvaluator.Using(Activator.CreateInstance(packageType))
-               .CallInitialTemplate()
-               .OutputTo(TextWriter.Null)
-               .Run();
-
-         } catch (RuntimeException ex) {
-
-            if (expectedToFail) {
-
-               Console.WriteLine($"// {ex.Message}");
-
-               foreach (string unit in compileResult.CompilationUnits) {
-                  Console.WriteLine(unit);
-               }
-            }
-
-            throw;
-         }
+         XcstEvaluator.Using(Activator.CreateInstance(packageType))
+            .CallInitialTemplate()
+            .OutputTo(TextWriter.Null)
+            .Run();
       }
    }
 

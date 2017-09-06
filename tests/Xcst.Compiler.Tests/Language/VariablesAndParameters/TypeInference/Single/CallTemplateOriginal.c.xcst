@@ -16,6 +16,4 @@
       <c:call-template name='foo'/>
    </c:template>
 
-   <c:template name='expected'/>
-
 </c:module>

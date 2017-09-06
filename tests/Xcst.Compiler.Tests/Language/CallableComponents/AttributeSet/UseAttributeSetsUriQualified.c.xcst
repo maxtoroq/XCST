@@ -7,7 +7,7 @@
       <c:attribute name='bar'>bar</c:attribute>
    </c:attribute-set>
 
-   <c:template name='c:initial-template'>
+   <c:template name='foo'>
       <foo c:use-attribute-sets='Q{urn:bar}bar'/>
    </c:template>
 

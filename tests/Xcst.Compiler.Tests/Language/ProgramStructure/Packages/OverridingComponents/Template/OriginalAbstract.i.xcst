@@ -11,7 +11,7 @@
       </c:override>
    </c:use-package>
 
-   <c:template name='c:initial-template'>
+   <c:template name='main'>
       <c:call-template name='foo'/>
    </c:template>
 

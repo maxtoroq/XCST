@@ -2,7 +2,7 @@
 <c:module version='1.0' language='C#'
    xmlns:c='http://maxtoroq.github.io/XCST'>
 
-   <c:template name='c:initial-template'>
+   <c:template name='main'>
       <html>
          <c:attribute name='xsl:version'>2.0</c:attribute>
       </html>

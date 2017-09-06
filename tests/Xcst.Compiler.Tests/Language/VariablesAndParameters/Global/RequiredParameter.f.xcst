@@ -3,4 +3,6 @@
 
    <c:param name='foo' required='yes'/>
 
+   <c:template name='c:initial-template'/>
+
 </c:module>
