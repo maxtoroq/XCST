@@ -259,6 +259,7 @@
     <None Include="Language\CreatingNodesAndObjects\MapEntry\Expando\ParentArray.f.xcst" />
     <None Include="Language\CreatingNodesAndObjects\Map\Expando\ValueWithoutEntry.f.xcst" />
     <None Include="Language\CreatingNodesAndObjects\Map\Expando\ParentMap.f.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\Map\Json\Raw.c.xcst" />
     <None Include="Language\CreatingNodesAndObjects\Map\Json\CompatibleOutput.c.xcst" />
     <None Include="Language\CreatingNodesAndObjects\Map\Json\ExpandoAndJson.f.xcst" />
     <None Include="Language\CreatingNodesAndObjects\MapEntry\Json\NoValue.c.xcst" />
@@ -273,6 +274,7 @@
     <None Include="Language\CreatingNodesAndObjects\Map\Json\ComplexContent.c.xcst" />
     <None Include="Language\CreatingNodesAndObjects\MapEntry\Expando\UnconditionallyClose.c.xcst" />
     <None Include="Language\CreatingNodesAndObjects\MapEntry\Json\UnconditionallyClose.c.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\Map\Json\Comment.c.xcst" />
     <None Include="Language\CreatingNodesAndObjects\Map\Json\UnconditionallyClose.c.xcst" />
     <None Include="Language\CreatingNodesAndObjects\Map\map.foo.i.xcst" />
     <None Include="Language\CreatingNodesAndObjects\MapEntry\map-entry.foo.i.xcst" />
@@ -368,6 +370,8 @@
     <Content Include="Language\CreatingNodesAndObjects\Element\NameWithPrefixAndNamespace2.xml" />
     <Content Include="Language\CreatingNodesAndObjects\MapEntry\Json\NoValue.txt" />
     <Content Include="Language\CreatingNodesAndObjects\MapEntry\Json\UnconditionallyClose.txt" />
+    <Content Include="Language\CreatingNodesAndObjects\Map\Json\Raw.txt" />
+    <Content Include="Language\CreatingNodesAndObjects\Map\Json\Comment.txt" />
     <Content Include="Language\CreatingNodesAndObjects\Map\Json\UnconditionallyClose.txt" />
     <Content Include="Language\CreatingNodesAndObjects\Namespace\UnconditionallyClose.xml" />
     <Content Include="Language\CreatingNodesAndObjects\ProcessingInstruction\UnconditionallyClose.xml" />

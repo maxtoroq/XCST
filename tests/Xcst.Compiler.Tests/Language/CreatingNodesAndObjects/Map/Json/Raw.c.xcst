@@ -5,15 +5,8 @@
 
    <c:template name='c:initial-template'>
       <c:map>
-         <c:call-template name='foo'/>
-         <c:map-entry key='"bar"'>bar</c:map-entry>
+         <c:text disable-output-escaping='yes'>main:function(){}</c:text>
       </c:map>
-   </c:template>
-
-   <c:template name='foo' as='object[]'>
-      <c:map-entry key='"foo"'>
-         <c:return/>
-      </c:map-entry>
    </c:template>
 
 </c:module>
