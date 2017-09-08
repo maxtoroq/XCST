@@ -66,9 +66,10 @@ namespace Xcst.Compiler.Tests.Language {
 
                } else {
 
-                  string packageFileWithoutExt = packageFile.Substring(0, packageFile.LastIndexOf('.'));
-                  string outputFileXml = packageFileWithoutExt + ".xml";
-                  string outputFileTxt = packageFileWithoutExt + ".xml";
+                  string packageDir = Path.GetDirectoryName(packageFile);
+                  string packageFileWithoutExt = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(packageFile));
+                  string outputFileXml = Path.Combine(packageDir, packageFileWithoutExt + ".xml");
+                  string outputFileTxt = Path.Combine(packageDir, packageFileWithoutExt + ".txt");
 
                   char outputOpt = File.Exists(outputFileXml) ? 'x'
                      : File.Exists(outputFileTxt) ? 't'
