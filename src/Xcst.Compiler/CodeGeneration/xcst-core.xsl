@@ -77,6 +77,33 @@
 
    <template match="c:*" mode="xcst:instruction"/>
 
+   <template match="*[not(self::c:*)]" mode="src:statement">
+      <call-template name="src:unknown-element">
+         <with-param name="current-mode" select="xs:QName('src:statement')"/>
+      </call-template>
+   </template>
+
+   <template match="*[not(self::c:*)]" mode="src:expression">
+      <call-template name="src:unknown-element">
+         <with-param name="current-mode" select="xs:QName('src:expression')"/>
+      </call-template>
+   </template>
+
+   <template name="src:unknown-element">
+      <param name="current-mode" as="xs:QName" required="yes"/>
+
+      <choose>
+         <when test="xcst:is-extension-instruction(.)">
+            <call-template name="src:extension-instruction">
+               <with-param name="current-mode" select="$current-mode"/>
+            </call-template>
+         </when>
+         <otherwise>
+            <call-template name="src:literal-result-element"/>
+         </otherwise>
+      </choose>
+   </template>
+
    <!--
       ## Creating Nodes and Objects
    -->
@@ -187,6 +214,34 @@
       </call-template>
       <text>)</text>
       <value-of select="$src:statement-delimiter"/>
+   </template>
+
+   <template match="c:document" mode="src:statement">
+      <param name="output" tunnel="yes"/>
+
+      <call-template name="xcst:validate-attribs"/>
+
+      <variable name="doc-output" select="concat(src:aux-variable('output'), '_', generate-id())"/>
+      <value-of select="$src:new-line"/>
+      <call-template name="src:line-hidden"/>
+      <call-template name="src:new-line-indented"/>
+      <text>using(var </text>
+      <value-of select="$doc-output"/>
+      <text> = </text>
+      <value-of select="src:fully-qualified-helper('DocumentWriter')"/>
+      <text>.CreateDocument(this, </text>
+      <value-of select="$output"/>
+      <text>))</text>
+      <call-template name="src:sequence-constructor">
+         <with-param name="ensure-block" select="true()"/>
+         <with-param name="output" select="$doc-output" tunnel="yes"/>
+      </call-template>
+   </template>
+
+   <template match="c:document" mode="xcst:instruction">
+      <element name="xcst:instruction">
+         <attribute name="as" select="'System.Xml.Linq.XDocument'"/>
+      </element>
    </template>
 
    <template match="c:element" mode="src:statement">
@@ -2106,68 +2161,49 @@
       <call-template name="xcst:validate-attribs"/>
    </template>
 
-   <template match="*[not(self::c:*)]" mode="src:statement">
-      <call-template name="src:unknown-element">
-         <with-param name="current-mode" select="xs:QName('src:statement')"/>
-      </call-template>
-   </template>
-
-   <template match="*[not(self::c:*)]" mode="src:expression">
-      <call-template name="src:unknown-element">
-         <with-param name="current-mode" select="xs:QName('src:expression')"/>
-      </call-template>
-   </template>
-
-   <template name="src:unknown-element">
+   <template name="src:extension-instruction">
       <param name="current-mode" as="xs:QName" required="yes"/>
 
+      <variable name="result" as="node()*">
+         <apply-templates select="." mode="src:extension-instruction">
+            <with-param name="src:current-mode" select="$current-mode" tunnel="yes"/>
+         </apply-templates>
+      </variable>
       <choose>
-         <when test="xcst:is-extension-instruction(.)">
-            <variable name="result" as="node()*">
-               <apply-templates select="." mode="src:extension-instruction">
-                  <with-param name="src:current-mode" select="$current-mode" tunnel="yes"/>
-               </apply-templates>
-            </variable>
-            <choose>
-               <when test="not(empty($result))">
-                  <variable name="instruction" select="."/>
-                  <for-each select="$result">
-                     <choose>
-                        <when test="self::text()">
-                           <!--
-                              Text is treated as output
-                           -->
-                           <sequence select="."/>
-                        </when>
-                        <otherwise>
-                           <variable name="node-from-source" select="root(.) is root($instruction)"/>
-                           <apply-templates select="." mode="#current">
-                              <with-param name="line-number-offset" select="
-                                 if ($node-from-source) then 0 
-                                 else (src:line-number(.) * -1) + src:line-number($instruction)"
-                                 tunnel="yes"/>
-                              <with-param name="line-uri" select="
-                                 if ($node-from-source) then ()
-                                 else document-uri(root($instruction))"
-                                 tunnel="yes"/>
-                           </apply-templates>
-                        </otherwise>
-                     </choose>
-                  </for-each>
-               </when>
-               <when test="c:fallback">
-                  <for-each select="c:fallback">
-                     <call-template name="xcst:validate-attribs"/>
-                     <call-template name="src:sequence-constructor"/>
-                  </for-each>
-               </when>
-               <otherwise>
-                  <sequence select="error(xs:QName('err:XTDE1450'), 'Unknown extension instruction.', src:error-object(.))"/>
-               </otherwise>
-            </choose>
+         <when test="not(empty($result))">
+            <variable name="instruction" select="."/>
+            <for-each select="$result">
+               <choose>
+                  <when test="self::text()">
+                     <!--
+                        Text is treated as output
+                     -->
+                     <sequence select="."/>
+                  </when>
+                  <otherwise>
+                     <variable name="node-from-source" select="root(.) is root($instruction)"/>
+                     <apply-templates select="." mode="#current">
+                        <with-param name="line-number-offset" select="
+                           if ($node-from-source) then 0 
+                           else (src:line-number(.) * -1) + src:line-number($instruction)"
+                           tunnel="yes"/>
+                        <with-param name="line-uri" select="
+                           if ($node-from-source) then ()
+                           else document-uri(root($instruction))"
+                           tunnel="yes"/>
+                     </apply-templates>
+                  </otherwise>
+               </choose>
+            </for-each>
+         </when>
+         <when test="c:fallback">
+            <for-each select="c:fallback">
+               <call-template name="xcst:validate-attribs"/>
+               <call-template name="src:sequence-constructor"/>
+            </for-each>
          </when>
          <otherwise>
-            <call-template name="src:literal-result-element"/>
+            <sequence select="error(xs:QName('err:XTDE1450'), 'Unknown extension instruction.', src:error-object(.))"/>
          </otherwise>
       </choose>
    </template>
@@ -2278,7 +2314,7 @@
       <value-of select="$new-output"/>
       <text> = </text>
       <value-of select="src:fully-qualified-helper('Serialization')"/>
-      <text>.ChangeOutput(this, </text>
+      <text>.ResultDocument(this, </text>
       <text>new </text>
       <value-of select="src:global-identifier('Xcst.OutputParameters')"/>
       <call-template name="src:open-brace"/>

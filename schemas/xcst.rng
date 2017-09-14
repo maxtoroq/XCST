@@ -57,6 +57,7 @@
          <ref name="comment"/>
          <ref name="continue"/>
          <ref name="delegate"/>
+         <ref name="document"/>
          <ref name="element"/>
          <ref name="evaluate-delegate"/>
          <ref name="evaluate-package"/>
@@ -949,6 +950,14 @@
          <zeroOrMore>
             <ref name="param"/>
          </zeroOrMore>
+         <ref name="sequence-constructor"/>
+      </element>
+   </define>
+
+   <define name="document">
+      <element name="document">
+         <ann:documentation>Creates a temporary tree.</ann:documentation>
+         <ref name="standard-attributes"/>
          <ref name="sequence-constructor"/>
       </element>
    </define>

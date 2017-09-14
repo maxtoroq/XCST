@@ -28,7 +28,7 @@ namespace Xcst.PackageModel {
 
       public SimpleContent SimpleContent { get; }
 
-      internal ExecutionContext(IXcstPackage topLevelPackage, IFormatProvider formatProvider) {
+      internal ExecutionContext(IXcstPackage topLevelPackage, IFormatProvider/*?*/ formatProvider) {
 
          if (topLevelPackage == null) throw new ArgumentNullException(nameof(topLevelPackage));
 

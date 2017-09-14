@@ -251,6 +251,11 @@
     <None Include="Language\CreatingNodesAndObjects\Delegate\Param\NoOtherPrecedingText.i.xcst" />
     <None Include="Language\CreatingNodesAndObjects\Delegate\Param\NoOtherPreceding.i.xcst" />
     <None Include="Language\CreatingNodesAndObjects\Delegate\Param\param.value_seqctor.mutex.i.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\Document\CompatibleOutput.c.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\Document\document.foo.i.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\Document\ValueTypeOutput.i.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\Document\XDocument.c.xcst" />
+    <None Include="Language\CreatingNodesAndObjects\Document\XmlDocument.c.xcst" />
     <None Include="Language\CreatingNodesAndObjects\Element\UnconditionallyClose.c.xcst" />
     <None Include="Language\CreatingNodesAndObjects\LiteralResultElement\UnconditionallyClose.c.xcst" />
     <None Include="Language\CreatingNodesAndObjects\Element\ComplexContent2.c.xcst" />
@@ -517,6 +522,7 @@
     <None Include="Language\VariablesAndParameters\TypeInference\Multiple\TemplateParamKnownType.i.xcst" />
     <None Include="Language\VariablesAndParameters\TypeInference\Multiple\TemplateParamUnknownType.i.xcst" />
     <None Include="Language\VariablesAndParameters\TypeInference\Single\Array.c.xcst" />
+    <None Include="Language\VariablesAndParameters\TypeInference\Single\Document.c.xcst" />
     <None Include="Language\VariablesAndParameters\TypeInference\Single\Map.c.xcst" />
     <None Include="Language\VariablesAndParameters\TypeInference\Single\FunctionParamKnownType.i.xcst" />
     <None Include="Language\VariablesAndParameters\TypeInference\Single\FunctionParamUnknownType.c.xcst" />

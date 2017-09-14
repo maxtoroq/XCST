@@ -16,22 +16,22 @@ using System;
 using System.IO;
 using System.Text;
 using System.Xml;
-using Xcst.Runtime;
+using Xcst.PackageModel;
 using Xcst.Xml;
 
 namespace Xcst {
 
-   delegate RuntimeWriter CreateWriterDelegate(OutputParameters defaultParams, OutputParameters overrideParams, SimpleContent simplContent);
+   delegate RuntimeWriter CreateWriterDelegate(OutputParameters defaultParams, OutputParameters/*?*/ overrideParams, ExecutionContext context);
 
    static class WriterFactory {
 
       internal static readonly Uri DefaultOuputUri = new Uri("", UriKind.Relative);
 
-      public static CreateWriterDelegate CreateWriter(Stream output, Uri outputUri) {
+      public static CreateWriterDelegate CreateWriter(Stream output, Uri/*?*/ outputUri) {
          return CreateWriter(p => CreateXmlWriter(output, p), outputUri);
       }
 
-      public static CreateWriterDelegate CreateWriter(TextWriter output, Uri outputUri) {
+      public static CreateWriterDelegate CreateWriter(TextWriter output, Uri/*?*/ outputUri) {
          return CreateWriter(p => CreateXmlWriter(output, p), outputUri);
       }
 
@@ -43,36 +43,36 @@ namespace Xcst {
          return CreateWriter(p => CreateXmlWriter(file, p), file, dispose: true);
       }
 
-      public static CreateWriterDelegate CreateWriter(XmlWriter output, Uri outputUri) {
+      public static CreateWriterDelegate CreateWriter(XmlWriter output, Uri/*?*/ outputUri) {
          return CreateWriter(p => output, outputUri);
       }
 
       public static CreateWriterDelegate CreateWriter(XcstWriter output) {
 
-         return (defaultParams, overrideParams, simplContent) => {
+         return (defaultParams, overrideParams, context) => {
 
             OutputParameters parameters = MergedParameters(defaultParams, overrideParams);
 
-            return CreateRuntimeWriter(output, parameters, simplContent);
+            return CreateRuntimeWriter(output, parameters, context);
          };
       }
 
-      static CreateWriterDelegate CreateWriter(Func<OutputParameters, XmlWriter> writerFn, Uri outputUri, bool dispose = false) {
+      static CreateWriterDelegate CreateWriter(Func<OutputParameters, XmlWriter> writerFn, Uri/*?*/ outputUri, bool dispose = false) {
 
-         return (defaultParams, overrideParams, simplContent) => {
+         return (defaultParams, overrideParams, context) => {
 
             OutputParameters parameters = MergedParameters(defaultParams, overrideParams);
 
             return CreateRuntimeWriter(CreateXmlXcstWriter(parameters, outputUri ?? DefaultOuputUri,
-               p => writerFn(p)), parameters, simplContent, dispose);
+               p => writerFn(p)), parameters, context, dispose);
          };
       }
 
-      static RuntimeWriter CreateRuntimeWriter(XcstWriter writer, OutputParameters parameters, SimpleContent simpleContent, bool dispose = false) {
+      static RuntimeWriter CreateRuntimeWriter(XcstWriter writer, OutputParameters parameters, ExecutionContext context, bool dispose = false) {
 
          var runtimeWriter = writer as RuntimeWriter
             ?? new RuntimeWriter(writer, parameters) {
-                  SimpleContent = simpleContent,
+                  SimpleContent = context.SimpleContent,
                   DisposeWriter = dispose
                };
 
@@ -81,8 +81,10 @@ namespace Xcst {
 
       static OutputParameters MergedParameters(OutputParameters defaultParams, OutputParameters overrideParams) {
 
+         if (defaultParams == null) throw new ArgumentNullException(nameof(defaultParams));
+
          if (overrideParams != null) {
-            defaultParams?.Merge(overrideParams);
+            defaultParams.Merge(overrideParams);
          }
 
          return defaultParams;

@@ -42,7 +42,7 @@ namespace Xcst.Runtime {
 
          if (output == null) throw new ArgumentNullException(nameof(output));
 
-         Debug.Assert(output.TryCastToFullWriter() == null);
+         Debug.Assert(output.TryCastToDocumentWriter() == null);
 
          this.mapOutput = output;
       }
@@ -51,7 +51,7 @@ namespace Xcst.Runtime {
 
          if (output == null) throw new ArgumentNullException(nameof(output));
 
-         Debug.Assert(output.TryCastToFullWriter() == null);
+         Debug.Assert(output.TryCastToDocumentWriter() == null);
 
          this.arrayOutput = output;
       }
@@ -233,7 +233,7 @@ namespace Xcst.Runtime {
          throw new NotImplementedException();
       }
 
-      public override XcstWriter TryCastToFullWriter() {
+      public override XcstWriter TryCastToDocumentWriter() {
          return null;
       }
 

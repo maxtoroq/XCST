@@ -48,10 +48,10 @@ namespace Xcst.Runtime {
             return mapWriter;
          }
 
-         XcstWriter fullWriter = output.TryCastToFullWriter();
+         XcstWriter docWriter = output.TryCastToDocumentWriter();
 
-         if (fullWriter != null) {
-            return Create(fullWriter);
+         if (docWriter != null) {
+            return Create(docWriter);
          }
 
          return new JsonMapWriter(output);
@@ -67,10 +67,10 @@ namespace Xcst.Runtime {
             return mapWriter;
          }
 
-         XcstWriter fullWriter = output.TryCastToFullWriter();
+         XcstWriter docWriter = output.TryCastToDocumentWriter();
 
-         if (fullWriter != null) {
-            return Create(fullWriter);
+         if (docWriter != null) {
+            return Create(docWriter);
          }
 
          return new JsonMapWriter(output);
@@ -109,24 +109,24 @@ namespace Xcst.Runtime {
 
    public class JsonMapWriter : MapWriter {
 
-      readonly XcstWriter fullWriter;
+      readonly XcstWriter docWriter;
       readonly ISequenceWriter<JObject> mapOutput;
       readonly ISequenceWriter<JArray> arrayOutput;
 
       protected JsonWriter BaseWriter { get; }
 
-      public JsonMapWriter(JsonWriter baseWriter, XcstWriter/*?*/ fullWriter) {
+      public JsonMapWriter(JsonWriter baseWriter, XcstWriter/*?*/ docWriter) {
 
          if (baseWriter == null) throw new ArgumentNullException(nameof(baseWriter));
 
          this.BaseWriter = baseWriter;
-         this.fullWriter = fullWriter;
+         this.docWriter = docWriter;
       }
 
       public JsonMapWriter(ISequenceWriter<JObject> output)
          : this(new JTokenWriter(), null) {
 
-         Debug.Assert(output.TryCastToFullWriter() == null);
+         Debug.Assert(output.TryCastToDocumentWriter() == null);
 
          this.mapOutput = output;
       }
@@ -134,7 +134,7 @@ namespace Xcst.Runtime {
       public JsonMapWriter(ISequenceWriter<JArray> output)
          : this(new JTokenWriter(), null) {
 
-         Debug.Assert(output.TryCastToFullWriter() == null);
+         Debug.Assert(output.TryCastToDocumentWriter() == null);
 
          this.arrayOutput = output;
       }
@@ -228,8 +228,8 @@ namespace Xcst.Runtime {
          this.BaseWriter.WriteRaw((string)data);
       }
 
-      public override XcstWriter TryCastToFullWriter() {
-         return this.fullWriter;
+      public override XcstWriter TryCastToDocumentWriter() {
+         return this.docWriter;
       }
 
       #endregion

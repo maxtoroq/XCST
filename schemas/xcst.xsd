@@ -26,6 +26,7 @@
          <xs:element ref="c:comment"/>
          <xs:element ref="c:continue"/>
          <xs:element ref="c:delegate"/>
+         <xs:element ref="c:document"/>
          <xs:element ref="c:element"/>
          <xs:element ref="c:evaluate-delegate"/>
          <xs:element ref="c:evaluate-package"/>
@@ -912,6 +913,15 @@
             <xs:element minOccurs="0" maxOccurs="unbounded" ref="c:param"/>
             <xs:group ref="c:sequence-constructor"/>
          </xs:sequence>
+         <xs:attributeGroup ref="c:standard-attributes"/>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="document">
+      <xs:annotation>
+         <xs:documentation>Creates a temporary tree.</xs:documentation>
+      </xs:annotation>
+      <xs:complexType mixed="true">
+         <xs:group ref="c:sequence-constructor"/>
          <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>

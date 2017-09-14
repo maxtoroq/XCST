@@ -26,6 +26,6 @@ namespace Xcst.PackageModel {
 
       Action<TemplateContext> GetTypedTemplate<TBase>(QualifiedName name, ISequenceWriter<TBase> output);
 
-      void ReadOutputDefinition(QualifiedName name, OutputParameters parameters);
+      void ReadOutputDefinition(QualifiedName/*?*/ name, OutputParameters parameters);
    }
 }

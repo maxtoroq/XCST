@@ -35,10 +35,10 @@ namespace Xcst.Runtime {
             return mapWriter;
          }
 
-         XcstWriter fullWriter = output.TryCastToFullWriter();
+         XcstWriter docWriter = output.TryCastToDocumentWriter();
 
-         if (fullWriter != null) {
-            return Create(fullWriter);
+         if (docWriter != null) {
+            return Create(docWriter);
          }
 
          return new ExpandoMapWriter((ISequenceWriter<ExpandoObject>)output);
@@ -52,10 +52,10 @@ namespace Xcst.Runtime {
             return mapWriter;
          }
 
-         XcstWriter fullWriter = output.TryCastToFullWriter();
+         XcstWriter docWriter = output.TryCastToDocumentWriter();
 
-         if (fullWriter != null) {
-            return Create(fullWriter);
+         if (docWriter != null) {
+            return Create(docWriter);
          }
 
          return new ExpandoMapWriter(output);
@@ -102,7 +102,7 @@ namespace Xcst.Runtime {
 
       public abstract void WriteRaw(object data);
 
-      public abstract XcstWriter TryCastToFullWriter();
+      public abstract XcstWriter TryCastToDocumentWriter();
 
       public MapWriter TryCastToMapWriter() => this;
 

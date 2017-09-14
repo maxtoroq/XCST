@@ -38,7 +38,7 @@ namespace Xcst.Runtime {
             package.ReadOutputDefinition(outputName, defaultParams);
          }
 
-         using (XcstWriter writer = WriterFactory.CreateWriter(sb)(defaultParams, parameters, package.Context.SimpleContent)) {
+         using (XcstWriter writer = WriterFactory.CreateWriter(sb)(defaultParams, parameters, package.Context)) {
             action(writer);
          }
 
@@ -58,7 +58,7 @@ namespace Xcst.Runtime {
          );
       }
 
-      public static XcstWriter ChangeOutput(
+      public static XcstWriter ResultDocument(
             IXcstPackage package,
             OutputParameters parameters,
             QualifiedName outputName,
@@ -67,10 +67,10 @@ namespace Xcst.Runtime {
 
          if (outputUri == null) throw new ArgumentNullException(nameof(outputUri));
 
-         return ChangeOutputImpl(u => WriterFactory.CreateWriter(u), false, package, parameters, outputName, currentOutput, outputUri);
+         return ResultDocumentImpl(u => WriterFactory.CreateWriter(u), false, package, parameters, outputName, currentOutput, outputUri);
       }
 
-      public static XcstWriter ChangeOutput(
+      public static XcstWriter ResultDocument(
             IXcstPackage package,
             OutputParameters parameters,
             QualifiedName outputName,
@@ -80,10 +80,10 @@ namespace Xcst.Runtime {
 
          if (output == null) throw new ArgumentNullException(nameof(output));
 
-         return ChangeOutputImpl(u => WriterFactory.CreateWriter(output, u), true, package, parameters, outputName, currentOutput, outputUri);
+         return ResultDocumentImpl(u => WriterFactory.CreateWriter(output, u), true, package, parameters, outputName, currentOutput, outputUri);
       }
 
-      public static XcstWriter ChangeOutput(
+      public static XcstWriter ResultDocument(
             IXcstPackage package,
             OutputParameters parameters,
             QualifiedName outputName,
@@ -93,10 +93,10 @@ namespace Xcst.Runtime {
 
          if (output == null) throw new ArgumentNullException(nameof(output));
 
-         return ChangeOutputImpl(u => WriterFactory.CreateWriter(output, u), true, package, parameters, outputName, currentOutput, outputUri);
+         return ResultDocumentImpl(u => WriterFactory.CreateWriter(output, u), true, package, parameters, outputName, currentOutput, outputUri);
       }
 
-      public static XcstWriter ChangeOutput(
+      public static XcstWriter ResultDocument(
             IXcstPackage package,
             OutputParameters parameters,
             QualifiedName outputName,
@@ -106,10 +106,10 @@ namespace Xcst.Runtime {
 
          if (output == null) throw new ArgumentNullException(nameof(output));
 
-         return ChangeOutputImpl(u => WriterFactory.CreateWriter(output, u), true, package, parameters, outputName, currentOutput, outputUri);
+         return ResultDocumentImpl(u => WriterFactory.CreateWriter(output, u), true, package, parameters, outputName, currentOutput, outputUri);
       }
 
-      public static XcstWriter ChangeOutput(
+      public static XcstWriter ResultDocument(
             IXcstPackage package,
             OutputParameters parameters,
             QualifiedName outputName,
@@ -119,10 +119,10 @@ namespace Xcst.Runtime {
 
          if (output == null) throw new ArgumentNullException(nameof(output));
 
-         return ChangeOutputImpl(u => WriterFactory.CreateWriter(output), true, package, parameters, outputName, currentOutput, outputUri);
+         return ResultDocumentImpl(u => WriterFactory.CreateWriter(output), true, package, parameters, outputName, currentOutput, outputUri);
       }
 
-      static XcstWriter ChangeOutputImpl(
+      static XcstWriter ResultDocumentImpl(
             Func<Uri, CreateWriterDelegate> writerFn,
             bool customOutput,
             IXcstPackage package,
@@ -159,13 +159,13 @@ namespace Xcst.Runtime {
          package.ReadOutputDefinition(outputName, defaultParams);
 
          return writerFn(outputUri)
-            (defaultParams, parameters, package.Context.SimpleContent);
+            (defaultParams, parameters, package.Context);
       }
 
       public static XcstWriter Void(IXcstPackage package) {
 
          return WriterFactory.CreateWriter(new NullWriter(WriterFactory.DefaultOuputUri))
-            (null, null, package.Context.SimpleContent);
+            (new OutputParameters(), null, package.Context);
       }
    }
 

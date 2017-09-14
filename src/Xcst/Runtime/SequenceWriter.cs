@@ -47,7 +47,7 @@ namespace Xcst.Runtime {
          WriteObject(data);
       }
 
-      public XcstWriter TryCastToFullWriter() {
+      public XcstWriter TryCastToDocumentWriter() {
          return null;
       }
 
@@ -169,8 +169,8 @@ namespace Xcst.Runtime {
          this.baseWriter.WriteRaw(data);
       }
 
-      public XcstWriter TryCastToFullWriter() {
-         return this.baseWriter.TryCastToFullWriter();
+      public XcstWriter TryCastToDocumentWriter() {
+         return this.baseWriter.TryCastToDocumentWriter();
       }
 
       public MapWriter TryCastToMapWriter() {

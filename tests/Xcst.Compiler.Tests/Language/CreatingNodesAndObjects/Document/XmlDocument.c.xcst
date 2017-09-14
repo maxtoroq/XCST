@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:import-namespace ns='System.Xml'/>
+
+   <c:template name='c:initial-template'>
+      <c:variable name='doc' as='XmlDocument'>
+         <c:document>
+            <foo bar='123'>baz</foo>
+         </c:document>
+      </c:variable>
+      <c:void value='Assert.AreEqual("foo", doc.DocumentElement.LocalName)'/>
+      <c:void value='Assert.AreEqual("123", doc.DocumentElement.GetAttribute("bar"))'/>
+      <c:void value='Assert.AreEqual("baz", doc.DocumentElement.InnerText)'/>
+   </c:template>
+
+</c:module>

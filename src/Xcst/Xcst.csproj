@@ -40,6 +40,7 @@
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\CommonAssemblyInfo.cs">
@@ -51,6 +52,7 @@
     <Compile Include="QualifiedName.cs" />
     <Compile Include="RuntimeException.cs" />
     <Compile Include="PackageModel\RangeAttribute.cs" />
+    <Compile Include="Runtime\DocumentWriter.cs" />
     <Compile Include="Runtime\EvaluateDelegate.cs" />
     <Compile Include="Runtime\ExpandoMapWriter.cs" />
     <Compile Include="Runtime\JsonMapWriter.cs" />

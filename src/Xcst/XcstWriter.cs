@@ -203,7 +203,7 @@ namespace Xcst {
          }
       }
 
-      public XcstWriter TryCastToFullWriter() {
+      public XcstWriter TryCastToDocumentWriter() {
          return this;
       }
 

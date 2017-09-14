@@ -30,7 +30,7 @@ namespace Xcst.PackageModel {
 
       void WriteRaw(TItem data);
 
-      XcstWriter TryCastToFullWriter();
+      XcstWriter TryCastToDocumentWriter();
 
       MapWriter TryCastToMapWriter();
    }

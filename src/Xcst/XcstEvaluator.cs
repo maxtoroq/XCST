@@ -387,7 +387,7 @@ namespace Xcst {
             var defaultParams = new OutputParameters();
             this.package.ReadOutputDefinition(null, defaultParams);
 
-            RuntimeWriter writer = this.writerFn(defaultParams, this.parameters, execContext.SimpleContent);
+            RuntimeWriter writer = this.writerFn(defaultParams, this.parameters, execContext);
 
             try {
                this.executionFn(this.package, writer);

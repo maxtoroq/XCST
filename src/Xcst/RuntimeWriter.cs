@@ -43,7 +43,7 @@ namespace Xcst {
       public RuntimeWriter(XcstWriter baseWriter, OutputParameters parameters)
          : base(baseWriter) {
 
-         this.itemSeparator = parameters?.ItemSeparator;
+         this.itemSeparator = parameters.ItemSeparator;
       }
 
       public override void WriteStartElement(string prefix, string localName, string ns) {
@@ -147,7 +147,7 @@ namespace Xcst {
       public override void WriteProcessingInstruction(string name, string text) {
 
          if (this.inAttr) {
-            throw new RuntimeException("Cannot create a processing instruction an attribute.");
+            throw new RuntimeException("Cannot create a processing instruction within an attribute.");
          }
 
          FlushAttributes();
