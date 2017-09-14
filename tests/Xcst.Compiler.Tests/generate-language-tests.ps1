@@ -49,10 +49,9 @@ function IgnoreTest($file) {
 
 function GenerateTests {
 
-   Add-Type -Path ..\..\..\src\Xcst.Compiler\bin\$Configuration\Xcst.Compiler.dll
+   Add-Type -Path ..\..\src\Xcst.Compiler\bin\$Configuration\Xcst.Compiler.dll
 
    $compilerFactory = New-Object Xcst.Compiler.XcstCompilerFactory
-   $startDirectory = Get-Item .
 
 @"
 //------------------------------------------------------------------------------
@@ -66,12 +65,15 @@ function GenerateTests {
 using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using static Xcst.Compiler.Tests.Language.LanguageTestsHelper;
+using static Xcst.Compiler.Tests.LanguageTestsHelper;
 "@
-   GenerateTestsForDirectory $startDirectory $startDirectory.Name
+
+   foreach ($subDirectory in ls -Directory) {
+      GenerateTestsForDirectory $subDirectory $subDirectory.Name
+   }
 }
 
-function GenerateTestsForDirectory([IO.DirectoryInfo]$directory, $relativeNs) {
+function GenerateTestsForDirectory([IO.DirectoryInfo]$directory, [string]$relativeNs) {
 
    $ns = "Xcst.Compiler.Tests.$relativeNs"
 
@@ -85,17 +87,17 @@ function GenerateTestsForDirectory([IO.DirectoryInfo]$directory, $relativeNs) {
       $xcstResult = $compiler.Compile((New-Object Uri $file.FullName))
 
       foreach ($src in $xcstResult.CompilationUnits) {
-         WriteLine $src
+         $src
       }
    }
-
-   WriteLine
-   WriteLine "namespace $ns {"
-   PushIndent
 
    $tests = ls $directory.FullName *.xcst
 
    if ($tests.Length -gt 0) {
+
+      WriteLine
+      WriteLine "namespace $ns {"
+      PushIndent
    
       WriteLine
       WriteLine "[TestClass]"
@@ -138,10 +140,10 @@ function GenerateTestsForDirectory([IO.DirectoryInfo]$directory, $relativeNs) {
 
       PopIndent
       WriteLine "}"
-   }
 
-   PopIndent
-   WriteLine "}"
+      PopIndent
+      WriteLine "}"
+   }
 
    foreach ($subDirectory in ls $directory.FullName -Directory) {
       GenerateTestsForDirectory $subDirectory ($relativeNs + "." + $subDirectory.Name)

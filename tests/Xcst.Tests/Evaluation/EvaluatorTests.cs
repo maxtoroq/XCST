@@ -7,7 +7,9 @@ namespace Xcst.Tests.Evaluation {
    [TestClass]
    public class EvaluatorTests {
 
-      [TestMethod, TestCategory(nameof(Evaluation))]
+      const string TestCategory = "API." + nameof(Evaluation);
+
+      [TestMethod, TestCategory(TestCategory)]
       [ExpectedException(typeof(InvalidOperationException))]
       public void Disallow_Re_Prime() {
 
@@ -24,7 +26,7 @@ namespace Xcst.Tests.Evaluation {
             .Run();
       }
 
-      [TestMethod, TestCategory(nameof(Evaluation))]
+      [TestMethod, TestCategory(TestCategory)]
       public void Lock_Template_Params() {
 
          var template = XcstEvaluator.Using(new LockTemplateParams())

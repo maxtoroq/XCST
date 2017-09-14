@@ -10,7 +10,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
 using TestAssert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 
-namespace Xcst.Compiler.Tests.Language {
+namespace Xcst.Compiler.Tests {
 
    static class LanguageTestsHelper {
 
