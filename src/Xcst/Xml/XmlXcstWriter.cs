@@ -36,7 +36,24 @@ namespace Xcst.Xml {
          this.standalone = parameters.Standalone.GetValueOrDefault();
       }
 
+      void WriteXmlDeclaration() {
+
+         if (this.outputXmlDecl
+            && !this.xmlDeclWritten
+            && this.writer.WriteState == WriteState.Start) {
+
+            if (this.standalone == XmlStandalone.Omit) {
+               this.writer.WriteStartDocument();
+            } else {
+               this.writer.WriteStartDocument(this.standalone == XmlStandalone.Yes);
+            }
+
+            this.xmlDeclWritten = true;
+         }
+      }
+
       public override void WriteComment(string text) {
+         WriteXmlDeclaration();
          this.writer.WriteComment(text);
       }
 
@@ -61,10 +78,12 @@ namespace Xcst.Xml {
       }
 
       public override void WriteProcessingInstruction(string name, string text) {
+         WriteXmlDeclaration();
          this.writer.WriteProcessingInstruction(name, text);
       }
 
       public override void WriteRaw(string data) {
+         WriteXmlDeclaration();
          this.writer.WriteRaw(data);
       }
 
@@ -73,28 +92,17 @@ namespace Xcst.Xml {
       }
 
       public override void WriteStartElement(string prefix, string localName, string ns) {
-
-         if (this.outputXmlDecl
-            && !this.xmlDeclWritten
-            && this.writer.WriteState == WriteState.Start) {
-
-            if (this.standalone == XmlStandalone.Omit) {
-               this.writer.WriteStartDocument();
-            } else {
-               this.writer.WriteStartDocument(this.standalone == XmlStandalone.Yes);
-            }
-
-            this.xmlDeclWritten = true;
-         }
-
+         WriteXmlDeclaration();
          this.writer.WriteStartElement(prefix, localName, ns);
       }
 
       public override void WriteString(string text) {
+         WriteXmlDeclaration();
          this.writer.WriteString(text);
       }
 
       public override void WriteChars(char[] buffer, int index, int count) {
+         WriteXmlDeclaration();
          this.writer.WriteChars(buffer, index, count);
       }
 
