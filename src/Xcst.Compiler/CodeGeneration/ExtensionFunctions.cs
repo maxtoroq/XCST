@@ -92,39 +92,6 @@ namespace Xcst.Compiler.CodeGeneration {
       }
    }
 
-   class InterpolatedStringFunction : ExtensionFunctionDefinition {
-
-      public override QName FunctionName { get; } = CompilerQName("interpolated-string");
-
-      public override XdmSequenceType[] ArgumentTypes { get; } = {
-         new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_STRING), ' ')
-      };
-
-      public override int MinimumNumberOfArguments => ArgumentTypes.Length;
-
-      public override int MaximumNumberOfArguments => MinimumNumberOfArguments;
-
-      public override ExtensionFunctionCall MakeFunctionCall() {
-         return new FunctionCall();
-      }
-
-      public override XdmSequenceType ResultType(XdmSequenceType[] ArgumentTypes) {
-         return new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_STRING), ' ');
-      }
-
-      class FunctionCall : ExtensionFunctionCall {
-
-         public override IXdmEnumerator Call(IXdmEnumerator[] arguments, DynamicContext context) {
-
-            XdmAtomicValue value = arguments[0].AsAtomicValues().Single();
-
-            return CSharpExpression.InterpolatedString(value.ToString())
-               .ToXdmAtomicValue()
-               .GetXdmEnumerator();
-         }
-      }
-   }
-
    class MakeRelativeUriFunction : ExtensionFunctionDefinition {
 
       public override QName FunctionName { get; } = CompilerQName("make-relative-uri");

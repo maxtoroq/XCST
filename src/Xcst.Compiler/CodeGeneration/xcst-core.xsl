@@ -3245,6 +3245,177 @@
       <sequence select="concat($src:context-field, '.SimpleContent.FormatValueTemplate(', src:interpolated-string($text), ')')"/>
    </function>
 
+   <function name="src:interpolated-string" as="xs:string">
+      <param name="text" as="xs:string"/>
+
+      <variable name="quotes" select="src:quotes-to-escape($text, 1, 'Text')"/>
+      <variable name="parts" as="xs:string*">
+         <choose>
+            <when test="empty($quotes)">
+               <sequence select="$text"/>
+            </when>
+            <otherwise>
+               <for-each select="$quotes">
+                  <variable name="current-pos" select="position()"/>
+                  <variable name="from" select="
+                     if (position() eq 1) then 1
+                     else $quotes[$current-pos - 1] + 1"/>
+                  <variable name="length" select=". - $from + 1"/>
+                  <sequence select="substring($text, $from, $length)"/>
+               </for-each>
+               <sequence select="
+                  if ($quotes[last()] eq string-length($text)) then ''
+                  else substring($text, $quotes[last()] + 1)"/>
+            </otherwise>
+         </choose>
+      </variable>
+      <sequence select="concat('$@&quot;', string-join($parts, '&quot;'), '&quot;')"/>
+   </function>
+
+   <function name="src:quotes-to-escape" as="xs:integer*">
+      <param name="text" as="xs:string"/>
+      <param name="char-pos" as="xs:integer"/>
+      <param name="modes" as="xs:string+"/>
+
+      <if test="$char-pos le string-length($text)">
+         <variable name="char" select="substring($text, $char-pos, 1)"/>
+         <variable name="next-char" select="
+            if ($char-pos lt string-length($text)) then
+               substring($text, $char-pos + 1, 1)
+            else ()"/>
+         <variable name="current-mode" select="$modes[last()]"/>
+         <variable name="actions" as="element()*">
+            <choose>
+               <when test="$current-mode eq 'Code'">
+                  <choose>
+                     <when test="$char eq '{'">
+                        <element name="push-mode">Code</element>
+                     </when>
+                     <when test="$char eq '}'">
+                        <element name="pop-mode"/>
+                     </when>
+                     <when test="$char eq ''''">
+                        <element name="push-mode">Char</element>
+                     </when>
+                     <when test="$char eq '&quot;'">
+                        <variable name="prev-char" select="substring($text, $char-pos - 1, 1)"/>
+                        <element name="push-mode">
+                           <choose>
+                              <when test="$prev-char eq '@'">
+                                 <choose>
+                                    <when test="($char-pos - 2) ge 1 and substring($text, $char-pos - 2, 1) eq '$'">InterpolatedVerbatimString</when>
+                                    <otherwise>VerbatimString</otherwise>
+                                 </choose>
+                              </when>
+                              <when test="$prev-char eq '$'">InterpolatedString</when>
+                              <otherwise>String</otherwise>
+                           </choose>
+                        </element>
+                     </when>
+                     <when test="$char eq '/' and $next-char eq '*'">
+                        <element name="push-mode">MultilineComment</element>
+                        <element name="skip-char"/>
+                     </when>
+                  </choose>
+               </when>
+               <when test="$current-mode = ('Text', 'InterpolatedString', 'InterpolatedVerbatimString')">
+                  <choose>
+                     <when test="$char eq '{'">
+                        <choose>
+                           <when test="$next-char eq '{'">
+                              <element name="skip-char"/>
+                           </when>
+                           <otherwise>
+                              <element name="push-mode">Code</element>
+                           </otherwise>
+                        </choose>
+                     </when>
+                     <when test="$char eq '&quot;'">
+                        <choose>
+                           <when test="$current-mode eq 'Text'">
+                              <element name="append-quote"/>
+                           </when>
+                           <when test="$current-mode eq 'InterpolatedString'">
+                              <element name="pop-mode"/>
+                           </when>
+                           <when test="$current-mode eq 'InterpolatedVerbatimString'">
+                              <choose>
+                                 <when test="$next-char eq '&quot;'">
+                                    <element name="skip-char"/>
+                                 </when>
+                                 <otherwise>
+                                    <element name="pop-mode"/>
+                                 </otherwise>
+                              </choose>
+                           </when>
+                        </choose>
+                     </when>
+                     <when test="$char eq '\' and $current-mode eq 'InterpolatedString'">
+                        <element name="skip-char"/>
+                     </when>
+                  </choose>
+               </when>
+               <when test="$current-mode eq 'String'">
+                  <choose>
+                     <when test="$char eq '\'">
+                        <element name="skip-char"/>
+                     </when>
+                     <when test="$char eq '&quot;'">
+                        <element name="pop-mode"/>
+                     </when>
+                  </choose>
+               </when>
+               <when test="$current-mode eq 'VerbatimString'">
+                  <if test="$char eq '&quot;'">
+                     <choose>
+                        <when test="$next-char eq '&quot;'">
+                           <element name="skip-char"/>
+                        </when>
+                        <otherwise>
+                           <element name="pop-mode"/>
+                        </otherwise>
+                     </choose>
+                  </if>
+               </when>
+               <when test="$current-mode eq 'Char'">
+                  <choose>
+                     <when test="$char eq '\'">
+                        <element name="skip-char"/>
+                     </when>
+                     <when test="$char eq ''''">
+                        <element name="pop-mode"/>
+                     </when>
+                  </choose>
+               </when>
+               <when test="$current-mode eq 'MultilineComment'">
+                  <if test="$char eq '*' and $next-char eq '/'">
+                     <element name="pop-mode"/>
+                     <element name="skip-char"/>
+                  </if>
+               </when>
+            </choose>
+         </variable>
+         <variable name="next-pos" select="
+            if ($actions[self::skip-char]) then
+               $char-pos + 2
+            else $char-pos + 1"/>
+         <variable name="next-modes" as="xs:string+">
+            <sequence select="$modes[position() lt last()]"/>
+            <if test="not($actions[self::pop-mode])">
+               <sequence select="$modes[last()]"/>
+            </if>
+            <variable name="push-mode" select="$actions[self::push-mode]"/>
+            <if test="$push-mode">
+               <sequence select="$push-mode/string()"/>
+            </if>
+         </variable>
+         <if test="$actions[self::append-quote]">
+            <sequence select="$char-pos"/>
+         </if>
+         <sequence select="src:quotes-to-escape($text, $next-pos, $next-modes)"/>
+      </if>
+   </function>
+
    <function name="src:string" as="xs:string">
       <param name="item" as="item()"/>
 

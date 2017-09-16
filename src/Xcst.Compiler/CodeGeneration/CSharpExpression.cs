@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 
@@ -64,161 +63,6 @@ namespace Xcst.Compiler.CodeGeneration {
          return str;
       }
 
-      public static string InterpolatedString(string text) {
-
-         if (text == null) throw new ArgumentNullException(nameof(text));
-
-         var quoteIndexes = new List<int>();
-
-         var modeStack = new Stack<ParsingMode>();
-         modeStack.Push(ParsingMode.Text);
-
-         Func<ParsingMode> currentMode = () => modeStack.Peek();
-
-         for (int i = 0; i < text.Length; i++) {
-
-            char c = text[i];
-            Func<char?> nextChar = () =>
-               i + 1 < text.Length ? text[i + 1]
-               : default(char?);
-
-            switch (currentMode()) {
-               case ParsingMode.Code:
-                  switch (c) {
-                     case '{':
-                        modeStack.Push(ParsingMode.Code);
-                        break;
-
-                     case '}':
-                        modeStack.Pop();
-                        break;
-
-                     case '\'':
-                        modeStack.Push(ParsingMode.Char);
-                        break;
-
-                     case '"':
-                        ParsingMode stringMode = ParsingMode.String;
-
-                        switch (text[i - 1]) {
-                           case '@':
-                              if (i - 2 >= 0 && text[i - 2] == '$') {
-                                 stringMode = ParsingMode.InterpolatedVerbatimString;
-                              } else {
-                                 stringMode = ParsingMode.VerbatimString;
-                              }
-                              break;
-
-                           case '$':
-                              stringMode = ParsingMode.InterpolatedString;
-                              break;
-                        }
-
-                        modeStack.Push(stringMode);
-                        break;
-
-                     case '/':
-                        if (nextChar() == '*') {
-                           modeStack.Push(ParsingMode.MultilineComment);
-                           i++;
-                        }
-                        break;
-                  }
-                  break;
-
-               case ParsingMode.Text:
-               case ParsingMode.InterpolatedString:
-               case ParsingMode.InterpolatedVerbatimString:
-                  switch (c) {
-                     case '{':
-                        if (nextChar() == '{') {
-                           i++;
-                        } else {
-                           modeStack.Push(ParsingMode.Code);
-                        }
-                        break;
-
-                     case '"':
-                        switch (currentMode()) {
-                           case ParsingMode.Text:
-                              quoteIndexes.Add(i);
-                              break;
-
-                           case ParsingMode.InterpolatedString:
-                              modeStack.Pop();
-                              break;
-
-                           case ParsingMode.InterpolatedVerbatimString:
-                              if (nextChar() == '"') {
-                                 i++;
-                              } else {
-                                 modeStack.Pop();
-                              }
-                              break;
-                        }
-                        break;
-
-                     case '\\':
-                        if (currentMode() == ParsingMode.InterpolatedString) {
-                           i++;
-                        }
-                        break;
-                  }
-                  break;
-
-               case ParsingMode.String:
-                  switch (c) {
-                     case '\\':
-                        i++;
-                        break;
-
-                     case '"':
-                        modeStack.Pop();
-                        break;
-                  }
-                  break;
-
-               case ParsingMode.VerbatimString:
-                  if (c == '"') {
-                     if (nextChar() == '"') {
-                        i++;
-                     } else {
-                        modeStack.Pop();
-                     }
-                  }
-                  break;
-
-               case ParsingMode.Char:
-                  switch (c) {
-                     case '\\':
-                        i++;
-                        break;
-                     case '\'':
-                        modeStack.Pop();
-                        break;
-                  }
-                  break;
-
-               case ParsingMode.MultilineComment:
-                  if (c == '*') {
-                     if (nextChar() == '/') {
-                        modeStack.Pop();
-                        i++;
-                     }
-                  }
-                  break;
-            }
-         }
-
-         var sb = new StringBuilder(text, text.Length + quoteIndexes.Count);
-
-         for (int i = 0; i < quoteIndexes.Count; i++) {
-            sb.Insert(quoteIndexes[i] + i, '"');
-         }
-
-         return "$@\"" + sb.ToString() + "\"";
-      }
-
       public static string TypeReference(Type type, string namespaceAlias = null) {
 
          var sb = new StringBuilder();
@@ -266,17 +110,6 @@ namespace Xcst.Compiler.CodeGeneration {
          } else {
             sb.Append(type.Name);
          }
-      }
-
-      enum ParsingMode {
-         Text,
-         Code,
-         InterpolatedString,
-         InterpolatedVerbatimString,
-         String,
-         VerbatimString,
-         Char,
-         MultilineComment
       }
    }
 }
