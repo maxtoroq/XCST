@@ -85,9 +85,24 @@ namespace Xcst.Compiler.CodeGeneration {
             Uri uri = value.Value as Uri
                ?? new Uri(value.ToString(), UriKind.RelativeOrAbsolute);
 
-            return Helpers.LocalPath(uri)
+            return LocalPath(uri)
                .ToXdmAtomicValue()
                .GetXdmEnumerator();
+         }
+
+         static string LocalPath(Uri uri) {
+
+            if (uri == null) throw new ArgumentNullException(nameof(uri));
+
+            if (!uri.IsAbsoluteUri) {
+               return uri.OriginalString;
+            }
+
+            if (uri.IsFile) {
+               return uri.LocalPath;
+            }
+
+            return uri.AbsoluteUri;
          }
       }
    }
@@ -122,8 +137,12 @@ namespace Xcst.Compiler.CodeGeneration {
                .ToArray();
 
             return (IXdmEnumerator)new XdmAtomicValue(
-               Helpers.MakeRelativeUri(uris[0], uris[1])
+               MakeRelativeUri(uris[0], uris[1])
             ).GetEnumerator();
+         }
+
+         static Uri MakeRelativeUri(Uri current, Uri compare) {
+            return current.MakeRelativeUri(compare);
          }
       }
    }
@@ -386,11 +405,15 @@ namespace Xcst.Compiler.CodeGeneration {
 
          public override IXdmEnumerator Call(IXdmEnumerator[] arguments, DynamicContext context) {
 
-            QualifiedName qname = ((QName)arguments[0].AsAtomicValues().Single().Value).ToQualifiedName();
+            QName qname = (QName)arguments[0].AsAtomicValues().Single().Value;
 
-            return Helpers.QNameId(qname)
+            return QNameId(qname)
                .ToXdmAtomicValue()
                .GetXdmEnumerator();
+         }
+
+         static int QNameId(QName qname) {
+            return $"Q{{{qname.Uri}}}{qname.LocalName}".GetHashCode();
          }
       }
    }

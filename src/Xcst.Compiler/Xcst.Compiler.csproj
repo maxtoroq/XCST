@@ -64,7 +64,6 @@
     <Compile Include="CodeGeneration\ExtensionFunctions.cs" />
     <Compile Include="CodeGeneration\PackageManifest.cs" />
     <Compile Include="CompileException.cs" />
-    <Compile Include="CodeGeneration\Helpers.cs" />
     <Compile Include="LoggingResolver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SaxonExtensions.cs" />
