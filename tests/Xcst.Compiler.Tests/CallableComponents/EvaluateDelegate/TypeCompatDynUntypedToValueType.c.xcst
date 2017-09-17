@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:template name='c:initial-template'>
+      <c:call-template name='foo'/>
+   </c:template>
+
+   <c:template name='foo'>
+      <c:variable name='foo' as='System.Delegate'>
+         <c:delegate as='int'>
+            <c:object value='5'/>
+         </c:delegate>
+      </c:variable>
+      <foo>
+         <c:evaluate-delegate delegate='foo'/>
+      </foo>
+   </c:template>
+
+   <c:template name='expected'>
+      <foo>5</foo>
+   </c:template>
+
+</c:module>

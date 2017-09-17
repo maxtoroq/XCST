@@ -1260,7 +1260,7 @@
       <param name="meta" as="element()?"/>
 
       <sequence select="
-         if ($meta[self::xcst:template] and $meta/@item-type) then
+         if ($meta/@item-type) then
             concat(src:package-model-type('ISequenceWriter'), '&lt;', src:global-identifier-meta($meta/@item-type), '>')
          else
             src:global-identifier('Xcst.XcstWriter')"/>

@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:template name='c:initial-template'>
+
+      <c:variable name='foo'>
+         <c:delegate as='int'>
+            <c:object value='5'/>
+         </c:delegate>
+      </c:variable>
+
+      <c:variable name='a' as='int'>
+         <c:evaluate-delegate delegate='foo'/>
+      </c:variable>
+
+      <c:void value='Assert.AreEqual(5, a)'/>
+   </c:template>
+
+</c:module>

@@ -1717,16 +1717,25 @@
    <template match="c:delegate" mode="src:expression">
       <param name="indent" tunnel="yes"/>
 
-      <call-template name="xcst:validate-attribs"/>
+      <call-template name="xcst:validate-attribs">
+         <with-param name="optional" select="'as'"/>
+      </call-template>
       <variable name="new-context" select="concat(src:aux-variable('context'), '_', generate-id())"/>
       <variable name="new-output" select="concat(src:aux-variable('output'), '_', generate-id())"/>
+      <variable name="meta" as="element()">
+         <element name="xcst:delegate">
+            <if test="@as">
+               <attribute name="item-type" select="@as/xcst:item-type(xcst:type(.))"/>
+            </if>
+         </element>
+      </variable>
       <text>new </text>
       <value-of select="src:global-identifier('System.Action')"/>
       <text>&lt;</text>
-      <value-of select="src:template-context-type(()), src:template-output-type(())" separator=", "/>
+      <value-of select="src:template-context-type(()), src:template-output-type($meta)" separator=", "/>
       <text>>((</text>
       <value-of select="$new-context, $new-output" separator=", "/>
-      <text>) => </text>
+      <text>) =></text>
       <call-template name="src:open-brace"/>
       <for-each select="c:param">
          <call-template name="xcst:validate-attribs">
@@ -2392,7 +2401,7 @@
       <call-template name="src:close-brace"/>
       <text>, (</text>
       <value-of select="$new-output"/>
-      <text>) => </text>
+      <text>) =></text>
       <call-template name="src:sequence-constructor">
          <with-param name="ensure-block" select="true()"/>
          <with-param name="output" select="$new-output" tunnel="yes"/>
@@ -3060,7 +3069,7 @@
             <value-of select="($separator, src:string(''))[1]"/>
             <text>, (</text>
             <value-of select="$new-output"/>
-            <text>) => </text>
+            <text>) =></text>
             <call-template name="src:sequence-constructor">
                <with-param name="ensure-block" select="true()"/>
                <with-param name="output" select="$new-output" tunnel="yes"/>
@@ -3118,7 +3127,7 @@
                   <value-of select="($item-type, 'object')[1]"/>
                   <text>>().WriteSequenceConstructor((</text>
                   <value-of select="$new-output"/>
-                  <text>) => </text>
+                  <text>) =></text>
                   <call-template name="src:sequence-constructor">
                      <with-param name="children" select="$children"/>
                      <with-param name="ensure-block" select="true()"/>

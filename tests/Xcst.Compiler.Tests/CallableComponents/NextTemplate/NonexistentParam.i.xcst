@@ -1,12 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
-   <c:import href='_DuplicateParameter.xcst'/>
+   <c:import href='_NonexistentParam.xcst'/>
 
-   <c:template name='foo'>
+   <c:template name='bar'>
       <c:next-template>
-         <c:with-param name='a'>a</c:with-param>
-         <c:with-param name='a'>a</c:with-param>
+         <c:with-param name='a' value='""'/>
       </c:next-template>
    </c:template>
 
