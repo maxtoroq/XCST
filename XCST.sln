@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26730.15
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xcst", "src\Xcst\Xcst.csproj", "{4387C5BE-1873-4060-B547-9467D5E2C779}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xcst.Runtime", "src\Xcst.Runtime\Xcst.Runtime.csproj", "{4387C5BE-1873-4060-B547-9467D5E2C779}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xcst.Compiler", "src\Xcst.Compiler\Xcst.Compiler.csproj", "{1228FBC0-3A76-4152-9D34-07FC2F9C9F31}"
 EndProject

@@ -57,7 +57,7 @@
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="..\Xcst\XmlNamespaces.cs">
+    <Compile Include="..\Xcst.Runtime\XmlNamespaces.cs">
       <Link>XmlNamespaces.cs</Link>
     </Compile>
     <Compile Include="CodeGeneration\CSharpExpression.cs" />
@@ -79,9 +79,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Xcst\Xcst.csproj">
+    <ProjectReference Include="..\Xcst.Runtime\Xcst.Runtime.csproj">
       <Project>{4387c5be-1873-4060-b547-9467d5e2c779}</Project>
-      <Name>Xcst</Name>
+      <Name>Xcst.Runtime</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

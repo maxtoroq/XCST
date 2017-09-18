@@ -49,9 +49,9 @@ function script:NuSpec {
          "<copyright>$($notice.copyright)</copyright>"
          "<iconUrl>$($notice.website)nuget/icon.png</iconUrl>"
 
-   if ($projName -eq "Xcst") {
+   if ($projName -eq "Xcst.Runtime") {
 
-      "<description>XCST runtime API. For compilation install the Xcst.Compiler package.</description>"
+      "<description>XCST runtime and evaluation API. For compilation install the Xcst.Compiler package.</description>"
 
       "<dependencies>"
          "<dependency id='Newtonsoft.Json' version='$($packagesDoc.DocumentElement.SelectSingleNode('package[@id=''Newtonsoft.Json'']').Attributes['version'].Value)'/>"
@@ -64,10 +64,10 @@ function script:NuSpec {
 
    } elseif ($projName -eq "Xcst.Compiler") {
 
-      "<description>XCST compiler API. Use this package to translate your XCST programs into C# code.</description>"
+      "<description>XCST compilation API. Use this package to translate your XCST programs into C# code.</description>"
 
       "<dependencies>"
-         "<dependency id='Xcst' version='$(DependencyVersionRange Xcst)'/>"
+         "<dependency id='Xcst.Runtime' version='$(DependencyVersionRange Xcst.Runtime)'/>"
          "<dependency id='Saxon-HE' version='$($packagesDoc.DocumentElement.SelectSingleNode('package[@id=''Saxon-HE'']').Attributes['allowedVersions'].Value)'/>"
       "</dependencies>"
 
@@ -188,7 +188,7 @@ try {
    [xml]$noticeDoc = Get-Content $solutionPath\NOTICE.xml
    $notice = $noticeDoc.DocumentElement
 
-   $projects = "Xcst", "Xcst.Compiler"
+   $projects = "Xcst.Runtime", "Xcst.Compiler"
 
    if ($ProjectName -eq '*') {
       

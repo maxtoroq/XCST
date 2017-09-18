@@ -50,7 +50,7 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\src\Xcst\bin\Debug\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\src\Xcst.Runtime\bin\Debug\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Collections.Immutable, Version=1.1.37.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -1049,9 +1049,9 @@
       <Project>{1228fbc0-3a76-4152-9d34-07fc2f9c9f31}</Project>
       <Name>Xcst.Compiler</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\src\Xcst\Xcst.csproj">
+    <ProjectReference Include="..\..\src\Xcst.Runtime\Xcst.Runtime.csproj">
       <Project>{4387c5be-1873-4060-b547-9467d5e2c779}</Project>
-      <Name>Xcst</Name>
+      <Name>Xcst.Runtime</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

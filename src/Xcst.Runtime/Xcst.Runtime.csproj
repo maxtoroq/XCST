@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Xcst</RootNamespace>
-    <AssemblyName>Xcst</AssemblyName>
+    <AssemblyName>Xcst.Runtime</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <CodeAnalysisRuleSet>..\XCST.ruleset</CodeAnalysisRuleSet>
