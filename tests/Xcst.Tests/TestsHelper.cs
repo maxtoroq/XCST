@@ -8,11 +8,12 @@ using System.Xml.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
+using Xcst.Compiler;
 using TestAssert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 
-namespace Xcst.Compiler.Tests {
+namespace Xcst.Tests {
 
-   static class LanguageTestsHelper {
+   static class TestsHelper {
 
       static readonly XcstCompilerFactory CompilerFactory = new XcstCompilerFactory {
          EnableExtensions = true,
@@ -125,7 +126,7 @@ namespace Xcst.Compiler.Tests {
       static Tuple<CompileResult, string> GenerateCode(string packageFile, string usePackageBase) {
 
          XcstCompiler compiler = CompilerFactory.CreateCompiler();
-         compiler.TargetNamespace = typeof(LanguageTestsHelper).Namespace + ".Runtime";
+         compiler.TargetNamespace = typeof(TestsHelper).Namespace + ".Runtime";
          compiler.TargetClass = "TestModule";
          compiler.UseLineDirective = true;
          compiler.UsePackageBase = usePackageBase;

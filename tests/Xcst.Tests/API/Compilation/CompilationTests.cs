@@ -2,13 +2,14 @@
 using System.IO;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xcst.Compiler;
 
-namespace Xcst.Compiler.Tests.API {
+namespace Xcst.Tests.API.Compilation {
 
    [TestClass]
-   public class ApiTests {
+   public class CompilationTests {
 
-      const string TestCategory = nameof(API) + ".Compilation";
+      const string TestCategory = nameof(API) + "." + nameof(Compilation);
 
       [TestMethod, TestCategory(TestCategory)]
       public void CompileResult_Lists_Public_Templates_Only() {
@@ -16,7 +17,7 @@ namespace Xcst.Compiler.Tests.API {
          var compilerFactory = new XcstCompilerFactory();
          var compiler = compilerFactory.CreateCompiler();
          compiler.TargetClass = "FooPackage";
-         compiler.TargetNamespace = typeof(ApiTests).Namespace;
+         compiler.TargetNamespace = typeof(CompilationTests).Namespace;
 
          var module = new StringReader(@"
 <c:package version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>

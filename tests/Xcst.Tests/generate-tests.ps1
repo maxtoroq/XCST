@@ -65,7 +65,7 @@ function GenerateTests {
 using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using static Xcst.Compiler.Tests.LanguageTestsHelper;
+using static Xcst.Tests.TestsHelper;
 "@
 
    foreach ($subDirectory in ls -Directory) {
@@ -75,14 +75,19 @@ using static Xcst.Compiler.Tests.LanguageTestsHelper;
 
 function GenerateTestsForDirectory([IO.DirectoryInfo]$directory, [string]$relativeNs) {
 
-   $ns = "Xcst.Compiler.Tests.$relativeNs"
+   $ns = "Xcst.Tests.$relativeNs"
 
-   foreach ($file in ls $directory.FullName *.pxcst) {
+   foreach ($file in ls "$($directory.FullName)\*" -Include *.xcst, *.pxcst -Exclude *.?.xcst, _*.xcst) {
 
       $compiler = $compilerFactory.CreateCompiler()
       $compiler.TargetNamespace = $ns
-      $compiler.NamedPackage = $true
       $compiler.IndentChars = $singleIndent
+
+      if ($file.Extension -eq ".pxcst") {
+         $compiler.NamedPackage = $true
+      } else {
+         $compiler.TargetClass = [IO.Path]::GetFileNameWithoutExtension($file.Name)
+      }
 
       $xcstResult = $compiler.Compile((New-Object Uri $file.FullName))
 
@@ -91,7 +96,7 @@ function GenerateTestsForDirectory([IO.DirectoryInfo]$directory, [string]$relati
       }
    }
 
-   $tests = ls $directory.FullName *.xcst
+   $tests = ls $directory.FullName *.?.xcst
 
    if ($tests.Length -gt 0) {
 
@@ -107,11 +112,6 @@ function GenerateTestsForDirectory([IO.DirectoryInfo]$directory, [string]$relati
       foreach ($file in $tests) { 
 
          $fileName = [IO.Path]::GetFileNameWithoutExtension($file.Name)
-
-         if ($fileName[0] -eq '_') {
-            continue
-         }
-
          $fail = $fileName -like '*.f'
          $correct = $fail -or $fileName -like '*.c'
          $testName = ($fileName -replace '[.-]', '_') -creplace '([a-z])([A-Z])', '$1_$2'
@@ -152,7 +152,7 @@ function GenerateTestsForDirectory([IO.DirectoryInfo]$directory, [string]$relati
 
 try {
 
-   GenerateTests | Out-File LanguageTests.generated.cs -Encoding utf8
+   GenerateTests | Out-File Tests.generated.cs -Encoding utf8
 
 } finally {
    Pop-Location

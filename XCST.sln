@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26730.15
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xcst", "src\Xcst\Xcst.csproj", "{4387C5BE-1873-4060-B547-9467D5E2C779}"
 EndProject
@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xcst.Compiler", "src\Xcst.C
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{28636474-5F87-46F6-BBED-0B6ECFC0F2D9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xcst.Compiler.Tests", "tests\Xcst.Compiler.Tests\Xcst.Compiler.Tests.csproj", "{6C0DB8CA-ACF7-40F3-8BB2-4072959A7B6A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xcst.Tests", "tests\Xcst.Tests\Xcst.Tests.csproj", "{6C0DB8CA-ACF7-40F3-8BB2-4072959A7B6A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{3D9FCA40-C58E-428A-AE3C-480DF5724451}"
 EndProject
@@ -18,8 +18,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "schemas", "schemas", "{A081
 		schemas\xcst.rng = schemas\xcst.rng
 		schemas\xcst.xsd = schemas\xcst.xsd
 	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xcst.Tests", "tests\Xcst.Tests\Xcst.Tests.csproj", "{13C3A8CE-34CD-4C05-9542-BF333FFB3393}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -46,12 +44,6 @@ Global
 		{6C0DB8CA-ACF7-40F3-8BB2-4072959A7B6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6C0DB8CA-ACF7-40F3-8BB2-4072959A7B6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6C0DB8CA-ACF7-40F3-8BB2-4072959A7B6A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{13C3A8CE-34CD-4C05-9542-BF333FFB3393}.CodeAnalysis|Any CPU.ActiveCfg = Release|Any CPU
-		{13C3A8CE-34CD-4C05-9542-BF333FFB3393}.CodeAnalysis|Any CPU.Build.0 = Release|Any CPU
-		{13C3A8CE-34CD-4C05-9542-BF333FFB3393}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{13C3A8CE-34CD-4C05-9542-BF333FFB3393}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{13C3A8CE-34CD-4C05-9542-BF333FFB3393}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{13C3A8CE-34CD-4C05-9542-BF333FFB3393}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -60,6 +52,8 @@ Global
 		{4387C5BE-1873-4060-B547-9467D5E2C779} = {3D9FCA40-C58E-428A-AE3C-480DF5724451}
 		{1228FBC0-3A76-4152-9D34-07FC2F9C9F31} = {3D9FCA40-C58E-428A-AE3C-480DF5724451}
 		{6C0DB8CA-ACF7-40F3-8BB2-4072959A7B6A} = {28636474-5F87-46F6-BBED-0B6ECFC0F2D9}
-		{13C3A8CE-34CD-4C05-9542-BF333FFB3393} = {28636474-5F87-46F6-BBED-0B6ECFC0F2D9}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {686445F4-CF10-43A5-B6EA-7555B7E97C14}
 	EndGlobalSection
 EndGlobal

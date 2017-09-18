@@ -2,12 +2,12 @@
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Xcst.Tests.Evaluation {
+namespace Xcst.Tests.API.Evaluation {
 
    [TestClass]
-   public class EvaluatorTests {
+   public class EvaluationTests {
 
-      const string TestCategory = "API." + nameof(Evaluation);
+      const string TestCategory = nameof(API) + "." + nameof(Evaluation);
 
       [TestMethod, TestCategory(TestCategory)]
       [ExpectedException(typeof(InvalidOperationException))]
