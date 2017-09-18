@@ -2,8 +2,8 @@
 using System.Reflection;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("Xcst.dll")]
-[assembly: AssemblyDescription("Xcst.dll")]
+[assembly: AssemblyTitle("Xcst.Runtime.dll")]
+[assembly: AssemblyDescription("Xcst.Runtime.dll")]
 [assembly: ComVisible(false)]
 [assembly: CLSCompliant(true)]
 
