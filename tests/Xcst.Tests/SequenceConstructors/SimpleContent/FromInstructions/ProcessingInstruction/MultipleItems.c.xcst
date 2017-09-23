@@ -3,23 +3,25 @@
 
    <c:template name='c:initial-template'>
       <foo>
-         <c:attribute name='bar'>
+         <c:processing-instruction name='bar'>
             <c:text>0</c:text>
             <c:object value='default(string)'/>
             <c:text>a</c:text>
             <c:text>b</c:text>
-            <!--<c>c</c>-->
+            <c>c</c>
             <c:object value='"1"'/>
             <c:object value='default(string)'/>
             <c:object value='"2"'/>
             <c:text>3</c:text>
             <c:object value='new[] { "4", "5" }'/>
-         </c:attribute>
+         </c:processing-instruction>
       </foo>
    </c:template>
 
    <c:template name='expected'>
-      <foo bar='0ab1 234 5'/>
+      <foo>
+         <c:processing-instruction name='bar'>0ab c 1 2 3 4 5</c:processing-instruction>
+      </foo>
    </c:template>
 
 </c:module>

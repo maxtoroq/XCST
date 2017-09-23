@@ -225,10 +225,6 @@ namespace Xcst.Runtime {
          throw new RuntimeException("A value can only be written to an entry or array.");
       }
 
-      public override void WriteString(object text) {
-         WriteObject((string)text);
-      }
-
       public override void WriteRaw(object data) {
          throw new NotImplementedException();
       }

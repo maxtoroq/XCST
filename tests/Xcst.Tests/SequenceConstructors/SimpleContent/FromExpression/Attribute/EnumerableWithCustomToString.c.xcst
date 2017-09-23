@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:import-namespace ns='Newtonsoft.Json.Linq'/>
+
+   <c:variable name='jObj' value='JObject.Parse("{\"foo\":1}")' as='JObject'/>
+
+   <c:template name='c:initial-template'>
+      <foo>
+         <c:attribute name='bar' value='jObj'/>
+      </foo>
+   </c:template>
+
+   <c:template name='expected'>
+      <foo bar='{jObj.ToString()}'/>
+   </c:template>
+
+</c:module>

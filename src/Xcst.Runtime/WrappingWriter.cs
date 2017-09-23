@@ -76,8 +76,8 @@ namespace Xcst {
          this.baseWriter.WriteString(text);
       }
 
-      public override void WriteObject(object value) {
-         this.baseWriter.WriteObject(value);
+      protected internal override void WriteItem(object value) {
+         this.baseWriter.WriteItem(value);
       }
 
       public override void Flush() {

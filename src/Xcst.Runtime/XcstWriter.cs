@@ -179,28 +179,26 @@ namespace Xcst {
       #region ISequenceWriter<object> Members
 
       public void WriteString(object text) {
-         WriteString(this.SimpleContent.Convert(text));
+         WriteString((string)text);
       }
 
       public void WriteRaw(object data) {
-         WriteRaw(this.SimpleContent.Convert(data));
+         WriteRaw((string)data);
       }
 
-      public virtual void WriteObject(object value) {
+      public void WriteObject(object value) {
 
-         if (value != null) {
-            WriteString(value);
+         IEnumerable seq = SimpleContent.ValueAsEnumerable(value);
+
+         if (seq != null) {
+            WriteSequence(seq);
+         } else {
+            WriteItem(value);
          }
       }
 
-      public void WriteObject(IEnumerable<object> value) {
-
-         if (value != null) {
-
-            foreach (var item in value) {
-               WriteObject(item);
-            }
-         }
+      void ISequenceWriter<object>.WriteObject(IEnumerable<object> value) {
+         WriteObject(value);
       }
 
       public XcstWriter TryCastToDocumentWriter() {
@@ -213,23 +211,33 @@ namespace Xcst {
 
       #endregion
 
-      // IEnumerable<object> works for reference types only
-      // IEnumerable for any type
+      public void WriteObject(string value) {
+         WriteItem(value);
+      }
 
-      public void WriteObject(IEnumerable value) {
+      public void WriteObject(IFormattable value) {
+         WriteItem(value);
+      }
+
+      public void WriteObject(Array value) {
+         WriteSequence(value);
+      }
+
+      protected internal virtual void WriteItem(object value) {
+
+         if (value != null) {
+            WriteString(this.SimpleContent.Convert(value));
+         }
+      }
+
+      protected void WriteSequence(IEnumerable value) {
 
          if (value != null) {
 
             foreach (var item in value) {
-               WriteObject(item);
+               WriteItem(item);
             }
          }
-      }
-
-      // string implements IEnumerable, treat as single value
-
-      public void WriteObject(string value) {
-         WriteObject((object)value);
       }
    }
 }

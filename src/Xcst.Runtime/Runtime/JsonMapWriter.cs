@@ -220,10 +220,6 @@ namespace Xcst.Runtime {
          this.BaseWriter.WriteValue(value);
       }
 
-      public override void WriteString(object text) {
-         this.BaseWriter.WriteValue((string)text);
-      }
-
       public override void WriteRaw(object data) {
          this.BaseWriter.WriteRaw((string)data);
       }

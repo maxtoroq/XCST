@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:template name='c:initial-template'>
+      <foo>
+         <c:attribute name='bar' value='(object)new[] { "1", "2", null }'/>
+      </foo>
+   </c:template>
+
+   <c:template name='expected'>
+      <foo bar='1 2'/>
+   </c:template>
+
+</c:module>

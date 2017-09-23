@@ -190,7 +190,7 @@ namespace Xcst {
          ItemWritten(ItemType.Raw);
       }
 
-      public override void WriteObject(object value) {
+      protected internal override void WriteItem(object value) {
 
          if (this.inAttr) {
 
@@ -207,7 +207,7 @@ namespace Xcst {
 
                ItemWriting(ItemType.Object);
 
-               base.WriteObject(value);
+               base.WriteItem(value);
 
                ItemWritten(ItemType.Object);
             }
@@ -272,18 +272,12 @@ namespace Xcst {
 
                      if (!first) {
 
-                        if (!lastWasText
-                           && sep == null) {
-
-                           sep = " ";
-                        }
-
                         if (!String.IsNullOrEmpty(sep)) {
                            base.WriteString(sep);
                         }
                      }
 
-                     base.WriteObject(obj);
+                     base.WriteItem(obj);
 
                      lastWasText = false;
 

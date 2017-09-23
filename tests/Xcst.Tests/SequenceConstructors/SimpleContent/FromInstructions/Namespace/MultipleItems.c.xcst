@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:template name='c:initial-template'>
+      <foo>
+         <c:namespace name='foo'>
+            <c:text>0</c:text>
+            <c:object value='default(string)'/>
+            <c:text>a</c:text>
+            <c:text>b</c:text>
+            <!--<c>c</c>-->
+            <c:object value='"1"'/>
+            <c:object value='default(string)'/>
+            <c:object value='"2"'/>
+            <c:text>3</c:text>
+            <c:object value='new[] { "4", "5" }'/>
+         </c:namespace>
+      </foo>
+   </c:template>
+
+   <c:template name='expected'>
+      <foo xmlns:foo='0ab 1 2 3 4 5'/>
+   </c:template>
+
+</c:module>

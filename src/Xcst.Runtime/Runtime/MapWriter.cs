@@ -98,7 +98,9 @@ namespace Xcst.Runtime {
          }
       }
 
-      public abstract void WriteString(object text);
+      public void WriteString(object text) {
+         WriteObject((string)text);
+      }
 
       public abstract void WriteRaw(object data);
 

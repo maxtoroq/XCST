@@ -14,6 +14,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -35,6 +36,8 @@ namespace Xcst.Runtime {
 
       static readonly char[] whiteSpaceChars = { (char)0x20, (char)0x9, (char)0xD, (char)0xA };
 
+      static readonly ConcurrentDictionary<Type, bool> customToString = new ConcurrentDictionary<Type, bool>();
+
       internal IFormatProvider FormatProvider { get; }
 
       public SimpleContent(IFormatProvider formatProvider) {
@@ -44,30 +47,12 @@ namespace Xcst.Runtime {
          this.FormatProvider = formatProvider;
       }
 
-      public string Join(string separator, IEnumerable value) {
-
-         if (value == null) {
-            return String.Empty;
-         }
-
-         return Join(separator, value.Cast<object>());
-      }
-
-      public string Join(string separator, object[] value) {
-         return Join(separator, value as IEnumerable<object>);
-      }
-
-      public string Join(string separator, IEnumerable<object> value) {
-
-         if (value == null) {
-            return String.Empty;
-         }
-
-         return Join(separator, value.Where(v => v != null).Select(v => Convert(v)));
+      public string Join(string separator, Array value) {
+         return JoinSequence(separator, value);
       }
 
       public string Join(string separator, string[] value) {
-         return Join(separator, value as IEnumerable<string>);
+         return Join(separator, (IEnumerable<string>)value);
       }
 
       public string Join(string separator, IEnumerable<string> value) {
@@ -79,20 +64,96 @@ namespace Xcst.Runtime {
          return String.Join(separator, value.Where(v => v != null));
       }
 
+      public string Join(string separator, object value) {
+
+         IEnumerable seq = ValueAsEnumerable(value);
+
+         if (seq != null) {
+            return JoinSequence(separator, seq);
+         }
+
+         return Convert(value);
+      }
+
       public string Join(string separator, string value) {
          return value ?? String.Empty;
       }
 
-      public string Join(string separator, object value) {
-         return Convert(value);
+      public string Join(string separator, IFormattable value) {
+
+         return value?.ToString(null, this.FormatProvider)
+            ?? String.Empty;
+      }
+
+      protected string JoinSequence(string separator, IEnumerable value) {
+
+         if (value == null) {
+            return String.Empty;
+         }
+
+         return Join(separator, value
+            .Cast<object>()
+            .Where(v => v != null)
+            .Select(v => Convert(v)));
+      }
+
+      internal static IEnumerable ValueAsEnumerable(object value) {
+
+         if (value == null
+            || value is string
+            || value is IFormattable) {
+
+            return null;
+         }
+
+         IEnumerable seq = value as IEnumerable;
+         Type type;
+
+         if (seq != null
+            && ((type = value.GetType()).IsArray
+               || !HasCustomToString(type))) {
+
+            return seq;
+         }
+
+         return null;
+      }
+
+      static bool HasCustomToString(Type type) {
+         return customToString.GetOrAdd(type, HasCustomToStringImpl);
+      }
+
+      static bool HasCustomToStringImpl(Type type) {
+
+         Type declaringType = type.GetMethod("ToString", Type.EmptyTypes).DeclaringType;
+
+         return declaringType != ((type.IsValueType) ?
+            typeof(ValueType) : typeof(object));
       }
 
       public string Format(string format, params object[] args) {
          return String.Format(this.FormatProvider, format, args);
       }
 
-      public string FormatValueTemplate(IFormattable value) {
-         return value.ToString(null, this.FormatProvider);
+      public string FormatValueTemplate(FormattableString value) {
+
+         if (value.ArgumentCount == 0) {
+            // Shouldn't be, but just in case...
+            return value.ToString(this.FormatProvider);
+         }
+
+         object[] args = value.GetArguments();
+
+         for (int i = 0; i < args.Length; i++) {
+
+            IEnumerable seq = ValueAsEnumerable(args[i]);
+
+            if (seq != null) {
+               args[i] = Join(" ", seq);
+            }
+         }
+
+         return Format(value.Format, args);
       }
 
       public string Convert(object value) {
