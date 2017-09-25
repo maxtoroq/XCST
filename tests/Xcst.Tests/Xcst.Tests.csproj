@@ -58,6 +58,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Reflection.Metadata, Version=1.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\..\packages\System.Reflection.Metadata.1.1.0\lib\dotnet5.2\System.Reflection.Metadata.dll</HintPath>
       <Private>True</Private>
@@ -250,6 +251,16 @@
     <None Include="CreatingNodesAndObjects\Array\array.foo.i.xcst" />
     <None Include="CreatingNodesAndObjects\Attribute\attribute.value_seqctor.mutex.i.xcst" />
     <None Include="CreatingNodesAndObjects\Attribute\Override.c.xcst" />
+    <None Include="CreatingNodesAndObjects\CopyOf\IXmlSerializableAsObject.c.xcst" />
+    <None Include="CreatingNodesAndObjects\CopyOf\IXmlSerializable.c.xcst" />
+    <None Include="CreatingNodesAndObjects\CopyOf\XmlReaderAsObject.c.xcst" />
+    <None Include="CreatingNodesAndObjects\CopyOf\XmlReader.c.xcst" />
+    <None Include="CreatingNodesAndObjects\CopyOf\IXPathNavigableAsObject.c.xcst" />
+    <None Include="CreatingNodesAndObjects\CopyOf\IXPathNavigable.c.xcst" />
+    <None Include="CreatingNodesAndObjects\CopyOf\XNode.c.xcst" />
+    <None Include="CreatingNodesAndObjects\CopyOf\XNodeAsObject.c.xcst" />
+    <None Include="CreatingNodesAndObjects\CopyOf\XmlNodeAsObject.c.xcst" />
+    <None Include="CreatingNodesAndObjects\CopyOf\XmlNode.c.xcst" />
     <None Include="SequenceConstructors\SimpleContent\FromExpression\Attribute\EnumerableWithCustomToString.c.xcst" />
     <None Include="SequenceConstructors\SimpleContent\FromExpression\Attribute\MultipleItems.c.xcst" />
     <None Include="SequenceConstructors\SimpleContent\FromExpression\Attribute\MultipleItemsAsObject.c.xcst" />

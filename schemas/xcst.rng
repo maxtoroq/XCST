@@ -56,6 +56,7 @@
          <ref name="choose"/>
          <ref name="comment"/>
          <ref name="continue"/>
+         <ref name="copy-of"/>
          <ref name="delegate"/>
          <ref name="document"/>
          <ref name="element"/>
@@ -939,6 +940,17 @@
    <define name="continue">
       <element name="continue">
          <ann:documentation>Interrupts the current loop iteration and advances to the next.</ann:documentation>
+         <ref name="standard-attributes"/>
+      </element>
+   </define>
+
+   <define name="copy-of">
+      <element name="copy-of">
+         <ann:documentation>Creates a deep copy of nodes.</ann:documentation>
+         <attribute name="value">
+            <ann:documentation>The nodes to copy.</ann:documentation>
+            <ref name="expression"/>
+         </attribute>
          <ref name="standard-attributes"/>
       </element>
    </define>

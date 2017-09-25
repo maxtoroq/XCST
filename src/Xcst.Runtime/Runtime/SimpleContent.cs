@@ -97,7 +97,7 @@ namespace Xcst.Runtime {
             .Select(v => Convert(v)));
       }
 
-      internal static IEnumerable ValueAsEnumerable(object value) {
+      internal static IEnumerable ValueAsEnumerable(object value, bool checkToString = true) {
 
          if (value == null
             || value is string
@@ -111,7 +111,7 @@ namespace Xcst.Runtime {
 
          if (seq != null
             && ((type = value.GetType()).IsArray
-               || !HasCustomToString(type))) {
+               || (!checkToString || !HasCustomToString(type)))) {
 
             return seq;
          }

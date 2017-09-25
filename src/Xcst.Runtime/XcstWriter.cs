@@ -16,8 +16,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Xml;
+using System.Xml.Linq;
+using System.Xml.Serialization;
+using System.Xml.XPath;
 using Xcst.PackageModel;
 using Xcst.Runtime;
+using Xcst.Xml;
 
 namespace Xcst {
 
@@ -178,11 +183,11 @@ namespace Xcst {
 
       #region ISequenceWriter<object> Members
 
-      public void WriteString(object text) {
+      void ISequenceWriter<object>.WriteString(object text) {
          WriteString((string)text);
       }
 
-      public void WriteRaw(object data) {
+      void ISequenceWriter<object>.WriteRaw(object data) {
          WriteRaw((string)data);
       }
 
@@ -201,11 +206,11 @@ namespace Xcst {
          WriteObject(value);
       }
 
-      public XcstWriter TryCastToDocumentWriter() {
+      XcstWriter ISequenceWriter<object>.TryCastToDocumentWriter() {
          return this;
       }
 
-      public MapWriter TryCastToMapWriter() {
+      MapWriter ISequenceWriter<object>.TryCastToMapWriter() {
          return null;
       }
 
@@ -236,6 +241,108 @@ namespace Xcst {
 
             foreach (var item in value) {
                WriteItem(item);
+            }
+         }
+      }
+
+      public void CopyOf(object value) {
+         CopyOfImpl(value, recurse: false);
+      }
+
+      void CopyOfImpl(object value, bool recurse) {
+
+         if (value == null) {
+            return;
+         }
+
+         XNode xNode = value as XNode;
+
+         if (xNode != null) {
+            CopyOf(xNode);
+            return;
+         }
+
+         XmlNode xmlNode = value as XmlNode;
+
+         if (xmlNode != null) {
+            CopyOf(xmlNode);
+            return;
+         }
+
+         IXPathNavigable xpathNav = value as IXPathNavigable;
+
+         if (xpathNav != null) {
+            CopyOf(xpathNav);
+            return;
+         }
+
+         IXmlSerializable xmlSer = value as IXmlSerializable;
+
+         if (xmlSer != null) {
+            CopyOf(xmlSer);
+            return;
+         }
+
+         XmlReader reader = value as XmlReader;
+
+         if (reader != null) {
+            CopyOf(reader);
+            return;
+         }
+
+         if (!recurse) {
+
+            IEnumerable seq = SimpleContent.ValueAsEnumerable(value, checkToString: false);
+
+            if (seq != null) {
+               CopyOfSequence(seq);
+               return;
+            }
+         }
+
+         WriteObject(value);
+      }
+
+      public void CopyOf(XNode value) {
+         value?.WriteTo(new XcstXmlWriter(this));
+      }
+
+      public void CopyOf(XmlNode value) {
+         value?.WriteTo(new XcstXmlWriter(this));
+      }
+
+      public void CopyOf(IXPathNavigable value) {
+
+         if (value != null) {
+
+            XPathNavigator nav = value as XPathNavigator
+               ?? value.CreateNavigator();
+
+            nav.WriteSubtree(new XcstXmlWriter(this));
+         }
+      }
+
+      public void CopyOf(IXmlSerializable value) {
+         value?.WriteXml(new XcstXmlWriter(this));
+      }
+
+      public void CopyOf(XmlReader value) {
+
+         if (value != null) {
+            new XcstXmlWriter(this).WriteNode(value, true);
+         }
+      }
+
+      public void CopyOf(Array value) {
+         CopyOfSequence(value);
+      }
+
+      protected void CopyOfSequence(IEnumerable value) {
+
+         if (value != null) {
+
+            foreach (var item in value) {
+               CopyOfImpl(item, recurse: true);
             }
          }
       }

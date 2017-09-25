@@ -25,6 +25,7 @@
          <xs:element ref="c:choose"/>
          <xs:element ref="c:comment"/>
          <xs:element ref="c:continue"/>
+         <xs:element ref="c:copy-of"/>
          <xs:element ref="c:delegate"/>
          <xs:element ref="c:document"/>
          <xs:element ref="c:element"/>
@@ -901,6 +902,19 @@
          <xs:documentation>Interrupts the current loop iteration and advances to the next.</xs:documentation>
       </xs:annotation>
       <xs:complexType>
+         <xs:attributeGroup ref="c:standard-attributes"/>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="copy-of">
+      <xs:annotation>
+         <xs:documentation>Creates a deep copy of nodes.</xs:documentation>
+      </xs:annotation>
+      <xs:complexType>
+         <xs:attribute name="value" use="required" type="c:expression">
+            <xs:annotation>
+               <xs:documentation>The nodes to copy. Expression.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>

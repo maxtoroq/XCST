@@ -176,6 +176,24 @@ namespace Xcst {
          }
       }
 
+      public override void WriteChars(char[] buffer, int index, int count) {
+
+         if (this.inAttr) {
+
+            EnsureAttributeCache();
+            this.arrAttrs[this.numEntries++].Init(new string(buffer, index, count));
+
+         } else {
+
+            FlushAttributes();
+            ItemWriting(ItemType.Text);
+
+            base.WriteChars(buffer, index, count);
+
+            ItemWritten(ItemType.Text);
+         }
+      }
+
       public override void WriteRaw(string data) {
 
          if (this.inAttr) {

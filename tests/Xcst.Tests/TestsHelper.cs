@@ -148,6 +148,7 @@ namespace Xcst.Tests {
          // TODO: Should compiler give list of assembly references?
 
          MetadataReference[] references = {
+            // XCST dependencies
             MetadataReference.CreateFromFile(typeof(System.Object).Assembly.Location),
             MetadataReference.CreateFromFile(typeof(System.Uri).Assembly.Location),
             MetadataReference.CreateFromFile(typeof(System.Linq.Enumerable).Assembly.Location),
@@ -156,8 +157,10 @@ namespace Xcst.Tests {
             MetadataReference.CreateFromFile(typeof(System.ComponentModel.DataAnnotations.ValidationAttribute).Assembly.Location),
             MetadataReference.CreateFromFile(typeof(Newtonsoft.Json.JsonWriter).Assembly.Location),
             MetadataReference.CreateFromFile(typeof(Xcst.PackageModel.IXcstPackage).Assembly.Location),
+            // Tests dependencies
             MetadataReference.CreateFromFile(typeof(Microsoft.CSharp.RuntimeBinder.RuntimeBinderException).Assembly.Location),
             MetadataReference.CreateFromFile(typeof(Microsoft.VisualStudio.TestTools.UnitTesting.Assert).Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(System.Data.DataTable).Assembly.Location),
             MetadataReference.CreateFromFile(Assembly.GetExecutingAssembly().Location)
          };
 

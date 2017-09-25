@@ -216,6 +216,20 @@
       <value-of select="$src:statement-delimiter"/>
    </template>
 
+   <template match="c:copy-of" mode="src:statement">
+      <param name="output" tunnel="yes"/>
+
+      <call-template name="xcst:validate-attribs">
+         <with-param name="required" select="'value'"/>
+      </call-template>
+
+      <value-of select="$output"/>
+      <text>.CopyOf(</text>
+      <value-of select="xcst:expression(@value)"/>
+      <text>)</text>
+      <value-of select="$src:statement-delimiter"/>
+   </template>
+
    <template match="c:document" mode="src:statement">
       <param name="output" tunnel="yes"/>
 
