@@ -223,6 +223,8 @@
          <with-param name="required" select="'value'"/>
       </call-template>
 
+      <call-template name="src:line-number"/>
+      <call-template name="src:new-line-indented"/>
       <value-of select="$output"/>
       <text>.CopyOf(</text>
       <value-of select="xcst:expression(@value)"/>

@@ -203,7 +203,11 @@ namespace Xcst {
       }
 
       void ISequenceWriter<object>.WriteObject(IEnumerable<object> value) {
-         WriteObject(value);
+         WriteObject((object)value);
+      }
+
+      void ISequenceWriter<object>.WriteObject<TDerived>(IEnumerable<TDerived> value) {
+         WriteObject((object)value);
       }
 
       XcstWriter ISequenceWriter<object>.TryCastToDocumentWriter() {
@@ -251,42 +255,9 @@ namespace Xcst {
 
       void CopyOfImpl(object value, bool recurse) {
 
-         if (value == null) {
-            return;
-         }
+         if (value == null
+            || TryCopyOf(value)) {
 
-         XNode xNode = value as XNode;
-
-         if (xNode != null) {
-            CopyOf(xNode);
-            return;
-         }
-
-         XmlNode xmlNode = value as XmlNode;
-
-         if (xmlNode != null) {
-            CopyOf(xmlNode);
-            return;
-         }
-
-         IXPathNavigable xpathNav = value as IXPathNavigable;
-
-         if (xpathNav != null) {
-            CopyOf(xpathNav);
-            return;
-         }
-
-         IXmlSerializable xmlSer = value as IXmlSerializable;
-
-         if (xmlSer != null) {
-            CopyOf(xmlSer);
-            return;
-         }
-
-         XmlReader reader = value as XmlReader;
-
-         if (reader != null) {
-            CopyOf(reader);
             return;
          }
 
@@ -301,6 +272,56 @@ namespace Xcst {
          }
 
          WriteObject(value);
+      }
+
+      public virtual bool TryCopyOf(object value) {
+
+         XNode xNode = value as XNode;
+
+         if (xNode != null) {
+            CopyOf(xNode);
+            return true;
+         }
+
+         XmlNode xmlNode = value as XmlNode;
+
+         if (xmlNode != null) {
+            CopyOf(xmlNode);
+            return true;
+         }
+
+         IXPathNavigable xpathNav = value as IXPathNavigable;
+
+         if (xpathNav != null) {
+            CopyOf(xpathNav);
+            return true;
+         }
+
+         IXmlSerializable xmlSer = value as IXmlSerializable;
+
+         if (xmlSer != null) {
+            CopyOf(xmlSer);
+            return true;
+         }
+
+         XmlReader reader = value as XmlReader;
+
+         if (reader != null) {
+            CopyOf(reader);
+            return true;
+         }
+
+         return false;
+      }
+
+      void CopyOfSequence(IEnumerable value) {
+
+         if (value != null) {
+
+            foreach (var item in value) {
+               CopyOfImpl(item, recurse: true);
+            }
+         }
       }
 
       public void CopyOf(XNode value) {
@@ -335,16 +356,6 @@ namespace Xcst {
 
       public void CopyOf(Array value) {
          CopyOfSequence(value);
-      }
-
-      protected void CopyOfSequence(IEnumerable value) {
-
-         if (value != null) {
-
-            foreach (var item in value) {
-               CopyOfImpl(item, recurse: true);
-            }
-         }
       }
    }
 }

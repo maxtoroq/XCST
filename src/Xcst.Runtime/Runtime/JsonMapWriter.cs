@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Newtonsoft.Json;
@@ -203,31 +204,37 @@ namespace Xcst.Runtime {
          this.BaseWriter.WritePropertyName(key);
       }
 
-      #region ISequenceWriter<object> Members
-
       public override void WriteObject(object value) {
-
-         if (value != null) {
-
-            JToken jt = value as JToken;
-
-            if (jt != null) {
-               jt.WriteTo(this.BaseWriter);
-               return;
-            }
-         }
-
          this.BaseWriter.WriteValue(value);
       }
 
-      public override void WriteRaw(object data) {
-         this.BaseWriter.WriteRaw((string)data);
+      public override void WriteRaw(string data) {
+         this.BaseWriter.WriteRaw(data);
       }
 
-      public override XcstWriter TryCastToDocumentWriter() {
+      protected override XcstWriter TryCastToDocumentWriter() {
          return this.docWriter;
       }
 
-      #endregion
+      public void CopyOf(JToken value) {
+
+         if (value != null) {
+            value.WriteTo(this.BaseWriter);
+         } else {
+            WriteObject(default(object));
+         }
+      }
+
+      public override bool TryCopyOf(object value) {
+
+         JToken jt = value as JToken;
+
+         if (jt != null) {
+            CopyOf(jt);
+            return true;
+         }
+
+         return base.TryCopyOf(value);
+      }
    }
 }

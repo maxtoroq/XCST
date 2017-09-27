@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Xml;
 using System.Xml.Linq;
 using Microsoft.CodeAnalysis;
@@ -47,7 +48,7 @@ namespace Xcst.Tests {
 
          try {
 
-            Type packageType = CompileCode(xcstResult, packageName);
+            Type packageType = CompileCode(xcstResult, packageName, packageFile);
 
             if (!correct) {
                return;
@@ -137,12 +138,12 @@ namespace Xcst.Tests {
          return Tuple.Create(result, compiler.TargetNamespace + "." + compiler.TargetClass);
       }
 
-      static Type CompileCode(CompileResult result, string packageName) {
+      static Type CompileCode(CompileResult result, string packageName, string packageFile) {
 
          var parseOptions = new CSharpParseOptions(preprocessorSymbols: new[] { "DEBUG", "TRACE" });
 
          SyntaxTree[] syntaxTrees = result.CompilationUnits
-            .Select(c => CSharpSyntaxTree.ParseText(c, parseOptions))
+            .Select(c => CSharpSyntaxTree.ParseText(c, parseOptions, path: packageFile, encoding: Encoding.UTF8))
             .ToArray();
 
          // TODO: Should compiler give list of assembly references?
@@ -171,29 +172,32 @@ namespace Xcst.Tests {
             options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
          using (var assemblyStream = new MemoryStream()) {
+            using (var pdbStream = new MemoryStream()) {
 
-            EmitResult csharpResult = compilation.Emit(assemblyStream);
+               EmitResult csharpResult = compilation.Emit(assemblyStream, pdbStream);
 
-            if (!csharpResult.Success) {
+               if (!csharpResult.Success) {
 
-               Diagnostic error = csharpResult.Diagnostics
-                  .Where(d => d.IsWarningAsError || d.Severity == DiagnosticSeverity.Error)
-                  .FirstOrDefault();
+                  Diagnostic error = csharpResult.Diagnostics
+                     .Where(d => d.IsWarningAsError || d.Severity == DiagnosticSeverity.Error)
+                     .FirstOrDefault();
 
-               if (error != null) {
-                  Console.WriteLine($"// {error.Id}: {error.GetMessage()}");
-                  Console.WriteLine($"// Line number: {error.Location.GetLineSpan().StartLinePosition.Line}");
+                  if (error != null) {
+                     Console.WriteLine($"// {error.Id}: {error.GetMessage()}");
+                     Console.WriteLine($"// Line number: {error.Location.GetLineSpan().StartLinePosition.Line}");
+                  }
+
+                  throw new CompileException("C# compilation failed.");
                }
 
-               throw new CompileException("C# compilation failed.");
+               assemblyStream.Position = 0;
+               pdbStream.Position = 0;
+
+               Assembly assembly = Assembly.Load(assemblyStream.ToArray(), pdbStream.ToArray());
+               Type type = assembly.GetType(packageName);
+
+               return type;
             }
-
-            assemblyStream.Position = 0;
-
-            Assembly assembly = Assembly.Load(assemblyStream.ToArray());
-            Type type = assembly.GetType(packageName);
-
-            return type;
          }
       }
 

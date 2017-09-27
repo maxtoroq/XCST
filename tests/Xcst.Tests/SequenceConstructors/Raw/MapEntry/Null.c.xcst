@@ -5,15 +5,11 @@
       <c:variable name='map' as='dynamic'>
          <c:map>
             <c:map-entry key='"foo"'>
-               <c:array>
-                  <c:object value='new[] { "1", "2" }'/>
-               </c:array>
+               <c:object value='default(object)'/>
             </c:map-entry>
          </c:map>
       </c:variable>
-      <c:void value='Assert.AreEqual(2, map.foo.Length)'/>
-      <c:void value='Assert.AreEqual("1", map.foo[0])'/>
-      <c:void value='Assert.AreEqual("2", map.foo[1])'/>
+      <c:void value='Assert.IsNull(map.foo)'/>
    </c:template>
 
 </c:module>

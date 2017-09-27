@@ -40,6 +40,10 @@ namespace Xcst {
          this.baseWriter = baseWriter;
       }
 
+      public override bool TryCopyOf(object value) {
+         return this.baseWriter.TryCopyOf(value);
+      }
+
       public override void WriteChars(char[] buffer, int index, int count) {
          this.baseWriter.WriteChars(buffer, index, count);
       }

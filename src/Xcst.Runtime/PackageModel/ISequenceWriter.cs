@@ -26,6 +26,11 @@ namespace Xcst.PackageModel {
 
       void WriteObject(IEnumerable<TItem> value);
 
+      // For cases where IEnumerable<TDerived> cannot be cast to IEnumerable<TItem>
+      // e.g. IEnumerable<int> to IEnumerable<object>
+
+      void WriteObject<TDerived>(IEnumerable<TDerived> value) where TDerived : TItem;
+
       void WriteString(TItem text);
 
       void WriteRaw(TItem data);

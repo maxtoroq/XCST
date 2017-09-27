@@ -88,27 +88,41 @@ namespace Xcst.Runtime {
 
       public abstract void WriteObject(object value);
 
-      public virtual void WriteObject(IEnumerable<object> value) {
-
-         if (value != null) {
-
-            foreach (var item in value) {
-               WriteObject(item);
-            }
-         }
+      void ISequenceWriter<object>.WriteObject(IEnumerable<object> value) {
+         WriteObject((IEnumerable)value);
       }
 
-      public void WriteString(object text) {
-         WriteObject((string)text);
+      void ISequenceWriter<object>.WriteObject<TDerived>(IEnumerable<TDerived> value) {
+         WriteObject((IEnumerable)value);
       }
 
-      public abstract void WriteRaw(object data);
+      void ISequenceWriter<object>.WriteString(object text) {
+         WriteString((string)text);
+      }
 
-      public abstract XcstWriter TryCastToDocumentWriter();
+      void ISequenceWriter<object>.WriteRaw(object data) {
+         WriteRaw((string)data);
+      }
 
-      public MapWriter TryCastToMapWriter() => this;
+      protected abstract XcstWriter TryCastToDocumentWriter();
+
+      XcstWriter ISequenceWriter<object>.TryCastToDocumentWriter() => TryCastToDocumentWriter();
+
+      MapWriter ISequenceWriter<object>.TryCastToMapWriter() => this;
 
       #endregion
+
+      public void WriteString(string text) {
+         WriteObject(text);
+      }
+
+      public abstract void WriteRaw(string data);
+
+      // string implements IEnumerable, treat as single value
+
+      public void WriteObject(string value) {
+         WriteObject((object)value);
+      }
 
       // IEnumerable<object> works for reference types only
       // IEnumerable for any type
@@ -123,10 +137,48 @@ namespace Xcst.Runtime {
          }
       }
 
-      // string implements IEnumerable, treat as single value
+      public void CopyOf(object value) {
+         CopyOfImpl(value, recurse: false);
+      }
 
-      public void WriteObject(string value) {
-         WriteObject((object)value);
+      void CopyOfImpl(object value, bool recurse) {
+
+         if (value != null) {
+
+            if (TryCopyOf(value)) {
+               return;
+            }
+
+            if (!recurse) {
+
+               IEnumerable seq = SimpleContent.ValueAsEnumerable(value, checkToString: false);
+
+               if (seq != null) {
+                  CopyOfSequence(seq);
+                  return;
+               }
+            }
+         }
+
+         WriteObject(value);
+      }
+
+      public virtual bool TryCopyOf(object value) {
+         return false;
+      }
+
+      void CopyOfSequence(IEnumerable value) {
+
+         if (value != null) {
+
+            foreach (var item in value) {
+               CopyOfImpl(item, recurse: true);
+            }
+         }
+      }
+
+      public void CopyOf(Array value) {
+         CopyOfSequence(value);
       }
    }
 }

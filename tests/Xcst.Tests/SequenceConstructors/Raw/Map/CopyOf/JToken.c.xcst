@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:import-namespace ns='Newtonsoft.Json.Linq'/>
+
+   <c:template name='c:initial-template'>
+      <c:variable name='map' as='JObject'>
+         <c:map>
+            <c:copy-of value='(JToken)new JProperty("foo", "1")'/>
+         </c:map>
+      </c:variable>
+      <c:void value='Assert.AreEqual("1", ((JValue)map["foo"]).Value)'/>
+   </c:template>
+
+</c:module>

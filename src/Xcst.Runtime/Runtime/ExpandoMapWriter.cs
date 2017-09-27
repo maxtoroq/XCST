@@ -202,8 +202,6 @@ namespace Xcst.Runtime {
 
       public override void WriteComment(string text) { }
 
-      #region ISequenceWriter<object> Members
-
       public override void WriteObject(object value) {
 
          var parent = Peek<object>();
@@ -225,15 +223,13 @@ namespace Xcst.Runtime {
          throw new RuntimeException("A value can only be written to an entry or array.");
       }
 
-      public override void WriteRaw(object data) {
+      public override void WriteRaw(string data) {
          throw new NotImplementedException();
       }
 
-      public override XcstWriter TryCastToDocumentWriter() {
+      protected override XcstWriter TryCastToDocumentWriter() {
          return null;
       }
-
-      #endregion
 
       void Push(object obj) {
          this.objects.Add(obj);

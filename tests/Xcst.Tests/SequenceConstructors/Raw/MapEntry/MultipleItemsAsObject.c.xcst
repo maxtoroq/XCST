@@ -5,9 +5,7 @@
       <c:variable name='map' as='dynamic'>
          <c:map>
             <c:map-entry key='"foo"'>
-               <c:array>
-                  <c:object value='new[] { "1", "2" }'/>
-               </c:array>
+               <c:object value='(object)new[] { "1", "2" }'/>
             </c:map-entry>
          </c:map>
       </c:variable>

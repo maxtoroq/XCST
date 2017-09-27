@@ -39,6 +39,10 @@ namespace Xcst.Runtime {
          }
       }
 
+      public void WriteObject<TDerived>(IEnumerable<TDerived> value) where TDerived : TItem {
+         WriteObject(value as IEnumerable<TItem> ?? value?.Cast<TItem>());
+      }
+
       public void WriteString(TItem text) {
          WriteObject(text);
       }
@@ -159,6 +163,10 @@ namespace Xcst.Runtime {
                WriteObject(item);
             }
          }
+      }
+
+      public void WriteObject<TDerived2>(IEnumerable<TDerived2> value) where TDerived2 : TDerived {
+         WriteObject(value as IEnumerable<TDerived> ?? value?.Cast<TDerived>());
       }
 
       public void WriteString(TDerived text) {
