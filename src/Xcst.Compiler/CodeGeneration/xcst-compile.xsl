@@ -953,8 +953,8 @@
 
    <template name="src:template-method-signature">
       <param name="meta" required="yes"/>
-      <param name="context-param" required="yes"/>
-      <param name="output-param" required="yes"/>
+      <param name="context" required="yes"/>
+      <param name="output" required="yes"/>
       <param name="indent" tunnel="yes"/>
 
       <variable name="public" select="$meta/@visibility = ('public', 'final', 'abstract')"/>
@@ -998,9 +998,9 @@
       <text>void </text>
       <value-of select="$meta/@member-name"/>
       <text>(</text>
-      <value-of select="src:template-context-type($meta), $context-param"/>
+      <value-of select="$context/@type, $context"/>
       <text>, </text>
-      <value-of select="src:template-output-type($meta), $output-param"/>
+      <value-of select="$output/@type, $output"/>
       <text>)</text>
    </template>
 
@@ -1110,7 +1110,7 @@
          <text>#pragma warning restore CS3008</text>
 
          <variable name="var" select="src:aux-variable('p')"/>
-         <variable name="context" select="src:aux-variable('context')"/>
+         <variable name="context" select="src:template-context(())"/>
          <value-of select="$src:new-line"/>
          <call-template name="src:new-line-indented">
             <with-param name="increase" select="1"/>
@@ -1118,7 +1118,7 @@
          <text>public static </text>
          <value-of select="$params-type"/>
          <text> Create(</text>
-         <value-of select="src:template-context-type(()), $context"/>
+         <value-of select="$context/@type, $context"/>
          <text>)</text>
          <call-template name="src:open-brace"/>
          <value-of select="$src:new-line"/>
@@ -1220,16 +1220,30 @@
       </if>
    </template>
 
-   <function name="src:template-context-type" as="xs:string">
+   <function name="src:template-context" as="element()">
       <param name="meta" as="element()?"/>
 
-      <variable name="type" select="src:package-model-type('TemplateContext')"/>
+      <sequence select="src:template-context($meta, ())"/>
+   </function>
 
-      <sequence select="
+   <function name="src:template-context" as="element()">
+      <param name="meta" as="element()?"/>
+      <param name="el" as="element()?"/>
+
+      <variable name="base-type" select="src:package-model-type('TemplateContext')"/>
+      <variable name="type" select="
          if ($meta[self::xcst:template] and $meta/xcst:typed-params(.)) then
-            concat($type, '&lt;', src:params-type($meta), '>')
+            concat($base-type, '&lt;', src:params-type($meta), '>')
          else
-            $type"/>
+            $base-type"/>
+
+      <src:context type="{$type}">
+         <value-of select="src:aux-variable('context')"/>
+         <if test="$el">
+            <text>_</text>
+            <value-of select="generate-id($el)"/>
+         </if>
+      </src:context>
    </function>
 
    <function name="xcst:typed-params" as="xs:boolean">
@@ -1256,14 +1270,56 @@
       <sequence select="src:aux-variable(concat($name, '_set'))"/>
    </function>
 
-   <function name="src:template-output-type" as="xs:string">
+   <function name="src:template-output" as="element()">
       <param name="meta" as="element()?"/>
 
-      <sequence select="
-         if ($meta/@item-type) then
-            concat(src:package-model-type('ISequenceWriter'), '&lt;', src:global-identifier-meta($meta/@item-type), '>')
-         else
-            src:global-identifier('Xcst.XcstWriter')"/>
+      <sequence select="src:template-output($meta, ())"/>
+   </function>
+
+   <function name="src:template-output" as="element()">
+      <param name="meta" as="element()?"/>
+      <param name="el" as="element()?"/>
+
+      <choose>
+         <when test="$meta/@item-type">
+            <src:output kind="obj" type="{concat(src:package-model-type('ISequenceWriter'), '&lt;', src:global-identifier-meta($meta/@item-type), '>')}">
+               <value-of select="src:aux-variable('output')"/>
+               <if test="$el">
+                  <text>_</text>
+                  <value-of select="generate-id($el)"/>
+               </if>
+            </src:output>
+         </when>
+         <otherwise>
+            <sequence select="src:doc-output($el, ())"/>
+         </otherwise>
+      </choose>
+   </function>
+
+   <function name="src:doc-output" as="item()">
+      <param name="el" as="element()?"/>
+      <param name="output" as="item()?"/>
+
+      <choose>
+         <when test="$output and src:output-is-doc($output)">
+            <sequence select="$output"/>
+         </when>
+         <otherwise>
+            <src:output kind="doc" type="{src:global-identifier('Xcst.XcstWriter')}">
+               <value-of select="src:aux-variable('output')"/>
+               <if test="$el">
+                  <text>_</text>
+                  <value-of select="generate-id($el)"/>
+               </if>
+            </src:output>
+         </otherwise>
+      </choose>
+   </function>
+
+   <function name="src:output-is-doc" as="xs:boolean">
+      <param name="output" as="item()"/>
+
+      <sequence select="$output instance of element() and $output/@kind[. eq 'doc']"/>
    </function>
 
    <function name="src:item-type-inference-member-name" as="xs:string">
@@ -1464,12 +1520,12 @@
    </template>
 
    <template match="xcst:template" mode="src:member">
-      <variable name="context-param" select="src:aux-variable('context')"/>
-      <variable name="output-param" select="src:aux-variable('output')"/>
+      <variable name="context" select="src:template-context(.)"/>
+      <variable name="output" select="src:template-output(.)"/>
       <call-template name="src:template-method-signature">
          <with-param name="meta" select="."/>
-         <with-param name="context-param" select="$context-param"/>
-         <with-param name="output-param" select="$output-param"/>
+         <with-param name="context" select="$context"/>
+         <with-param name="output" select="$output"/>
       </call-template>
       <call-template name="src:open-brace"/>
       <call-template name="src:new-line-indented">
@@ -1478,7 +1534,7 @@
       <text>this.</text>
       <value-of select="src:used-package-field-name(.), @member-name" separator="."/>
       <text>(</text>
-      <value-of select="$context-param, $output-param" separator=", "/>
+      <value-of select="$context, $output" separator=", "/>
       <text>)</text>
       <value-of select="$src:statement-delimiter"/>
       <call-template name="src:close-brace"/>
@@ -1534,8 +1590,8 @@
    <template match="xcst:attribute-set" mode="src:member">
 
       <variable name="public" select="@visibility ne 'private'"/>
-      <variable name="context-param" select="src:aux-variable('context')"/>
-      <variable name="output-param" select="src:aux-variable('output')"/>
+      <variable name="context" select="src:template-context(.)"/>
+      <variable name="output" select="src:template-output(.)"/>
 
       <value-of select="$src:new-line"/>
       <if test="$public">
@@ -1554,9 +1610,9 @@
       <text>void </text>
       <value-of select="@member-name"/>
       <text>(</text>
-      <value-of select="src:template-context-type(.), $context-param"/>
+      <value-of select="$context/@type, $context"/>
       <text>, </text>
-      <value-of select="src:template-output-type(.), $output-param"/>
+      <value-of select="$output/@type, $output"/>
       <text>)</text>
       <call-template name="src:open-brace"/>
       <call-template name="src:new-line-indented">
@@ -1565,7 +1621,7 @@
       <text>this.</text>
       <value-of select="src:used-package-field-name(.), @member-name" separator="."/>
       <text>(</text>
-      <value-of select="$context-param, $output-param" separator=", "/>
+      <value-of select="$context, $output" separator=", "/>
       <text>)</text>
       <value-of select="$src:statement-delimiter"/>
       <call-template name="src:close-brace"/>
@@ -1633,7 +1689,7 @@
    <template match="xcst:template | xcst:attribute-set" mode="src:used-package-overridden-type">
       <value-of select="src:global-identifier('System.Action')"/>
       <text>&lt;</text>
-      <value-of select="src:template-context-type(.), src:template-output-type(.)" separator=", "/>
+      <value-of select="src:template-context(.)/@type, src:template-output(.)/@type" separator=", "/>
       <text>></text>
    </template>
 
@@ -1674,16 +1730,16 @@
    </template>
 
    <template match="xcst:template | xcst:attribute-set" mode="src:used-package-override">
-      <variable name="context-param" select="src:aux-variable('context')"/>
-      <variable name="output-param" select="src:aux-variable('output')"/>
+      <variable name="context" select="src:template-context(.)"/>
+      <variable name="output" select="src:template-output(.)"/>
       <value-of select="$src:new-line"/>
       <call-template name="src:new-line-indented"/>
       <text>public override void </text>
       <value-of select="@member-name"/>
       <text>(</text>
-      <value-of select="src:template-context-type(.), $context-param"/>
+      <value-of select="$context/@type, $context"/>
       <text>, </text>
-      <value-of select="src:template-output-type(.), $output-param"/>
+      <value-of select="$output/@type, $output"/>
       <text>)</text>
       <call-template name="src:open-brace"/>
       <call-template name="src:new-line-indented">
@@ -1692,7 +1748,7 @@
       <text>this.</text>
       <value-of select="src:overridden-field-name(.)"/>
       <text>(</text>
-      <value-of select="$context-param, $output-param" separator=", "/>
+      <value-of select="$context, $output" separator=", "/>
       <text>)</text>
       <value-of select="$src:statement-delimiter"/>
       <call-template name="src:close-brace"/>
@@ -1731,16 +1787,16 @@
    </template>
 
    <template match="xcst:template | xcst:attribute-set" mode="src:used-package-original">
-      <variable name="context-param" select="src:aux-variable('context')"/>
-      <variable name="output-param" select="src:aux-variable('output')"/>
+      <variable name="context" select="src:template-context(.)"/>
+      <variable name="output" select="src:template-output(.)"/>
       <value-of select="$src:new-line"/>
       <call-template name="src:new-line-indented"/>
       <text>internal void </text>
       <value-of select="src:original-member-name(.)"/>
       <text>(</text>
-      <value-of select="src:template-context-type(.), $context-param"/>
+      <value-of select="$context/@type, $context"/>
       <text>, </text>
-      <value-of select="src:template-output-type(.), $output-param"/>
+      <value-of select="$output/@type, $output"/>
       <text>)</text>
       <call-template name="src:open-brace"/>
       <call-template name="src:new-line-indented">
@@ -1749,7 +1805,7 @@
       <text>base.</text>
       <value-of select="@member-name"/>
       <text>(</text>
-      <value-of select="$context-param, $output-param" separator=", "/>
+      <value-of select="$context, $output" separator=", "/>
       <text>)</text>
       <value-of select="$src:statement-delimiter"/>
       <call-template name="src:close-brace"/>
@@ -2028,13 +2084,13 @@
 
       <variable name="meta" select="$package-manifest/xcst:template[@declaration-id eq current()/generate-id()]"/>
       <variable name="public" select="$meta/@visibility = ('public', 'final', 'abstract')"/>
-      <variable name="context-param" select="src:aux-variable('context')"/>
-      <variable name="output-param" select="src:aux-variable('output')"/>
+      <variable name="context" select="src:template-context($meta)"/>
+      <variable name="output" select="src:template-output($meta)"/>
 
       <call-template name="src:template-method-signature">
          <with-param name="meta" select="$meta"/>
-         <with-param name="context-param" select="$context-param"/>
-         <with-param name="output-param" select="$output-param"/>
+         <with-param name="context" select="$context"/>
+         <with-param name="output" select="$output"/>
       </call-template>
 
       <variable name="children" select="node()[not(self::c:param or following-sibling::c:param)]"/>
@@ -2051,14 +2107,14 @@
             <call-template name="src:open-brace"/>
             <apply-templates select="c:param" mode="src:statement">
                <with-param name="indent" select="$indent + 1" tunnel="yes"/>
-               <with-param name="context" select="$context-param" tunnel="yes"/>
+               <with-param name="context" select="$context" tunnel="yes"/>
             </apply-templates>
             <call-template name="src:sequence-constructor">
                <with-param name="children" select="$children"/>
                <with-param name="omit-block" select="true()"/>
                <with-param name="indent" select="$indent + 1" tunnel="yes"/>
-               <with-param name="context" select="$context-param" tunnel="yes"/>
-               <with-param name="output" select="$output-param" tunnel="yes"/>
+               <with-param name="context" select="$context" tunnel="yes"/>
+               <with-param name="output" select="$output" tunnel="yes"/>
             </call-template>
             <call-template name="src:close-brace"/>
          </otherwise>
@@ -2137,8 +2193,8 @@
 
       <variable name="meta" select="$package-manifest/xcst:attribute-set[@declaration-id eq current()/generate-id()]"/>
       <variable name="public" select="$meta/@visibility = ('public', 'final', 'abstract')"/>
-      <variable name="context-param" select="src:aux-variable('context')"/>
-      <variable name="output-param" select="src:aux-variable('output')"/>
+      <variable name="context" select="src:template-context($meta)"/>
+      <variable name="output" select="src:template-output($meta)"/>
 
       <value-of select="$src:new-line"/>
       <if test="$public">
@@ -2158,9 +2214,9 @@
       <text>void </text>
       <value-of select="$meta/@member-name"/>
       <text>(</text>
-      <value-of select="src:template-context-type($meta), $context-param"/>
+      <value-of select="$context/@type, $context"/>
       <text>, </text>
-      <value-of select="src:template-output-type($meta), $output-param"/>
+      <value-of select="$output/@type, $output"/>
       <text>)</text>
       <variable name="children" select="c:attribute"/>
       <choose>
@@ -2175,15 +2231,15 @@
             <call-template name="src:use-attribute-sets">
                <with-param name="attr" select="@use-attribute-sets"/>
                <with-param name="indent" select="$indent + 1" tunnel="yes"/>
-               <with-param name="context" select="$context-param" tunnel="yes"/>
-               <with-param name="output" select="$output-param" tunnel="yes"/>
+               <with-param name="context" select="$context" tunnel="yes"/>
+               <with-param name="output" select="$output" tunnel="yes"/>
             </call-template>
             <call-template name="src:sequence-constructor">
                <with-param name="children" select="$children"/>
                <with-param name="omit-block" select="true()"/>
                <with-param name="indent" select="$indent + 1" tunnel="yes"/>
-               <with-param name="context" select="$context-param" tunnel="yes"/>
-               <with-param name="output" select="$output-param" tunnel="yes"/>
+               <with-param name="context" select="$context" tunnel="yes"/>
+               <with-param name="output" select="$output" tunnel="yes"/>
             </call-template>
             <call-template name="src:close-brace"/>
          </otherwise>
@@ -2412,8 +2468,8 @@
 
       <choose>
          <when test="$overriding-typed-params or $overridden-typed-params">
-            <variable name="context" select="src:aux-variable('context')"/>
-            <variable name="output" select="src:aux-variable('output')"/>
+            <variable name="context" select="src:template-context($meta)"/>
+            <variable name="output" select="src:template-output($meta)"/>
             <text>(</text>
             <value-of select="$context, $output" separator=", "/>
             <text>) => </text>
@@ -2423,7 +2479,7 @@
             <choose>
                <when test="$overriding-typed-params">
                   <text>new </text>
-                  <value-of select="src:template-context-type($meta)"/>
+                  <value-of select="$context/@type"/>
                   <text>(</text>
                   <value-of select="$context, 'Parameters'" separator="."/>
                   <text>, </text>
@@ -2520,7 +2576,7 @@
          for $pos in (1 to count($modules)) 
          return if ($modules[$pos] is current()) then $pos else ()"/>
       <variable name="principal-module" select="$module-pos eq count($modules)"/>
-      <variable name="context-param" select="src:aux-variable('context')"/>
+      <variable name="context" select="src:template-context(())"/>
       <value-of select="$src:new-line"/>
       <if test="not($principal-module)">
          <call-template name="src:editor-browsable-never"/>
@@ -2539,7 +2595,7 @@
       <text>(</text>
       <value-of select="src:package-model-type('PrimingContext')"/>
       <text> </text>
-      <value-of select="$context-param"/>
+      <value-of select="$context"/>
       <text>)</text>
       <call-template name="src:open-brace"/>
       <if test="$principal-module">
@@ -2557,7 +2613,7 @@
             <text>)this.</text>
             <value-of select="src:used-package-field-name(.)"/>
             <text>).Prime(</text>
-            <value-of select="$context-param"/>
+            <value-of select="$context"/>
             <text>)</text>
             <value-of select="$src:statement-delimiter"/>
          </for-each>
@@ -2568,7 +2624,7 @@
             <text>this.</text>
             <value-of select="src:prime-method-name(.)"/>
             <text>(</text>
-            <value-of select="$context-param"/>
+            <value-of select="$context"/>
             <text>)</text>
             <value-of select="$src:statement-delimiter"/>
          </for-each>
@@ -2577,7 +2633,7 @@
          <if test="$package-manifest/xcst:*[@declaration-id eq current()/generate-id()]/@visibility ne 'hidden'">
             <apply-templates select="." mode="src:statement">
                <with-param name="indent" select="$indent + 1" tunnel="yes"/>
-               <with-param name="context" select="$context-param" tunnel="yes"/>
+               <with-param name="context" select="$context" tunnel="yes"/>
             </apply-templates>
          </if>
       </for-each>
@@ -2595,24 +2651,24 @@
 
       <value-of select="$src:new-line"/>
       <call-template name="src:new-line-indented"/>
-      <variable name="name-param" select="src:aux-variable('name')"/>
-      <variable name="context-param" select="src:aux-variable('context')"/>
-      <variable name="output-param" select="src:aux-variable('output')"/>
+      <variable name="name" select="src:aux-variable('name')"/>
+      <variable name="context" select="src:template-context(())"/>
+      <variable name="output" select="src:template-output(())"/>
       <text>void </text>
       <value-of select="$src:package-interface"/>
       <text>.CallTemplate(</text>
-      <value-of select="src:global-identifier('Xcst.QualifiedName'), $name-param"/>
+      <value-of select="src:global-identifier('Xcst.QualifiedName'), $name"/>
       <text>, </text>
-      <value-of select="src:template-context-type(()), $context-param"/>
+      <value-of select="$context/@type, $context"/>
       <text>, </text>
-      <value-of select="src:template-output-type(()), $output-param"/>
+      <value-of select="$output/@type, $output"/>
       <text>)</text>
       <call-template name="src:open-brace"/>
       <call-template name="src:call-template-method-body">
          <with-param name="indent" select="$indent + 1" tunnel="yes"/>
-         <with-param name="name-param" select="$name-param"/>
-         <with-param name="context" select="$context-param"/>
-         <with-param name="output" select="$output-param"/>
+         <with-param name="name-param" select="$name"/>
+         <with-param name="context" select="$context"/>
+         <with-param name="output" select="$output"/>
       </call-template>
       <call-template name="src:close-brace"/>
    </template>
@@ -2654,7 +2710,7 @@
          <choose>
             <when test="xcst:typed-params(.)">
                <text>new </text>
-               <value-of select="src:template-context-type(.)"/>
+               <value-of select="src:template-context(.)/@type"/>
                <text>(</text>
                <value-of select="src:params-type-name(.), 'Create'" separator="."/>
                <text>(</text>
@@ -2699,30 +2755,34 @@
 
       <value-of select="$src:new-line"/>
       <call-template name="src:new-line-indented"/>
-      <variable name="name-param" select="src:aux-variable('name')"/>
-      <variable name="output-param" select="src:aux-variable('output')"/>
+      <variable name="name" select="src:aux-variable('name')"/>
+      <variable name="output" as="element()">
+         <src:output kind="obj" type="{concat(src:package-model-type('ISequenceWriter'), '&lt;TBase>')}">
+            <value-of select="src:aux-variable('output')"/>
+         </src:output>
+      </variable>
       <value-of select="src:global-identifier('System.Action')"/>
       <text>&lt;</text>
-      <value-of select="src:template-context-type(())"/>
+      <value-of select="src:template-context(())/@type"/>
       <text>> </text>
       <value-of select="$src:package-interface"/>
       <text>.GetTypedTemplate&lt;TBase>(</text>
-      <value-of select="src:global-identifier('Xcst.QualifiedName'), $name-param"/>
+      <value-of select="src:global-identifier('Xcst.QualifiedName'), $name"/>
       <text>, </text>
-      <value-of select="concat(src:package-model-type('ISequenceWriter'), '&lt;TBase>'), $output-param"/>
+      <value-of select="$output/@type, $output"/>
       <text>)</text>
       <call-template name="src:open-brace"/>
       <call-template name="src:get-typed-template-method-body">
          <with-param name="indent" select="$indent + 1" tunnel="yes"/>
-         <with-param name="name-param" select="$name-param"/>
-         <with-param name="output" select="$output-param"/>
+         <with-param name="name" select="$name"/>
+         <with-param name="output" select="$output"/>
       </call-template>
       <call-template name="src:close-brace"/>
    </template>
 
    <template name="src:get-typed-template-method-body">
       <param name="package-manifest" required="yes" tunnel="yes"/>
-      <param name="name-param" required="yes"/>
+      <param name="name" required="yes"/>
       <param name="output" required="yes"/>
 
       <variable name="templates" select="$package-manifest/xcst:template[@visibility = ('public', 'final', 'absent') and @item-type]"/>
@@ -2732,7 +2792,7 @@
          <sort select="xcst:EQName(@name) eq xs:QName('c:initial-template')" order="descending"/>
 
          <variable name="qname" select="xcst:EQName(@name)"/>
-         <variable name="context" select="src:aux-variable('context')"/>
+         <variable name="context" select="src:template-context(())"/>
          <choose>
             <when test="position() eq 1">
                <call-template name="src:new-line-indented"/>
@@ -2740,12 +2800,12 @@
             <otherwise> else </otherwise>
          </choose>
          <text>if (</text>
-         <value-of select="$name-param"/>
+         <value-of select="$name"/>
          <text>.Name</text>
          <text> == </text>
          <value-of select="src:string(local-name-from-QName($qname))"/>
          <text> &amp;&amp; </text>
-         <value-of select="src:string-equals-literal(concat($name-param, '.Namespace'), namespace-uri-from-QName($qname))"/>
+         <value-of select="src:string-equals-literal(concat($name, '.Namespace'), namespace-uri-from-QName($qname))"/>
          <text>)</text>
          <call-template name="src:open-brace"/>
          <call-template name="src:new-line-indented">
@@ -2777,7 +2837,7 @@
       <text>throw </text>
       <value-of select="src:fully-qualified-helper('DynamicError')"/>
       <text>.UnknownTemplate(</text>
-      <value-of select="$name-param"/>
+      <value-of select="$name"/>
       <text>)</text>
       <value-of select="$src:statement-delimiter"/>
       <if test="$templates">

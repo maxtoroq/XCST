@@ -34,11 +34,6 @@ namespace Xcst.Runtime {
          return CreateArray((ISequenceWriter<JArray>)output);
       }
 
-      [Obsolete("Cannot cast XcstWriter to JsonMapWriter.", error: true)]
-      public static JsonMapWriter Cast(XcstWriter output) {
-         throw new InvalidOperationException();
-      }
-
       // From object to JObject, create a JsonMapWriter
 
       public static JsonMapWriter Create(ISequenceWriter<JObject> output) {

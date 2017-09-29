@@ -237,7 +237,7 @@
 
       <call-template name="xcst:validate-attribs"/>
 
-      <variable name="doc-output" select="concat(src:aux-variable('output'), '_', generate-id())"/>
+      <variable name="doc-output" select="src:doc-output(., ())"/>
       <value-of select="$src:new-line"/>
       <call-template name="src:line-hidden"/>
       <call-template name="src:new-line-indented"/>
@@ -676,6 +676,9 @@
          <with-param name="optional" select="'value'"/>
       </call-template>
       <call-template name="xcst:value-or-sequence-constructor"/>
+      <call-template name="xcst:validate-output">
+         <with-param name="kind" select="'map', 'obj'"/>
+      </call-template>
 
       <variable name="output-is-map" select="src:output-is-map($output)"/>
       <variable name="map-output" select="src:map-output(., $output)"/>
@@ -795,10 +798,9 @@
             <sequence select="$output"/>
          </when>
          <otherwise>
-            <element name="src:output">
-               <attribute name="map" select="true()"/>
+            <src:output kind="map">
                <value-of select="concat(src:aux-variable('output'), '_', generate-id($el))"/>
-            </element>
+            </src:output>
          </otherwise>
       </choose>
    </function>
@@ -806,9 +808,7 @@
    <function name="src:output-is-map" as="xs:boolean">
       <param name="output" as="item()"/>
 
-      <sequence select="
-         if ($output instance of element()) then boolean($output/@map/xs:boolean(.))
-         else false()"/>
+      <sequence select="$output instance of element() and $output/@kind[. eq 'map']"/>
    </function>
 
    <!--
@@ -1159,7 +1159,7 @@
                   <value-of select="$context, 'Parameters', $name" separator="."/>
                </when>
                <otherwise>
-                  <value-of select="src:template-context-type(())"/>
+                  <value-of select="src:template-context(())/@type"/>
                   <text>.TypedParam</text>
                   <if test="$required">
                      <text>&lt;</text>
@@ -1414,7 +1414,7 @@
       <variable name="typed-params" select="boolean($meta/xcst:typed-params(.))"/>
 
       <text>new </text>
-      <value-of select="src:template-context-type($meta)"/>
+      <value-of select="src:template-context($meta)/@type"/>
       <text>(</text>
       <if test="$typed-params">
          <text>new </text>
@@ -1736,8 +1736,6 @@
       <call-template name="xcst:validate-attribs">
          <with-param name="optional" select="'as'"/>
       </call-template>
-      <variable name="new-context" select="concat(src:aux-variable('context'), '_', generate-id())"/>
-      <variable name="new-output" select="concat(src:aux-variable('output'), '_', generate-id())"/>
       <variable name="meta" as="element()">
          <element name="xcst:delegate">
             <if test="@as">
@@ -1745,10 +1743,12 @@
             </if>
          </element>
       </variable>
+      <variable name="new-context" select="src:template-context($meta, .)"/>
+      <variable name="new-output" select="src:template-output($meta, .)"/>
       <text>new </text>
       <value-of select="src:global-identifier('System.Action')"/>
       <text>&lt;</text>
-      <value-of select="src:template-context-type(()), src:template-output-type($meta)" separator=", "/>
+      <value-of select="$new-context/@type, $new-output/@type" separator=", "/>
       <text>>((</text>
       <value-of select="$new-context, $new-output" separator=", "/>
       <text>) =></text>
@@ -2258,7 +2258,7 @@
             <value-of select="$src:statement-delimiter"/>
          </when>
          <otherwise>
-            <variable name="new-output" select="concat(src:aux-variable('output'), '_', generate-id())"/>
+            <variable name="new-output" select="src:doc-output(., ())"/>
             <text>using (var </text>
             <value-of select="$new-output"/>
             <text> = </text>
@@ -2334,7 +2334,7 @@
       <value-of select="$src:new-line"/>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
-      <variable name="new-output" select="concat(src:aux-variable('output'), '_', generate-id())"/>
+      <variable name="new-output" select="src:doc-output(., ())"/>
       <text>using (var </text>
       <value-of select="$new-output"/>
       <text> = </text>
@@ -2394,7 +2394,7 @@
       <call-template name="xcst:validate-attribs">
          <with-param name="optional" select="'format', $src:output-parameters/*[not(self::version)]/local-name()"/>
       </call-template>
-      <variable name="new-output" select="concat(src:aux-variable('output'), '_', generate-id())"/>
+      <variable name="new-output" select="src:doc-output(., ())"/>
       <value-of select="src:fully-qualified-helper('Serialization')"/>
       <text>.Serialize(this, </text>
       <call-template name="src:format-QName"/>
@@ -2674,6 +2674,18 @@
 
       <if test="@value and $children[self::* or self::text()[normalize-space() or xcst:preserve-whitespace(..)]]">
          <sequence select="error(xs:QName('err:XTSE0010'), 'The ''value'' attribute must be omitted if the element has content.', src:error-object(.))"/>
+      </if>
+   </template>
+
+   <template name="xcst:validate-output">
+      <param name="output" tunnel="yes"/>
+      <param name="kind" as="xs:string*"/>
+
+      <if test="not($output)">
+         <sequence select="error((), 'Output required.', src:error-object(.))"/>
+      </if>
+      <if test="not(empty($kind)) and not($output instance of element() and $output/@kind = $kind)">
+         <sequence select="error((), 'Incompatible output.', src:error-object(.))"/>
       </if>
    </template>
 
@@ -3079,7 +3091,7 @@
             <text>)</text>
          </when>
          <when test="*">
-            <variable name="new-output" select="concat(src:aux-variable('output'), '_', generate-id())"/>
+            <variable name="new-output" select="src:doc-output(., ())"/>
             <variable name="default-sep" select="
                if (self::c:value-of or self::c:attribute) then ''
                else ' '"/>
@@ -3140,7 +3152,11 @@
                   <if test="$as">)</if>
                </when>
                <otherwise>
-                  <variable name="new-output" select="concat(src:aux-variable('output'), '_', generate-id())"/>
+                  <variable name="new-output" as="element()">
+                     <src:output kind="obj">
+                        <value-of select="concat(src:aux-variable('output'), '_', generate-id())"/>
+                     </src:output>
+                  </variable>
                   <value-of select="src:fully-qualified-helper('SequenceWriter'), 'Create'" separator="."/>
                   <text>&lt;</text>
                   <value-of select="($item-type, 'object')[1]"/>
