@@ -30,7 +30,9 @@ namespace Xcst.Runtime {
          var doc = new XDocument();
          output.WriteObject(doc);
 
-         var defaultParams = new OutputParameters();
+         var defaultParams = new OutputParameters {
+            OmitXmlDeclaration = true
+         };
 
          return WriterFactory.CreateWriter(doc.CreateWriter(), null)
             (defaultParams, null, package.Context);
@@ -41,7 +43,9 @@ namespace Xcst.Runtime {
          var doc = new XmlDocument();
          output.WriteObject(doc);
 
-         var defaultParams = new OutputParameters();
+         var defaultParams = new OutputParameters {
+            OmitXmlDeclaration = true
+         };
 
          return WriterFactory.CreateWriter(doc.CreateNavigator().AppendChild(), null)
             (defaultParams, null, package.Context);
