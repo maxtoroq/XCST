@@ -50,5 +50,8 @@ namespace Xcst.Runtime {
          return WriterFactory.CreateWriter(doc.CreateNavigator().AppendChild(), null)
             (defaultParams, null, package.Context);
       }
+
+      // Sadly, cannot create writer for c:element
+      // XNodeBuilder does not support top level attribute and text
    }
 }

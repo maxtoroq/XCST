@@ -344,6 +344,9 @@ namespace Xcst {
       }
 
       public void CopyOf(IXmlSerializable value) {
+
+         // Don't output root element, gives caller more flexibility and choice
+
          value?.WriteXml(new XcstXmlWriter(this));
       }
 
