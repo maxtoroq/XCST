@@ -1645,7 +1645,7 @@
       <value-of select="src:global-identifier(@package-type)"/>
       <call-template name="src:open-brace"/>
 
-      <apply-templates select="$overridden" mode="src:used-package-overridden">
+      <apply-templates select="$overridden" mode="src:used-package-overriding">
          <with-param name="indent" select="$indent + 1" tunnel="yes"/>
       </apply-templates>
 
@@ -1660,19 +1660,19 @@
       <call-template name="src:close-brace"/>
    </template>
 
-   <template match="xcst:template | xcst:attribute-set | xcst:function | xcst:variable | xcst:param" mode="src:used-package-overridden">
+   <template match="xcst:template | xcst:attribute-set | xcst:function | xcst:variable | xcst:param" mode="src:used-package-overriding">
       <if test="position() eq 1">
          <value-of select="$src:new-line"/>
       </if>
       <call-template name="src:new-line-indented"/>
       <text>public </text>
-      <apply-templates select="." mode="src:used-package-overridden-type"/>
+      <apply-templates select="." mode="src:used-package-overriding-type"/>
       <text> </text>
-      <value-of select="src:overridden-field-name(.)"/>
+      <value-of select="src:overriding-field-name(.)"/>
       <value-of select="$src:statement-delimiter"/>
    </template>
 
-   <template match="xcst:param | xcst:variable" mode="src:used-package-overridden-type">
+   <template match="xcst:param | xcst:variable" mode="src:used-package-overriding-type">
       <variable name="type" select="src:global-identifier-meta(@as)"/>
       <value-of select="src:global-identifier('System.Tuple')"/>
       <text>&lt;</text>
@@ -1686,14 +1686,14 @@
       <text>>></text>
    </template>
 
-   <template match="xcst:template | xcst:attribute-set" mode="src:used-package-overridden-type">
+   <template match="xcst:template | xcst:attribute-set" mode="src:used-package-overriding-type">
       <value-of select="src:global-identifier('System.Action')"/>
       <text>&lt;</text>
       <value-of select="src:template-context(.)/@type, src:template-output(.)/@type" separator=", "/>
       <text>></text>
    </template>
 
-   <template match="xcst:function" mode="src:used-package-overridden-type">
+   <template match="xcst:function" mode="src:used-package-overriding-type">
       <value-of select="src:global-identifier(if (@as) then 'System.Func' else 'System.Action')"/>
       <if test="@as or xcst:param">
          <text>&lt;</text>
@@ -1704,7 +1704,7 @@
    </template>
 
    <template match="xcst:variable | xcst:param" mode="src:used-package-override">
-      <variable name="field" select="src:overridden-field-name(.)"/>
+      <variable name="field" select="src:overriding-field-name(.)"/>
       <value-of select="$src:new-line"/>
       <call-template name="src:new-line-indented"/>
       <text>public override </text>
@@ -1746,7 +1746,7 @@
          <with-param name="increase" select="1"/>
       </call-template>
       <text>this.</text>
-      <value-of select="src:overridden-field-name(.)"/>
+      <value-of select="src:overriding-field-name(.)"/>
       <text>(</text>
       <value-of select="$context, $output" separator=", "/>
       <text>)</text>
@@ -1775,7 +1775,7 @@
          <text>return </text>
       </if>
       <text>this.</text>
-      <value-of select="src:overridden-field-name(.)"/>
+      <value-of select="src:overriding-field-name(.)"/>
       <text>(</text>
       <for-each select="xcst:param">
          <if test="position() gt 1">, </if>
@@ -1820,10 +1820,10 @@
          return (if ($package-manifest/xcst:*[@overrides eq $c/@id]) then $c else ())"/>
    </function>
 
-   <function name="src:overridden-field-name" as="xs:string">
+   <function name="src:overriding-field-name" as="xs:string">
       <param name="meta" as="element()"/>
 
-      <sequence select="src:aux-variable(concat('overridden_', $meta/@id))"/>
+      <sequence select="src:aux-variable(concat('overriding_', $meta/@id))"/>
    </function>
 
    <function name="src:original-member-name" as="xs:string">
@@ -2417,7 +2417,7 @@
                   <with-param name="indent" select="$indent + 2" tunnel="yes"/>
                </call-template>
                <variable name="meta" select="$package-manifest/xcst:*[@overrides eq current()/@id and @visibility ne 'hidden']"/>
-               <value-of select="src:overridden-field-name(.)"/>
+               <value-of select="src:overriding-field-name(.)"/>
                <text> = </text>
                <apply-templates select="." mode="src:used-package-overriding-value">
                   <with-param name="meta" select="$meta"/>
