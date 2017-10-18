@@ -505,6 +505,10 @@
          else if ($modules[position() gt $module-pos]/c:*[xcst:homonymous(., current())]) then 'hidden'
          else (@visibility/xcst:visibility(.), 'public'[$implicit-package], 'private')[1]"/>
 
+      <call-template name="xcst:validate-empty-abstract">
+         <with-param name="visibility" select="$visibility"/>
+      </call-template>
+
       <variable name="public" select="$visibility = ('public', 'final', 'abstract')"/>
       <variable name="as" select="@as/xcst:type(.)"/>
 
@@ -592,6 +596,10 @@
             , @visibility/xcst:visibility(.), 'private')[1]
          else if ($modules[position() gt $module-pos]/c:*[xcst:homonymous(., current())]) then 'hidden'
          else (@visibility/xcst:visibility(.), 'private')[1]"/>
+
+      <call-template name="xcst:validate-empty-abstract">
+         <with-param name="visibility" select="$visibility"/>
+      </call-template>
 
       <variable name="member-name" select="
          if ($visibility eq 'hidden') then 
@@ -699,6 +707,10 @@
             , @visibility/xcst:visibility(.), 'private')[1]
          else if ($modules[position() gt $module-pos]/c:*[xcst:homonymous(., current())]) then 'hidden'
          else (@visibility/xcst:visibility(.), 'private')[1]"/>
+
+      <call-template name="xcst:validate-empty-abstract">
+         <with-param name="visibility" select="$visibility"/>
+      </call-template>
 
       <variable name="public" select="$visibility = ('public', 'final', 'abstract')"/>
 
@@ -845,6 +857,18 @@
 
       <sequence select="$string"/>
    </function>
+
+   <template name="xcst:validate-empty-abstract">
+      <param name="visibility" as="xs:string" required="yes"/>
+
+      <if test="$visibility eq 'abstract'">
+         <variable name="children" select="node()[not(self::c:param or following-sibling::c:param)]"/>
+         <variable name="text" select="xcst:text(., $children)"/>
+         <if test="$text or $children[self::*]">
+            <sequence select="error(xs:QName('err:XTSE0010'), 'No content is allowed when visibility=''abstract''.', src:error-object(.))"/>
+         </if>
+      </if>
+   </template>
 
    <function name="xcst:homonymous" as="xs:boolean">
       <param name="a" as="element()"/>
@@ -2118,14 +2142,8 @@
          <with-param name="output" select="$output"/>
       </call-template>
 
-      <variable name="children" select="node()[not(self::c:param or following-sibling::c:param)]"/>
-
       <choose>
          <when test="$meta/@visibility eq 'abstract'">
-            <variable name="text" select="xcst:text(., $children)"/>
-            <if test="$text or $children[self::*]">
-               <sequence select="error(xs:QName('err:XTSE0010'), 'No content is allowed when visibility=''abstract''.', src:error-object(.))"/>
-            </if>
             <value-of select="$src:statement-delimiter"/>
          </when>
          <otherwise>
@@ -2135,7 +2153,7 @@
                <with-param name="context" select="$context" tunnel="yes"/>
             </apply-templates>
             <call-template name="src:sequence-constructor">
-               <with-param name="children" select="$children"/>
+               <with-param name="children" select="node()[not(self::c:param or following-sibling::c:param)]"/>
                <with-param name="omit-block" select="true()"/>
                <with-param name="indent" select="$indent + 1" tunnel="yes"/>
                <with-param name="context" select="$context" tunnel="yes"/>
@@ -2193,13 +2211,8 @@
          <if test="position() ne last()">, </if>
       </for-each>
       <text>)</text>
-      <variable name="children" select="node()[not(self::c:param or following-sibling::c:param)]"/>
       <choose>
          <when test="$meta/@visibility eq 'abstract'">
-            <variable name="text" select="xcst:text(., $children)"/>
-            <if test="$text or $children[self::*]">
-               <sequence select="error(xs:QName('err:XTSE0010'), 'No content is allowed when visibility=''abstract''.', src:error-object(.))"/>
-            </if>
             <value-of select="$src:statement-delimiter"/>
          </when>
          <otherwise>
@@ -2232,7 +2245,7 @@
                <value-of select="$src:statement-delimiter"/>
             </if>
             <call-template name="src:sequence-constructor">
-               <with-param name="children" select="$children"/>
+               <with-param name="children" select="node()[not(self::c:param or following-sibling::c:param)]"/>
                <with-param name="omit-block" select="true()"/>
                <with-param name="indent" select="$indent + 1" tunnel="yes"/>
             </call-template>
@@ -2272,12 +2285,8 @@
       <text>, </text>
       <value-of select="$output/@type, $output"/>
       <text>)</text>
-      <variable name="children" select="c:attribute"/>
       <choose>
          <when test="$meta/@visibility eq 'abstract'">
-            <if test="$children">
-               <sequence select="error(xs:QName('err:XTSE0010'), 'No content is allowed when visibility=''abstract''.', src:error-object(.))"/>
-            </if>
             <value-of select="$src:statement-delimiter"/>
          </when>
          <otherwise>
@@ -2289,7 +2298,7 @@
                <with-param name="output" select="$output" tunnel="yes"/>
             </call-template>
             <call-template name="src:sequence-constructor">
-               <with-param name="children" select="$children"/>
+               <with-param name="children" select="c:attribute"/>
                <with-param name="omit-block" select="true()"/>
                <with-param name="indent" select="$indent + 1" tunnel="yes"/>
                <with-param name="context" select="$context" tunnel="yes"/>
