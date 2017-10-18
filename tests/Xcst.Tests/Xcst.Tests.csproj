@@ -240,6 +240,10 @@
     <None Include="CreatingNodesAndObjects\Array\Expando\NoFlat.c.xcst" />
     <None Include="CreatingNodesAndObjects\Array\Expando\Simple.c.xcst" />
     <None Include="CreatingNodesAndObjects\Array\Json\CompatibleOutput.c.xcst" />
+    <None Include="ProgramStructure\Packages\OverridingComponents\Function\Original.c.xcst" />
+    <None Include="ProgramStructure\Packages\OverridingComponents\Function\Original.pxcst" />
+    <None Include="ProgramStructure\Packages\OverridingComponents\Function\OriginalAbstract.i.xcst" />
+    <None Include="ProgramStructure\Packages\OverridingComponents\Function\OriginalAbstract.pxcst" />
     <None Include="SequenceConstructors\Raw\Array\CopyOf\JTokenNull.c.xcst" />
     <None Include="SequenceConstructors\Raw\Array\CopyOf\JTokenAsObject.c.xcst" />
     <None Include="SequenceConstructors\Raw\Array\CopyOf\JToken.c.xcst" />

@@ -37,6 +37,7 @@
    <variable name="src:context-field" select="concat('this.', src:aux-variable('execution_context'))"/>
    <variable name="xcst:validation-attributes" select="'error-resource-type', 'data-type-error-message', 'data-type-error-resource', 'required-error-message', 'required-error-resource', 'length-error-message', 'length-error-resource', 'pattern-error-message', 'pattern-error-resource', 'range-error-message', 'range-error-resource', 'equal-to-error-message', 'equal-to-error-resource'"/>
    <variable name="xcst:type-or-member-attributes" select="'resource-type', 'disable-empty-string-to-null-conversion', 'allow-empty-string', 'display-text-member', $xcst:validation-attributes"/>
+   <variable name="src:contextual-variable" select="'__xcst'"/>
 
    <output cdata-section-elements="src:compilation-unit"/>
 
@@ -1811,6 +1812,30 @@
       <call-template name="src:close-brace"/>
    </template>
 
+   <template match="xcst:function" mode="src:used-package-original">
+      <value-of select="$src:new-line"/>
+      <call-template name="src:new-line-indented"/>
+      <text>internal </text>
+      <value-of select="src:global-identifier(if (@as) then 'System.Func' else 'System.Action')"/>
+      <if test="@as or xcst:param">
+         <text>&lt;</text>
+         <value-of select="
+            xcst:param/(src:global-identifier-meta(@as)), @as/src:global-identifier-meta(.)" separator=", "/>
+         <text>></text>
+      </if>
+      <text> </text>
+      <value-of select="src:original-member-name(.)"/>
+      <text>()</text>
+      <call-template name="src:open-brace"/>
+      <call-template name="src:new-line-indented">
+         <with-param name="increase" select="1"/>
+      </call-template>
+      <text>return base.</text>
+      <value-of select="@member-name"/>
+      <value-of select="$src:statement-delimiter"/>
+      <call-template name="src:close-brace"/>
+   </template>
+
    <function name="src:overridden-components" as="element()*">
       <param name="used-package" as="element(xcst:package-manifest)"/>
       <param name="package-manifest" as="element(xcst:package-manifest)"/>
@@ -2178,11 +2203,40 @@
             <value-of select="$src:statement-delimiter"/>
          </when>
          <otherwise>
-            <!-- TODO: $c:original -->
+            <variable name="original-meta" select="$package-manifest/xcst:function[@id eq $meta/@overrides]"/>
+            <variable name="original-fn" select="parent::c:override
+               and $original-meta/@original-visibility ne 'abstract'"/>
+            <call-template name="src:open-brace"/>
+            <if test="parent::c:override">
+               <call-template name="src:line-hidden">
+                  <with-param name="indent" select="$indent + 1" tunnel="yes"/>
+               </call-template>
+               <call-template name="src:new-line-indented">
+                  <with-param name="increase" select="1"/>
+               </call-template>
+               <text>var </text>
+               <value-of select="$src:contextual-variable"/>
+               <text> = new</text>
+               <call-template name="src:open-brace"/>
+               <if test="$original-fn">
+                  <call-template name="src:new-line-indented">
+                     <with-param name="increase" select="2"/>
+                  </call-template>
+                  <text>original = </text>
+                  <value-of select="src:original-member($original-meta)"/>
+                  <text>(),</text>
+               </if>
+               <call-template name="src:close-brace">
+                  <with-param name="indent" select="$indent + 1" tunnel="yes"/>
+               </call-template>
+               <value-of select="$src:statement-delimiter"/>
+            </if>
             <call-template name="src:sequence-constructor">
                <with-param name="children" select="$children"/>
-               <with-param name="ensure-block" select="true()"/>
+               <with-param name="omit-block" select="true()"/>
+               <with-param name="indent" select="$indent + 1" tunnel="yes"/>
             </call-template>
+            <call-template name="src:close-brace"/>
          </otherwise>
       </choose>
    </template>
