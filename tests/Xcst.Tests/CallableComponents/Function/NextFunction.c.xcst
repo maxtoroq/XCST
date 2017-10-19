@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:import href='_NextFunction.xcst'/>
+
+   <c:function name='foo' as='string' expand-text='yes'>
+      <c:return>{__xcst.next_function()}baz</c:return>
+   </c:function>
+
+   <c:template name='c:initial-template'>
+      <foo>
+         <c:value-of value='foo()'/>
+      </foo>
+   </c:template>
+
+   <c:template name='expected'>
+      <foo>barbaz</foo>
+   </c:template>
+
+</c:module>

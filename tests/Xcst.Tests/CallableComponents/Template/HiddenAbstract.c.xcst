@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:import href='_HiddenAbstract.xcst'/>
+   
+   <c:template name='foo'>
+      <c:attribute name='foo'>bar</c:attribute>
+   </c:template>
+
+   <c:template name='c:initial-template'>
+      <foo>
+         <c:call-template name='foo'/>
+      </foo>
+   </c:template>
+
+   <c:template name='expected'>
+      <foo foo="bar"/>
+   </c:template>
+
+</c:module>

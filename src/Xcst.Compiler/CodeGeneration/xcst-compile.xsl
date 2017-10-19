@@ -517,6 +517,7 @@
 
       <xcst:template name="{xcst:uri-qualified-name($qname)}"
             visibility="{$visibility}"
+            declared-visibility="{$declared-visibility}"
             member-name="{src:template-method-name(., $qname, 'tmpl', $public)}"
             declaration-id="{generate-id()}"
             declaring-module-uri="{document-uri(root())}"
@@ -613,6 +614,7 @@
 
       <xcst:function name="{$name}"
             visibility="{$visibility}"
+            declared-visibility="{$declared-visibility}"
             member-name="{$member-name}"
             declaration-id="{generate-id()}"
             declaring-module-uri="{document-uri(root())}">
@@ -723,6 +725,7 @@
 
       <xcst:attribute-set name="{xcst:uri-qualified-name($qname)}"
             visibility="{$visibility}"
+            declared-visibility="{$declared-visibility}"
             member-name="{src:template-method-name(., $qname, 'attribs', $public)}"
             declaration-id="{generate-id()}"
             declaring-module-uri="{document-uri(root())}">
@@ -2139,36 +2142,38 @@
       <variable name="context" select="src:template-context($meta)"/>
       <variable name="output" select="src:template-output($meta)"/>
 
-      <call-template name="src:template-method-signature">
-         <with-param name="meta" select="$meta"/>
-         <with-param name="context" select="$context"/>
-         <with-param name="output" select="$output"/>
-      </call-template>
+      <if test="not($meta/@visibility eq 'hidden' and $meta/@declared-visibility eq 'abstract')">
+         <call-template name="src:template-method-signature">
+            <with-param name="meta" select="$meta"/>
+            <with-param name="context" select="$context"/>
+            <with-param name="output" select="$output"/>
+         </call-template>
 
-      <choose>
-         <when test="$meta/@visibility eq 'abstract'">
-            <value-of select="$src:statement-delimiter"/>
-         </when>
-         <otherwise>
-            <call-template name="src:open-brace"/>
-            <apply-templates select="c:param" mode="src:statement">
-               <with-param name="indent" select="$indent + 1" tunnel="yes"/>
-               <with-param name="context" select="$context" tunnel="yes"/>
-            </apply-templates>
-            <call-template name="src:sequence-constructor">
-               <with-param name="children" select="node()[not(self::c:param or following-sibling::c:param)]"/>
-               <with-param name="omit-block" select="true()"/>
-               <with-param name="indent" select="$indent + 1" tunnel="yes"/>
-               <with-param name="context" select="$context" tunnel="yes"/>
-               <with-param name="output" select="$output" tunnel="yes"/>
-            </call-template>
-            <call-template name="src:close-brace"/>
-         </otherwise>
-      </choose>
+         <choose>
+            <when test="$meta/@visibility eq 'abstract'">
+               <value-of select="$src:statement-delimiter"/>
+            </when>
+            <otherwise>
+               <call-template name="src:open-brace"/>
+               <apply-templates select="c:param" mode="src:statement">
+                  <with-param name="indent" select="$indent + 1" tunnel="yes"/>
+                  <with-param name="context" select="$context" tunnel="yes"/>
+               </apply-templates>
+               <call-template name="src:sequence-constructor">
+                  <with-param name="children" select="node()[not(self::c:param or following-sibling::c:param)]"/>
+                  <with-param name="omit-block" select="true()"/>
+                  <with-param name="indent" select="$indent + 1" tunnel="yes"/>
+                  <with-param name="context" select="$context" tunnel="yes"/>
+                  <with-param name="output" select="$output" tunnel="yes"/>
+               </call-template>
+               <call-template name="src:close-brace"/>
+            </otherwise>
+         </choose>
 
-      <call-template name="src:template-additional-members">
-         <with-param name="meta" select="$meta"/>
-      </call-template>
+         <call-template name="src:template-additional-members">
+            <with-param name="meta" select="$meta"/>
+         </call-template>
+      </if>
    </template>
 
    <template match="c:function" mode="src:member">
@@ -2178,119 +2183,119 @@
       <variable name="meta" select="$package-manifest/xcst:function[@declaration-id eq current()/generate-id()]"/>
       <variable name="public" select="$meta/@visibility = ('public', 'final', 'abstract')"/>
 
-      <value-of select="$src:new-line"/>
-      <if test="$public">
-         <call-template name="src:new-line-indented"/>
-         <text>[</text>
-         <value-of select="src:package-model-type('XcstFunction')"/>
-         <text>]</text>
-      </if>
-      <if test="$meta/@visibility eq 'hidden'">
-         <call-template name="src:editor-browsable-never"/>
-      </if>
-      <call-template name="src:line-number"/>
-      <call-template name="src:new-line-indented"/>
-      <if test="$public">public </if>
-      <if test="$meta/@visibility eq 'public'">virtual </if>
-      <if test="$meta/@visibility eq 'abstract'">abstract </if>
-      <value-of select="($meta/@as, 'void')[1]"/>
-      <text> </text>
-      <value-of select="$meta/@member-name"/>
-      <text>(</text>
-      <for-each select="c:param">
-         <variable name="pos" select="position()"/>
-         <variable name="param-meta" select="$meta/xcst:param[$pos]"/>
-         <call-template name="src:line-number">
-            <with-param name="indent" select="$indent + 2" tunnel="yes"/>
-         </call-template>
-         <call-template name="src:new-line-indented">
-            <with-param name="increase" select="2"/>
-         </call-template>
-         <value-of select="$param-meta/@as, xcst:name(@name)"/>
-         <if test="$param-meta/@value">
-            <text> = </text>
-            <value-of select="$param-meta/@value"/>
+      <if test="not($meta/@visibility eq 'hidden' and $meta/@declared-visibility eq 'abstract')">
+         <value-of select="$src:new-line"/>
+         <if test="$public">
+            <call-template name="src:new-line-indented"/>
+            <text>[</text>
+            <value-of select="src:package-model-type('XcstFunction')"/>
+            <text>]</text>
          </if>
-         <if test="position() ne last()">, </if>
-      </for-each>
-      <text>)</text>
-      <choose>
-         <when test="$meta/@visibility eq 'abstract'">
-            <value-of select="$src:statement-delimiter"/>
-         </when>
-         <otherwise>
-            <variable name="hiding-meta" select="$meta/following-sibling::xcst:*[xcst:homonymous(., $meta) and not(@accepted/xs:boolean(.))][1]"/>
-            <variable name="hidden-meta" select="$meta/preceding-sibling::xcst:*[xcst:homonymous(., $meta) and not(@accepted/xs:boolean(.))][1]"/>
-
-            <call-template name="src:open-brace"/>
-            <if test="parent::c:override
-               or $hidden-meta">
-               <variable name="original-meta" select="$package-manifest/xcst:function[@id eq $meta/@overrides]"/>
-               <variable name="original-expr" select="if ($original-meta/@original-visibility ne 'abstract') then concat('this.', src:original-member($original-meta)) else ()"/>
-               <variable name="next-function-expr" select="if ($hidden-meta) then concat('this.', src:hidden-function-delegate-method-name($hidden-meta)) else ()"/>
-               <call-template name="src:line-hidden">
-                  <with-param name="indent" select="$indent + 1" tunnel="yes"/>
-               </call-template>
-               <call-template name="src:new-line-indented">
-                  <with-param name="increase" select="1"/>
-               </call-template>
-               <text>var </text>
-               <value-of select="$src:contextual-variable"/>
-               <text> = new</text>
-               <call-template name="src:open-brace"/>
-               <if test="$original-expr">
-                  <call-template name="src:new-line-indented">
-                     <with-param name="increase" select="2"/>
-                  </call-template>
-                  <text>original = </text>
-                  <value-of select="$original-expr"/>
-                  <text>(),</text>
-               </if>
-               <if test="$next-function-expr">
-                  <call-template name="src:new-line-indented">
-                     <with-param name="increase" select="2"/>
-                  </call-template>
-                  <text>next_function = </text>
-                  <value-of select="$next-function-expr"/>
-                  <text>(),</text>
-               </if>
-               <call-template name="src:close-brace">
-                  <with-param name="indent" select="$indent + 1" tunnel="yes"/>
-               </call-template>
-               <value-of select="$src:statement-delimiter"/>
-            </if>
-            <call-template name="src:sequence-constructor">
-               <with-param name="children" select="node()[not(self::c:param or following-sibling::c:param)]"/>
-               <with-param name="omit-block" select="true()"/>
-               <with-param name="indent" select="$indent + 1" tunnel="yes"/>
+         <if test="$meta/@visibility eq 'hidden'">
+            <call-template name="src:editor-browsable-never"/>
+         </if>
+         <call-template name="src:line-number"/>
+         <call-template name="src:new-line-indented"/>
+         <if test="$public">public </if>
+         <if test="$meta/@visibility eq 'public'">virtual </if>
+         <if test="$meta/@visibility eq 'abstract'">abstract </if>
+         <value-of select="($meta/@as, 'void')[1]"/>
+         <text> </text>
+         <value-of select="$meta/@member-name"/>
+         <text>(</text>
+         <for-each select="c:param">
+            <variable name="pos" select="position()"/>
+            <variable name="param-meta" select="$meta/xcst:param[$pos]"/>
+            <call-template name="src:line-number">
+               <with-param name="indent" select="$indent + 2" tunnel="yes"/>
             </call-template>
-            <call-template name="src:close-brace"/>
-            <if test="$hiding-meta">
-               <value-of select="$src:new-line"/>
-               <call-template name="src:line-hidden"/>
-               <call-template name="src:editor-browsable-never"/>
-               <call-template name="src:new-line-indented"/>
-               <value-of select="src:global-identifier(if ($meta/@as) then 'System.Func' else 'System.Action')"/>
-               <if test="$meta/@as or $meta/xcst:param">
-                  <text>&lt;</text>
-                  <value-of select="
-                     $meta/xcst:param/(src:global-identifier-meta(@as)), $meta/@as/src:global-identifier-meta(.)" separator=", "/>
-                  <text>></text>
-               </if>
-               <text> </text>
-               <value-of select="src:hidden-function-delegate-method-name($meta)"/>
-               <text>()</text>
-               <call-template name="src:open-brace"/>
-               <call-template name="src:new-line-indented">
-                  <with-param name="increase" select="1"/>
-               </call-template>
-               <text>return this.</text>
-               <value-of select="$meta/@member-name"/>
-               <value-of select="$src:statement-delimiter"/>
-               <call-template name="src:close-brace"/>
+            <call-template name="src:new-line-indented">
+               <with-param name="increase" select="2"/>
+            </call-template>
+            <value-of select="$param-meta/@as, xcst:name(@name)"/>
+            <if test="$param-meta/@value">
+               <text> = </text>
+               <value-of select="$param-meta/@value"/>
             </if>
-         </otherwise>
-      </choose>
+            <if test="position() ne last()">, </if>
+         </for-each>
+         <text>)</text>
+         <choose>
+            <when test="$meta/@visibility eq 'abstract'">
+               <value-of select="$src:statement-delimiter"/>
+            </when>
+            <otherwise>
+               <variable name="hiding-meta" select="$meta/following-sibling::xcst:*[xcst:homonymous(., $meta) and not(@accepted/xs:boolean(.))][1]"/>
+               <variable name="hidden-meta" select="$meta/preceding-sibling::xcst:*[xcst:homonymous(., $meta) and not(@accepted/xs:boolean(.))][1]"/>
+
+               <call-template name="src:open-brace"/>
+               <if test="parent::c:override or $hidden-meta">
+                  <variable name="original-meta" select="$package-manifest/xcst:function[@id eq $meta/@overrides]"/>
+                  <variable name="original-expr" select="if ($original-meta/@original-visibility ne 'abstract') then concat('this.', src:original-member($original-meta)) else ()"/>
+                  <variable name="next-function-expr" select="if ($hidden-meta[@declared-visibility ne 'abstract']) then concat('this.', src:hidden-function-delegate-method-name($hidden-meta)) else ()"/>
+                  <call-template name="src:line-hidden">
+                     <with-param name="indent" select="$indent + 1" tunnel="yes"/>
+                  </call-template>
+                  <call-template name="src:new-line-indented">
+                     <with-param name="increase" select="1"/>
+                  </call-template>
+                  <text>var </text>
+                  <value-of select="$src:contextual-variable"/>
+                  <text> = new</text>
+                  <call-template name="src:open-brace"/>
+                  <if test="$original-expr">
+                     <call-template name="src:new-line-indented">
+                        <with-param name="increase" select="2"/>
+                     </call-template>
+                     <text>original = </text>
+                     <value-of select="$original-expr"/>
+                     <text>(),</text>
+                  </if>
+                  <if test="$next-function-expr">
+                     <call-template name="src:new-line-indented">
+                        <with-param name="increase" select="2"/>
+                     </call-template>
+                     <text>next_function = </text>
+                     <value-of select="$next-function-expr"/>
+                     <text>(),</text>
+                  </if>
+                  <call-template name="src:close-brace">
+                     <with-param name="indent" select="$indent + 1" tunnel="yes"/>
+                  </call-template>
+                  <value-of select="$src:statement-delimiter"/>
+               </if>
+               <call-template name="src:sequence-constructor">
+                  <with-param name="children" select="node()[not(self::c:param or following-sibling::c:param)]"/>
+                  <with-param name="omit-block" select="true()"/>
+                  <with-param name="indent" select="$indent + 1" tunnel="yes"/>
+               </call-template>
+               <call-template name="src:close-brace"/>
+               <if test="$hiding-meta">
+                  <value-of select="$src:new-line"/>
+                  <call-template name="src:line-hidden"/>
+                  <call-template name="src:editor-browsable-never"/>
+                  <call-template name="src:new-line-indented"/>
+                  <value-of select="src:global-identifier(if ($meta/@as) then 'System.Func' else 'System.Action')"/>
+                  <if test="$meta/@as or $meta/xcst:param">
+                     <text>&lt;</text>
+                     <value-of select="$meta/xcst:param/(src:global-identifier-meta(@as)), $meta/@as/src:global-identifier-meta(.)" separator=", "/>
+                     <text>></text>
+                  </if>
+                  <text> </text>
+                  <value-of select="src:hidden-function-delegate-method-name($meta)"/>
+                  <text>()</text>
+                  <call-template name="src:open-brace"/>
+                  <call-template name="src:new-line-indented">
+                     <with-param name="increase" select="1"/>
+                  </call-template>
+                  <text>return this.</text>
+                  <value-of select="$meta/@member-name"/>
+                  <value-of select="$src:statement-delimiter"/>
+                  <call-template name="src:close-brace"/>
+               </if>
+            </otherwise>
+         </choose>
+      </if>
    </template>
 
    <template match="c:attribute-set" mode="src:member">
@@ -2302,50 +2307,52 @@
       <variable name="context" select="src:template-context($meta)"/>
       <variable name="output" select="src:template-output($meta)"/>
 
-      <value-of select="$src:new-line"/>
-      <if test="$public">
-         <variable name="qname" select="xcst:EQName($meta/@name)"/>
+      <if test="not($meta/@visibility eq 'hidden' and $meta/@declared-visibility eq 'abstract')">
+         <value-of select="$src:new-line"/>
+         <if test="$public">
+            <variable name="qname" select="xcst:EQName($meta/@name)"/>
+            <call-template name="src:new-line-indented"/>
+            <text>[</text>
+            <value-of select="src:package-model-type('XcstAttributeSet')"/>
+            <text>(Name = </text>
+            <value-of select="src:verbatim-string(xcst:uri-qualified-name($qname))"/>
+            <text>)]</text>
+         </if>
+         <call-template name="src:editor-browsable-never"/>
          <call-template name="src:new-line-indented"/>
-         <text>[</text>
-         <value-of select="src:package-model-type('XcstAttributeSet')"/>
-         <text>(Name = </text>
-         <value-of select="src:verbatim-string(xcst:uri-qualified-name($qname))"/>
-         <text>)]</text>
+         <if test="$public">public </if>
+         <if test="$meta/@visibility eq 'public'">virtual </if>
+         <if test="$meta/@visibility eq 'abstract'">abstract </if>
+         <text>void </text>
+         <value-of select="$meta/@member-name"/>
+         <text>(</text>
+         <value-of select="$context/@type, $context"/>
+         <text>, </text>
+         <value-of select="$output/@type, $output"/>
+         <text>)</text>
+         <choose>
+            <when test="$meta/@visibility eq 'abstract'">
+               <value-of select="$src:statement-delimiter"/>
+            </when>
+            <otherwise>
+               <call-template name="src:open-brace"/>
+               <call-template name="src:use-attribute-sets">
+                  <with-param name="attr" select="@use-attribute-sets"/>
+                  <with-param name="indent" select="$indent + 1" tunnel="yes"/>
+                  <with-param name="context" select="$context" tunnel="yes"/>
+                  <with-param name="output" select="$output" tunnel="yes"/>
+               </call-template>
+               <call-template name="src:sequence-constructor">
+                  <with-param name="children" select="c:attribute"/>
+                  <with-param name="omit-block" select="true()"/>
+                  <with-param name="indent" select="$indent + 1" tunnel="yes"/>
+                  <with-param name="context" select="$context" tunnel="yes"/>
+                  <with-param name="output" select="$output" tunnel="yes"/>
+               </call-template>
+               <call-template name="src:close-brace"/>
+            </otherwise>
+         </choose>
       </if>
-      <call-template name="src:editor-browsable-never"/>
-      <call-template name="src:new-line-indented"/>
-      <if test="$public">public </if>
-      <if test="$meta/@visibility eq 'public'">virtual </if>
-      <if test="$meta/@visibility eq 'abstract'">abstract </if>
-      <text>void </text>
-      <value-of select="$meta/@member-name"/>
-      <text>(</text>
-      <value-of select="$context/@type, $context"/>
-      <text>, </text>
-      <value-of select="$output/@type, $output"/>
-      <text>)</text>
-      <choose>
-         <when test="$meta/@visibility eq 'abstract'">
-            <value-of select="$src:statement-delimiter"/>
-         </when>
-         <otherwise>
-            <call-template name="src:open-brace"/>
-            <call-template name="src:use-attribute-sets">
-               <with-param name="attr" select="@use-attribute-sets"/>
-               <with-param name="indent" select="$indent + 1" tunnel="yes"/>
-               <with-param name="context" select="$context" tunnel="yes"/>
-               <with-param name="output" select="$output" tunnel="yes"/>
-            </call-template>
-            <call-template name="src:sequence-constructor">
-               <with-param name="children" select="c:attribute"/>
-               <with-param name="omit-block" select="true()"/>
-               <with-param name="indent" select="$indent + 1" tunnel="yes"/>
-               <with-param name="context" select="$context" tunnel="yes"/>
-               <with-param name="output" select="$output" tunnel="yes"/>
-            </call-template>
-            <call-template name="src:close-brace"/>
-         </otherwise>
-      </choose>
    </template>
 
    <template match="c:type" mode="src:member">
