@@ -415,15 +415,16 @@
          <call-template name="xcst:overriden-component"/>
       </variable>
 
+      <variable name="declared-visibility" select="('public'[current()/self::c:param], @visibility/xcst:visibility(.), 'private')[1]"/>
+
       <variable name="visibility" select="
          if (parent::c:override) then
-         ('hidden'[$modules[position() gt $module-pos]/c:use-package[xcst:name-equals(@name, current()/parent::c:override/parent::c:use-package/@name)]/c:override/c:*[xcst:homonymous(., current())]]
-            , self::c:variable/(@visibility/xcst:visibility(.), 'private')[1], 'public')[1]
+            ('hidden'[$modules[position() gt $module-pos]/c:use-package[xcst:name-equals(@name, current()/parent::c:override/parent::c:use-package/@name)]/c:override/c:*[xcst:homonymous(., current())]]
+            , $declared-visibility)[1]
          else if ($modules[position() gt $module-pos]/c:*[xcst:homonymous(., current())]) then 'hidden'
-         else if (self::c:param) then 'public'
-         else (@visibility/xcst:visibility(.), 'private')[1]"/>
+         else $declared-visibility"/>
 
-      <if test="$has-default-value and $visibility eq 'abstract'">
+      <if test="$has-default-value and $declared-visibility eq 'abstract'">
          <sequence select="error(xs:QName('err:XTSE0010'), 'The ''value'' attribute or child element/text should be omitted when visibility=''abstract''.', src:error-object(.))"/>
       </if>
 
@@ -498,15 +499,17 @@
          </for-each>
       </if>
 
+      <variable name="declared-visibility" select="(@visibility/xcst:visibility(.), 'public'[not(current()/parent::c:override) and $implicit-package], 'private')[1]"/>
+
       <variable name="visibility" select="
          if (parent::c:override) then
-         ('hidden'[$modules[position() gt $module-pos]/c:use-package[xcst:name-equals(@name, current()/parent::c:override/parent::c:use-package/@name)]/c:override/c:*[xcst:homonymous(., current())]]
-            , @visibility/xcst:visibility(.), 'private')[1]
+            ('hidden'[$modules[position() gt $module-pos]/c:use-package[xcst:name-equals(@name, current()/parent::c:override/parent::c:use-package/@name)]/c:override/c:*[xcst:homonymous(., current())]]
+            , $declared-visibility)[1]
          else if ($modules[position() gt $module-pos]/c:*[xcst:homonymous(., current())]) then 'hidden'
-         else (@visibility/xcst:visibility(.), 'public'[$implicit-package], 'private')[1]"/>
+         else $declared-visibility"/>
 
       <call-template name="xcst:validate-empty-abstract">
-         <with-param name="visibility" select="$visibility"/>
+         <with-param name="visibility" select="$declared-visibility"/>
       </call-template>
 
       <variable name="public" select="$visibility = ('public', 'final', 'abstract')"/>
@@ -590,15 +593,17 @@
          <call-template name="xcst:overriden-component"/>
       </variable>
 
+      <variable name="declared-visibility" select="(@visibility/xcst:visibility(.), 'private')[1]"/>
+
       <variable name="visibility" select="
          if (parent::c:override) then
-         ('hidden'[$modules[position() gt $module-pos]/c:use-package[xcst:name-equals(@name, current()/parent::c:override/parent::c:use-package/@name)]/c:override/c:*[xcst:homonymous(., current())]]
-            , @visibility/xcst:visibility(.), 'private')[1]
+            ('hidden'[$modules[position() gt $module-pos]/c:use-package[xcst:name-equals(@name, current()/parent::c:override/parent::c:use-package/@name)]/c:override/c:*[xcst:homonymous(., current())]]
+            , $declared-visibility)[1]
          else if ($modules[position() gt $module-pos]/c:*[xcst:homonymous(., current())]) then 'hidden'
-         else (@visibility/xcst:visibility(.), 'private')[1]"/>
+         else $declared-visibility"/>
 
       <call-template name="xcst:validate-empty-abstract">
-         <with-param name="visibility" select="$visibility"/>
+         <with-param name="visibility" select="$declared-visibility"/>
       </call-template>
 
       <variable name="member-name" select="
@@ -701,15 +706,17 @@
          <call-template name="xcst:overriden-component"/>
       </variable>
 
+      <variable name="declared-visibility" select="(@visibility/xcst:visibility(.), 'private')[1]"/>
+
       <variable name="visibility" select="
          if (parent::c:override) then
-         ('hidden'[$modules[position() gt $module-pos]/c:use-package[xcst:name-equals(@name, current()/parent::c:override/parent::c:use-package/@name)]/c:override/c:*[xcst:homonymous(., current())]]
-            , @visibility/xcst:visibility(.), 'private')[1]
+            ('hidden'[$modules[position() gt $module-pos]/c:use-package[xcst:name-equals(@name, current()/parent::c:override/parent::c:use-package/@name)]/c:override/c:*[xcst:homonymous(., current())]]
+            , $declared-visibility)[1]
          else if ($modules[position() gt $module-pos]/c:*[xcst:homonymous(., current())]) then 'hidden'
-         else (@visibility/xcst:visibility(.), 'private')[1]"/>
+         else $declared-visibility"/>
 
       <call-template name="xcst:validate-empty-abstract">
-         <with-param name="visibility" select="$visibility"/>
+         <with-param name="visibility" select="$declared-visibility"/>
       </call-template>
 
       <variable name="public" select="$visibility = ('public', 'final', 'abstract')"/>
@@ -747,11 +754,13 @@
          <sequence select="error((), 'Cannot override a c:type component.', src:error-object(.))"/>
       </if>
 
+      <variable name="declared-visibility" select="(@visibility/xcst:visibility(.), 'private')[1]"/>
+
       <variable name="visibility" select="
          if ($modules[position() gt $module-pos]/c:*[xcst:homonymous(., current())]) then 'hidden'
-         else (@visibility/xcst:visibility(.), 'private')[1]"/>
+         else $declared-visibility"/>
 
-      <if test="$visibility eq 'abstract'">
+      <if test="$declared-visibility eq 'abstract'">
          <sequence select="error((), 'visibility=''abstract'' is not a valid value for c:type declarations.', src:error-object(.))"/>
       </if>
 
@@ -2212,7 +2221,7 @@
          <otherwise>
             <variable name="hiding-meta" select="$meta/following-sibling::xcst:*[xcst:homonymous(., $meta) and not(@accepted/xs:boolean(.))][1]"/>
             <variable name="hidden-meta" select="$meta/preceding-sibling::xcst:*[xcst:homonymous(., $meta) and not(@accepted/xs:boolean(.))][1]"/>
-            
+
             <call-template name="src:open-brace"/>
             <if test="parent::c:override
                or $hidden-meta">
