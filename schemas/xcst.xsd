@@ -39,7 +39,6 @@
          <xs:element ref="c:map-entry"/>
          <xs:element ref="c:message"/>
          <xs:element ref="c:namespace"/>
-         <xs:element ref="c:next-function"/>
          <xs:element ref="c:next-template"/>
          <xs:element ref="c:object"/>
          <xs:element ref="c:processing-instruction"/>
@@ -1201,19 +1200,6 @@
          <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
-   <xs:element name="next-function">
-      <xs:annotation>
-         <xs:documentation>Invokes the overriden function.</xs:documentation>
-      </xs:annotation>
-      <xs:complexType>
-         <xs:attribute name="arguments" type="c:argument_list">
-            <xs:annotation>
-               <xs:documentation>The function call arguments.</xs:documentation>
-            </xs:annotation>
-         </xs:attribute>
-         <xs:attributeGroup ref="c:standard-attributes"/>
-      </xs:complexType>
-   </xs:element>
    <xs:element name="next-template">
       <xs:annotation>
          <xs:documentation>Invokes the overriden template.</xs:documentation>
@@ -1927,13 +1913,5 @@
          <xs:documentation>Boolean expression.</xs:documentation>
       </xs:annotation>
       <xs:restriction base="c:expression"/>
-   </xs:simpleType>
-   <xs:simpleType name="argument_list">
-      <xs:annotation>
-         <xs:documentation>Argument list.</xs:documentation>
-      </xs:annotation>
-      <xs:restriction base="xs:string">
-         <xs:minLength value="1"/>
-      </xs:restriction>
    </xs:simpleType>
 </xs:schema>

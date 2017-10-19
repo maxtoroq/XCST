@@ -603,7 +603,7 @@
 
       <variable name="member-name" select="
          if ($visibility eq 'hidden') then 
-         src:hidden-function-method-name(.)
+            concat(xcst:name(@name), '_', generate-id())
          else $name"/>
 
       <xcst:function name="{$name}"
@@ -950,12 +950,6 @@
          '_',
          if ($deterministic and not(empty($qname))) then replace(string(src:qname-id($qname)), '-', '_') else generate-id($declaration)
       )"/>
-   </function>
-
-   <function name="src:hidden-function-method-name" as="xs:string">
-      <param name="function" as="element(c:function)"/>
-
-      <sequence select="concat($function/xcst:name(@name), '_', generate-id($function))"/>
    </function>
 
    <!--
@@ -2216,11 +2210,15 @@
             <value-of select="$src:statement-delimiter"/>
          </when>
          <otherwise>
-            <variable name="original-meta" select="$package-manifest/xcst:function[@id eq $meta/@overrides]"/>
-            <variable name="original-fn" select="parent::c:override
-               and $original-meta/@original-visibility ne 'abstract'"/>
+            <variable name="hiding-meta" select="$meta/following-sibling::xcst:*[xcst:homonymous(., $meta) and not(@accepted/xs:boolean(.))][1]"/>
+            <variable name="hidden-meta" select="$meta/preceding-sibling::xcst:*[xcst:homonymous(., $meta) and not(@accepted/xs:boolean(.))][1]"/>
+            
             <call-template name="src:open-brace"/>
-            <if test="parent::c:override">
+            <if test="parent::c:override
+               or $hidden-meta">
+               <variable name="original-meta" select="$package-manifest/xcst:function[@id eq $meta/@overrides]"/>
+               <variable name="original-expr" select="if ($original-meta/@original-visibility ne 'abstract') then concat('this.', src:original-member($original-meta)) else ()"/>
+               <variable name="next-function-expr" select="if ($hidden-meta) then concat('this.', src:hidden-function-delegate-method-name($hidden-meta)) else ()"/>
                <call-template name="src:line-hidden">
                   <with-param name="indent" select="$indent + 1" tunnel="yes"/>
                </call-template>
@@ -2231,12 +2229,20 @@
                <value-of select="$src:contextual-variable"/>
                <text> = new</text>
                <call-template name="src:open-brace"/>
-               <if test="$original-fn">
+               <if test="$original-expr">
                   <call-template name="src:new-line-indented">
                      <with-param name="increase" select="2"/>
                   </call-template>
                   <text>original = </text>
-                  <value-of select="src:original-member($original-meta)"/>
+                  <value-of select="$original-expr"/>
+                  <text>(),</text>
+               </if>
+               <if test="$next-function-expr">
+                  <call-template name="src:new-line-indented">
+                     <with-param name="increase" select="2"/>
+                  </call-template>
+                  <text>next_function = </text>
+                  <value-of select="$next-function-expr"/>
                   <text>(),</text>
                </if>
                <call-template name="src:close-brace">
@@ -2250,6 +2256,30 @@
                <with-param name="indent" select="$indent + 1" tunnel="yes"/>
             </call-template>
             <call-template name="src:close-brace"/>
+            <if test="$hiding-meta">
+               <value-of select="$src:new-line"/>
+               <call-template name="src:line-hidden"/>
+               <call-template name="src:editor-browsable-never"/>
+               <call-template name="src:new-line-indented"/>
+               <value-of select="src:global-identifier(if ($meta/@as) then 'System.Func' else 'System.Action')"/>
+               <if test="$meta/@as or $meta/xcst:param">
+                  <text>&lt;</text>
+                  <value-of select="
+                     $meta/xcst:param/(src:global-identifier-meta(@as)), $meta/@as/src:global-identifier-meta(.)" separator=", "/>
+                  <text>></text>
+               </if>
+               <text> </text>
+               <value-of select="src:hidden-function-delegate-method-name($meta)"/>
+               <text>()</text>
+               <call-template name="src:open-brace"/>
+               <call-template name="src:new-line-indented">
+                  <with-param name="increase" select="1"/>
+               </call-template>
+               <text>return this.</text>
+               <value-of select="$meta/@member-name"/>
+               <value-of select="$src:statement-delimiter"/>
+               <call-template name="src:close-brace"/>
+            </if>
          </otherwise>
       </choose>
    </template>
@@ -2443,6 +2473,12 @@
       <param name="meta" as="element()"/>
 
       <sequence select="src:aux-variable(concat('backing_field_', $meta/@name))"/>
+   </function>
+
+   <function name="src:hidden-function-delegate-method-name" as="xs:string">
+      <param name="meta" as="element()"/>
+
+      <sequence select="concat($meta/@member-name, '_del')"/>
    </function>
 
    <!--

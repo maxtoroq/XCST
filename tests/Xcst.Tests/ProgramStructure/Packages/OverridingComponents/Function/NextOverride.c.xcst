@@ -4,10 +4,7 @@
    <c:use-package name='NextOverride'>
       <c:override>
          <c:function name='foo' as='string' expand-text='yes'>
-            <c:variable name='next'>
-               <c:next-function/>
-            </c:variable>
-            <c:return>{next}baz</c:return>
+            <c:return>{__xcst.next_function()}baz</c:return>
          </c:function>
       </c:override>
    </c:use-package>

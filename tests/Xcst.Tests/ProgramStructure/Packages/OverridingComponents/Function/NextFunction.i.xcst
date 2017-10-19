@@ -4,9 +4,7 @@
    <c:use-package name='NextFunction'>
       <c:override>
          <c:function name='foo' as='string'>
-            <c:return>
-               <c:next-function/>
-            </c:return>
+            <c:return value='__xcst.next_function()'/>
          </c:function>
       </c:override>
    </c:use-package>

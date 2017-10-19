@@ -70,7 +70,6 @@
          <ref name="map-entry"/>
          <ref name="message"/>
          <ref name="namespace"/>
-         <ref name="next-function"/>
          <ref name="next-template"/>
          <ref name="object"/>
          <ref name="processing-instruction"/>
@@ -1254,19 +1253,6 @@
       </element>
    </define>
 
-   <define name="next-function">
-      <element name="next-function">
-         <ann:documentation>Invokes the overriden function.</ann:documentation>
-         <optional>
-            <attribute name="arguments">
-               <ann:documentation>The function call arguments.</ann:documentation>
-               <ref name="argument_list"/>
-            </attribute>
-         </optional>
-         <ref name="standard-attributes"/>
-      </element>
-   </define>
-
    <define name="next-template">
       <element name="next-template">
          <ann:documentation>Invokes the overriden template.</ann:documentation>
@@ -1969,13 +1955,6 @@
    <define name="boolean_expression">
       <ann:documentation>Boolean expression.</ann:documentation>
       <ref name="expression"/>
-   </define>
-
-   <define name="argument_list">
-      <ann:documentation>Argument list.</ann:documentation>
-      <data type="string">
-         <param name="minLength">1</param>
-      </data>
    </define>
 
 </grammar>

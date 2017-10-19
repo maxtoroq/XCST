@@ -141,13 +141,6 @@
     <None Include="CallableComponents\EvaluatePackage\NoChildren.i.xcst" />
     <None Include="CallableComponents\Function\Param\NoOtherPreceding.i.xcst" />
     <None Include="CallableComponents\Function\Param\param.value_seqctor.mutex.i.xcst" />
-    <None Include="CallableComponents\NextFunction\next-function.arguments.type.i.xcst" />
-    <None Include="CallableComponents\NextFunction\NoChildrenText.i.xcst" />
-    <None Include="CallableComponents\NextFunction\NoChildren.i.xcst" />
-    <None Include="CallableComponents\NextFunction\Output.c.xcst" />
-    <None Include="CallableComponents\NextFunction\NoOutput.c.xcst" />
-    <None Include="CallableComponents\NextFunction\_Output.xcst" />
-    <None Include="CallableComponents\NextFunction\_NoOutput.xcst" />
     <None Include="CallableComponents\NextTemplate\Children.c.xcst" />
     <None Include="CallableComponents\NextTemplate\Children.i.xcst" />
     <None Include="CallableComponents\NextTemplate\ChildrenText.i.xcst" />
@@ -629,10 +622,8 @@
     <None Include="VariablesAndParameters\TypeInference\Single\CallTemplateAccepted.c.xcst" />
     <None Include="VariablesAndParameters\TypeInference\Single\CallTemplateOriginal.pxcst" />
     <None Include="VariablesAndParameters\TypeInference\Single\CallTemplateOriginal.c.xcst" />
-    <None Include="VariablesAndParameters\TypeInference\Single\NextFunctionVoid.c.xcst" />
     <None Include="VariablesAndParameters\TypeInference\Single\Object.c.xcst" />
     <None Include="VariablesAndParameters\TypeInference\Single\Serialize.c.xcst" />
-    <None Include="VariablesAndParameters\TypeInference\Single\NextFunction.c.xcst" />
     <None Include="VariablesAndParameters\TypeInference\Single\Delegate.c.xcst" />
     <None Include="VariablesAndParameters\Variable\variable.value_seqctor.mutex.i.xcst" />
     <None Include="VariablesAndParameters\TypeInference\Single\_NextFunctionVoid.xcst" />
@@ -688,8 +679,6 @@
     <None Include="CallableComponents\Function\function.name.req.i.xcst" />
     <None Include="CallableComponents\Function\function.name.type.i.xcst" />
     <None Include="CallableComponents\Function\function.visibility.type.i.xcst" />
-    <None Include="CallableComponents\NextFunction\_next-function.xcst" />
-    <None Include="CallableComponents\NextFunction\next-function.foo.i.xcst" />
     <None Include="CallableComponents\NextTemplate\next-template.foo.i.xcst" />
     <None Include="CallableComponents\NextTemplate\NonexistentParam.i.xcst" />
     <None Include="CallableComponents\NextTemplate\RequiredTunnelParam.c.xcst" />
