@@ -1544,6 +1544,10 @@
          <sequence select="error(xs:QName('err:XTSE0650'), 'There are no more templates to call.', src:error-object(.))"/>
       </if>
 
+      <if test="$meta/@declared-visibility eq 'abstract'">
+         <sequence select="error((), 'Cannot call a next template with visibility=''abstract''.', src:error-object(.))"/>
+      </if>
+
       <variable name="current" select="."/>
       <for-each select="$meta/xcst:param[@required/xs:boolean(.) and not(@tunnel/xs:boolean(.))]">
          <if test="not($current/c:with-param[xcst:name-equals(@name, current()/string(@name))])">
