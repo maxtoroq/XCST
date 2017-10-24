@@ -1202,7 +1202,7 @@
    </xs:element>
    <xs:element name="next-template">
       <xs:annotation>
-         <xs:documentation>Invokes the overriden template.</xs:documentation>
+         <xs:documentation>Invokes the overridden template.</xs:documentation>
       </xs:annotation>
       <xs:complexType>
          <xs:sequence>

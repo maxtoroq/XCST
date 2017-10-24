@@ -1145,7 +1145,10 @@
          <when test="$global">
             <variable name="meta" select="$package-manifest/xcst:*[@declaration-id eq current()/generate-id()]"/>
             <text>this.</text>
-            <value-of select="src:backing-field($meta)"/>
+            <value-of select="
+               if ($meta/xs:boolean(@required)) then
+                  xcst:name(@name)
+               else src:backing-field($meta)"/>
          </when>
          <otherwise>
             <value-of select="(@as/$type, 'var')[1], $name"/>
@@ -1248,7 +1251,7 @@
          <call-template name="src:line-number"/>
          <call-template name="src:new-line-indented"/>
          <text>this.</text>
-         <value-of select="if ($meta/@visibility = ('public', 'final')) then src:backing-field($meta) else xcst:name(@name)"/>
+         <value-of select="src:backing-field($meta)"/>
          <text> = </text>
          <call-template name="src:value">
             <with-param name="text" select="$text"/>

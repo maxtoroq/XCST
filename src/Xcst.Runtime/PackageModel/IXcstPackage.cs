@@ -20,7 +20,7 @@ namespace Xcst.PackageModel {
 
       ExecutionContext Context { get; set; }
 
-      void Prime(PrimingContext context);
+      void Prime(PrimingContext context, string[]/*?*/ overriddenParams);
 
       void CallTemplate(QualifiedName name, TemplateContext context, XcstWriter output);
 

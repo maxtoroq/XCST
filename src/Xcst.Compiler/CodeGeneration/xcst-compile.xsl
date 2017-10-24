@@ -34,7 +34,11 @@
    <param name="src:manifest-only" select="false()" as="xs:boolean"/>
 
    <variable name="src:package-interface" select="src:package-model-type('IXcstPackage')"/>
-   <variable name="src:context-field" select="concat('this.', src:aux-variable('execution_context'))"/>
+   <variable name="src:context-field" as="element()">
+      <src:context type="{src:package-model-type('ExecutionContext')}">
+         <value-of select="concat('this.', src:aux-variable('execution_context'))"/>
+      </src:context>
+   </variable>
    <variable name="xcst:validation-attributes" select="'error-resource-type', 'data-type-error-message', 'data-type-error-resource', 'required-error-message', 'required-error-resource', 'length-error-message', 'length-error-resource', 'pattern-error-message', 'pattern-error-resource', 'range-error-message', 'range-error-resource', 'equal-to-error-message', 'equal-to-error-resource'"/>
    <variable name="xcst:type-or-member-attributes" select="'resource-type', 'disable-empty-string-to-null-conversion', 'allow-empty-string', 'display-text-member', $xcst:validation-attributes"/>
    <variable name="src:contextual-variable" select="'__xcst'"/>
@@ -411,8 +415,8 @@
          <sequence select="error(xs:QName('err:XTSE3055'), 'There is an homonymous overriding component.', src:error-object(.))"/>
       </if>
 
-      <variable name="overriden-meta" as="element()?">
-         <call-template name="xcst:overriden-component"/>
+      <variable name="overridden-meta" as="element()?">
+         <call-template name="xcst:overridden-component"/>
       </variable>
 
       <variable name="declared-visibility" select="('public'[current()/self::c:param], @visibility/xcst:visibility(.), 'private')[1]"/>
@@ -438,13 +442,14 @@
       <element name="xcst:{local-name()}">
          <attribute name="name" select="$name"/>
          <attribute name="as" select="($type, 'object')[1]"/>
+         <attribute name="has-default-value" select="$has-default-value"/>
          <if test="self::c:param">
             <attribute name="required" select="$required"/>
          </if>
          <attribute name="visibility" select="$visibility"/>
          <attribute name="member-name" select="$name"/>
-         <if test="$overriden-meta">
-            <attribute name="overrides" select="generate-id($overriden-meta)"/>
+         <if test="$overridden-meta">
+            <attribute name="overrides" select="generate-id($overridden-meta)"/>
          </if>
          <attribute name="declaration-id" select="generate-id()"/>
          <attribute name="declaring-module-uri" select="document-uri(root())"/>
@@ -480,13 +485,13 @@
          <sequence select="error(xs:QName('err:XTSE3055'), 'There is an homonymous overriding component.', src:error-object(.))"/>
       </if>
 
-      <variable name="overriden-meta" as="element()?">
-         <call-template name="xcst:overriden-component"/>
+      <variable name="overridden-meta" as="element()?">
+         <call-template name="xcst:overridden-component"/>
       </variable>
 
-      <if test="$overriden-meta">
+      <if test="$overridden-meta">
          <variable name="template" select="."/>
-         <for-each select="$overriden-meta/xcst:param">
+         <for-each select="$overridden-meta/xcst:param">
             <variable name="param" select="$template/c:param[xcst:name-equals(@name, current()/string(@name))]"/>
             <if test="not($param)
                or xs:boolean(@required) ne ($param/@required/xcst:boolean(.), false())[1]
@@ -525,8 +530,8 @@
          <if test="$as">
             <attribute name="item-type" select="xcst:item-type($as)"/>
          </if>
-         <if test="$overriden-meta">
-            <attribute name="overrides" select="generate-id($overriden-meta)"/>
+         <if test="$overridden-meta">
+            <attribute name="overrides" select="generate-id($overridden-meta)"/>
          </if>
          <for-each select="c:param">
             <call-template name="xcst:validate-attribs">
@@ -546,8 +551,8 @@
             <if test="preceding-sibling::c:param[xcst:name-equals(@name, $param-name)]">
                <sequence select="error(xs:QName('err:XTSE0580'), 'The name of the parameter is not unique.', src:error-object(.))"/>
             </if>
-            <if test="$overriden-meta
-               and not($overriden-meta/xcst:param[xcst:name-equals(string(@name), $param-name)])
+            <if test="$overridden-meta
+               and not($overridden-meta/xcst:param[xcst:name-equals(string(@name), $param-name)])
                and not($tunnel)
                and (not(@required) or $required)">
                <sequence select="error(xs:QName('err:XTSE3070'), 'Any parameter on the overriding template for which there is no corresponding parameter on the overridden template must specify required=''no''.', src:error-object(.))"/>
@@ -590,8 +595,8 @@
          <sequence select="error(xs:QName('err:XTSE3055'), 'There is an homonymous overriding component.', src:error-object(.))"/>
       </if>
 
-      <variable name="overriden-meta" as="element()?">
-         <call-template name="xcst:overriden-component"/>
+      <variable name="overridden-meta" as="element()?">
+         <call-template name="xcst:overridden-component"/>
       </variable>
 
       <variable name="declared-visibility" select="(@visibility/xcst:visibility(.), 'private')[1]"/>
@@ -621,8 +626,8 @@
          <if test="@as">
             <attribute name="as" select="xcst:type(@as)"/>
          </if>
-         <if test="$overriden-meta">
-            <attribute name="overrides" select="generate-id($overriden-meta)"/>
+         <if test="$overridden-meta">
+            <attribute name="overrides" select="generate-id($overridden-meta)"/>
          </if>
          <for-each select="c:param">
             <call-template name="xcst:validate-attribs">
@@ -704,8 +709,8 @@
          <sequence select="error(xs:QName('err:XTSE3055'), 'There is an homonymous overriding component.', src:error-object(.))"/>
       </if>
 
-      <variable name="overriden-meta" as="element()?">
-         <call-template name="xcst:overriden-component"/>
+      <variable name="overridden-meta" as="element()?">
+         <call-template name="xcst:overridden-component"/>
       </variable>
 
       <variable name="declared-visibility" select="(@visibility/xcst:visibility(.), 'private')[1]"/>
@@ -729,8 +734,8 @@
             member-name="{src:template-method-name(., $qname, 'attribs', $public)}"
             declaration-id="{generate-id()}"
             declaring-module-uri="{document-uri(root())}">
-         <if test="$overriden-meta">
-            <attribute name="overrides" select="$overriden-meta/generate-id()"/>
+         <if test="$overridden-meta">
+            <attribute name="overrides" select="$overridden-meta/generate-id()"/>
          </if>
       </xcst:attribute-set>
    </template>
@@ -770,7 +775,7 @@
       <xcst:type name="{$name}" visibility="{$visibility}" member-name="{$name}" declaration-id="{generate-id()}" declaring-module-uri="{document-uri(root())}"/>
    </template>
 
-   <template name="xcst:overriden-component" as="element()*">
+   <template name="xcst:overridden-component" as="element()*">
       <param name="used-packages" tunnel="yes"/>
       <param name="namespace" tunnel="yes"/>
 
@@ -1504,7 +1509,7 @@
          </apply-templates>
 
          <apply-templates select="$meta" mode="src:used-package-class">
-            <with-param name="overriden" select="$overridden[@declaring-module-uri eq $module-uri]"/>
+            <with-param name="overridden" select="$overridden[@declaring-module-uri eq $module-uri]"/>
             <with-param name="indent" select="$indent + 2" tunnel="yes"/>
          </apply-templates>
 
@@ -1525,6 +1530,9 @@
          <call-template name="src:new-line-indented"/>
          <text>[</text>
          <value-of select="src:package-model-type(concat('Xcst', (if (self::xcst:param) then 'Parameter' else 'Variable')))"/>
+         <if test="self::xcst:param[xs:boolean(@required)]">
+            <text>(Required = true)</text>
+         </if>
          <text>]</text>
       </if>
       <call-template name="src:new-line-indented"/>
@@ -2075,20 +2083,29 @@
 
    <template match="c:param | c:variable" mode="src:member">
       <param name="package-manifest" required="yes" tunnel="yes"/>
+      <param name="indent" tunnel="yes"/>
 
       <variable name="meta" select="$package-manifest/xcst:*[@declaration-id eq current()/generate-id()]"/>
       <variable name="public" select="$meta/@visibility = ('public', 'final', 'abstract')"/>
-      <variable name="use-backing-field" select="$meta/@visibility = ('public', 'final')"/>
+      <variable name="use-backing-field" select="
+         (self::c:param and $meta/not(xs:boolean(@required)))
+         or ($meta/@visibility ne 'abstract' and $meta/xs:boolean(@has-default-value))"/>
       <variable name="backing-field" select="if ($use-backing-field) then src:backing-field($meta) else ()"/>
+      <variable name="init-field" select="
+         if ($use-backing-field) then 
+            src:aux-variable(concat('init_', $meta/@name))
+         else ()"/>
 
-      <if test="position() eq 1 or $use-backing-field">
-         <value-of select="$src:new-line"/>
-      </if>
+      <value-of select="$src:new-line"/>
       <if test="$use-backing-field">
          <call-template name="src:line-hidden"/>
          <call-template name="src:editor-browsable-never"/>
          <call-template name="src:new-line-indented"/>
          <value-of select="$meta/@as, $backing-field"/>
+         <value-of select="$src:statement-delimiter"/>
+         <call-template name="src:editor-browsable-never"/>
+         <call-template name="src:new-line-indented"/>
+         <value-of select="'bool', $init-field"/>
          <value-of select="$src:statement-delimiter"/>
          <value-of select="$src:new-line"/>
       </if>
@@ -2096,6 +2113,9 @@
          <call-template name="src:new-line-indented"/>
          <text>[</text>
          <value-of select="src:package-model-type(concat('Xcst', (if (self::c:param) then 'Parameter' else 'Variable')))"/>
+         <if test="self::c:param and $meta/xs:boolean(@required)">
+            <text>(Required = true)</text>
+         </if>
          <text>]</text>
       </if>
       <call-template name="src:line-number"/>
@@ -2110,10 +2130,49 @@
             <call-template name="src:new-line-indented">
                <with-param name="increase" select="1"/>
             </call-template>
-            <text>get { return this.</text>
+            <text>get</text>
+            <call-template name="src:open-brace">
+               <with-param name="indent" select="$indent + 1" tunnel="yes"/>
+            </call-template>
+            <call-template name="src:line-hidden">
+               <with-param name="indent" select="$indent + 2" tunnel="yes"/>
+            </call-template>
+            <call-template name="src:new-line-indented">
+               <with-param name="increase" select="2"/>
+            </call-template>
+            <text>if (!this.</text>
+            <value-of select="$init-field"/>
+            <text>)</text>
+            <call-template name="src:open-brace">
+               <with-param name="indent" select="$indent + 1" tunnel="yes"/>
+            </call-template>
+            <apply-templates select="." mode="src:statement">
+               <with-param name="context" select="concat($src:context-field, '.PrimingContext')" tunnel="yes"/>
+               <with-param name="indent" select="$indent + 3" tunnel="yes"/>
+            </apply-templates>
+            <call-template name="src:line-hidden">
+               <with-param name="indent" select="$indent + 3" tunnel="yes"/>
+            </call-template>
+            <call-template name="src:new-line-indented">
+               <with-param name="increase" select="3"/>
+            </call-template>
+            <text>this.</text>
+            <value-of select="$init-field"/>
+            <text> = true</text>
+            <value-of select="$src:statement-delimiter"/>
+            <call-template name="src:close-brace">
+               <with-param name="indent" select="$indent + 2" tunnel="yes"/>
+            </call-template>
+
+            <call-template name="src:new-line-indented">
+               <with-param name="increase" select="2"/>
+            </call-template>
+            <text>return this.</text>
             <value-of select="$backing-field"/>
             <value-of select="$src:statement-delimiter"/>
-            <text> }</text>
+            <call-template name="src:close-brace">
+               <with-param name="indent" select="$indent + 1" tunnel="yes"/>
+            </call-template>
             <call-template name="src:new-line-indented">
                <with-param name="increase" select="1"/>
             </call-template>
@@ -2124,12 +2183,7 @@
             <text> }</text>
             <call-template name="src:close-brace"/>
          </when>
-         <when test="$meta/@visibility eq 'abstract'">
-            <text> { get; set; }</text>
-         </when>
-         <otherwise>
-            <value-of select="$src:statement-delimiter"/>
-         </otherwise>
+         <otherwise> { get; set; }</otherwise>
       </choose>
    </template>
 
@@ -2626,17 +2680,16 @@
    <template name="src:execution-context">
       <param name="used-packages" tunnel="yes"/>
 
-      <variable name="type" select="src:package-model-type('ExecutionContext')"/>
       <value-of select="$src:new-line"/>
       <call-template name="src:editor-browsable-never"/>
       <call-template name="src:new-line-indented"/>
-      <value-of select="$type"/>
+      <value-of select="$src:context-field/@type"/>
       <text> </text>
-      <value-of select="substring-after($src:context-field, 'this.')"/>
+      <value-of select="substring-after($src:context-field, '.')"/>
       <value-of select="$src:statement-delimiter"/>
       <value-of select="$src:new-line"/>
       <call-template name="src:new-line-indented"/>
-      <value-of select="$type"/>
+      <value-of select="$src:context-field/@type"/>
       <text> </text>
       <value-of select="$src:package-interface"/>
       <text>.Context</text>
@@ -2691,7 +2744,13 @@
          for $pos in (1 to count($modules)) 
          return if ($modules[$pos] is current()) then $pos else ()"/>
       <variable name="principal-module" select="$module-pos eq count($modules)"/>
-      <variable name="context" select="src:template-context(())"/>
+      <variable name="context" as="element()">
+         <src:context type="{src:package-model-type('PrimingContext')}">
+            <value-of select="src:aux-variable('context')"/>
+         </src:context>
+      </variable>
+      <variable name="overridden-params" select="'overriddenParams'"/>
+
       <value-of select="$src:new-line"/>
       <if test="not($principal-module)">
          <call-template name="src:editor-browsable-never"/>
@@ -2708,13 +2767,15 @@
          </otherwise>
       </choose>
       <text>(</text>
-      <value-of select="src:package-model-type('PrimingContext')"/>
-      <text> </text>
-      <value-of select="$context"/>
+      <value-of select="$context/@type, $context"/>
+      <text>, string[] </text>
+      <value-of select="$overridden-params"/>
       <text>)</text>
       <call-template name="src:open-brace"/>
       <if test="$principal-module">
          <for-each select="$used-packages">
+            <variable name="overridden" select="src:overridden-components(., $package-manifest)[self::xcst:param and xs:boolean(@required)]"/>
+
             <if test="position() eq 1">
                <call-template name="src:line-hidden">
                   <with-param name="indent" select="$indent + 1" tunnel="yes"/>
@@ -2729,6 +2790,15 @@
             <value-of select="src:used-package-field-name(.)"/>
             <text>).Prime(</text>
             <value-of select="$context"/>
+            <text>, </text>
+            <choose>
+               <when test="$overridden">
+                  <text>new[] { </text>
+                  <value-of select="$overridden/src:string(@name)" separator=", "/>
+                  <text> }</text>
+               </when>
+               <otherwise>null</otherwise>
+            </choose>
             <text>)</text>
             <value-of select="$src:statement-delimiter"/>
          </for-each>
@@ -2739,17 +2809,34 @@
             <text>this.</text>
             <value-of select="src:prime-method-name(.)"/>
             <text>(</text>
-            <value-of select="$context"/>
+            <value-of select="$context, $overridden-params" separator=", "/>
             <text>)</text>
             <value-of select="$src:statement-delimiter"/>
          </for-each>
       </if>
-      <for-each select="(., c:use-package/c:override)/(c:param | c:variable)">
-         <if test="$package-manifest/xcst:*[@declaration-id eq current()/generate-id()]/@visibility ne 'hidden'">
+      <for-each select="(., c:use-package/c:override)/c:param">
+         <variable name="meta" select="$package-manifest/xcst:*[@declaration-id eq current()/generate-id()]"/>
+         <if test="$meta/@visibility ne 'hidden' and $meta/xs:boolean(@required)">
+            <call-template name="src:new-line-indented">
+               <with-param name="increase" select="1"/>
+            </call-template>
+            <text>if (</text>
+            <value-of select="$overridden-params"/>
+            <text> == null || </text>
+            <value-of select="src:global-identifier('System.Array')"/>
+            <text>.IndexOf(</text>
+            <value-of select="$overridden-params"/>
+            <text>, </text>
+            <value-of select="src:string($meta/@name)"/>
+            <text>) == -1)</text>
+            <call-template name="src:open-brace"/>
             <apply-templates select="." mode="src:statement">
-               <with-param name="indent" select="$indent + 1" tunnel="yes"/>
+               <with-param name="indent" select="$indent + 2" tunnel="yes"/>
                <with-param name="context" select="$context" tunnel="yes"/>
             </apply-templates>
+            <call-template name="src:close-brace">
+               <with-param name="indent" select="$indent + 1" tunnel="yes"/>
+            </call-template>
          </if>
       </for-each>
       <call-template name="src:close-brace"/>

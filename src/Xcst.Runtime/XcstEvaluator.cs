@@ -27,7 +27,8 @@ namespace Xcst {
 
       readonly IXcstPackage package;
       readonly IDictionary<string, object> parameters = new Dictionary<string, object>();
-      bool paramsLocked = false, primed = false;
+      bool paramsLocked = false;
+      PrimingContext primingContext;
 
       public static XcstEvaluator Using(object package) {
 
@@ -137,33 +138,33 @@ namespace Xcst {
          return new XcstTemplateEvaluator(this.package, Prime, name);
       }
 
-      void Prime() {
+      PrimingContext Prime() {
 
-         if (this.primed) {
-            return;
+         if (this.primingContext == null) {
+
+            this.primingContext = new PrimingContext();
+
+            foreach (var param in this.parameters) {
+               this.primingContext.WithParam(param.Key, param.Value);
+            }
+
+            this.parameters.Clear();
+            this.package.Prime(this.primingContext, null);
          }
 
-         var context = new PrimingContext();
-
-         foreach (var param in this.parameters) {
-            context.WithParam(param.Key, param.Value);
-         }
-
-         this.parameters.Clear();
-         this.package.Prime(context);
-         this.primed = true;
+         return this.primingContext;
       }
    }
 
    public class XcstTemplateEvaluator {
 
       readonly IXcstPackage package;
-      readonly Action primeFn;
+      readonly Func<PrimingContext> primeFn;
       readonly QualifiedName name;
       readonly IDictionary<string, object> templateParameters = new Dictionary<string, object>();
       readonly IDictionary<string, object> tunnelParameters = new Dictionary<string, object>();
 
-      internal XcstTemplateEvaluator(IXcstPackage package, Action primeFn, QualifiedName name) {
+      internal XcstTemplateEvaluator(IXcstPackage package, Func<PrimingContext> primeFn, QualifiedName name) {
 
          if (package == null) throw new ArgumentNullException(nameof(package));
          if (primeFn == null) throw new ArgumentNullException(nameof(primeFn));
@@ -326,7 +327,7 @@ namespace Xcst {
    public class XcstOutputter {
 
       readonly IXcstPackage package;
-      readonly Action primeFn;
+      readonly Func<PrimingContext> primeFn;
       readonly CreateWriterDelegate writerFn;
       readonly Action<IXcstPackage, XcstWriter> executionFn;
       readonly Action typedExecutionFn;
@@ -334,7 +335,7 @@ namespace Xcst {
       OutputParameters parameters;
       IFormatProvider formatProvider;
 
-      internal XcstOutputter(IXcstPackage package, Action primeFn, CreateWriterDelegate writerFn, Action<IXcstPackage, XcstWriter> executionFn) {
+      internal XcstOutputter(IXcstPackage package, Func<PrimingContext> primeFn, CreateWriterDelegate writerFn, Action<IXcstPackage, XcstWriter> executionFn) {
 
          if (package == null) throw new ArgumentNullException(nameof(package));
          if (primeFn == null) throw new ArgumentNullException(nameof(primeFn));
@@ -347,7 +348,7 @@ namespace Xcst {
          this.executionFn = executionFn;
       }
 
-      internal XcstOutputter(IXcstPackage package, Action primeFn, Action typedExecutionFn) {
+      internal XcstOutputter(IXcstPackage package, Func<PrimingContext> primeFn, Action typedExecutionFn) {
 
          if (package == null) throw new ArgumentNullException(nameof(package));
          if (primeFn == null) throw new ArgumentNullException(nameof(primeFn));
@@ -372,11 +373,11 @@ namespace Xcst {
 
       public void Run(bool skipFlush = false) {
 
-         var execContext = new ExecutionContext(this.package, this.formatProvider);
+         PrimingContext primingContext = this.primeFn();
+
+         var execContext = new ExecutionContext(this.package, primingContext, this.formatProvider);
 
          this.package.Context = execContext;
-
-         this.primeFn();
 
          if (this.typedExecutionFn != null) {
 

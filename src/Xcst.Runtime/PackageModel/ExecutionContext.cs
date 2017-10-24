@@ -26,13 +26,20 @@ namespace Xcst.PackageModel {
 
       public IXcstPackage TopLevelPackage { get; }
 
+      public PrimingContext PrimingContext { get; }
+
       public SimpleContent SimpleContent { get; }
 
-      internal ExecutionContext(IXcstPackage topLevelPackage, IFormatProvider/*?*/ formatProvider) {
+      internal ExecutionContext(
+            IXcstPackage topLevelPackage,
+            PrimingContext primingContext,
+            IFormatProvider/*?*/ formatProvider) {
 
          if (topLevelPackage == null) throw new ArgumentNullException(nameof(topLevelPackage));
+         if (primingContext == null) throw new ArgumentNullException(nameof(primingContext));
 
          this.TopLevelPackage = topLevelPackage;
+         this.PrimingContext = primingContext;
          this.formatProvider = formatProvider ?? CultureInfo.CurrentCulture;
          this.SimpleContent = new SimpleContent(this.formatProvider);
       }

@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:package name='LazyEvaluation' version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:variable name='foo' value='20 / bar' as='decimal' visibility='final'/>
+   <c:variable name='bar' as='int' visibility='abstract'/>
+
+</c:package>

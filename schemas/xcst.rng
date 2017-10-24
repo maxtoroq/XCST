@@ -1255,7 +1255,7 @@
 
    <define name="next-template">
       <element name="next-template">
-         <ann:documentation>Invokes the overriden template.</ann:documentation>
+         <ann:documentation>Invokes the overridden template.</ann:documentation>
          <ref name="standard-attributes"/>
          <zeroOrMore>
             <ref name="with-param"/>

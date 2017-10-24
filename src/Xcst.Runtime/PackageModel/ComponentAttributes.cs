@@ -28,7 +28,10 @@ namespace Xcst.PackageModel {
    public class XcstFunctionAttribute : XcstComponentAttribute { }
 
    [AttributeUsage(AttributeTargets.Property)]
-   public class XcstParameterAttribute : XcstComponentAttribute { }
+   public class XcstParameterAttribute : XcstComponentAttribute {
+
+      public bool Required { get; set; }
+   }
 
    [AttributeUsage(AttributeTargets.Method)]
    public class XcstTemplateAttribute : XcstComponentAttribute {

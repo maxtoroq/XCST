@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:param name='foo' value='bar++' as='int'/>
+   <c:variable name='bar' value='1' as='int'/>
+   
+   <c:template name='c:initial-template'>
+      <c:void value='Assert.AreEqual(1, bar)'/>
+      <c:void value='Assert.AreEqual(1, foo)'/>
+      <c:void value='Assert.AreEqual(2, bar)'/>
+   </c:template>
+
+</c:module>

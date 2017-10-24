@@ -82,9 +82,12 @@ namespace Xcst.Compiler.CodeGeneration {
 
             } else if (attr is XcstParameterAttribute) {
 
+               XcstParameterAttribute paramAttr = (XcstParameterAttribute)attr;
+
                writer.WriteStartElement(prefix, "param", ns);
                writer.WriteAttributeString("name", attr.Name ?? member.Name);
                writer.WriteAttributeString("as", TypeReference(((PropertyInfo)member).PropertyType));
+               writer.WriteAttributeString("required", XmlConvert.ToString(paramAttr.Required));
                writer.WriteAttributeString("visibility", memberVisibility(member));
                writer.WriteAttributeString("member-name", member.Name);
                writer.WriteEndElement();
