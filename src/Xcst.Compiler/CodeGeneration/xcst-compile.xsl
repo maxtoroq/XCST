@@ -1874,6 +1874,27 @@
       <call-template name="src:close-brace"/>
    </template>
 
+   <template match="xcst:param[not(xs:boolean(@required))] | xcst:variable" mode="src:used-package-original">
+      <value-of select="$src:new-line"/>
+      <call-template name="src:new-line-indented"/>
+      <text>internal </text>
+      <value-of select="src:global-identifier('System.Func')"/>
+      <text>&lt;</text>
+      <value-of select="src:global-identifier-meta(@as)"/>
+      <text>></text>
+      <text> </text>
+      <value-of select="src:original-member-name(.)"/>
+      <text>()</text>
+      <call-template name="src:open-brace"/>
+      <call-template name="src:new-line-indented">
+         <with-param name="increase" select="1"/>
+      </call-template>
+      <text>return () => base.</text>
+      <value-of select="@member-name"/>
+      <value-of select="$src:statement-delimiter"/>
+      <call-template name="src:close-brace"/>
+   </template>
+
    <function name="src:overridden-components" as="element()*">
       <param name="used-package" as="element(xcst:package-manifest)"/>
       <param name="package-manifest" as="element(xcst:package-manifest)"/>
@@ -2146,6 +2167,33 @@
             <call-template name="src:open-brace">
                <with-param name="indent" select="$indent + 1" tunnel="yes"/>
             </call-template>
+            <if test="parent::c:override">
+               <variable name="original-meta" select="$package-manifest/xcst:*[@id eq $meta/@overrides]"/>
+               <variable name="original-expr" select="
+                  if ($original-meta/@original-visibility ne 'abstract'
+                     and ($original-meta[self::xcst:variable] or not(xs:boolean($original-meta/@required)))) then
+                     concat('this.', src:original-member($original-meta))
+                  else ()"/>
+               <call-template name="src:new-line-indented">
+                  <with-param name="increase" select="3"/>
+               </call-template>
+               <text>var </text>
+               <value-of select="$src:contextual-variable"/>
+               <text> = new</text>
+               <call-template name="src:open-brace"/>
+               <if test="$original-expr">
+                  <call-template name="src:new-line-indented">
+                     <with-param name="increase" select="4"/>
+                  </call-template>
+                  <text>original = </text>
+                  <value-of select="$original-expr"/>
+                  <text>()</text>
+               </if>
+               <call-template name="src:close-brace">
+                  <with-param name="indent" select="$indent + 3" tunnel="yes"/>
+               </call-template>
+               <value-of select="$src:statement-delimiter"/>
+            </if>
             <apply-templates select="." mode="src:statement">
                <with-param name="context" select="concat($src:context-field, '.PrimingContext')" tunnel="yes"/>
                <with-param name="indent" select="$indent + 3" tunnel="yes"/>

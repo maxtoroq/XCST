@@ -265,6 +265,10 @@
     <None Include="ProgramStructure\Packages\OverridingComponents\Parameter\Duplicate5.c.xcst" />
     <None Include="ProgramStructure\Packages\OverridingComponents\Parameter\NoMatching.i.xcst" />
     <None Include="ProgramStructure\Packages\OverridingComponents\Parameter\NoMatching.pxcst" />
+    <None Include="ProgramStructure\Packages\OverridingComponents\Parameter\OriginalRequired.pxcst" />
+    <None Include="ProgramStructure\Packages\OverridingComponents\Parameter\OriginalRequired.i.xcst" />
+    <None Include="ProgramStructure\Packages\OverridingComponents\Parameter\Original.c.xcst" />
+    <None Include="ProgramStructure\Packages\OverridingComponents\Parameter\Original.pxcst" />
     <None Include="ProgramStructure\Packages\OverridingComponents\Parameter\OverriddenRequired.pxcst" />
     <None Include="ProgramStructure\Packages\OverridingComponents\Parameter\OverriddenRequired.c.xcst" />
     <None Include="ProgramStructure\Packages\OverridingComponents\Parameter\Overridden.c.xcst" />
@@ -276,6 +280,8 @@
     <None Include="ProgramStructure\Packages\OverridingComponents\Parameter\_OverrideOverridden.xcst" />
     <None Include="ProgramStructure\Packages\OverridingComponents\Variable\LazyEvaluation.pxcst" />
     <None Include="ProgramStructure\Packages\OverridingComponents\Variable\LazyEvaluation.c.xcst" />
+    <None Include="ProgramStructure\Packages\OverridingComponents\Variable\Original.c.xcst" />
+    <None Include="ProgramStructure\Packages\OverridingComponents\Variable\Original.pxcst" />
     <None Include="SequenceConstructors\Raw\Array\CopyOf\JTokenNull.c.xcst" />
     <None Include="SequenceConstructors\Raw\Array\CopyOf\JTokenAsObject.c.xcst" />
     <None Include="SequenceConstructors\Raw\Array\CopyOf\JToken.c.xcst" />
