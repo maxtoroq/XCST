@@ -253,6 +253,7 @@
     <None Include="CreatingNodesAndObjects\Array\Expando\NoFlat.c.xcst" />
     <None Include="CreatingNodesAndObjects\Array\Expando\Simple.c.xcst" />
     <None Include="CreatingNodesAndObjects\Array\Json\CompatibleOutput.c.xcst" />
+    <None Include="CreatingNodesAndObjects\MapEntry\Json\JObjectOutput.i.xcst" />
     <None Include="ProgramStructure\Packages\OverridingComponents\Function\Original.c.xcst" />
     <None Include="ProgramStructure\Packages\OverridingComponents\Function\Original.pxcst" />
     <None Include="ProgramStructure\Packages\OverridingComponents\Function\OriginalAbstract.i.xcst" />
