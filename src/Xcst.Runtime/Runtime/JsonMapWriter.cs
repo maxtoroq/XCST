@@ -73,9 +73,8 @@ namespace Xcst.Runtime {
       }
 
       // From object to JProperty, cast to JsonMapWriter
-      // Cast method is used by c:map-entry, and JProperty represents an entry
 
-      public static JsonMapWriter Cast(ISequenceWriter<JProperty> output) {
+      public static JsonMapWriter CastMapEntry(ISequenceWriter<JProperty> output) {
 
          JsonMapWriter mapWriter = TryCast(output);
 

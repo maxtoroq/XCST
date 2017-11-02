@@ -792,7 +792,7 @@
          <value-of select="$map-output"/>
          <text> = </text>
          <value-of select="src:fully-qualified-helper('MapWriter')"/>
-         <text>.Cast(</text>
+         <text>.CastMapEntry(</text>
          <value-of select="$output"/>
          <text>)</text>
          <value-of select="$src:statement-delimiter"/>

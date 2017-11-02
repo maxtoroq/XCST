@@ -62,9 +62,8 @@ namespace Xcst.Runtime {
       }
 
       // For object, cast to abstract MapWriter
-      // Cast method is used by c:map-entry
 
-      public static MapWriter Cast(ISequenceWriter<object> output) {
+      public static MapWriter CastMapEntry(ISequenceWriter<object> output) {
 
          MapWriter mapWriter = output.TryCastToMapWriter();
 
