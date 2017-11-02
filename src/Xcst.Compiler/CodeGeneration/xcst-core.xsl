@@ -117,9 +117,27 @@
          <with-param name="optional" select="'namespace', 'separator', 'value'"/>
       </call-template>
       <call-template name="xcst:value-or-sequence-constructor"/>
+
+      <variable name="output-is-doc" select="src:output-is-doc($output)"/>
+      <variable name="doc-output" select="src:doc-output(., $output)"/>
+
+      <if test="not($output-is-doc)">
+         <value-of select="$src:new-line"/>
+         <call-template name="src:line-number"/>
+         <call-template name="src:new-line-indented"/>
+         <text>var </text>
+         <value-of select="$doc-output"/>
+         <text> = </text>
+         <value-of select="src:fully-qualified-helper('DocumentWriter')"/>
+         <text>.CastAttribute(</text>
+         <value-of select="$output"/>
+         <text>)</text>
+         <value-of select="$src:statement-delimiter"/>
+         <value-of select="$src:new-line"/>
+      </if>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
-      <value-of select="$output"/>
+      <value-of select="$doc-output"/>
       <text>.</text>
       <variable name="attrib-string" select="@value or not(*)"/>
       <variable name="separator" select="@separator/src:expand-attribute(.)"/>
@@ -182,6 +200,7 @@
          <text>try</text>
          <call-template name="src:sequence-constructor">
             <with-param name="ensure-block" select="true()"/>
+            <with-param name="output" select="$doc-output" tunnel="yes"/>
          </call-template>
          <text> finally</text>
          <call-template name="src:open-brace"/>
@@ -191,7 +210,7 @@
          <call-template name="src:new-line-indented">
             <with-param name="indent" select="$new-indent" tunnel="yes"/>
          </call-template>
-         <value-of select="$output"/>
+         <value-of select="$doc-output"/>
          <text>.WriteEndAttribute()</text>
          <value-of select="$src:statement-delimiter"/>
          <call-template name="src:close-brace"/>
@@ -205,9 +224,32 @@
          <with-param name="optional" select="'value'"/>
       </call-template>
       <call-template name="xcst:value-or-sequence-constructor"/>
+
+      <variable name="output-is-doc" select="src:output-is-doc($output)"/>
+      <variable name="output-is-map" select="src:output-is-map($output)"/>
+      <variable name="comment-output" select="
+         if ($output-is-map) then
+            $output
+         else
+            src:doc-output(., $output)"/>
+
+      <if test="not($output-is-doc or $output-is-map)">
+         <value-of select="$src:new-line"/>
+         <call-template name="src:line-number"/>
+         <call-template name="src:new-line-indented"/>
+         <text>var </text>
+         <value-of select="$comment-output"/>
+         <text> = </text>
+         <value-of select="src:fully-qualified-helper('DocumentWriter')"/>
+         <text>.CastComment(</text>
+         <value-of select="$output"/>
+         <text>)</text>
+         <value-of select="$src:statement-delimiter"/>
+         <value-of select="$src:new-line"/>
+      </if>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
-      <value-of select="$output"/>
+      <value-of select="$comment-output"/>
       <text>.WriteComment(</text>
       <call-template name="src:simple-content">
          <with-param name="attribute" select="@value"/>
@@ -268,9 +310,27 @@
          <with-param name="required" select="'name'"/>
          <with-param name="optional" select="'namespace', 'use-attribute-sets'"/>
       </call-template>
+
+      <variable name="output-is-doc" select="src:output-is-doc($output)"/>
+      <variable name="doc-output" select="src:doc-output(., $output)"/>
+
+      <if test="not($output-is-doc)">
+         <value-of select="$src:new-line"/>
+         <call-template name="src:line-number"/>
+         <call-template name="src:new-line-indented"/>
+         <text>var </text>
+         <value-of select="$doc-output"/>
+         <text> = </text>
+         <value-of select="src:fully-qualified-helper('DocumentWriter')"/>
+         <text>.CastElement(</text>
+         <value-of select="$output"/>
+         <text>)</text>
+         <value-of select="$src:statement-delimiter"/>
+         <value-of select="$src:new-line"/>
+      </if>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
-      <value-of select="$output"/>
+      <value-of select="$doc-output"/>
       <text>.WriteStartElement</text>
       <choose>
          <when test="xcst:is-value-template(@name)">
@@ -311,10 +371,12 @@
       <call-template name="src:use-attribute-sets">
          <with-param name="attr" select="@use-attribute-sets"/>
          <with-param name="indent" select="$new-indent" tunnel="yes"/>
+         <with-param name="output" select="$doc-output" tunnel="yes"/>
       </call-template>
       <call-template name="src:sequence-constructor">
          <with-param name="omit-block" select="true()"/>
          <with-param name="indent" select="$new-indent" tunnel="yes"/>
+         <with-param name="output" select="$doc-output" tunnel="yes"/>
       </call-template>
       <call-template name="src:line-hidden">
          <with-param name="indent" select="$new-indent" tunnel="yes"/>
@@ -325,7 +387,7 @@
       <call-template name="src:new-line-indented">
          <with-param name="indent" select="$new-indent" tunnel="yes"/>
       </call-template>
-      <value-of select="$output"/>
+      <value-of select="$doc-output"/>
       <text>.WriteEndElement()</text>
       <value-of select="$src:statement-delimiter"/>
       <call-template name="src:close-brace"/>
@@ -393,9 +455,27 @@
          <with-param name="optional" select="'value'"/>
       </call-template>
       <call-template name="xcst:value-or-sequence-constructor"/>
+
+      <variable name="output-is-doc" select="src:output-is-doc($output)"/>
+      <variable name="doc-output" select="src:doc-output(., $output)"/>
+
+      <if test="not($output-is-doc)">
+         <value-of select="$src:new-line"/>
+         <call-template name="src:line-number"/>
+         <call-template name="src:new-line-indented"/>
+         <text>var </text>
+         <value-of select="$doc-output"/>
+         <text> = </text>
+         <value-of select="src:fully-qualified-helper('DocumentWriter')"/>
+         <text>.CastProcessingInstruction(</text>
+         <value-of select="$output"/>
+         <text>)</text>
+         <value-of select="$src:statement-delimiter"/>
+         <value-of select="$src:new-line"/>
+      </if>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
-      <value-of select="$output"/>
+      <value-of select="$doc-output"/>
       <text>.WriteProcessingInstruction(</text>
       <value-of select="
          if (xcst:is-value-template(@name)) then src:expand-attribute(@name)
@@ -487,9 +567,27 @@
       <call-template name="xcst:validate-attribs">
          <with-param name="optional" select="@*[not(namespace-uri())]/local-name()"/>
       </call-template>
+
+      <variable name="output-is-doc" select="src:output-is-doc($output)"/>
+      <variable name="doc-output" select="src:doc-output(., $output)"/>
+
+      <if test="not($output-is-doc)">
+         <value-of select="$src:new-line"/>
+         <call-template name="src:line-number"/>
+         <call-template name="src:new-line-indented"/>
+         <text>var </text>
+         <value-of select="$doc-output"/>
+         <text> = </text>
+         <value-of select="src:fully-qualified-helper('DocumentWriter')"/>
+         <text>.CastElement(</text>
+         <value-of select="$output"/>
+         <text>)</text>
+         <value-of select="$src:statement-delimiter"/>
+         <value-of select="$src:new-line"/>
+      </if>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
-      <value-of select="$output"/>
+      <value-of select="$doc-output"/>
       <text>.WriteStartElement(</text>
       <variable name="prefix" select="prefix-from-QName(node-name(.))"/>
       <if test="$prefix">
@@ -509,12 +607,13 @@
       <call-template name="src:use-attribute-sets">
          <with-param name="attr" select="@c:use-attribute-sets"/>
          <with-param name="indent" select="$new-indent" tunnel="yes"/>
+         <with-param name="output" select="$doc-output" tunnel="yes"/>
       </call-template>
       <for-each select="@* except @c:*">
          <call-template name="src:new-line-indented">
             <with-param name="indent" select="$new-indent" tunnel="yes"/>
          </call-template>
-         <value-of select="$output"/>
+         <value-of select="$doc-output"/>
          <text>.WriteAttributeString(</text>
          <variable name="attr-prefix" select="prefix-from-QName(node-name(.))"/>
          <if test="$attr-prefix">
@@ -534,6 +633,7 @@
       <call-template name="src:sequence-constructor">
          <with-param name="omit-block" select="true()"/>
          <with-param name="indent" select="$new-indent" tunnel="yes"/>
+         <with-param name="output" select="$doc-output" tunnel="yes"/>
       </call-template>
       <call-template name="src:line-hidden">
          <with-param name="indent" select="$new-indent" tunnel="yes"/>
@@ -544,7 +644,7 @@
       <call-template name="src:new-line-indented">
          <with-param name="indent" select="$new-indent" tunnel="yes"/>
       </call-template>
-      <value-of select="$output"/>
+      <value-of select="$doc-output"/>
       <text>.WriteEndElement()</text>
       <value-of select="$src:statement-delimiter"/>
       <call-template name="src:close-brace"/>

@@ -53,5 +53,64 @@ namespace Xcst.Runtime {
 
       // Sadly, cannot create writer for c:element
       // XNodeBuilder does not support top level attribute and text
+
+      public static XcstWriter CastElement(ISequenceWriter<object> output) {
+         return Cast(output);
+      }
+
+      public static XcstWriter CastElement(ISequenceWriter<XElement> output) {
+         return Cast(output);
+      }
+
+      public static XcstWriter CastElement(ISequenceWriter<XmlElement> output) {
+         return Cast(output);
+      }
+
+      public static XcstWriter CastAttribute(ISequenceWriter<object> output) {
+         return Cast(output);
+      }
+
+      public static XcstWriter CastAttribute(ISequenceWriter<XAttribute> output) {
+         return Cast(output);
+      }
+
+      public static XcstWriter CastAttribute(ISequenceWriter<XmlAttribute> output) {
+         return Cast(output);
+      }
+
+      public static XcstWriter CastComment(ISequenceWriter<object> output) {
+         return Cast(output);
+      }
+
+      public static XcstWriter CastComment(ISequenceWriter<XComment> output) {
+         return Cast(output);
+      }
+
+      public static XcstWriter CastComment(ISequenceWriter<XmlComment> output) {
+         return Cast(output);
+      }
+
+      public static XcstWriter CastProcessingInstruction(ISequenceWriter<object> output) {
+         return Cast(output);
+      }
+
+      public static XcstWriter CastProcessingInstruction(ISequenceWriter<XProcessingInstruction> output) {
+         return Cast(output);
+      }
+
+      public static XcstWriter CastProcessingInstruction(ISequenceWriter<XmlProcessingInstruction> output) {
+         return Cast(output);
+      }
+
+      static XcstWriter Cast<TItem>(ISequenceWriter<TItem> output) {
+
+         XcstWriter docWriter = output.TryCastToDocumentWriter();
+
+         if (docWriter != null) {
+            return docWriter;
+         }
+
+         throw new RuntimeException("Could not cast output to XcstWriter.");
+      }
    }
 }

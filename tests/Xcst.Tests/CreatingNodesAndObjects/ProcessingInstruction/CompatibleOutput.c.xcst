@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:template name='default'>
+      <c:processing-instruction name='foo'/>
+   </c:template>
+
+   <c:template name='object' as='object'>
+      <c:processing-instruction name='foo'/>
+   </c:template>
+
+   <c:template name='XObject' as='System.Xml.Linq.XObject'>
+      <c:processing-instruction name='foo'/>
+   </c:template>
+
+   <c:template name='XNode' as='System.Xml.Linq.XNode'>
+      <c:processing-instruction name='foo'/>
+   </c:template>
+
+   <c:template name='XProcessingInstruction' as='System.Xml.Linq.XProcessingInstruction'>
+      <c:processing-instruction name='foo'/>
+   </c:template>
+
+   <c:template name='XmlNode' as='System.Xml.XmlNode'>
+      <c:processing-instruction name='foo'/>
+   </c:template>
+
+   <c:template name='XmlLinkedNode' as='System.Xml.XmlLinkedNode'>
+      <c:processing-instruction name='foo'/>
+   </c:template>
+
+   <c:template name='XmlProcessingInstruction' as='System.Xml.XmlProcessingInstruction'>
+      <c:processing-instruction name='foo'/>
+   </c:template>
+
+</c:module>

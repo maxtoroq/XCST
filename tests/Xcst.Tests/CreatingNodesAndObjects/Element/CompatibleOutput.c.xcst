@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:template name='default'>
+      <c:element name='foo'/>
+   </c:template>
+
+   <c:template name='object' as='object'>
+      <c:element name='foo'/>
+   </c:template>
+
+   <c:template name='XObject' as='System.Xml.Linq.XObject'>
+      <c:element name='foo'/>
+   </c:template>
+
+   <c:template name='XNode' as='System.Xml.Linq.XNode'>
+      <c:element name='foo'/>
+   </c:template>
+
+   <c:template name='XContainer' as='System.Xml.Linq.XContainer'>
+      <c:element name='foo'/>
+   </c:template>
+
+   <c:template name='XElement' as='System.Xml.Linq.XElement'>
+      <c:element name='foo'/>
+   </c:template>
+
+   <c:template name='XmlNode' as='System.Xml.XmlNode'>
+      <c:element name='foo'/>
+   </c:template>
+
+   <c:template name='XmlLinkedNode' as='System.Xml.XmlLinkedNode'>
+      <c:element name='foo'/>
+   </c:template>
+
+   <c:template name='XmlElement' as='System.Xml.XmlElement'>
+      <c:element name='foo'/>
+   </c:template>
+
+</c:module>
