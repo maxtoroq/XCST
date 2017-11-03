@@ -225,31 +225,9 @@
       </call-template>
       <call-template name="xcst:value-or-sequence-constructor"/>
 
-      <variable name="output-is-doc" select="src:output-is-doc($output)"/>
-      <variable name="output-is-map" select="src:output-is-map($output)"/>
-      <variable name="comment-output" select="
-         if ($output-is-map) then
-            $output
-         else
-            src:doc-output(., $output)"/>
-
-      <if test="not($output-is-doc or $output-is-map)">
-         <value-of select="$src:new-line"/>
-         <call-template name="src:line-number"/>
-         <call-template name="src:new-line-indented"/>
-         <text>var </text>
-         <value-of select="$comment-output"/>
-         <text> = </text>
-         <value-of select="src:fully-qualified-helper('DocumentWriter')"/>
-         <text>.CastComment(</text>
-         <value-of select="$output"/>
-         <text>)</text>
-         <value-of select="$src:statement-delimiter"/>
-         <value-of select="$src:new-line"/>
-      </if>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
-      <value-of select="$comment-output"/>
+      <value-of select="$output"/>
       <text>.WriteComment(</text>
       <call-template name="src:simple-content">
          <with-param name="attribute" select="@value"/>

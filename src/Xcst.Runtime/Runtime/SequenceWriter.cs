@@ -51,6 +51,8 @@ namespace Xcst.Runtime {
          WriteObject(data);
       }
 
+      public void WriteComment(string text) { }
+
       public XcstWriter TryCastToDocumentWriter() {
          return null;
       }
@@ -175,6 +177,10 @@ namespace Xcst.Runtime {
 
       public void WriteRaw(TDerived data) {
          this.baseWriter.WriteRaw(data);
+      }
+
+      public void WriteComment(string text) {
+         this.baseWriter.WriteComment(text);
       }
 
       public XcstWriter TryCastToDocumentWriter() {

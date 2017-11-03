@@ -9,32 +9,20 @@
       <c:comment/>
    </c:template>
 
-   <c:template name='XObject' as='System.Xml.Linq.XObject'>
+   <c:template name='int' as='int'>
       <c:comment/>
    </c:template>
 
-   <c:template name='XNode' as='System.Xml.Linq.XNode'>
-      <c:comment/>
+   <c:template name='map'>
+      <c:map>
+         <c:comment/>
+      </c:map>
    </c:template>
 
-   <c:template name='XComment' as='System.Xml.Linq.XComment'>
-      <c:comment/>
-   </c:template>
-
-   <c:template name='XmlNode' as='System.Xml.XmlNode'>
-      <c:comment/>
-   </c:template>
-
-   <c:template name='XmlLinkedNode' as='System.Xml.XmlLinkedNode'>
-      <c:comment/>
-   </c:template>
-
-   <c:template name='XmlCharacterData' as='System.Xml.XmlCharacterData'>
-      <c:comment/>
-   </c:template>
-
-   <c:template name='XmlComment' as='System.Xml.XmlComment'>
-      <c:comment/>
+   <c:template name='array'>
+      <c:array>
+         <c:comment/>
+      </c:array>
    </c:template>
 
 </c:module>

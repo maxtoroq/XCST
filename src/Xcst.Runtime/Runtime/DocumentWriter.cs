@@ -78,18 +78,6 @@ namespace Xcst.Runtime {
          return Cast(output);
       }
 
-      public static XcstWriter CastComment(ISequenceWriter<object> output) {
-         return Cast(output);
-      }
-
-      public static XcstWriter CastComment(ISequenceWriter<XComment> output) {
-         return Cast(output);
-      }
-
-      public static XcstWriter CastComment(ISequenceWriter<XmlComment> output) {
-         return Cast(output);
-      }
-
       public static XcstWriter CastProcessingInstruction(ISequenceWriter<object> output) {
          return Cast(output);
       }

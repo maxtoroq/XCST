@@ -35,6 +35,8 @@ namespace Xcst.PackageModel {
 
       void WriteRaw(TItem data);
 
+      void WriteComment(string text);
+
       XcstWriter TryCastToDocumentWriter();
 
       MapWriter TryCastToMapWriter();
