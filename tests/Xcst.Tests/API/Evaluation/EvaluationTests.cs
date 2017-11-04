@@ -75,5 +75,33 @@ namespace Xcst.Tests.API.Evaluation {
 
          Assert.AreEqual("foo", output1.ToString());
       }
+
+      [TestMethod, TestCategory(TestCategory)]
+      public void Call_Public_Template() {
+
+         XcstEvaluator.Using(new ExposePublicTemplatesOnly())
+            .CallTemplate("public")
+            .OutputTo(TextWriter.Null)
+            .Run();
+      }
+
+      [TestMethod, TestCategory(TestCategory)]
+      public void Call_Final_Template() {
+
+         XcstEvaluator.Using(new ExposePublicTemplatesOnly())
+            .CallTemplate("final")
+            .OutputTo(TextWriter.Null)
+            .Run();
+      }
+
+      [TestMethod, TestCategory(TestCategory)]
+      [ExpectedException(typeof(RuntimeException))]
+      public void Call_Private_Template() {
+
+         XcstEvaluator.Using(new ExposePublicTemplatesOnly())
+            .CallTemplate("private")
+            .OutputTo(TextWriter.Null)
+            .Run();
+      }
    }
 }

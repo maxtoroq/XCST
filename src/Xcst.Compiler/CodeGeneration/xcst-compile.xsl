@@ -2930,7 +2930,7 @@
       <param name="output" required="yes"/>
       <param name="indent" tunnel="yes"/>
 
-      <variable name="templates" select="$package-manifest/xcst:template[@visibility = ('public', 'final', 'absent')]"/>
+      <variable name="templates" select="$package-manifest/xcst:template[@visibility = ('public', 'final')]"/>
 
       <value-of select="$src:new-line"/>
       <call-template name="src:new-line-indented"/>
@@ -3087,7 +3087,7 @@
       <param name="output" required="yes"/>
       <param name="indent" tunnel="yes"/>
 
-      <variable name="templates" select="$package-manifest/xcst:template[@visibility = ('public', 'final', 'absent')][@item-type]"/>
+      <variable name="templates" select="$package-manifest/xcst:template[@visibility = ('public', 'final')][@item-type]"/>
 
       <value-of select="$src:new-line"/>
       <call-template name="src:new-line-indented"/>
