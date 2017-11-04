@@ -3602,20 +3602,6 @@
       </choose>
    </function>
 
-   <function name="src:string-equals-literal" as="xs:string">
-      <param name="left-expr" as="xs:string"/>
-      <param name="right-string" as="xs:string"/>
-
-      <choose>
-         <when test="$right-string">
-            <sequence select="concat($left-expr, ' == ', src:verbatim-string($right-string))"/>
-         </when>
-         <otherwise>
-            <sequence select="concat(src:global-identifier('System.String'), '.IsNullOrEmpty(', $left-expr, ')')"/>
-         </otherwise>
-      </choose>
-   </function>
-
    <function name="src:expression-or-null" as="xs:string">
       <param name="expr" as="item()?"/>
 
