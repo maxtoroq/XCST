@@ -627,6 +627,8 @@
     <None Include="ValueTemplates\Attribute\MissingCloseBrace.i.xcst" />
     <None Include="ValueTemplates\Text\MissingCloseBrace.i.xcst" />
     <None Include="ValueTemplates\Text\DoubleBraces.c.xcst" />
+    <None Include="VariablesAndParameters\Global\SetParameter.c.xcst" />
+    <None Include="VariablesAndParameters\Global\SetVariable.c.xcst" />
     <None Include="VariablesAndParameters\Global\HiddenAbstract.c.xcst" />
     <None Include="VariablesAndParameters\Global\LazyEvaluation.c.xcst" />
     <None Include="VariablesAndParameters\Global\_HiddenAbstract.xcst" />

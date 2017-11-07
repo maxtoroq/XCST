@@ -2224,11 +2224,27 @@
             <call-template name="src:new-line-indented">
                <with-param name="increase" select="1"/>
             </call-template>
-            <text>set { this.</text>
+            <text>set</text>
+            <call-template name="src:open-brace">
+               <with-param name="indent" select="$indent + 1" tunnel="yes"/>
+            </call-template>
+            <call-template name="src:new-line-indented">
+               <with-param name="increase" select="2"/>
+            </call-template>
+            <text>this.</text>
             <value-of select="$backing-field"/>
             <text> = value</text>
             <value-of select="$src:statement-delimiter"/>
-            <text> }</text>
+            <call-template name="src:new-line-indented">
+               <with-param name="increase" select="2"/>
+            </call-template>
+            <text>this.</text>
+            <value-of select="$init-field"/>
+            <text> = true</text>
+            <value-of select="$src:statement-delimiter"/>
+            <call-template name="src:close-brace">
+               <with-param name="indent" select="$indent + 1" tunnel="yes"/>
+            </call-template>
             <call-template name="src:close-brace"/>
          </when>
          <otherwise> { get; set; }</otherwise>

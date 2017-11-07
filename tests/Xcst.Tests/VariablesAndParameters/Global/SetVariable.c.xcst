@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:variable name='foo' as='string'>foo</c:variable>
+
+   <c:template name='c:initial-template' expand-text='yes'>
+      <c:set member='foo'>bar</c:set>
+      <foo>{foo}</foo>
+   </c:template>
+
+   <c:template name='expected'>
+      <foo>bar</foo>
+   </c:template>
+
+</c:module>
