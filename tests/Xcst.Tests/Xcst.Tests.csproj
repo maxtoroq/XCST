@@ -292,6 +292,10 @@
     <None Include="ProgramStructure\Packages\OverridingComponents\Variable\LazyEvaluation.c.xcst" />
     <None Include="ProgramStructure\Packages\OverridingComponents\Variable\Original.c.xcst" />
     <None Include="ProgramStructure\Packages\OverridingComponents\Variable\Original.pxcst" />
+    <None Include="SequenceConstructors\ComplexContent\CopyOf\JArrayAsObject.c.xcst" />
+    <None Include="SequenceConstructors\ComplexContent\CopyOf\JArray.c.xcst" />
+    <None Include="SequenceConstructors\ComplexContent\CopyOf\JObjectAsObject.c.xcst" />
+    <None Include="SequenceConstructors\ComplexContent\CopyOf\JObject.c.xcst" />
     <None Include="SequenceConstructors\Raw\Array\CopyOf\JTokenNull.c.xcst" />
     <None Include="SequenceConstructors\Raw\Array\CopyOf\JTokenAsObject.c.xcst" />
     <None Include="SequenceConstructors\Raw\Array\CopyOf\JToken.c.xcst" />

@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:import-namespace ns='Newtonsoft.Json.Linq'/>
+
+   <c:template name='c:initial-template'>
+      <c:variable name='map' as='JObject'>
+         <c:map>
+            <c:map-entry key='"foo"'>foo</c:map-entry>
+         </c:map>
+      </c:variable>
+      <foo>
+         <c:copy-of value='map'/>
+      </foo>
+   </c:template>
+
+   <c:template name='expected'>
+      <foo>{"foo":"foo"}</foo>
+   </c:template>
+
+</c:module>

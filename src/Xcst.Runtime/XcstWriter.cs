@@ -23,6 +23,8 @@ using System.Xml.XPath;
 using Xcst.PackageModel;
 using Xcst.Runtime;
 using Xcst.Xml;
+using JObject = Newtonsoft.Json.Linq.JObject;
+using JArray = Newtonsoft.Json.Linq.JArray;
 
 namespace Xcst {
 
@@ -311,6 +313,20 @@ namespace Xcst {
             return true;
          }
 
+         JObject jObj = value as JObject;
+
+         if (jObj != null) {
+            CopyOf(jObj);
+            return true;
+         }
+
+         JArray jArr = value as JArray;
+
+         if (jArr != null) {
+            CopyOf(jArr);
+            return true;
+         }
+
          return false;
       }
 
@@ -359,6 +375,20 @@ namespace Xcst {
 
       public void CopyOf(Array value) {
          CopyOfSequence(value);
+      }
+
+      public void CopyOf(JObject value) {
+
+         if (value != null) {
+            MapWriter.Create(this).CopyOf(value);
+         }
+      }
+
+      public void CopyOf(JArray value) {
+
+         if (value != null) {
+            MapWriter.Create(this).CopyOf(value);
+         }
       }
    }
 }
