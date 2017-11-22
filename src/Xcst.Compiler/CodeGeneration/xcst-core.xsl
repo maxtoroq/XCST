@@ -2499,7 +2499,7 @@
       </choose>
    </template>
 
-   <template match="@doctype-public | @doctype-system | @item-separator | @media-type" mode="src:output-parameter-setter">
+   <template match="@doctype-public | @doctype-system | @media-type" mode="src:output-parameter-setter">
       <value-of select="src:output-parameter-property(.)"/>
       <text> = </text>
       <value-of select="if (parent::c:output) then src:verbatim-string(string()) else src:expand-attribute(.)"/>
@@ -2524,6 +2524,19 @@
       <value-of select="src:output-parameter-property(.)"/>
       <text> = </text>
       <value-of select="src:integer(xcst:integer(., not(parent::c:output)), src:expand-attribute(.))"/>
+   </template>
+
+   <template match="@item-separator" mode="src:output-parameter-setter">
+
+      <variable name="separator" select="xcst:item-separator(., not(parent::c:output))"/>
+
+      <variable name="expr" select="
+         if ($separator eq '#absent') then ()
+         else src:item-separator($separator, src:expand-attribute(.))"/>
+
+      <value-of select="src:output-parameter-property(.)"/>
+      <text> = </text>
+      <value-of select="src:expression-or-null($expr)"/>
    </template>
 
    <template match="@method" mode="src:output-parameter-setter">
@@ -2912,6 +2925,17 @@
             ()
          else
             error(xs:QName('err:XTSE0020'), concat('Invalid value for ''', name($node), '''. Must be one of (ascending|descending).'), src:error-object($node))
+      "/>
+   </function>
+
+   <function name="xcst:item-separator" as="xs:string?">
+      <param name="node" as="node()"/>
+      <param name="avt" as="xs:boolean"/>
+
+      <variable name="string" select="string($node)"/>
+      <sequence select="
+         if ($avt and xcst:is-value-template($node)) then ()
+         else $string
       "/>
    </function>
 
@@ -3598,6 +3622,20 @@
          </when>
          <otherwise>
             <sequence select="concat(src:fully-qualified-helper('DataType'), '.SortOrderDescending(', $string, ')')"/>
+         </otherwise>
+      </choose>
+   </function>
+
+   <function name="src:item-separator" as="xs:string">
+      <param name="separator" as="xs:string?"/>
+      <param name="string" as="xs:string"/>
+
+      <choose>
+         <when test="$separator instance of xs:string">
+            <sequence select="src:verbatim-string($separator)"/>
+         </when>
+         <otherwise>
+            <sequence select="concat(src:fully-qualified-helper('DataType'), '.ItemSeparator(', $string, ')')"/>
          </otherwise>
       </choose>
    </function>

@@ -53,6 +53,25 @@ namespace Xcst.Runtime {
          return System.Int32.Parse(value, NumberStyles.Integer, CultureInfo.InvariantCulture);
       }
 
+      public static string/*?*/ ItemSeparator(string value) {
+
+         if (value == null) throw new ArgumentNullException(nameof(value));
+
+         if (value == "#absent") {
+            return null;
+         }
+
+         return value;
+      }
+
+      public static QualifiedName QName(string localOrUriQualifiedName) {
+         return QualifiedName.Parse(localOrUriQualifiedName);
+      }
+
+      public static QualifiedName QName(string ns, string localName) {
+         return new QualifiedName(localName, ns);
+      }
+
       public static bool SortOrderDescending(string order) {
 
          if (order == null) throw new ArgumentNullException(nameof(order));
@@ -69,18 +88,6 @@ namespace Xcst.Runtime {
          }
       }
 
-      public static QualifiedName QName(string localOrUriQualifiedName) {
-         return QualifiedName.Parse(localOrUriQualifiedName);
-      }
-
-      public static QualifiedName QName(string ns, string localName) {
-         return new QualifiedName(localName, ns);
-      }
-
-      public static Uri Uri(string uri) {
-         return new Uri(uri, UriKind.RelativeOrAbsolute);
-      }
-
       public static XmlStandalone Standalone(string value) {
 
          if (value == null) throw new ArgumentNullException(nameof(value));
@@ -94,6 +101,10 @@ namespace Xcst.Runtime {
          }
 
          return XmlStandalone.No;
+      }
+
+      public static Uri Uri(string uri) {
+         return new Uri(uri, UriKind.RelativeOrAbsolute);
       }
 
       public static IList<TItem> List<TItem>(string list, Func<string, TItem> parseFn) {

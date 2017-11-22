@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:output method='xml' omit-xml-declaration='yes' item-separator='#absent'/>
+
+   <c:template name='c:initial-template'>
+      <c:object value='new[] { "4", "5" }'/>
+   </c:template>
+
+</c:module>
