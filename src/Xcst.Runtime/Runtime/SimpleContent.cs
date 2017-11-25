@@ -16,6 +16,7 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 
@@ -37,6 +38,8 @@ namespace Xcst.Runtime {
       static readonly char[] whiteSpaceChars = { (char)0x20, (char)0x9, (char)0xD, (char)0xA };
 
       static readonly ConcurrentDictionary<Type, bool> customToString = new ConcurrentDictionary<Type, bool>();
+
+      public static SimpleContent Invariant { get; } = new SimpleContent(CultureInfo.InvariantCulture);
 
       internal IFormatProvider FormatProvider { get; }
 

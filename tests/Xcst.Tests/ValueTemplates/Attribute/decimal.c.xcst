@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:import-namespace ns='System.Globalization'/>
+   <c:import-namespace ns='System.IO'/>
+   <c:import-namespace ns='System.Threading'/>
+
+   <c:output method='text'/>
+   
+   <c:template name='c:initial-template'>
+      <c:set member='Thread.CurrentThread.CurrentCulture' value='new CultureInfo("es")'/>
+      <c:variable name='htmlVersion' value='4.01m'/>
+      <c:serialize method='html' html-version='{htmlVersion}'/>
+      <c:result-document method='html' html-version='{htmlVersion}' output='TextWriter.Null'/>
+   </c:template>
+
+</c:module>

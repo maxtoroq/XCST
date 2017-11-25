@@ -600,6 +600,7 @@
     <None Include="CallableComponents\CallTemplate\TypeCompat.c.xcst" />
     <None Include="Serialization\Output\NoChildrenText.i.xcst" />
     <None Include="Serialization\Output\NoChildren.i.xcst" />
+    <None Include="ValueTemplates\Attribute\decimal.c.xcst" />
     <None Include="Types\_HiddenAbstract.xcst" />
     <None Include="Types\HiddenAbstract.i.xcst" />
     <None Include="Types\Children.c.xcst" />

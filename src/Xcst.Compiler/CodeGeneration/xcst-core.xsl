@@ -604,7 +604,7 @@
             <value-of select="src:string(namespace-uri())"/>
             <text>, </text>
          </if>
-         <value-of select="src:expand-attribute(.)"/>
+         <value-of select="src:expand-attribute(., true())"/>
          <text>)</text>
          <value-of select="$src:statement-delimiter"/>
       </for-each>
@@ -3300,11 +3300,25 @@
    <function name="src:expand-attribute" as="xs:string">
       <param name="attr" as="attribute()"/>
 
+      <sequence select="src:expand-attribute($attr, false())"/>
+   </function>
+
+   <function name="src:expand-attribute" as="xs:string">
+      <param name="attr" as="attribute()"/>
+      <param name="lre" as="xs:boolean"/>
+
       <variable name="text" select="string($attr)"/>
 
       <choose>
          <when test="xcst:is-value-template($text)">
-            <sequence select="src:format-value-template($text, $attr)"/>
+            <choose>
+               <when test="$lre">
+                  <sequence select="src:format-value-template($text, $attr)"/>
+               </when>
+               <otherwise>
+                  <sequence select="src:format-value-template($text, $attr, concat(src:fully-qualified-helper('SimpleContent'), '.Invariant'))"/>
+               </otherwise>
+            </choose>
          </when>
          <otherwise>
             <sequence select="src:verbatim-string($text)"/>
@@ -3316,7 +3330,15 @@
       <param name="text" as="xs:string"/>
       <param name="context" as="node()"/>
 
-      <sequence select="concat($src:context-field, '.SimpleContent.FormatValueTemplate(', src:interpolated-string($text, $context), ')')"/>
+      <sequence select="src:format-value-template($text, $context, concat($src:context-field, '.SimpleContent'))"/>
+   </function>
+
+   <function name="src:format-value-template" as="xs:string">
+      <param name="text" as="xs:string"/>
+      <param name="context" as="node()"/>
+      <param name="simple-content-ref" as="xs:string"/>
+
+      <sequence select="concat($simple-content-ref, '.FormatValueTemplate(', src:interpolated-string($text, $context), ')')"/>
    </function>
 
    <function name="src:interpolated-string" as="xs:string">

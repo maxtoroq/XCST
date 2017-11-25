@@ -46,7 +46,14 @@ namespace Xcst.Runtime {
       }
 
       public static decimal Decimal(string value) {
-         return System.Decimal.Parse(value, NumberStyles.Number, CultureInfo.InvariantCulture);
+
+         NumberStyles style = NumberStyles.AllowLeadingWhite
+            | NumberStyles.AllowTrailingWhite
+            | NumberStyles.AllowLeadingSign
+            | NumberStyles.AllowTrailingSign
+            | NumberStyles.AllowDecimalPoint;
+
+         return System.Decimal.Parse(value, style, CultureInfo.InvariantCulture);
       }
 
       public static int Integer(string value) {
