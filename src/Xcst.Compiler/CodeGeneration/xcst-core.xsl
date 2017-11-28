@@ -275,9 +275,7 @@
    </template>
 
    <template match="c:document" mode="xcst:instruction">
-      <element name="xcst:instruction">
-         <attribute name="as" select="'System.Xml.Linq.XDocument'"/>
-      </element>
+      <xcst:instruction as="System.Xml.Linq.XDocument"/>
    </template>
 
    <template match="c:element" mode="src:statement">
@@ -506,10 +504,7 @@
    </template>
 
    <template match="c:value-of | c:text" mode="xcst:instruction">
-      <element name="xcst:instruction">
-         <attribute name="as" select="'System.String'"/>
-         <attribute name="expression" select="true()"/>
-      </element>
+      <xcst:instruction as="System.String" expression="true"/>
    </template>
 
    <template match="text()[xcst:insignificant-whitespace(.)]" mode="src:statement src:expression">
@@ -681,9 +676,7 @@
    </template>
 
    <template match="c:object" mode="xcst:instruction">
-      <element name="xcst:instruction">
-         <attribute name="expression" select="true()"/>
-      </element>
+      <xcst:instruction expression="true"/>
    </template>
 
    <template match="c:map" mode="src:statement">
@@ -740,9 +733,7 @@
    </template>
 
    <template match="c:map" mode="xcst:instruction">
-      <element name="xcst:instruction">
-         <attribute name="as" select="'System.Object'"/>
-      </element>
+      <xcst:instruction as="System.Object"/>
    </template>
 
    <template match="c:map-entry" mode="src:statement">
@@ -862,9 +853,7 @@
    </template>
 
    <template match="c:array" mode="xcst:instruction">
-      <element name="xcst:instruction">
-         <attribute name="as" select="'System.Object'"/>
-      </element>
+      <xcst:instruction as="System.Object"/>
    </template>
 
    <function name="src:map-output" as="item()">
@@ -1353,9 +1342,7 @@
    </template>
 
    <template match="c:set" mode="xcst:instruction">
-      <element name="xcst:instruction">
-         <attribute name="void" select="true()"/>
-      </element>
+      <xcst:instruction void="true"/>
    </template>
 
    <!--
@@ -1477,14 +1464,14 @@
       </variable>
       <variable name="meta" select="$result[1]" as="element(xcst:template)"/>
       <variable name="original" select="$result[2]" as="xs:boolean"/>
-      <element name="xcst:instruction">
+      <xcst:instruction>
          <if test="$meta/@item-type">
             <attribute name="expression" select="true()"/>
             <if test="$meta/(@qualified-types, ../@qualified-types)[1]/xs:boolean(.)">
                <attribute name="as" select="$meta/@item-type"/>
             </if>
          </if>
-      </element>
+      </xcst:instruction>
    </template>
 
    <template name="src:call-template-context">
@@ -1648,11 +1635,11 @@
       <variable name="meta" as="element(xcst:template)">
          <call-template name="xcst:validate-next-template"/>
       </variable>
-      <element name="xcst:instruction">
+      <xcst:instruction>
          <if test="$meta/@item-type">
             <attribute name="expression" select="true()"/>
          </if>
-      </element>
+      </xcst:instruction>
    </template>
 
    <template match="c:with-param" mode="src:with-param">
@@ -1742,11 +1729,11 @@
          <with-param name="optional" select="'as'"/>
       </call-template>
       <variable name="meta" as="element()">
-         <element name="xcst:delegate">
+         <xcst:delegate>
             <if test="@as">
                <attribute name="item-type" select="@as/xcst:item-type(xcst:type(.))"/>
             </if>
-         </element>
+         </xcst:delegate>
       </variable>
       <variable name="new-context" select="src:template-context($meta, .)"/>
       <variable name="new-output" select="src:template-output($meta, .)"/>
@@ -1785,10 +1772,7 @@
    </template>
 
    <template match="c:delegate" mode="xcst:instruction">
-      <element name="xcst:instruction">
-         <attribute name="as" select="'System.Delegate'"/>
-         <attribute name="expression" select="true()"/>
-      </element>
+      <xcst:instruction as="System.Delegate" expression="true"/>
    </template>
 
    <template match="c:evaluate-delegate" mode="src:statement">
@@ -2122,9 +2106,7 @@
    </template>
 
    <template match="c:assert" mode="xcst:instruction">
-      <element name="xcst:instruction">
-         <attribute name="void" select="true()"/>
-      </element>
+      <xcst:instruction void="true"/>
    </template>
 
    <template match="c:message" mode="src:statement">
@@ -2178,9 +2160,7 @@
    </template>
 
    <template match="c:message" mode="xcst:instruction">
-      <element name="xcst:instruction">
-         <attribute name="void" select="true()"/>
-      </element>
+      <xcst:instruction void="true"/>
    </template>
 
    <!--
@@ -2278,9 +2258,7 @@
    </template>
 
    <template match="c:void" mode="xcst:instruction">
-      <element name="xcst:instruction">
-         <attribute name="void" select="true()"/>
-      </element>
+      <xcst:instruction void="true"/>
    </template>
 
    <template match="c:script" mode="src:statement">
@@ -2318,9 +2296,7 @@
    </template>
 
    <template match="c:script" mode="xcst:instruction">
-      <element name="xcst:instruction">
-         <attribute name="void" select="true()"/>
-      </element>
+      <xcst:instruction void="true"/>
    </template>
 
    <!--
@@ -2390,9 +2366,7 @@
    </template>
 
    <template match="c:result-document" mode="xcst:instruction">
-      <element name="xcst:instruction">
-         <attribute name="void" select="true()"/>
-      </element>
+      <xcst:instruction void="true"/>
    </template>
 
    <template match="c:serialize" mode="src:expression">
@@ -2431,10 +2405,7 @@
    </template>
 
    <template match="c:serialize" mode="xcst:instruction">
-      <element name="xcst:instruction">
-         <attribute name="as" select="'System.String'"/>
-         <attribute name="expression" select="true()"/>
-      </element>
+      <xcst:instruction as="System.String" expression="true"/>
    </template>
 
    <template name="src:format-QName">
@@ -2764,14 +2735,11 @@
       <!-- This is a template and not a function to allow access to tunnel parameters -->
 
       <variable name="text-meta" as="element()">
-         <element name="xcst:instruction">
-            <attribute name="as" select="'System.String'"/>
-            <attribute name="expression" select="true()"/>
-         </element>
+         <xcst:instruction as="System.String" expression="true"/>
       </variable>
 
       <variable name="default-meta" as="element()">
-         <element name="xcst:instruction"/>
+         <xcst:instruction/>
       </variable>
 
       <variable name="instructions" as="element(xcst:instruction)*">
@@ -2803,7 +2771,7 @@
             </otherwise>
          </choose>
       </variable>
-      <element name="xcst:sequence-constructor">
+      <xcst:sequence-constructor>
          <variable name="voids" select="$instructions[@void/xs:boolean(.)]"/>
          <variable name="non-void" select="$instructions except $voids"/>
          <variable name="item-types" select="$non-void[(@qualified-types/xs:boolean(.), true())[1]]/(@as/xcst:item-type(.))"/>
@@ -2825,7 +2793,7 @@
          <if test="$cardinality">
             <attribute name="cardinality" select="$cardinality"/>
          </if>
-      </element>
+      </xcst:sequence-constructor>
    </template>
 
    <function name="xcst:non-string" as="xs:string">
