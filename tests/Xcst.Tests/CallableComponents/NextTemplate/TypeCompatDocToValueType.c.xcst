@@ -1,16 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
-   <c:import href='_TypeCompatUntypedToValueType.xcst'/>
+   <c:import href='_TypeCompatDocToValueType.xcst'/>
 
    <c:template name='c:initial-template'>
-      <foo>
-         <c:call-template name='bar'/>
-      </foo>
+      <c:call-template name='foo'/>
    </c:template>
 
-   <c:template name='bar'>
-      <c:next-template/>
+   <c:template name='foo'>
+      <foo>
+         <c:next-template/>
+      </foo>
    </c:template>
 
    <c:template name='expected'>

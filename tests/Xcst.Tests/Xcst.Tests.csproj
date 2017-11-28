@@ -119,9 +119,9 @@
     <None Include="CallableComponents\EvaluateDelegate\DynamicInvoke.c.xcst" />
     <None Include="CallableComponents\EvaluateDelegate\TypeCompatDyn.f.xcst" />
     <None Include="CallableComponents\EvaluateDelegate\TypeCompatDynObjectToValueType.c.xcst" />
-    <None Include="CallableComponents\EvaluateDelegate\TypeCompatDynUntypedToValueType.c.xcst" />
+    <None Include="CallableComponents\EvaluateDelegate\TypeCompatDynDocToValueType.c.xcst" />
     <None Include="CallableComponents\EvaluateDelegate\TypeCompat.i.xcst" />
-    <None Include="CallableComponents\EvaluateDelegate\TypeCompatUntypedToValueType.c.xcst" />
+    <None Include="CallableComponents\EvaluateDelegate\TypeCompatDocToValueType.c.xcst" />
     <None Include="CallableComponents\EvaluateDelegate\TypeCompatObjectToValueType.c.xcst" />
     <None Include="CallableComponents\EvaluateDelegate\TypeCompat.c.xcst" />
     <None Include="CallableComponents\EvaluateDelegate\TypeCompatDyn.c.xcst" />
@@ -141,7 +141,7 @@
     <None Include="CallableComponents\EvaluatePackage\evaluate-package.global-params.type.i.xcst" />
     <None Include="CallableComponents\EvaluatePackage\TypeCompat.f.xcst" />
     <None Include="CallableComponents\EvaluatePackage\TypeCompat.c.xcst" />
-    <None Include="CallableComponents\EvaluatePackage\TypeCompatUntypedToValueType.c.xcst" />
+    <None Include="CallableComponents\EvaluatePackage\TypeCompatDocToValueType.c.xcst" />
     <None Include="CallableComponents\EvaluatePackage\NoChildrenText.i.xcst" />
     <None Include="CallableComponents\EvaluatePackage\NoChildren.i.xcst" />
     <None Include="CallableComponents\Function\HiddenAbstract.c.xcst" />
@@ -161,8 +161,8 @@
     <None Include="CallableComponents\NextTemplate\NextTemplate.c.xcst" />
     <None Include="CallableComponents\NextTemplate\_AbstractNextTemplate.xcst" />
     <None Include="CallableComponents\NextTemplate\_NextTemplate.xcst" />
-    <None Include="CallableComponents\NextTemplate\_TypeCompatUntypedToValueType.xcst" />
-    <None Include="CallableComponents\NextTemplate\TypeCompatUntypedToValueType.c.xcst" />
+    <None Include="CallableComponents\NextTemplate\_TypeCompatDocToValueType.xcst" />
+    <None Include="CallableComponents\NextTemplate\TypeCompatDocToValueType.c.xcst" />
     <None Include="CallableComponents\NextTemplate\WithParam\with-param.value_seqctor.mutex.i.xcst" />
     <None Include="CallableComponents\NextTemplate\_Children.xcst" />
     <None Include="CallableComponents\Template\HiddenAbstract.c.xcst" />
@@ -177,7 +177,7 @@
     <None Include="CallableComponents\Template\TypeCompatManyToOne.c.xcst" />
     <None Include="CallableComponents\Template\TypeCompat.c.xcst" />
     <None Include="CallableComponents\Template\TypeCompatObjectToValueType.c.xcst" />
-    <None Include="CallableComponents\Template\TypeCompatUntypedToValueType.c.xcst" />
+    <None Include="CallableComponents\Template\TypeCompatDefaultToValueType.c.xcst" />
     <None Include="CallableComponents\Template\TypeCompat.i.xcst" />
     <None Include="ConditionalProcessing\Break\NoChildrenText.i.xcst" />
     <None Include="ConditionalProcessing\Break\NoChildren.i.xcst" />
@@ -390,7 +390,7 @@
     <None Include="CreatingNodesAndObjects\MapEntry\Json\NoValue.c.xcst" />
     <None Include="CreatingNodesAndObjects\Map\Expando\UnconditionallyClose.c.xcst" />
     <None Include="CreatingNodesAndObjects\Map\Expando\ValueTypeOutput.i.xcst" />
-    <None Include="CreatingNodesAndObjects\MapEntry\Expando\DefaultOutput.i.xcst" />
+    <None Include="CreatingNodesAndObjects\MapEntry\Expando\DocOutput.i.xcst" />
     <None Include="CreatingNodesAndObjects\MapEntry\Json\CompatibleOutput.c.xcst" />
     <None Include="CreatingNodesAndObjects\Map\Expando\CompatibleOutput.c.xcst" />
     <None Include="CreatingNodesAndObjects\Map\Expando\CrossTemplate.c.xcst" />
@@ -596,7 +596,7 @@
     <None Include="Grouping\ForEachGroup\Sort\sort.order.type.i.xcst" />
     <None Include="Grouping\ForEachGroup\Sort\sort.value.type.i.xcst" />
     <None Include="CallableComponents\CallTemplate\TypeCompat.i.xcst" />
-    <None Include="CallableComponents\CallTemplate\TypeCompatUntypedToValueType.c.xcst" />
+    <None Include="CallableComponents\CallTemplate\TypeCompatDocToValueType.c.xcst" />
     <None Include="CallableComponents\CallTemplate\TypeCompat.c.xcst" />
     <None Include="Serialization\Output\NoChildrenText.i.xcst" />
     <None Include="Serialization\Output\NoChildren.i.xcst" />
