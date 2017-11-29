@@ -303,7 +303,7 @@ namespace Xcst {
          var tunnelParams = new Dictionary<string, object>(this.tunnelParameters);
 
          Action<IXcstPackage, XcstWriter> executionFn =
-            (p, o) => p.CallTemplate(this.name, CreateTemplateContext(templateParams, tunnelParams), o);
+            (p, o) => p.GetTypedTemplate(this.name, o)(CreateTemplateContext(templateParams, tunnelParams));
 
          return new XcstOutputter(this.package, this.primeFn, writerFn, executionFn);
       }

@@ -261,6 +261,8 @@
     <None Include="CreatingNodesAndObjects\Element\CompatibleOutput.c.xcst" />
     <None Include="CreatingNodesAndObjects\LiteralResultElement\CompatibleOutput.c.xcst" />
     <None Include="CreatingNodesAndObjects\LiteralResultElement\ValueTypeOutput.i.xcst" />
+    <None Include="CreatingNodesAndObjects\Namespace\CompatibleOutput.c.xcst" />
+    <None Include="CreatingNodesAndObjects\Namespace\ValueTypeOutput.i.xcst" />
     <None Include="CreatingNodesAndObjects\ProcessingInstruction\CompatibleOutput.c.xcst" />
     <None Include="CreatingNodesAndObjects\ProcessingInstruction\ValueTypeOutput.i.xcst" />
     <None Include="ProgramStructure\Packages\OverridingComponents\Function\Original.c.xcst" />

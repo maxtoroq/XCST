@@ -5,13 +5,21 @@
 
    <c:template name='c:initial-template'>
       <c:call-template name='foo'/>
+      <c:call-template name='bar'/>
    </c:template>
 
    <c:template name='foo'>
-      <c:variable name='a'>
+      <c:variable name='foo'>
          <c:next-template/>
       </c:variable>
-      <c:void value='Assert.AreEqual(typeof(int), CompileType(a))'/>
+      <c:void value='Assert.AreEqual(typeof(int), CompileType(foo))'/>
+   </c:template>
+
+   <c:template name='bar'>
+      <c:variable name='bar'>
+         <c:next-template/>
+      </c:variable>
+      <c:void value='Assert.AreEqual(typeof(object[]), CompileType(bar))'/>
    </c:template>
 
 </c:module>

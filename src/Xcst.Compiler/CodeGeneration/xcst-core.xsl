@@ -53,6 +53,7 @@
          <version>Version</version>
       </data>
    </variable>
+   <variable name="src:default-template-type" select="'System.Object[]'" as="xs:string"/>
 
    <template match="c:*" mode="src:statement">
       <param name="output" tunnel="yes"/>
@@ -378,9 +379,27 @@
          <with-param name="optional" select="'value'"/>
       </call-template>
       <call-template name="xcst:value-or-sequence-constructor"/>
+
+      <variable name="output-is-doc" select="src:output-is-doc($output)"/>
+      <variable name="doc-output" select="src:doc-output(., $output)"/>
+
+      <if test="not($output-is-doc)">
+         <value-of select="$src:new-line"/>
+         <call-template name="src:line-number"/>
+         <call-template name="src:new-line-indented"/>
+         <text>var </text>
+         <value-of select="$doc-output"/>
+         <text> = </text>
+         <value-of select="src:fully-qualified-helper('DocumentWriter')"/>
+         <text>.CastNamespace(</text>
+         <value-of select="$output"/>
+         <text>)</text>
+         <value-of select="$src:statement-delimiter"/>
+         <value-of select="$src:new-line"/>
+      </if>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
-      <value-of select="$output"/>
+      <value-of select="$doc-output"/>
       <text>.</text>
       <variable name="attrib-string" select="@value or not(*)"/>
       <choose>
@@ -407,6 +426,7 @@
          <text>try</text>
          <call-template name="src:sequence-constructor">
             <with-param name="ensure-block" select="true()"/>
+            <with-param name="output" select="$doc-output" tunnel="yes"/>
          </call-template>
          <text> finally</text>
          <call-template name="src:open-brace"/>
@@ -416,7 +436,7 @@
          <call-template name="src:new-line-indented">
             <with-param name="indent" select="$new-indent" tunnel="yes"/>
          </call-template>
-         <value-of select="$output"/>
+         <value-of select="$doc-output"/>
          <text>.WriteEndAttribute()</text>
          <value-of select="$src:statement-delimiter"/>
          <call-template name="src:close-brace"/>
@@ -433,7 +453,11 @@
       <call-template name="xcst:value-or-sequence-constructor"/>
 
       <variable name="output-is-doc" select="src:output-is-doc($output)"/>
-      <variable name="doc-output" select="src:doc-output(., $output)"/>
+      <!--
+         Using 'name' attribute to generate unique output name because src:simple-content
+         uses element for the same purpose
+      -->
+      <variable name="doc-output" select="src:doc-output(@name, $output)"/>
 
       <if test="not($output-is-doc)">
          <value-of select="$src:new-line"/>
@@ -1156,8 +1180,6 @@
       <param name="package-manifest" required="yes" tunnel="yes"/>
       <param name="context" tunnel="yes"/>
 
-      <!-- TODO: $c:original -->
-
       <variable name="global" select="parent::c:module
          or parent::c:package
          or parent::c:override"/>
@@ -1310,7 +1332,6 @@
    <template match="c:module/c:variable | c:package/c:variable | c:override/c:variable" mode="src:statement">
       <param name="package-manifest" required="yes" tunnel="yes"/>
 
-      <!-- TODO: $c:original -->
       <variable name="text" select="xcst:text(.)"/>
 
       <if test="xcst:has-value(., $text)">
@@ -1374,18 +1395,26 @@
    </template>
 
    <template match="c:call-template" mode="src:expression">
-
       <variable name="result" as="item()+">
          <call-template name="xcst:validate-call-template"/>
       </variable>
       <variable name="meta" select="$result[1]" as="element(xcst:template)"/>
       <variable name="original" select="$result[2]" as="xs:boolean"/>
+      <call-template name="src:write-template-expr">
+         <with-param name="meta" select="$meta"/>
+         <with-param name="template-method" select="if ($original) then src:original-member($meta) else $meta/@member-name"/>
+      </call-template>
+   </template>
+
+   <template name="src:write-template-expr">
+      <param name="meta" as="element()"/>
+      <param name="template-method" select="$meta/@member-name" as="xs:string"/>
 
       <value-of select="src:fully-qualified-helper('SequenceWriter'), 'Create'" separator="."/>
       <text>(</text>
-      <value-of select="src:global-identifier($meta/(@package-type, ../@package-type)[1]), src:item-type-inference-member-name($meta/@member-name)" separator="."/>
+      <value-of select="src:item-type-inference-member-ref($meta)"/>
       <text>).WriteTemplate(this.</text>
-      <value-of select="if ($original) then src:original-member($meta) else $meta/@member-name"/>
+      <value-of select="$template-method"/>
       <text>, </text>
       <call-template name="src:call-template-context">
          <with-param name="meta" select="$meta"/>
@@ -1464,13 +1493,17 @@
       </variable>
       <variable name="meta" select="$result[1]" as="element(xcst:template)"/>
       <variable name="original" select="$result[2]" as="xs:boolean"/>
-      <xcst:instruction>
-         <if test="$meta/@item-type">
-            <attribute name="expression" select="true()"/>
-            <if test="$meta/(@qualified-types, ../@qualified-types)[1]/xs:boolean(.)">
-               <attribute name="as" select="$meta/@item-type"/>
-            </if>
-         </if>
+      <xcst:instruction expression="true">
+         <choose>
+            <when test="$meta/@item-type">
+               <if test="$meta/(@qualified-types, ../@qualified-types)[1]/xs:boolean(.)">
+                  <attribute name="as" select="$meta/@item-type"/>
+               </if>
+            </when>
+            <otherwise>
+               <attribute name="as" select="$src:default-template-type"/>
+            </otherwise>
+         </choose>
       </xcst:instruction>
    </template>
 
@@ -1518,15 +1551,17 @@
       <param name="dynamic" select="false()" as="xs:boolean"/>
       <param name="output" tunnel="yes"/>
 
+      <variable name="output-item-type-is-object" select="
+         not(src:output-is-obj($output))
+         or $output/@item-type-is-object/xs:boolean(.)"/>
+
       <choose>
-         <when test="$meta/@item-type">
+         <when test="$meta/@item-type or not($output-item-type-is-object)">
             <value-of select="src:fully-qualified-helper('SequenceWriter')"/>
             <text>.AdjustWriter</text>
             <if test="$dynamic">Dynamically</if>
             <text>(</text>
-            <value-of select="$output"/>
-            <text>, </text>
-            <value-of select="src:global-identifier($meta/(@package-type, ../@package-type)[1]), src:item-type-inference-member-name($meta/@member-name)" separator="."/>
+            <value-of select="$output, src:item-type-inference-member-ref($meta)" separator=", "/>
             <text>)</text>
          </when>
          <otherwise>
@@ -1558,23 +1593,12 @@
    </template>
 
    <template match="c:next-template" mode="src:expression">
-
       <variable name="meta" as="element(xcst:template)">
          <call-template name="xcst:validate-next-template"/>
       </variable>
-
-      <value-of select="src:fully-qualified-helper('SequenceWriter'), 'Create'" separator="."/>
-      <text>(</text>
-      <value-of select="src:global-identifier($meta/(@package-type, ../@package-type)[1]), src:item-type-inference-member-name($meta/@member-name)" separator="."/>
-      <text>).WriteTemplate(this.</text>
-      <value-of select="$meta/@member-name"/>
-      <text>, </text>
-      <call-template name="src:call-template-context">
+      <call-template name="src:write-template-expr">
          <with-param name="meta" select="$meta"/>
       </call-template>
-      <text>).Flush</text>
-      <if test="$meta/@cardinality eq 'One'">Single</if>
-      <text>()</text>
    </template>
 
    <template name="xcst:validate-next-template">
@@ -1635,9 +1659,9 @@
       <variable name="meta" as="element(xcst:template)">
          <call-template name="xcst:validate-next-template"/>
       </variable>
-      <xcst:instruction>
-         <if test="$meta/@item-type">
-            <attribute name="expression" select="true()"/>
+      <xcst:instruction expression="true">
+         <if test="not($meta/@item-type)">
+            <attribute name="as" select="$src:default-template-type"/>
          </if>
       </xcst:instruction>
    </template>
@@ -3151,6 +3175,9 @@
                <otherwise>
                   <variable name="new-output" as="element()">
                      <src:output kind="obj">
+                        <if test="not($item-type)">
+                           <attribute name="item-type-is-object" select="true()"/>
+                        </if>
                         <value-of select="concat(src:aux-variable('output'), '_', generate-id())"/>
                      </src:output>
                   </variable>

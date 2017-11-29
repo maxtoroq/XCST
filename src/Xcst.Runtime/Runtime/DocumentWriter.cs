@@ -66,6 +66,10 @@ namespace Xcst.Runtime {
          return Cast(output);
       }
 
+      public static XcstWriter CastNamespace(ISequenceWriter<object> output) {
+         return Cast(output);
+      }
+
       public static XcstWriter CastAttribute(ISequenceWriter<object> output) {
          return Cast(output);
       }

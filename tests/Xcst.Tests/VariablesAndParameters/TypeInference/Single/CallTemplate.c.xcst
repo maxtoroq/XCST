@@ -2,14 +2,22 @@
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
    <c:template name='c:initial-template'>
-      <c:variable name='a'>
+      <c:variable name='foo'>
          <c:call-template name='foo'/>
       </c:variable>
-      <c:void value='Assert.AreEqual(typeof(int), CompileType(a))'/>
+      <c:variable name='bar'>
+         <c:call-template name='bar'/>
+      </c:variable>
+      <c:void value='Assert.AreEqual(typeof(int), CompileType(foo))'/>
+      <c:void value='Assert.AreEqual(typeof(object[]), CompileType(bar))'/>
    </c:template>
 
    <c:template name='foo' as='int'>
       <c:object value='1'/>
+   </c:template>
+
+   <c:template name='bar'>
+      <c:object value='"1"'/>
    </c:template>
 
 </c:module>

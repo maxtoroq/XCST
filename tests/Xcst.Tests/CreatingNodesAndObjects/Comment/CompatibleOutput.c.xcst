@@ -1,8 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
-   <c:template name='default'>
-      <c:comment/>
+   <c:template name='doc'>
+      <div>
+         <c:comment/>
+      </div>
    </c:template>
 
    <c:template name='object' as='object'>

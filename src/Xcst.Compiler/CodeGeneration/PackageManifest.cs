@@ -103,9 +103,12 @@ namespace Xcst.Compiler.CodeGeneration {
                MethodInfo method = ((MethodInfo)member);
 
                Type outputType = method.GetParameters()[1].ParameterType;
+               Type itemType;
 
-               if (outputType.IsGenericType) {
-                  writer.WriteAttributeString("item-type", TypeReference(outputType.GetGenericArguments()[0]));
+               if (outputType.IsGenericType
+                  && (itemType = outputType.GetGenericArguments()[0]) != typeof(object)) {
+
+                  writer.WriteAttributeString("item-type", TypeReference(itemType));
                }
 
                writer.WriteAttributeString("cardinality", tmplAttr.Cardinality.ToString());

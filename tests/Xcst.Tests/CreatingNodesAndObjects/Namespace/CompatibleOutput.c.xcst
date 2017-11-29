@@ -2,13 +2,13 @@
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
    <c:template name='doc'>
-      <c:element name='div'>
-         <foo/>
-      </c:element>
+      <div>
+         <c:namespace name='bar'/>
+      </div>
    </c:template>
 
    <c:template name='object' as='object'>
-      <foo/>
+      <c:namespace name='bar'/>
    </c:template>
 
 </c:module>

@@ -1,8 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
-   <c:template name='default'>
-      <c:map/>
+   <c:template name='doc'>
+      <div>
+         <c:map/>
+      </div>
    </c:template>
 
    <c:template name='JToken' as='Newtonsoft.Json.Linq.JToken'>

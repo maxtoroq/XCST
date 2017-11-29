@@ -1055,7 +1055,7 @@
          <call-template name="src:new-line-indented"/>
          <if test="$public">public </if>
          <text>static </text>
-         <value-of select="$item-type, src:item-type-inference-member-name($meta/@member-name)" separator=" "/>
+         <value-of select="$item-type, src:item-type-inference-member-name($meta)" separator=" "/>
          <text>()</text>
          <call-template name="src:open-brace"/>
          <call-template name="src:new-line-indented">
@@ -1316,24 +1316,20 @@
       <param name="meta" as="element()?"/>
       <param name="el" as="element()?"/>
 
-      <choose>
-         <when test="$meta/@item-type">
-            <src:output kind="obj" type="{concat(src:package-model-type('ISequenceWriter'), '&lt;', src:global-identifier-meta($meta/@item-type), '>')}">
-               <value-of select="src:aux-variable('output')"/>
-               <if test="$el">
-                  <text>_</text>
-                  <value-of select="generate-id($el)"/>
-               </if>
-            </src:output>
-         </when>
-         <otherwise>
-            <sequence select="src:doc-output($el, ())"/>
-         </otherwise>
-      </choose>
+      <src:output kind="obj" type="{concat(src:package-model-type('ISequenceWriter'), '&lt;', ($meta/@item-type/src:global-identifier-meta(.), 'object')[1], '>')}">
+         <if test="not($meta/@item-type)">
+            <attribute name="item-type-is-object" select="true()"/>
+         </if>
+         <value-of select="src:aux-variable('output')"/>
+         <if test="$el">
+            <text>_</text>
+            <value-of select="generate-id($el)"/>
+         </if>
+      </src:output>
    </function>
 
    <function name="src:doc-output" as="item()">
-      <param name="el" as="element()?"/>
+      <param name="node" as="node()?"/>
       <param name="output" as="item()?"/>
 
       <choose>
@@ -1343,9 +1339,9 @@
          <otherwise>
             <src:output kind="doc" type="{src:global-identifier('Xcst.XcstWriter')}">
                <value-of select="src:aux-variable('output')"/>
-               <if test="$el">
+               <if test="$node">
                   <text>_</text>
-                  <value-of select="generate-id($el)"/>
+                  <value-of select="generate-id($node)"/>
                </if>
             </src:output>
          </otherwise>
@@ -1358,10 +1354,29 @@
       <sequence select="$output instance of element() and $output/@kind[. eq 'doc']"/>
    </function>
 
-   <function name="src:item-type-inference-member-name" as="xs:string">
-      <param name="member-name" as="item()"/>
+   <function name="src:output-is-obj" as="xs:boolean">
+      <param name="output" as="item()"/>
 
-      <sequence select="concat($member-name, '_infer')"/>
+      <sequence select="$output instance of element() and $output/@kind[. eq 'obj']"/>
+   </function>
+
+   <function name="src:item-type-inference-member-name" as="xs:string">
+      <param name="meta" as="element()"/>
+
+      <sequence select="concat($meta/@member-name, '_infer')"/>
+   </function>
+
+   <function name="src:item-type-inference-member-ref" as="xs:string">
+      <param name="meta" as="element()"/>
+
+      <choose>
+         <when test="$meta/@item-type">
+            <sequence select="concat(src:global-identifier($meta/(@package-type, ../@package-type)[1]), '.', src:item-type-inference-member-name($meta))"/>
+         </when>
+         <otherwise>
+            <sequence select="concat(src:fully-qualified-helper('SequenceWriter'), '.DefaultInfer')"/>
+         </otherwise>
+      </choose>
    </function>
 
    <function name="src:package-model-type" as="xs:string">
@@ -2074,9 +2089,6 @@
          <with-param name="indent" select="$indent + 1" tunnel="yes"/>
       </call-template>
       <if test="$principal-module">
-         <call-template name="src:call-template-method">
-            <with-param name="indent" select="$indent + 1" tunnel="yes"/>
-         </call-template>
          <call-template name="src:get-typed-template-method">
             <with-param name="indent" select="$indent + 1" tunnel="yes"/>
          </call-template>
@@ -2912,161 +2924,6 @@
       <sequence select="concat(src:aux-variable('prime'), '_', generate-id($module))"/>
    </function>
 
-   <template name="src:call-template-method">
-      <param name="indent" tunnel="yes"/>
-
-      <value-of select="$src:new-line"/>
-      <call-template name="src:new-line-indented"/>
-      <variable name="name" select="src:aux-variable('name')"/>
-      <variable name="context" select="src:template-context(())"/>
-      <variable name="output" select="src:template-output(())"/>
-      <text>void </text>
-      <value-of select="$src:package-interface"/>
-      <text>.CallTemplate(</text>
-      <value-of select="src:global-identifier('Xcst.QualifiedName'), $name"/>
-      <text>, </text>
-      <value-of select="$context/@type, $context"/>
-      <text>, </text>
-      <value-of select="$output/@type, $output"/>
-      <text>)</text>
-      <call-template name="src:open-brace"/>
-      <call-template name="src:call-template-method-body">
-         <with-param name="indent" select="$indent + 1" tunnel="yes"/>
-         <with-param name="name-param" select="$name"/>
-         <with-param name="context" select="$context"/>
-         <with-param name="output" select="$output"/>
-      </call-template>
-      <call-template name="src:close-brace"/>
-   </template>
-
-   <template name="src:call-template-method-body">
-      <param name="package-manifest" required="yes" tunnel="yes"/>
-      <param name="name-param" required="yes"/>
-      <param name="context" required="yes"/>
-      <param name="output" required="yes"/>
-      <param name="indent" tunnel="yes"/>
-
-      <variable name="templates" select="$package-manifest/xcst:template[@visibility = ('public', 'final')]"/>
-
-      <value-of select="$src:new-line"/>
-      <call-template name="src:new-line-indented"/>
-      <text>switch (</text>
-      <value-of select="concat($name-param, '.Namespace')"/>
-      <text>)</text>
-      <call-template name="src:open-brace"/>
-
-      <for-each-group select="$templates" group-by="namespace-uri-from-QName(xcst:EQName(@name))">
-         <sort select="xcst:is-reserved-namespace(current-grouping-key())" order="descending"/>
-         <sort select="count(current-group())" order="descending"/>
-
-         <call-template name="src:new-line-indented">
-            <with-param name="increase" select="1"/>
-         </call-template>
-         <text>case </text>
-         <value-of select="src:verbatim-string(current-grouping-key())"/>
-         <text>:</text>
-         <call-template name="src:new-line-indented">
-            <with-param name="increase" select="2"/>
-         </call-template>
-         <text>switch (</text>
-         <value-of select="concat($name-param, '.Name')"/>
-         <text>)</text>
-         <call-template name="src:open-brace">
-            <with-param name="indent" select="$indent + 2" tunnel="yes"/>
-         </call-template>
-
-         <for-each select="current-group()">
-            <variable name="qname" select="xcst:EQName(@name)"/>
-
-            <call-template name="src:new-line-indented">
-               <with-param name="increase" select="3"/>
-            </call-template>
-            <text>case </text>
-            <value-of select="src:string(local-name-from-QName($qname))"/>
-            <text>:</text>
-            <call-template name="src:new-line-indented">
-               <with-param name="increase" select="4"/>
-            </call-template>
-            <text>this.</text>
-            <value-of select="@member-name"/>
-            <text>(</text>
-            <choose>
-               <when test="xcst:typed-params(.)">
-                  <text>new </text>
-                  <value-of select="src:template-context(.)/@type"/>
-                  <text>(</text>
-                  <value-of select="src:params-type-name(.), 'Create'" separator="."/>
-                  <text>(</text>
-                  <value-of select="$context"/>
-                  <text>), </text>
-                  <value-of select="$context"/>
-                  <text>)</text>
-               </when>
-               <otherwise>
-                  <value-of select="$context"/>
-               </otherwise>
-            </choose>
-            <text>, </text>
-            <call-template name="src:call-template-output">
-               <with-param name="meta" select="."/>
-               <with-param name="output" select="$output" tunnel="yes"/>
-            </call-template>
-            <text>)</text>
-            <value-of select="$src:statement-delimiter"/>
-
-            <call-template name="src:new-line-indented">
-               <with-param name="increase" select="4"/>
-            </call-template>
-            <text>break</text>
-            <value-of select="$src:statement-delimiter"/>
-         </for-each>
-
-         <call-template name="src:new-line-indented">
-            <with-param name="increase" select="3"/>
-         </call-template>
-         <text>default:</text>
-         <call-template name="src:new-line-indented">
-            <with-param name="increase" select="4"/>
-         </call-template>
-         <call-template name="src:call-template-method-unknown-throw">
-            <with-param name="name-param" select="$name-param"/>
-         </call-template>
-
-         <call-template name="src:close-brace">
-            <with-param name="indent" select="$indent + 2" tunnel="yes"/>
-         </call-template>
-
-         <call-template name="src:new-line-indented">
-            <with-param name="increase" select="2"/>
-         </call-template>
-         <text>break</text>
-         <value-of select="$src:statement-delimiter"/>
-      </for-each-group>
-
-      <call-template name="src:new-line-indented">
-         <with-param name="increase" select="1"/>
-      </call-template>
-      <text>default:</text>
-      <call-template name="src:new-line-indented">
-         <with-param name="increase" select="2"/>
-      </call-template>
-      <call-template name="src:call-template-method-unknown-throw">
-         <with-param name="name-param" select="$name-param"/>
-      </call-template>
-      <call-template name="src:close-brace"/>
-   </template>
-
-   <template name="src:call-template-method-unknown-throw">
-      <param name="name-param" required="yes"/>
-
-      <text>throw </text>
-      <value-of select="src:fully-qualified-helper('DynamicError')"/>
-      <text>.UnknownTemplate(</text>
-      <value-of select="$name-param"/>
-      <text>)</text>
-      <value-of select="$src:statement-delimiter"/>
-   </template>
-
    <template name="src:get-typed-template-method">
       <param name="indent" tunnel="yes"/>
 
@@ -3103,7 +2960,7 @@
       <param name="output" required="yes"/>
       <param name="indent" tunnel="yes"/>
 
-      <variable name="templates" select="$package-manifest/xcst:template[@visibility = ('public', 'final')][@item-type]"/>
+      <variable name="templates" select="$package-manifest/xcst:template[@visibility = ('public', 'final')]"/>
 
       <value-of select="$src:new-line"/>
       <call-template name="src:new-line-indented"/>
@@ -3150,7 +3007,22 @@
             <text> => this.</text>
             <value-of select="@member-name"/>
             <text>(</text>
-            <value-of select="$context"/>
+            <choose>
+               <when test="xcst:typed-params(.)">
+                  <text>new </text>
+                  <value-of select="src:template-context(.)/@type"/>
+                  <text>(</text>
+                  <value-of select="src:params-type-name(.), 'Create'" separator="."/>
+                  <text>(</text>
+                  <value-of select="$context"/>
+                  <text>), </text>
+                  <value-of select="$context"/>
+                  <text>)</text>
+               </when>
+               <otherwise>
+                  <value-of select="$context"/>
+               </otherwise>
+            </choose>
             <text>, </text>
             <call-template name="src:call-template-output">
                <with-param name="meta" select="."/>
@@ -3168,7 +3040,7 @@
          <call-template name="src:new-line-indented">
             <with-param name="increase" select="4"/>
          </call-template>
-         <call-template name="src:call-template-method-unknown-throw">
+         <call-template name="src:get-typed-template-method-unknown-throw">
             <with-param name="name-param" select="$name-param"/>
          </call-template>
 
@@ -3184,10 +3056,21 @@
       <call-template name="src:new-line-indented">
          <with-param name="increase" select="2"/>
       </call-template>
-      <call-template name="src:call-template-method-unknown-throw">
+      <call-template name="src:get-typed-template-method-unknown-throw">
          <with-param name="name-param" select="$name-param"/>
       </call-template>
       <call-template name="src:close-brace"/>
+   </template>
+
+   <template name="src:get-typed-template-method-unknown-throw">
+      <param name="name-param" required="yes"/>
+
+      <text>throw </text>
+      <value-of select="src:fully-qualified-helper('DynamicError')"/>
+      <text>.UnknownTemplate(</text>
+      <value-of select="$name-param"/>
+      <text>)</text>
+      <value-of select="$src:statement-delimiter"/>
    </template>
 
    <template name="src:read-output-definition-method">

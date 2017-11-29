@@ -140,6 +140,10 @@ namespace Xcst.Runtime {
 
          throw new RuntimeException($"{typeof(TDerived).FullName} is not compatible with {typeof(TBase).FullName}.");
       }
+
+      public static object DefaultInfer() {
+         return default(object);
+      }
    }
 
    class CastingSequenceWriter<TDerived, TBase> : ISequenceWriter<TDerived> where TDerived : TBase {
