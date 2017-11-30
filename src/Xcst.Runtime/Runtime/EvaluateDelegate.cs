@@ -19,18 +19,7 @@ namespace Xcst.Runtime {
 
    public static class EvaluateDelegate {
 
-      // This overload is required for XcstWriter output
-
-      public static void Invoke<TOutput>(Action<TemplateContext, TOutput> del, TemplateContext context, TOutput output) {
-
-         if (del == null) throw new ArgumentNullException(nameof(del));
-         if (context == null) throw new ArgumentNullException(nameof(context));
-         if (output == null) throw new ArgumentNullException(nameof(output));
-
-         del.Invoke(context, output);
-      }
-
-      public static void Invoke<TDerived, TBase>(Action<TemplateContext, ISequenceWriter<TDerived>> del, TemplateContext context, ISequenceWriter<TBase> output)
+      public static void Invoke<TDerived, TBase>(XcstDelegate<TDerived> del, TemplateContext context, ISequenceWriter<TBase> output)
             where TDerived : TBase {
 
          if (del == null) throw new ArgumentNullException(nameof(del));
@@ -50,27 +39,21 @@ namespace Xcst.Runtime {
          if (output == null) throw new ArgumentNullException(nameof(output));
 
          Type delType = del.GetType();
-         Type actionType = delType.GetGenericTypeDefinition();
-         Type[] actionTypeParams = delType.GetGenericArguments();
-         Type seqWriterType = null;
+         Type xcstType = delType.GetGenericTypeDefinition();
 
-         if (actionType != typeof(Action<,>)
-            || actionTypeParams[0] != typeof(TemplateContext)
-            || (actionTypeParams[1] != typeof(XcstWriter)
-               && (seqWriterType = actionTypeParams[1].GetGenericTypeDefinition()) != typeof(ISequenceWriter<>))) {
-
+         if (xcstType != typeof(XcstDelegate<>)) {
             throw new RuntimeException("Invalid delegate.");
          }
 
+         Type[] xcstTypeParams = delType.GetGenericArguments();
+         Type derivedType = xcstTypeParams[0];
+         Type baseType = typeof(TItem);
+
          object derivedWriter = output;
+         bool compatibleOutput = typeof(ISequenceWriter<>).MakeGenericType(derivedType)
+            .IsAssignableFrom(output.GetType());
 
-         if (!actionTypeParams[1].IsAssignableFrom(output.GetType())) {
-
-            Type derivedType = (seqWriterType != null) ?
-               actionTypeParams[1].GetGenericArguments()[0]
-               : typeof(object);
-
-            Type baseType = typeof(TItem);
+         if (!compatibleOutput) {
 
             if (baseType.IsAssignableFrom(derivedType)) {
 

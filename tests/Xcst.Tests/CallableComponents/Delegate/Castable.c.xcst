@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:template name='c:initial-template'>
+      <c:variable name='s'>
+         <c:delegate as='string'>foo</c:delegate>
+      </c:variable>
+      <c:variable name='o' value='s' as='Xcst.XcstDelegate&lt;object>'/>
+      <c:variable name='r' as='object'>
+         <c:evaluate-delegate delegate='o'/>
+      </c:variable>
+      <c:void value='Assert.AreEqual(typeof(string), r.GetType())'/>
+      <c:void value='Assert.AreEqual("foo", r)'/>
+   </c:template>
+
+</c:module>

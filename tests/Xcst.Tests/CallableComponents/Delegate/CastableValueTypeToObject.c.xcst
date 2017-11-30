@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:template name='c:initial-template'>
+      <c:variable name='i'>
+         <c:delegate as='int'>
+            <c:object value='1'/>
+         </c:delegate>
+      </c:variable>
+      <c:variable name='o' value='Xcst.Runtime.SequenceWriter.CastDelegate&lt;object, int>(i)' as='Xcst.XcstDelegate&lt;object>'/>
+      <c:variable name='r' as='object'>
+         <c:evaluate-delegate delegate='o'/>
+      </c:variable>
+      <c:void value='Assert.AreEqual(typeof(int), r.GetType())'/>
+      <c:void value='Assert.AreEqual(1, r)'/>
+   </c:template>
+
+</c:module>

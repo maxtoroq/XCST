@@ -1324,9 +1324,7 @@
    </template>
 
    <template match="c:variable" mode="xcst:instruction">
-      <element name="xcst:instruction">
-         <attribute name="void" select="true()"/>
-      </element>
+      <xcst:instruction void="true"/>
    </template>
 
    <template match="c:module/c:variable | c:package/c:variable | c:override/c:variable" mode="src:statement">
@@ -1762,9 +1760,9 @@
       <variable name="new-context" select="src:template-context($meta, .)"/>
       <variable name="new-output" select="src:template-output($meta, .)"/>
       <text>new </text>
-      <value-of select="src:global-identifier('System.Action')"/>
+      <value-of select="src:global-identifier('Xcst.XcstDelegate')"/>
       <text>&lt;</text>
-      <value-of select="$new-context/@type, $new-output/@type" separator=", "/>
+      <value-of select="($meta/@item-type, src:global-identifier('System.Object'))[1]"/>
       <text>>((</text>
       <value-of select="$new-context, $new-output" separator=", "/>
       <text>) =></text>
@@ -2751,6 +2749,42 @@
 
       <sequence select="if ($as) then ('ZeroOrMore'[ends-with($as, '[]')], 'One')[1] else 'ZeroOrMore'"/>
    </function>
+
+   <template name="xcst:variable-type" as="xs:string?">
+      <param name="el" as="element()" required="yes"/>
+      <param name="text" select="xcst:text($el)" as="xs:string?"/>
+      <param name="ignore-seqctor" select="false()"/>
+
+      <!-- This is a template and not a function to allow access to tunnel parameters -->
+
+      <choose>
+         <when test="$el/@as">
+            <sequence select="xcst:type($el/@as)"/>
+         </when>
+         <when test="$text">
+            <sequence select="'string'"/>
+         </when>
+         <when test="xcst:has-value($el, $text)">
+            <choose>
+               <when test="$el/@value"/>
+               <when test="not($ignore-seqctor)">
+                  <variable name="seqctor-meta" as="element()">
+                     <call-template name="xcst:sequence-constructor">
+                        <with-param name="text" select="$text"/>
+                     </call-template>
+                  </variable>
+                  <sequence select="concat(
+                     ($seqctor-meta/@item-type/src:global-identifier(.), 'object')[1],
+                     if ($seqctor-meta/@cardinality eq 'ZeroOrMore') then '[]' else ''
+                  )"/>
+               </when>
+            </choose>
+         </when>
+         <otherwise>
+            <sequence select="'object'"/>
+         </otherwise>
+      </choose>
+   </template>
 
    <template name="xcst:sequence-constructor" as="element(xcst:sequence-constructor)">
       <param name="text" as="xs:string?" required="yes"/>

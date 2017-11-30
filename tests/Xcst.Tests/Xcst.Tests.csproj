@@ -111,6 +111,9 @@
     <None Include="CallableComponents\CallTemplate\WithParam\TypeIncompatible.i.xcst" />
     <None Include="CallableComponents\CallTemplate\WithParam\NoValue.c.xcst" />
     <None Include="CallableComponents\CallTemplate\WithParam\with-param.value_seqctor.mutex.i.xcst" />
+    <None Include="CallableComponents\Delegate\Castable.c.xcst" />
+    <None Include="CallableComponents\Delegate\CastableValueTypeToObject.c.xcst" />
+    <None Include="CallableComponents\Delegate\Castable.i.xcst" />
     <None Include="CallableComponents\EvaluateDelegate\Children.c.xcst" />
     <None Include="CallableComponents\EvaluateDelegate\Children.i.xcst" />
     <None Include="CallableComponents\EvaluateDelegate\ChildrenText.i.xcst" />

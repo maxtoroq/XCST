@@ -144,6 +144,12 @@ namespace Xcst.Runtime {
       public static object DefaultInfer() {
          return default(object);
       }
+
+      public static XcstDelegate<TBase> CastDelegate<TBase, TDerived>(XcstDelegate<TDerived> del)
+            where TDerived : TBase {
+
+         return (c, o) => del(c, new CastingSequenceWriter<TDerived, TBase>(o));
+      }
    }
 
    class CastingSequenceWriter<TDerived, TBase> : ISequenceWriter<TDerived> where TDerived : TBase {

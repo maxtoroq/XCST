@@ -919,42 +919,6 @@
       </choose>
    </function>
 
-   <template name="xcst:variable-type" as="xs:string?">
-      <param name="el" as="element()" required="yes"/>
-      <param name="text" select="xcst:text($el)" as="xs:string?"/>
-      <param name="ignore-seqctor" select="false()"/>
-
-      <!-- This is a template and not a function to allow access to tunnel parameters -->
-
-      <choose>
-         <when test="$el/@as">
-            <sequence select="xcst:type($el/@as)"/>
-         </when>
-         <when test="$text">
-            <sequence select="'string'"/>
-         </when>
-         <when test="xcst:has-value($el, $text)">
-            <choose>
-               <when test="$el/@value"/>
-               <when test="not($ignore-seqctor)">
-                  <variable name="seqctor-meta" as="element()">
-                     <call-template name="xcst:sequence-constructor">
-                        <with-param name="text" select="$text"/>
-                     </call-template>
-                  </variable>
-                  <sequence select="concat(
-                     ($seqctor-meta/@item-type/src:global-identifier(.), 'object')[1],
-                     if ($seqctor-meta/@cardinality eq 'ZeroOrMore') then '[]' else ''
-                  )"/>
-               </when>
-            </choose>
-         </when>
-         <otherwise>
-            <sequence select="'object'"/>
-         </otherwise>
-      </choose>
-   </template>
-
    <function name="src:template-method-name" as="xs:string">
       <param name="declaration" as="element()"/>
       <param name="qname" as="xs:QName?"/>

@@ -5,7 +5,11 @@
       <c:variable name='a'>
          <c:delegate/>
       </c:variable>
-      <c:void value='Assert.IsTrue(typeof(System.Delegate).IsAssignableFrom(CompileType(a)))'/>
+      <c:variable name='b'>
+         <c:delegate as='string'/>
+      </c:variable>
+      <c:void value='Assert.AreEqual(typeof(Xcst.XcstDelegate&lt;object>), CompileType(a))'/>
+      <c:void value='Assert.AreEqual(typeof(Xcst.XcstDelegate&lt;string>), CompileType(b))'/>
    </c:template>
 
 </c:module>
