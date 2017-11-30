@@ -162,7 +162,7 @@ function script:Release([string]$projName, [switch]$skipBuild) {
    }
    
    if ((Prompt-Choices -Message "Push package to gallery?" -Default 1) -eq 0) {
-      &$nuget push $pkgPath
+      &$nuget push $pkgPath -Source https://www.nuget.org/api/v2/package
    }
 
    if ($createdTag) {

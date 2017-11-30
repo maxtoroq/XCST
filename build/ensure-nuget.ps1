@@ -13,7 +13,7 @@ try {
 
    if (-not (Test-Path $nuget -PathType Leaf)) {
       write "Downloading NuGet..."
-      Invoke-WebRequest https://www.nuget.org/nuget.exe -OutFile $nuget
+      Invoke-WebRequest https://dist.nuget.org/win-x86-commandline/latest/nuget.exe -OutFile $nuget
    }
 
 } finally {
