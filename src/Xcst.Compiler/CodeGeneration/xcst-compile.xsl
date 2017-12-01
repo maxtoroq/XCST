@@ -1280,16 +1280,23 @@
       <param name="meta" as="element()?"/>
       <param name="el" as="element()?"/>
 
-      <src:output kind="obj" type="{concat(src:package-model-type('ISequenceWriter'), '&lt;', ($meta/@item-type/src:global-identifier-meta(.), 'object')[1], '>')}">
-         <if test="not($meta/@item-type)">
-            <attribute name="item-type-is-object" select="true()"/>
-         </if>
-         <value-of select="src:aux-variable('output')"/>
-         <if test="$el">
-            <text>_</text>
-            <value-of select="generate-id($el)"/>
-         </if>
-      </src:output>
+      <choose>
+         <when test="$meta[self::xcst:attribute-set]">
+            <sequence select="src:doc-output((), ())"/>
+         </when>
+         <otherwise>
+            <src:output kind="obj" type="{concat(src:package-model-type('ISequenceWriter'), '&lt;', ($meta/@item-type/src:global-identifier-meta(.), 'object')[1], '>')}">
+               <if test="not($meta/@item-type)">
+                  <attribute name="item-type-is-object" select="true()"/>
+               </if>
+               <value-of select="src:aux-variable('output')"/>
+               <if test="$el">
+                  <text>_</text>
+                  <value-of select="generate-id($el)"/>
+               </if>
+            </src:output>
+         </otherwise>
+      </choose>
    </function>
 
    <function name="src:doc-output" as="item()">
