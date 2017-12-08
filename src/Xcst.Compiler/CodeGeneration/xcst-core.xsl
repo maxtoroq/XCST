@@ -2362,10 +2362,14 @@
       <call-template name="src:close-brace"/>
       <text>, </text>
       <call-template name="src:format-QName"/>
-      <text>, (</text>
-      <value-of select="src:expression-or-null($output)"/>
-      <text>) as </text>
-      <value-of select="src:global-identifier('Xcst.XcstWriter')"/>
+      <text>, </text>
+      <choose>
+         <when test="$output">
+            <value-of select="$output"/>
+            <if test="not(src:output-is-doc($output))">.TryCastToDocumentWriter()</if>
+         </when>
+         <otherwise>null</otherwise>
+      </choose>
       <text>, </text>
       <choose>
          <when test="@href">

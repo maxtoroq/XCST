@@ -227,10 +227,6 @@ namespace Xcst.Runtime {
          throw new NotImplementedException();
       }
 
-      protected override XcstWriter TryCastToDocumentWriter() {
-         return null;
-      }
-
       void Push(object obj) {
          this.objects.Add(obj);
       }

@@ -104,11 +104,13 @@ namespace Xcst.Runtime {
          WriteRaw((string)data);
       }
 
-      protected abstract XcstWriter TryCastToDocumentWriter();
+      public virtual XcstWriter TryCastToDocumentWriter() {
+         return null;
+      }
 
-      XcstWriter ISequenceWriter<object>.TryCastToDocumentWriter() => TryCastToDocumentWriter();
-
-      MapWriter ISequenceWriter<object>.TryCastToMapWriter() => this;
+      public MapWriter TryCastToMapWriter() {
+         return this;
+      }
 
       #endregion
 

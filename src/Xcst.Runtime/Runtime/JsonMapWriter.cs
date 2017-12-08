@@ -207,7 +207,7 @@ namespace Xcst.Runtime {
          this.BaseWriter.WriteRaw(data);
       }
 
-      protected override XcstWriter TryCastToDocumentWriter() {
+      public override XcstWriter TryCastToDocumentWriter() {
          return this.docWriter;
       }
 

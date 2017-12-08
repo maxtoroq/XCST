@@ -212,11 +212,11 @@ namespace Xcst {
          WriteObject((object)value);
       }
 
-      XcstWriter ISequenceWriter<object>.TryCastToDocumentWriter() {
+      public XcstWriter TryCastToDocumentWriter() {
          return this;
       }
 
-      MapWriter ISequenceWriter<object>.TryCastToMapWriter() {
+      public MapWriter TryCastToMapWriter() {
          return null;
       }
 
