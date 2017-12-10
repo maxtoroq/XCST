@@ -24,7 +24,7 @@ namespace Xcst.Runtime {
 
    public static class Serialization {
 
-      public static string Serialize(IXcstPackage package, QualifiedName outputName, OutputParameters parameters, Action<XcstWriter> action) {
+      public static string Serialize(IXcstPackage package, QualifiedName/*?*/ outputName, OutputParameters parameters, Action<XcstWriter> action) {
 
          if (package == null) throw new ArgumentNullException(nameof(package));
          if (parameters == null) throw new ArgumentNullException(nameof(parameters));
@@ -61,8 +61,8 @@ namespace Xcst.Runtime {
       public static XcstWriter ResultDocument(
             IXcstPackage package,
             OutputParameters parameters,
-            QualifiedName outputName,
-            XcstWriter currentOutput,
+            QualifiedName/*?*/ outputName,
+            XcstWriter/*?*/ currentOutput,
             Uri outputUri) {
 
          if (outputUri == null) throw new ArgumentNullException(nameof(outputUri));
@@ -73,9 +73,9 @@ namespace Xcst.Runtime {
       public static XcstWriter ResultDocument(
             IXcstPackage package,
             OutputParameters parameters,
-            QualifiedName outputName,
-            XcstWriter currentOutput,
-            Uri outputUri,
+            QualifiedName/*?*/ outputName,
+            XcstWriter/*?*/ currentOutput,
+            Uri/*?*/ outputUri,
             Stream output) {
 
          if (output == null) throw new ArgumentNullException(nameof(output));
@@ -86,9 +86,9 @@ namespace Xcst.Runtime {
       public static XcstWriter ResultDocument(
             IXcstPackage package,
             OutputParameters parameters,
-            QualifiedName outputName,
-            XcstWriter currentOutput,
-            Uri outputUri,
+            QualifiedName/*?*/ outputName,
+            XcstWriter/*?*/ currentOutput,
+            Uri/*?*/ outputUri,
             TextWriter output) {
 
          if (output == null) throw new ArgumentNullException(nameof(output));
@@ -99,9 +99,9 @@ namespace Xcst.Runtime {
       public static XcstWriter ResultDocument(
             IXcstPackage package,
             OutputParameters parameters,
-            QualifiedName outputName,
-            XcstWriter currentOutput,
-            Uri outputUri,
+            QualifiedName/*?*/ outputName,
+            XcstWriter/*?*/ currentOutput,
+            Uri/*?*/ outputUri,
             XmlWriter output) {
 
          if (output == null) throw new ArgumentNullException(nameof(output));
@@ -112,9 +112,9 @@ namespace Xcst.Runtime {
       public static XcstWriter ResultDocument(
             IXcstPackage package,
             OutputParameters parameters,
-            QualifiedName outputName,
-            XcstWriter currentOutput,
-            Uri outputUri,
+            QualifiedName/*?*/ outputName,
+            XcstWriter/*?*/ currentOutput,
+            Uri/*?*/ outputUri,
             XcstWriter output) {
 
          if (output == null) throw new ArgumentNullException(nameof(output));
@@ -127,9 +127,9 @@ namespace Xcst.Runtime {
             bool customOutput,
             IXcstPackage package,
             OutputParameters parameters,
-            QualifiedName outputName,
-            XcstWriter currentOutput,
-            Uri outputUri) {
+            QualifiedName/*?*/ outputName,
+            XcstWriter/*?*/ currentOutput,
+            Uri/*?*/ outputUri) {
 
          if (package == null) throw new ArgumentNullException(nameof(package));
          if (parameters == null) throw new ArgumentNullException(nameof(parameters));

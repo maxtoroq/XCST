@@ -50,7 +50,7 @@ namespace Xcst {
          this.package = package;
       }
 
-      public XcstEvaluator WithParam(string name, object value) {
+      public XcstEvaluator WithParam(string name, object/*?*/ value) {
 
          if (name == null) throw new ArgumentNullException(nameof(name));
 
@@ -67,7 +67,7 @@ namespace Xcst {
          return this;
       }
 
-      public XcstEvaluator WithParams(object parameters) {
+      public XcstEvaluator WithParams(object/*?*/ parameters) {
 
          if (parameters != null) {
             WithParams(ObjectToDictionary(parameters));
@@ -76,7 +76,7 @@ namespace Xcst {
          return this;
       }
 
-      public XcstEvaluator WithParams(IDictionary<string, object> parameters) {
+      public XcstEvaluator WithParams(IDictionary<string, object>/*?*/ parameters) {
 
          if (parameters != null) {
 
@@ -88,7 +88,7 @@ namespace Xcst {
          return this;
       }
 
-      internal static IDictionary<string, object> ObjectToDictionary(object values) {
+      internal static IDictionary<string, object> ObjectToDictionary(object/*?*/ values) {
 
          IDictionary<string, object> dict = null;
 
@@ -175,7 +175,7 @@ namespace Xcst {
          this.name = name;
       }
 
-      public XcstTemplateEvaluator WithParam(string name, object value, bool tunnel = false) {
+      public XcstTemplateEvaluator WithParam(string name, object/*?*/ value, bool tunnel = false) {
 
          if (name == null) throw new ArgumentNullException(nameof(name));
 
@@ -188,7 +188,7 @@ namespace Xcst {
          return this;
       }
 
-      public XcstTemplateEvaluator WithParams(object parameters) {
+      public XcstTemplateEvaluator WithParams(object/*?*/ parameters) {
 
          if (parameters != null) {
             WithParams(XcstEvaluator.ObjectToDictionary(parameters));
@@ -197,7 +197,7 @@ namespace Xcst {
          return this;
       }
 
-      public XcstTemplateEvaluator WithParams(IDictionary<string, object> parameters) {
+      public XcstTemplateEvaluator WithParams(IDictionary<string, object>/*?*/ parameters) {
 
          if (parameters != null) {
 
@@ -209,7 +209,7 @@ namespace Xcst {
          return this;
       }
 
-      public XcstTemplateEvaluator WithTunnelParams(object parameters) {
+      public XcstTemplateEvaluator WithTunnelParams(object/*?*/ parameters) {
 
          if (parameters != null) {
             WithTunnelParams(XcstEvaluator.ObjectToDictionary(parameters));
@@ -218,7 +218,7 @@ namespace Xcst {
          return this;
       }
 
-      public XcstTemplateEvaluator WithTunnelParams(IDictionary<string, object> parameters) {
+      public XcstTemplateEvaluator WithTunnelParams(IDictionary<string, object>/*?*/ parameters) {
 
          if (parameters != null) {
 
@@ -359,13 +359,17 @@ namespace Xcst {
          this.typedExecutionFn = typedExecutionFn;
       }
 
-      public XcstOutputter WithParams(OutputParameters parameters) {
+      public XcstOutputter WithParams(OutputParameters/*?*/ parameters) {
+
+         if (parameters != null) {
+            parameters = new OutputParameters(parameters);
+         }
 
          this.parameters = parameters;
          return this;
       }
 
-      public XcstOutputter WithFormatProvider(IFormatProvider formatProvider) {
+      public XcstOutputter WithFormatProvider(IFormatProvider/*?*/ formatProvider) {
 
          this.formatProvider = formatProvider;
          return this;

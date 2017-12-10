@@ -177,6 +177,15 @@ namespace Xcst {
          set { parameters[StandardParameters.Version] = value; }
       }
 
+      public OutputParameters() { }
+
+      public OutputParameters(OutputParameters parameters) {
+
+         if (parameters == null) throw new ArgumentNullException(nameof(parameters));
+
+         Merge(parameters);
+      }
+
       internal void Merge(OutputParameters other) {
 
          foreach (var pair in other.parameters) {
