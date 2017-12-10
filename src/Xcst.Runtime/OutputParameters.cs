@@ -142,6 +142,11 @@ namespace Xcst {
          set { parameters[StandardParameters.OmitXmlDeclaration] = value; }
       }
 
+      public bool? SkipCharacterCheck {
+         get { return (bool?)this[StandardParameters.SkipCharacterCheck]; }
+         set { parameters[StandardParameters.SkipCharacterCheck] = value; }
+      }
+
       public XmlStandalone? Standalone {
          get { return (XmlStandalone?)this[StandardParameters.Standalone]; }
          set { parameters[StandardParameters.Standalone] = value; }
@@ -210,6 +215,7 @@ namespace Xcst {
          public static readonly QualifiedName MediaType = new QualifiedName("media-type");
          public static readonly QualifiedName Method = new QualifiedName("method");
          public static readonly QualifiedName OmitXmlDeclaration = new QualifiedName("omit-xml-declaration");
+         public static readonly QualifiedName SkipCharacterCheck = new QualifiedName("skip-character-check");
          public static readonly QualifiedName Standalone = new QualifiedName("standalone");
          public static readonly QualifiedName SuppressIndentation = new QualifiedName("suppress-indentation");
          public static readonly QualifiedName UndeclarePrefixes = new QualifiedName("undeclare-prefixes");
@@ -264,6 +270,9 @@ namespace Xcst {
 
                case "output-version":
                   return Version;
+
+               case "skip-character-check":
+                  return SkipCharacterCheck;
 
                case "standalone":
                   return Standalone;

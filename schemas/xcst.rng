@@ -722,6 +722,10 @@
                   <ann:documentation>The version of the output format.</ann:documentation>
                   <ref name="output-version"/>
                </attribute>
+               <attribute name="skip-character-check">
+                  <ann:documentation>Specifies whether to skip character checking that ensures the output does not contain any illegal characters.</ann:documentation>
+                  <ref name="boolean"/>
+               </attribute>
                <ref name="standard-attributes-except-version"/>
             </choice>
          </zeroOrMore>
@@ -1720,6 +1724,13 @@
                <ann:documentation>The version of the output format.</ann:documentation>
                <choice>
                   <ref name="output-version"/>
+                  <ref name="avt-expr"/>
+               </choice>
+            </attribute>
+            <attribute name="skip-character-check">
+               <ann:documentation>Specifies whether to skip character checking that ensures the output does not contain any illegal characters.</ann:documentation>
+               <choice>
+                  <ref name="boolean"/>
                   <ref name="avt-expr"/>
                </choice>
             </attribute>

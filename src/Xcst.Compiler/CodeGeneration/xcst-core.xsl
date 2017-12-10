@@ -47,6 +47,7 @@
          <method>Method</method>
          <omit-xml-declaration>OmitXmlDeclaration</omit-xml-declaration>
          <output-version>Version</output-version>
+         <skip-character-check>SkipCharacterCheck</skip-character-check>
          <standalone>Standalone</standalone>
          <suppress-indentation>SuppressIndentation</suppress-indentation>
          <undeclare-prefixes>UndeclarePrefixes</undeclare-prefixes>
@@ -2458,7 +2459,7 @@
       <value-of select="src:verbatim-string(string())"/>
    </template>
 
-   <template match="@byte-order-mark | @escape-uri-attributes | @include-content-type | @indent | @omit-xml-declaration | @undeclare-prefixes" mode="src:output-parameter-setter">
+   <template match="@byte-order-mark | @escape-uri-attributes | @include-content-type | @indent | @omit-xml-declaration | @skip-character-check | @undeclare-prefixes" mode="src:output-parameter-setter">
       <value-of select="src:output-parameter-property(.)"/>
       <text> = </text>
       <value-of select="src:boolean(xcst:boolean(., not(parent::c:output)), src:expand-attribute(.))"/>

@@ -116,6 +116,10 @@ namespace Xcst.Xml {
             }
          }
 
+         if (parameters.SkipCharacterCheck != null) {
+            settings.CheckCharacters = !parameters.SkipCharacterCheck.Value;
+         }
+
          return settings;
       }
    }

@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:output method='xml'/>
+
+   <c:template name='c:initial-template'>
+      <div>
+         <c:try rollback-output='no'>
+            <c:value-of value='(char)0'/>
+            <c:catch exception='System.ArgumentException ex'>
+               <c:void value='throw new Xcst.RuntimeException(ex.Message)'/>
+            </c:catch>
+         </c:try>
+      </div>
+   </c:template>
+
+</c:module>

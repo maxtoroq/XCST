@@ -680,6 +680,11 @@
                <xs:documentation>The version of the output format.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
+         <xs:attribute name="skip-character-check" type="c:boolean">
+            <xs:annotation>
+               <xs:documentation>Specifies whether to skip character checking that ensures the output does not contain any illegal characters.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes-except-version"/>
       </xs:complexType>
    </xs:element>
@@ -1680,6 +1685,14 @@
          </xs:annotation>
          <xs:simpleType>
             <xs:union memberTypes="c:output-version c:avt-expr"/>
+         </xs:simpleType>
+      </xs:attribute>
+      <xs:attribute name="skip-character-check">
+         <xs:annotation>
+            <xs:documentation>Specifies whether to skip character checking that ensures the output does not contain any illegal characters. Attribute value template (boolean).</xs:documentation>
+         </xs:annotation>
+         <xs:simpleType>
+            <xs:union memberTypes="c:boolean c:avt-expr"/>
          </xs:simpleType>
       </xs:attribute>
    </xs:attributeGroup>

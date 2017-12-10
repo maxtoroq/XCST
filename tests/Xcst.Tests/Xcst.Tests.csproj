@@ -481,6 +481,8 @@
     <None Include="Serialization\Methods\Html\Html.c.xcst" />
     <None Include="Serialization\Methods\XHtml\XHtml.c.xcst" />
     <None Include="Serialization\Methods\Text\Text.c.xcst" />
+    <None Include="Serialization\Methods\Xml\SkipCharacterCheck.c.xcst" />
+    <None Include="Serialization\Methods\Xml\CharacterCheck.f.xcst" />
     <None Include="Serialization\Methods\Xml\TopPI.c.xcst" />
     <None Include="Serialization\Methods\Xml\TopComment.c.xcst" />
     <None Include="Serialization\Methods\Xml\Xml.c.xcst" />
@@ -534,6 +536,7 @@
     <Content Include="Serialization\Methods\Html\Html.txt" />
     <Content Include="Serialization\Methods\XHtml\XHtml.txt" />
     <Content Include="Serialization\Methods\Text\Text.txt" />
+    <Content Include="Serialization\Methods\Xml\SkipCharacterCheck.txt" />
     <Content Include="Serialization\Methods\Xml\TopPI.txt" />
     <Content Include="Serialization\Methods\Xml\TopComment.txt" />
     <Content Include="Serialization\Methods\Xml\Xml.txt" />
