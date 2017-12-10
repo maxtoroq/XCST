@@ -283,29 +283,32 @@ namespace Xcst {
 
          Action<TemplateContext> tmplFn = this.package.GetTypedTemplate<TBase>(this.name, output);
 
-         // it's important to keep template parameters' variables outside the execution delegate
-         // so subsequent modifications do not affect previously created outputters
+         Action<OutputParameters, bool, TemplateContext> executionFn = (overrideParams, skipFlush, tmplContext) =>
+            tmplFn(tmplContext);
 
-         var templateParams = new Dictionary<string, object>(this.templateParameters);
-         var tunnelParams = new Dictionary<string, object>(this.tunnelParameters);
-
-         Action executionFn = () => tmplFn(CreateTemplateContext(templateParams, tunnelParams));
-
-         return new XcstOutputter(this.package, this.primeFn, executionFn);
+         return CreateOutputter(executionFn);
       }
 
       XcstOutputter CreateOutputter(CreateWriterDelegate writerFn) {
 
+         Action<OutputParameters, bool, TemplateContext> executionFn = (overrideParams, skipFlush, tmplContext) =>
+            EvaluateToWriter(writerFn, overrideParams, skipFlush, tmplContext);
+
+         return CreateOutputter(executionFn);
+      }
+
+      XcstOutputter CreateOutputter(Action<OutputParameters, bool, TemplateContext> executionFn) {
+
          // it's important to keep template parameters' variables outside the execution delegate
          // so subsequent modifications do not affect previously created outputters
 
          var templateParams = new Dictionary<string, object>(this.templateParameters);
          var tunnelParams = new Dictionary<string, object>(this.tunnelParameters);
 
-         Action<IXcstPackage, XcstWriter> executionFn =
-            (p, o) => p.GetTypedTemplate(this.name, o)(CreateTemplateContext(templateParams, tunnelParams));
+         Action<OutputParameters, bool> executionFn2 = (overrideParams, skipFlush) =>
+            executionFn(overrideParams, skipFlush, CreateTemplateContext(templateParams, tunnelParams));
 
-         return new XcstOutputter(this.package, this.primeFn, writerFn, executionFn);
+         return new XcstOutputter(this.package, this.primeFn, executionFn2);
       }
 
       static TemplateContext CreateTemplateContext(IDictionary<string, object> templateParams, IDictionary<string, object> tunnelParams) {
@@ -322,41 +325,52 @@ namespace Xcst {
 
          return context;
       }
+
+      void EvaluateToWriter(CreateWriterDelegate writerFn, OutputParameters overrideParams, bool skipFlush, TemplateContext tmplContext) {
+
+         var defaultParams = new OutputParameters();
+         this.package.ReadOutputDefinition(null, defaultParams);
+
+         RuntimeWriter writer = writerFn(defaultParams, overrideParams, this.package.Context);
+
+         try {
+
+            Action<TemplateContext> tmplFn = this.package.GetTypedTemplate(this.name, writer);
+            tmplFn(tmplContext);
+
+            if (!writer.DisposeWriter
+               && !skipFlush) {
+
+               writer.Flush();
+            }
+
+         } finally {
+
+            if (writer.DisposeWriter) {
+               writer.Dispose();
+            }
+         }
+      }
    }
 
    public class XcstOutputter {
 
       readonly IXcstPackage package;
       readonly Func<PrimingContext> primeFn;
-      readonly CreateWriterDelegate writerFn;
-      readonly Action<IXcstPackage, XcstWriter> executionFn;
-      readonly Action typedExecutionFn;
+      readonly Action<OutputParameters, bool> executionFn;
 
       OutputParameters parameters;
       IFormatProvider formatProvider;
 
-      internal XcstOutputter(IXcstPackage package, Func<PrimingContext> primeFn, CreateWriterDelegate writerFn, Action<IXcstPackage, XcstWriter> executionFn) {
+      internal XcstOutputter(IXcstPackage package, Func<PrimingContext> primeFn, Action<OutputParameters, bool> executionFn) {
 
          if (package == null) throw new ArgumentNullException(nameof(package));
          if (primeFn == null) throw new ArgumentNullException(nameof(primeFn));
-         if (writerFn == null) throw new ArgumentNullException(nameof(writerFn));
          if (executionFn == null) throw new ArgumentNullException(nameof(executionFn));
 
          this.package = package;
          this.primeFn = primeFn;
-         this.writerFn = writerFn;
          this.executionFn = executionFn;
-      }
-
-      internal XcstOutputter(IXcstPackage package, Func<PrimingContext> primeFn, Action typedExecutionFn) {
-
-         if (package == null) throw new ArgumentNullException(nameof(package));
-         if (primeFn == null) throw new ArgumentNullException(nameof(primeFn));
-         if (typedExecutionFn == null) throw new ArgumentNullException(nameof(typedExecutionFn));
-
-         this.package = package;
-         this.primeFn = primeFn;
-         this.typedExecutionFn = typedExecutionFn;
       }
 
       public XcstOutputter WithParams(OutputParameters/*?*/ parameters) {
@@ -383,33 +397,7 @@ namespace Xcst {
 
          this.package.Context = execContext;
 
-         if (this.typedExecutionFn != null) {
-
-            this.typedExecutionFn();
-
-         } else {
-
-            var defaultParams = new OutputParameters();
-            this.package.ReadOutputDefinition(null, defaultParams);
-
-            RuntimeWriter writer = this.writerFn(defaultParams, this.parameters, execContext);
-
-            try {
-               this.executionFn(this.package, writer);
-
-               if (!writer.DisposeWriter
-                  && !skipFlush) {
-
-                  writer.Flush();
-               }
-
-            } finally {
-
-               if (writer.DisposeWriter) {
-                  writer.Dispose();
-               }
-            }
-         }
+         this.executionFn(this.parameters, skipFlush);
       }
    }
 }
