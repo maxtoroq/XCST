@@ -22,7 +22,7 @@ namespace Xcst.PackageModel {
 
    public class ExecutionContext {
 
-      readonly IFormatProvider formatProvider;
+      readonly Func<IFormatProvider> formatProviderFn;
 
       public IXcstPackage TopLevelPackage { get; }
 
@@ -33,15 +33,15 @@ namespace Xcst.PackageModel {
       internal ExecutionContext(
             IXcstPackage topLevelPackage,
             PrimingContext primingContext,
-            IFormatProvider/*?*/ formatProvider) {
+            Func<IFormatProvider>/*?*/ formatProviderFn) {
 
          if (topLevelPackage == null) throw new ArgumentNullException(nameof(topLevelPackage));
          if (primingContext == null) throw new ArgumentNullException(nameof(primingContext));
 
          this.TopLevelPackage = topLevelPackage;
          this.PrimingContext = primingContext;
-         this.formatProvider = formatProvider ?? CultureInfo.CurrentCulture;
-         this.SimpleContent = new SimpleContent(this.formatProvider);
+         this.formatProviderFn = formatProviderFn ?? (() => CultureInfo.CurrentCulture);
+         this.SimpleContent = new SimpleContent(this.formatProviderFn);
       }
    }
 }

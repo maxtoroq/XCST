@@ -39,15 +39,17 @@ namespace Xcst.Runtime {
 
       static readonly ConcurrentDictionary<Type, bool> customToString = new ConcurrentDictionary<Type, bool>();
 
-      public static SimpleContent Invariant { get; } = new SimpleContent(CultureInfo.InvariantCulture);
+      readonly Func<IFormatProvider> formatProviderFn;
 
-      internal IFormatProvider FormatProvider { get; }
+      public static SimpleContent Invariant { get; } = new SimpleContent(() => CultureInfo.InvariantCulture);
 
-      public SimpleContent(IFormatProvider formatProvider) {
+      internal IFormatProvider FormatProvider => formatProviderFn();
 
-         if (formatProvider == null) throw new ArgumentNullException(nameof(formatProvider));
+      public SimpleContent(Func<IFormatProvider> formatProviderFn) {
 
-         this.FormatProvider = formatProvider;
+         if (formatProviderFn == null) throw new ArgumentNullException(nameof(formatProviderFn));
+
+         this.formatProviderFn = formatProviderFn;
       }
 
       public string Join(string separator, Array value) {

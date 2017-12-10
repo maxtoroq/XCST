@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:import-namespace ns='System.Globalization'/>
+   <c:import-namespace ns='System.Threading'/>
+
+   <c:template name='c:initial-template'>
+      <div>
+         <c:set member='Thread.CurrentThread.CurrentCulture' value='CultureInfo.GetCultureInfo("en")'/>
+         <c:value-of value='1.1'/>
+         <c:set member='Thread.CurrentThread.CurrentCulture' value='CultureInfo.GetCultureInfo("es")'/>
+         <c:value-of value='2.1'/>
+      </div>
+   </c:template>
+
+   <c:template name='expected'>
+      <div>1.12,1</div>
+   </c:template>
+
+</c:module>

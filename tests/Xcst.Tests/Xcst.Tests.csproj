@@ -349,6 +349,7 @@
     <None Include="SequenceConstructors\Raw\Variable\MultipleItemsValueType.c.xcst" />
     <None Include="SequenceConstructors\Raw\Variable\MultipleItemsAsObject.c.xcst" />
     <None Include="SequenceConstructors\Raw\Variable\MultipleItems.c.xcst" />
+    <None Include="SequenceConstructors\SimpleContent\FormatProviderSwitch.c.xcst" />
     <None Include="SequenceConstructors\SimpleContent\FromExpression\Attribute\EnumerableWithCustomToString.c.xcst" />
     <None Include="SequenceConstructors\SimpleContent\FromExpression\Attribute\MultipleItems.c.xcst" />
     <None Include="SequenceConstructors\SimpleContent\FromExpression\Attribute\MultipleItemsAsObject.c.xcst" />

@@ -360,7 +360,7 @@ namespace Xcst {
       readonly Action<OutputParameters, bool> executionFn;
 
       OutputParameters parameters;
-      IFormatProvider formatProvider;
+      Func<IFormatProvider> formatProviderFn;
 
       internal XcstOutputter(IXcstPackage package, Func<PrimingContext> primeFn, Action<OutputParameters, bool> executionFn) {
 
@@ -385,7 +385,17 @@ namespace Xcst {
 
       public XcstOutputter WithFormatProvider(IFormatProvider/*?*/ formatProvider) {
 
-         this.formatProvider = formatProvider;
+         if (formatProvider != null) {
+            return WithFormatProvider(() => formatProvider);
+         }
+
+         this.formatProviderFn = null;
+         return this;
+      }
+
+      public XcstOutputter WithFormatProvider(Func<IFormatProvider>/*?*/ formatProviderFn) {
+
+         this.formatProviderFn = formatProviderFn;
          return this;
       }
 
@@ -393,7 +403,7 @@ namespace Xcst {
 
          PrimingContext primingContext = this.primeFn();
 
-         var execContext = new ExecutionContext(this.package, primingContext, this.formatProvider);
+         var execContext = new ExecutionContext(this.package, primingContext, this.formatProviderFn);
 
          this.package.Context = execContext;
 
