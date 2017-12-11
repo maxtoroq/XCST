@@ -22,7 +22,7 @@ namespace Xcst.PackageModel {
 
       void Prime(PrimingContext context, string[]/*?*/ overriddenParams);
 
-      Action<TemplateContext> GetTypedTemplate<TBase>(QualifiedName name, ISequenceWriter<TBase> output);
+      Action<TemplateContext> GetTemplate<TBase>(QualifiedName name, ISequenceWriter<TBase> output);
 
       void ReadOutputDefinition(QualifiedName/*?*/ name, OutputParameters parameters);
    }

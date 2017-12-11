@@ -281,7 +281,7 @@ namespace Xcst {
 
          if (output == null) throw new ArgumentNullException(nameof(output));
 
-         Action<TemplateContext> tmplFn = this.package.GetTypedTemplate<TBase>(this.name, output);
+         Action<TemplateContext> tmplFn = this.package.GetTemplate<TBase>(this.name, output);
 
          Action<OutputParameters, bool, TemplateContext> executionFn = (overrideParams, skipFlush, tmplContext) =>
             tmplFn(tmplContext);
@@ -335,7 +335,7 @@ namespace Xcst {
 
          try {
 
-            Action<TemplateContext> tmplFn = this.package.GetTypedTemplate(this.name, writer);
+            Action<TemplateContext> tmplFn = this.package.GetTemplate(this.name, writer);
             tmplFn(tmplContext);
 
             if (!writer.DisposeWriter

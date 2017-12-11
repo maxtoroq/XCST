@@ -2060,7 +2060,7 @@
          <with-param name="indent" select="$indent + 1" tunnel="yes"/>
       </call-template>
       <if test="$principal-module">
-         <call-template name="src:get-typed-template-method">
+         <call-template name="src:get-template-method">
             <with-param name="indent" select="$indent + 1" tunnel="yes"/>
          </call-template>
          <call-template name="src:read-output-definition-method">
@@ -2895,7 +2895,7 @@
       <sequence select="concat(src:aux-variable('prime'), '_', generate-id($module))"/>
    </function>
 
-   <template name="src:get-typed-template-method">
+   <template name="src:get-template-method">
       <param name="indent" tunnel="yes"/>
 
       <value-of select="$src:new-line"/>
@@ -2911,13 +2911,13 @@
       <value-of select="src:template-context(())/@type"/>
       <text>> </text>
       <value-of select="$src:package-interface"/>
-      <text>.GetTypedTemplate&lt;TBase>(</text>
+      <text>.GetTemplate&lt;TBase>(</text>
       <value-of select="src:global-identifier('Xcst.QualifiedName'), $name"/>
       <text>, </text>
       <value-of select="$output/@type, $output"/>
       <text>)</text>
       <call-template name="src:open-brace"/>
-      <call-template name="src:get-typed-template-method-body">
+      <call-template name="src:get-template-method-body">
          <with-param name="indent" select="$indent + 1" tunnel="yes"/>
          <with-param name="name-param" select="$name"/>
          <with-param name="output" select="$output"/>
@@ -2925,7 +2925,7 @@
       <call-template name="src:close-brace"/>
    </template>
 
-   <template name="src:get-typed-template-method-body">
+   <template name="src:get-template-method-body">
       <param name="package-manifest" required="yes" tunnel="yes"/>
       <param name="name-param" required="yes"/>
       <param name="output" required="yes"/>
@@ -3011,7 +3011,7 @@
          <call-template name="src:new-line-indented">
             <with-param name="increase" select="4"/>
          </call-template>
-         <call-template name="src:get-typed-template-method-unknown-throw">
+         <call-template name="src:get-template-method-unknown-throw">
             <with-param name="name-param" select="$name-param"/>
          </call-template>
 
@@ -3027,13 +3027,13 @@
       <call-template name="src:new-line-indented">
          <with-param name="increase" select="2"/>
       </call-template>
-      <call-template name="src:get-typed-template-method-unknown-throw">
+      <call-template name="src:get-template-method-unknown-throw">
          <with-param name="name-param" select="$name-param"/>
       </call-template>
       <call-template name="src:close-brace"/>
    </template>
 
-   <template name="src:get-typed-template-method-unknown-throw">
+   <template name="src:get-template-method-unknown-throw">
       <param name="name-param" required="yes"/>
 
       <text>throw </text>
