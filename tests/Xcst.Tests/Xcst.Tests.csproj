@@ -143,6 +143,7 @@
     <None Include="CallableComponents\EvaluatePackage\ExamplePackage.pxcst" />
     <None Include="CallableComponents\EvaluatePackage\evaluate-package.package.req.i.xcst" />
     <None Include="CallableComponents\EvaluatePackage\evaluate-package.global-params.type.i.xcst" />
+    <None Include="CallableComponents\EvaluatePackage\InResultDocument.c.xcst" />
     <None Include="CallableComponents\EvaluatePackage\TypeCompat.f.xcst" />
     <None Include="CallableComponents\EvaluatePackage\TypeCompat.c.xcst" />
     <None Include="CallableComponents\EvaluatePackage\TypeCompatDocToValueType.c.xcst" />

@@ -64,7 +64,7 @@ namespace Xcst.Tests {
                      TestAssert.Fail("A failing package should not define an 'expected' template.");
                   }
 
-                  SimplyRun(packageType);
+                  SimplyRun(packageType, packageFile);
 
                } else {
 
@@ -101,7 +101,7 @@ namespace Xcst.Tests {
                         if (xcstResult.Templates.Contains(ExpectedName)) {
                            TestAssert.IsTrue(OutputEqualsToExpected(packageType));
                         } else {
-                           SimplyRun(packageType);
+                           SimplyRun(packageType, packageFile);
                         }
 
                      } else if (xcstResult.Templates.Contains(ExpectedName)) {
@@ -258,11 +258,11 @@ namespace Xcst.Tests {
          return XDocumentNormalizer.DeepEqualsWithNormalization(expectedDoc, actualDoc);
       }
 
-      static void SimplyRun(Type packageType) {
+      static void SimplyRun(Type packageType, string packageFile) {
 
          XcstEvaluator.Using(Activator.CreateInstance(packageType))
             .CallInitialTemplate()
-            .OutputTo(TextWriter.Null)
+            .OutputTo(TextWriter.Null, new Uri(packageFile))
             .Run();
       }
    }

@@ -271,6 +271,11 @@ namespace Xcst {
 
          if (output == null) throw new ArgumentNullException(nameof(output));
 
+         if (output is RuntimeWriter) {
+            // avoid disposing of RuntimeWriter
+            return OutputTo((ISequenceWriter<object>)output);
+         }
+
          return CreateOutputter(WriterFactory.CreateWriter(output));
       }
 
