@@ -23,7 +23,17 @@ namespace Xcst.Runtime {
 
    public class SequenceWriter<TItem> : ISequenceWriter<TItem> {
 
-      readonly List<TItem> buffer = new List<TItem>();
+      readonly ICollection<TItem> buffer;
+
+      public SequenceWriter()
+         : this(new List<TItem>()) { }
+
+      public SequenceWriter(ICollection<TItem> buffer) {
+
+         if (buffer == null) throw new ArgumentNullException(nameof(buffer));
+
+         this.buffer = buffer;
+      }
 
       public void WriteObject(TItem value) {
          this.buffer.Add(value);
@@ -91,7 +101,9 @@ namespace Xcst.Runtime {
 
       public TItem[] Flush() {
 
-         TItem[] seq = this.buffer.ToArray();
+         TItem[] seq = (this.buffer as List<TItem>)?.ToArray()
+            ?? this.buffer.ToArray();
+
          this.buffer.Clear();
 
          return seq;

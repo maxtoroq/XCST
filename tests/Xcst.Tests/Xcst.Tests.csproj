@@ -86,6 +86,7 @@
     <Compile Include="TestsHelper.cs" />
     <Compile Include="Tests.generated.cs" />
     <Compile Include="XDocumentNormalizer.cs" />
+    <None Include="API\Evaluation\RawOutput.xcst" />
     <None Include="API\Evaluation\CopyOutputParameters.xcst" />
     <None Include="API\Evaluation\ExposePublicTemplatesOnly.xcst" />
     <None Include="API\Evaluation\DisallowRePrime.xcst" />

@@ -18,6 +18,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Xml;
 using Xcst.PackageModel;
+using Xcst.Runtime;
 
 namespace Xcst {
 
@@ -271,33 +272,39 @@ namespace Xcst {
 
          if (output == null) throw new ArgumentNullException(nameof(output));
 
-         if (output is RuntimeWriter) {
-            // avoid disposing of RuntimeWriter
-            return OutputTo((ISequenceWriter<object>)output);
-         }
-
          return CreateOutputter(WriterFactory.CreateWriter(output));
+      }
+
+      public XcstOutputter OutputTo<TItem>(ICollection<TItem> output) {
+
+         if (output == null) throw new ArgumentNullException(nameof(output));
+
+         var seqWriter = new SequenceWriter<TItem>(output);
+
+         return OutputToRaw(seqWriter);
       }
 
       /// <exclude/>
 
       [EditorBrowsable(EditorBrowsableState.Never)]
-      public XcstOutputter OutputTo<TBase>(ISequenceWriter<TBase> output) {
+      public XcstOutputter OutputToRaw<TBase>(ISequenceWriter<TBase> output) {
 
          if (output == null) throw new ArgumentNullException(nameof(output));
 
          Action<TemplateContext> tmplFn = this.package.GetTemplate<TBase>(this.name, output);
 
-         Action<OutputParameters, bool, TemplateContext> executionFn = (overrideParams, skipFlush, tmplContext) =>
-            tmplFn(tmplContext);
+         Action<OutputParameters, bool, TemplateContext> executionFn =
+            (overrideParams, skipFlush, tmplContext) =>
+               tmplFn(tmplContext);
 
          return CreateOutputter(executionFn);
       }
 
       XcstOutputter CreateOutputter(CreateWriterDelegate writerFn) {
 
-         Action<OutputParameters, bool, TemplateContext> executionFn = (overrideParams, skipFlush, tmplContext) =>
-            EvaluateToWriter(writerFn, overrideParams, skipFlush, tmplContext);
+         Action<OutputParameters, bool, TemplateContext> executionFn =
+            (overrideParams, skipFlush, tmplContext) =>
+               EvaluateToWriter(writerFn, overrideParams, skipFlush, tmplContext);
 
          return CreateOutputter(executionFn);
       }
@@ -310,8 +317,9 @@ namespace Xcst {
          var templateParams = new Dictionary<string, object>(this.templateParameters);
          var tunnelParams = new Dictionary<string, object>(this.tunnelParameters);
 
-         Action<OutputParameters, bool> executionFn2 = (overrideParams, skipFlush) =>
-            executionFn(overrideParams, skipFlush, CreateTemplateContext(templateParams, tunnelParams));
+         Action<OutputParameters, bool> executionFn2 =
+            (overrideParams, skipFlush) =>
+               executionFn(overrideParams, skipFlush, CreateTemplateContext(templateParams, tunnelParams));
 
          return new XcstOutputter(this.package, this.primeFn, executionFn2);
       }

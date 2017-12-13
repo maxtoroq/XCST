@@ -1731,7 +1731,7 @@
       <call-template name="src:new-line-indented">
          <with-param name="increase" select="1"/>
       </call-template>
-      <text>.OutputTo(</text>
+      <text>.OutputToRaw(</text>
       <value-of select="$output"/>
       <text>)</text>
       <call-template name="src:new-line-indented">
