@@ -37,6 +37,12 @@ namespace Xcst.PackageModel {
 
       void WriteComment(string text);
 
+      void CopyOf(TItem value);
+
+      void CopyOf(IEnumerable<TItem> value);
+
+      void CopyOf<TDerived>(IEnumerable<TDerived> value) where TDerived : TItem;
+
       XcstWriter TryCastToDocumentWriter();
 
       MapWriter TryCastToMapWriter();

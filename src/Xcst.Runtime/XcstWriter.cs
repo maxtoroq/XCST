@@ -212,6 +212,18 @@ namespace Xcst {
          WriteObject((object)value);
       }
 
+      public void CopyOf(object value) {
+         CopyOfImpl(value, recurse: false);
+      }
+
+      void ISequenceWriter<object>.CopyOf(IEnumerable<object> value) {
+         CopyOf((object)value);
+      }
+
+      void ISequenceWriter<object>.CopyOf<TDerived>(IEnumerable<TDerived> value) {
+         CopyOf((object)value);
+      }
+
       public XcstWriter TryCastToDocumentWriter() {
          return this;
       }
@@ -249,10 +261,6 @@ namespace Xcst {
                WriteItem(item);
             }
          }
-      }
-
-      public void CopyOf(object value) {
-         CopyOfImpl(value, recurse: false);
       }
 
       void CopyOfImpl(object value, bool recurse) {

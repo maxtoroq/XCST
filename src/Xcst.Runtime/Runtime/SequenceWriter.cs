@@ -63,6 +63,24 @@ namespace Xcst.Runtime {
 
       public void WriteComment(string text) { }
 
+      public void CopyOf(TItem value) {
+         throw new NotImplementedException();
+      }
+
+      public void CopyOf(IEnumerable<TItem> value) {
+
+         if (value != null) {
+
+            foreach (var item in value) {
+               CopyOf(item);
+            }
+         }
+      }
+
+      public void CopyOf<TDerived>(IEnumerable<TDerived> value) where TDerived : TItem {
+         CopyOf(value as IEnumerable<TItem> ?? value?.Cast<TItem>());
+      }
+
       public XcstWriter TryCastToDocumentWriter() {
          return null;
       }
@@ -203,6 +221,24 @@ namespace Xcst.Runtime {
 
       public void WriteComment(string text) {
          this.baseWriter.WriteComment(text);
+      }
+
+      public void CopyOf(TDerived value) {
+         this.baseWriter.CopyOf(value);
+      }
+
+      public void CopyOf(IEnumerable<TDerived> value) {
+
+         if (value != null) {
+
+            foreach (var item in value) {
+               CopyOf(item);
+            }
+         }
+      }
+
+      public void CopyOf<TDerived2>(IEnumerable<TDerived2> value) where TDerived2 : TDerived {
+         CopyOf(value as IEnumerable<TDerived> ?? value?.Cast<TDerived>());
       }
 
       public XcstWriter TryCastToDocumentWriter() {

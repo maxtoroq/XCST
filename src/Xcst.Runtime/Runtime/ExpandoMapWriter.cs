@@ -227,6 +227,10 @@ namespace Xcst.Runtime {
          throw new NotImplementedException();
       }
 
+      public override void CopyOf(object value) {
+         throw new NotImplementedException();
+      }
+
       void Push(object obj) {
          this.objects.Add(obj);
       }

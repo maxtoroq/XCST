@@ -104,6 +104,18 @@ namespace Xcst.Runtime {
          WriteRaw((string)data);
       }
 
+      public virtual void CopyOf(object value) {
+         CopyOfImpl(value, recurse: false);
+      }
+
+      void ISequenceWriter<object>.CopyOf(IEnumerable<object> value) {
+         CopyOf((object)value);
+      }
+
+      void ISequenceWriter<object>.CopyOf<TDerived>(IEnumerable<TDerived> value) {
+         CopyOf((object)value);
+      }
+
       public virtual XcstWriter TryCastToDocumentWriter() {
          return null;
       }
@@ -121,13 +133,11 @@ namespace Xcst.Runtime {
       public abstract void WriteRaw(string data);
 
       // string implements IEnumerable, treat as single value
+      // IEnumerable<object> works for reference types only, IEnumerable for any type
 
       public void WriteObject(string value) {
          WriteObject((object)value);
       }
-
-      // IEnumerable<object> works for reference types only
-      // IEnumerable for any type
 
       public void WriteObject(IEnumerable value) {
 
@@ -137,10 +147,6 @@ namespace Xcst.Runtime {
                WriteObject(item);
             }
          }
-      }
-
-      public void CopyOf(object value) {
-         CopyOfImpl(value, recurse: false);
       }
 
       void CopyOfImpl(object value, bool recurse) {

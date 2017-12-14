@@ -263,6 +263,8 @@
     <None Include="CreatingNodesAndObjects\Attribute\CompatibleOutput.c.xcst" />
     <None Include="CreatingNodesAndObjects\Attribute\ValueTypeOutput.i.xcst" />
     <None Include="CreatingNodesAndObjects\Comment\CompatibleOutput.c.xcst" />
+    <None Include="CreatingNodesAndObjects\CopyOf\copy-of.foo.i.xcst" />
+    <None Include="CreatingNodesAndObjects\CopyOf\copy-of.value.type.i.xcst" />
     <None Include="CreatingNodesAndObjects\Element\ValueTypeOutput.i.xcst" />
     <None Include="CreatingNodesAndObjects\Element\CompatibleOutput.c.xcst" />
     <None Include="CreatingNodesAndObjects\LiteralResultElement\CompatibleOutput.c.xcst" />
