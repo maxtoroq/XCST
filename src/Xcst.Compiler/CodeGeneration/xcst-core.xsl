@@ -2365,14 +2365,6 @@
       <call-template name="src:format-QName"/>
       <text>, </text>
       <choose>
-         <when test="$output">
-            <value-of select="$output"/>
-            <if test="not(src:output-is-doc($output))">.TryCastToDocumentWriter()</if>
-         </when>
-         <otherwise>null</otherwise>
-      </choose>
-      <text>, </text>
-      <choose>
          <when test="@href">
             <value-of select="src:fully-qualified-helper('DataType')"/>
             <text>.Uri(</text>

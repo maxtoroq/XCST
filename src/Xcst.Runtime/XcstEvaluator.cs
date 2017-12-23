@@ -247,25 +247,25 @@ namespace Xcst {
          return CreateOutputter(WriterFactory.CreateWriter(file));
       }
 
-      public XcstOutputter OutputTo(Stream output, Uri outputUri = null) {
+      public XcstOutputter OutputTo(Stream output) {
 
          if (output == null) throw new ArgumentNullException(nameof(output));
 
-         return CreateOutputter(WriterFactory.CreateWriter(output, outputUri));
+         return CreateOutputter(WriterFactory.CreateWriter(output, null));
       }
 
-      public XcstOutputter OutputTo(TextWriter output, Uri outputUri = null) {
+      public XcstOutputter OutputTo(TextWriter output) {
 
          if (output == null) throw new ArgumentNullException(nameof(output));
 
-         return CreateOutputter(WriterFactory.CreateWriter(output, outputUri));
+         return CreateOutputter(WriterFactory.CreateWriter(output, null));
       }
 
-      public XcstOutputter OutputTo(XmlWriter output, Uri outputUri = null) {
+      public XcstOutputter OutputTo(XmlWriter output) {
 
          if (output == null) throw new ArgumentNullException(nameof(output));
 
-         return CreateOutputter(WriterFactory.CreateWriter(output, outputUri));
+         return CreateOutputter(WriterFactory.CreateWriter(output, null));
       }
 
       public XcstOutputter OutputTo(XcstWriter output) {
@@ -374,6 +374,7 @@ namespace Xcst {
 
       OutputParameters parameters;
       Func<IFormatProvider> formatProviderFn;
+      Uri baseOutputUri;
 
       internal XcstOutputter(IXcstPackage package, Func<PrimingContext> primeFn, Action<OutputParameters, bool> executionFn) {
 
@@ -412,11 +413,23 @@ namespace Xcst {
          return this;
       }
 
+      public XcstOutputter WithBaseOutputUri(Uri/*?*/ baseOutputUri) {
+
+         if (baseOutputUri != null
+            && !baseOutputUri.IsAbsoluteUri) {
+
+            throw new ArgumentException("An absolute URI is expected.", nameof(baseOutputUri));
+         }
+
+         this.baseOutputUri = baseOutputUri;
+         return this;
+      }
+
       public void Run(bool skipFlush = false) {
 
          PrimingContext primingContext = this.primeFn();
 
-         var execContext = new ExecutionContext(this.package, primingContext, this.formatProviderFn);
+         var execContext = new ExecutionContext(this.package, primingContext, this.formatProviderFn, this.baseOutputUri);
 
          this.package.Context = execContext;
 

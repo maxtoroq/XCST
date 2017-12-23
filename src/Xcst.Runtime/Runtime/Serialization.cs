@@ -62,64 +62,59 @@ namespace Xcst.Runtime {
             IXcstPackage package,
             OutputParameters parameters,
             QualifiedName/*?*/ outputName,
-            XcstWriter/*?*/ currentOutput,
             Uri outputUri) {
 
          if (outputUri == null) throw new ArgumentNullException(nameof(outputUri));
 
-         return ResultDocumentImpl(u => WriterFactory.CreateWriter(u), false, package, parameters, outputName, currentOutput, outputUri);
+         return ResultDocumentImpl(u => WriterFactory.CreateWriter(u), false, package, parameters, outputName, outputUri);
       }
 
       public static XcstWriter ResultDocument(
             IXcstPackage package,
             OutputParameters parameters,
             QualifiedName/*?*/ outputName,
-            XcstWriter/*?*/ currentOutput,
             Uri/*?*/ outputUri,
             Stream output) {
 
          if (output == null) throw new ArgumentNullException(nameof(output));
 
-         return ResultDocumentImpl(u => WriterFactory.CreateWriter(output, u), true, package, parameters, outputName, currentOutput, outputUri);
+         return ResultDocumentImpl(u => WriterFactory.CreateWriter(output, u), true, package, parameters, outputName, outputUri);
       }
 
       public static XcstWriter ResultDocument(
             IXcstPackage package,
             OutputParameters parameters,
             QualifiedName/*?*/ outputName,
-            XcstWriter/*?*/ currentOutput,
             Uri/*?*/ outputUri,
             TextWriter output) {
 
          if (output == null) throw new ArgumentNullException(nameof(output));
 
-         return ResultDocumentImpl(u => WriterFactory.CreateWriter(output, u), true, package, parameters, outputName, currentOutput, outputUri);
+         return ResultDocumentImpl(u => WriterFactory.CreateWriter(output, u), true, package, parameters, outputName, outputUri);
       }
 
       public static XcstWriter ResultDocument(
             IXcstPackage package,
             OutputParameters parameters,
             QualifiedName/*?*/ outputName,
-            XcstWriter/*?*/ currentOutput,
             Uri/*?*/ outputUri,
             XmlWriter output) {
 
          if (output == null) throw new ArgumentNullException(nameof(output));
 
-         return ResultDocumentImpl(u => WriterFactory.CreateWriter(output, u), true, package, parameters, outputName, currentOutput, outputUri);
+         return ResultDocumentImpl(u => WriterFactory.CreateWriter(output, u), true, package, parameters, outputName, outputUri);
       }
 
       public static XcstWriter ResultDocument(
             IXcstPackage package,
             OutputParameters parameters,
             QualifiedName/*?*/ outputName,
-            XcstWriter/*?*/ currentOutput,
             Uri/*?*/ outputUri,
             XcstWriter output) {
 
          if (output == null) throw new ArgumentNullException(nameof(output));
 
-         return ResultDocumentImpl(u => WriterFactory.CreateWriter(output), true, package, parameters, outputName, currentOutput, outputUri);
+         return ResultDocumentImpl(u => WriterFactory.CreateWriter(output), true, package, parameters, outputName, outputUri);
       }
 
       static XcstWriter ResultDocumentImpl(
@@ -128,7 +123,6 @@ namespace Xcst.Runtime {
             IXcstPackage package,
             OutputParameters parameters,
             QualifiedName/*?*/ outputName,
-            XcstWriter/*?*/ currentOutput,
             Uri/*?*/ outputUri) {
 
          if (package == null) throw new ArgumentNullException(nameof(package));
@@ -137,16 +131,16 @@ namespace Xcst.Runtime {
          if (outputUri != null) {
 
             if (!outputUri.IsAbsoluteUri
-               && currentOutput != null
-               && currentOutput.OutputUri.IsAbsoluteUri) {
+               && package.Context.BaseOutputUri != null
+               && package.Context.BaseOutputUri.IsAbsoluteUri) {
 
-               outputUri = new Uri(currentOutput.OutputUri, outputUri);
+               outputUri = new Uri(package.Context.BaseOutputUri, outputUri);
             }
 
             if (!customOutput) {
 
                if (!outputUri.IsAbsoluteUri) {
-                  throw new RuntimeException($"Cannot resolve {outputUri.OriginalString}. Specify an output URI.");
+                  throw new RuntimeException($"Cannot resolve {outputUri.OriginalString}. Specify a base output URI or use an absolute URI.");
                }
 
                if (!outputUri.IsFile) {
@@ -164,7 +158,7 @@ namespace Xcst.Runtime {
 
       public static XcstWriter Void(IXcstPackage package) {
 
-         return WriterFactory.CreateWriter(new NullWriter(WriterFactory.DefaultOuputUri))
+         return WriterFactory.CreateWriter(new NullWriter(WriterFactory.AbsentOutputUri))
             (new OutputParameters(), null, package.Context);
       }
    }

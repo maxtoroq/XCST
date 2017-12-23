@@ -262,7 +262,8 @@ namespace Xcst.Tests {
 
          XcstEvaluator.Using(Activator.CreateInstance(packageType))
             .CallInitialTemplate()
-            .OutputTo(TextWriter.Null, new Uri(packageFile))
+            .OutputTo(TextWriter.Null)
+            .WithBaseOutputUri(new Uri(packageFile))
             .Run();
       }
    }

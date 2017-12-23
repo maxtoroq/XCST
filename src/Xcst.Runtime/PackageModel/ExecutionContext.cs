@@ -30,10 +30,13 @@ namespace Xcst.PackageModel {
 
       public SimpleContent SimpleContent { get; }
 
+      public Uri/*?*/ BaseOutputUri { get; }
+
       internal ExecutionContext(
             IXcstPackage topLevelPackage,
             PrimingContext primingContext,
-            Func<IFormatProvider>/*?*/ formatProviderFn) {
+            Func<IFormatProvider>/*?*/ formatProviderFn,
+            Uri baseOutputUri) {
 
          if (topLevelPackage == null) throw new ArgumentNullException(nameof(topLevelPackage));
          if (primingContext == null) throw new ArgumentNullException(nameof(primingContext));
@@ -42,6 +45,7 @@ namespace Xcst.PackageModel {
          this.PrimingContext = primingContext;
          this.formatProviderFn = formatProviderFn ?? (() => CultureInfo.CurrentCulture);
          this.SimpleContent = new SimpleContent(this.formatProviderFn);
+         this.BaseOutputUri = baseOutputUri;
       }
    }
 }

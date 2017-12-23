@@ -34,7 +34,7 @@ namespace Xcst.Runtime {
             OmitXmlDeclaration = true
          };
 
-         return WriterFactory.CreateWriter(doc.CreateWriter(), null)
+         return WriterFactory.CreateWriter(doc.CreateWriter(), WriterFactory.AbsentOutputUri)
             (defaultParams, null, package.Context);
       }
 
@@ -47,7 +47,7 @@ namespace Xcst.Runtime {
             OmitXmlDeclaration = true
          };
 
-         return WriterFactory.CreateWriter(doc.CreateNavigator().AppendChild(), null)
+         return WriterFactory.CreateWriter(doc.CreateNavigator().AppendChild(), WriterFactory.AbsentOutputUri)
             (defaultParams, null, package.Context);
       }
 
