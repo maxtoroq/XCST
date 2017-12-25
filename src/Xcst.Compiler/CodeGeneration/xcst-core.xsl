@@ -144,6 +144,7 @@
       <variable name="attrib-string" select="@value or not(*)"/>
       <variable name="separator" select="@separator/src:expand-attribute(.)"/>
       <variable name="include-separator" select="not($attrib-string) and $separator"/>
+      <variable name="namespace" select="@namespace/src:uri-string(xcst:uri(., true()), src:expand-attribute(.))"/>
       <choose>
          <when test="$attrib-string">WriteAttributeString</when>
          <otherwise>WriteStartAttribute</otherwise>
@@ -153,7 +154,7 @@
             <text>Lexical(</text>
             <value-of select="src:expand-attribute(@name)"/>
             <text>, </text>
-            <value-of select="src:expression-or-null(@namespace/src:expand-attribute(.))"/>
+            <value-of select="src:expression-or-null(@namespace/$namespace)"/>
          </when>
          <otherwise>
             <text>(</text>
@@ -168,7 +169,7 @@
             <choose>
                <when test="@namespace">
                   <text>, </text>
-                  <value-of select="src:expand-attribute(@namespace)"/>
+                  <value-of select="$namespace"/>
                </when>
                <when test="$prefix">
                   <text>, </text>
@@ -289,6 +290,8 @@
          <with-param name="optional" select="'namespace', 'use-attribute-sets'"/>
       </call-template>
 
+      <variable name="namespace" select="@namespace/src:uri-string(xcst:uri(., true()), src:expand-attribute(.))"/>
+
       <variable name="output-is-doc" select="src:output-is-doc($output)"/>
       <variable name="doc-output" select="src:doc-output(., $output)"/>
 
@@ -315,7 +318,7 @@
             <text>Lexical(</text>
             <value-of select="
                src:expand-attribute(@name),
-               src:expression-or-null(@namespace/src:expand-attribute(.)),
+               src:expression-or-null(@namespace/$namespace),
                src:verbatim-string(namespace-uri-from-QName(resolve-QName('foo', .)))" separator=", "/>
          </when>
          <otherwise>
@@ -331,7 +334,7 @@
             <text>, </text>
             <choose>
                <when test="@namespace">
-                  <value-of select="src:expand-attribute(@namespace)"/>
+                  <value-of select="$namespace"/>
                </when>
                <otherwise>
                   <value-of select="src:verbatim-string(namespace-uri-from-QName($name))"/>
@@ -1684,7 +1687,7 @@
 
       <call-template name="xcst:validate-attribs">
          <with-param name="required" select="'package'"/>
-         <with-param name="optional" select="'global-params', 'initial-template', 'template-params', 'tunnel-params', 'value'"/>
+         <with-param name="optional" select="'base-output-uri', 'global-params', 'initial-template', 'template-params', 'tunnel-params', 'value'"/>
       </call-template>
       <call-template name="xcst:no-children"/>
       <call-template name="src:line-number"/>
@@ -1734,6 +1737,14 @@
       <text>.OutputToRaw(</text>
       <value-of select="$output"/>
       <text>)</text>
+      <if test="@base-output-uri">
+         <call-template name="src:new-line-indented">
+            <with-param name="increase" select="1"/>
+         </call-template>
+         <text>.WithBaseOutputUri(</text>
+         <value-of select="@base-output-uri/src:uri-resolve(xcst:uri(., true()), src:expand-attribute(.), .)"/>
+         <text>)</text>
+      </if>
       <call-template name="src:new-line-indented">
          <with-param name="increase" select="1"/>
       </call-template>
@@ -2296,7 +2307,7 @@
                <if test="$text">
                   <sequence select="error(xs:QName('err:XTSE0010'), 'The ''src'' attribute must be omitted if the element has content.', src:error-object(.))"/>
                </if>
-               <variable name="src" select="resolve-uri(@src, base-uri())"/>
+               <variable name="src" select="resolve-uri(xcst:uri(@src), base-uri())"/>
                <if test="not(unparsed-text-available($src))">
                   <sequence select="error((), 'Cannot retrieve script.', src:error-object(.))"/>
                </if>
@@ -2366,10 +2377,7 @@
       <text>, </text>
       <choose>
          <when test="@href">
-            <value-of select="src:fully-qualified-helper('DataType')"/>
-            <text>.Uri(</text>
-            <value-of select="src:expand-attribute(@href)"/>
-            <text>)</text>
+            <sequence select="concat($src:context-field, '.ResolveOutputUri(', @href/src:uri-string(xcst:uri(., true()), src:expand-attribute(.)), ')')"/>
          </when>
          <otherwise>null</otherwise>
       </choose>
@@ -2923,6 +2931,27 @@
             ()
          else if ($string castable as xs:integer) then
             xs:integer($string)
+         else
+            error(xs:QName('err:XTSE0020'), concat('Invalid value for ''', name($node), '''.'), src:error-object($node))
+      "/>
+   </function>
+
+   <function name="xcst:uri" as="xs:anyURI">
+      <param name="node" as="node()"/>
+
+      <sequence select="xcst:uri($node, false())"/>
+   </function>
+
+   <function name="xcst:uri" as="xs:anyURI?">
+      <param name="node" as="node()"/>
+      <param name="avt" as="xs:boolean"/>
+
+      <variable name="string" select="string($node)"/>
+      <sequence select="
+         if ($avt and xcst:is-value-template($node)) then
+            ()
+         else if ($string castable as xs:anyURI) then
+            xs:anyURI($string)
          else
             error(xs:QName('err:XTSE0020'), concat('Invalid value for ''', name($node), '''.'), src:error-object($node))
       "/>
@@ -3650,6 +3679,49 @@
          </when>
          <otherwise>
             <sequence select="concat(src:fully-qualified-helper('DataType'), '.QName(', $string, ')')"/>
+         </otherwise>
+      </choose>
+   </function>
+
+   <function name="src:uri-string" as="xs:string">
+      <param name="uri" as="xs:anyURI"/>
+
+      <sequence select="src:verbatim-string($uri)"/>
+   </function>
+
+   <function name="src:uri-string" as="xs:string">
+      <param name="uri" as="xs:anyURI?"/>
+      <param name="string" as="xs:string"/>
+
+      <choose>
+         <when test="$uri instance of xs:anyURI">
+            <sequence select="src:uri-string($uri)"/>
+         </when>
+         <otherwise>
+            <sequence select="$string"/>
+         </otherwise>
+      </choose>
+   </function>
+
+   <function name="src:uri-resolve" as="xs:string">
+      <param name="uri" as="xs:anyURI?"/>
+      <param name="string" as="xs:string"/>
+      <param name="n" as="node()"/>
+
+      <choose>
+         <when test="$n/ancestor::*[@xml:base]">
+            <variable name="base-uri" select="base-uri($n)"/>
+            <choose>
+               <when test="not(empty($uri))">
+                  <sequence select="concat(src:fully-qualified-helper('DataType'), '.Uri(', src:uri-string(resolve-uri($uri, $base-uri)), ')')"/>
+               </when>
+               <otherwise>
+                  <sequence select="concat(src:fully-qualified-helper('DataType'), '.Uri(', src:uri-string($base-uri), ', ', $string, ')')"/>
+               </otherwise>
+            </choose>
+         </when>
+         <otherwise>
+            <sequence select="concat($src:context-field, '.ResolveUri(', $string, ')')"/>
          </otherwise>
       </choose>
    </function>

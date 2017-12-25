@@ -242,7 +242,7 @@
       </call-template>
       <call-template name="xcst:no-children"/>
 
-      <variable name="href" select="resolve-uri(@href, base-uri())"/>
+      <variable name="href" select="resolve-uri(xcst:uri(@href), base-uri())"/>
 
       <variable name="result" select="src:doc-with-uris($href, src:error-object(.))"/>
       <variable name="imported" select="$result[1]"/>

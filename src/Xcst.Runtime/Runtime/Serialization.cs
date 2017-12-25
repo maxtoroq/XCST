@@ -128,25 +128,11 @@ namespace Xcst.Runtime {
          if (package == null) throw new ArgumentNullException(nameof(package));
          if (parameters == null) throw new ArgumentNullException(nameof(parameters));
 
-         if (outputUri != null) {
+         if (outputUri != null
+            && !customOutput
+            && !outputUri.IsFile) {
 
-            if (!outputUri.IsAbsoluteUri
-               && package.Context.BaseOutputUri != null
-               && package.Context.BaseOutputUri.IsAbsoluteUri) {
-
-               outputUri = new Uri(package.Context.BaseOutputUri, outputUri);
-            }
-
-            if (!customOutput) {
-
-               if (!outputUri.IsAbsoluteUri) {
-                  throw new RuntimeException($"Cannot resolve {outputUri.OriginalString}. Specify a base output URI or use an absolute URI.");
-               }
-
-               if (!outputUri.IsFile) {
-                  throw new RuntimeException($"Can write to file URIs only ({outputUri.OriginalString}).");
-               }
-            }
+            throw new RuntimeException($"Can write to file URIs only ({outputUri.OriginalString}).");
          }
 
          var defaultParams = new OutputParameters();

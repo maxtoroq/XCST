@@ -139,11 +139,14 @@
     <None Include="CallableComponents\EvaluateDelegate\WithParams.c.xcst" />
     <None Include="CallableComponents\EvaluateDelegate\WithParam.c.xcst" />
     <None Include="CallableComponents\EvaluateDelegate\WithParam\with-param.value_seqctor.mutex.i.xcst" />
+    <None Include="CallableComponents\EvaluatePackage\BaseOutputUriRelative.c.xcst" />
+    <None Include="CallableComponents\EvaluatePackage\BaseOutputUriRelativeXmlBase.c.xcst" />
+    <None Include="CallableComponents\EvaluatePackage\evaluate-package.base-output-uri.type.c.xcst" />
     <None Include="CallableComponents\EvaluatePackage\evaluate-package.template-params.type.i.xcst" />
     <None Include="CallableComponents\EvaluatePackage\evaluate-package.tunnel-params.type.i.xcst" />
-    <None Include="CallableComponents\EvaluatePackage\ExamplePackage.pxcst" />
     <None Include="CallableComponents\EvaluatePackage\evaluate-package.package.req.i.xcst" />
     <None Include="CallableComponents\EvaluatePackage\evaluate-package.global-params.type.i.xcst" />
+    <None Include="CallableComponents\EvaluatePackage\BaseOutputUri.c.xcst" />
     <None Include="CallableComponents\EvaluatePackage\InResultDocument.c.xcst" />
     <None Include="CallableComponents\EvaluatePackage\TypeCompat.f.xcst" />
     <None Include="CallableComponents\EvaluatePackage\TypeCompat.c.xcst" />
@@ -493,6 +496,8 @@
     <None Include="Serialization\Methods\Xml\TopComment.c.xcst" />
     <None Include="Serialization\Methods\Xml\Xml.c.xcst" />
     <None Include="Serialization\Methods\Xml\TopText.c.xcst" />
+    <None Include="Serialization\ResultDocument\RelativeUri.f.xcst" />
+    <None Include="Serialization\ResultDocument\RelativeUri.c.xcst" />
     <None Include="Serialization\ResultDocument\OutputTypedTemplate.c.xcst" />
     <None Include="Serialization\ResultDocument\Output.c.xcst" />
     <None Include="Serialization\ResultDocument\result-document.cdata-section-elements.avt.c.xcst" />

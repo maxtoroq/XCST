@@ -1032,6 +1032,14 @@
                <xs:documentation>An object with tunnel template parameters. Expression (System.Object | System.Collections.Generic.IDictionary&lt;System.String, System.Object&gt;).</xs:documentation>
             </xs:annotation>
          </xs:attribute>
+         <xs:attribute name="base-output-uri">
+            <xs:annotation>
+               <xs:documentation>The base output URI. Attribute value template (uri).</xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+               <xs:union memberTypes="c:uri c:avt-expr"/>
+            </xs:simpleType>
+         </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>

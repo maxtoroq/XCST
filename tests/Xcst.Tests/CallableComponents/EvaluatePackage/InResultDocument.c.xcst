@@ -1,14 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<?ignore-test ?>
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
    <c:import-namespace ns='System'/>
+   <c:import-namespace ns='System.IO'/>
+   <c:import-namespace ns='Xcst.PackageModel'/>
 
    <c:template name='c:initial-template'>
-      <c:result-document href='foo.txt' method='text'>
+      <c:variable name='outputUri' value='((IXcstPackage)this).Context.ResolveOutputUri("foo.txt")'/>
+      <c:result-document href='{outputUri.AbsoluteUri}' method='text'>
          <c:evaluate-package package='Activator.CreateInstance(GetType())' initial-template='foo'/>
          <c:text>bar</c:text>
       </c:result-document>
+      <c:void value='File.Delete(outputUri.LocalPath)'/>
    </c:template>
 
    <c:template name='foo' as='string'>foo</c:template>

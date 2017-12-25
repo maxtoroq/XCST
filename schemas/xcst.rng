@@ -1087,6 +1087,13 @@
                      </docs:expression-type>
                   </ref>
                </attribute>
+               <attribute name="base-output-uri">
+                  <ann:documentation>The base output URI.</ann:documentation>
+                  <choice>
+                     <ref name="uri"/>
+                     <ref name="avt-expr"/>
+                  </choice>
+               </attribute>
             </choice>
          </zeroOrMore>
          <ref name="standard-attributes"/>

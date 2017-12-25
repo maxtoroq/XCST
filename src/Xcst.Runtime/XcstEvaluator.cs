@@ -374,6 +374,7 @@ namespace Xcst {
 
       OutputParameters parameters;
       Func<IFormatProvider> formatProviderFn;
+      Uri baseUri;
       Uri baseOutputUri;
 
       internal XcstOutputter(IXcstPackage package, Func<PrimingContext> primeFn, Action<OutputParameters, bool> executionFn) {
@@ -413,6 +414,18 @@ namespace Xcst {
          return this;
       }
 
+      public XcstOutputter WithBaseUri(Uri/*?*/ baseUri) {
+
+         if (baseUri != null
+            && !baseUri.IsAbsoluteUri) {
+
+            throw new ArgumentException("An absolute URI is expected.", nameof(baseUri));
+         }
+
+         this.baseUri = baseUri;
+         return this;
+      }
+
       public XcstOutputter WithBaseOutputUri(Uri/*?*/ baseOutputUri) {
 
          if (baseOutputUri != null
@@ -429,7 +442,7 @@ namespace Xcst {
 
          PrimingContext primingContext = this.primeFn();
 
-         var execContext = new ExecutionContext(this.package, primingContext, this.formatProviderFn, this.baseOutputUri);
+         var execContext = new ExecutionContext(this.package, primingContext, this.formatProviderFn, this.baseUri, this.baseOutputUri);
 
          this.package.Context = execContext;
 

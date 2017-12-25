@@ -27,13 +27,14 @@ namespace Xcst.Tests {
 
       public static void RunXcstTest(string packageFile, bool correct, bool fail) {
 
+         var packageUri = new Uri(packageFile, UriKind.Absolute);
          string usePackageBase = new StackFrame(1, true).GetMethod().DeclaringType.Namespace;
 
          CompileResult xcstResult;
          string packageName;
 
          try {
-            var codegenResult = GenerateCode(packageFile, usePackageBase);
+            var codegenResult = GenerateCode(packageUri, usePackageBase);
             xcstResult = codegenResult.Item1;
             packageName = codegenResult.Item2;
 
@@ -48,7 +49,7 @@ namespace Xcst.Tests {
 
          try {
 
-            Type packageType = CompileCode(xcstResult, packageName, packageFile);
+            Type packageType = CompileCode(xcstResult, packageName, packageUri);
 
             if (!correct) {
                return;
@@ -64,7 +65,7 @@ namespace Xcst.Tests {
                      TestAssert.Fail("A failing package should not define an 'expected' template.");
                   }
 
-                  SimplyRun(packageType, packageFile);
+                  SimplyRun(packageType, packageUri);
 
                } else {
 
@@ -87,10 +88,10 @@ namespace Xcst.Tests {
 
                      switch (outputOpt) {
                         case 'x':
-                           TestAssert.IsTrue(OutputEqualsToDoc(packageType, outputFileXml));
+                           TestAssert.IsTrue(OutputEqualsToDoc(packageType, packageUri, outputFileXml));
                            break;
                         case 't':
-                           TestAssert.IsTrue(OutputEqualsToText(packageType, outputFileTxt));
+                           TestAssert.IsTrue(OutputEqualsToText(packageType, packageUri, outputFileTxt));
                            break;
                      }
 
@@ -99,9 +100,9 @@ namespace Xcst.Tests {
                      if (xcstResult.Templates.Contains(InitialName)) {
 
                         if (xcstResult.Templates.Contains(ExpectedName)) {
-                           TestAssert.IsTrue(OutputEqualsToExpected(packageType));
+                           TestAssert.IsTrue(OutputEqualsToExpected(packageType, packageUri));
                         } else {
-                           SimplyRun(packageType, packageFile);
+                           SimplyRun(packageType, packageUri);
                         }
 
                      } else if (xcstResult.Templates.Contains(ExpectedName)) {
@@ -124,7 +125,7 @@ namespace Xcst.Tests {
          }
       }
 
-      static Tuple<CompileResult, string> GenerateCode(string packageFile, string usePackageBase) {
+      static Tuple<CompileResult, string> GenerateCode(Uri packageUri, string usePackageBase) {
 
          XcstCompiler compiler = CompilerFactory.CreateCompiler();
          compiler.TargetNamespace = typeof(TestsHelper).Namespace + ".Runtime";
@@ -133,17 +134,17 @@ namespace Xcst.Tests {
          compiler.UsePackageBase = usePackageBase;
          compiler.SetTargetBaseTypes(typeof(TestBase));
 
-         CompileResult result = compiler.Compile(new Uri(packageFile, UriKind.Absolute));
+         CompileResult result = compiler.Compile(packageUri);
 
          return Tuple.Create(result, compiler.TargetNamespace + "." + compiler.TargetClass);
       }
 
-      static Type CompileCode(CompileResult result, string packageName, string packageFile) {
+      static Type CompileCode(CompileResult result, string packageName, Uri packageUri) {
 
          var parseOptions = new CSharpParseOptions(preprocessorSymbols: new[] { "DEBUG", "TRACE" });
 
          SyntaxTree[] syntaxTrees = result.CompilationUnits
-            .Select(c => CSharpSyntaxTree.ParseText(c, parseOptions, path: packageFile, encoding: Encoding.UTF8))
+            .Select(c => CSharpSyntaxTree.ParseText(c, parseOptions, path: packageUri.LocalPath, encoding: Encoding.UTF8))
             .ToArray();
 
          // TODO: Should compiler give list of assembly references?
@@ -201,7 +202,7 @@ namespace Xcst.Tests {
          }
       }
 
-      static bool OutputEqualsToDoc(Type packageType, string fileName) {
+      static bool OutputEqualsToDoc(Type packageType, Uri packageUri, string fileName) {
 
          var expectedDoc = XDocument.Load(fileName, LoadOptions.PreserveWhitespace);
          var actualDoc = new XDocument();
@@ -211,13 +212,15 @@ namespace Xcst.Tests {
             XcstEvaluator.Using(Activator.CreateInstance(packageType))
                .CallInitialTemplate()
                .OutputTo(output)
+               .WithBaseUri(packageUri)
+               .WithBaseOutputUri(packageUri)
                .Run();
          }
 
          return XDocumentNormalizer.DeepEqualsWithNormalization(expectedDoc, actualDoc);
       }
 
-      static bool OutputEqualsToText(Type packageType, string fileName) {
+      static bool OutputEqualsToText(Type packageType, Uri packageUri, string fileName) {
 
          string result;
 
@@ -226,6 +229,8 @@ namespace Xcst.Tests {
             XcstEvaluator.Using(Activator.CreateInstance(packageType))
                .CallInitialTemplate()
                .OutputTo(output)
+               .WithBaseUri(packageUri)
+               .WithBaseOutputUri(packageUri)
                .Run();
 
             result = output.ToString();
@@ -234,7 +239,7 @@ namespace Xcst.Tests {
          return String.Equals(result, File.ReadAllText(fileName));
       }
 
-      static bool OutputEqualsToExpected(Type packageType) {
+      static bool OutputEqualsToExpected(Type packageType, Uri packageUri) {
 
          var expectedDoc = new XDocument();
          var actualDoc = new XDocument();
@@ -245,6 +250,8 @@ namespace Xcst.Tests {
 
             evaluator.CallInitialTemplate()
                .OutputTo(actualWriter)
+               .WithBaseUri(packageUri)
+               .WithBaseOutputUri(packageUri)
                .Run();
          }
 
@@ -258,12 +265,13 @@ namespace Xcst.Tests {
          return XDocumentNormalizer.DeepEqualsWithNormalization(expectedDoc, actualDoc);
       }
 
-      static void SimplyRun(Type packageType, string packageFile) {
+      static void SimplyRun(Type packageType, Uri packageUri) {
 
          XcstEvaluator.Using(Activator.CreateInstance(packageType))
             .CallInitialTemplate()
             .OutputTo(TextWriter.Null)
-            .WithBaseOutputUri(new Uri(packageFile))
+            .WithBaseUri(packageUri)
+            .WithBaseOutputUri(packageUri)
             .Run();
       }
    }

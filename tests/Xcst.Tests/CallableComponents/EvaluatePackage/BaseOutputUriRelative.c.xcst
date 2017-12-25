@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:import-namespace ns='System'/>
+   <c:import-namespace ns='System.IO'/>
+   <c:import-namespace ns='Xcst.PackageModel'/>
+
+   <c:variable name='tempFile'>foo.txt</c:variable>
+
+   <c:template name='c:initial-template'>
+      <c:variable name='context' value='((IXcstPackage)this).Context'/>
+      <c:variable name='outputDir'>../</c:variable>
+      <c:variable name='outputUri' value='context.ResolveUri($"{outputDir}{tempFile}")'/>
+      <c:evaluate-package
+         package='Activator.CreateInstance(GetType())'
+         initial-template='foo'
+         base-output-uri='{outputDir}'/>
+      <c:void value='Assert.IsTrue(File.Exists(outputUri.LocalPath))'/>
+      <c:void value='File.Delete(outputUri.LocalPath)'/>
+   </c:template>
+
+   <c:template name='foo'>
+      <c:result-document href='{tempFile}' method='text'>foo</c:result-document>
+   </c:template>
+
+</c:module>

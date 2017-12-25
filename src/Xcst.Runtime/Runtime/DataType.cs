@@ -47,17 +47,22 @@ namespace Xcst.Runtime {
 
       public static decimal Decimal(string value) {
 
-         NumberStyles style = NumberStyles.AllowLeadingWhite
-            | NumberStyles.AllowTrailingWhite
-            | NumberStyles.AllowLeadingSign
+         if (value == null) throw new ArgumentNullException(nameof(value));
+
+         NumberStyles style = NumberStyles.AllowLeadingSign
             | NumberStyles.AllowTrailingSign
             | NumberStyles.AllowDecimalPoint;
 
-         return System.Decimal.Parse(value, style, CultureInfo.InvariantCulture);
+         return System.Decimal.Parse(SimpleContent.Trim(value), style, CultureInfo.InvariantCulture);
       }
 
       public static int Integer(string value) {
-         return System.Int32.Parse(value, NumberStyles.Integer, CultureInfo.InvariantCulture);
+
+         if (value == null) throw new ArgumentNullException(nameof(value));
+
+         NumberStyles style = NumberStyles.AllowLeadingSign;
+
+         return Int32.Parse(SimpleContent.Trim(value), style, CultureInfo.InvariantCulture);
       }
 
       public static string/*?*/ ItemSeparator(string value) {
@@ -110,8 +115,22 @@ namespace Xcst.Runtime {
          return XmlStandalone.No;
       }
 
-      public static Uri Uri(string uri) {
-         return new Uri(uri, UriKind.RelativeOrAbsolute);
+      public static Uri Uri(string uriString) {
+
+         try {
+            return new Uri(uriString);
+         } catch (UriFormatException ex) {
+            throw new RuntimeException(ex.Message);
+         }
+      }
+
+      public static Uri Uri(string baseUri, string relativeUri) {
+
+         try {
+            return new Uri(new Uri(baseUri, UriKind.Absolute), relativeUri);
+         } catch (UriFormatException ex) {
+            throw new RuntimeException(ex.Message);
+         }
       }
 
       public static IList<TItem> List<TItem>(string list, Func<string, TItem> parseFn) {

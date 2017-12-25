@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.Diagnostics;
 using System.Globalization;
 using Xcst.Runtime;
 
@@ -30,13 +31,16 @@ namespace Xcst.PackageModel {
 
       public SimpleContent SimpleContent { get; }
 
+      public Uri/*?*/ StaticBaseUri { get; }
+
       public Uri/*?*/ BaseOutputUri { get; }
 
       internal ExecutionContext(
             IXcstPackage topLevelPackage,
             PrimingContext primingContext,
             Func<IFormatProvider>/*?*/ formatProviderFn,
-            Uri baseOutputUri) {
+            Uri/*?*/ staticBaseUri,
+            Uri/*?*/ baseOutputUri) {
 
          if (topLevelPackage == null) throw new ArgumentNullException(nameof(topLevelPackage));
          if (primingContext == null) throw new ArgumentNullException(nameof(primingContext));
@@ -45,7 +49,56 @@ namespace Xcst.PackageModel {
          this.PrimingContext = primingContext;
          this.formatProviderFn = formatProviderFn ?? (() => CultureInfo.CurrentCulture);
          this.SimpleContent = new SimpleContent(this.formatProviderFn);
+
+         if (staticBaseUri != null) {
+            Debug.Assert(staticBaseUri.IsAbsoluteUri);
+         }
+
+         if (baseOutputUri != null) {
+            Debug.Assert(baseOutputUri.IsAbsoluteUri);
+         }
+
+         this.StaticBaseUri = staticBaseUri;
          this.BaseOutputUri = baseOutputUri;
+      }
+
+      public Uri ResolveUri(string relativeUri) {
+
+         var relUri = new Uri(relativeUri, UriKind.RelativeOrAbsolute);
+
+         if (relUri.IsAbsoluteUri) {
+            return relUri;
+         }
+
+         if (this.StaticBaseUri == null) {
+            throw new RuntimeException("Cannot resolve relative URI. Specify a base URI.");
+         }
+
+         return NewUri(this.StaticBaseUri, relativeUri);
+      }
+
+      public Uri ResolveOutputUri(string relativeUri) {
+
+         var relUri = new Uri(relativeUri, UriKind.RelativeOrAbsolute);
+
+         if (relUri.IsAbsoluteUri) {
+            return relUri;
+         }
+
+         if (this.BaseOutputUri == null) {
+            throw new RuntimeException("Cannot resolve relative URI. Specify a base output URI.");
+         }
+
+         return NewUri(this.BaseOutputUri, relativeUri);
+      }
+
+      static Uri NewUri(Uri baseUri, string relativeUri) {
+
+         try {
+            return new Uri(baseUri, relativeUri);
+         } catch (UriFormatException ex) {
+            throw new RuntimeException(ex.Message);
+         }
       }
    }
 }
