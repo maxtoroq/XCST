@@ -411,9 +411,7 @@
          <otherwise>WriteStartAttribute</otherwise>
       </choose>
       <text>("xmlns", </text>
-      <value-of select="
-         if (xcst:is-value-template(@name)) then src:expand-attribute(@name)
-         else src:string(xcst:name(@name))"/>
+      <value-of select="@name/src:ncname-string(xcst:ncname(., true()), src:expand-attribute(.))"/>
       <text>, null</text>
       <if test="$attrib-string">
          <text>, </text>
@@ -481,9 +479,7 @@
       <call-template name="src:new-line-indented"/>
       <value-of select="$doc-output"/>
       <text>.WriteProcessingInstruction(</text>
-      <value-of select="
-         if (xcst:is-value-template(@name)) then src:expand-attribute(@name)
-         else src:string(xcst:name(@name))"/>
+      <value-of select="@name/src:ncname-string(xcst:ncname(., true()), src:expand-attribute(.))"/>
       <text>, </text>
       <call-template name="src:simple-content">
          <with-param name="attribute" select="@value"/>
@@ -3068,12 +3064,14 @@
          <variable name="ext-ns" as="xs:string*">
             <for-each select="$elem/ancestor-or-self::*[(self::c:* and @extension-element-prefixes) or (not(self::c:*) and @c:extension-element-prefixes)]
                /(if (self::c:*) then @extension-element-prefixes else @c:extension-element-prefixes)">
+               <variable name="attr" select="."/>
                <variable name="el" select=".."/>
                <for-each select="tokenize(., '\s')[.]">
                   <variable name="default" select=". eq '#default'"/>
-                  <variable name="ns" select="namespace-uri-for-prefix((if ($default) then '' else .), $el)"/>
+                  <variable name="prefix" select="if ($default) then '' else string(xcst:ncname($attr, false(), .))"/>
+                  <variable name="ns" select="namespace-uri-for-prefix($prefix, $el)"/>
                   <if test="empty($ns)">
-                     <sequence select="error(xs:QName('err:XTSE1430'), concat(if ($default) then 'Default namespace' else concat('Namespace prefix ''', ., ''''), ' has not been declared.'), src:error-object($el))"/>
+                     <sequence select="error(xs:QName('err:XTSE1430'), concat(if ($default) then 'Default namespace' else concat('Namespace prefix ''', $prefix, ''''), ' has not been declared.'), src:error-object($el))"/>
                   </if>
                   <sequence select="$ns"/>
                </for-each>
@@ -3136,6 +3134,37 @@
             </otherwise>
          </choose>
       </if>
+   </function>
+
+   <!-- xs:NCName not available in XSLT 2.0 -->
+   
+   <function name="xcst:ncname" as="xs:string">
+      <param name="node" as="node()"/>
+
+      <sequence select="xcst:ncname($node, false())"/>
+   </function>
+
+   <function name="xcst:ncname" as="xs:string?">
+      <param name="node" as="node()"/>
+      <param name="avt" as="xs:boolean"/>
+
+      <sequence select="xcst:ncname($node, $avt, ())"/>
+   </function>
+
+   <function name="xcst:ncname" as="xs:string?">
+      <param name="node" as="node()"/>
+      <param name="avt" as="xs:boolean"/>
+      <param name="value" as="xs:string?"/>
+
+      <variable name="string" select="($value, xcst:non-string($node))[1]"/>
+      <sequence select="
+         if ($avt and xcst:is-value-template($node)) then
+            ()
+         else if ($string castable as xs:string) then
+            xs:string($string)
+         else
+            error(xs:QName('err:XTSE0020'), concat('Invalid value for ''', name($node), '''.'), src:error-object($node))
+      "/>
    </function>
 
    <function name="xcst:uri-qualified-name" as="xs:string">
@@ -3679,6 +3708,20 @@
          </when>
          <otherwise>
             <sequence select="concat(src:fully-qualified-helper('DataType'), '.QName(', $string, ')')"/>
+         </otherwise>
+      </choose>
+   </function>
+
+   <function name="src:ncname-string" as="xs:string">
+      <param name="ncname" as="xs:string?"/>
+      <param name="string" as="xs:string"/>
+
+      <choose>
+         <when test="$ncname instance of xs:string">
+            <sequence select="src:string($ncname)"/>
+         </when>
+         <otherwise>
+            <sequence select="$string"/>
          </otherwise>
       </choose>
    </function>
