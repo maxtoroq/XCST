@@ -1088,7 +1088,14 @@
                   </ref>
                </attribute>
                <attribute name="base-output-uri">
-                  <ann:documentation>The base output URI.</ann:documentation>
+                  <ann:documentation>The base output URI, used to resolve relative URIs of secondary result documents.</ann:documentation>
+                  <choice>
+                     <ref name="uri"/>
+                     <ref name="avt-expr"/>
+                  </choice>
+               </attribute>
+               <attribute name="base-uri">
+                  <ann:documentation>The base URI, used to resolve relative URIs.</ann:documentation>
                   <choice>
                      <ref name="uri"/>
                      <ref name="avt-expr"/>

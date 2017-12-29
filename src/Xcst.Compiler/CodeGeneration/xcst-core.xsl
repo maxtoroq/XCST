@@ -1683,7 +1683,7 @@
 
       <call-template name="xcst:validate-attribs">
          <with-param name="required" select="'package'"/>
-         <with-param name="optional" select="'base-output-uri', 'global-params', 'initial-template', 'template-params', 'tunnel-params', 'value'"/>
+         <with-param name="optional" select="'base-output-uri', 'base-uri', 'global-params', 'initial-template', 'template-params', 'tunnel-params'"/>
       </call-template>
       <call-template name="xcst:no-children"/>
       <call-template name="src:line-number"/>
@@ -1733,6 +1733,14 @@
       <text>.OutputToRaw(</text>
       <value-of select="$output"/>
       <text>)</text>
+      <if test="@base-uri">
+         <call-template name="src:new-line-indented">
+            <with-param name="increase" select="1"/>
+         </call-template>
+         <text>.WithBaseUri(</text>
+         <value-of select="@base-uri/src:uri-resolve(xcst:uri(., true()), src:expand-attribute(.), .)"/>
+         <text>)</text>
+      </if>
       <if test="@base-output-uri">
          <call-template name="src:new-line-indented">
             <with-param name="increase" select="1"/>

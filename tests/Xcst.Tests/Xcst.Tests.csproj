@@ -139,8 +139,10 @@
     <None Include="CallableComponents\EvaluateDelegate\WithParams.c.xcst" />
     <None Include="CallableComponents\EvaluateDelegate\WithParam.c.xcst" />
     <None Include="CallableComponents\EvaluateDelegate\WithParam\with-param.value_seqctor.mutex.i.xcst" />
+    <None Include="CallableComponents\EvaluatePackage\BaseUri.c.xcst" />
     <None Include="CallableComponents\EvaluatePackage\BaseOutputUriRelative.c.xcst" />
     <None Include="CallableComponents\EvaluatePackage\BaseOutputUriRelativeXmlBase.c.xcst" />
+    <None Include="CallableComponents\EvaluatePackage\evaluate-package.base-uri.type.c.xcst" />
     <None Include="CallableComponents\EvaluatePackage\evaluate-package.base-output-uri.type.c.xcst" />
     <None Include="CallableComponents\EvaluatePackage\evaluate-package.template-params.type.i.xcst" />
     <None Include="CallableComponents\EvaluatePackage\evaluate-package.tunnel-params.type.i.xcst" />

@@ -1034,7 +1034,15 @@
          </xs:attribute>
          <xs:attribute name="base-output-uri">
             <xs:annotation>
-               <xs:documentation>The base output URI. Attribute value template (uri).</xs:documentation>
+               <xs:documentation>The base output URI, used to resolve relative URIs of secondary result documents. Attribute value template (uri).</xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+               <xs:union memberTypes="c:uri c:avt-expr"/>
+            </xs:simpleType>
+         </xs:attribute>
+         <xs:attribute name="base-uri">
+            <xs:annotation>
+               <xs:documentation>The base URI, used to resolve relative URIs. Attribute value template (uri).</xs:documentation>
             </xs:annotation>
             <xs:simpleType>
                <xs:union memberTypes="c:uri c:avt-expr"/>
