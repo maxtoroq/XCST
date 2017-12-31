@@ -348,6 +348,8 @@ namespace Xcst {
          }
       }
 
+      // These don't need to be public, but it's a small optimization
+
       public void CopyOf(XNode value) {
          value?.WriteTo(new XcstXmlWriter(this));
       }
@@ -385,14 +387,17 @@ namespace Xcst {
          CopyOfSequence(value);
       }
 
-      public void CopyOf(JObject value) {
+      // These are private to not force code that depends on XcstWriter
+      // having to reference Newtonsoft.Json
+
+      void CopyOf(JObject value) {
 
          if (value != null) {
             MapWriter.Create(this).CopyOf(value);
          }
       }
 
-      public void CopyOf(JArray value) {
+      void CopyOf(JArray value) {
 
          if (value != null) {
             MapWriter.Create(this).CopyOf(value);
