@@ -2,7 +2,7 @@
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
    <c:template name='foo'>
-      <c:for-each-group name='group' in='new[] { "banana", "apricot", "apple" }' group-by='Substring(0, 1)'>
+      <c:for-each-group name='group' in='new[] { "banana", "apricot", "apple" }' group-by='it => it.Substring(0, 1)'>
          foo
          <c:sort/>
          <c:sort/>

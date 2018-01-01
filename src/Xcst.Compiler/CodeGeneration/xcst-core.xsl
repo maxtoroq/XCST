@@ -1914,12 +1914,15 @@
          <text>.GroupBy(</text>
          <value-of select="xcst:expression(@in)"/>
          <text>, </text>
-         <variable name="param" select="src:aux-variable(generate-id())"/>
-         <value-of select="$param, '=>', $param"/>
-         <if test="@group-by">
-            <text>.</text>
-            <value-of select="xcst:expression(@group-by)"/>
-         </if>
+         <choose>
+            <when test="@group-by">
+               <value-of select="xcst:expression(@group-by)"/>
+            </when>
+            <otherwise>
+               <variable name="param" select="src:aux-variable(generate-id())"/>
+               <value-of select="$param, '=>', $param"/>
+            </otherwise>
+         </choose>
          <text>)</text>
       </variable>
 
@@ -3145,7 +3148,7 @@
    </function>
 
    <!-- xs:NCName not available in XSLT 2.0 -->
-   
+
    <function name="xcst:ncname" as="xs:string">
       <param name="node" as="node()"/>
 

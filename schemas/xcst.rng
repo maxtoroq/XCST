@@ -1170,8 +1170,8 @@
          <optional>
             <choice>
                <attribute name="group-by">
-                  <ann:documentation>An expression to use as grouping key.</ann:documentation>
-                  <ref name="expression"/>
+                  <ann:documentation>A lambda expression that computes the grouping key.</ann:documentation>
+                  <ref name="lambda_expression"/>
                </attribute>
                <attribute name="group-size">
                   <ann:documentation>The maximum number of items a group may have.</ann:documentation>
@@ -1979,6 +1979,11 @@
 
    <define name="boolean_expression">
       <ann:documentation>Boolean expression.</ann:documentation>
+      <ref name="expression"/>
+   </define>
+
+   <define name="lambda_expression">
+      <ann:documentation>Lambda expression.</ann:documentation>
       <ref name="expression"/>
    </define>
 

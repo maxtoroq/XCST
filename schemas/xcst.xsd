@@ -1120,9 +1120,9 @@
                <xs:documentation>The source of the items. Expression (System.Collections.Generic.IEnumerable&lt;T&gt;).</xs:documentation>
             </xs:annotation>
          </xs:attribute>
-         <xs:attribute name="group-by" type="c:expression">
+         <xs:attribute name="group-by" type="c:lambda_expression">
             <xs:annotation>
-               <xs:documentation>An expression to use as grouping key. Expression.</xs:documentation>
+               <xs:documentation>A lambda expression that computes the grouping key.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attribute name="group-size">
@@ -1940,6 +1940,12 @@
    <xs:simpleType name="boolean_expression">
       <xs:annotation>
          <xs:documentation>Boolean expression.</xs:documentation>
+      </xs:annotation>
+      <xs:restriction base="c:expression"/>
+   </xs:simpleType>
+   <xs:simpleType name="lambda_expression">
+      <xs:annotation>
+         <xs:documentation>Lambda expression.</xs:documentation>
       </xs:annotation>
       <xs:restriction base="c:expression"/>
    </xs:simpleType>
