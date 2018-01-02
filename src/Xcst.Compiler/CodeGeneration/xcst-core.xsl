@@ -1905,16 +1905,21 @@
       ## Grouping
    -->
 
-   <template match="c:for-each-group[not(@group-size)]" mode="src:statement">
+   <template match="c:for-each-group[not(@group-size and not(c:sort))]" mode="src:statement">
 
       <call-template name="xcst:validate-for-each-group"/>
 
       <variable name="grouped-aux">
          <value-of select="src:fully-qualified-helper('Grouping')"/>
-         <text>.GroupBy(</text>
+         <text>.Group</text>
+         <value-of select="if (@group-size) then 'Size' else 'By'"/>
+         <text>(</text>
          <value-of select="xcst:expression(@in)"/>
          <text>, </text>
          <choose>
+            <when test="@group-size">
+               <value-of select="@group-size/src:integer(xcst:integer(., true()), src:expand-attribute(.))"/>
+            </when>
             <when test="@group-by">
                <value-of select="xcst:expression(@group-by)"/>
             </when>
@@ -1953,14 +1958,10 @@
       </call-template>
    </template>
 
-   <template match="c:for-each-group[@group-size]" mode="src:statement">
+   <template match="c:for-each-group[@group-size and not(c:sort)]" mode="src:statement">
       <param name="indent" tunnel="yes"/>
 
       <call-template name="xcst:validate-for-each-group"/>
-
-      <if test="c:sort">
-         <sequence select="error((), 'c:sort is currently not supported when using ''group-size''.', src:error-object(c:sort[1]))"/>
-      </if>
 
       <variable name="in" select="xcst:expression(@in)"/>
       <variable name="iter" select="concat(src:aux-variable('iter'), '_', generate-id())"/>
