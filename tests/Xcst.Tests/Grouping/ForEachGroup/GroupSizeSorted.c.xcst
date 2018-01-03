@@ -6,7 +6,7 @@
    <c:template name='c:initial-template' expand-text='yes'>
       <table>
          <c:for-each-group name='group' in='new[] { "banana", "apricot", "apple" }' group-size='2'>
-            <c:sort value='group.Count()'/>
+            <c:sort value='g => g.Count()'/>
 
             <tr>
                <c:for-each name='item' in='group'>

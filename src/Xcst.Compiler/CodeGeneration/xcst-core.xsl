@@ -924,7 +924,6 @@
       <choose>
          <when test="c:sort">
             <call-template name="src:sort">
-               <with-param name="name" select="$name"/>
                <with-param name="in" select="$in"/>
             </call-template>
          </when>
@@ -1863,7 +1862,6 @@
    -->
 
    <template name="src:sort">
-      <param name="name" required="yes"/>
       <param name="in" required="yes"/>
       <param name="indent" tunnel="yes"/>
 
@@ -1889,7 +1887,15 @@
             </when>
             <otherwise>.CreateOrderedEnumerable(</otherwise>
          </choose>
-         <value-of select="$name, '=>', (@value/xcst:expression(.), $name)[1]"/>
+         <choose>
+            <when test="@value">
+               <value-of select="xcst:expression(@value)"/>
+            </when>
+            <otherwise>
+               <variable name="param" select="src:aux-variable(generate-id())"/>
+               <value-of select="$param, '=>', $param"/>
+            </otherwise>
+         </choose>
          <if test="position() gt 1">, null</if>
          <text>, </text>
          <value-of select="
@@ -1943,7 +1949,6 @@
       <choose>
          <when test="c:sort">
             <call-template name="src:sort">
-               <with-param name="name" select="$name"/>
                <with-param name="in" select="$grouped"/>
             </call-template>
          </when>

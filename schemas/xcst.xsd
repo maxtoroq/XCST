@@ -1365,9 +1365,9 @@
          <xs:documentation>Defines how to sort sequences of items.</xs:documentation>
       </xs:annotation>
       <xs:complexType>
-         <xs:attribute name="value" type="c:expression">
+         <xs:attribute name="value" type="c:lambda_expression">
             <xs:annotation>
-               <xs:documentation>An expression to use as sort key. Expression.</xs:documentation>
+               <xs:documentation>An expression to use as sort key.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attribute name="order">

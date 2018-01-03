@@ -1418,7 +1418,7 @@
             <choice>
                <attribute name="value">
                   <ann:documentation>An expression to use as sort key.</ann:documentation>
-                  <ref name="expression"/>
+                  <ref name="lambda_expression"/>
                </attribute>
                <attribute name="order">
                   <ann:documentation>Specifies the sort direction ("ascending" or "descending").</ann:documentation>
