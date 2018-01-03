@@ -1367,7 +1367,7 @@
       <xs:complexType>
          <xs:attribute name="value" type="c:lambda_expression">
             <xs:annotation>
-               <xs:documentation>An expression to use as sort key.</xs:documentation>
+               <xs:documentation>A lambda expression that computes the sorting key.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attribute name="order">

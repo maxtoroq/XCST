@@ -1417,7 +1417,7 @@
          <zeroOrMore>
             <choice>
                <attribute name="value">
-                  <ann:documentation>An expression to use as sort key.</ann:documentation>
+                  <ann:documentation>A lambda expression that computes the sorting key.</ann:documentation>
                   <ref name="lambda_expression"/>
                </attribute>
                <attribute name="order">
