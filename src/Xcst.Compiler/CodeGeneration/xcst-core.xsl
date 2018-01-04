@@ -3153,22 +3153,22 @@
       </if>
    </function>
 
-   <!-- xs:NCName not available in XSLT 2.0 -->
+   <!-- xs:NCName not available in XSLT 2.0, using xs:QName instead -->
 
-   <function name="xcst:ncname" as="xs:string">
+   <function name="xcst:ncname" as="xs:QName">
       <param name="node" as="node()"/>
 
       <sequence select="xcst:ncname($node, false())"/>
    </function>
 
-   <function name="xcst:ncname" as="xs:string?">
+   <function name="xcst:ncname" as="xs:QName?">
       <param name="node" as="node()"/>
       <param name="avt" as="xs:boolean"/>
 
       <sequence select="xcst:ncname($node, $avt, ())"/>
    </function>
 
-   <function name="xcst:ncname" as="xs:string?">
+   <function name="xcst:ncname" as="xs:QName?">
       <param name="node" as="node()"/>
       <param name="avt" as="xs:boolean"/>
       <param name="value" as="xs:string?"/>
@@ -3177,8 +3177,8 @@
       <sequence select="
          if ($avt and xcst:is-value-template($node)) then
             ()
-         else if ($string castable as xs:string) then
-            xs:string($string)
+         else if ($string castable as xs:QName and not(contains($string, ':'))) then
+            QName('', $string)
          else
             error(xs:QName('err:XTSE0020'), concat('Invalid value for ''', name($node), '''.'), src:error-object($node))
       "/>
@@ -3730,11 +3730,11 @@
    </function>
 
    <function name="src:ncname-string" as="xs:string">
-      <param name="ncname" as="xs:string?"/>
+      <param name="ncname" as="xs:QName?"/>
       <param name="string" as="xs:string"/>
 
       <choose>
-         <when test="$ncname instance of xs:string">
+         <when test="$ncname instance of xs:QName">
             <sequence select="src:string($ncname)"/>
          </when>
          <otherwise>
