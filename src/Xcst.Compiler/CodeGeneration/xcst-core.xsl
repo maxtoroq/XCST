@@ -1924,7 +1924,7 @@
          <text>, </text>
          <choose>
             <when test="@group-size">
-               <value-of select="@group-size/src:integer(xcst:integer(., true()), src:expand-attribute(.))"/>
+               <value-of select="@group-size/src:integer(xcst:positive-integer(., true()), src:expand-attribute(.))"/>
             </when>
             <when test="@group-by">
                <value-of select="xcst:expression(@group-by)"/>
@@ -2019,7 +2019,7 @@
       <variable name="eof" select="concat(src:aux-variable('eof'), '_', generate-id())"/>
 
       <call-template name="src:new-line-indented"/>
-      <value-of select="'int', $cols, '=', @group-size/src:integer(xcst:integer(., true()), src:expand-attribute(.))"/>
+      <value-of select="'int', $cols, '=', @group-size/src:integer(xcst:positive-integer(., true()), src:expand-attribute(.))"/>
       <value-of select="$src:statement-delimiter"/>
 
       <call-template name="src:new-line-indented"/>
@@ -2946,6 +2946,19 @@
             xs:integer($string)
          else
             error(xs:QName('err:XTSE0020'), concat('Invalid value for ''', name($node), '''.'), src:error-object($node))
+      "/>
+   </function>
+
+   <function name="xcst:positive-integer" as="xs:integer?">
+      <param name="node" as="node()"/>
+      <param name="avt" as="xs:boolean"/>
+
+      <variable name="value" select="xcst:integer($node, $avt)"/>
+      <sequence select="
+         if (not(empty($value)) and $value le 0) then
+            error(xs:QName('err:XTSE0020'), concat('Value of ''', name($node), ''' must be a positive integer.'), src:error-object($node))
+         else
+            $value
       "/>
    </function>
 

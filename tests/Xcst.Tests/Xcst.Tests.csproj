@@ -278,6 +278,8 @@
     <None Include="CreatingNodesAndObjects\Namespace\ValueTypeOutput.i.xcst" />
     <None Include="CreatingNodesAndObjects\ProcessingInstruction\CompatibleOutput.c.xcst" />
     <None Include="CreatingNodesAndObjects\ProcessingInstruction\ValueTypeOutput.i.xcst" />
+    <None Include="Grouping\ForEachGroup\for-each-group.group-size.zero.i.xcst" />
+    <None Include="Grouping\ForEachGroup\for-each-group.group-size.negative.i.xcst" />
     <None Include="Grouping\ForEachGroup\GroupSizeSorted.c.xcst" />
     <None Include="ProgramStructure\Packages\OverridingComponents\Function\Original.c.xcst" />
     <None Include="ProgramStructure\Packages\OverridingComponents\Function\Original.pxcst" />
