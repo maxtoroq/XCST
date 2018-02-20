@@ -560,7 +560,7 @@
    <xs:attributeGroup name="type-or-member-attributes">
       <xs:attribute name="resource-type" type="c:type_name">
          <xs:annotation>
-            <xs:documentation>A type that contains resources for name, short-name, description and placeholder attributes.</xs:documentation>
+            <xs:documentation>A type that contains resources for name, short-name, description and place-holder attributes.</xs:documentation>
          </xs:annotation>
       </xs:attribute>
       <xs:attribute name="disable-empty-string-to-null-conversion" type="c:boolean">
