@@ -46,7 +46,7 @@
       </choice>
    </define>
 
-   <define name="instruction">
+   <define name="instruction" docs:display-type="true">
       <choice>
          <ref name="array"/>
          <ref name="assert"/>
@@ -161,7 +161,7 @@
       </zeroOrMore>
    </define>
 
-   <define name="sequence-constructor">
+   <define name="sequence-constructor" docs:display-type="true">
       <zeroOrMore>
          <choice>
             <ref name="instruction"/>
@@ -1771,7 +1771,7 @@
       <data type="int"/>
    </define>
 
-   <define name="boolean">
+   <define name="boolean" docs:display-type="true">
       <ann:documentation>One of the values "yes", "no", "true", "false", "1" or "0".</ann:documentation>
       <choice>
          <value>yes</value>
@@ -1790,12 +1790,12 @@
       </data>
    </define>
 
-   <define name="qname-default">
+   <define name="qname-default" docs:display-type="true" docs:display-name="qname">
       <ann:documentation>A qualified name. Unprefixed names are in the default namespace.</ann:documentation>
       <data type="QName"/>
    </define>
 
-   <define name="eqname">
+   <define name="eqname" docs:display-type="true">
       <ann:documentation>An expanded qualified name. Unprefixed qualified names are in the null namespace.</ann:documentation>
       <choice>
          <ref name="qname"/>
@@ -1803,7 +1803,7 @@
       </choice>
    </define>
 
-   <define name="eqname-default">
+   <define name="eqname-default" docs:display-type="true" docs:display-name="eqname">
       <ann:documentation>An expanded qualified name. Unprefixed qualified names are in the default namespace.</ann:documentation>
       <choice>
          <ref name="qname-default"/>
@@ -1977,12 +1977,12 @@
       </data>
    </define>
 
-   <define name="boolean_expression">
+   <define name="boolean_expression" docs:display-type="true">
       <ann:documentation>Boolean expression.</ann:documentation>
       <ref name="expression"/>
    </define>
 
-   <define name="lambda_expression">
+   <define name="lambda_expression" docs:display-type="true">
       <ann:documentation>Lambda expression.</ann:documentation>
       <ref name="expression"/>
    </define>
