@@ -3,10 +3,10 @@
 
    <c:template name='c:initial-template'>
       <c:variable name='a'/>
-      <c:set member='a'/>
+      <c:set ref='a'/>
       <c:void value='Assert.IsNull(a)'/>
       <c:variable name='b' as='int'/>
-      <c:set member='b' as='int'/>
+      <c:set ref='b' as='int'/>
       <c:void value='Assert.AreEqual(default(int), b)'/>
    </c:template>
 

@@ -6,7 +6,7 @@
          <c:variable name='i' value='1'/>
          <c:while test='i &lt; 5'>
             <c:value-of value='i'/>
-            <c:set member='i' value='i + 1'/>
+            <c:set ref='i' value='i + 1'/>
             <c:continue/>
             <c:text>!</c:text>
          </c:while>

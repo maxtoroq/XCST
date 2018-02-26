@@ -8,7 +8,7 @@
    <c:output method='text'/>
    
    <c:template name='c:initial-template'>
-      <c:set member='Thread.CurrentThread.CurrentCulture' value='new CultureInfo("es")'/>
+      <c:set ref='Thread.CurrentThread.CurrentCulture' value='new CultureInfo("es")'/>
       <c:variable name='htmlVersion' value='4.01m'/>
       <c:serialize method='html' html-version='{htmlVersion}'/>
       <c:result-document method='html' html-version='{htmlVersion}' output='TextWriter.Null'/>

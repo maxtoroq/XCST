@@ -7,7 +7,7 @@
       <dl>
          <c:variable name='groupIndex' value='0'/>
          <c:for-each-group name='group' in='new[] { "banana", "apricot", "apple" }' group-size='2'>
-            <c:set member='groupIndex' value='groupIndex + 1'/>
+            <c:set ref='groupIndex' value='groupIndex + 1'/>
             <dt>
                <c:value-of value='groupIndex'/>
             </dt>

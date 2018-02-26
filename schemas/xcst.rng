@@ -1390,7 +1390,7 @@
    <define name="set">
       <element name="set">
          <ann:documentation>Assigns a value to a variable or object member.</ann:documentation>
-         <attribute name="member">
+         <attribute name="ref">
             <ann:documentation>The reference to set.</ann:documentation>
             <ref name="expression"/>
          </attribute>

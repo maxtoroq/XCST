@@ -1166,8 +1166,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="VariablesAndParameters\Set\set.value.type.i.xcst" />
-    <None Include="VariablesAndParameters\Set\set.member.type.i.xcst" />
-    <None Include="VariablesAndParameters\Set\set.member.req.i.xcst" />
+    <None Include="VariablesAndParameters\Set\set.ref.type.i.xcst" />
+    <None Include="VariablesAndParameters\Set\set.ref.req.i.xcst" />
     <None Include="VariablesAndParameters\Set\set.foo.i.xcst" />
     <None Include="CallableComponents\Template\Param\DefaultValueAndRequired.c.xcst" />
     <None Include="CallableComponents\Template\Param\DefaultValueAndRequired.i.xcst" />

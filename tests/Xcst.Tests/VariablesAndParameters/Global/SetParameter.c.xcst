@@ -4,7 +4,7 @@
    <c:param name='foo' as='string'>foo</c:param>
 
    <c:template name='c:initial-template' expand-text='yes'>
-      <c:set member='foo'>bar</c:set>
+      <c:set ref='foo'>bar</c:set>
       <foo>{foo}</foo>
    </c:template>
 

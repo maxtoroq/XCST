@@ -3,7 +3,7 @@
 
    <c:template name='foo'>
       <c:variable name='a' as='string'/>
-      <c:set member='a' value='"foo"'>foo</c:set>
+      <c:set ref='a' value='"foo"'>foo</c:set>
    </c:template>
 
 </c:module>

@@ -6,9 +6,9 @@
 
    <c:template name='c:initial-template'>
       <div>
-         <c:set member='Thread.CurrentThread.CurrentCulture' value='CultureInfo.GetCultureInfo("en")'/>
+         <c:set ref='Thread.CurrentThread.CurrentCulture' value='CultureInfo.GetCultureInfo("en")'/>
          <c:value-of value='1.1'/>
-         <c:set member='Thread.CurrentThread.CurrentCulture' value='CultureInfo.GetCultureInfo("es")'/>
+         <c:set ref='Thread.CurrentThread.CurrentCulture' value='CultureInfo.GetCultureInfo("es")'/>
          <c:value-of value='2.1'/>
       </div>
    </c:template>

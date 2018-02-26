@@ -9,7 +9,7 @@
       <c:result-document output='output' omit-xml-declaration='yes'>
          <bar of='5'>baz</bar>
       </c:result-document>
-      <c:set member='output.Position' value='0'/>
+      <c:set ref='output.Position' value='0'/>
       <c:variable name='obj' value='new SqlXml(output)'/>
       <foo>
          <c:copy-of value='obj'/>

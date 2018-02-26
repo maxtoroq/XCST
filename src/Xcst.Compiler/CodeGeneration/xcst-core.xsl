@@ -1347,13 +1347,13 @@
 
    <template match="c:set" mode="src:statement">
       <call-template name="xcst:validate-attribs">
-         <with-param name="required" select="'member'"/>
+         <with-param name="required" select="'ref'"/>
          <with-param name="optional" select="'as', 'value'"/>
       </call-template>
       <call-template name="xcst:value-or-sequence-constructor"/>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
-      <value-of select="xcst:expression(@member)"/>
+      <value-of select="xcst:expression(@ref)"/>
       <text> = </text>
       <call-template name="src:value"/>
       <value-of select="$src:statement-delimiter"/>
