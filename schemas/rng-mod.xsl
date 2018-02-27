@@ -30,12 +30,12 @@
 
    <template match="rng:define[@name = ('avt-expr')]/ann:documentation"/>
 
-   <template match="rng:attribute[rng:ref[@name = 'expression']]/ann:documentation">
+   <template match="rng:attribute[rng:ref[@name = ('expression', 'unary_expression', 'statement_expression')]]/ann:documentation">
       <copy>
          <apply-templates select="@*"/>
          <value-of select="string()"/>
          <text> </text>
-         <value-of select="key('define', 'expression')/replace(ann:documentation, '\.$', '')"/>
+         <value-of select="key('define', following-sibling::rng:ref/@name)/replace(ann:documentation, '\.$', '')"/>
          <if test="../rng:ref/docs:expression-type">
             <text> (</text>
             <for-each select="../rng:ref/docs:expression-type">

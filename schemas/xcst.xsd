@@ -1342,9 +1342,9 @@
       </xs:annotation>
       <xs:complexType mixed="true">
          <xs:group minOccurs="0" ref="c:sequence-constructor"/>
-         <xs:attribute name="ref" use="required" type="c:expression">
+         <xs:attribute name="ref" use="required" type="c:unary_expression">
             <xs:annotation>
-               <xs:documentation>The reference to set. Expression.</xs:documentation>
+               <xs:documentation>The reference to set. Unary expression.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attribute name="value" type="c:expression">
@@ -1500,9 +1500,9 @@
       </xs:annotation>
       <xs:complexType mixed="true">
          <xs:group minOccurs="0" ref="c:sequence-constructor"/>
-         <xs:attribute name="value" type="c:expression">
+         <xs:attribute name="value" type="c:statement_expression">
             <xs:annotation>
-               <xs:documentation>The expression to evaluate. Expression.</xs:documentation>
+               <xs:documentation>The expression to evaluate. Statement expression.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>
@@ -1946,6 +1946,18 @@
    <xs:simpleType name="lambda_expression">
       <xs:annotation>
          <xs:documentation>Lambda expression.</xs:documentation>
+      </xs:annotation>
+      <xs:restriction base="c:expression"/>
+   </xs:simpleType>
+   <xs:simpleType name="statement_expression">
+      <xs:annotation>
+         <xs:documentation>Statement expression.</xs:documentation>
+      </xs:annotation>
+      <xs:restriction base="c:expression"/>
+   </xs:simpleType>
+   <xs:simpleType name="unary_expression">
+      <xs:annotation>
+         <xs:documentation>Unary expression.</xs:documentation>
       </xs:annotation>
       <xs:restriction base="c:expression"/>
    </xs:simpleType>

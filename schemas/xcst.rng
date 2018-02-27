@@ -1392,7 +1392,7 @@
          <ann:documentation>Assigns a value to a variable or object member.</ann:documentation>
          <attribute name="ref">
             <ann:documentation>The reference to set.</ann:documentation>
-            <ref name="expression"/>
+            <ref name="unary_expression"/>
          </attribute>
          <choice>
             <attribute name="value">
@@ -1558,7 +1558,7 @@
          <choice>
             <attribute name="value">
                <ann:documentation>The expression to evaluate.</ann:documentation>
-               <ref name="expression"/>
+               <ref name="statement_expression"/>
             </attribute>
             <ref name="sequence-constructor"/>
          </choice>
@@ -1984,6 +1984,16 @@
 
    <define name="lambda_expression" docs:display-type="true">
       <ann:documentation>Lambda expression.</ann:documentation>
+      <ref name="expression"/>
+   </define>
+
+   <define name="statement_expression" docs:display-type="true">
+      <ann:documentation>Statement expression.</ann:documentation>
+      <ref name="expression"/>
+   </define>
+
+   <define name="unary_expression" docs:display-type="true">
+      <ann:documentation>Unary expression.</ann:documentation>
       <ref name="expression"/>
    </define>
 
