@@ -991,7 +991,7 @@
                <xs:documentation>The template delegate instance. Expression (System.Delegate).</xs:documentation>
             </xs:annotation>
          </xs:attribute>
-         <xs:attribute name="with-params" type="c:expression">
+         <xs:attribute name="with-params" type="c:expr-obj-dict">
             <xs:annotation>
                <xs:documentation>An object with parameters. Expression (System.Object | System.Collections.Generic.IDictionary&lt;System.String, System.Object&gt;).</xs:documentation>
             </xs:annotation>
@@ -1009,7 +1009,7 @@
                <xs:documentation>The package instance. Expression.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
-         <xs:attribute name="global-params" type="c:expression">
+         <xs:attribute name="global-params" type="c:expr-obj-dict">
             <xs:annotation>
                <xs:documentation>An object with global parameters. Expression (System.Object | System.Collections.Generic.IDictionary&lt;System.String, System.Object&gt;).</xs:documentation>
             </xs:annotation>
@@ -1022,12 +1022,12 @@
                <xs:union memberTypes="c:eqname c:avt-expr"/>
             </xs:simpleType>
          </xs:attribute>
-         <xs:attribute name="template-params" type="c:expression">
+         <xs:attribute name="template-params" type="c:expr-obj-dict">
             <xs:annotation>
                <xs:documentation>An object with template parameters. Expression (System.Object | System.Collections.Generic.IDictionary&lt;System.String, System.Object&gt;).</xs:documentation>
             </xs:annotation>
          </xs:attribute>
-         <xs:attribute name="tunnel-params" type="c:expression">
+         <xs:attribute name="tunnel-params" type="c:expr-obj-dict">
             <xs:annotation>
                <xs:documentation>An object with tunnel template parameters. Expression (System.Object | System.Collections.Generic.IDictionary&lt;System.String, System.Object&gt;).</xs:documentation>
             </xs:annotation>
@@ -1958,6 +1958,12 @@
    <xs:simpleType name="unary_expression">
       <xs:annotation>
          <xs:documentation>Unary expression.</xs:documentation>
+      </xs:annotation>
+      <xs:restriction base="c:expression"/>
+   </xs:simpleType>
+   <xs:simpleType name="expr-obj-dict">
+      <xs:annotation>
+         <xs:documentation>Expression.</xs:documentation>
       </xs:annotation>
       <xs:restriction base="c:expression"/>
    </xs:simpleType>

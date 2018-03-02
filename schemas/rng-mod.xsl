@@ -30,15 +30,20 @@
 
    <template match="rng:define[@name = ('avt-expr')]/ann:documentation"/>
 
-   <template match="rng:attribute[rng:ref[@name = ('expression', 'unary_expression', 'statement_expression')]]/ann:documentation">
+   <template match="rng:attribute[rng:ref[@name = ('expression', 'unary_expression', 'statement_expression', 'expr-obj-dict')]]/ann:documentation">
+      <variable name="define" select="key('define', following-sibling::rng:ref/@name)"/>
+      <variable name="types" select="
+         if (../rng:ref/docs:expression-type) then
+            ../rng:ref/docs:expression-type
+         else $define/rng:ref/docs:expression-type"/>
       <copy>
          <apply-templates select="@*"/>
          <value-of select="string()"/>
          <text> </text>
-         <value-of select="key('define', following-sibling::rng:ref/@name)/replace(ann:documentation, '\.$', '')"/>
-         <if test="../rng:ref/docs:expression-type">
+         <value-of select="$define/replace(ann:documentation, '\.$', '')"/>
+         <if test="$types">
             <text> (</text>
-            <for-each select="../rng:ref/docs:expression-type">
+            <for-each select="$types">
                <if test="position() gt 1"> | </if>
                <apply-templates select="." mode="type-display"/>
             </for-each>

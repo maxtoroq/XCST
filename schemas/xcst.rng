@@ -1025,13 +1025,7 @@
          <optional>
             <attribute name="with-params">
                <ann:documentation>An object with parameters.</ann:documentation>
-               <ref name="expression">
-                  <docs:expression-type name="System.Object"/>
-                  <docs:expression-type name="System.Collections.Generic.IDictionary" topic="s4ys34ea">
-                     <docs:type-param name="System.String"/>
-                     <docs:type-param name="System.Object"/>
-                  </docs:expression-type>
-               </ref>
+               <ref name="expr-obj-dict"/>
             </attribute>
          </optional>
          <ref name="standard-attributes"/>
@@ -1052,13 +1046,7 @@
             <choice>
                <attribute name="global-params">
                   <ann:documentation>An object with global parameters.</ann:documentation>
-                  <ref name="expression">
-                     <docs:expression-type name="System.Object"/>
-                     <docs:expression-type name="System.Collections.Generic.IDictionary" topic="s4ys34ea">
-                        <docs:type-param name="System.String"/>
-                        <docs:type-param name="System.Object"/>
-                     </docs:expression-type>
-                  </ref>
+                  <ref name="expr-obj-dict"/>
                </attribute>
                <attribute name="initial-template">
                   <ann:documentation>The name of the initial template.</ann:documentation>
@@ -1069,23 +1057,11 @@
                </attribute>
                <attribute name="template-params">
                   <ann:documentation>An object with template parameters.</ann:documentation>
-                  <ref name="expression">
-                     <docs:expression-type name="System.Object"/>
-                     <docs:expression-type name="System.Collections.Generic.IDictionary" topic="s4ys34ea">
-                        <docs:type-param name="System.String"/>
-                        <docs:type-param name="System.Object"/>
-                     </docs:expression-type>
-                  </ref>
+                  <ref name="expr-obj-dict"/>
                </attribute>
                <attribute name="tunnel-params">
                   <ann:documentation>An object with tunnel template parameters.</ann:documentation>
-                  <ref name="expression">
-                     <docs:expression-type name="System.Object"/>
-                     <docs:expression-type name="System.Collections.Generic.IDictionary" topic="s4ys34ea">
-                        <docs:type-param name="System.String"/>
-                        <docs:type-param name="System.Object"/>
-                     </docs:expression-type>
-                  </ref>
+                  <ref name="expr-obj-dict"/>
                </attribute>
                <attribute name="base-output-uri">
                   <ann:documentation>The base output URI, used to resolve relative URIs of secondary result documents.</ann:documentation>
@@ -1995,6 +1971,17 @@
    <define name="unary_expression" docs:display-type="true">
       <ann:documentation>Unary expression.</ann:documentation>
       <ref name="expression"/>
+   </define>
+
+   <define name="expr-obj-dict">
+      <ann:documentation>Expression.</ann:documentation>
+      <ref name="expression">
+         <docs:expression-type name="System.Object"/>
+         <docs:expression-type name="System.Collections.Generic.IDictionary" topic="s4ys34ea">
+            <docs:type-param name="System.String"/>
+            <docs:type-param name="System.Object"/>
+         </docs:expression-type>
+      </ref>
    </define>
 
 </grammar>
