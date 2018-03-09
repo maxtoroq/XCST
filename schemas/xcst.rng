@@ -491,6 +491,9 @@
                      <value>edit-only</value>
                      <ann:documentation>Indicates that this member should only be displayed in an editing UI.</ann:documentation>
 
+                     <value>hidden</value>
+                     <ann:documentation>Indicates that this member should only be displayed in an editing UI as a hidden field.</ann:documentation>
+
                      <ref name="boolean"/>
                   </choice>
                </attribute>

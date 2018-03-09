@@ -215,7 +215,7 @@
 
    <template match="@display" mode="src:scaffold-column-attribute">
       <variable name="display" select="xcst:non-string(.)"/>
-      <variable name="scaffold" select="if ($display = ('view-only', 'edit-only')) then true() else xcst:boolean(.)"/>
+      <variable name="scaffold" select="if ($display = ('view-only', 'edit-only', 'hidden')) then true() else xcst:boolean(.)"/>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
       <text>[</text>

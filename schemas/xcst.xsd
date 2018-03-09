@@ -411,6 +411,15 @@
                         </xs:enumeration>
                      </xs:restriction>
                   </xs:simpleType>
+                  <xs:simpleType>
+                     <xs:restriction base="xs:token">
+                        <xs:enumeration value="hidden">
+                           <xs:annotation>
+                              <xs:documentation>Indicates that this member should only be displayed in an editing UI as a hidden field.</xs:documentation>
+                           </xs:annotation>
+                        </xs:enumeration>
+                     </xs:restriction>
+                  </xs:simpleType>
                </xs:union>
             </xs:simpleType>
          </xs:attribute>
