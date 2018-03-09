@@ -140,6 +140,8 @@
     <None Include="CallableComponents\EvaluateDelegate\WithParams.c.xcst" />
     <None Include="CallableComponents\EvaluateDelegate\WithParam.c.xcst" />
     <None Include="CallableComponents\EvaluateDelegate\WithParam\with-param.value_seqctor.mutex.i.xcst" />
+    <None Include="CallableComponents\EvaluatePackage\NonexistentTemplateParam.c.xcst" />
+    <None Include="CallableComponents\EvaluatePackage\NonexistentGlobalParam.c.xcst" />
     <None Include="CallableComponents\EvaluatePackage\BaseUri.c.xcst" />
     <None Include="CallableComponents\EvaluatePackage\BaseOutputUriRelative.c.xcst" />
     <None Include="CallableComponents\EvaluatePackage\BaseOutputUriRelativeXmlBase.c.xcst" />
