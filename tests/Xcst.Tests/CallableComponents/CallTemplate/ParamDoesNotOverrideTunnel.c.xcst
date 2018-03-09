@@ -18,6 +18,12 @@
    </c:template>
 
    <c:template name='bar'>
+      <c:param name='a'/>
+
+      <c:call-template name='baz'/>
+   </c:template>
+
+   <c:template name='baz'>
       <c:param name='a' tunnel='yes'/>
 
       <c:value-of value='a'/>

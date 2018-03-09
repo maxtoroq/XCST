@@ -101,6 +101,7 @@
     <None Include="CallableComponents\CallTemplate\Children.c.xcst" />
     <None Include="CallableComponents\CallTemplate\Children.i.xcst" />
     <None Include="CallableComponents\CallTemplate\ChildrenText.i.xcst" />
+    <None Include="CallableComponents\CallTemplate\NonexistentParamSameNameTunnel.i.xcst" />
     <None Include="CallableComponents\CallTemplate\TypeCompatManyToMany.c.xcst" />
     <None Include="CallableComponents\CallTemplate\TypeCompatManyToOne.c.xcst" />
     <None Include="CallableComponents\CallTemplate\TypeCompatObjectToValueTypeOriginal.c.xcst" />
@@ -170,8 +171,10 @@
     <None Include="CallableComponents\NextTemplate\ChildrenText.i.xcst" />
     <None Include="CallableComponents\NextTemplate\AbstractNextTemplate.i.xcst" />
     <None Include="CallableComponents\NextTemplate\NextTemplate.c.xcst" />
+    <None Include="CallableComponents\NextTemplate\NonexistentParamSameNameTunnel.i.xcst" />
     <None Include="CallableComponents\NextTemplate\_AbstractNextTemplate.xcst" />
     <None Include="CallableComponents\NextTemplate\_NextTemplate.xcst" />
+    <None Include="CallableComponents\NextTemplate\_NonexistentParamSameNameTunnel.xcst" />
     <None Include="CallableComponents\NextTemplate\_TypeCompatDocToValueType.xcst" />
     <None Include="CallableComponents\NextTemplate\TypeCompatDocToValueType.c.xcst" />
     <None Include="CallableComponents\NextTemplate\WithParam\with-param.value_seqctor.mutex.i.xcst" />

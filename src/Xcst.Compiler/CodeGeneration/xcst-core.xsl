@@ -1476,7 +1476,7 @@
       </for-each>
       <for-each select="c:with-param[not((@tunnel/xcst:boolean(.), false())[1])]">
          <variable name="param-name" select="xcst:name(@name)"/>
-         <if test="not($meta/xcst:param[string(@name) eq $param-name])">
+         <if test="not($meta/xcst:param[string(@name) eq $param-name and not(xs:boolean(@tunnel))])">
             <sequence select="error(xs:QName('err:XTSE0680'), concat('Parameter ''', $param-name, ''' is not declared in the called template.'), src:error-object(.))"/>
          </if>
       </for-each>
@@ -1645,7 +1645,7 @@
       </for-each>
       <for-each select="c:with-param[not((@tunnel/xcst:boolean(.), false())[1])]">
          <variable name="param-name" select="xcst:name(@name)"/>
-         <if test="not($meta/xcst:param[string(@name) eq $param-name])">
+         <if test="not($meta/xcst:param[string(@name) eq $param-name and not(xs:boolean(@tunnel))])">
             <sequence select="error(xs:QName('err:XTSE0680'), concat('Parameter ''', $param-name, ''' is not declared in the called template.'), src:error-object(.))"/>
          </if>
       </for-each>
