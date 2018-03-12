@@ -447,47 +447,43 @@
 
       <!--
          ErrorMessage and ErrorMessageResource(Name|Type) are mutually exclusive.
-         
-         @*-error-message, @*-error-resource and @error-resource-type can all be inherited.
-         
-         When both @*-error-message and @*-error-resource are defined on the same level,
-         @*-error-message wins. Otherwise, the one closest to the member wins.
+
+         All c:validation declarations in the package are merged into a single definition.
+         This definition provides defaults for @*-message and @validation-resource-type.
+         If @validation-resource-type is present, then @*-message is used for ErrorMessageResourceName,
+         otherwise it's used for ErrorMessage.
+
+         c:type inherits defaults from c:validation, but if an @*-message is present then
+         it's used for ErrorMessage, unless @validation-resource-type is also present, and ignoring
+         a @validation-resource-type from c:validation.
+
+         c:member inherits defaults from c:type and c:member, including @validation-resource-type.
       -->
 
-      <variable name="error-message" select="(
-         (ancestor-or-self::c:*[self::c:member or self::c:type]
-            /attribute()[name() eq concat($name, '-error-message')])[last()]
-         , $src:validation-attributes[name() eq concat($name, '-error-message')])[1]"/>
+      <variable name="validation-message" select="$src:validation-attributes[name() eq concat($name, '-message')]"/>
 
-      <variable name="error-resource" select="(
-         (ancestor-or-self::c:*[self::c:member or self::c:type]
-            /attribute()[name() eq concat($name, '-error-resource')])[last()]
-         , $src:validation-attributes[name() eq concat($name, '-error-resource')])[1]"/>
+      <variable name="validation-resource-type" select="$src:validation-attributes[self::attribute(validation-resource-type)]"/>
 
-      <variable name="error-resource-type" select="(
-         (ancestor-or-self::c:*[self::c:member or self::c:type]
-            /@error-resource-type)[last()]
-         , $src:validation-attributes[self::attribute(error-resource-type)])[1]"/>
+      <variable name="member-message" select="(ancestor-or-self::c:*[self::c:member or self::c:type]/attribute()[name() eq concat($name, '-message')])[last()]"/>
 
-      <choose>
-         <when test="$error-resource and (not($error-message) or $error-resource/parent::* >> $error-message/parent::*)">
-            <apply-templates select="$error-resource, $error-resource-type" mode="src:validation-setter"/>
-         </when>
-         <otherwise>
-            <apply-templates select="$error-message" mode="src:validation-setter"/>
-         </otherwise>
-      </choose>
+      <variable name="member-resource-type" select="(ancestor-or-self::c:*[self::c:member or self::c:type]/@validation-resource-type)[last()]"/>
+
+      <variable name="message" select="($member-message, $validation-message)[1]"/>
+      <variable name="resource-type" select="($member-resource-type, $validation-resource-type[not($member-message)])[1]"/>
+
+      <apply-templates select="$message" mode="src:validation-setter">
+         <with-param name="is-resource" select="not(empty($resource-type))"/>
+      </apply-templates>
+      <apply-templates select="$resource-type" mode="src:validation-setter"/>
    </template>
 
-   <template match="@*[not(namespace-uri()) and ends-with(name(), '-error-message')]" mode="src:validation-setter">
-      <value-of select="'ErrorMessage', src:verbatim-string(.)" separator=" = "/>
+   <template match="@*[not(namespace-uri()) and ends-with(name(), '-message')]" mode="src:validation-setter">
+      <param name="is-resource" as="xs:boolean" required="yes"/>
+
+      <value-of select="('ErrorMessageResourceName'[$is-resource], 'ErrorMessage')[1], src:verbatim-string(.)" separator=" = "/>
    </template>
 
-   <template match="@*[not(namespace-uri()) and ends-with(name(), '-error-resource')]" mode="src:validation-setter">
-      <value-of select="'ErrorMessageResourceName', src:verbatim-string(.)" separator=" = "/>
-   </template>
-
-   <template match="@error-resource-type" mode="src:validation-setter">
+   <template match="@validation-resource-type" mode="src:validation-setter">
       <value-of select="'ErrorMessageResourceType', concat('typeof(', xcst:type(.), ')')" separator=" = "/>
    </template>
 

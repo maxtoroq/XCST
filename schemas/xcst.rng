@@ -745,56 +745,32 @@
    <define name="validation-attributes">
       <zeroOrMore>
          <choice>
-            <attribute name="error-resource-type">
+            <attribute name="validation-resource-type">
                <ann:documentation>A type that contains error message resources for validation attributes.</ann:documentation>
                <ref name="type_name"/>
             </attribute>
-            <attribute name="data-type-error-message">
+            <attribute name="data-type-message">
                <ann:documentation>An error message for the data-type attribute.</ann:documentation>
                <ref name="string"/>
             </attribute>
-            <attribute name="data-type-error-resource">
-               <ann:documentation>A resource name that contains an error message for the data-type attribute.</ann:documentation>
-               <ref name="string"/>
-            </attribute>
-            <attribute name="required-error-message">
+            <attribute name="required-message">
                <ann:documentation>An error message for the required attribute.</ann:documentation>
                <ref name="string"/>
             </attribute>
-            <attribute name="required-error-resource">
-               <ann:documentation>A resource name that contains an error message for the required attribute.</ann:documentation>
-               <ref name="string"/>
-            </attribute>
-            <attribute name="length-error-message">
+            <attribute name="length-message">
                <ann:documentation>An error message for the min-length and max-length attributes.</ann:documentation>
                <ref name="string"/>
             </attribute>
-            <attribute name="length-error-resource">
-               <ann:documentation>A resource name that contains an error message for the min-length and max-length attributes.</ann:documentation>
-               <ref name="string"/>
-            </attribute>
-            <attribute name="pattern-error-message">
+            <attribute name="pattern-message">
                <ann:documentation>An error message for the pattern attribute.</ann:documentation>
                <ref name="string"/>
             </attribute>
-            <attribute name="pattern-error-resource">
-               <ann:documentation>A resource name that contains an error message for the pattern attribute.</ann:documentation>
-               <ref name="string"/>
-            </attribute>
-            <attribute name="range-error-message">
+            <attribute name="range-message">
                <ann:documentation>An error message for the min and max attributes.</ann:documentation>
                <ref name="string"/>
             </attribute>
-            <attribute name="range-error-resource">
-               <ann:documentation>A resource name that contains an error message for the min and max attributes.</ann:documentation>
-               <ref name="string"/>
-            </attribute>
-            <attribute name="equal-to-error-message">
+            <attribute name="equal-to-message">
                <ann:documentation>An error message for the equal-to attribute.</ann:documentation>
-               <ref name="string"/>
-            </attribute>
-            <attribute name="equal-to-error-resource">
-               <ann:documentation>A resource name that contains an error message for the equal-to attribute.</ann:documentation>
                <ref name="string"/>
             </attribute>
          </choice>

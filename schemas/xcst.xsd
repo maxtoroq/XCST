@@ -706,69 +706,39 @@
       </xs:complexType>
    </xs:element>
    <xs:attributeGroup name="validation-attributes">
-      <xs:attribute name="error-resource-type" type="c:type_name">
+      <xs:attribute name="validation-resource-type" type="c:type_name">
          <xs:annotation>
             <xs:documentation>A type that contains error message resources for validation attributes.</xs:documentation>
          </xs:annotation>
       </xs:attribute>
-      <xs:attribute name="data-type-error-message" type="c:string">
+      <xs:attribute name="data-type-message" type="c:string">
          <xs:annotation>
             <xs:documentation>An error message for the data-type attribute.</xs:documentation>
          </xs:annotation>
       </xs:attribute>
-      <xs:attribute name="data-type-error-resource" type="c:string">
-         <xs:annotation>
-            <xs:documentation>A resource name that contains an error message for the data-type attribute.</xs:documentation>
-         </xs:annotation>
-      </xs:attribute>
-      <xs:attribute name="required-error-message" type="c:string">
+      <xs:attribute name="required-message" type="c:string">
          <xs:annotation>
             <xs:documentation>An error message for the required attribute.</xs:documentation>
          </xs:annotation>
       </xs:attribute>
-      <xs:attribute name="required-error-resource" type="c:string">
-         <xs:annotation>
-            <xs:documentation>A resource name that contains an error message for the required attribute.</xs:documentation>
-         </xs:annotation>
-      </xs:attribute>
-      <xs:attribute name="length-error-message" type="c:string">
+      <xs:attribute name="length-message" type="c:string">
          <xs:annotation>
             <xs:documentation>An error message for the min-length and max-length attributes.</xs:documentation>
          </xs:annotation>
       </xs:attribute>
-      <xs:attribute name="length-error-resource" type="c:string">
-         <xs:annotation>
-            <xs:documentation>A resource name that contains an error message for the min-length and max-length attributes.</xs:documentation>
-         </xs:annotation>
-      </xs:attribute>
-      <xs:attribute name="pattern-error-message" type="c:string">
+      <xs:attribute name="pattern-message" type="c:string">
          <xs:annotation>
             <xs:documentation>An error message for the pattern attribute.</xs:documentation>
          </xs:annotation>
       </xs:attribute>
-      <xs:attribute name="pattern-error-resource" type="c:string">
-         <xs:annotation>
-            <xs:documentation>A resource name that contains an error message for the pattern attribute.</xs:documentation>
-         </xs:annotation>
-      </xs:attribute>
-      <xs:attribute name="range-error-message" type="c:string">
+      <xs:attribute name="range-message" type="c:string">
          <xs:annotation>
             <xs:documentation>An error message for the min and max attributes.</xs:documentation>
          </xs:annotation>
       </xs:attribute>
-      <xs:attribute name="range-error-resource" type="c:string">
-         <xs:annotation>
-            <xs:documentation>A resource name that contains an error message for the min and max attributes.</xs:documentation>
-         </xs:annotation>
-      </xs:attribute>
-      <xs:attribute name="equal-to-error-message" type="c:string">
+      <xs:attribute name="equal-to-message" type="c:string">
          <xs:annotation>
             <xs:documentation>An error message for the equal-to attribute.</xs:documentation>
-         </xs:annotation>
-      </xs:attribute>
-      <xs:attribute name="equal-to-error-resource" type="c:string">
-         <xs:annotation>
-            <xs:documentation>A resource name that contains an error message for the equal-to attribute.</xs:documentation>
          </xs:annotation>
       </xs:attribute>
    </xs:attributeGroup>

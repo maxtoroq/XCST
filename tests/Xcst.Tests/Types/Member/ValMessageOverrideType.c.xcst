@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:import-namespace ns='System.Collections.Generic'/>
+   <c:import-namespace ns='System.ComponentModel.DataAnnotations'/>
+
+   <c:type name='foo' required-message='REQUIRED!'>
+      <c:member name='bar' as='string' required='yes' required-message='SUPER IMPORTANT!'/>
+   </c:type>
+
+   <c:template name='c:initial-template'>
+      <c:variable name='value' value='new foo()'/>
+      <c:variable name='context' value='new ValidationContext(value, null, null)'/>
+      <c:variable name='results' value='new List&lt;ValidationResult>()'/>
+      <c:void value='Validator.TryValidateObject(value, context, results, validateAllProperties: true)'/>
+      <ol>
+         <c:for-each name='r' in='results' expand-text='yes'>
+            <li>{r.ErrorMessage}</li>
+         </c:for-each>
+      </ol>
+   </c:template>
+
+   <c:template name='expected'>
+      <ol>
+         <li>SUPER IMPORTANT!</li>
+      </ol>
+   </c:template>
+
+</c:module>

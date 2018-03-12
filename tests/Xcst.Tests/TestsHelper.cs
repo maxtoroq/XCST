@@ -28,13 +28,13 @@ namespace Xcst.Tests {
       public static void RunXcstTest(string packageFile, bool correct, bool fail) {
 
          var packageUri = new Uri(packageFile, UriKind.Absolute);
-         string usePackageBase = new StackFrame(1, true).GetMethod().DeclaringType.Namespace;
+         MethodBase testMethod = new StackFrame(1, true).GetMethod();
 
          CompileResult xcstResult;
          string packageName;
 
          try {
-            var codegenResult = GenerateCode(packageUri, usePackageBase);
+            var codegenResult = GenerateCode(packageUri, testMethod);
             xcstResult = codegenResult.Item1;
             packageName = codegenResult.Item2;
 
@@ -46,6 +46,8 @@ namespace Xcst.Tests {
 
             throw;
          }
+
+         bool printCode = true;
 
          try {
 
@@ -100,7 +102,8 @@ namespace Xcst.Tests {
                      if (xcstResult.Templates.Contains(InitialName)) {
 
                         if (xcstResult.Templates.Contains(ExpectedName)) {
-                           TestAssert.IsTrue(OutputEqualsToExpected(packageType, packageUri));
+                           bool equals = printCode = OutputEqualsToExpected(packageType, packageUri);
+                           TestAssert.IsTrue(equals);
                         } else {
                            SimplyRun(packageType, packageUri);
                         }
@@ -119,19 +122,21 @@ namespace Xcst.Tests {
 
          } finally {
 
-            foreach (string unit in xcstResult.CompilationUnits) {
-               Console.WriteLine(unit);
+            if (printCode) {
+               foreach (string unit in xcstResult.CompilationUnits) {
+                  Console.WriteLine(unit);
+               }
             }
          }
       }
 
-      static Tuple<CompileResult, string> GenerateCode(Uri packageUri, string usePackageBase) {
+      static Tuple<CompileResult, string> GenerateCode(Uri packageUri, MethodBase testMethod) {
 
          XcstCompiler compiler = CompilerFactory.CreateCompiler();
-         compiler.TargetNamespace = typeof(TestsHelper).Namespace + ".Runtime";
-         compiler.TargetClass = "TestModule";
+         compiler.TargetNamespace = testMethod.DeclaringType.Namespace;
+         compiler.TargetClass = testMethod.Name;
          compiler.UseLineDirective = true;
-         compiler.UsePackageBase = usePackageBase;
+         compiler.UsePackageBase = testMethod.DeclaringType.Namespace;
          compiler.SetTargetBaseTypes(typeof(TestBase));
 
          CompileResult result = compiler.Compile(packageUri);
@@ -262,7 +267,19 @@ namespace Xcst.Tests {
                .Run();
          }
 
-         return XDocumentNormalizer.DeepEqualsWithNormalization(expectedDoc, actualDoc);
+         XDocument normalizedExpected = XDocumentNormalizer.Normalize(expectedDoc);
+         XDocument normalizedActual = XDocumentNormalizer.Normalize(actualDoc);
+         bool equals = XNode.DeepEquals(normalizedExpected, normalizedActual);
+
+         if (!equals) {
+            Console.WriteLine("<!-- expected -->");
+            Console.WriteLine(normalizedExpected.ToString());
+            Console.WriteLine();
+            Console.WriteLine("<!-- actual -->");
+            Console.WriteLine(normalizedActual.ToString());
+         }
+
+         return equals;
       }
 
       static void SimplyRun(Type packageType, Uri packageUri) {

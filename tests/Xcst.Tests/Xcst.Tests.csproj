@@ -85,6 +85,46 @@
     <Compile Include="API\Evaluation\EvaluationTests.cs" />
     <Compile Include="TestsHelper.cs" />
     <Compile Include="Tests.generated.cs" />
+    <Compile Include="Types\Member\Member\Resources.Designer.cs">
+      <DependentUpon>Resources.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Types\Member\Member\Resources2.Designer.cs">
+      <DependentUpon>Resources2.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Types\Member\Resources.Designer.cs">
+      <DependentUpon>Resources.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Types\Member\Resources2.Designer.cs">
+      <DependentUpon>Resources2.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Types\Resources.Designer.cs">
+      <DependentUpon>Resources.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Types\Resources2.Designer.cs">
+      <DependentUpon>Resources2.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Validation\Resources2.Designer.cs">
+      <DependentUpon>Resources2.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Validation\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="XDocumentNormalizer.cs" />
     <None Include="API\Evaluation\RawOutput.xcst" />
     <None Include="API\Evaluation\CopyOutputParameters.xcst" />
@@ -629,6 +669,27 @@
     <None Include="CallableComponents\CallTemplate\TypeCompat.c.xcst" />
     <None Include="Serialization\Output\NoChildrenText.i.xcst" />
     <None Include="Serialization\Output\NoChildren.i.xcst" />
+    <None Include="Types\Member\Member\ValResourceOverrideMember.c.xcst" />
+    <None Include="Types\Member\Member\ValMessageOverrideMember.c.xcst" />
+    <None Include="Types\Member\ValResourceOverrideType.c.xcst" />
+    <None Include="Types\Member\ValResource.c.xcst" />
+    <None Include="Types\Member\ValMessageOverrideType.c.xcst" />
+    <None Include="Types\Member\ValMessage.c.xcst" />
+    <None Include="Types\ValResourceOverrideValidation.c.xcst" />
+    <None Include="Types\ValMessageIgnoreValidationResource.c.xcst" />
+    <None Include="Types\ValResource.c.xcst" />
+    <None Include="Types\ValMessageOverrideValidation.c.xcst" />
+    <None Include="Types\ValMessage.c.xcst" />
+    <None Include="Validation\ValResourceOverride.c.xcst" />
+    <None Include="Validation\ValResourceImport.c.xcst" />
+    <None Include="Validation\ValResource.c.xcst" />
+    <None Include="Validation\ValMessageOverride.c.xcst" />
+    <None Include="Validation\_ValResourceOverride.xcst" />
+    <None Include="Validation\_ValResourceImport.xcst" />
+    <None Include="Validation\_ValMessageOverride.xcst" />
+    <None Include="Validation\_ValMessageImport.xcst" />
+    <None Include="Validation\ValMessageImport.c.xcst" />
+    <None Include="Validation\ValMessage.c.xcst" />
     <None Include="ValueTemplates\Attribute\decimal.c.xcst" />
     <None Include="Types\_HiddenAbstract.xcst" />
     <None Include="Types\HiddenAbstract.i.xcst" />
@@ -1219,7 +1280,40 @@
     <Analyzer Include="..\..\packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
     <Analyzer Include="..\..\packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Types\Member\Member\Resources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Types\Member\Member\Resources2.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources2.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Types\Member\Resources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Types\Member\Resources2.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources2.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Types\Resources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Types\Resources2.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources2.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Validation\Resources2.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources2.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Validation\Resources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>
