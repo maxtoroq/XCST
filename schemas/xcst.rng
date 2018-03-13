@@ -545,10 +545,6 @@
                   <ann:documentation>Specifies if editing should be disabled for this member in an editing UI.</ann:documentation>
                   <ref name="boolean"/>
                </attribute>
-               <attribute name="auto-generate-filter">
-                  <ann:documentation>Specifies if a filtering control should be automatically displayed for this member in a UI.</ann:documentation>
-                  <ref name="boolean"/>
-               </attribute>
                <attribute name="data-type">
                   <choice>
                      <value>CreditCard</value>
