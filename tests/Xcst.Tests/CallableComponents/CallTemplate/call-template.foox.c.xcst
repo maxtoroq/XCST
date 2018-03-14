@@ -2,7 +2,9 @@
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
    <c:template name='foo'>
-      <c:copy-of value='null' foo='foo'/>
+      <c:call-template name='bar' foo:foo='foo' xmlns:foo='urn:foo'/>
    </c:template>
+
+   <c:template name='bar'/>
 
 </c:module>

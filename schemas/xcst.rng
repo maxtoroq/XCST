@@ -115,6 +115,20 @@
             </attribute>
          </choice>
       </zeroOrMore>
+      <ref name="extension-attributes"/>
+   </define>
+
+   <define name="extension-attributes">
+      <zeroOrMore>
+         <attribute>
+            <anyName>
+               <except>
+                  <nsName/>
+                  <nsName ns=""/>
+               </except>
+            </anyName>
+         </attribute>
+      </zeroOrMore>
    </define>
 
    <define name="literal-result-element">
@@ -613,6 +627,7 @@
                <ref name="expression"/>
             </attribute>
          </optional>
+         <ref name="standard-attributes"/>
       </element>
    </define>
 
@@ -735,6 +750,7 @@
       <element name="validation">
          <ann:documentation>Defines default values for validation messages.</ann:documentation>
          <ref name="validation-attributes"/>
+         <ref name="standard-attributes"/>
       </element>
    </define>
 
@@ -1133,6 +1149,7 @@
                </attribute>
             </choice>
          </optional>
+         <ref name="standard-attributes"/>
          <zeroOrMore>
             <ref name="sort"/>
          </zeroOrMore>
@@ -1380,6 +1397,7 @@
                </attribute>
             </choice>
          </zeroOrMore>
+         <ref name="standard-attributes"/>
       </element>
    </define>
 

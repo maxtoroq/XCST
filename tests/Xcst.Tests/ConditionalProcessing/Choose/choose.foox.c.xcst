@@ -2,7 +2,9 @@
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
    <c:template name='foo'>
-      <c:copy-of value='null' foo='foo'/>
+      <c:choose foo:foo='foo' xmlns:foo='urn:foo'>
+         <c:when test='true'/>
+      </c:choose>
    </c:template>
 
 </c:module>

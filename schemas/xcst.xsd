@@ -80,6 +80,10 @@
             <xs:documentation>Enables or disables text normalization for descendant text nodes.</xs:documentation>
          </xs:annotation>
       </xs:attribute>
+      <xs:attributeGroup ref="c:extension-attributes"/>
+   </xs:attributeGroup>
+   <xs:attributeGroup name="extension-attributes">
+      <xs:anyAttribute namespace="##other" processContents="skip"/>
    </xs:attributeGroup>
    <xs:group name="literal-result-element">
       <xs:choice>
@@ -559,6 +563,7 @@
                <xs:documentation>The metadata expression. Expression.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
+         <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
    <xs:attributeGroup name="type-or-member-attributes">
@@ -698,6 +703,7 @@
       </xs:annotation>
       <xs:complexType>
          <xs:attributeGroup ref="c:validation-attributes"/>
+         <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
    <xs:attributeGroup name="validation-attributes">
@@ -1107,6 +1113,7 @@
                <xs:union memberTypes="c:integer c:avt-expr"/>
             </xs:simpleType>
          </xs:attribute>
+         <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
    <xs:element name="if">
@@ -1352,6 +1359,7 @@
                <xs:union memberTypes="c:order c:avt-expr"/>
             </xs:simpleType>
          </xs:attribute>
+         <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
    <xs:element name="text">

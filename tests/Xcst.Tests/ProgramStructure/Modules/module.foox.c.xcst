@@ -1,0 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' foo:foo='foo' xmlns:foo='urn:foo' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+</c:module>

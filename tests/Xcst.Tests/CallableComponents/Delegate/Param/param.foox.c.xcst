@@ -2,7 +2,11 @@
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
    <c:template name='foo'>
-      <c:copy-of value='null' foo='foo'/>
+      <c:variable name='bar'>
+         <c:delegate>
+            <c:param name='a' foo:foo='foo' xmlns:foo='urn:foo'/>
+         </c:delegate>
+      </c:variable>
    </c:template>
 
 </c:module>
