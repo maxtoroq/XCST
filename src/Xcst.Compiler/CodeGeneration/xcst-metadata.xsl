@@ -59,6 +59,57 @@
       <call-template name="src:ui-hint-attribute"/>
    </template>
 
+   <template name="src:type-attribute-extra">
+      <call-template name="src:type-or-member-attribute-extra">
+         <with-param name="result" as="node()*">
+            <apply-templates select="." mode="src:type-attribute-extra"/>
+         </with-param>
+      </call-template>
+   </template>
+
+   <template name="src:member-attribute-extra">
+      <call-template name="src:type-or-member-attribute-extra">
+         <with-param name="result" as="node()*">
+            <apply-templates select="." mode="src:member-attribute-extra"/>
+         </with-param>
+      </call-template>
+   </template>
+
+   <template name="src:type-or-member-attribute-extra">
+      <param name="result" as="node()*" required="yes"/>
+
+      <if test="not(empty($result))">
+         <variable name="current" select="."/>
+         <for-each select="$result">
+            <choose>
+               <when test="self::text()">
+                  <!--
+                     Text is treated as output
+                  -->
+                  <sequence select="."/>
+               </when>
+               <otherwise>
+                  <variable name="node-from-source" select="root(.) is root($current)"/>
+                  <apply-templates select="." mode="src:attribute">
+                     <with-param name="line-number-offset" select="
+                        if ($node-from-source) then 0
+                        else (src:line-number(.) * -1) + src:line-number($current)"
+                        tunnel="yes"/>
+                     <with-param name="line-uri" select="
+                        if ($node-from-source) then ()
+                        else document-uri(root($current))"
+                        tunnel="yes"/>
+                  </apply-templates>
+               </otherwise>
+            </choose>
+         </for-each>
+      </if>
+   </template>
+
+   <template match="c:type/node()" mode="src:type-attribute-extra"/>
+
+   <template match="c:member/node()" mode="src:type-attribute-extra src:member-attribute-extra"/>
+
    <!--
       ## DisplayColumn
    -->

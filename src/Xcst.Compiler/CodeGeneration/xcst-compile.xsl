@@ -2481,6 +2481,7 @@
             <text>]</text>
          </if>
          <call-template name="src:type-attributes"/>
+         <call-template name="src:type-attribute-extra"/>
          <apply-templates select="c:metadata" mode="src:attribute"/>
          <call-template name="src:line-number"/>
          <call-template name="src:new-line-indented"/>
@@ -2530,6 +2531,7 @@
 
       <value-of select="$src:new-line"/>
       <call-template name="src:member-attributes"/>
+      <call-template name="src:member-attribute-extra"/>
       <apply-templates select="c:metadata" mode="src:attribute"/>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
@@ -2566,6 +2568,7 @@
 
       <value-of select="$src:new-line"/>
       <call-template name="src:type-attributes"/>
+      <call-template name="src:type-attribute-extra"/>
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
       <text>public class </text>
