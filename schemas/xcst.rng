@@ -584,11 +584,11 @@
                   <ref name="boolean"/>
                </attribute>
                <attribute name="max-length">
-                  <ann:documentation>A maximum valid string length for this member.</ann:documentation>
+                  <ann:documentation>A maximum valid length for this member.</ann:documentation>
                   <ref name="integer"/>
                </attribute>
                <attribute name="min-length">
-                  <ann:documentation>A minimum valid string length for this member.</ann:documentation>
+                  <ann:documentation>A minimum valid length for this member.</ann:documentation>
                   <ref name="integer"/>
                </attribute>
                <attribute name="pattern">
@@ -769,8 +769,12 @@
                <ann:documentation>An error message for the required attribute.</ann:documentation>
                <ref name="string"/>
             </attribute>
-            <attribute name="length-message">
-               <ann:documentation>An error message for the min-length and max-length attributes.</ann:documentation>
+            <attribute name="min-length-message">
+               <ann:documentation>An error message for the min-length attribute.</ann:documentation>
+               <ref name="string"/>
+            </attribute>
+            <attribute name="max-length-message">
+               <ann:documentation>An error message for the max-length attribute.</ann:documentation>
                <ref name="string"/>
             </attribute>
             <attribute name="pattern-message">

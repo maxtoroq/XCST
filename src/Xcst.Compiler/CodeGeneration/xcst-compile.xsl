@@ -39,7 +39,7 @@
          <value-of select="concat('this.', src:aux-variable('execution_context'))"/>
       </src:context>
    </variable>
-   <variable name="xcst:validation-attributes" select="'validation-resource-type', 'data-type-message', 'required-message', 'length-message', 'pattern-message', 'range-message', 'equal-to-message'"/>
+   <variable name="xcst:validation-attributes" select="'validation-resource-type', 'data-type-message', 'required-message', 'min-length-message', 'max-length-message', 'pattern-message', 'range-message', 'equal-to-message'"/>
    <variable name="xcst:type-or-member-attributes" select="'resource-type', 'disable-empty-string-to-null-conversion', 'allow-empty-string', 'display-text-member', $xcst:validation-attributes"/>
    <variable name="src:contextual-variable" select="'__xcst'"/>
 

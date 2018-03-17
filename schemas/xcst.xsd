@@ -516,12 +516,12 @@
          </xs:attribute>
          <xs:attribute name="max-length" type="c:integer">
             <xs:annotation>
-               <xs:documentation>A maximum valid string length for this member.</xs:documentation>
+               <xs:documentation>A maximum valid length for this member.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attribute name="min-length" type="c:integer">
             <xs:annotation>
-               <xs:documentation>A minimum valid string length for this member.</xs:documentation>
+               <xs:documentation>A minimum valid length for this member.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attribute name="pattern" type="c:string">
@@ -722,9 +722,14 @@
             <xs:documentation>An error message for the required attribute.</xs:documentation>
          </xs:annotation>
       </xs:attribute>
-      <xs:attribute name="length-message" type="c:string">
+      <xs:attribute name="min-length-message" type="c:string">
          <xs:annotation>
-            <xs:documentation>An error message for the min-length and max-length attributes.</xs:documentation>
+            <xs:documentation>An error message for the min-length attribute.</xs:documentation>
+         </xs:annotation>
+      </xs:attribute>
+      <xs:attribute name="max-length-message" type="c:string">
+         <xs:annotation>
+            <xs:documentation>An error message for the max-length attribute.</xs:documentation>
          </xs:annotation>
       </xs:attribute>
       <xs:attribute name="pattern-message" type="c:string">

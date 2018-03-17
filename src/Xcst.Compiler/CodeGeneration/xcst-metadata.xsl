@@ -48,7 +48,8 @@
    <template name="src:member-attributes">
       <call-template name="src:scaffold-column-attribute"/>
       <call-template name="src:required-attribute"/>
-      <call-template name="src:string-length-attribute"/>
+      <call-template name="src:min-length-attribute"/>
+      <call-template name="src:max-length-attribute"/>
       <call-template name="src:data-type-attribute"/>
       <call-template name="src:regular-expression-attribute"/>
       <call-template name="src:range-attribute"/>
@@ -371,38 +372,55 @@
    </template>
 
    <!--
-      ## StringLength
+      ## MinLength
    -->
 
-   <template name="src:string-length-attribute">
-      <if test="@max-length or @min-length">
+   <template name="src:min-length-attribute">
+      <if test="@min-length">
          <variable name="setters" as="text()*">
-            <apply-templates select="@max-length, @min-length" mode="src:string-length-setter"/>
+            <apply-templates select="@min-length" mode="src:min-length-setter"/>
             <call-template name="src:validation-setters">
-               <with-param name="name" select="'length'"/>
+               <with-param name="name" select="name(@min-length)"/>
             </call-template>
          </variable>
          <call-template name="src:line-number"/>
          <call-template name="src:new-line-indented"/>
          <text>[</text>
-         <value-of select="src:global-identifier('System.ComponentModel.DataAnnotations.StringLength')"/>
+         <value-of select="src:global-identifier('System.ComponentModel.DataAnnotations.MinLength')"/>
          <text>(</text>
-         <if test="not(@max-length)">
-            <value-of select="src:global-identifier('System.Int32')"/>
-            <text>.MaxValue</text>
-            <text>, </text>
-         </if>
          <value-of select="$setters/string()" separator=", "/>
          <text>)]</text>
       </if>
    </template>
 
-   <template match="@max-length" mode="src:string-length-setter">
+   <template match="@min-length" mode="src:min-length-setter">
       <value-of select="src:integer(xcst:integer(.))"/>
    </template>
 
-   <template match="@min-length" mode="src:string-length-setter">
-      <value-of select="'MinimumLength', src:integer(xcst:integer(.))" separator=" = "/>
+   <!--
+      ## MaxLength
+   -->
+
+   <template name="src:max-length-attribute">
+      <if test="@max-length">
+         <variable name="setters" as="text()*">
+            <apply-templates select="@max-length" mode="src:max-length-setter"/>
+            <call-template name="src:validation-setters">
+               <with-param name="name" select="name(@max-length)"/>
+            </call-template>
+         </variable>
+         <call-template name="src:line-number"/>
+         <call-template name="src:new-line-indented"/>
+         <text>[</text>
+         <value-of select="src:global-identifier('System.ComponentModel.DataAnnotations.MaxLength')"/>
+         <text>(</text>
+         <value-of select="$setters/string()" separator=", "/>
+         <text>)]</text>
+      </if>
+   </template>
+
+   <template match="@max-length" mode="src:max-length-setter">
+      <value-of select="src:integer(xcst:integer(.))"/>
    </template>
 
    <!--
