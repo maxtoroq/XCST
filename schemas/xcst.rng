@@ -446,7 +446,7 @@
             <ref name="identifier"/>
          </attribute>
          <ref name="visibility-attribute"/>
-         <ref name="type-or-member-attributes"/>
+         <ref name="type-or-member-attributes" docs:attrib-group=""/>
          <optional>
             <attribute name="resource-type">
                <ann:documentation>A type that contains resources for display-name, short-name, description and place-holder attributes.</ann:documentation>
@@ -467,7 +467,7 @@
    <define name="member">
       <element name="member">
          <ann:documentation>Defines a type member.</ann:documentation>
-         <attribute name="name">
+         <attribute name="name" docs:attrib-group="Definition">
             <ann:documentation>The name of the member.</ann:documentation>
             <ref name="identifier"/>
          </attribute>
@@ -476,7 +476,7 @@
          </zeroOrMore>
          <optional>
             <choice>
-               <attribute name="as">
+               <attribute name="as" docs:attrib-group="Definition">
                   <ann:documentation>The type of the member.</ann:documentation>
                   <ref name="type_name"/>
                </attribute>
@@ -485,7 +485,7 @@
                </oneOrMore>
             </choice>
          </optional>
-         <optional>
+         <optional docs:attrib-group="Definition">
             <choice>
                <attribute name="value">
                   <ann:documentation>An initial value for this member.</ann:documentation>
@@ -497,12 +497,14 @@
                </attribute>
             </choice>
          </optional>
-         <zeroOrMore>
+         <optional>
+            <attribute name="auto-initialize" docs:attrib-group="Definition">
+               <ann:documentation>Auto-assign an initial value to this member.</ann:documentation>
+               <ref name="boolean"/>
+            </attribute>
+         </optional>
+         <zeroOrMore docs:attrib-group="Presentation">
             <choice>
-               <attribute name="auto-initialize">
-                  <ann:documentation>Auto-assign an initial value to this member.</ann:documentation>
-                  <ref name="boolean"/>
-               </attribute>
                <attribute name="display">
                   <ann:documentation>Specifies if this member should be displayed in a UI.</ann:documentation>
                   <choice>
@@ -566,6 +568,10 @@
                   <ann:documentation>Specifies if editing should be disabled for this member in an editing UI.</ann:documentation>
                   <ref name="boolean"/>
                </attribute>
+            </choice>
+         </zeroOrMore>
+         <zeroOrMore docs:attrib-group="Validation">
+            <choice>
                <attribute name="data-type">
                   <choice>
                      <value>CreditCard</value>
@@ -617,7 +623,7 @@
             </choice>
          </zeroOrMore>
          <ref name="type-or-member-attributes"/>
-         <ref name="validation-or-member-attributes"/>
+         <ref name="validation-or-member-attributes" docs:attrib-group="Validation"/>
          <ref name="standard-attributes"/>
       </element>
    </define>
@@ -642,15 +648,15 @@
    <define name="type-or-member-attributes">
       <zeroOrMore>
          <choice>
-            <attribute name="disable-empty-string-to-null-conversion">
+            <attribute name="disable-empty-string-to-null-conversion" docs:attrib-group="Validation">
                <ann:documentation>Specifies if empty strings should not be converted to null for this member.</ann:documentation>
                <ref name="boolean"/>
             </attribute>
-            <attribute name="allow-empty-string">
+            <attribute name="allow-empty-string" docs:attrib-group="Validation">
                <ann:documentation>Specifies if an empty string is a valid value for this member.</ann:documentation>
                <ref name="boolean"/>
             </attribute>
-            <attribute name="display-text-member">
+            <attribute name="display-text-member" docs:attrib-group="Presentation">
                <ann:documentation>The name of the member to use as the text representation for this type.</ann:documentation>
                <ref name="identifier"/>
             </attribute>
