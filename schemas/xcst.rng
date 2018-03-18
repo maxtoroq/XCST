@@ -447,6 +447,12 @@
          </attribute>
          <ref name="visibility-attribute"/>
          <ref name="type-or-member-attributes"/>
+         <optional>
+            <attribute name="resource-type">
+               <ann:documentation>A type that contains resources for display-name, short-name, description and place-holder attributes.</ann:documentation>
+               <ref name="type_name"/>
+            </attribute>
+         </optional>
          <ref name="validation-or-type-attributes"/>
          <ref name="standard-attributes"/>
          <zeroOrMore>
@@ -636,10 +642,6 @@
    <define name="type-or-member-attributes">
       <zeroOrMore>
          <choice>
-            <attribute name="resource-type">
-               <ann:documentation>A type that contains resources for name, short-name, description and place-holder attributes.</ann:documentation>
-               <ref name="type_name"/>
-            </attribute>
             <attribute name="disable-empty-string-to-null-conversion">
                <ann:documentation>Specifies if empty strings should not be converted to null for this member.</ann:documentation>
                <ref name="boolean"/>

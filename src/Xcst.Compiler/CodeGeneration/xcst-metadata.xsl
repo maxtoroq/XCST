@@ -144,7 +144,7 @@
             | @order
             | @group
             | @auto-generate-filter
-            | (ancestor-or-self::c:*[self::c:member or self::c:type]/@resource-type)[1]"
+            | (ancestor::c:type/@resource-type)[1]"
             mode="src:display-setter"/>
       </variable>
       <if test="$setters">

@@ -44,7 +44,7 @@
 
    <variable name="xcst:validation-or-member-attributes" select="'data-type-message', 'required-message', 'min-length-message', 'max-length-message', 'pattern-message', 'range-message', 'equal-to-message'"/>
 
-   <variable name="xcst:type-or-member-attributes" select="'resource-type', 'disable-empty-string-to-null-conversion', 'allow-empty-string', 'display-text-member'"/>
+   <variable name="xcst:type-or-member-attributes" select="'disable-empty-string-to-null-conversion', 'allow-empty-string', 'display-text-member'"/>
 
    <variable name="src:contextual-variable" select="'__xcst'"/>
 
@@ -751,7 +751,7 @@
 
       <call-template name="xcst:validate-attribs">
          <with-param name="required" select="'name'"/>
-         <with-param name="optional" select="'visibility', $xcst:type-or-member-attributes, $xcst:validation-or-type-attributes"/>
+         <with-param name="optional" select="'visibility', 'resource-type', $xcst:type-or-member-attributes, $xcst:validation-or-type-attributes"/>
       </call-template>
       <call-template name="xcst:validate-children">
          <with-param name="allowed" select="'metadata', 'member'"/>

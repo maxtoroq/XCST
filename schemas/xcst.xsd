@@ -354,6 +354,11 @@
          </xs:attribute>
          <xs:attributeGroup ref="c:visibility-attribute"/>
          <xs:attributeGroup ref="c:type-or-member-attributes"/>
+         <xs:attribute name="resource-type" type="c:type_name">
+            <xs:annotation>
+               <xs:documentation>A type that contains resources for display-name, short-name, description and place-holder attributes.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
          <xs:attributeGroup ref="c:validation-or-type-attributes"/>
          <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
@@ -569,11 +574,6 @@
       </xs:complexType>
    </xs:element>
    <xs:attributeGroup name="type-or-member-attributes">
-      <xs:attribute name="resource-type" type="c:type_name">
-         <xs:annotation>
-            <xs:documentation>A type that contains resources for name, short-name, description and place-holder attributes.</xs:documentation>
-         </xs:annotation>
-      </xs:attribute>
       <xs:attribute name="disable-empty-string-to-null-conversion" type="c:boolean">
          <xs:annotation>
             <xs:documentation>Specifies if empty strings should not be converted to null for this member.</xs:documentation>
