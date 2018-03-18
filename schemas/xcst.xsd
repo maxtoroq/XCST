@@ -354,6 +354,7 @@
          </xs:attribute>
          <xs:attributeGroup ref="c:visibility-attribute"/>
          <xs:attributeGroup ref="c:type-or-member-attributes"/>
+         <xs:attributeGroup ref="c:validation-or-type-attributes"/>
          <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
@@ -545,6 +546,7 @@
             </xs:annotation>
          </xs:attribute>
          <xs:attributeGroup ref="c:type-or-member-attributes"/>
+         <xs:attributeGroup ref="c:validation-or-member-attributes"/>
          <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
@@ -587,7 +589,6 @@
             <xs:documentation>The name of the member to use as the text representation for this type.</xs:documentation>
          </xs:annotation>
       </xs:attribute>
-      <xs:attributeGroup ref="c:validation-attributes"/>
    </xs:attributeGroup>
    <xs:element name="output">
       <xs:annotation>
@@ -702,16 +703,19 @@
          <xs:documentation>Defines default values for validation messages.</xs:documentation>
       </xs:annotation>
       <xs:complexType>
-         <xs:attributeGroup ref="c:validation-attributes"/>
+         <xs:attributeGroup ref="c:validation-or-member-attributes"/>
+         <xs:attributeGroup ref="c:validation-or-type-attributes"/>
          <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
-   <xs:attributeGroup name="validation-attributes">
+   <xs:attributeGroup name="validation-or-type-attributes">
       <xs:attribute name="validation-resource-type" type="c:type_name">
          <xs:annotation>
             <xs:documentation>A type that contains error message resources for validation attributes.</xs:documentation>
          </xs:annotation>
       </xs:attribute>
+   </xs:attributeGroup>
+   <xs:attributeGroup name="validation-or-member-attributes">
       <xs:attribute name="data-type-message" type="c:string">
          <xs:annotation>
             <xs:documentation>An error message for the data-type attribute.</xs:documentation>

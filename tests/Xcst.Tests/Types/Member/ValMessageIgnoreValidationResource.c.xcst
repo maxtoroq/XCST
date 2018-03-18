@@ -4,8 +4,10 @@
    <c:import-namespace ns='System.Collections.Generic'/>
    <c:import-namespace ns='System.ComponentModel.DataAnnotations'/>
 
+   <c:validation required-message='Required' validation-resource-type='Resources'/>
+   
    <c:type name='foo'>
-      <c:member name='bar' as='string' required='yes' required-message='Required' validation-resource-type='Resources'/>
+      <c:member name='bar' as='string' required='yes' required-message='ESSENTIAL!'/>
    </c:type>
 
    <c:template name='c:initial-template'>
@@ -22,7 +24,7 @@
 
    <c:template name='expected'>
       <ol>
-         <li>SUPER IMPORTANT!</li>
+         <li>ESSENTIAL!</li>
       </ol>
    </c:template>
 

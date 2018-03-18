@@ -302,7 +302,7 @@
          <variable name="data-type" select="xcst:non-string(@data-type)"/>
          <variable name="setters" as="text()*">
             <call-template name="src:validation-setters">
-               <with-param name="name" select="name(@data-type)"/>
+               <with-param name="name" select="node-name(@data-type)"/>
             </call-template>
          </variable>
          <call-template name="src:line-number"/>
@@ -351,7 +351,7 @@
          <variable name="setters" as="text()*">
             <apply-templates select="(ancestor-or-self::c:*[self::c:member or self::c:type]/@allow-empty-string)[1]" mode="src:required-setter"/>
             <call-template name="src:validation-setters">
-               <with-param name="name" select="name(@required)"/>
+               <with-param name="name" select="node-name(@required)"/>
             </call-template>
          </variable>
          <call-template name="src:line-number"/>
@@ -380,7 +380,7 @@
          <variable name="setters" as="text()*">
             <apply-templates select="@min-length" mode="src:min-length-setter"/>
             <call-template name="src:validation-setters">
-               <with-param name="name" select="name(@min-length)"/>
+               <with-param name="name" select="node-name(@min-length)"/>
             </call-template>
          </variable>
          <call-template name="src:line-number"/>
@@ -406,7 +406,7 @@
          <variable name="setters" as="text()*">
             <apply-templates select="@max-length" mode="src:max-length-setter"/>
             <call-template name="src:validation-setters">
-               <with-param name="name" select="name(@max-length)"/>
+               <with-param name="name" select="node-name(@max-length)"/>
             </call-template>
          </variable>
          <call-template name="src:line-number"/>
@@ -432,7 +432,7 @@
          <variable name="setters" as="text()*">
             <apply-templates select="@pattern" mode="src:regular-expression-setter"/>
             <call-template name="src:validation-setters">
-               <with-param name="name" select="name(@pattern)"/>
+               <with-param name="name" select="node-name(@pattern)"/>
             </call-template>
          </variable>
          <call-template name="src:line-number"/>
@@ -460,7 +460,7 @@
          </if>
          <variable name="setters" as="text()*">
             <call-template name="src:validation-setters">
-               <with-param name="name" select="'range'"/>
+               <with-param name="name" select="QName('', 'range')"/>
             </call-template>
          </variable>
          <variable name="type" select="xcst:type(@as)"/>
@@ -489,7 +489,7 @@
          <variable name="setters" as="text()*">
             <apply-templates select="@equal-to" mode="src:compare-setter"/>
             <call-template name="src:validation-setters">
-               <with-param name="name" select="name(@equal-to)"/>
+               <with-param name="name" select="node-name(@equal-to)"/>
             </call-template>
          </variable>
          <call-template name="src:line-number"/>
@@ -511,7 +511,7 @@
    -->
 
    <template name="src:validation-setters">
-      <param name="name" as="xs:string"/>
+      <param name="name" as="xs:QName"/>
       <param name="src:validation-attributes" as="attribute()*" tunnel="yes"/>
 
       <!--
@@ -522,23 +522,27 @@
          If @validation-resource-type is present, then @*-message is used for ErrorMessageResourceName,
          otherwise it's used for ErrorMessage.
 
-         c:type inherits defaults from c:validation, but if an @*-message is present then
-         it's used for ErrorMessage, unless @validation-resource-type is also present, and ignoring
-         a @validation-resource-type from c:validation.
-
-         c:member inherits defaults from c:type and c:member, including @validation-resource-type.
+         c:member inherits defaults from c:validation, but if an @*-message is present then
+         it's used for ErrorMessage, unless @validation-resource-type is also present in c:type,
+         and ignoring a @validation-resource-type from c:validation.
       -->
 
-      <variable name="validation-message" select="$src:validation-attributes[name() eq concat($name, '-message')]"/>
+      <variable name="message-name" select="
+         QName(
+            namespace-uri-from-QName($name),
+            concat(local-name-from-QName($name), '-message')
+         )"/>
+
+      <variable name="validation-message" select="$src:validation-attributes[node-name(.) eq $message-name]"/>
 
       <variable name="validation-resource-type" select="$src:validation-attributes[self::attribute(validation-resource-type)]"/>
 
-      <variable name="member-message" select="(ancestor-or-self::c:*[self::c:member or self::c:type]/attribute()[name() eq concat($name, '-message')])[last()]"/>
+      <variable name="member-message" select="(ancestor-or-self::c:member/attribute()[node-name(.) eq $message-name])[last()]"/>
 
-      <variable name="member-resource-type" select="(ancestor-or-self::c:*[self::c:member or self::c:type]/@validation-resource-type)[last()]"/>
+      <variable name="type-resource-type" select="(ancestor::c:type/@validation-resource-type)[last()]"/>
 
       <variable name="message" select="($member-message, $validation-message)[1]"/>
-      <variable name="resource-type" select="($member-resource-type, $validation-resource-type[not($member-message)])[1]"/>
+      <variable name="resource-type" select="($type-resource-type, $validation-resource-type[not($member-message)])[1]"/>
 
       <apply-templates select="$message" mode="src:validation-setter">
          <with-param name="is-resource" select="not(empty($resource-type))"/>
@@ -546,7 +550,7 @@
       <apply-templates select="$resource-type" mode="src:validation-setter"/>
    </template>
 
-   <template match="@*[not(namespace-uri()) and ends-with(name(), '-message')]" mode="src:validation-setter">
+   <template match="@*[ends-with(local-name(), '-message')]" mode="src:validation-setter">
       <param name="is-resource" as="xs:boolean" required="yes"/>
 
       <value-of select="('ErrorMessageResourceName'[$is-resource], 'ErrorMessage')[1], src:verbatim-string(.)" separator=" = "/>

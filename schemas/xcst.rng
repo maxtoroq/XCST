@@ -447,6 +447,7 @@
          </attribute>
          <ref name="visibility-attribute"/>
          <ref name="type-or-member-attributes"/>
+         <ref name="validation-or-type-attributes"/>
          <ref name="standard-attributes"/>
          <zeroOrMore>
             <ref name="metadata"/>
@@ -610,6 +611,7 @@
             </choice>
          </zeroOrMore>
          <ref name="type-or-member-attributes"/>
+         <ref name="validation-or-member-attributes"/>
          <ref name="standard-attributes"/>
       </element>
    </define>
@@ -652,7 +654,6 @@
             </attribute>
          </choice>
       </zeroOrMore>
-      <ref name="validation-attributes"/>
    </define>
 
    <define name="output">
@@ -749,18 +750,24 @@
    <define name="validation">
       <element name="validation">
          <ann:documentation>Defines default values for validation messages.</ann:documentation>
-         <ref name="validation-attributes"/>
+         <ref name="validation-or-member-attributes"/>
+         <ref name="validation-or-type-attributes"/>
          <ref name="standard-attributes"/>
       </element>
    </define>
 
-   <define name="validation-attributes">
+   <define name="validation-or-type-attributes">
+      <optional>
+         <attribute name="validation-resource-type">
+            <ann:documentation>A type that contains error message resources for validation attributes.</ann:documentation>
+            <ref name="type_name"/>
+         </attribute>
+      </optional>
+   </define>
+
+   <define name="validation-or-member-attributes">
       <zeroOrMore>
          <choice>
-            <attribute name="validation-resource-type">
-               <ann:documentation>A type that contains error message resources for validation attributes.</ann:documentation>
-               <ref name="type_name"/>
-            </attribute>
             <attribute name="data-type-message">
                <ann:documentation>An error message for the data-type attribute.</ann:documentation>
                <ref name="string"/>

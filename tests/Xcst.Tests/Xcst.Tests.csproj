@@ -85,23 +85,8 @@
     <Compile Include="API\Evaluation\EvaluationTests.cs" />
     <Compile Include="TestsHelper.cs" />
     <Compile Include="Tests.generated.cs" />
-    <Compile Include="Types\Member\Member\Resources.Designer.cs">
-      <DependentUpon>Resources.resx</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Types\Member\Member\Resources2.Designer.cs">
-      <DependentUpon>Resources2.resx</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Include="Types\Member\Resources.Designer.cs">
       <DependentUpon>Resources.resx</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Types\Member\Resources2.Designer.cs">
-      <DependentUpon>Resources2.resx</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
@@ -727,19 +712,14 @@
     <None Include="Serialization\Output\NoChildren.i.xcst" />
     <None Include="Serialization\Serialize\serialize.foox.c.xcst" />
     <None Include="Types\Member\member.foox.c.xcst" />
-    <None Include="Types\Member\Member\ValResourceOverrideMember.c.xcst" />
     <None Include="Types\Member\Member\ValMessageOverrideMember.c.xcst" />
-    <None Include="Types\Member\ValResourceOverrideType.c.xcst" />
-    <None Include="Types\Member\ValResource.c.xcst" />
-    <None Include="Types\Member\ValMessageOverrideType.c.xcst" />
     <None Include="Types\Member\ValMessage.c.xcst" />
     <None Include="Types\Metadata\metadata.foox.c.xcst" />
     <None Include="Types\type.foox.c.xcst" />
     <None Include="Types\ValResourceOverrideValidation.c.xcst" />
-    <None Include="Types\ValMessageIgnoreValidationResource.c.xcst" />
+    <None Include="Types\Member\ValMessageIgnoreValidationResource.c.xcst" />
     <None Include="Types\ValResource.c.xcst" />
-    <None Include="Types\ValMessageOverrideValidation.c.xcst" />
-    <None Include="Types\ValMessage.c.xcst" />
+    <None Include="Types\Member\ValMessageOverrideValidation.c.xcst" />
     <None Include="Validation\validation.foox.c.xcst" />
     <None Include="Validation\ValResourceOverride.c.xcst" />
     <None Include="Validation\ValResourceImport.c.xcst" />
@@ -1346,21 +1326,9 @@
     <Analyzer Include="..\..\packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Types\Member\Member\Resources.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Types\Member\Member\Resources2.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources2.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
     <EmbeddedResource Include="Types\Member\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Types\Member\Resources2.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources2.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Types\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>

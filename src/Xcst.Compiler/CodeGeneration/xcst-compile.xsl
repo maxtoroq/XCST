@@ -39,8 +39,13 @@
          <value-of select="concat('this.', src:aux-variable('execution_context'))"/>
       </src:context>
    </variable>
-   <variable name="xcst:validation-attributes" select="'validation-resource-type', 'data-type-message', 'required-message', 'min-length-message', 'max-length-message', 'pattern-message', 'range-message', 'equal-to-message'"/>
-   <variable name="xcst:type-or-member-attributes" select="'resource-type', 'disable-empty-string-to-null-conversion', 'allow-empty-string', 'display-text-member', $xcst:validation-attributes"/>
+
+   <variable name="xcst:validation-or-type-attributes" select="'validation-resource-type'"/>
+
+   <variable name="xcst:validation-or-member-attributes" select="'data-type-message', 'required-message', 'min-length-message', 'max-length-message', 'pattern-message', 'range-message', 'equal-to-message'"/>
+
+   <variable name="xcst:type-or-member-attributes" select="'resource-type', 'disable-empty-string-to-null-conversion', 'allow-empty-string', 'display-text-member'"/>
+
    <variable name="src:contextual-variable" select="'__xcst'"/>
 
    <output cdata-section-elements="src:compilation-unit"/>
@@ -320,7 +325,7 @@
 
    <template match="c:validation" mode="xcst:check-top-level">
       <call-template name="xcst:validate-attribs">
-         <with-param name="optional" select="$xcst:validation-attributes"/>
+         <with-param name="optional" select="$xcst:validation-or-member-attributes, $xcst:validation-or-type-attributes"/>
       </call-template>
       <call-template name="xcst:no-children"/>
    </template>
@@ -746,7 +751,7 @@
 
       <call-template name="xcst:validate-attribs">
          <with-param name="required" select="'name'"/>
-         <with-param name="optional" select="'visibility', $xcst:type-or-member-attributes"/>
+         <with-param name="optional" select="'visibility', $xcst:type-or-member-attributes, $xcst:validation-or-type-attributes"/>
       </call-template>
       <call-template name="xcst:validate-children">
          <with-param name="allowed" select="'metadata', 'member'"/>
@@ -2469,7 +2474,7 @@
             for $m in reverse($modules) 
             return reverse($m/c:validation)"/>
          <variable name="validation-attributes" as="attribute()*">
-            <for-each-group select="for $v in $validation-definitions return $v/@*[not(namespace-uri())]" group-by="node-name(.)">
+            <for-each-group select="for $v in $validation-definitions return $v/@*" group-by="node-name(.)">
                <sequence select="."/>
             </for-each-group>
          </variable>
@@ -2507,7 +2512,7 @@
 
       <call-template name="xcst:validate-attribs">
          <with-param name="required" select="'name'"/>
-         <with-param name="optional" select="'as', 'value', 'expression', 'auto-initialize', 'display', 'display-name', 'description', 'short-name', 'place-holder', 'order', 'group', 'format', 'apply-format-in-edit-mode', 'disable-output-escaping', 'null-display-text', 'template', 'read-only', 'auto-generate-filter', 'data-type', 'required', 'max-length', 'min-length', 'pattern', 'min', 'max', 'equal-to', $xcst:type-or-member-attributes"/>
+         <with-param name="optional" select="'as', 'value', 'expression', 'auto-initialize', 'display', 'display-name', 'description', 'short-name', 'place-holder', 'order', 'group', 'format', 'apply-format-in-edit-mode', 'disable-output-escaping', 'null-display-text', 'template', 'read-only', 'auto-generate-filter', 'data-type', 'required', 'max-length', 'min-length', 'pattern', 'min', 'max', 'equal-to', $xcst:type-or-member-attributes, $xcst:validation-or-member-attributes"/>
       </call-template>
       <call-template name="xcst:validate-children">
          <with-param name="allowed" select="'metadata', 'member'"/>
