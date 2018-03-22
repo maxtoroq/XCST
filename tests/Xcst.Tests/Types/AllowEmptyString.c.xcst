@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:import-namespace ns='System.ComponentModel.DataAnnotations'/>
+
+   <c:type name='foo' allow-empty-string='yes'>
+      <c:member name='bar' as='string' required='yes'/>
+   </c:type>
+
+   <c:function name='IsValid' as='bool'>
+      <c:param name='value'/>
+
+      <c:variable name='context' value='new ValidationContext(value, null, null)'/>
+      <c:return value='Validator.TryValidateObject(value, context, null, validateAllProperties: true)'/>
+   </c:function>
+
+   <c:template name='c:initial-template'>
+      <c:void value='Assert.IsTrue(IsValid(new foo { bar = "" }))'/>
+      <c:void value='Assert.IsFalse(IsValid(new foo { bar = null }))'/>
+   </c:template>
+
+</c:module>

@@ -144,7 +144,7 @@
             | @order
             | @group
             | @auto-generate-filter
-            | (ancestor::c:type/@resource-type)[1]"
+            | ancestor::c:type[1]/@resource-type"
             mode="src:display-setter"/>
       </variable>
       <if test="$setters">
@@ -198,7 +198,7 @@
       <variable name="setters" as="text()*">
          <apply-templates select="@format
             | @apply-format-in-edit-mode
-            | (ancestor-or-self::c:*[self::c:member or self::c:type]/@disable-empty-string-to-null-conversion)[1]
+            | ancestor-or-self::c:*[(self::c:member or self::c:type) and @allow-empty-string][1]/@allow-empty-string
             | @disable-output-escaping
             | @null-display-text"
             mode="src:display-format-setter"/>
@@ -222,7 +222,7 @@
       <value-of select="'ApplyFormatInEditMode', src:boolean(xcst:boolean(.))" separator=" = "/>
    </template>
 
-   <template match="@disable-empty-string-to-null-conversion" mode="src:display-format-setter">
+   <template match="@allow-empty-string" mode="src:display-format-setter">
       <value-of select="'ConvertEmptyStringToNull', src:boolean(not(xcst:boolean(.)))" separator=" = "/>
    </template>
 
@@ -349,7 +349,7 @@
    <template name="src:required-attribute">
       <if test="@required/xcst:boolean(.)">
          <variable name="setters" as="text()*">
-            <apply-templates select="(ancestor-or-self::c:*[self::c:member or self::c:type]/@allow-empty-string)[1]" mode="src:required-setter"/>
+            <apply-templates select="ancestor-or-self::c:*[(self::c:member or self::c:type) and @allow-empty-string][1]/@allow-empty-string" mode="src:required-setter"/>
             <call-template name="src:validation-setters">
                <with-param name="name" select="node-name(@required)"/>
             </call-template>
@@ -539,7 +539,7 @@
 
       <variable name="member-message" select="(ancestor-or-self::c:member/attribute()[node-name(.) eq $message-name])[last()]"/>
 
-      <variable name="type-resource-type" select="(ancestor::c:type/@validation-resource-type)[last()]"/>
+      <variable name="type-resource-type" select="ancestor::c:type[1]/@validation-resource-type"/>
 
       <variable name="message" select="($member-message, $validation-message)[1]"/>
       <variable name="resource-type" select="($type-resource-type, $validation-resource-type[not($member-message)])[1]"/>

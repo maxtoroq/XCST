@@ -44,7 +44,7 @@
 
    <variable name="xcst:validation-or-member-attributes" select="'data-type-message', 'required-message', 'min-length-message', 'max-length-message', 'pattern-message', 'range-message', 'equal-to-message'"/>
 
-   <variable name="xcst:type-or-member-attributes" select="'disable-empty-string-to-null-conversion', 'allow-empty-string', 'display-text-member'"/>
+   <variable name="xcst:type-or-member-attributes" select="'allow-empty-string', 'display-text-member'"/>
 
    <variable name="src:contextual-variable" select="'__xcst'"/>
 

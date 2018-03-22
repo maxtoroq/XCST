@@ -711,8 +711,11 @@
     <None Include="Serialization\Output\NoChildrenText.i.xcst" />
     <None Include="Serialization\Output\NoChildren.i.xcst" />
     <None Include="Serialization\Serialize\serialize.foox.c.xcst" />
+    <None Include="Types\AllowEmptyString.c.xcst" />
+    <None Include="Types\Member\AllowEmptyStringOverrideType.c.xcst" />
     <None Include="Types\Member\member.foox.c.xcst" />
     <None Include="Types\Member\Member\ValMessageOverrideMember.c.xcst" />
+    <None Include="Types\Member\AllowEmptyString.c.xcst" />
     <None Include="Types\Member\ValMessage.c.xcst" />
     <None Include="Types\Metadata\metadata.foox.c.xcst" />
     <None Include="Types\type.foox.c.xcst" />

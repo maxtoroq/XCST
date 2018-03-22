@@ -648,10 +648,6 @@
    <define name="type-or-member-attributes">
       <zeroOrMore>
          <choice>
-            <attribute name="disable-empty-string-to-null-conversion" docs:attrib-group="Validation">
-               <ann:documentation>Specifies if empty strings should not be converted to null for this member.</ann:documentation>
-               <ref name="boolean"/>
-            </attribute>
             <attribute name="allow-empty-string" docs:attrib-group="Validation">
                <ann:documentation>Specifies if an empty string is a valid value for this member.</ann:documentation>
                <ref name="boolean"/>
