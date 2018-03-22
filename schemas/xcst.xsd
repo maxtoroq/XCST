@@ -352,7 +352,11 @@
                <xs:documentation>The name of the type.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
-         <xs:attributeGroup ref="c:visibility-attribute"/>
+         <xs:attribute name="visibility" type="c:visibility-except-abstract">
+            <xs:annotation>
+               <xs:documentation>Specifies how the current component can be used in other (using) packages.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
          <xs:attributeGroup ref="c:type-or-member-attributes"/>
          <xs:attribute name="resource-type" type="c:type_name">
             <xs:annotation>
@@ -574,11 +578,6 @@
       </xs:complexType>
    </xs:element>
    <xs:attributeGroup name="type-or-member-attributes">
-      <xs:attribute name="disable-empty-string-to-null-conversion" type="c:boolean">
-         <xs:annotation>
-            <xs:documentation>Specifies if empty strings should not be converted to null for this member.</xs:documentation>
-         </xs:annotation>
-      </xs:attribute>
       <xs:attribute name="allow-empty-string" type="c:boolean">
          <xs:annotation>
             <xs:documentation>Specifies if an empty string is a valid value for this member.</xs:documentation>
@@ -1825,11 +1824,22 @@
       <xs:annotation>
          <xs:documentation>One of the values "public", "private", "final" or "abstract".</xs:documentation>
       </xs:annotation>
+      <xs:union memberTypes="c:visibility-except-abstract">
+         <xs:simpleType>
+            <xs:restriction base="xs:token">
+               <xs:enumeration value="abstract"/>
+            </xs:restriction>
+         </xs:simpleType>
+      </xs:union>
+   </xs:simpleType>
+   <xs:simpleType name="visibility-except-abstract">
+      <xs:annotation>
+         <xs:documentation>One of the values "public", "private" or "final".</xs:documentation>
+      </xs:annotation>
       <xs:restriction base="xs:token">
          <xs:enumeration value="public"/>
          <xs:enumeration value="private"/>
          <xs:enumeration value="final"/>
-         <xs:enumeration value="abstract"/>
       </xs:restriction>
    </xs:simpleType>
    <xs:simpleType name="order">

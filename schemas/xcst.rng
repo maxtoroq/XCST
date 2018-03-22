@@ -445,7 +445,12 @@
             <ann:documentation>The name of the type.</ann:documentation>
             <ref name="identifier"/>
          </attribute>
-         <ref name="visibility-attribute"/>
+         <optional>
+            <attribute name="visibility">
+               <ann:documentation>Specifies how the current component can be used in other (using) packages.</ann:documentation>
+               <ref name="visibility-except-abstract"/>
+            </attribute>
+         </optional>
          <ref name="type-or-member-attributes" docs:attrib-group=""/>
          <optional>
             <attribute name="resource-type">
@@ -1872,10 +1877,17 @@
    <define name="visibility">
       <ann:documentation>One of the values "public", "private", "final" or "abstract".</ann:documentation>
       <choice>
+         <ref name="visibility-except-abstract"/>
+         <value>abstract</value>
+      </choice>
+   </define>
+
+   <define name="visibility-except-abstract">
+      <ann:documentation>One of the values "public", "private" or "final".</ann:documentation>
+      <choice>
          <value>public</value>
          <value>private</value>
          <value>final</value>
-         <value>abstract</value>
       </choice>
    </define>
 
