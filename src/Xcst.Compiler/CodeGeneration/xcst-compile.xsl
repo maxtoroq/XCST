@@ -2512,7 +2512,7 @@
 
       <call-template name="xcst:validate-attribs">
          <with-param name="required" select="'name'"/>
-         <with-param name="optional" select="'as', 'value', 'expression', 'auto-initialize', 'display', 'display-name', 'description', 'short-name', 'place-holder', 'order', 'group', 'format', 'apply-format-in-edit-mode', 'disable-output-escaping', 'null-display-text', 'template', 'read-only', 'auto-generate-filter', 'data-type', 'required', 'max-length', 'min-length', 'pattern', 'min', 'max', 'equal-to', $xcst:type-or-member-attributes, $xcst:validation-or-member-attributes"/>
+         <with-param name="optional" select="'as', 'value', 'expression', 'auto-initialize', 'display', 'display-name', 'description', 'short-name', 'edit-hint', 'order', 'group', 'format', 'apply-format-in-edit-mode', 'disable-output-escaping', 'null-display-text', 'template', 'read-only', 'auto-generate-filter', 'data-type', 'required', 'max-length', 'min-length', 'pattern', 'min', 'max', 'equal-to', $xcst:type-or-member-attributes, $xcst:validation-or-member-attributes"/>
       </call-template>
       <call-template name="xcst:validate-children">
          <with-param name="allowed" select="'metadata', 'member'"/>

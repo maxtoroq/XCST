@@ -452,7 +452,7 @@
                <xs:documentation>A shorter name suitable for UI where the display name would be too long to fit (e.g. a table column).</xs:documentation>
             </xs:annotation>
          </xs:attribute>
-         <xs:attribute name="place-holder" type="c:string">
+         <xs:attribute name="edit-hint" type="c:string">
             <xs:annotation>
                <xs:documentation>A hint to the user of what can be entered in a control for this member.</xs:documentation>
             </xs:annotation>

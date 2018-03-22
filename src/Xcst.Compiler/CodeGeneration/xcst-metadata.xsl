@@ -140,7 +140,7 @@
          <apply-templates select="@display-name
             | @description
             | @short-name
-            | @place-holder
+            | @edit-hint
             | @order
             | @group
             | @auto-generate-filter
@@ -170,7 +170,7 @@
       <value-of select="'ShortName', src:verbatim-string(.)" separator=" = "/>
    </template>
 
-   <template match="@place-holder" mode="src:display-setter">
+   <template match="@edit-hint" mode="src:display-setter">
       <value-of select="'Prompt', src:verbatim-string(.)" separator=" = "/>
    </template>
 
