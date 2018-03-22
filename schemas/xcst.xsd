@@ -492,11 +492,6 @@
                <xs:documentation>The name of a template to use when displaying this member in a UI.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
-         <xs:attribute name="read-only" type="c:boolean">
-            <xs:annotation>
-               <xs:documentation>Specifies if editing should be disabled for this member in an editing UI.</xs:documentation>
-            </xs:annotation>
-         </xs:attribute>
          <xs:attribute name="data-type">
             <xs:simpleType>
                <xs:restriction base="xs:token">

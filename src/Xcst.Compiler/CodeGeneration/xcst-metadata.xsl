@@ -54,7 +54,6 @@
       <call-template name="src:regular-expression-attribute"/>
       <call-template name="src:range-attribute"/>
       <call-template name="src:compare-attribute"/>
-      <call-template name="src:editable-attribute"/>
       <call-template name="src:display-attribute"/>
       <call-template name="src:display-format-attribute"/>
       <call-template name="src:ui-hint-attribute"/>
@@ -270,22 +269,6 @@
       <text>(</text>
       <value-of select="src:boolean($scaffold)"/>
       <text>)]</text>
-   </template>
-
-   <!--
-      ## Editable
-   -->
-
-   <template name="src:editable-attribute">
-      <if test="@read-only">
-         <call-template name="src:line-number"/>
-         <call-template name="src:new-line-indented"/>
-         <text>[</text>
-         <value-of select="src:global-identifier('System.ComponentModel.DataAnnotations.Editable')"/>
-         <text>(</text>
-         <value-of select="src:boolean(not(xcst:boolean(@read-only)))"/>
-         <text>)]</text>
-      </if>
    </template>
 
    <!--

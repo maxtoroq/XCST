@@ -569,10 +569,6 @@
                   <ann:documentation>The name of a template to use when displaying this member in a UI.</ann:documentation>
                   <ref name="string"/>
                </attribute>
-               <attribute name="read-only">
-                  <ann:documentation>Specifies if editing should be disabled for this member in an editing UI.</ann:documentation>
-                  <ref name="boolean"/>
-               </attribute>
             </choice>
          </zeroOrMore>
          <zeroOrMore docs:attrib-group="Validation">
