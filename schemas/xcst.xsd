@@ -360,7 +360,7 @@
          <xs:attributeGroup ref="c:type-or-member-attributes"/>
          <xs:attribute name="resource-type" type="c:type_name">
             <xs:annotation>
-               <xs:documentation>A type that contains resources for display-name, short-name, description and place-holder attributes.</xs:documentation>
+               <xs:documentation>A type that contains resources for description, display-name, edit-hint, group and short-name attributes.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attributeGroup ref="c:validation-or-type-attributes"/>

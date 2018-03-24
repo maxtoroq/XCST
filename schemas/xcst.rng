@@ -454,7 +454,7 @@
          <ref name="type-or-member-attributes" docs:attrib-group=""/>
          <optional>
             <attribute name="resource-type">
-               <ann:documentation>A type that contains resources for display-name, short-name, description and place-holder attributes.</ann:documentation>
+               <ann:documentation>A type that contains resources for description, display-name, edit-hint, group and short-name attributes.</ann:documentation>
                <ref name="type_name"/>
             </attribute>
          </optional>
