@@ -4,9 +4,9 @@
    <c:import-namespace ns='System.Collections.Generic'/>
    <c:import-namespace ns='System.ComponentModel.DataAnnotations'/>
 
-   <c:import href='_ValResourceOverride.xcst'/>
+   <c:import href='_ValMessageOverrideResource.xcst'/>
 
-   <c:validation required-message='Required' validation-resource-type='Resources2'/>
+   <c:validation required-message='SUPER IMPORTANT!'/>
 
    <c:type name='foo'>
       <c:member name='bar' as='string' required='yes'/>
@@ -26,7 +26,7 @@
 
    <c:template name='expected'>
       <ol>
-         <li>ESSENTIAL!</li>
+         <li>SUPER IMPORTANT!</li>
       </ol>
    </c:template>
 

@@ -508,8 +508,7 @@
          )"/>
 
       <variable name="validation-message" select="$src:validation-attributes[node-name(.) eq $message-name]"/>
-
-      <variable name="validation-resource-type" select="$src:validation-attributes[self::attribute(validation-resource-type)]"/>
+      <variable name="validation-resource-type" select="$validation-message/../@validation-resource-type"/>
 
       <variable name="member-message" select="(ancestor-or-self::c:member/attribute()[node-name(.) eq $message-name])[last()]"/>
 

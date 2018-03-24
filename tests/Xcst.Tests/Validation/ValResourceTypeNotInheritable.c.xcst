@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:import-namespace ns='System.Collections.Generic'/>
+   <c:import-namespace ns='System.ComponentModel.DataAnnotations'/>
+   <c:import-namespace ns='System.Linq'/>
+
+   <c:import href='_ValResourceTypeNotInheritable.xcst'/>
+
+   <c:validation min-length-message='MinLength' validation-resource-type='Resources2'/>
+
+   <c:type name='foo'>
+      <c:member name='bar' as='string' required='yes' min-length='3'/>
+   </c:type>
+
+   <c:function name='Validate' as='IEnumerable&lt;ValidationResult>'>
+      <c:param name='value'/>
+
+      <c:script>
+         <![CDATA[
+         
+         var context = new ValidationContext(value, null, null);
+         var results = new List<ValidationResult>();
+         Validator.TryValidateObject(value, context, results, validateAllProperties: true);
+         
+         return results;
+         ]]>
+      </c:script>
+   </c:function>
+
+   <c:template name='c:initial-template'>
+      <c:variable name='results' value='Validate(new foo())'/>
+      <c:variable name='results2' value='Validate(new foo { bar = "a" })'/>
+      <ol>
+         <c:for-each name='r' in='results.Concat(results2)' expand-text='yes'>
+            <li>{r.ErrorMessage}</li>
+         </c:for-each>
+      </ol>
+   </c:template>
+
+   <c:template name='expected'>
+      <ol>
+         <li>SUPER IMPORTANT!</li>
+         <li>GIVE ME MORE!</li>
+      </ol>
+   </c:template>
+
+</c:module>

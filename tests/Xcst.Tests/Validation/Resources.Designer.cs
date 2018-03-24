@@ -61,6 +61,15 @@ namespace Xcst.Tests.Validation {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to TOO SHORT!.
+        /// </summary>
+        public static string MinLength {
+            get {
+                return ResourceManager.GetString("MinLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to SUPER IMPORTANT!.
         /// </summary>
         public static string Required {

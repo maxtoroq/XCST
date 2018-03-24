@@ -2470,11 +2470,11 @@
       <variable name="public" select="$meta/@visibility = ('public', 'final', 'abstract')"/>
 
       <if test="$meta/@visibility ne 'hidden'">
-         <variable name="validation-definitions" select="
+         <variable name="validation-declarations" select="
             for $m in reverse($modules) 
             return reverse($m/c:validation)"/>
          <variable name="validation-attributes" as="attribute()*">
-            <for-each-group select="for $v in $validation-definitions return $v/@*" group-by="node-name(.)">
+            <for-each-group select="for $v in $validation-declarations return $v/@*" group-by="node-name(.)">
                <sequence select="."/>
             </for-each-group>
          </variable>
