@@ -24,8 +24,16 @@ namespace Xcst.Runtime {
 
    public static class Grouping {
 
+      public static IEnumerable<IGrouping<object, object>> GroupBy(IEnumerable source, Func<object, object> keySelector) {
+         return Enumerable.GroupBy(source as IEnumerable<object> ?? source.Cast<object>(), keySelector);
+      }
+
       public static IEnumerable<IGrouping<TKey, TSource>> GroupBy<TSource, TKey>(IEnumerable<TSource> source, Func<TSource, TKey> keySelector) {
          return Enumerable.GroupBy(source, keySelector);
+      }
+
+      public static IEnumerable<IList<object>> GroupSize(IEnumerable source, int size) {
+         return GroupSize(source as IEnumerable<object> ?? source.Cast<object>(), size);
       }
 
       public static IEnumerable<IList<TSource>> GroupSize<TSource>(IEnumerable<TSource> source, int size) {

@@ -354,6 +354,7 @@
     <None Include="Grouping\ForEachGroup\for-each-group.foox.c.xcst" />
     <None Include="Grouping\ForEachGroup\for-each-group.group-size.zero.i.xcst" />
     <None Include="Grouping\ForEachGroup\for-each-group.group-size.negative.i.xcst" />
+    <None Include="Grouping\ForEachGroup\Enumerable.c.xcst" />
     <None Include="Grouping\ForEachGroup\GroupSizeSorted.c.xcst" />
     <None Include="Grouping\ForEachGroup\Sort\sort.foox.c.xcst" />
     <None Include="ProgramStructure\CombiningModules\import.foox.c.xcst" />

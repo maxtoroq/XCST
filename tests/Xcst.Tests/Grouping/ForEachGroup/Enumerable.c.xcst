@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:import-namespace ns='System.Collections'/>
+   <c:import-namespace ns='System.Linq'/>
+
+   <c:template name='c:initial-template' expand-text='yes'>
+      <div>
+         <ul>
+            <c:for-each-group name='group' in='(IEnumerable)"hello".ToCharArray()'>
+               <li>{group.Key}: {group.Count()}</li>
+            </c:for-each-group>
+         </ul>
+         <ul>
+            <c:for-each-group name='group' in='(IEnumerable)"hello".ToCharArray()'>
+               <c:sort value='g => g.Key'/>
+
+               <li>{group.Key}: {group.Count()}</li>
+            </c:for-each-group>
+         </ul>
+         <ul>
+            <c:for-each-group name='group' in='(IEnumerable)"hello".ToCharArray()' group-size='2'>
+               <li>{string.Join(", ", group)}</li>
+            </c:for-each-group>
+         </ul>
+         <ul>
+            <c:for-each-group name='group' in='(IEnumerable)"hello".ToCharArray()' group-size='2'>
+               <c:sort value='g => g.Count'/>
+
+               <li>{string.Join(", ", group)}</li>
+            </c:for-each-group>
+         </ul>
+      </div>
+   </c:template>
+
+   <c:template name='expected'>
+      <div>
+         <ul>
+            <li>h: 1</li>
+            <li>e: 1</li>
+            <li>l: 2</li>
+            <li>o: 1</li>
+         </ul>
+         <ul>
+            <li>e: 1</li>
+            <li>h: 1</li>
+            <li>l: 2</li>
+            <li>o: 1</li>
+         </ul>
+         <ul>
+            <li>h, e</li>
+            <li>l, l</li>
+            <li>o</li>
+         </ul>
+         <ul>
+            <li>o</li>
+            <li>h, e</li>
+            <li>l, l</li>
+         </ul>
+      </div>
+   </c:template>
+
+</c:module>
