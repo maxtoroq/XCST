@@ -971,7 +971,7 @@
          </xs:sequence>
          <xs:attribute name="delegate" use="required" type="c:expression">
             <xs:annotation>
-               <xs:documentation>The template delegate instance. Expression (System.Delegate).</xs:documentation>
+               <xs:documentation>The template delegate instance. Expression (Xcst.XcstDelegate&lt;TItem&gt; | System.Delegate).</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attribute name="with-params" type="c:expr-obj-dict">

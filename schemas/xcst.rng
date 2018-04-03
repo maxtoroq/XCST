@@ -1026,6 +1026,7 @@
          <attribute name="delegate">
             <ann:documentation>The template delegate instance.</ann:documentation>
             <ref name="expression">
+               <docs:expression-type name="Xcst.XcstDelegate&lt;TItem>"/>
                <docs:expression-type name="System.Delegate"/>
             </ref>
          </attribute>
