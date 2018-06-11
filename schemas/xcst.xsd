@@ -218,7 +218,6 @@
             <xs:element ref="c:variable"/>
             <xs:element ref="c:param"/>
             <xs:element ref="c:attribute-set"/>
-            <xs:element ref="c:type"/>
          </xs:choice>
          <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>

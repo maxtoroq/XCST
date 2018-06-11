@@ -322,7 +322,6 @@
                <ref name="variable"/>
                <ref name="param"/>
                <ref name="attribute-set"/>
-               <ref name="type"/>
             </choice>
          </zeroOrMore>
       </element>

@@ -374,13 +374,15 @@
       <if test="preceding-sibling::c:use-package[xcst:name-equals(@name, current()/@name)]">
          <sequence select="error((), 'Duplicate c:use-package declaration.', src:error-object(.))"/>
       </if>
-      <for-each select="c:override">
-         <call-template name="xcst:validate-attribs"/>
-         <call-template name="xcst:validate-children">
-            <with-param name="allowed" select="'template', 'function', 'attribute-set', 'param', 'variable', 'type'"/>
-         </call-template>
-         <apply-templates select="c:*" mode="#current"/>
-      </for-each>
+      <apply-templates select="c:override" mode="#current"/>
+   </template>
+
+   <template match="c:use-package/c:override" mode="xcst:package-manifest">
+      <call-template name="xcst:validate-attribs"/>
+      <call-template name="xcst:validate-children">
+         <with-param name="allowed" select="'template', 'function', 'attribute-set', 'param', 'variable'"/>
+      </call-template>
+      <apply-templates select="c:*" mode="#current"/>
    </template>
 
    <template match="c:param | c:variable" mode="xcst:package-manifest">
