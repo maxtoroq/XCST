@@ -106,7 +106,7 @@ function GenerateTestsForDirectory([IO.DirectoryInfo]$directory, [string]$relati
    
       WriteLine
       WriteLine "[TestClass]"
-      WriteLine "public class $($directory.Name)Tests {"
+      WriteLine "public partial class $($directory.Name)Tests {"
       PushIndent
 
       foreach ($file in $tests) { 

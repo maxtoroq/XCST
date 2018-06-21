@@ -78,7 +78,7 @@
    <template name="src:type-or-member-attribute-extra">
       <param name="result" as="node()*" required="yes"/>
 
-      <if test="not(empty($result))">
+      <if test="exists($result)">
          <variable name="current" select="."/>
          <for-each select="$result">
             <choose>
@@ -518,7 +518,7 @@
       <variable name="resource-type" select="($type-resource-type, $validation-resource-type[not($member-message)])[1]"/>
 
       <apply-templates select="$message" mode="src:validation-setter">
-         <with-param name="is-resource" select="not(empty($resource-type))"/>
+         <with-param name="is-resource" select="exists($resource-type)"/>
       </apply-templates>
       <apply-templates select="$resource-type" mode="src:validation-setter"/>
    </template>

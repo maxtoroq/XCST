@@ -30,43 +30,7 @@ namespace Xcst.Compiler {
       readonly Lazy<XsltExecutable> executable;
       readonly IDictionary<Uri, Func<Stream>> extensions = new Dictionary<Uri, Func<Stream>>();
 
-      Func<string, Type> _PackageTypeResolver = typeName => Type.GetType(typeName, throwOnError: false);
-      Func<string, Uri> _PackageLocationResolver;
-
       public bool EnableExtensions { get; set; }
-
-      public string PackagesLocation { get; set; }
-
-      public string PackageFileExtension { get; set; }
-
-      public Func<string, Type> PackageTypeResolver {
-         get { return _PackageTypeResolver; }
-         set {
-
-            if (value == null) {
-               throw new ArgumentNullException(nameof(value));
-            }
-
-            _PackageTypeResolver = value;
-         }
-      }
-
-      public Func<string, Uri> PackageLocationResolver {
-         get {
-            if (_PackageLocationResolver != null) {
-               return _PackageLocationResolver;
-            }
-            if (!String.IsNullOrEmpty(PackagesLocation)
-               && !String.IsNullOrEmpty(PackageFileExtension)) {
-
-               return FindNamedPackage;
-            }
-            return null;
-         }
-         set {
-            _PackageLocationResolver = value;
-         }
-      }
 
       public XcstCompilerFactory() {
 
@@ -78,8 +42,8 @@ namespace Xcst.Compiler {
          this.processor.RegisterExtensionFunction(new LineNumberFunction());
          this.processor.RegisterExtensionFunction(new LocalPathFunction());
          this.processor.RegisterExtensionFunction(new MakeRelativeUriFunction());
-         this.processor.RegisterExtensionFunction(new PackageLocationFunction(this));
-         this.processor.RegisterExtensionFunction(new PackageManifestFunction(this, this.processor));
+         this.processor.RegisterExtensionFunction(new PackageLocationFunction());
+         this.processor.RegisterExtensionFunction(new PackageManifestFunction(this.processor));
          this.processor.RegisterExtensionFunction(new QNameIdFunction());
 
          this.executable = new Lazy<XsltExecutable>(CreateCompilerExec);
@@ -182,43 +146,6 @@ namespace Xcst.Compiler {
          }
 
          return loader();
-      }
-
-      Uri FindNamedPackage(string packageName) {
-
-         string dir = this.PackagesLocation;
-         string search = "*." + this.PackageFileExtension;
-
-         if (!Directory.Exists(dir)) {
-            return null;
-         }
-
-         foreach (string path in Directory.EnumerateFiles(dir, search, SearchOption.AllDirectories)) {
-
-            if (Path.GetFileNameWithoutExtension(path)[0] == '_') {
-               continue;
-            }
-
-            using (var reader = XmlReader.Create(path)) {
-
-               while (reader.Read()) {
-
-                  if (reader.NodeType == XmlNodeType.Element) {
-
-                     if (reader.LocalName == "package"
-                        && reader.NamespaceURI == XmlNamespaces.Xcst
-                        && reader.GetAttribute("name") == packageName) {
-
-                        return new Uri(path);
-                     }
-
-                     break;
-                  }
-               }
-            }
-         }
-
-         return null;
       }
 
       class CompilerResolver : XmlResolver {

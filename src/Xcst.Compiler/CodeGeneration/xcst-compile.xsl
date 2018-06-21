@@ -33,6 +33,12 @@
    <param name="src:use-package-base" as="xs:string?"/>
    <param name="src:manifest-only" select="false()" as="xs:boolean"/>
 
+   <param name="src:package-type-resolver" as="item()?"/>
+   <param name="src:package-location-resolver" as="item()?"/>
+   <param name="src:packages-location" as="xs:string?"/>
+   <param name="src:package-file-extension" as="xs:string?"/>
+   <param name="src:module-resolver" as="item()?"/>
+
    <variable name="src:package-interface" select="src:package-model-type('IXcstPackage')"/>
    <variable name="src:context-field" as="element()">
       <src:context type="{src:package-model-type('ExecutionContext')}">
@@ -56,6 +62,7 @@
       <param name="named-package" select="$src:named-package"/>
       <param name="manifest-only" select="$src:manifest-only"/>
 
+      <variable name="package-uri" select="document-uri(root())"/>
       <variable name="package-name" select="self::c:package/@name/xcst:name(.)"/>
       <variable name="package-name-parts" select="tokenize($package-name, '\.')"/>
       <variable name="language" select="@language/xcst:non-string(.)"/>
@@ -122,20 +129,30 @@
 
       <variable name="used-packages" as="element()*">
          <for-each-group select="for $m in $modules return $m/c:use-package" group-by="src:resolve-package-name(., $ns)">
-            <variable name="package-name" select="current-grouping-key()"/>
+            <variable name="used-package-name" select="current-grouping-key()"/>
             <variable name="manifest" as="element()">
-               <variable name="man" select="src:package-manifest($package-name, src:error-object(.))"/>
+               <variable name="man" select="src:package-manifest(
+                  $used-package-name,
+                  $src:package-type-resolver,
+                  src:error-object(.))"/>
                <choose>
                   <when test="$man">
                      <sequence select="$man/xcst:package-manifest"/>
                   </when>
                   <otherwise>
-                     <variable name="package-uri" select="src:package-location($package-name)"/>
-                     <if test="not($package-uri)">
-                        <sequence select="error(xs:QName('err:XTSE3000'), concat('Cannot find package ''', $package-name, '''.'), src:error-object(.))"/>
+                     <variable name="used-package-uri" select="src:package-location(
+                        $used-package-name,
+                        $src:package-location-resolver,
+                        $package-uri,
+                        $src:packages-location,
+                        $src:package-file-extension)"/>
+                     <if test="not($used-package-uri)">
+                        <sequence select="error(xs:QName('err:XTSE3000'), concat('Cannot find package ''', $used-package-name, '''.'), src:error-object(.))"/>
                      </if>
                      <variable name="result">
-                        <apply-templates select="doc(string($package-uri))/c:package" mode="src:main">
+                        <apply-templates select="doc(string($used-package-uri))/c:package" mode="src:main">
+                           <with-param name="namespace" select="()"/>
+                           <with-param name="class" select="()"/>
                            <with-param name="named-package" select="true()"/>
                            <with-param name="manifest-only" select="true()"/>
                         </apply-templates>
@@ -149,7 +166,7 @@
             </variable>
             <xcst:package-manifest package-id="{generate-id($manifest)}">
                <sequence select="$manifest/@*"/>
-               <sequence select="$manifest/xcst:*[not(@visibility = ('private', 'hidden'))]"/>
+               <sequence select="$manifest/xcst:*[@visibility ne 'hidden']"/>
             </xcst:package-manifest>
          </for-each-group>
       </variable>
@@ -249,7 +266,7 @@
 
       <variable name="href" select="resolve-uri(xcst:uri(@href), base-uri())"/>
 
-      <variable name="result" select="src:doc-with-uris($href, src:error-object(.))"/>
+      <variable name="result" select="src:doc-with-uris($href, src:error-object(.), $src:module-resolver)"/>
       <variable name="imported" select="$result[1]"/>
 
       <if test="some $m in $module-docs satisfies $m is $imported">
@@ -805,7 +822,9 @@
       </copy>
    </template>
 
-   <template match="xcst:package-manifest/xcst:*" mode="xcst:accepted-component">
+   <template match="xcst:package-manifest/xcst:*[@visibility eq 'private']" mode="xcst:accepted-component"/>
+
+   <template match="xcst:package-manifest/xcst:*[@visibility ne 'private']" mode="xcst:accepted-component">
       <param name="modules" tunnel="yes"/>
       <param name="local-components" tunnel="yes"/>
 
@@ -857,12 +876,12 @@
             </if>
          </for-each>
 
-         <if test="not(empty($output-name)) and xcst:is-reserved-namespace(namespace-uri-from-QName($output-name))">
+         <if test="exists($output-name) and xcst:is-reserved-namespace(namespace-uri-from-QName($output-name))">
             <sequence select="error(xs:QName('err:XTSE0080'), concat('Namespace prefix ''', prefix-from-QName($output-name), ''' refers to a reserved namespace.'), src:error-object(.))"/>
          </if>
 
          <xcst:output member-name="{src:template-method-name(., $output-name, 'output', false())}" declaration-ids="{current-group()/generate-id(.)}">
-            <if test="not(empty($output-name))">
+            <if test="exists($output-name)">
                <attribute name="name" select="xcst:uri-qualified-name($output-name)"/>
             </if>
          </xcst:output>
@@ -933,10 +952,10 @@
       <param name="deterministic" as="xs:boolean"/>
 
       <sequence select="concat(
-         if (not(empty($qname))) then concat(replace(string($qname), '[^A-Za-z0-9]', '_'), '_') else (),
+         if (exists($qname)) then concat(replace(string($qname), '[^A-Za-z0-9]', '_'), '_') else (),
          $component-kind,
          '_',
-         if ($deterministic and not(empty($qname))) then replace(string(src:qname-id($qname)), '-', '_') else generate-id($declaration)
+         if ($deterministic and exists($qname)) then replace(string(src:qname-id($qname)), '-', '_') else generate-id($declaration)
       )"/>
    </function>
 
@@ -1256,7 +1275,7 @@
    <function name="xcst:typed-params" as="xs:boolean">
       <param name="meta" as="element(xcst:template)"/>
 
-      <sequence select="not(empty($meta/xcst:param[not(@tunnel/xs:boolean(.))]))"/>
+      <sequence select="exists($meta/xcst:param[not(@tunnel/xs:boolean(.))])"/>
    </function>
 
    <function name="src:params-type" as="xs:string">
@@ -1454,7 +1473,7 @@
       <variable name="overridden" select="src:overridden-components(., $package-manifest)"/>
       <variable name="module-uris" select="distinct-values(($accepted-public, $overridden)/@declaring-module-uri)"/>
 
-      <for-each select="if (not(empty($module-uris))) then $module-uris else ''">
+      <for-each select="if (exists($module-uris)) then $module-uris else ''">
          <variable name="module-uri" select="."/>
          <value-of select="$src:new-line"/>
          <call-template name="src:new-line-indented"/>
@@ -1462,7 +1481,9 @@
          <value-of select="$namespace"/>
          <call-template name="src:open-brace"/>
          <if test="$module-uri">
-            <apply-templates select="$accepted-public[self::xcst:type]" mode="src:import-namespace">
+            <apply-templates select="
+               $meta/xcst:type[@accepted/xs:boolean(.) and @visibility ne 'hidden'],
+               $accepted-public[self::xcst:type]" mode="src:import-namespace">
                <with-param name="indent" select="$indent + 1" tunnel="yes"/>
             </apply-templates>
          </if>
@@ -2011,7 +2032,7 @@
             <variable name="custom" as="xs:string*">
                <apply-templates select="." mode="src:base-types"/>
             </variable>
-            <sequence select="if (not(empty($custom))) then $custom else $src:base-types"/>
+            <sequence select="if (exists($custom)) then $custom else $src:base-types"/>
          </variable>
          <value-of select="$base-types, $src:package-interface" separator=", "/>
       </if>
@@ -2025,7 +2046,7 @@
          </for-each>
       </variable>
 
-      <variable name="disable-CS0414" select="not($principal-module) and not(empty($global-vars))"/>
+      <variable name="disable-CS0414" select="not($principal-module) and exists($global-vars)"/>
 
       <if test="$disable-CS0414">
          <call-template name="src:new-line-indented">

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -17,9 +18,7 @@ namespace Xcst.Tests {
    static class TestsHelper {
 
       static readonly XcstCompilerFactory CompilerFactory = new XcstCompilerFactory {
-         EnableExtensions = true,
-         PackageTypeResolver = (typeName) => Assembly.GetExecutingAssembly()
-            .GetType(typeName)
+         EnableExtensions = true
       };
 
       static readonly QualifiedName InitialName = new QualifiedName("initial-template", "http://maxtoroq.github.io/XCST");
@@ -51,7 +50,7 @@ namespace Xcst.Tests {
 
          try {
 
-            Type packageType = CompileCode(xcstResult, packageName, packageUri);
+            Type packageType = CompileCode(xcstResult.CompilationUnits, packageName, packageUri);
 
             if (!correct) {
                return;
@@ -130,12 +129,20 @@ namespace Xcst.Tests {
          }
       }
 
-      static Tuple<CompileResult, string> GenerateCode(Uri packageUri, MethodBase testMethod) {
+      public static XcstCompiler CreateCompiler() {
 
          XcstCompiler compiler = CompilerFactory.CreateCompiler();
+         compiler.UseLineDirective = true;
+         compiler.PackageTypeResolver = n => Assembly.GetExecutingAssembly().GetType(n);
+
+         return compiler;
+      }
+
+      static Tuple<CompileResult, string> GenerateCode(Uri packageUri, MethodBase testMethod) {
+
+         XcstCompiler compiler = CreateCompiler();
          compiler.TargetNamespace = testMethod.DeclaringType.Namespace;
          compiler.TargetClass = testMethod.Name;
-         compiler.UseLineDirective = true;
          compiler.UsePackageBase = testMethod.DeclaringType.Namespace;
          compiler.SetTargetBaseTypes(typeof(TestBase));
 
@@ -144,11 +151,11 @@ namespace Xcst.Tests {
          return Tuple.Create(result, compiler.TargetNamespace + "." + compiler.TargetClass);
       }
 
-      static Type CompileCode(CompileResult result, string packageName, Uri packageUri) {
+      public static Type CompileCode(IEnumerable<string> compilationUnits, string packageName, Uri packageUri) {
 
          var parseOptions = new CSharpParseOptions(preprocessorSymbols: new[] { "DEBUG", "TRACE" });
 
-         SyntaxTree[] syntaxTrees = result.CompilationUnits
+         SyntaxTree[] syntaxTrees = compilationUnits
             .Select(c => CSharpSyntaxTree.ParseText(c, parseOptions, path: packageUri.LocalPath, encoding: Encoding.UTF8))
             .ToArray();
 

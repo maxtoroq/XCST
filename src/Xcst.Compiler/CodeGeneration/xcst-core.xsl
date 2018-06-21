@@ -2227,7 +2227,7 @@
          </apply-templates>
       </variable>
       <choose>
-         <when test="not(empty($result))">
+         <when test="exists($result)">
             <variable name="instruction" select="."/>
             <for-each select="$result">
                <choose>
@@ -2454,7 +2454,7 @@
       <choose>
          <when test="@format">
             <variable name="format" select="xcst:EQName(@format, (), false(), true())"/>
-            <if test="not(empty($format)) and not($package-manifest/xcst:output[xcst:EQName(@name) eq $format])">
+            <if test="exists($format) and not($package-manifest/xcst:output[xcst:EQName(@name) eq $format])">
                <sequence select="error(xs:QName('err:XTDE1460'), concat('No output definition exists named ''', $format, '''.'), src:error-object(.))"/>
             </if>
             <value-of select="src:QName($format, src:expand-attribute(@format))"/>
@@ -2555,7 +2555,7 @@
       <text> = </text>
       <variable name="string" select="xcst:non-string(.)"/>
       <variable name="qname" select="xcst:EQName(., (), false(), not(parent::c:output))"/>
-      <if test="not(empty($qname)) and not(namespace-uri-from-QName($qname)) and not(local-name-from-QName($qname) = ('xml', 'html', 'xhtml', 'text'))">
+      <if test="exists($qname) and not(namespace-uri-from-QName($qname)) and not(local-name-from-QName($qname) = ('xml', 'html', 'xhtml', 'text'))">
          <sequence select="error(xs:QName('err:XTSE1570'), concat('Invalid value for ''', name(), '''. Must be one of (xml|html|xhtml|text).'), src:error-object(.))"/>
       </if>
       <value-of select="src:QName($qname, src:expand-attribute(.))"/>
@@ -2713,7 +2713,7 @@
       <if test="not($output)">
          <sequence select="error((), 'Output required.', src:error-object(.))"/>
       </if>
-      <if test="not(empty($kind)) and not($output instance of element() and $output/@kind = $kind)">
+      <if test="exists($kind) and not($output instance of element() and $output/@kind = $kind)">
          <sequence select="error((), 'Incompatible output.', src:error-object(.))"/>
       </if>
    </template>
@@ -2955,7 +2955,7 @@
 
       <variable name="value" select="xcst:integer($node, $avt)"/>
       <sequence select="
-         if (not(empty($value)) and $value le 0) then
+         if (exists($value) and $value le 0) then
             error(xs:QName('err:XTSE0020'), concat('Value of ''', name($node), ''' must be a positive integer.'), src:error-object($node))
          else
             $value
@@ -3072,7 +3072,7 @@
       <variable name="transform" select="$el/ancestor-or-self::*[(self::c:* and @transform-text) or (not(self::c:*) and @c:transform-text)][1]/(if (self::c:*) then @transform-text else @c:transform-text)"/>
       <variable name="value" select="$transform/xcst:non-string(.)"/>
 
-      <if test="not(empty($value)) and not($value = ('none', 'normalize-space', 'trim'))">
+      <if test="exists($value) and not($value = ('none', 'normalize-space', 'trim'))">
          <sequence select="error(xs:QName('err:XTSE0020'), concat('Invalid value for ''', name($transform), '''. Must be one of (none|normalize-space|trim).'), src:error-object($transform))"/>
       </if>
 
@@ -3139,7 +3139,7 @@
       <param name="default" as="xs:boolean"/>
       <param name="avt" as="xs:boolean"/>
 
-      <if test="not(empty($node))">
+      <if test="exists($node)">
          <variable name="string" select="($value, xcst:non-string($node))[1]"/>
          <variable name="qname-pattern" select="'([^:\{\}]+:)?[^:\{\}]+'"/>
          <choose>
@@ -3785,7 +3785,7 @@
          <when test="$n/ancestor::*[@xml:base]">
             <variable name="base-uri" select="base-uri($n)"/>
             <choose>
-               <when test="not(empty($uri))">
+               <when test="exists($uri)">
                   <sequence select="concat(src:fully-qualified-helper('DataType'), '.Uri(', src:uri-string(resolve-uri($uri, $base-uri)), ')')"/>
                </when>
                <otherwise>

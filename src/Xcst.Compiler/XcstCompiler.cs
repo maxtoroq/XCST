@@ -46,6 +46,16 @@ namespace Xcst.Compiler {
 
       public string UsePackageBase { get; set; }
 
+      public Func<string, Type> PackageTypeResolver { get; set; }
+
+      public Func<string, Uri> PackageLocationResolver { get; set; }
+
+      public string PackagesLocation { get; set; }
+
+      public string PackageFileExtension { get; set; }
+
+      public XmlResolver ModuleResolver { get; set; }
+
       internal XcstCompiler(Func<XsltExecutable> compilerExecFn, Processor processor) {
 
          if (compilerExecFn == null) throw new ArgumentNullException(nameof(compilerExecFn));
@@ -77,10 +87,18 @@ namespace Xcst.Compiler {
       public CompileResult Compile(Uri file) {
 
          if (file == null) throw new ArgumentNullException(nameof(file));
-         if (!file.IsAbsoluteUri) throw new ArgumentException("file must be an absolute URI.", nameof(file));
-         if (!file.IsFile) throw new ArgumentException("file must be a file URI", nameof(file));
 
-         using (var source = File.OpenRead(file.LocalPath)) {
+         XmlResolver resolver = GetModuleResolverOrDefault(this.ModuleResolver);
+
+         if (!file.IsAbsoluteUri) {
+            file = resolver.ResolveUri(null, file.OriginalString);
+         }
+
+         if (!file.IsAbsoluteUri) {
+            throw new ArgumentException("file must be an absolute URI.", nameof(file));
+         }
+
+         using (var source = (Stream)resolver.GetEntity(file, null, typeof(Stream))) {
             return Compile(source, file);
          }
       }
@@ -99,10 +117,11 @@ namespace Xcst.Compiler {
 
       CompileResult Compile(Func<DocumentBuilder, XdmNode> buildFn, Uri baseUri = null) {
 
-         var resolver = new LoggingResolver();
+         var moduleResolver = GetModuleResolverOrDefault(this.ModuleResolver);
+         var loggingResolver = new LoggingResolver(moduleResolver);
 
          DocumentBuilder docBuilder = this.processor.NewDocumentBuilder();
-         docBuilder.XmlResolver = resolver;
+         docBuilder.XmlResolver = loggingResolver;
 
          if (baseUri != null) {
             docBuilder.BaseUri = baseUri;
@@ -132,6 +151,7 @@ namespace Xcst.Compiler {
          }
 
          XsltTransformer compiler = GetCompiler(moduleDoc);
+         compiler.InputXmlResolver = moduleResolver;
 
          var destination = new XdmDestination();
 
@@ -179,7 +199,7 @@ namespace Xcst.Compiler {
                   .Select(n => n.StringValue)
                   .ToArray(),
             Dependencies =
-               new HashSet<Uri>(resolver.ResolvedUris
+               new HashSet<Uri>(loggingResolver.ResolvedUris
                   .Concat(((IXdmEnumerator)docEl.EnumerateAxis(XdmAxis.Child, compiled.@ref))
                      .AsNodes()
                      .Select(n => new Uri(n.GetAttributeValue(compiled.href), UriKind.Absolute))
@@ -237,7 +257,50 @@ namespace Xcst.Compiler {
             compiler.SetParameter(CompilerQName("use-package-base"), this.UsePackageBase.ToXdmItem());
          }
 
+         if (this.PackageTypeResolver != null) {
+            compiler.SetParameter(CompilerQName("package-type-resolver"), WrapExternalObject(this.PackageTypeResolver));
+         }
+
+         if (this.PackageLocationResolver != null) {
+            compiler.SetParameter(CompilerQName("package-location-resolver"), WrapExternalObject(this.PackageLocationResolver));
+         }
+
+         if (this.PackagesLocation != null) {
+            compiler.SetParameter(CompilerQName("packages-location"), this.PackagesLocation.ToXdmItem());
+         }
+
+         if (this.PackageFileExtension != null) {
+            compiler.SetParameter(CompilerQName("package-file-extension"), this.PackageFileExtension.ToXdmItem());
+         }
+
+         if (this.ModuleResolver != null) {
+            compiler.SetParameter(CompilerQName("module-resolver"), WrapExternalObject(this.ModuleResolver));
+         }
+
          return compiler;
+      }
+
+      static XdmValue WrapExternalObject(object obj) {
+         return new XdmExternalObjectValue(obj);
+      }
+
+      internal static T UnwrapExternalObject<T>(XdmItem item) {
+
+         object obj = ((XdmExternalObjectValue)item).GetExternalObject();
+
+         // See <https://saxonica.plan.io/issues/3359>
+
+         var objValue = obj as net.sf.saxon.value.ObjectValue;
+
+         if (objValue != null) {
+            obj = objValue.getObject();
+         }
+
+         return (T)obj;
+      }
+
+      internal static XmlResolver GetModuleResolverOrDefault(XmlResolver moduleResolver) {
+         return moduleResolver ?? new XmlUrlResolver();
       }
 
       internal static QName CompilerQName(string local) {

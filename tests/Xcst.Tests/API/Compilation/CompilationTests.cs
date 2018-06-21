@@ -14,8 +14,7 @@ namespace Xcst.Tests.API.Compilation {
       [TestMethod, TestCategory(TestCategory)]
       public void CompileResult_Lists_Public_Templates_Only() {
 
-         var compilerFactory = new XcstCompilerFactory();
-         var compiler = compilerFactory.CreateCompiler();
+         var compiler = TestsHelper.CreateCompiler();
          compiler.TargetClass = "FooPackage";
          compiler.TargetNamespace = typeof(CompilationTests).Namespace;
 

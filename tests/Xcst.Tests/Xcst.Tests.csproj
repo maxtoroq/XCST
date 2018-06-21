@@ -83,6 +83,7 @@
   <ItemGroup>
     <Compile Include="API\Compilation\CompilationTests.cs" />
     <Compile Include="API\Evaluation\EvaluationTests.cs" />
+    <Compile Include="ProgramStructure\Packages\AcceptingComponents\AcceptingComponentsTests.cs" />
     <Compile Include="TestsHelper.cs" />
     <Compile Include="Tests.generated.cs" />
     <Compile Include="Types\Member\Resources.Designer.cs">
@@ -1030,13 +1031,13 @@
     <None Include="ProgramStructure\Modules\module.language.type.i.xcst" />
     <None Include="ProgramStructure\Modules\module.language.req.i.xcst" />
     <None Include="ProgramStructure\Packages\OverridingComponents\Override\override.foo.i.xcst" />
-    <None Include="ProgramStructure\Packages\OverridingComponents\Override\override.pxcst" />
+    <None Include="ProgramStructure\Packages\OverridingComponents\Override\Override.pxcst" />
     <None Include="ProgramStructure\Packages\Package\package.language.req.i.xcst" />
     <None Include="ProgramStructure\Packages\Package\package.language.type.i.xcst" />
     <None Include="ProgramStructure\Packages\Package\package.foo.i.xcst" />
     <None Include="ProgramStructure\Packages\Dependencies\use-package.foo.i.xcst" />
     <None Include="ProgramStructure\Packages\Dependencies\use-package.name.type.i.xcst" />
-    <None Include="ProgramStructure\Packages\Dependencies\use-package.pxcst" />
+    <None Include="ProgramStructure\Packages\Dependencies\UsePackage.pxcst" />
     <None Include="ProgramStructure\Packages\Dependencies\use-package.name.req.i.xcst" />
     <None Include="ProgramStructure\ImportNamespace\import-namespace.alias.type.i.xcst" />
     <None Include="ProgramStructure\ImportNamespace\import-namespace.foo.i.xcst" />

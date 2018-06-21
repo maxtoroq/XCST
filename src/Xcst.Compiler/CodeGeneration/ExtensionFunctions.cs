@@ -155,7 +155,8 @@ namespace Xcst.Compiler.CodeGeneration {
 
       public override XdmSequenceType[] ArgumentTypes { get; } = {
          new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_ANYURI), ' '),
-         new XdmSequenceType(XdmAnyItemType.Instance, '+')
+         new XdmSequenceType(XdmAnyItemType.Instance, '+'),
+         new XdmSequenceType(XdmAnyItemType.Instance, '?')
       };
 
       public override int MinimumNumberOfArguments => ArgumentTypes.Length;
@@ -176,10 +177,14 @@ namespace Xcst.Compiler.CodeGeneration {
 
       class FunctionCall : ExtensionFunctionCall {
 
-         readonly Processor processor;
+         Processor processor;
 
          public FunctionCall(Processor processor) {
             this.processor = processor;
+         }
+
+         public override void CopyLocalData(ExtensionFunctionCall destination) {
+            ((FunctionCall)destination).processor = this.processor;
          }
 
          public override IXdmEnumerator Call(IXdmEnumerator[] arguments, DynamicContext context) {
@@ -191,13 +196,17 @@ namespace Xcst.Compiler.CodeGeneration {
             string moduleUri = errorData.Item1;
             int lineNumber = errorData.Item2.GetValueOrDefault();
 
+            XmlResolver moduleResolver = arguments[2].AsItems()
+               .Select(i => UnwrapExternalObject<XmlResolver>(i))
+               .SingleOrDefault();
+
             Uri uri = (Uri)value.Value;
 
             if (!uri.IsAbsoluteUri) {
                throw new InvalidOperationException("Supplied URI must be absolute.");
             }
 
-            var resolver = new LoggingResolver();
+            var resolver = new LoggingResolver(GetModuleResolverOrDefault(moduleResolver));
 
             DocumentBuilder docb = this.processor.NewDocumentBuilder();
             docb.XmlResolver = resolver;
@@ -241,13 +250,13 @@ namespace Xcst.Compiler.CodeGeneration {
 
    class PackageManifestFunction : ExtensionFunctionDefinition {
 
-      readonly XcstCompilerFactory compilerFactory;
       readonly Processor processor;
 
       public override QName FunctionName { get; } = CompilerQName("package-manifest");
 
       public override XdmSequenceType[] ArgumentTypes { get; } = {
          new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_STRING), ' '),
+         new XdmSequenceType(XdmAnyItemType.Instance, '?'),
          new XdmSequenceType(XdmAnyItemType.Instance, '+')
       };
 
@@ -255,13 +264,12 @@ namespace Xcst.Compiler.CodeGeneration {
 
       public override int MaximumNumberOfArguments => MinimumNumberOfArguments;
 
-      public PackageManifestFunction(XcstCompilerFactory compilerFactory, Processor processor) {
-         this.compilerFactory = compilerFactory;
+      public PackageManifestFunction(Processor processor) {
          this.processor = processor;
       }
 
       public override ExtensionFunctionCall MakeFunctionCall() {
-         return new FunctionCall(this.compilerFactory, this.processor);
+         return new FunctionCall(this.processor);
       }
 
       public override XdmSequenceType ResultType(XdmSequenceType[] ArgumentTypes) {
@@ -270,19 +278,28 @@ namespace Xcst.Compiler.CodeGeneration {
 
       class FunctionCall : ExtensionFunctionCall {
 
-         readonly XcstCompilerFactory compilerFactory;
-         readonly Processor processor;
+         Processor processor;
 
-         public FunctionCall(XcstCompilerFactory compilerFactory, Processor processor) {
-            this.compilerFactory = compilerFactory;
+         public FunctionCall(Processor processor) {
             this.processor = processor;
+         }
+
+         public override void CopyLocalData(ExtensionFunctionCall destination) {
+
+            var call = (FunctionCall)destination;
+            call.processor = this.processor;
          }
 
          public override IXdmEnumerator Call(IXdmEnumerator[] arguments, DynamicContext context) {
 
             string typeName = arguments[0].AsAtomicValues().Single().ToString();
 
-            XdmValue errorObject = new XdmValue(arguments[1].AsItems());
+            Func<string, Type> packageTypeResolver = arguments[1].AsItems()
+               .Select(i => UnwrapExternalObject<Func<string, Type>>(i))
+               .SingleOrDefault()
+               ?? new Func<string, Type>(n => Type.GetType(n, throwOnError: false));
+
+            XdmValue errorObject = new XdmValue(arguments[2].AsItems());
             var errorData = ModuleUriAndLineNumberFromErrorObject(errorObject);
             string moduleUri = errorData.Item1;
             int lineNumber = errorData.Item2.GetValueOrDefault();
@@ -291,7 +308,7 @@ namespace Xcst.Compiler.CodeGeneration {
             var packageResolveError = new QualifiedName("XTSE3000", XmlNamespaces.XcstErrors);
 
             try {
-               packageType = this.compilerFactory.PackageTypeResolver(typeName);
+               packageType = packageTypeResolver(typeName);
 
             } catch (Exception ex) {
 
@@ -336,24 +353,22 @@ namespace Xcst.Compiler.CodeGeneration {
 
    class PackageLocationFunction : ExtensionFunctionDefinition {
 
-      readonly XcstCompilerFactory compilerFactory;
-
       public override QName FunctionName { get; } = CompilerQName("package-location");
 
       public override XdmSequenceType[] ArgumentTypes { get; } = {
-         new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_STRING), ' ')
+         new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_STRING), ' '),
+         new XdmSequenceType(XdmAnyItemType.Instance, '?'),
+         new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_ANYURI), '?'),
+         new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_STRING), '?'),
+         new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_STRING), '?')
       };
 
       public override int MinimumNumberOfArguments => ArgumentTypes.Length;
 
       public override int MaximumNumberOfArguments => MinimumNumberOfArguments;
 
-      public PackageLocationFunction(XcstCompilerFactory compilerFactory) {
-         this.compilerFactory = compilerFactory;
-      }
-
       public override ExtensionFunctionCall MakeFunctionCall() {
-         return new FunctionCall(this.compilerFactory);
+         return new FunctionCall();
       }
 
       public override XdmSequenceType ResultType(XdmSequenceType[] ArgumentTypes) {
@@ -362,21 +377,91 @@ namespace Xcst.Compiler.CodeGeneration {
 
       class FunctionCall : ExtensionFunctionCall {
 
-         readonly XcstCompilerFactory compilerFactory;
-
-         public FunctionCall(XcstCompilerFactory compilerFactory) {
-            this.compilerFactory = compilerFactory;
-         }
-
          public override IXdmEnumerator Call(IXdmEnumerator[] arguments, DynamicContext context) {
 
             string packageName = arguments[0].AsAtomicValues().Single().ToString();
 
-            Uri packageLocation = this.compilerFactory.PackageLocationResolver?.Invoke(packageName);
+            Func<string, Uri> packageLocationResolver = arguments[1].AsItems()
+               .Select(i => UnwrapExternalObject<Func<string, Uri>>(i))
+               .SingleOrDefault();
 
-            return packageLocation?.ToXdmAtomicValue()
+            Uri/*?*/ usingPackageUri = arguments[2].AsAtomicValues()
+               .Select(i => i.Value as Uri ?? new Uri(i.ToString(), UriKind.RelativeOrAbsolute))
+               .SingleOrDefault();
+
+            string/*?*/ packagesLocation = arguments[3].AsAtomicValues()
+               .SingleOrDefault()?.ToString();
+
+            string/*?*/ packageFileExtension = arguments[4].AsAtomicValues()
+               .SingleOrDefault()?.ToString();
+
+            if (packagesLocation == null
+               && usingPackageUri?.IsFile == true) {
+
+               packagesLocation = Path.GetDirectoryName(usingPackageUri.LocalPath);
+            }
+
+            Uri packageUri = null;
+
+            if (packageLocationResolver != null) {
+               packageUri = packageLocationResolver(packageName);
+
+            } else if (!String.IsNullOrEmpty(packagesLocation)
+               && !String.IsNullOrEmpty(packageFileExtension)) {
+
+               packageUri = FindNamedPackage(packageName, packagesLocation, packageFileExtension);
+            }
+
+            return packageUri?.ToXdmAtomicValue()
                .GetXdmEnumerator()
                ?? EmptyEnumerator.INSTANCE;
+         }
+
+         static Uri FindNamedPackage(string packageName, string packagesLocation, string fileExtension) {
+
+            if (packageName == null) throw new ArgumentNullException(nameof(packageName));
+
+            string dir = packagesLocation;
+            string search = "*." + fileExtension;
+
+            if (!Directory.Exists(dir)) {
+               return null;
+            }
+
+            foreach (string path in Directory.EnumerateFiles(dir, search, SearchOption.AllDirectories)) {
+
+               if (Path.GetFileNameWithoutExtension(path)[0] == '_') {
+                  continue;
+               }
+
+               var readerSettings = new XmlReaderSettings {
+                  IgnoreComments = true,
+                  IgnoreProcessingInstructions = true,
+                  IgnoreWhitespace = true,
+                  ValidationType = ValidationType.None,
+                  DtdProcessing = DtdProcessing.Ignore
+               };
+
+               using (var reader = XmlReader.Create(path, readerSettings)) {
+
+                  while (reader.Read()) {
+
+                     if (reader.NodeType == XmlNodeType.Element) {
+
+                        if (reader.LocalName == "package"
+                           && reader.NamespaceURI == XmlNamespaces.Xcst
+                           && reader.GetAttribute("name") == packageName) {
+
+                           return new Uri(path, UriKind.Absolute);
+                        }
+
+                        break;
+                     }
+                  }
+               }
+            }
+
+            return null;
          }
       }
    }
