@@ -11,11 +11,13 @@
       </c:variable>
       <foo>
          <c:copy-of value='doc'/>
+         <c:copy-of value='(object)doc'/>
       </foo>
    </c:template>
 
    <c:template name='expected'>
       <foo>
+         <bar of='5'>baz</bar>
          <bar of='5'>baz</bar>
       </foo>
    </c:template>

@@ -13,11 +13,13 @@
       <c:variable name='obj' value='new SqlXml(output)'/>
       <foo>
          <c:copy-of value='obj'/>
+         <c:copy-of value='(object)obj'/>
       </foo>
    </c:template>
 
    <c:template name='expected'>
       <foo>
+         <bar of='5'>baz</bar>
          <bar of='5'>baz</bar>
       </foo>
    </c:template>

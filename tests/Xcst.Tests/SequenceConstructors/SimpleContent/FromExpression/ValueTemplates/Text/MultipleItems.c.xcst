@@ -2,11 +2,17 @@
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
    <c:template name='c:initial-template' expand-text='yes'>
-      <foo>{new[] { "1", "2", null }}</foo>
+      <foo>
+         <bar>{new[] { "1", "2", null }}</bar>
+         <baz>{(object)new[] { "1", "2", null }}</baz>
+      </foo>
    </c:template>
 
    <c:template name='expected'>
-      <foo>1 2</foo>
+      <foo>
+         <bar>1 2</bar>
+         <baz>1 2</baz>
+      </foo>
    </c:template>
 
 </c:module>

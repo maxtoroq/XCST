@@ -5,11 +5,20 @@
       <c:variable name='a'>
          <!-- c:script to avoid expression -->
          <c:script/>
+         <!-- reference type array -->
          <c:object value='new[] { "1", "2" }'/>
+         <!-- array as object -->
+         <c:object value='(object)new[] { "3", "4" }'/>
+         <!-- value type array -->
+         <c:object value='new[] { 5, 6 }'/>
       </c:variable>
-      <c:void value='Assert.AreEqual(2, a.Length)'/>
+      <c:void value='Assert.AreEqual(5, a.Length)'/>
       <c:void value='Assert.AreEqual("1", a[0])'/>
       <c:void value='Assert.AreEqual("2", a[1])'/>
+      <c:void value='Assert.AreEqual("3", ((string[])a[2])[0])'/>
+      <c:void value='Assert.AreEqual("4", ((string[])a[2])[1])'/>
+      <c:void value='Assert.AreEqual(5, a[3])'/>
+      <c:void value='Assert.AreEqual(6, a[4])'/>
    </c:template>
 
 </c:module>

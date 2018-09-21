@@ -11,12 +11,20 @@
          </c:array>
       </c:variable>
       <foo>
-         <c:copy-of value='arr'/>
+         <bar>
+            <c:copy-of value='arr'/>
+         </bar>
+         <baz>
+            <c:copy-of value='(object)arr'/>
+         </baz>
       </foo>
    </c:template>
 
    <c:template name='expected'>
-      <foo>[1,2,"3"]</foo>
+      <foo>
+         <bar>[1,2,"3"]</bar>
+         <baz>[1,2,"3"]</baz>
+      </foo>
    </c:template>
 
 </c:module>

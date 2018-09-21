@@ -7,15 +7,31 @@
 
    <c:template name='c:initial-template'>
       <foo>
-         <c:value-of>
-            <c:object value='jObj'/>
-         </c:value-of>
+         <bar>
+            <c:value-of>
+               <c:object value='jObj'/>
+            </c:value-of>
+         </bar>
+         <baz>
+            <c:value-of>
+               <c:object value='(object)jObj'/>
+            </c:value-of>
+         </baz>
       </foo>
    </c:template>
 
    <c:template name='expected'>
       <foo>
-         <c:value-of value='jObj.ToString()'/>
+         <bar>
+            <c:value-of>
+               <c:object value='jObj.ToString()'/>
+            </c:value-of>
+         </bar>
+         <baz>
+            <c:value-of>
+               <c:object value='jObj.ToString()'/>
+            </c:value-of>
+         </baz>
       </foo>
    </c:template>
 

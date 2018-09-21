@@ -10,12 +10,20 @@
          </c:map>
       </c:variable>
       <foo>
-         <c:copy-of value='map'/>
+         <bar>
+            <c:copy-of value='map'/>
+         </bar>
+         <baz>
+            <c:copy-of value='(object)map'/>
+         </baz>
       </foo>
    </c:template>
 
    <c:template name='expected'>
-      <foo>{"foo":"foo"}</foo>
+      <foo>
+         <bar>{"foo":"foo"}</bar>
+         <baz>{"foo":"foo"}</baz>
+      </foo>
    </c:template>
 
 </c:module>

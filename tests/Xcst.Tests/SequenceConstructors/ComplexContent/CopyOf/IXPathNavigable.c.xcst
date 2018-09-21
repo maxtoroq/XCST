@@ -8,11 +8,13 @@
       <c:variable name='doc' value='new XPathDocument(new StringReader("&lt;bar of=\"5\">baz&lt;/bar>"))'/>
       <foo>
          <c:copy-of value='doc'/>
+         <c:copy-of value='(object)doc'/>
       </foo>
    </c:template>
 
    <c:template name='expected'>
       <foo>
+         <bar of='5'>baz</bar>
          <bar of='5'>baz</bar>
       </foo>
    </c:template>

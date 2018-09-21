@@ -3,7 +3,25 @@
 
    <c:template name='c:initial-template'>
       <foo>
+         <!-- multiple items -->
          <c:attribute name='bar'>
+            <c:text>0</c:text>
+            <c:object value='default(string)'/>
+            <c:text>a</c:text>
+            <c:text>b</c:text>
+            <!--<c>c</c>-->
+            <c:object value='"1"'/>
+            <c:object value='default(string)'/>
+            <c:object value='"2"'/>
+            <c:text>3</c:text>
+            <c:object value='new[] { "4", "5" }'/>
+         </c:attribute>
+         <!-- array as object -->
+         <c:attribute name='baz'>
+            <c:object value='(object)new[] { "4", "5" }'/>
+         </c:attribute>
+         <!-- multiple items with separator -->
+         <c:attribute name='qux' separator='|'>
             <c:text>0</c:text>
             <c:object value='default(string)'/>
             <c:text>a</c:text>
@@ -19,7 +37,9 @@
    </c:template>
 
    <c:template name='expected'>
-      <foo bar='0ab12345'/>
+      <foo bar='0ab12345'
+           baz='45'
+           qux='0ab|1|2|3|4|5'/>
    </c:template>
 
 </c:module>

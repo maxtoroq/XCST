@@ -3,6 +3,7 @@
 
    <c:template name='c:initial-template'>
       <foo>
+         <!-- multiple items -->
          <c:comment>
             <c:text>0</c:text>
             <c:object value='default(string)'/>
@@ -15,12 +16,17 @@
             <c:text>3</c:text>
             <c:object value='new[] { "4", "5" }'/>
          </c:comment>
+         <!-- array as object -->
+         <c:comment>
+            <c:object value='(object)new[] { "4", "5" }'/>
+         </c:comment>
       </foo>
    </c:template>
 
    <c:template name='expected'>
       <foo>
          <c:comment>0ab c 1 2 3 4 5</c:comment>
+         <c:comment>4 5</c:comment>
       </foo>
    </c:template>
 

@@ -3,12 +3,24 @@
 
    <c:template name='c:initial-template'>
       <foo>
-         <c:value-of value='new[] { "1", "2", null }'/>
+         <bar>
+            <c:value-of value='new[] { "1", "2", null }'/>
+         </bar>
+         <baz>
+            <c:value-of value='(object)new[] { "1", "2", null }'/>
+         </baz>
+         <qux>
+            <c:value-of value='new[] { "1", null, "2" }' separator='|'/>
+         </qux>
       </foo>
    </c:template>
 
    <c:template name='expected'>
-      <foo>1 2</foo>
+      <foo>
+         <bar>1 2</bar>
+         <baz>1 2</baz>
+         <qux>1|2</qux>
+      </foo>
    </c:template>
 
 </c:module>

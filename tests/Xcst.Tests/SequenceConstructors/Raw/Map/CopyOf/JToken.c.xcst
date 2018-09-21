@@ -7,9 +7,11 @@
       <c:variable name='map' as='JObject'>
          <c:map>
             <c:copy-of value='(JToken)new JProperty("foo", "1")'/>
+            <c:copy-of value='(object)new JProperty("bar", "2")'/>
          </c:map>
       </c:variable>
       <c:void value='Assert.AreEqual("1", ((JValue)map["foo"]).Value)'/>
+      <c:void value='Assert.AreEqual("2", ((JValue)map["bar"]).Value)'/>
    </c:template>
 
 </c:module>

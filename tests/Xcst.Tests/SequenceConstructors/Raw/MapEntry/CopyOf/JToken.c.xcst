@@ -9,10 +9,19 @@
             <c:map-entry key='"foo"'>
                <c:copy-of value='(JToken)new JArray("1", "2")'/>
             </c:map-entry>
+            <c:map-entry key='"bar"'>
+               <c:copy-of value='(object)new JArray("3", "4")'/>
+            </c:map-entry>
+            <c:map-entry key='"baz"'>
+               <c:copy-of value='(JToken)null'/>
+            </c:map-entry>
          </c:map>
       </c:variable>
       <c:void value='Assert.AreEqual("1", ((JArray)map["foo"])[0])'/>
       <c:void value='Assert.AreEqual("2", ((JArray)map["foo"])[1])'/>
+      <c:void value='Assert.AreEqual("3", ((JArray)map["bar"])[0])'/>
+      <c:void value='Assert.AreEqual("4", ((JArray)map["bar"])[1])'/>
+      <c:void value='Assert.IsNull(((JValue)map["baz"]).Value)'/>
    </c:template>
 
 </c:module>

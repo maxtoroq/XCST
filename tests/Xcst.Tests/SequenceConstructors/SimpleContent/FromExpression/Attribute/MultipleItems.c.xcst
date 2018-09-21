@@ -4,11 +4,15 @@
    <c:template name='c:initial-template'>
       <foo>
          <c:attribute name='bar' value='new[] { "1", "2", null }'/>
+         <c:attribute name='baz' value='(object)new[] { "1", "2", null }'/>
+         <c:attribute name='qux' value='new[] { "1", null, "2" }' separator='|'/>
       </foo>
    </c:template>
 
    <c:template name='expected'>
-      <foo bar='1 2'/>
+      <foo bar='1 2'
+           baz='1 2'
+           qux='1|2'/>
    </c:template>
 
 </c:module>

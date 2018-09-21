@@ -7,11 +7,16 @@
       <c:variable name='arr' as='JArray'>
          <c:array>
             <c:copy-of value='(JToken)new JArray("1", "2")'/>
+            <c:copy-of value='(object)new JArray("3", "4")'/>
+            <c:copy-of value='(JToken)null'/>
          </c:array>
       </c:variable>
-      <c:void value='Assert.AreEqual(1, arr.Count)'/>
+      <c:void value='Assert.AreEqual(3, arr.Count)'/>
       <c:void value='Assert.AreEqual("1", ((JValue)((JArray)arr[0])[0]).Value)'/>
       <c:void value='Assert.AreEqual("2", ((JValue)((JArray)arr[0])[1]).Value)'/>
+      <c:void value='Assert.AreEqual("3", ((JValue)((JArray)arr[1])[0]).Value)'/>
+      <c:void value='Assert.AreEqual("4", ((JValue)((JArray)arr[1])[1]).Value)'/>
+      <c:void value='Assert.IsNull(((JValue)arr[2]).Value)'/>
    </c:template>
 
 </c:module>

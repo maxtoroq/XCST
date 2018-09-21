@@ -3,23 +3,51 @@
 
    <c:template name='c:initial-template'>
       <foo>
-         <c:value-of>
-            <c:text>0</c:text>
-            <c:object value='default(string)'/>
-            <c:text>a</c:text>
-            <c:text>b</c:text>
-            <c>c</c>
-            <c:object value='"1"'/>
-            <c:object value='default(string)'/>
-            <c:object value='"2"'/>
-            <c:text>3</c:text>
-            <c:object value='new[] { "4", "5" }'/>
-         </c:value-of>
+         <!-- multiple items -->
+         <bar>
+            <c:value-of>
+               <c:text>0</c:text>
+               <c:object value='default(string)'/>
+               <c:text>a</c:text>
+               <c:text>b</c:text>
+               <c>c</c>
+               <c:object value='"1"'/>
+               <c:object value='default(string)'/>
+               <c:object value='"2"'/>
+               <c:text>3</c:text>
+               <c:object value='new[] { "4", "5" }'/>
+            </c:value-of>
+         </bar>
+         <!-- array as object -->
+         <baz>
+            <c:value-of>
+               <c:object value='(object)new[] { "4", "5" }'/>
+            </c:value-of>
+         </baz>
+         <!-- multiple items with separator -->
+         <qux>
+            <c:value-of separator='|'>
+               <c:text>0</c:text>
+               <c:object value='default(string)'/>
+               <c:text>a</c:text>
+               <c:text>b</c:text>
+               <c>c</c>
+               <c:object value='"1"'/>
+               <c:object value='default(string)'/>
+               <c:object value='"2"'/>
+               <c:text>3</c:text>
+               <c:object value='new[] { "4", "5" }'/>
+            </c:value-of>
+         </qux>
       </foo>
    </c:template>
 
    <c:template name='expected'>
-      <foo>0abc12345</foo>
+      <foo>
+         <bar>0abc12345</bar>
+         <baz>45</baz>
+         <qux>0ab|c|1|2|3|4|5</qux>
+      </foo>
    </c:template>
 
 </c:module>
