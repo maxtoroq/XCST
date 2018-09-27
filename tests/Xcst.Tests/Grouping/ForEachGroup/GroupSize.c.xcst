@@ -4,29 +4,42 @@
    <c:import-namespace ns='System.Linq'/>
 
    <c:template name='c:initial-template' expand-text='yes'>
-      <table>
-         <c:for-each-group name='group' in='new[] { "banana", "apricot", "apple" }' group-size='2'>
-            <tr>
-               <c:for-each name='item' in='group'>
-                  <c:sort/>
+      <div>
+         <c:for-each name='size' in='new[] { 2, 3 }'>
+            <table>
+               <c:for-each-group name='group' in='new[] { "banana", "apricot", "apple" }' group-size='{size}'>
+                  <tr>
+                     <c:for-each name='item' in='group'>
+                        <c:sort/>
 
-                  <td>{item}</td>
-               </c:for-each>
-            </tr>
-         </c:for-each-group>
-      </table>
+                        <td>{item}</td>
+                     </c:for-each>
+                  </tr>
+               </c:for-each-group>
+            </table>
+         </c:for-each>
+      </div>
    </c:template>
 
    <c:template name='expected'>
-      <table>
-         <tr>
-            <td>apricot</td>
-            <td>banana</td>
-         </tr>
-         <tr>
-            <td>apple</td>
-         </tr>
-      </table>
+      <div>
+         <table>
+            <tr>
+               <td>apricot</td>
+               <td>banana</td>
+            </tr>
+            <tr>
+               <td>apple</td>
+            </tr>
+         </table>
+         <table>
+            <tr>
+               <td>apple</td>
+               <td>apricot</td>
+               <td>banana</td>
+            </tr>
+         </table>
+      </div>
    </c:template>
 
 </c:module>
