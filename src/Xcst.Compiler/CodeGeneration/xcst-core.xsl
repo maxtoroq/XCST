@@ -2070,13 +2070,16 @@
       <call-template name="src:close-brace"/>
 
       <call-template name="src:new-line-indented"/>
-      <text>if (</text>
+      <text>if ((</text>
       <value-of select="$buff"/>
       <text>.Count == </text>
       <value-of select="$cols"/>
-      <text> || </text>
+      <text>) || (</text>
       <value-of select="$eof"/>
-      <text>)</text>
+      <text> &amp;&amp; </text>
+      <value-of select="$buff"/>
+      <text>.Count > 0</text>
+      <text>))</text>
       <call-template name="src:open-brace"/>
       <call-template name="src:group-size-if">
          <with-param name="buff" select="$buff"/>
