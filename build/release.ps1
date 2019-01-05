@@ -44,7 +44,7 @@ function script:NuSpec {
          "<id>$projName</id>"
          "<version>$pkgVersion</version>"
          "<authors>$($notice.authors)</authors>"
-         "<licenseUrl>$($notice.license.url)</licenseUrl>"
+         "<license type='expression'>$($notice.license.name)</license>"
          "<projectUrl>$($notice.website)</projectUrl>"
          "<copyright>$($notice.copyright)</copyright>"
          "<iconUrl>$($notice.website)nuget/icon.png</iconUrl>"

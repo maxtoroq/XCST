@@ -9,15 +9,15 @@
 <notice>
    <work>XCST</work>
    <website>http://maxtoroq.github.io/XCST/</website>
-   <copyright>2015-2018 Max Toro Q.</copyright>
+   <copyright>2015-2019 Max Toro Q.</copyright>
    <authors>Max Toro Q.</authors>
-   <license name="Apache 2" src="LICENSE.txt" url="http://www.apache.org/licenses/LICENSE-2.0"/>
+   <license name="Apache-2.0" src="LICENSE.txt" url="http://www.apache.org/licenses/LICENSE-2.0"/>
    <foreign-work type="source">
       <notice>
          <work>XMLMVP Project</work>
          <website>http://mvpxml.codeplex.com/</website>
          <copyright>2005, XMLMVP Project</copyright>
-         <license name="BSD"><![CDATA[ BSD License
+         <license name="BSD-3-Clause"><![CDATA[ BSD License
  
  Copyright (c) 2005, XMLMVP Project
  All rights reserved.
@@ -113,7 +113,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.]]></l
          <work>Saxon-HE</work>
          <website>http://saxon.sf.net/</website>
          <copyright>Saxonica 2014</copyright>
-         <license name="MPL 2.0" src="packages/Saxon-HE.9.7.0.21/notices/LICENSE.txt"/>
+         <license name="MPL-2.0" src="packages/Saxon-HE.9.7.0.21/notices/LICENSE.txt"/>
       </notice>
       <used-by-source path="src/Xcst.Compiler/"/>
    </foreign-work>
