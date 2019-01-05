@@ -7,6 +7,8 @@ using Xcst.Compiler;
 
 namespace Xcst.Tests.ProgramStructure.Packages.AcceptingComponents {
 
+   using ModuleResolver = AcceptingComponentsTests.Component_Using_Accepted_Type_Resolver;
+
    [TestClass]
    public partial class AcceptingComponentsTests {
 
@@ -19,12 +21,12 @@ namespace Xcst.Tests.ProgramStructure.Packages.AcceptingComponents {
          compilerA.TargetClass = "FooPackage";
          compilerA.TargetNamespace = typeof(AcceptingComponentsTests).Namespace;
          compilerA.PackageLocationResolver = name => new Uri("urn:x:" + name);
-         compilerA.ModuleResolver = new StringModuleResolver1();
+         compilerA.ModuleResolver = new ModuleResolver();
 
          var usingPackageUri = new Uri(@"c:\foo.xcst");
 
          CompileResult resultA = compilerA.Compile(
-            new StringReader(StringModuleResolver1.GetPackageString("")),
+            new StringReader(ModuleResolver.GetPackageString("")),
             baseUri: usingPackageUri
          );
 
@@ -33,7 +35,7 @@ namespace Xcst.Tests.ProgramStructure.Packages.AcceptingComponents {
          compilerB.ModuleResolver = compilerA.ModuleResolver;
 
          CompileResult resultB = compilerB.Compile(
-            new StringReader(StringModuleResolver1.GetPackageString("localhost.PackageB")),
+            new StringReader(ModuleResolver.GetPackageString("localhost.PackageB")),
             baseUri: compilerB.PackageLocationResolver("localhost.PackageB")
          );
 
@@ -42,7 +44,7 @@ namespace Xcst.Tests.ProgramStructure.Packages.AcceptingComponents {
          compilerC.ModuleResolver = compilerA.ModuleResolver;
 
          CompileResult resultC = compilerC.Compile(
-            new StringReader(StringModuleResolver1.GetPackageString("localhost.PackageC")),
+            new StringReader(ModuleResolver.GetPackageString("localhost.PackageC")),
             baseUri: compilerC.PackageLocationResolver("localhost.PackageC")
          );
 
@@ -62,7 +64,7 @@ namespace Xcst.Tests.ProgramStructure.Packages.AcceptingComponents {
          }
       }
 
-      class StringModuleResolver1 : XmlResolver {
+      internal class Component_Using_Accepted_Type_Resolver : XmlResolver {
 
          public static string GetPackageString(string name) {
 

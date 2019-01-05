@@ -1710,6 +1710,10 @@
          <with-param name="indent" select="$indent + 1" tunnel="yes"/>
       </apply-templates>
 
+      <apply-templates select="$overridden[self::xcst:param or self::xcst:variable]" mode="src:used-package-tuple">
+         <with-param name="indent" select="$indent + 1" tunnel="yes"/>
+      </apply-templates>
+
       <call-template name="src:close-brace"/>
    </template>
 
@@ -1909,6 +1913,42 @@
       <call-template name="src:close-brace"/>
    </template>
 
+   <template match="xcst:param | xcst:variable" mode="src:used-package-tuple">
+      <variable name="type" select="src:global-identifier-meta(@as)"/>
+      <variable name="getter" select="src:aux-variable('getter')"/>
+      <variable name="setter" select="src:aux-variable('setter')"/>
+      <value-of select="$src:new-line"/>
+      <call-template name="src:new-line-indented"/>
+      <text>internal static </text>
+      <apply-templates select="." mode="src:used-package-overriding-type"/>
+      <text> </text>
+      <value-of select="src:tuple-member-name(.)"/>
+      <text>(</text>
+      <value-of select="src:global-identifier('System.Func')"/>
+      <text>&lt;</text>
+      <value-of select="$type"/>
+      <text>> </text>
+      <value-of select="$getter"/>
+      <text>, </text>
+      <value-of select="src:global-identifier('System.Action')"/>
+      <text>&lt;</text>
+      <value-of select="$type"/>
+      <text>> </text>
+      <value-of select="$setter"/>
+      <text>)</text>
+      <call-template name="src:open-brace"/>
+      <call-template name="src:new-line-indented">
+         <with-param name="increase" select="1"/>
+      </call-template>
+      <text>return </text>
+      <value-of select="src:global-identifier('System.Tuple')"/>
+      <text>.Create(</text>
+      <value-of select="$getter, $setter" separator=", "/>
+      <text>)</text>
+      <value-of select="$src:statement-delimiter"/>
+      <call-template name="src:close-brace"/>
+   </template>
+
    <function name="src:overridden-components" as="element()*">
       <param name="used-package" as="element(xcst:package-manifest)"/>
       <param name="package-manifest" as="element(xcst:package-manifest)"/>
@@ -1928,6 +1968,12 @@
       <param name="meta" as="element()"/>
 
       <sequence select="src:aux-variable(concat('original_', $meta/@id))"/>
+   </function>
+
+   <function name="src:tuple-member-name" as="xs:string">
+      <param name="meta" as="element()"/>
+
+      <sequence select="src:aux-variable(concat('tuple_', $meta/@id))"/>
    </function>
 
    <function name="src:original-member">
@@ -2683,20 +2729,10 @@
    <template match="xcst:variable | xcst:param" mode="src:used-package-overriding-value">
       <param name="meta" as="element()"/>
 
-      <variable name="type" select="src:global-identifier(@as)"/>
-
-      <value-of select="src:global-identifier('System.Tuple')"/>
-      <text>.Create(new </text>
-      <value-of select="src:global-identifier('System.Func')"/>
-      <text>&lt;</text>
-      <value-of select="$type"/>
-      <text>>(() => this.</text>
+      <value-of select="src:used-package-class-name(.), src:tuple-member-name(.)" separator="."/>
+      <text>(() => this.</text>
       <value-of select="$meta/@member-name"/>
-      <text>), new </text>
-      <value-of select="src:global-identifier('System.Action')"/>
-      <text>&lt;</text>
-      <value-of select="$type"/>
-      <text>>( </text>
+      <text>, </text>
       <variable name="param" select="src:aux-variable(generate-id())"/>
       <value-of select="$param"/>
       <text> => { this.</text>
@@ -2704,7 +2740,7 @@
       <text> = </text>
       <value-of select="$param"/>
       <value-of select="$src:statement-delimiter"/>
-      <text> }))</text>
+      <text> })</text>
    </template>
 
    <template match="xcst:template" mode="src:used-package-overriding-value">

@@ -83,7 +83,8 @@
   <ItemGroup>
     <Compile Include="API\Compilation\CompilationTests.cs" />
     <Compile Include="API\Evaluation\EvaluationTests.cs" />
-    <Compile Include="ProgramStructure\Packages\AcceptingComponents\AcceptingComponentsTests.cs" />
+    <Compile Include="ProgramStructure\Packages\AcceptingComponents\Component_Using_Accepted_Type.cs" />
+    <Compile Include="ProgramStructure\Packages\OverridingComponents\Variable\Overridden_Non_Compiled.cs" />
     <Compile Include="TestsHelper.cs" />
     <Compile Include="Tests.generated.cs" />
     <Compile Include="Types\Member\Resources.Designer.cs">
