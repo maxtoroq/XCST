@@ -523,7 +523,7 @@
                <sequence select="error(
                   xs:QName('err:XTSE3070'),
                   'For every parameter on the overridden template, there must be a parameter on the overriding template that has the same name and the same effective values for the tunnel and required attributes.',
-                  src:error-object($param))"/>
+                  src:error-object(($param, $template)[1]))"/>
             </if>
          </for-each>
       </if>
