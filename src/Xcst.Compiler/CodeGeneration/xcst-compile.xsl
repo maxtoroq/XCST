@@ -1591,9 +1591,11 @@
       <text>)</text>
       <value-of select="$src:statement-delimiter"/>
       <call-template name="src:close-brace"/>
-      <call-template name="src:template-additional-members">
-         <with-param name="meta" select="."/>
-      </call-template>
+      <if test="not(@accepted/xs:boolean(.))">
+         <call-template name="src:template-additional-members">
+            <with-param name="meta" select="."/>
+         </call-template>
+      </if>
    </template>
 
    <template match="xcst:function" mode="src:member">
