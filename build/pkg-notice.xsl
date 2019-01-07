@@ -13,10 +13,6 @@
       </xsl:copy>
    </xsl:template>
 
-   <xsl:template match="/notice/license[@src]/@url">
-      <!-- no need for URL when the license is included -->
-   </xsl:template>
-
    <xsl:template match="/notice/foreign-work[@type = 'source']">
       <!-- only include notices for dependencies used by the project -->
       <xsl:if test="used-by-source[string-join(tokenize(@path, '/')[.], '/') = concat('src/', $projectName)]">
@@ -31,7 +27,7 @@
    <xsl:template match="foreign-work/notice/license[@src]">
       <!-- include license -->
       <xsl:copy>
-         <xsl:apply-templates select="@* except (@src, @url)"/>
+         <xsl:apply-templates select="@* except (@src)"/>
          <xsl:value-of select="unparsed-text(resolve-uri(@src, base-uri()))"/>
       </xsl:copy>
    </xsl:template>
