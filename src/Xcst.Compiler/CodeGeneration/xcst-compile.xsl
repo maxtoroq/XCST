@@ -1386,7 +1386,7 @@
       <param name="attr" as="attribute()"/>
 
       <sequence select="
-         if ($attr/../xs:boolean(@qualified-types)) then src:global-identifier($attr)
+         if ($attr/ancestor::*[@qualified-types][1]/xs:boolean(@qualified-types)) then src:global-identifier($attr)
          else $attr"/>
    </function>
 
