@@ -69,6 +69,7 @@
     <Compile Include="SaxonExtensions.cs" />
     <Compile Include="XcstCompiler.cs" />
     <Compile Include="XcstCompilerFactory.cs" />
+    <Compile Include="XcstExtensionAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="CodeGeneration\xcst-compile.xsl">

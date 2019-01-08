@@ -114,6 +114,20 @@ namespace Xcst.Compiler {
          this.extensions[extensionNamespace] = extensionLoader;
       }
 
+      public void RegisterExtensionsForAssembly(Assembly assembly) {
+
+         if (assembly == null) throw new ArgumentNullException(nameof(assembly));
+
+         var attribs = assembly.GetCustomAttributes<XcstExtensionAttribute>();
+
+         foreach (var item in attribs) {
+
+            var loader = (XcstExtensionLoader)Activator.CreateInstance(item.ExtensionLoaderType);
+
+            RegisterExtension(item.ExtensionNamespace, loader.LoadSource);
+         }
+      }
+
       void BuildExtensionsModule(Stream output) {
 
          using (var writer = XmlWriter.Create(output)) {
