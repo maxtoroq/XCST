@@ -28,6 +28,7 @@
    <param name="src:namespace" as="xs:string?"/>
    <param name="src:class" as="xs:string?"/>
    <param name="src:base-types" as="xs:string*"/>
+   <param name="src:visibility" select="'public'" as="xs:string"/>
 
    <param name="src:named-package" select="false()" as="xs:boolean"/>
    <param name="src:use-package-base" as="xs:string?"/>
@@ -2070,7 +2071,10 @@
 
       <value-of select="$src:new-line"/>
       <call-template name="src:new-line-indented"/>
-      <if test="$principal-module">public </if>
+      <if test="$principal-module">
+         <value-of select="$src:visibility"/>
+         <text> </text>
+      </if>
       <if test="$principal-module and $package-manifest/xcst:*[@visibility eq 'abstract']">abstract </if>
       <text>partial class </text>
       <value-of select="$class"/>

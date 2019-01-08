@@ -32,15 +32,9 @@ namespace Xcst.Compiler {
 
       public string TargetClass { get; set; }
 
+      public string TargetVisibility { get; set; }
+
       public string[] TargetBaseTypes { get; set; }
-
-      public bool UseLineDirective { get; set; }
-
-      public string NewLineChars { get; set; }
-
-      public string IndentChars { get; set; }
-
-      public bool OpenBraceOnNewLine { get; set; }
 
       public bool NamedPackage { get; set; }
 
@@ -55,6 +49,14 @@ namespace Xcst.Compiler {
       public string PackageFileExtension { get; set; }
 
       public XmlResolver ModuleResolver { get; set; }
+
+      public bool UseLineDirective { get; set; }
+
+      public string NewLineChars { get; set; }
+
+      public string IndentChars { get; set; }
+
+      public bool OpenBraceOnNewLine { get; set; }
 
       internal XcstCompiler(Func<XsltExecutable> compilerExecFn, Processor processor) {
 
@@ -235,6 +237,10 @@ namespace Xcst.Compiler {
 
          if (this.TargetClass != null) {
             compiler.SetParameter(CompilerQName("class"), this.TargetClass.ToXdmItem());
+         }
+
+         if (this.TargetVisibility != null) {
+            compiler.SetParameter(CompilerQName("visibility"), this.TargetVisibility.ToXdmItem());
          }
 
          compiler.SetParameter(CompilerQName("base-types"), this.TargetBaseTypes.ToXdmValue());
