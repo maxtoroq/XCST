@@ -141,7 +141,7 @@ namespace Xcst.Compiler {
 
             if (this.EnableExtensions) {
                foreach (Uri ns in this.extensions.Keys) {
-                  writer.WriteStartElement("include", xsltNs);
+                  writer.WriteStartElement("import", xsltNs);
                   writer.WriteAttributeString("href", ns.AbsoluteUri);
                   writer.WriteEndElement();
                }
