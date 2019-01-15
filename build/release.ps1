@@ -59,7 +59,10 @@ function script:NuSpec {
 
       "<frameworkAssemblies>"
          "<frameworkAssembly assemblyName='System'/>"
+         "<frameworkAssembly assemblyName='System.Core'/>"
+         "<frameworkAssembly assemblyName='System.ComponentModel.DataAnnotations'/>"
          "<frameworkAssembly assemblyName='System.Xml'/>"
+         "<frameworkAssembly assemblyName='System.Xml.Linq'/>"
       "</frameworkAssemblies>"
 
    } elseif ($projName -eq "Xcst.Compiler") {
