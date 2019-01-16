@@ -16,6 +16,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
+using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Xml;
@@ -63,41 +65,42 @@ namespace Xcst.Compiler {
             Path = $"{thisType.Assembly.GetName().Name}/{nameof(CodeGeneration)}/xcst-compile.xsl"
          }.Uri;
 
-         XmlResolver resolver = new CompilerResolver(
-            thisType.Assembly,
-            baseUri,
-            output => BuildExtensionsModule(output),
-            uri => LoadExtension(uri)
-         );
+         Stream zipSource = thisType.Assembly
+            .GetManifestResourceStream(typeof(CodeGeneration.CSharpExpression), "xcst-xsl.zip");
 
-         xsltCompiler.BaseUri = baseUri;
-         xsltCompiler.XmlResolver = resolver;
-         xsltCompiler.ErrorList = new ArrayList();
+         using (var archive = new ZipArchive(zipSource, ZipArchiveMode.Read)) {
 
-         using (Stream compilerSource = (Stream)resolver.GetEntity(baseUri, null, typeof(Stream))) {
+            XmlResolver resolver = new CompilerResolver(archive, baseUri, LoadExtensionsModule, LoadExtension);
 
-            try {
-               return xsltCompiler.Compile(compilerSource);
+            xsltCompiler.BaseUri = baseUri;
+            xsltCompiler.XmlResolver = resolver;
+            xsltCompiler.ErrorList = new ArrayList();
 
-            } catch (StaticError ex) {
+            using (var compilerSource = (Stream)resolver.GetEntity(baseUri, null, typeof(Stream))) {
 
-               string message;
+               try {
+                  return xsltCompiler.Compile(compilerSource);
 
-               if (xsltCompiler.ErrorList.Count > 0) {
+               } catch (StaticError ex) {
 
-                  StaticError error = xsltCompiler.ErrorList[0] as StaticError;
+                  string message;
 
-                  if (error != null) {
-                     message = $"{error.Message}{Environment.NewLine}Module URI: {error.ModuleUri}{Environment.NewLine}Line Number: {error.LineNumber}";
+                  if (xsltCompiler.ErrorList.Count > 0) {
+
+                     StaticError error = xsltCompiler.ErrorList[0] as StaticError;
+
+                     if (error != null) {
+                        message = $"{error.Message}{Environment.NewLine}Module URI: {error.ModuleUri}{Environment.NewLine}Line Number: {error.LineNumber}";
+                     } else {
+                        message = xsltCompiler.ErrorList[0].ToString();
+                     }
+
                   } else {
-                     message = xsltCompiler.ErrorList[0].ToString();
+                     message = ex.Message;
                   }
 
-               } else {
-                  message = ex.Message;
+                  throw new InvalidOperationException(message);
                }
-
-               throw new InvalidOperationException(message);
             }
          }
       }
@@ -108,10 +111,17 @@ namespace Xcst.Compiler {
 
       public void RegisterExtension(Uri extensionNamespace, Func<Stream> extensionLoader) {
 
-         if (extensionNamespace == null) throw new ArgumentNullException(nameof(extensionNamespace));
-         if (!extensionNamespace.IsAbsoluteUri) throw new ArgumentException($"{nameof(extensionNamespace)} must be an absolute URI.", nameof(extensionNamespace));
-         if (extensionNamespace.Scheme.Equals(CompilerResolver.UriSchemeClires, StringComparison.OrdinalIgnoreCase)) throw new ArgumentException("Invalid URI.", nameof(extensionNamespace));
-         if (extensionLoader == null) throw new ArgumentNullException(nameof(extensionLoader));
+         if (extensionNamespace == null)
+            throw new ArgumentNullException(nameof(extensionNamespace));
+
+         if (!extensionNamespace.IsAbsoluteUri)
+            throw new ArgumentException($"{nameof(extensionNamespace)} must be an absolute URI.", nameof(extensionNamespace));
+
+         if (extensionNamespace.Scheme.Equals(CompilerResolver.UriSchemeClires, StringComparison.OrdinalIgnoreCase))
+            throw new ArgumentException("Invalid URI.", nameof(extensionNamespace));
+
+         if (extensionLoader == null)
+            throw new ArgumentNullException(nameof(extensionLoader));
 
          this.extensions[extensionNamespace] = extensionLoader;
       }
@@ -130,25 +140,35 @@ namespace Xcst.Compiler {
          }
       }
 
-      void BuildExtensionsModule(Stream output) {
+      Stream LoadExtensionsModule() {
 
-         using (var writer = XmlWriter.Create(output)) {
+         var stream = new MemoryStream();
 
-            const string xsltNs = "http://www.w3.org/1999/XSL/Transform";
-
-            writer.WriteStartElement("stylesheet", xsltNs);
-            writer.WriteAttributeString("version", "2.0");
-
-            if (this.EnableExtensions) {
-               foreach (Uri ns in this.extensions.Keys) {
-                  writer.WriteStartElement("import", xsltNs);
-                  writer.WriteAttributeString("href", ns.AbsoluteUri);
-                  writer.WriteEndElement();
-               }
-            }
-
-            writer.WriteEndElement();
+         using (var writer = XmlWriter.Create(stream)) {
+            BuildExtensionsModule(writer);
          }
+
+         stream.Position = 0;
+
+         return stream;
+      }
+
+      void BuildExtensionsModule(XmlWriter writer) {
+
+         const string xsltNs = "http://www.w3.org/1999/XSL/Transform";
+
+         writer.WriteStartElement("stylesheet", xsltNs);
+         writer.WriteAttributeString("version", "2.0");
+
+         if (this.EnableExtensions) {
+            foreach (Uri ns in this.extensions.Keys) {
+               writer.WriteStartElement("import", xsltNs);
+               writer.WriteAttributeString("href", ns.AbsoluteUri);
+               writer.WriteEndElement();
+            }
+         }
+
+         writer.WriteEndElement();
       }
 
       Stream LoadExtension(Uri ns) {
@@ -168,25 +188,27 @@ namespace Xcst.Compiler {
 
          public static readonly string UriSchemeClires = "clires";
 
-         readonly Assembly assembly;
+         readonly ZipArchive archive;
+         readonly Uri principalModuleUri;
          readonly Uri extensionsModuleUri;
 
-         readonly Action<Stream> buildExtensionsModuleFn;
+         readonly Func<Stream> loadExtensionsModuleFn;
          readonly Func<Uri, Stream> loadExtensionXslt;
 
          public override ICredentials Credentials { set { } }
 
-         public CompilerResolver(Assembly assembly, Uri principalModuleUri, Action<Stream> buildExtensionsModuleFn, Func<Uri, Stream> loadExtensionXslt) {
+         public CompilerResolver(ZipArchive archive, Uri principalModuleUri, Func<Stream> loadExtensionsModuleFn, Func<Uri, Stream> loadExtensionXslt) {
 
-            if (assembly == null) throw new ArgumentNullException(nameof(assembly));
+            if (archive == null) throw new ArgumentNullException(nameof(archive));
             if (principalModuleUri == null) throw new ArgumentNullException(nameof(principalModuleUri));
-            if (buildExtensionsModuleFn == null) throw new ArgumentNullException(nameof(buildExtensionsModuleFn));
+            if (loadExtensionsModuleFn == null) throw new ArgumentNullException(nameof(loadExtensionsModuleFn));
             if (loadExtensionXslt == null) throw new ArgumentNullException(nameof(loadExtensionXslt));
 
-            this.assembly = assembly;
+            this.archive = archive;
+            this.principalModuleUri = principalModuleUri;
             this.extensionsModuleUri = new Uri(principalModuleUri, "xcst-extensions.xsl");
 
-            this.buildExtensionsModuleFn = buildExtensionsModuleFn;
+            this.loadExtensionsModuleFn = loadExtensionsModuleFn;
             this.loadExtensionXslt = loadExtensionXslt;
          }
 
@@ -196,37 +218,21 @@ namespace Xcst.Compiler {
             if (absoluteUri.AbsolutePath.Length <= 1) throw new ArgumentException("The embedded resource name must be specified in the AbsolutePath portion of the supplied Uri.", nameof(absoluteUri));
 
             if (absoluteUri.Scheme != UriSchemeClires) {
-               return LoadExtensionXslt(absoluteUri, role, ofObjectToReturn);
+               return this.loadExtensionXslt(absoluteUri);
 
             } else if (absoluteUri == this.extensionsModuleUri) {
-               return BuildExtensionsModule();
+               return loadExtensionsModuleFn();
             }
 
-            string host = absoluteUri.Host;
+            Uri relativeUri = this.principalModuleUri.MakeRelativeUri(absoluteUri);
+            string fileName = relativeUri.OriginalString;
 
-            if (String.IsNullOrEmpty(host)) {
-               host = null;
+            if (fileName.Length == 0) {
+               fileName = this.principalModuleUri.AbsoluteUri.Split('/').Last();
             }
 
-            string resourceName = ((host != null) ?
-               absoluteUri.GetComponents(UriComponents.Host | UriComponents.Path, UriFormat.Unescaped)
-               : absoluteUri.AbsolutePath)
-               .Replace('/', '.');
-
-            return this.assembly.GetManifestResourceStream(resourceName);
-         }
-
-         object BuildExtensionsModule() {
-
-            var stream = new MemoryStream();
-            this.buildExtensionsModuleFn(stream);
-            stream.Position = 0;
-
-            return stream;
-         }
-
-         object LoadExtensionXslt(Uri absoluteUri, string role, Type ofObjectToReturn) {
-            return this.loadExtensionXslt(absoluteUri);
+            return this.archive.GetEntry(fileName)
+               .Open();
          }
       }
    }

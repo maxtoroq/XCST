@@ -51,6 +51,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.IO.Compression" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -72,11 +73,11 @@
     <Compile Include="XcstExtensionAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="CodeGeneration\xcst-compile.xsl">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
+    <Content Include="CodeGeneration\xcst-compile.xsl" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="CodeGeneration\xcst-xsl.zip" />
+    <None Include="CodeGeneration\zip-source.ps1" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -86,15 +87,14 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="CodeGeneration\xcst-core.xsl">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="CodeGeneration\xcst-metadata.xsl">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
+    <Content Include="CodeGeneration\xcst-core.xsl" />
+    <Content Include="CodeGeneration\xcst-metadata.xsl" />
     <Content Include="CodeGeneration\xcst-extensions.xsl" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>powershell -NoProfile -ExecutionPolicy RemoteSigned -File $(ProjectDir)CodeGeneration\zip-source.ps1</PreBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
