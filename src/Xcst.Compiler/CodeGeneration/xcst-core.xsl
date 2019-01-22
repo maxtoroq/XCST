@@ -25,7 +25,7 @@
    <import href="xcst-extensions.xsl"/>
 
    <param name="src:use-line-directive" select="false()" as="xs:boolean"/>
-   <param name="src:new-line" select="'&#xD;&#xA;'" as="xs:string"/>
+   <param name="src:new-line" select="'&#xA;'" as="xs:string"/>
    <param name="src:indent" select="'    '" as="xs:string"/>
    <param name="src:open-brace-on-new-line" select="false()" as="xs:boolean"/>
 
