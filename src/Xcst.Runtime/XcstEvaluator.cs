@@ -326,7 +326,7 @@ namespace Xcst {
 
       static TemplateContext CreateTemplateContext(IDictionary<string, object> templateParams, IDictionary<string, object> tunnelParams) {
 
-         var context = new TemplateContext();
+         var context = TemplateContext.Create(templateParams.Count, tunnelParams.Count);
 
          foreach (var param in templateParams) {
             context.WithParam(param.Key, param.Value);

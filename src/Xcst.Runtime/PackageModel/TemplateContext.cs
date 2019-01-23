@@ -14,6 +14,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Xcst.Runtime;
 
 namespace Xcst.PackageModel {
@@ -22,32 +23,73 @@ namespace Xcst.PackageModel {
 
    public class TemplateContext {
 
-      readonly IDictionary<string, object> templateParameters = new Dictionary<string, object>();
-      readonly IDictionary<string, object> tunnelParameters = new Dictionary<string, object>();
+      static readonly TemplateContext EmptyContext = new TemplateContext(0, 0);
 
-      public TemplateContext(TemplateContext currentContext = null) {
+      readonly Dictionary<string, object>/*?*/ templateParameters;
+      readonly Dictionary<string, object>/*?*/ tunnelParameters;
 
-         if (currentContext != null) {
+      public static TemplateContext Create(int tmplCount, int tunnelCount, TemplateContext currentContext = null) {
+
+         if (tmplCount == 0
+            && tunnelCount == 0
+            && (currentContext?.tunnelParameters == null
+               || currentContext.tunnelParameters.Count == 0)) {
+
+            return EmptyContext;
+         }
+
+         var context = new TemplateContext(tmplCount, tunnelCount + (currentContext?.tunnelParameters?.Count ?? 0));
+         context.CopyTunnelParams(currentContext);
+
+         return context;
+      }
+
+      public static TemplateContext<TParams> CreateTyped<TParams>(TParams parameters, int tunnelCount, TemplateContext currentContext = null) {
+
+         var context = new TemplateContext<TParams>(parameters, tunnelCount + (currentContext?.tunnelParameters?.Count ?? 0));
+         context.CopyTunnelParams(currentContext);
+
+         return context;
+      }
+
+      protected TemplateContext(int tmplCount, int tunnelCount) {
+
+         if (tmplCount > 0) {
+            this.templateParameters = new Dictionary<string, object>(tmplCount);
+         }
+
+         if (tunnelCount > 0) {
+            this.tunnelParameters = new Dictionary<string, object>(tunnelCount);
+         }
+      }
+
+      void CopyTunnelParams(TemplateContext/*?*/ currentContext) {
+
+         if (currentContext?.tunnelParameters != null) {
+
             foreach (var item in currentContext.tunnelParameters) {
-               this.tunnelParameters.Add(item);
+               WithParam(item.Key, item.Value, tunnel: true);
             }
          }
       }
 
-      public TemplateContext WithParam(string name, object value, bool tunnel = false) {
-
-         if (name == null) throw new ArgumentNullException(nameof(name));
+      public TemplateContext WithParam(string name, object/*?*/ value, bool tunnel = false) {
 
          if (tunnel) {
+
+            Debug.Assert(this.tunnelParameters != null);
             this.tunnelParameters[name] = value;
+
          } else {
+
+            Debug.Assert(this.templateParameters != null);
             this.templateParameters[name] = value;
          }
 
          return this;
       }
 
-      public TemplateContext WithParams(object parameters) {
+      public TemplateContext WithParams(object/*?*/ parameters) {
 
          if (parameters != null) {
             WithParams(XcstEvaluator.ObjectToDictionary(parameters));
@@ -56,7 +98,7 @@ namespace Xcst.PackageModel {
          return this;
       }
 
-      public TemplateContext WithParams(IDictionary<string, object> parameters) {
+      public TemplateContext WithParams(IDictionary<string, object>/*?*/ parameters) {
 
          if (parameters != null) {
 
@@ -69,20 +111,18 @@ namespace Xcst.PackageModel {
       }
 
       public bool HasParam(string name) {
-         return this.templateParameters.ContainsKey(name);
+         return this.templateParameters?.ContainsKey(name) == true;
       }
 
       public TDefault Param<TDefault>(string name, Func<TDefault> defaultValue = null, bool tunnel = false) {
 
-         if (name == null) throw new ArgumentNullException(nameof(name));
-
-         IDictionary<string, object> paramsDict = (tunnel) ?
+         IDictionary<string, object>/*?*/ paramsDict = (tunnel) ?
             this.tunnelParameters
             : this.templateParameters;
 
-         object value;
+         object value = null;
 
-         if (paramsDict.TryGetValue(name, out value)) {
+         if (paramsDict?.TryGetValue(name, out value) == true) {
 
             if (!tunnel) {
                paramsDict.Remove(name);
@@ -123,10 +163,8 @@ namespace Xcst.PackageModel {
 
       public TParams Parameters { get; }
 
-      public TemplateContext(TParams parameters, TemplateContext currentContext = null)
-         : base(currentContext) {
-
-         if (parameters == null) throw new ArgumentNullException(nameof(parameters));
+      internal TemplateContext(TParams parameters, int tunnelCount)
+         : base(0, tunnelCount) {
 
          this.Parameters = parameters;
       }

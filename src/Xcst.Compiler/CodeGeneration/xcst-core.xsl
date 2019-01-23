@@ -1511,32 +1511,48 @@
 
       <variable name="typed-params" select="boolean($meta/xcst:typed-params(.))"/>
 
-      <text>new </text>
-      <value-of select="src:template-context($meta)/@type"/>
+      <value-of select="src:template-context(())/@type"/>
+      <text>.Create</text>
+      <if test="$typed-params">Typed</if>
       <text>(</text>
-      <if test="$typed-params">
-         <text>new </text>
-         <value-of select="src:params-type($meta)"/>
-         <call-template name="src:open-brace"/>
-         <for-each select="c:with-param[not(@tunnel/xcst:boolean(.))]">
-            <call-template name="src:line-number">
-               <with-param name="indent" select="$indent + 2" tunnel="yes"/>
+      <choose>
+         <when test="not($typed-params)">
+            <variable name="tmplParamsCount" select="count(c:with-param[not(@tunnel/xcst:boolean(.))])"/>
+            <value-of select="
+               if ($tmplParamsCount gt 0) then
+                  $tmplParamsCount
+               else
+                  count(self::c:evaluate-delegate/@with-params)
+               "/>
+         </when>
+         <otherwise>
+            <text>new </text>
+            <value-of select="src:params-type($meta)"/>
+            <call-template name="src:open-brace"/>
+            <for-each select="c:with-param[not(@tunnel/xcst:boolean(.))]">
+               <call-template name="src:line-number">
+                  <with-param name="indent" select="$indent + 2" tunnel="yes"/>
+               </call-template>
+               <call-template name="src:new-line-indented">
+                  <with-param name="increase" select="2"/>
+               </call-template>
+               <text>@</text>
+               <value-of select="src:strip-verbatim-prefix(xcst:name(@name))"/>
+               <text> = </text>
+               <call-template name="src:value"/>
+               <if test="position() ne last()">,</if>
+            </for-each>
+            <call-template name="src:close-brace">
+               <with-param name="indent" select="$indent + 1" tunnel="yes"/>
             </call-template>
-            <call-template name="src:new-line-indented">
-               <with-param name="increase" select="2"/>
-            </call-template>
-            <text>@</text>
-            <value-of select="src:strip-verbatim-prefix(xcst:name(@name))"/>
-            <text> = </text>
-            <call-template name="src:value"/>
-            <if test="position() ne last()">,</if>
-         </for-each>
-         <call-template name="src:close-brace">
-            <with-param name="indent" select="$indent + 1" tunnel="yes"/>
-         </call-template>
-         <if test="$context">, </if>
+         </otherwise>
+      </choose>
+      <text>, </text>
+      <value-of select="count(c:with-param[@tunnel/xcst:boolean(.)])"/>
+      <if test="$context">
+         <text>, </text>
+         <value-of select="$context"/>
       </if>
-      <value-of select="$context"/>
       <text>)</text>
       <apply-templates select="c:with-param[not($typed-params) or @tunnel/xcst:boolean(.)]" mode="src:with-param">
          <with-param name="indent" select="$indent + 1" tunnel="yes"/>

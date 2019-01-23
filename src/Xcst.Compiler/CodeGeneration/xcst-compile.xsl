@@ -2767,11 +2767,12 @@
             <text>(</text>
             <choose>
                <when test="$overriding-typed-params">
-                  <text>new </text>
-                  <value-of select="$context/@type"/>
-                  <text>(</text>
+                  <value-of select="src:template-context(())/@type"/>
+                  <text>.CreateTyped((</text>
+                  <value-of select="src:params-type($meta)"/>
+                  <text>)</text>
                   <value-of select="$context, 'Parameters'" separator="."/>
-                  <text>, </text>
+                  <text>, 0, </text>
                   <value-of select="$context"/>
                   <text>)</text>
                </when>
@@ -3053,13 +3054,12 @@
             <text>(</text>
             <choose>
                <when test="xcst:typed-params(.)">
-                  <text>new </text>
-                  <value-of select="src:template-context(.)/@type"/>
-                  <text>(</text>
+                  <value-of select="src:template-context(())/@type"/>
+                  <text>.CreateTyped(</text>
                   <value-of select="src:params-type-name(.), 'Create'" separator="."/>
                   <text>(</text>
                   <value-of select="$context"/>
-                  <text>), </text>
+                  <text>), 0, </text>
                   <value-of select="$context"/>
                   <text>)</text>
                </when>
