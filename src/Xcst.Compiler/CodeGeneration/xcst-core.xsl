@@ -674,7 +674,7 @@
                      <if test="not($meta)">
                         <sequence select="error(xs:QName('err:XTSE0710'), concat('No attribute set exists named ', current(), '.'), src:error-object($current))"/>
                      </if>
-                     <sequence select="$meta/@member-name"/>
+                     <sequence select="src:template-member($meta)"/>
                   </otherwise>
                </choose>
             </for-each>
@@ -1378,7 +1378,7 @@
       <call-template name="src:line-number"/>
       <call-template name="src:new-line-indented"/>
       <text>this.</text>
-      <value-of select="if ($original) then src:original-member($meta) else $meta/@member-name"/>
+      <value-of select="if ($original) then src:original-member($meta) else src:template-member($meta)"/>
       <text>(</text>
       <call-template name="src:call-template-context">
          <with-param name="meta" select="$meta"/>
@@ -1399,7 +1399,7 @@
       <variable name="original" select="$result[2]" as="xs:boolean"/>
       <call-template name="src:write-template-expr">
          <with-param name="meta" select="$meta"/>
-         <with-param name="template-method" select="if ($original) then src:original-member($meta) else $meta/@member-name"/>
+         <with-param name="template-method" select="if ($original) then src:original-member($meta) else src:template-member($meta)"/>
       </call-template>
    </template>
 
@@ -1770,6 +1770,12 @@
       <text>.Run()</text>
       <value-of select="$src:statement-delimiter"/>
    </template>
+
+   <function name="src:template-member" as="xs:string">
+      <param name="meta" as="element()"/>
+
+      <sequence select="string-join((src:used-package-field-name($meta)[$meta/@accepted/xs:boolean(.)], $meta/@member-name), '.')"/>
+   </function>
 
    <!--
       ## Delegated Templates

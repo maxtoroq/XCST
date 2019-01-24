@@ -1573,31 +1573,7 @@
       <call-template name="src:close-brace"/>
    </template>
 
-   <template match="xcst:template" mode="src:member">
-      <variable name="context" select="src:template-context(.)"/>
-      <variable name="output" select="src:template-output(.)"/>
-      <call-template name="src:template-method-signature">
-         <with-param name="meta" select="."/>
-         <with-param name="context" select="$context"/>
-         <with-param name="output" select="$output"/>
-      </call-template>
-      <call-template name="src:open-brace"/>
-      <call-template name="src:new-line-indented">
-         <with-param name="increase" select="1"/>
-      </call-template>
-      <text>this.</text>
-      <value-of select="src:used-package-field-name(.), @member-name" separator="."/>
-      <text>(</text>
-      <value-of select="$context, $output" separator=", "/>
-      <text>)</text>
-      <value-of select="$src:statement-delimiter"/>
-      <call-template name="src:close-brace"/>
-      <if test="not(@accepted/xs:boolean(.))">
-         <call-template name="src:template-additional-members">
-            <with-param name="meta" select="."/>
-         </call-template>
-      </if>
-   </template>
+   <template match="xcst:template" mode="src:member"/>
 
    <template match="xcst:function" mode="src:member">
       <variable name="public" select="@visibility ne 'private'"/>
@@ -1643,45 +1619,7 @@
       <call-template name="src:close-brace"/>
    </template>
 
-   <template match="xcst:attribute-set" mode="src:member">
-
-      <variable name="public" select="@visibility ne 'private'"/>
-      <variable name="context" select="src:template-context(.)"/>
-      <variable name="output" select="src:template-output(.)"/>
-
-      <value-of select="$src:new-line"/>
-      <if test="$public">
-         <variable name="qname" select="xcst:EQName(@name)"/>
-         <call-template name="src:new-line-indented"/>
-         <text>[</text>
-         <value-of select="src:package-model-type('XcstAttributeSet')"/>
-         <text>(Name = </text>
-         <value-of select="src:verbatim-string(xcst:uri-qualified-name($qname))"/>
-         <text>)]</text>
-      </if>
-      <call-template name="src:editor-browsable-never"/>
-      <call-template name="src:new-line-indented"/>
-      <if test="$public">public </if>
-      <if test="@visibility eq 'public'">virtual </if>
-      <text>void </text>
-      <value-of select="@member-name"/>
-      <text>(</text>
-      <value-of select="$context/@type, $context"/>
-      <text>, </text>
-      <value-of select="$output/@type, $output"/>
-      <text>)</text>
-      <call-template name="src:open-brace"/>
-      <call-template name="src:new-line-indented">
-         <with-param name="increase" select="1"/>
-      </call-template>
-      <text>this.</text>
-      <value-of select="src:used-package-field-name(.), @member-name" separator="."/>
-      <text>(</text>
-      <value-of select="$context, $output" separator=", "/>
-      <text>)</text>
-      <value-of select="$src:statement-delimiter"/>
-      <call-template name="src:close-brace"/>
-   </template>
+   <template match="xcst:attribute-set" mode="src:member"/>
 
    <template match="xcst:package-manifest" mode="src:used-package-class">
       <param name="package-manifest" required="yes" tunnel="yes"/>
