@@ -6,7 +6,7 @@ $solutionPath = Resolve-Path ..
 
 try {
 
-   ./ensure-nuget.ps1
+   .\ensure-nuget.ps1
 
    &$nuget restore $solutionPath\XCST.sln
 
