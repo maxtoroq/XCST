@@ -23,7 +23,7 @@ namespace Xcst.PackageModel {
 
    public class TemplateContext {
 
-      static readonly TemplateContext EmptyContext = new TemplateContext(0, 0);
+      static readonly TemplateContext EmptyContext = new TemplateContext(0, 0, null);
 
       readonly Dictionary<string, object>/*?*/ templateParameters;
       readonly Dictionary<string, object>/*?*/ tunnelParameters;
@@ -38,32 +38,24 @@ namespace Xcst.PackageModel {
             return EmptyContext;
          }
 
-         var context = new TemplateContext(tmplCount, tunnelCount + (currentContext?.tunnelParameters?.Count ?? 0));
-         context.CopyTunnelParams(currentContext);
-
-         return context;
+         return new TemplateContext(tmplCount, tunnelCount, currentContext);
       }
 
       public static TemplateContext<TParams> CreateTyped<TParams>(TParams parameters, int tunnelCount, TemplateContext currentContext = null) {
-
-         var context = new TemplateContext<TParams>(parameters, tunnelCount + (currentContext?.tunnelParameters?.Count ?? 0));
-         context.CopyTunnelParams(currentContext);
-
-         return context;
+         return new TemplateContext<TParams>(parameters, tunnelCount, currentContext);
       }
 
-      protected TemplateContext(int tmplCount, int tunnelCount) {
+      public TemplateContext(int tmplCount, int tunnelCount, TemplateContext/*?*/ currentContext) {
 
          if (tmplCount > 0) {
             this.templateParameters = new Dictionary<string, object>(tmplCount);
          }
 
-         if (tunnelCount > 0) {
-            this.tunnelParameters = new Dictionary<string, object>(tunnelCount);
-         }
-      }
+         int tunnelTotalCount = tunnelCount + (currentContext?.tunnelParameters?.Count ?? 0);
 
-      void CopyTunnelParams(TemplateContext/*?*/ currentContext) {
+         if (tunnelTotalCount > 0) {
+            this.tunnelParameters = new Dictionary<string, object>(tunnelTotalCount);
+         }
 
          if (currentContext?.tunnelParameters != null) {
 
@@ -163,8 +155,8 @@ namespace Xcst.PackageModel {
 
       public TParams Parameters { get; }
 
-      internal TemplateContext(TParams parameters, int tunnelCount)
-         : base(0, tunnelCount) {
+      public TemplateContext(TParams parameters, int tunnelCount, TemplateContext/*?*/ currentContext)
+         : base(0, tunnelCount, currentContext) {
 
          this.Parameters = parameters;
       }

@@ -14,6 +14,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Xcst.Runtime;
 
 namespace Xcst.PackageModel {
@@ -22,12 +23,31 @@ namespace Xcst.PackageModel {
 
    public class PrimingContext {
 
-      readonly Dictionary<string, object> parameters = new Dictionary<string, object>();
+      static readonly PrimingContext EmptyContext = new PrimingContext(0);
+
+      readonly Dictionary<string, object> parameters;
+
+      public static PrimingContext Create(int paramCount) {
+
+         if (paramCount == 0) {
+            return EmptyContext;
+         }
+
+         return new PrimingContext(paramCount);
+      }
+
+      public PrimingContext(int paramCount) {
+
+         if (paramCount > 0) {
+            this.parameters = new Dictionary<string, object>(paramCount);
+         }
+      }
 
       public PrimingContext WithParam(string name, object value) {
 
          if (name == null) throw new ArgumentNullException(nameof(name));
 
+         Debug.Assert(this.parameters != null);
          this.parameters[name] = value;
 
          return this;
@@ -35,9 +55,9 @@ namespace Xcst.PackageModel {
 
       public TValue Param<TValue>(string name, Func<TValue> defaultValue) {
 
-         object value;
+         object value = null;
 
-         if (this.parameters.TryGetValue(name, out value)) {
+         if (this.parameters?.TryGetValue(name, out value) == true) {
 
             this.parameters.Remove(name);
 

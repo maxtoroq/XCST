@@ -143,7 +143,7 @@ namespace Xcst {
 
          if (this.primingContext == null) {
 
-            this.primingContext = new PrimingContext();
+            this.primingContext = PrimingContext.Create(this.parameters.Count);
 
             foreach (var param in this.parameters) {
                this.primingContext.WithParam(param.Key, param.Value);
