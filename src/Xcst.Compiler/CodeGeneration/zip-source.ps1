@@ -4,6 +4,18 @@ Push-Location (Split-Path $script:MyInvocation.MyCommand.Path)
 
 function CompressSource {
 
+   # test compilation
+   $saxonPath = Resolve-Path ..\..\..\packages\Saxon-HE.*
+   $saxonCommand = "$saxonPath\tools\Transform.exe -nogo -xsl:xcst-compile-cmdline.xsl"
+   $saxonOutput = cmd /c $saxonCommand '2>&1'
+
+   if ($saxonOutput -ne $null) {
+      $saxonOutput
+      ""
+      "error: XSLT compilation failed."
+      return
+   }
+
    Add-Type -AssemblyName System.IO.Compression
 
    try {
@@ -15,7 +27,7 @@ function CompressSource {
 
          $zipArchive = New-Object IO.Compression.ZipArchive($zipFile, [IO.Compression.ZipArchiveMode]::Create)
 
-         foreach ($xsl in ls *.xsl) {
+         foreach ($xsl in ls *.xsl -Exclude xcst-compile-cmdline.xsl) {
 
             $zipEntry = $zipArchive.CreateEntry($xsl.Name)
             $zipEntry.LastWriteTime = $xsl.LastWriteTime

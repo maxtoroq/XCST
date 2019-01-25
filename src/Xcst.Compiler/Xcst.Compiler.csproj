@@ -73,6 +73,7 @@
     <Compile Include="XcstExtensionAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="CodeGeneration\xcst-compile-cmdline.xsl" />
     <Content Include="CodeGeneration\xcst-compile.xsl" />
   </ItemGroup>
   <ItemGroup>

@@ -25,7 +25,7 @@ namespace Xcst.Compiler.CodeGeneration {
 
    class LineNumberFunction : ExtensionFunctionDefinition {
 
-      public override QName FunctionName { get; } = CompilerQName("line-number");
+      public override QName FunctionName { get; } = CompilerQName("_line-number");
 
       public override XdmSequenceType[] ArgumentTypes { get; } = {
          new XdmSequenceType(XdmAnyNodeType.Instance, ' ')
@@ -58,7 +58,7 @@ namespace Xcst.Compiler.CodeGeneration {
 
    class LocalPathFunction : ExtensionFunctionDefinition {
 
-      public override QName FunctionName { get; } = CompilerQName("local-path");
+      public override QName FunctionName { get; } = CompilerQName("_local-path");
 
       public override XdmSequenceType[] ArgumentTypes { get; } = {
          new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_ANYURI), ' ')
@@ -109,7 +109,7 @@ namespace Xcst.Compiler.CodeGeneration {
 
    class MakeRelativeUriFunction : ExtensionFunctionDefinition {
 
-      public override QName FunctionName { get; } = CompilerQName("make-relative-uri");
+      public override QName FunctionName { get; } = CompilerQName("_make-relative-uri");
 
       public override XdmSequenceType[] ArgumentTypes { get; } = {
          new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_ANYURI), ' '),
@@ -151,7 +151,7 @@ namespace Xcst.Compiler.CodeGeneration {
 
       readonly Processor processor;
 
-      public override QName FunctionName { get; } = CompilerQName("doc-with-uris");
+      public override QName FunctionName { get; } = CompilerQName("_doc-with-uris");
 
       public override XdmSequenceType[] ArgumentTypes { get; } = {
          new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_ANYURI), ' '),
@@ -252,7 +252,7 @@ namespace Xcst.Compiler.CodeGeneration {
 
       readonly Processor processor;
 
-      public override QName FunctionName { get; } = CompilerQName("package-manifest");
+      public override QName FunctionName { get; } = CompilerQName("_package-manifest");
 
       public override XdmSequenceType[] ArgumentTypes { get; } = {
          new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_STRING), ' '),
@@ -353,7 +353,7 @@ namespace Xcst.Compiler.CodeGeneration {
 
    class PackageLocationFunction : ExtensionFunctionDefinition {
 
-      public override QName FunctionName { get; } = CompilerQName("package-location");
+      public override QName FunctionName { get; } = CompilerQName("_package-location");
 
       public override XdmSequenceType[] ArgumentTypes { get; } = {
          new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_STRING), ' '),
@@ -468,7 +468,7 @@ namespace Xcst.Compiler.CodeGeneration {
 
    class QNameIdFunction : ExtensionFunctionDefinition {
 
-      public override QName FunctionName { get; } = CompilerQName("qname-id");
+      public override QName FunctionName { get; } = CompilerQName("_qname-id");
 
       public override XdmSequenceType[] ArgumentTypes { get; } = {
          new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_QNAME), ' ')

@@ -3943,4 +3943,23 @@
       <sequence select="(document-uri(root($node)), xs:anyURI(''))[1], src:line-number($node)"/>
    </function>
 
+   <function name="src:line-number" as="xs:integer">
+      <param name="p1" as="node()"/>
+
+      <sequence select="src:_line-number($p1)"/>
+   </function>
+
+   <function name="src:local-path" as="xs:string">
+      <param name="p1" as="xs:anyURI"/>
+
+      <sequence select="src:_local-path($p1)"/>
+   </function>
+
+   <function name="src:make-relative-uri" as="xs:anyURI">
+      <param name="p1" as="xs:anyURI"/>
+      <param name="p2" as="xs:anyURI"/>
+
+      <sequence select="src:_make-relative-uri($p1, $p2)"/>
+   </function>
+
 </stylesheet>

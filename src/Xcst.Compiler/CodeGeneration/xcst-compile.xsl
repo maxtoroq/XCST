@@ -364,6 +364,32 @@
       <sequence select="error(xs:QName('err:XTSE0120'), 'No character data is allowed between top-level elements.', src:error-object(.))"/>
    </template>
 
+   <function name="src:package-manifest" as="document-node()?">
+      <param name="p1" as="xs:string"/>
+      <param name="p2" as="item()?"/>
+      <param name="p3" as="item()+"/>
+
+      <sequence select="src:_package-manifest($p1, $p2, $p3)"/>
+   </function>
+
+   <function name="src:package-location" as="xs:anyURI?">
+      <param name="p1" as="xs:string"/>
+      <param name="p2" as="item()?"/>
+      <param name="p3" as="xs:anyURI?"/>
+      <param name="p4" as="xs:string?"/>
+      <param name="p5" as="xs:string?"/>
+
+      <sequence select="src:_package-location($p1, $p2, $p3, $p4, $p5)"/>
+   </function>
+
+   <function name="src:doc-with-uris" as="item()+">
+      <param name="p1" as="xs:anyURI"/>
+      <param name="p2" as="item()+"/>
+      <param name="p3" as="item()?"/>
+
+      <sequence select="src:_doc-with-uris($p1, $p2, $p3)"/>
+   </function>
+
    <!--
       ## Package Analysis
    -->
@@ -958,6 +984,12 @@
          '_',
          if ($deterministic and exists($qname)) then replace(string(src:qname-id($qname)), '-', '_') else generate-id($declaration)
       )"/>
+   </function>
+
+   <function name="src:qname-id" as="xs:integer">
+      <param name="p1" as="xs:QName"/>
+
+      <sequence select="src:_qname-id($p1)"/>
    </function>
 
    <!--
