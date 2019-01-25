@@ -26,7 +26,7 @@ namespace Xcst.Compiler {
 
       readonly Lazy<XsltExecutable> compilerExec;
       readonly Processor processor;
-      readonly IDictionary<QualifiedName, object> parameters = new Dictionary<QualifiedName, object>();
+      readonly Dictionary<QualifiedName, object> parameters = new Dictionary<QualifiedName, object>();
 
       public string TargetNamespace { get; set; }
 

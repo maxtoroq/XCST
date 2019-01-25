@@ -116,7 +116,7 @@ namespace Xcst.PackageModel {
 
       public TDefault Param<TDefault>(string name, Func<TDefault> defaultValue = null, bool tunnel = false) {
 
-         IDictionary<string, object>/*?*/ paramsDict = (tunnel) ?
+         Dictionary<string, object>/*?*/ paramsDict = (tunnel) ?
             this.tunnelParameters
             : this.templateParameters;
 

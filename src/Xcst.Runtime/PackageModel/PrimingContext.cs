@@ -22,7 +22,7 @@ namespace Xcst.PackageModel {
 
    public class PrimingContext {
 
-      readonly IDictionary<string, object> parameters = new Dictionary<string, object>();
+      readonly Dictionary<string, object> parameters = new Dictionary<string, object>();
 
       public PrimingContext WithParam(string name, object value) {
 

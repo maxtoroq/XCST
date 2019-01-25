@@ -30,7 +30,7 @@ namespace Xcst.Compiler {
 
       readonly Processor processor;
       readonly Lazy<XsltExecutable> executable;
-      readonly IDictionary<Uri, Func<Stream>> extensions = new Dictionary<Uri, Func<Stream>>();
+      readonly Dictionary<Uri, Func<Stream>> extensions = new Dictionary<Uri, Func<Stream>>();
 
       public bool EnableExtensions { get; set; }
 

@@ -27,7 +27,7 @@ namespace Xcst {
       static readonly QualifiedName InitialTemplate = new QualifiedName("initial-template", XmlNamespaces.Xcst);
 
       readonly IXcstPackage package;
-      readonly IDictionary<string, object> parameters = new Dictionary<string, object>();
+      readonly Dictionary<string, object> parameters = new Dictionary<string, object>();
       bool paramsLocked = false;
       PrimingContext primingContext;
 
@@ -162,8 +162,8 @@ namespace Xcst {
       readonly IXcstPackage package;
       readonly Func<PrimingContext> primeFn;
       readonly QualifiedName name;
-      readonly IDictionary<string, object> templateParameters = new Dictionary<string, object>();
-      readonly IDictionary<string, object> tunnelParameters = new Dictionary<string, object>();
+      readonly Dictionary<string, object> templateParameters = new Dictionary<string, object>();
+      readonly Dictionary<string, object> tunnelParameters = new Dictionary<string, object>();
 
       internal XcstTemplateEvaluator(IXcstPackage package, Func<PrimingContext> primeFn, QualifiedName name) {
 
@@ -324,7 +324,7 @@ namespace Xcst {
          return new XcstOutputter(this.package, this.primeFn, executionFn2);
       }
 
-      static TemplateContext CreateTemplateContext(IDictionary<string, object> templateParams, IDictionary<string, object> tunnelParams) {
+      static TemplateContext CreateTemplateContext(Dictionary<string, object> templateParams, Dictionary<string, object> tunnelParams) {
 
          var context = TemplateContext.Create(templateParams.Count, tunnelParams.Count);
 

@@ -21,7 +21,7 @@ namespace Xcst {
 
    public class OutputParameters {
 
-      readonly IDictionary<QualifiedName, object> parameters = new Dictionary<QualifiedName, object>();
+      readonly Dictionary<QualifiedName, object> parameters = new Dictionary<QualifiedName, object>();
 
       public object this[string name] {
          get { return this[StandardParameters.Parse(name)]; }
