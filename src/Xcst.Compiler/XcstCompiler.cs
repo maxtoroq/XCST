@@ -36,6 +36,8 @@ namespace Xcst.Compiler {
 
       public string[] TargetBaseTypes { get; set; }
 
+      public bool ClsCompliant { get; set; }
+
       public bool NamedPackage { get; set; }
 
       public string UsePackageBase { get; set; }
@@ -244,6 +246,8 @@ namespace Xcst.Compiler {
          }
 
          compiler.SetParameter(CompilerQName("base-types"), this.TargetBaseTypes.ToXdmValue());
+
+         compiler.SetParameter(CompilerQName("cls-compliant"), this.ClsCompliant.ToXdmValue());
 
          compiler.SetParameter(CompilerQName("use-line-directive"), this.UseLineDirective.ToXdmValue());
 

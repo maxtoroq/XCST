@@ -29,6 +29,7 @@
    <param name="src:class" as="xs:string?"/>
    <param name="src:base-types" as="xs:string*"/>
    <param name="src:visibility" select="'public'" as="xs:string"/>
+   <param name="src:cls-compliant" select="false()" as="xs:boolean"/>
 
    <param name="src:named-package" select="false()" as="xs:boolean"/>
    <param name="src:use-package-base" as="xs:string?"/>
@@ -43,7 +44,7 @@
    <variable name="src:package-interface" select="src:package-model-type('IXcstPackage')"/>
    <variable name="src:context-field" as="element()">
       <src:context type="{src:package-model-type('ExecutionContext')}">
-         <value-of select="concat('this.', src:aux-variable('execution_context'))"/>
+         <value-of select="concat('this.', src:aux-variable('exec_context'))"/>
       </src:context>
    </variable>
 
@@ -665,7 +666,7 @@
 
       <variable name="member-name" select="
          if ($visibility eq 'hidden') then 
-            concat(xcst:name(@name), '_', generate-id())
+            src:aux-variable(concat('fn_', xcst:name(@name), '_', generate-id()))
          else $name"/>
 
       <xcst:function name="{$name}"
@@ -907,7 +908,7 @@
             <sequence select="error(xs:QName('err:XTSE0080'), concat('Namespace prefix ''', prefix-from-QName($output-name), ''' refers to a reserved namespace.'), src:error-object(.))"/>
          </if>
 
-         <xcst:output member-name="{src:template-method-name(., $output-name, 'output', false())}" declaration-ids="{current-group()/generate-id(.)}">
+         <xcst:output member-name="{src:template-method-name(., $output-name, 'outputdef', false())}" declaration-ids="{current-group()/generate-id(.)}">
             <if test="exists($output-name)">
                <attribute name="name" select="xcst:uri-qualified-name($output-name)"/>
             </if>
@@ -978,12 +979,22 @@
       <param name="component-kind" as="xs:string"/>
       <param name="deterministic" as="xs:boolean"/>
 
-      <sequence select="concat(
-         if (exists($qname)) then concat(replace(string($qname), '[^A-Za-z0-9]', '_'), '_') else (),
-         $component-kind,
-         '_',
-         if ($deterministic and exists($qname)) then replace(string(src:qname-id($qname)), '-', '_') else generate-id($declaration)
-      )"/>
+      <variable name="escaped-name" select="
+         if (exists($qname)) then
+            replace(string($qname), '[^A-Za-z0-9]', '_')
+         else ()"/>
+
+      <variable name="id" select="
+         if ($deterministic and exists($qname)) then
+            replace(string(src:qname-id($qname)), '-', '_')
+         else
+            generate-id($declaration)"/>
+
+      <sequence select="
+         if ($src:cls-compliant and $deterministic) then
+            string-join(($escaped-name, $component-kind, $id), '_')
+         else
+            src:aux-variable(string-join(($component-kind, $escaped-name, $id), '_'))"/>
    </function>
 
    <function name="src:qname-id" as="xs:integer">
@@ -1110,8 +1121,8 @@
          <text>#pragma warning disable CS3008</text>
          <for-each select="$non-tunnel-params">
             <variable name="type" select="src:global-identifier-meta(@as)"/>
-            <variable name="value-field" select="src:aux-variable(concat(@name, '_value'))"/>
-            <variable name="set-field" select="src:aux-variable(concat(@name, '_set'))"/>
+            <variable name="value-field" select="src:aux-variable(concat('back_', @name))"/>
+            <variable name="init-field" select="src:params-type-init-name(@name)"/>
             <if test="position() gt 1">
                <value-of select="$src:new-line"/>
             </if>
@@ -1124,7 +1135,7 @@
                <with-param name="increase" select="1"/>
             </call-template>
             <text>public bool </text>
-            <value-of select="$set-field"/>
+            <value-of select="$init-field"/>
             <value-of select="$src:statement-delimiter"/>
             <value-of select="$src:new-line"/>
             <call-template name="src:new-line-indented">
@@ -1154,7 +1165,7 @@
             <call-template name="src:new-line-indented">
                <with-param name="increase" select="3"/>
             </call-template>
-            <value-of select="$set-field, 'true'" separator=" = "/>
+            <value-of select="$init-field, 'true'" separator=" = "/>
             <value-of select="$src:statement-delimiter"/>
             <call-template name="src:close-brace">
                <with-param name="indent" select="$indent + 2" tunnel="yes"/>
@@ -1192,7 +1203,6 @@
          <value-of select="$src:statement-delimiter"/>
          <for-each select="$non-tunnel-params">
             <variable name="name-str" select="src:string(@name)"/>
-            <variable name="set-field" select="src:params-type-set-name(@name)"/>
             <value-of select="$src:new-line"/>
             <call-template name="src:new-line-indented">
                <with-param name="increase" select="2"/>
@@ -1216,12 +1226,6 @@
             <text>>(</text>
             <value-of select="$name-str"/>
             <text>)</text>
-            <value-of select="$src:statement-delimiter"/>
-            <call-template name="src:new-line-indented">
-               <with-param name="increase" select="3"/>
-            </call-template>
-            <value-of select="$var, $set-field" separator="."/>
-            <text> = true</text>
             <value-of select="$src:statement-delimiter"/>
             <call-template name="src:close-brace">
                <with-param name="indent" select="$indent + 2" tunnel="yes"/>
@@ -1323,10 +1327,10 @@
       <sequence select="concat($meta/@member-name, '_params')"/>
    </function>
 
-   <function name="src:params-type-set-name" as="xs:string">
+   <function name="src:params-type-init-name" as="xs:string">
       <param name="name" as="item()"/>
 
-      <sequence select="src:aux-variable(concat($name, '_set'))"/>
+      <sequence select="src:aux-variable(concat('init_', $name))"/>
    </function>
 
    <function name="src:template-output" as="element()">
@@ -1934,7 +1938,7 @@
    <function name="src:overriding-field-name" as="xs:string">
       <param name="meta" as="element()"/>
 
-      <sequence select="src:aux-variable(concat('overriding_', $meta/@id))"/>
+      <sequence select="src:aux-variable(concat('overr_', $meta/@id))"/>
    </function>
 
    <function name="src:original-member-name" as="xs:string">
@@ -1964,7 +1968,7 @@
    <function name="src:used-package-field-name" as="xs:string">
       <param name="meta" as="element()"/>
 
-      <sequence select="src:aux-variable(concat('used_package_', $meta/@package-id))"/>
+      <sequence select="src:aux-variable(concat('pkg_', $meta/@package-id))"/>
    </function>
 
    <!--
@@ -2642,7 +2646,7 @@
    <function name="src:backing-field" as="xs:string">
       <param name="meta" as="element()"/>
 
-      <sequence select="src:aux-variable(concat('backing_field_', $meta/@name))"/>
+      <sequence select="src:aux-variable(concat('back_', $meta/@name))"/>
    </function>
 
    <function name="src:hidden-function-delegate-method-name" as="xs:string">
@@ -3093,7 +3097,7 @@
       <value-of select="$src:new-line"/>
       <call-template name="src:new-line-indented"/>
       <variable name="name-param" select="src:aux-variable('name')"/>
-      <variable name="parameters-param" select="src:aux-variable('parameters')"/>
+      <variable name="parameters-param" select="src:aux-variable('params')"/>
       <text>void </text>
       <value-of select="$src:package-interface"/>
       <text>.ReadOutputDefinition(</text>
@@ -3260,7 +3264,7 @@
       <param name="indent" tunnel="yes"/>
       <param name="modules" tunnel="yes"/>
 
-      <variable name="parameters-param" select="src:aux-variable('parameters')"/>
+      <variable name="parameters-param" select="src:aux-variable('params')"/>
       <variable name="declarations" select="for $id in tokenize(@declaration-ids, '\s') return $modules/c:output[generate-id() eq $id]"/>
 
       <value-of select="$src:new-line"/>

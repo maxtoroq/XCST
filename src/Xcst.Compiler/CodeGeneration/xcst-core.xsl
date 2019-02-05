@@ -1260,7 +1260,7 @@
                   <text>(</text>
                   <value-of select="$name-str"/>
                   <text>, </text>
-                  <value-of select="$context, 'Parameters', src:params-type-set-name(src:strip-verbatim-prefix($name))" separator="."/>
+                  <value-of select="$context, 'Parameters', src:params-type-init-name(src:strip-verbatim-prefix($name))" separator="."/>
                   <text>, </text>
                   <value-of select="$context, 'Parameters', $name" separator="."/>
                   <text>, () => </text>
