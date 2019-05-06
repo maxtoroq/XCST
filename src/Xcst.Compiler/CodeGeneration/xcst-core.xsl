@@ -1289,43 +1289,32 @@
          </if>
       </if>
 
-      <variable name="default-value-lambda-body" as="element()">
-         <choose>
-            <when test="$required">
-               <code:block>
-                  <code:throw>
-                     <code:method-call name="Required{if ($global) then 'Global' else 'Template'}Parameter">
-                        <sequence select="src:helper-type('DynamicError')"/>
-                        <code:arguments>
-                           <sequence select="$name-str"/>
-                        </code:arguments>
-                     </code:method-call>
-                  </code:throw>
-               </code:block>
-            </when>
-            <otherwise>
-               <call-template name="src:value">
-                  <with-param name="text" select="$text"/>
-               </call-template>
-            </otherwise>
-         </choose>
+      <variable name="default-value" as="element()?">
+         <if test="$has-default-value">
+            <call-template name="src:value">
+               <with-param name="text" select="$text"/>
+            </call-template>
+         </if>
       </variable>
 
       <variable name="expression" as="element()">
          <choose>
             <when test="$template-meta/xcst:typed-params(.) and not($tunnel)">
+               <variable name="typed-ref" as="element()">
+                  <code:property-reference name="Parameters">
+                     <sequence select="$context/src:reference/code:*"/>
+                  </code:property-reference>
+               </variable>
                <choose>
                   <when test="not($required) and not($has-default-value)">
                      <code:property-reference name="{$name}">
-                        <code:property-reference name="Parameters">
-                           <sequence select="$context/src:reference/code:*"/>
-                        </code:property-reference>
+                        <sequence select="$typed-ref"/>
                      </code:property-reference>
                   </when>
                   <otherwise>
                      <code:method-call name="TypedParam">
                         <sequence select="src:template-context(())/code:type-reference"/>
-                        <if test="$required">
+                        <if test="$required or not($has-default-value)">
                            <code:type-arguments>
                               <sequence select="$type, $type"/>
                            </code:type-arguments>
@@ -1333,18 +1322,21 @@
                         <code:arguments>
                            <sequence select="$name-str"/>
                            <code:property-reference name="{src:params-type-init-name(xcst:unescape-identifier($name, $language))}">
-                              <code:property-reference name="Parameters">
-                                 <sequence select="$context/src:reference/code:*"/>
-                              </code:property-reference>
+                              <sequence select="$typed-ref"/>
                            </code:property-reference>
                            <code:property-reference name="{$name}">
-                              <code:property-reference name="Parameters">
-                                 <sequence select="$context/src:reference/code:*"/>
-                              </code:property-reference>
+                              <sequence select="$typed-ref"/>
                            </code:property-reference>
-                           <code:lambda>
-                              <sequence select="$default-value-lambda-body"/>
-                           </code:lambda>
+                           <if test="$has-default-value">
+                              <code:lambda>
+                                 <sequence select="$default-value"/>
+                              </code:lambda>
+                           </if>
+                           <if test="$required">
+                              <code:argument name="required">
+                                 <code:bool value="true"/>
+                              </code:argument>
+                           </if>
                         </code:arguments>
                      </code:method-call>
                   </otherwise>
@@ -1353,16 +1345,23 @@
             <otherwise>
                <code:method-call name="Param">
                   <sequence select="$context/src:reference/code:*"/>
-                  <if test="$required">
+                  <if test="$required or not($has-default-value)">
                      <code:type-arguments>
                         <sequence select="$type"/>
                      </code:type-arguments>
                   </if>
                   <code:arguments>
                      <sequence select="$name-str"/>
-                     <code:lambda>
-                        <sequence select="$default-value-lambda-body"/>
-                     </code:lambda>
+                     <if test="$has-default-value">
+                        <code:lambda>
+                           <sequence select="$default-value"/>
+                        </code:lambda>
+                     </if>
+                     <if test="$required">
+                        <code:argument name="required">
+                           <code:bool value="true"/>
+                        </code:argument>
+                     </if>
                      <if test="$tunnel">
                         <code:argument name="tunnel">
                            <code:bool value="true"/>
@@ -3590,7 +3589,7 @@
       ## Expressions
    -->
 
-   <template name="src:simple-content">
+   <template name="src:simple-content" as="element()">
       <param name="attribute" as="attribute()?"/>
       <param name="text" select="xcst:text(.)"/>
       <param name="separator" as="attribute()?"/>
@@ -3666,7 +3665,7 @@
       </choose>
    </template>
 
-   <template name="src:value">
+   <template name="src:value" as="element()">
       <param name="attribute" select="@value" as="attribute()?"/>
       <param name="text" select="xcst:text(.)"/>
       <param name="language" required="yes" tunnel="yes"/>

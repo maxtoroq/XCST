@@ -53,7 +53,7 @@ namespace Xcst.PackageModel {
          return this;
       }
 
-      public TValue Param<TValue>(string name, Func<TValue> defaultValue) {
+      public TValue Param<TValue>(string name, Func<TValue> defaultValue = null, bool required = false) {
 
          object value = null;
 
@@ -71,6 +71,10 @@ namespace Xcst.PackageModel {
 
          if (defaultValue != null) {
             return defaultValue();
+         }
+
+         if (required) {
+            throw DynamicError.RequiredGlobalParameter(name);
          }
 
          return default(TValue);

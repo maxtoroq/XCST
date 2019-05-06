@@ -106,7 +106,8 @@ namespace Xcst.PackageModel {
          return this.templateParameters?.ContainsKey(name) == true;
       }
 
-      public TDefault Param<TDefault>(string name, Func<TDefault> defaultValue = null, bool tunnel = false) {
+      public TDefault Param<TDefault>(
+            string name, Func<TDefault> defaultValue = null, bool required = false, bool tunnel = false) {
 
          Dictionary<string, object>/*?*/ paramsDict = (tunnel) ?
             this.tunnelParameters
@@ -132,10 +133,15 @@ namespace Xcst.PackageModel {
             return defaultValue();
          }
 
+         if (required) {
+            throw DynamicError.RequiredTemplateParameter(name);
+         }
+
          return default(TDefault);
       }
 
-      public static TDefault TypedParam<TValue, TDefault>(string name, bool valueSet, TValue value, Func<TDefault> defaultValue) where TDefault : TValue {
+      public static TDefault TypedParam<TValue, TDefault>(
+            string name, bool valueSet, TValue value, Func<TDefault> defaultValue = null, bool required = false) where TDefault : TValue {
 
          if (valueSet) {
 
@@ -147,7 +153,15 @@ namespace Xcst.PackageModel {
             }
          }
 
-         return defaultValue();
+         if (defaultValue != null) {
+            return defaultValue();
+         }
+
+         if (required) {
+            throw DynamicError.RequiredTemplateParameter(name);
+         }
+
+         return default(TDefault);
       }
    }
 
