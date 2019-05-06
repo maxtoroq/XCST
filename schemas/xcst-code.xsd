@@ -1,0 +1,742 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Converted from Relax NG schema, using Trang. Use only with code completion tools that do not support Relax NG. -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:code="http://maxtoroq.github.io/XCST/code" elementFormDefault="qualified" targetNamespace="http://maxtoroq.github.io/XCST/code">
+   <xs:element name="_expression" abstract="true" substitutionGroup="code:_member-binding"/>
+   <xs:element name="_literal" abstract="true" substitutionGroup="code:_expression"/>
+   <xs:group name="_statement">
+      <xs:choice>
+         <xs:group ref="code:assign"/>
+         <xs:element ref="code:break"/>
+         <xs:element ref="code:chain"/>
+         <xs:element ref="code:continue"/>
+         <xs:element ref="code:for-each"/>
+         <xs:element ref="code:if"/>
+         <xs:element ref="code:if-else"/>
+         <xs:element ref="code:method-call"/>
+         <xs:element ref="code:return"/>
+         <xs:element ref="code:script"/>
+         <xs:element ref="code:switch"/>
+         <xs:element ref="code:throw"/>
+         <xs:element ref="code:using"/>
+         <xs:element ref="code:variable"/>
+         <xs:element ref="code:while"/>
+      </xs:choice>
+   </xs:group>
+   <xs:group name="_namespace-member">
+      <xs:choice>
+         <xs:element ref="code:region"/>
+         <xs:element ref="code:type"/>
+      </xs:choice>
+   </xs:group>
+   <xs:group name="_type-member">
+      <xs:choice>
+         <xs:element ref="code:constructor"/>
+         <xs:element ref="code:conversion"/>
+         <xs:element ref="code:field"/>
+         <xs:element ref="code:property"/>
+         <xs:element ref="code:method"/>
+         <xs:element ref="code:region"/>
+         <xs:element ref="code:type"/>
+      </xs:choice>
+   </xs:group>
+   <xs:element name="_member-binding" abstract="true"/>
+   <xs:element name="add" substitutionGroup="code:_expression">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element ref="code:_expression"/>
+            <xs:element ref="code:_expression"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="and-also" substitutionGroup="code:_expression">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element ref="code:_expression"/>
+            <xs:element ref="code:_expression"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="argument">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element ref="code:_expression"/>
+         </xs:sequence>
+         <xs:attribute name="name"/>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="arguments">
+      <xs:complexType>
+         <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element ref="code:argument"/>
+            <xs:element ref="code:_expression"/>
+         </xs:choice>
+      </xs:complexType>
+   </xs:element>
+   <xs:group name="assign">
+      <xs:sequence>
+         <xs:element ref="code:_expression"/>
+         <xs:element ref="code:_expression"/>
+      </xs:sequence>
+   </xs:group>
+   <xs:element name="attribute">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element ref="code:type-reference"/>
+            <xs:element minOccurs="0" ref="code:arguments"/>
+            <xs:element minOccurs="0" ref="code:initializer"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="attributes">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element minOccurs="0" maxOccurs="unbounded" ref="code:attribute"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="base-reference" substitutionGroup="code:_expression">
+      <xs:complexType/>
+   </xs:element>
+   <xs:element name="base-types">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element minOccurs="0" maxOccurs="unbounded" ref="code:type-reference"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="block">
+      <xs:complexType>
+         <xs:group minOccurs="0" maxOccurs="unbounded" ref="code:_statement"/>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="bool" substitutionGroup="code:_literal">
+      <xs:complexType>
+         <xs:attribute name="value" use="required" type="code:_boolean"/>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="break">
+      <xs:complexType/>
+   </xs:element>
+   <xs:element name="case">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element ref="code:_expression"/>
+            <xs:choice>
+               <xs:group minOccurs="0" maxOccurs="unbounded" ref="code:_statement"/>
+               <xs:element ref="code:block"/>
+            </xs:choice>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="case-default">
+      <xs:complexType>
+         <xs:choice>
+            <xs:group minOccurs="0" maxOccurs="unbounded" ref="code:_statement"/>
+            <xs:element ref="code:block"/>
+         </xs:choice>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="cast" substitutionGroup="code:_expression">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element ref="code:type-reference"/>
+            <xs:element ref="code:_expression"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="catch">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:sequence minOccurs="0">
+               <xs:element ref="code:exception"/>
+               <xs:element minOccurs="0" ref="code:when"/>
+            </xs:sequence>
+            <xs:element ref="code:block"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="chain" substitutionGroup="code:_expression">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element ref="code:_expression"/>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+               <xs:element ref="code:field-reference"/>
+               <xs:element ref="code:property-reference"/>
+               <xs:element ref="code:method-call"/>
+            </xs:choice>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="chain-reference" substitutionGroup="code:_expression">
+      <xs:complexType/>
+   </xs:element>
+   <xs:element name="collection-initializer">
+      <xs:complexType>
+         <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element ref="code:_expression"/>
+            <xs:element ref="code:collection-initializer"/>
+         </xs:choice>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="compilation-unit">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element minOccurs="0" maxOccurs="unbounded" ref="code:import"/>
+            <xs:element minOccurs="0" maxOccurs="unbounded" ref="code:namespace"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="constructor">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element minOccurs="0" ref="code:attributes"/>
+            <xs:element minOccurs="0" ref="code:parameters"/>
+            <xs:element minOccurs="0" ref="code:block"/>
+         </xs:sequence>
+         <xs:attribute name="visibility" type="code:_visibility"/>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="continue">
+      <xs:complexType/>
+   </xs:element>
+   <xs:element name="conversion">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element ref="code:type-reference"/>
+            <xs:element minOccurs="0" ref="code:attributes"/>
+            <xs:element minOccurs="0" ref="code:parameters"/>
+            <xs:element minOccurs="0" ref="code:block"/>
+         </xs:sequence>
+         <xs:attribute name="implicit" type="code:_boolean"/>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="decimal" substitutionGroup="code:_literal">
+      <xs:complexType>
+         <xs:attribute name="value" use="required"/>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="default" substitutionGroup="code:_expression">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element ref="code:type-reference"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="double" substitutionGroup="code:_literal">
+      <xs:complexType>
+         <xs:attribute name="value" use="required"/>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="else">
+      <xs:complexType>
+         <xs:group minOccurs="0" maxOccurs="unbounded" ref="code:_statement"/>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="equal" substitutionGroup="code:_expression">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element ref="code:_expression"/>
+            <xs:element ref="code:_expression"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="exception">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element ref="code:_expression"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="expression" substitutionGroup="code:_expression">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element minOccurs="0" ref="code:_expression"/>
+         </xs:sequence>
+         <xs:attribute name="value"/>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="field">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element ref="code:type-reference"/>
+            <xs:element minOccurs="0" ref="code:attributes"/>
+            <xs:element minOccurs="0" ref="code:expression"/>
+         </xs:sequence>
+         <xs:attribute name="name" use="required"/>
+         <xs:attribute name="extensibility" type="code:_extensibility"/>
+         <xs:attribute name="readonly" type="code:_boolean"/>
+         <xs:attribute name="visibility" type="code:_visibility"/>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="field-reference" substitutionGroup="code:_expression">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element ref="code:_member-binding"/>
+         </xs:sequence>
+         <xs:attribute name="name" use="required"/>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="finally">
+      <xs:complexType>
+         <xs:group minOccurs="0" maxOccurs="unbounded" ref="code:_statement"/>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="float" substitutionGroup="code:_literal">
+      <xs:complexType>
+         <xs:attribute name="value" use="required"/>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="for-each">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element ref="code:variable"/>
+            <xs:element ref="code:block"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="getter">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element minOccurs="0" ref="code:block"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="greater-than" substitutionGroup="code:_expression">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element ref="code:_expression"/>
+            <xs:element ref="code:_expression"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="greater-than-or-equal" substitutionGroup="code:_expression">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element ref="code:_expression"/>
+            <xs:element ref="code:_expression"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="if">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element ref="code:_expression"/>
+            <xs:element ref="code:block"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="if-else">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element maxOccurs="unbounded" ref="code:if"/>
+            <xs:element minOccurs="0" ref="code:else"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="implements-interface">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element ref="code:type-reference"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="import">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element minOccurs="0" ref="code:type-reference"/>
+         </xs:sequence>
+         <xs:attribute name="alias"/>
+         <xs:attribute name="static" type="code:_boolean"/>
+         <xs:attribute name="namespace"/>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="indexer-initializer">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element ref="code:arguments"/>
+            <xs:element ref="code:_expression"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="indexer-reference" substitutionGroup="code:_expression">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element ref="code:_expression"/>
+            <xs:element ref="code:arguments"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="initializer">
+      <xs:complexType>
+         <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element ref="code:member-initializer"/>
+            <xs:element ref="code:indexer-initializer"/>
+         </xs:choice>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="int" substitutionGroup="code:_literal">
+      <xs:complexType>
+         <xs:attribute name="value" use="required"/>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="lambda" substitutionGroup="code:_expression">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element minOccurs="0" ref="code:parameters"/>
+            <xs:choice>
+               <xs:element ref="code:_expression"/>
+               <xs:element ref="code:block"/>
+            </xs:choice>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="less-than" substitutionGroup="code:_expression">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element ref="code:_expression"/>
+            <xs:element ref="code:_expression"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="less-than-or-equal" substitutionGroup="code:_expression">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element ref="code:_expression"/>
+            <xs:element ref="code:_expression"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="long" substitutionGroup="code:_literal">
+      <xs:complexType>
+         <xs:attribute name="value" use="required"/>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="member-initializer">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element ref="code:_expression"/>
+         </xs:sequence>
+         <xs:attribute name="name" use="required"/>
+         <xs:attribute name="verbatim" type="code:_boolean"/>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="members">
+      <xs:complexType>
+         <xs:group minOccurs="0" maxOccurs="unbounded" ref="code:_type-member"/>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="method">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element minOccurs="0" ref="code:type-reference"/>
+            <xs:element minOccurs="0" ref="code:implements-interface"/>
+            <xs:element minOccurs="0" ref="code:attributes"/>
+            <xs:element minOccurs="0" ref="code:type-parameters"/>
+            <xs:element minOccurs="0" ref="code:parameters"/>
+            <xs:element minOccurs="0" ref="code:block"/>
+         </xs:sequence>
+         <xs:attribute name="name" use="required"/>
+         <xs:attribute name="extensibility" type="code:_extensibility"/>
+         <xs:attribute name="visibility" type="code:_visibility"/>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="method-call" substitutionGroup="code:_expression">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:choice>
+               <xs:group ref="code:_method-reference-model"/>
+               <xs:element ref="code:method-reference"/>
+            </xs:choice>
+            <xs:element minOccurs="0" ref="code:arguments"/>
+         </xs:sequence>
+         <xs:attribute name="name"/>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="method-reference" substitutionGroup="code:_expression">
+      <xs:complexType>
+         <xs:group ref="code:_method-reference-model"/>
+         <xs:attributeGroup ref="code:_method-reference-model"/>
+      </xs:complexType>
+   </xs:element>
+   <xs:group name="_method-reference-model">
+      <xs:sequence>
+         <xs:element ref="code:_member-binding"/>
+         <xs:element minOccurs="0" ref="code:type-arguments"/>
+      </xs:sequence>
+   </xs:group>
+   <xs:attributeGroup name="_method-reference-model">
+      <xs:attribute name="name" use="required"/>
+   </xs:attributeGroup>
+   <xs:element name="namespace">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element minOccurs="0" maxOccurs="unbounded" ref="code:import"/>
+            <xs:group minOccurs="0" maxOccurs="unbounded" ref="code:_namespace-member"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="new-array" substitutionGroup="code:_expression">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element minOccurs="0" ref="code:type-reference"/>
+            <xs:element minOccurs="0" ref="code:collection-initializer"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="new-object" substitutionGroup="code:_expression">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element ref="code:type-reference"/>
+            <xs:element minOccurs="0" ref="code:arguments"/>
+            <xs:choice minOccurs="0">
+               <xs:element ref="code:initializer"/>
+               <xs:element ref="code:collection-initializer"/>
+            </xs:choice>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="not" substitutionGroup="code:_expression">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element ref="code:_expression"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="null" substitutionGroup="code:_expression">
+      <xs:complexType/>
+   </xs:element>
+   <xs:element name="or-else" substitutionGroup="code:_expression">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element ref="code:_expression"/>
+            <xs:element ref="code:_expression"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="parameter">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element minOccurs="0" ref="code:type-reference"/>
+            <xs:element minOccurs="0" ref="code:_expression"/>
+         </xs:sequence>
+         <xs:attribute name="name" use="required"/>
+         <xs:attribute name="params" type="code:_boolean"/>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="parameters">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element minOccurs="0" maxOccurs="unbounded" ref="code:parameter"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="property">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element ref="code:type-reference"/>
+            <xs:element ref="code:implements-interface"/>
+            <xs:element minOccurs="0" ref="code:attributes"/>
+            <xs:element minOccurs="0" ref="code:getter"/>
+            <xs:element minOccurs="0" ref="code:setter"/>
+            <xs:element minOccurs="0" ref="code:expression"/>
+         </xs:sequence>
+         <xs:attribute name="name" use="required"/>
+         <xs:attribute name="extensibility" type="code:_extensibility"/>
+         <xs:attribute name="visibility" type="code:_visibility"/>
+         <xs:attribute name="verbatim" type="code:_boolean"/>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="property-reference" substitutionGroup="code:_expression">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element ref="code:_member-binding"/>
+         </xs:sequence>
+         <xs:attribute name="name" use="required"/>
+         <xs:attribute name="verbatim" type="code:_boolean"/>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="region">
+      <xs:complexType>
+         <xs:attribute name="name" use="required"/>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="return">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element minOccurs="0" ref="code:_expression"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="script" type="xs:string"/>
+   <xs:element name="setter">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element minOccurs="0" ref="code:block"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="setter-value" substitutionGroup="code:_expression">
+      <xs:complexType/>
+   </xs:element>
+   <xs:element name="string" substitutionGroup="code:_literal">
+      <xs:complexType mixed="true">
+         <xs:attribute name="interpolated" type="code:_boolean"/>
+         <xs:attribute name="literal" type="code:_boolean"/>
+         <xs:attribute name="verbatim" type="code:_boolean"/>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="switch">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element ref="code:_expression"/>
+            <xs:choice minOccurs="0" maxOccurs="unbounded">
+               <xs:element ref="code:case"/>
+               <xs:element ref="code:case-default"/>
+            </xs:choice>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="this-reference" substitutionGroup="code:_expression">
+      <xs:complexType/>
+   </xs:element>
+   <xs:element name="throw">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element ref="code:_expression"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="try">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element ref="code:block"/>
+            <xs:element minOccurs="0" maxOccurs="unbounded" ref="code:catch"/>
+            <xs:element minOccurs="0" ref="code:finally"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="type">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element minOccurs="0" ref="code:base-types"/>
+            <xs:element minOccurs="0" ref="code:attributes"/>
+            <xs:element minOccurs="0" ref="code:members"/>
+         </xs:sequence>
+         <xs:attribute name="name" use="required"/>
+         <xs:attribute name="extensibility" type="code:_extensibility"/>
+         <xs:attribute name="partial" type="code:_boolean"/>
+         <xs:attribute name="struct" type="code:_boolean"/>
+         <xs:attribute name="visibility" type="code:_visibility"/>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="type-arguments">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element minOccurs="0" maxOccurs="unbounded" ref="code:type-reference"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="type-parameters">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element minOccurs="0" maxOccurs="unbounded" ref="code:parameter"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="type-reference" substitutionGroup="code:_member-binding">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element minOccurs="0" ref="code:type-reference"/>
+            <xs:element minOccurs="0" ref="code:type-arguments"/>
+         </xs:sequence>
+         <xs:attribute name="array-dimensions" type="code:_positive-integer"/>
+         <xs:attribute name="name"/>
+         <xs:attribute name="namespace"/>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="typeof" substitutionGroup="code:_expression">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element ref="code:type-reference"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="uint" substitutionGroup="code:_literal">
+      <xs:complexType>
+         <xs:attribute name="value" use="required"/>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="ulong" substitutionGroup="code:_literal">
+      <xs:complexType>
+         <xs:attribute name="value" use="required"/>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="using">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:choice>
+               <xs:element ref="code:variable"/>
+               <xs:element ref="code:_expression"/>
+            </xs:choice>
+            <xs:element ref="code:block"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="variable">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element minOccurs="0" ref="code:type-reference"/>
+            <xs:element minOccurs="0" ref="code:_expression"/>
+         </xs:sequence>
+         <xs:attribute name="name" use="required"/>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="variable-reference" substitutionGroup="code:_expression">
+      <xs:complexType>
+         <xs:attribute name="name" use="required"/>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="while">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element ref="code:_expression"/>
+            <xs:element ref="code:block"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="when">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element ref="code:_expression"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
+   <xs:simpleType name="_boolean">
+      <xs:restriction base="xs:token">
+         <xs:enumeration value="true"/>
+         <xs:enumeration value="false"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="_positive-integer">
+      <xs:restriction base="xs:positiveInteger"/>
+   </xs:simpleType>
+   <xs:simpleType name="_visibility">
+      <xs:restriction base="xs:token">
+         <xs:enumeration value="#default"/>
+         <xs:enumeration value="internal"/>
+         <xs:enumeration value="private"/>
+         <xs:enumeration value="public"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="_extensibility">
+      <xs:restriction base="xs:token">
+         <xs:enumeration value="#default"/>
+         <xs:enumeration value="abstract"/>
+         <xs:enumeration value="new"/>
+         <xs:enumeration value="override"/>
+         <xs:enumeration value="sealed"/>
+         <xs:enumeration value="static"/>
+         <xs:enumeration value="virtual"/>
+      </xs:restriction>
+   </xs:simpleType>
+</xs:schema>

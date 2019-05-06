@@ -5,4 +5,8 @@
       <c:object value='1'/>
    </c:template>
 
+   <c:template name='foos' as='int[]' visibility='public'>
+      <c:object value='1'/>
+   </c:template>
+
 </c:package>

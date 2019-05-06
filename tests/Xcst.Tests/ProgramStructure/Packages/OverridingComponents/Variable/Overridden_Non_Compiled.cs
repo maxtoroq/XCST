@@ -43,9 +43,10 @@ namespace Xcst.Tests.ProgramStructure.Packages.OverridingComponents.Variable {
             .ToArray();
 
          TestsHelper.CompileCode(
-            compilationUnits,
             compilerA.TargetNamespace + "." + compilerA.TargetClass,
-            usingPackageUri
+            usingPackageUri,
+            compilationUnits,
+            resultA.Language
          );
 
          foreach (string unit in compilationUnits) {

@@ -168,7 +168,7 @@
       </xs:attribute>
       <xs:attribute name="language" use="required" type="c:language">
          <xs:annotation>
-            <xs:documentation>The expression language for this module (usually "C#").</xs:documentation>
+            <xs:documentation>The expression language for this module (usually "C#" or "VisualBasic").</xs:documentation>
          </xs:annotation>
       </xs:attribute>
       <xs:attributeGroup ref="c:standard-attributes-except-version"/>

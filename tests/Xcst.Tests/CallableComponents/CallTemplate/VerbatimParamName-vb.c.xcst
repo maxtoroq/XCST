@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='VisualBasic' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:template name='c:initial-template'>
+      <foo>
+         <c:call-template name='foo'>
+            <c:with-param name='class'>bar</c:with-param>
+         </c:call-template>
+      </foo>
+   </c:template>
+
+   <c:template name='foo'>
+      <c:param name='[class]' as='string'/>
+      <c:value-of value='[class]'/>
+   </c:template>
+
+   <c:template name='expected'>
+      <foo>bar</foo>
+   </c:template>
+
+</c:module>

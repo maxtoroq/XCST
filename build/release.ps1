@@ -68,7 +68,7 @@ function script:NuSpec {
 
    } elseif ($projName -eq "Xcst.Compiler") {
 
-      "<description>XCST compilation API. Use this package to translate your XCST programs into C# code.</description>"
+      "<description>XCST compilation API. Use this package to translate your XCST programs into C# or Visual Basic code.</description>"
 
       "<dependencies>"
          "<dependency id='Xcst.Runtime' version='$(DependencyVersionRange Xcst.Runtime)'/>"
@@ -89,8 +89,8 @@ function script:NuSpec {
       "<file src='$projPath\bin\$configuration\$projName.*' target='lib\$targetFxMoniker'/>"
 
    if ($projName -eq "Xcst.Compiler") {
-      "<file src='$solutionPath\schemas\*.rng' target='schemas'/>"
-      "<file src='$solutionPath\schemas\*.xsd' target='schemas'/>"
+      "<file src='$solutionPath\schemas\xcst.rng' target='schemas'/>"
+      "<file src='$solutionPath\schemas\xcst.xsd' target='schemas'/>"
    }
 
    "</files>"

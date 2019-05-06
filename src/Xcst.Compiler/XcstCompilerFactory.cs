@@ -66,7 +66,7 @@ namespace Xcst.Compiler {
          }.Uri;
 
          Stream zipSource = thisType.Assembly
-            .GetManifestResourceStream(typeof(CodeGeneration.CSharpExpression), "xcst-xsl.zip");
+            .GetManifestResourceStream(typeof(CodeGeneration.PackageManifest), "xcst-xsl.zip");
 
          using (var archive = new ZipArchive(zipSource, ZipArchiveMode.Read)) {
 
@@ -111,17 +111,21 @@ namespace Xcst.Compiler {
 
       public void RegisterExtension(Uri extensionNamespace, Func<Stream> extensionLoader) {
 
-         if (extensionNamespace == null)
+         if (extensionNamespace == null) {
             throw new ArgumentNullException(nameof(extensionNamespace));
+         }
 
-         if (!extensionNamespace.IsAbsoluteUri)
+         if (!extensionNamespace.IsAbsoluteUri) {
             throw new ArgumentException($"{nameof(extensionNamespace)} must be an absolute URI.", nameof(extensionNamespace));
+         }
 
-         if (extensionNamespace.Scheme.Equals(CompilerResolver.UriSchemeClires, StringComparison.OrdinalIgnoreCase))
+         if (extensionNamespace.Scheme.Equals(CompilerResolver.UriSchemeClires, StringComparison.OrdinalIgnoreCase)) {
             throw new ArgumentException("Invalid URI.", nameof(extensionNamespace));
+         }
 
-         if (extensionLoader == null)
+         if (extensionLoader == null) {
             throw new ArgumentNullException(nameof(extensionLoader));
+         }
 
          this.extensions[extensionNamespace] = extensionLoader;
       }
@@ -215,7 +219,10 @@ namespace Xcst.Compiler {
          public override object GetEntity(Uri absoluteUri, string role, Type ofObjectToReturn) {
 
             if (absoluteUri == null) throw new ArgumentNullException(nameof(absoluteUri));
-            if (absoluteUri.AbsolutePath.Length <= 1) throw new ArgumentException("The embedded resource name must be specified in the AbsolutePath portion of the supplied Uri.", nameof(absoluteUri));
+
+            if (absoluteUri.AbsolutePath.Length <= 1) {
+               throw new ArgumentException("The embedded resource name must be specified in the AbsolutePath portion of the supplied Uri.", nameof(absoluteUri));
+            }
 
             if (absoluteUri.Scheme != UriSchemeClires) {
                return this.loadExtensionXslt(absoluteUri);

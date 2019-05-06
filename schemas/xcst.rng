@@ -265,7 +265,7 @@
          <ref name="version"/>
       </attribute>
       <attribute name="language">
-         <ann:documentation>The expression language for this module (usually "C#").</ann:documentation>
+         <ann:documentation>The expression language for this module (usually "C#" or "VisualBasic").</ann:documentation>
          <ref name="language"/>
       </attribute>
       <ref name="standard-attributes-except-version"/>

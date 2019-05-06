@@ -1,0 +1,1064 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!--
+ Copyright 2019 Max Toro Q.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<grammar xmlns="http://relaxng.org/ns/structure/1.0"
+   xmlns:code="http://maxtoroq.github.io/XCST/code"
+   ns="http://maxtoroq.github.io/XCST/code">
+
+   <define name="_expression">
+      <choice>
+         <ref name="add"/>
+         <ref name="and-also"/>
+         <ref name="base-reference"/>
+         <ref name="cast"/>
+         <ref name="chain"/>
+         <ref name="chain-reference"/>
+         <ref name="default"/>
+         <ref name="equal"/>
+         <ref name="expression"/>
+         <ref name="field-reference"/>
+         <ref name="greater-than"/>
+         <ref name="greater-than-or-equal"/>
+         <ref name="indexer-reference"/>
+         <ref name="lambda"/>
+         <ref name="less-than"/>
+         <ref name="less-than-or-equal"/>
+         <ref name="method-call"/>
+         <ref name="method-reference"/>
+         <ref name="new-array"/>
+         <ref name="new-object"/>
+         <ref name="not"/>
+         <ref name="null"/>
+         <ref name="or-else"/>
+         <ref name="property-reference"/>
+         <ref name="setter-value"/>
+         <ref name="this-reference"/>
+         <ref name="typeof"/>
+         <ref name="variable-reference"/>
+         <ref name="_literal"/>
+      </choice>
+   </define>
+
+   <define name="_literal">
+      <choice>
+         <ref name="bool"/>
+         <ref name="decimal"/>
+         <ref name="double"/>
+         <ref name="float"/>
+         <ref name="int"/>
+         <ref name="long"/>
+         <ref name="string"/>
+         <ref name="uint"/>
+         <ref name="ulong"/>
+      </choice>
+   </define>
+
+   <define name="_statement">
+      <choice>
+         <ref name="assign"/>
+         <ref name="break"/>
+         <ref name="chain"/>
+         <ref name="continue"/>
+         <ref name="for-each"/>
+         <ref name="if"/>
+         <ref name="if-else"/>
+         <ref name="method-call"/>
+         <ref name="return"/>
+         <ref name="script"/>
+         <ref name="switch"/>
+         <ref name="throw"/>
+         <ref name="using"/>
+         <ref name="variable"/>
+         <ref name="while"/>
+      </choice>
+   </define>
+
+   <define name="_namespace-member">
+      <choice>
+         <ref name="region"/>
+         <ref name="type"/>
+      </choice>
+   </define>
+
+   <define name="_type-member">
+      <choice>
+         <ref name="constructor"/>
+         <ref name="conversion"/>
+         <ref name="field"/>
+         <ref name="property"/>
+         <ref name="method"/>
+         <ref name="region"/>
+         <ref name="type"/>
+      </choice>
+   </define>
+
+   <define name="_member-binding">
+      <choice>
+         <ref name="_expression"/>
+         <ref name="type-reference"/>
+      </choice>
+   </define>
+
+   <define name="add">
+      <element name="add">
+         <ref name="_expression"/>
+         <ref name="_expression"/>
+      </element>
+   </define>
+
+   <define name="and-also">
+      <element name="and-also">
+         <ref name="_expression"/>
+         <ref name="_expression"/>
+      </element>
+   </define>
+
+   <define name="argument">
+      <element name="argument">
+         <optional>
+            <attribute name="name"/>
+         </optional>
+         <ref name="_expression"/>
+      </element>
+   </define>
+
+   <define name="arguments">
+      <element name="arguments">
+         <zeroOrMore>
+            <choice>
+               <ref name="argument"/>
+               <ref name="_expression"/>
+            </choice>
+         </zeroOrMore>
+      </element>
+   </define>
+
+   <define name="assign">
+      <ref name="_expression"/>
+      <ref name="_expression"/>
+   </define>
+
+   <define name="attribute">
+      <element name="attribute">
+         <ref name="type-reference"/>
+         <optional>
+            <ref name="arguments"/>
+         </optional>
+         <optional>
+            <ref name="initializer"/>
+         </optional>
+      </element>
+   </define>
+
+   <define name="attributes">
+      <element name="attributes">
+         <zeroOrMore>
+            <ref name="attribute"/>
+         </zeroOrMore>
+      </element>
+   </define>
+
+   <define name="base-reference">
+      <element name="base-reference">
+         <empty/>
+      </element>
+   </define>
+
+   <define name="base-types">
+      <element name="base-types">
+         <zeroOrMore>
+            <ref name="type-reference"/>
+         </zeroOrMore>
+      </element>
+   </define>
+
+   <define name="block">
+      <element name="block">
+         <zeroOrMore>
+            <ref name="_statement"/>
+         </zeroOrMore>
+      </element>
+   </define>
+
+   <define name="bool">
+      <element name="bool">
+         <attribute name="value">
+            <ref name="_boolean"/>
+         </attribute>
+      </element>
+   </define>
+
+   <define name="break">
+      <element name="break">
+         <empty/>
+      </element>
+   </define>
+
+   <define name="case">
+      <element name="case">
+         <ref name="_expression"/>
+         <choice>
+            <zeroOrMore>
+               <ref name="_statement"/>
+            </zeroOrMore>
+            <ref name="block"/>
+         </choice>
+      </element>
+   </define>
+
+   <define name="case-default">
+      <element name="case-default">
+         <choice>
+            <zeroOrMore>
+               <ref name="_statement"/>
+            </zeroOrMore>
+            <ref name="block"/>
+         </choice>
+      </element>
+   </define>
+
+   <define name="cast">
+      <element name="cast">
+         <ref name="type-reference"/>
+         <ref name="_expression"/>
+      </element>
+   </define>
+
+   <define name="catch">
+      <element name="catch">
+         <optional>
+            <ref name="exception"/>
+            <optional>
+               <ref name="when"/>
+            </optional>
+         </optional>
+         <ref name="block"/>
+      </element>
+   </define>
+
+   <define name="chain">
+      <element name="chain">
+         <ref name="_expression"/>
+         <zeroOrMore>
+            <choice>
+               <ref name="field-reference"/>
+               <ref name="property-reference"/>
+               <ref name="method-call"/>
+            </choice>
+         </zeroOrMore>
+      </element>
+   </define>
+
+   <define name="chain-reference">
+      <element name="chain-reference">
+         <empty/>
+      </element>
+   </define>
+
+   <define name="collection-initializer">
+      <element name="collection-initializer">
+         <zeroOrMore>
+            <choice>
+               <ref name="_expression"/>
+               <ref name="collection-initializer"/>
+            </choice>
+         </zeroOrMore>
+      </element>
+   </define>
+
+   <define name="compilation-unit">
+      <element name="compilation-unit">
+         <zeroOrMore>
+            <ref name="import"/>
+         </zeroOrMore>
+         <zeroOrMore>
+            <ref name="namespace"/>
+         </zeroOrMore>
+      </element>
+   </define>
+
+   <define name="constructor">
+      <element name="constructor">
+         <zeroOrMore>
+            <choice>
+               <attribute name="visibility">
+                  <ref name="_visibility"/>
+               </attribute>
+            </choice>
+         </zeroOrMore>
+         <optional>
+            <ref name="attributes"/>
+         </optional>
+         <optional>
+            <ref name="parameters"/>
+         </optional>
+         <optional>
+            <ref name="block"/>
+         </optional>
+      </element>
+   </define>
+
+   <define name="continue">
+      <element name="continue">
+         <empty/>
+      </element>
+   </define>
+
+   <define name="conversion">
+      <element name="conversion">
+         <optional>
+            <attribute name="implicit">
+               <ref name="_boolean"/>
+            </attribute>
+         </optional>
+         <ref name="type-reference"/>
+         <optional>
+            <ref name="attributes"/>
+         </optional>
+         <optional>
+            <ref name="parameters"/>
+         </optional>
+         <optional>
+            <ref name="block"/>
+         </optional>
+      </element>
+   </define>
+
+   <define name="decimal">
+      <element name="decimal">
+         <attribute name="value"/>
+      </element>
+   </define>
+
+   <define name="default">
+      <element name="default">
+         <ref name="type-reference"/>
+      </element>
+   </define>
+
+   <define name="double">
+      <element name="double">
+         <attribute name="value"/>
+      </element>
+   </define>
+
+   <define name="else">
+      <element name="else">
+         <zeroOrMore>
+            <ref name="_statement"/>
+         </zeroOrMore>
+      </element>
+   </define>
+
+   <define name="equal">
+      <element name="equal">
+         <ref name="_expression"/>
+         <ref name="_expression"/>
+      </element>
+   </define>
+
+   <define name="exception">
+      <element name="exception">
+         <choice>
+            <ref name="_expression"/>
+         </choice>
+      </element>
+   </define>
+
+   <define name="expression">
+      <element name="expression">
+         <choice>
+            <attribute name="value"/>
+            <ref name="_expression"/>
+         </choice>
+      </element>
+   </define>
+
+   <define name="field">
+      <element name="field">
+         <attribute name="name"/>
+         <zeroOrMore>
+            <choice>
+               <attribute name="extensibility">
+                  <ref name="_extensibility"/>
+               </attribute>
+               <attribute name="readonly">
+                  <ref name="_boolean"/>
+               </attribute>
+               <attribute name="visibility">
+                  <ref name="_visibility"/>
+               </attribute>
+            </choice>
+         </zeroOrMore>
+         <ref name="type-reference"/>
+         <optional>
+            <ref name="attributes"/>
+         </optional>
+         <optional>
+            <ref name="expression"/>
+         </optional>
+      </element>
+   </define>
+
+   <define name="field-reference">
+      <element name="field-reference">
+         <attribute name="name"/>
+         <ref name="_member-binding"/>
+      </element>
+   </define>
+
+   <define name="finally">
+      <element name="finally">
+         <zeroOrMore>
+            <ref name="_statement"/>
+         </zeroOrMore>
+      </element>
+   </define>
+
+   <define name="float">
+      <element name="float">
+         <attribute name="value"/>
+      </element>
+   </define>
+
+   <define name="for-each">
+      <element name="for-each">
+         <ref name="variable"/>
+         <ref name="block"/>
+      </element>
+   </define>
+
+   <define name="getter">
+      <element name="getter">
+         <optional>
+            <ref name="block"/>
+         </optional>
+      </element>
+   </define>
+
+   <define name="greater-than">
+      <element name="greater-than">
+         <ref name="_expression"/>
+         <ref name="_expression"/>
+      </element>
+   </define>
+
+   <define name="greater-than-or-equal">
+      <element name="greater-than-or-equal">
+         <ref name="_expression"/>
+         <ref name="_expression"/>
+      </element>
+   </define>
+
+   <define name="if">
+      <element name="if">
+         <ref name="_expression"/>
+         <ref name="block"/>
+      </element>
+   </define>
+
+   <define name="if-else">
+      <element name="if-else">
+         <oneOrMore>
+            <ref name="if"/>
+         </oneOrMore>
+         <optional>
+            <ref name="else"/>
+         </optional>
+      </element>
+   </define>
+
+   <define name="implements-interface">
+      <element name="implements-interface">
+         <ref name="type-reference"/>
+      </element>
+   </define>
+
+   <define name="import">
+      <element name="import">
+         <optional>
+            <choice>
+               <attribute name="alias"/>
+               <attribute name="static">
+                  <ref name="_boolean"/>
+               </attribute>
+            </choice>
+         </optional>
+         <optional>
+            <choice>
+               <attribute name="namespace"/>
+               <ref name="type-reference"/>
+            </choice>
+         </optional>
+      </element>
+   </define>
+
+   <define name="indexer-initializer">
+      <element name="indexer-initializer">
+         <ref name="arguments"/>
+         <ref name="_expression"/>
+      </element>
+   </define>
+
+   <define name="indexer-reference">
+      <element name="indexer-reference">
+         <ref name="_expression"/>
+         <ref name="arguments"/>
+      </element>
+   </define>
+
+   <define name="initializer">
+      <element name="initializer">
+         <zeroOrMore>
+            <choice>
+               <ref name="member-initializer"/>
+               <ref name="indexer-initializer"/>
+            </choice>
+         </zeroOrMore>
+      </element>
+   </define>
+
+   <define name="int">
+      <element name="int">
+         <attribute name="value"/>
+      </element>
+   </define>
+
+   <define name="lambda">
+      <element name="lambda">
+         <optional>
+            <ref name="parameters"/>
+         </optional>
+         <choice>
+            <ref name="_expression"/>
+            <ref name="block"/>
+         </choice>
+      </element>
+   </define>
+
+   <define name="less-than">
+      <element name="less-than">
+         <ref name="_expression"/>
+         <ref name="_expression"/>
+      </element>
+   </define>
+
+   <define name="less-than-or-equal">
+      <element name="less-than-or-equal">
+         <ref name="_expression"/>
+         <ref name="_expression"/>
+      </element>
+   </define>
+
+   <define name="long">
+      <element name="long">
+         <attribute name="value"/>
+      </element>
+   </define>
+
+   <define name="member-initializer">
+      <element name="member-initializer">
+         <attribute name="name"/>
+         <optional>
+            <attribute name="verbatim">
+               <ref name="_boolean"/>
+            </attribute>
+         </optional>
+         <ref name="_expression"/>
+      </element>
+   </define>
+
+   <define name="members">
+      <element name="members">
+         <zeroOrMore>
+            <ref name="_type-member"/>
+         </zeroOrMore>
+      </element>
+   </define>
+
+   <define name="method">
+      <element name="method">
+         <attribute name="name"/>
+         <zeroOrMore>
+            <choice>
+               <attribute name="extensibility">
+                  <ref name="_extensibility"/>
+               </attribute>
+               <attribute name="visibility">
+                  <ref name="_visibility"/>
+               </attribute>
+            </choice>
+         </zeroOrMore>
+         <optional>
+            <ref name="type-reference"/>
+         </optional>
+         <optional>
+            <ref name="implements-interface"/>
+         </optional>
+         <optional>
+            <ref name="attributes"/>
+         </optional>
+         <optional>
+            <ref name="type-parameters"/>
+         </optional>
+         <optional>
+            <ref name="parameters"/>
+         </optional>
+         <optional>
+            <ref name="block"/>
+         </optional>
+      </element>
+   </define>
+
+   <define name="method-call">
+      <element name="method-call">
+         <choice>
+            <group>
+               <ref name="_method-reference-model"/>
+            </group>
+            <ref name="method-reference"/>
+         </choice>
+         <optional>
+            <ref name="arguments"/>
+         </optional>
+      </element>
+   </define>
+
+   <define name="method-reference">
+      <element name="method-reference">
+         <ref name="_method-reference-model"/>
+      </element>
+   </define>
+
+   <define name="_method-reference-model">
+      <attribute name="name"/>
+      <ref name="_member-binding"/>
+      <optional>
+         <ref name="type-arguments"/>
+      </optional>
+   </define>
+
+   <define name="namespace">
+      <element name="namespace">
+         <zeroOrMore>
+            <ref name="import"/>
+         </zeroOrMore>
+         <zeroOrMore>
+            <ref name="_namespace-member"/>
+         </zeroOrMore>
+      </element>
+   </define>
+
+   <define name="new-array">
+      <element name="new-array">
+         <optional>
+            <ref name="type-reference"/>
+         </optional>
+         <optional>
+            <ref name="collection-initializer"/>
+         </optional>
+      </element>
+   </define>
+
+   <define name="new-object">
+      <element name="new-object">
+         <ref name="type-reference"/>
+         <optional>
+            <ref name="arguments"/>
+         </optional>
+         <optional>
+            <choice>
+               <ref name="initializer"/>
+               <ref name="collection-initializer"/>
+            </choice>
+         </optional>
+      </element>
+   </define>
+
+   <define name="not">
+      <element name="not">
+         <ref name="_expression"/>
+      </element>
+   </define>
+
+   <define name="null">
+      <element name="null">
+         <empty/>
+      </element>
+   </define>
+
+   <define name="or-else">
+      <element name="or-else">
+         <ref name="_expression"/>
+         <ref name="_expression"/>
+      </element>
+   </define>
+
+   <define name="parameter">
+      <element name="parameter">
+         <attribute name="name"/>
+         <optional>
+            <attribute name="params">
+               <ref name="_boolean"/>
+            </attribute>
+         </optional>
+         <optional>
+            <ref name="type-reference"/>
+         </optional>
+         <optional>
+            <ref name="_expression"/>
+         </optional>
+      </element>
+   </define>
+
+   <define name="parameters">
+      <element name="parameters">
+         <zeroOrMore>
+            <ref name="parameter"/>
+         </zeroOrMore>
+      </element>
+   </define>
+
+   <define name="property">
+      <element name="property">
+         <attribute name="name"/>
+         <zeroOrMore>
+            <choice>
+               <attribute name="extensibility">
+                  <ref name="_extensibility"/>
+               </attribute>
+               <attribute name="visibility">
+                  <ref name="_visibility"/>
+               </attribute>
+               <attribute name="verbatim">
+                  <ref name="_boolean"/>
+               </attribute>
+            </choice>
+         </zeroOrMore>
+         <ref name="type-reference"/>
+         <ref name="implements-interface"/>
+         <optional>
+            <ref name="attributes"/>
+         </optional>
+         <optional>
+            <ref name="getter"/>
+         </optional>
+         <optional>
+            <ref name="setter"/>
+         </optional>
+         <optional>
+            <ref name="expression"/>
+         </optional>
+      </element>
+   </define>
+
+   <define name="property-reference">
+      <element name="property-reference">
+         <attribute name="name"/>
+         <optional>
+            <attribute name="verbatim">
+               <ref name="_boolean"/>
+            </attribute>
+         </optional>
+         <ref name="_member-binding"/>
+      </element>
+   </define>
+
+   <define name="region">
+      <element name="region">
+         <attribute name="name"/>
+         <!--
+         <choice>
+            <zeroOrMore>
+               <ref name="_namespace-member"/>
+            </zeroOrMore>
+            <zeroOrMore>
+               <ref name="_type-member"/>
+            </zeroOrMore>
+            <zeroOrMore>
+               <ref name="_statement"/>
+            </zeroOrMore>
+         </choice>
+         -->
+      </element>
+   </define>
+
+   <define name="return">
+      <element name="return">
+         <optional>
+            <ref name="_expression"/>
+         </optional>
+      </element>
+   </define>
+
+   <define name="script">
+      <element name="script">
+         <text/>
+      </element>
+   </define>
+
+   <define name="setter">
+      <element name="setter">
+         <optional>
+            <ref name="block"/>
+         </optional>
+      </element>
+   </define>
+
+   <define name="setter-value">
+      <element name="setter-value">
+         <empty/>
+      </element>
+   </define>
+
+   <define name="string">
+      <element name="string">
+         <zeroOrMore>
+            <choice>
+               <attribute name="interpolated">
+                  <ref name="_boolean"/>
+               </attribute>
+               <attribute name="literal">
+                  <ref name="_boolean"/>
+               </attribute>
+               <attribute name="verbatim">
+                  <ref name="_boolean"/>
+               </attribute>
+            </choice>
+         </zeroOrMore>
+         <text/>
+      </element>
+   </define>
+
+   <define name="switch">
+      <element name="switch">
+         <ref name="_expression"/>
+         <zeroOrMore>
+            <choice>
+               <ref name="case"/>
+               <ref name="case-default"/>
+            </choice>
+         </zeroOrMore>
+      </element>
+   </define>
+
+   <define name="this-reference">
+      <element name="this-reference">
+         <empty/>
+      </element>
+   </define>
+
+   <define name="throw">
+      <element name="throw">
+         <ref name="_expression"/>
+      </element>
+   </define>
+
+   <define name="try">
+      <element name="try">
+         <ref name="block"/>
+         <zeroOrMore>
+            <ref name="catch"/>
+         </zeroOrMore>
+         <optional>
+            <ref name="finally"/>
+         </optional>
+      </element>
+   </define>
+
+   <define name="type">
+      <element name="type">
+         <attribute name="name"/>
+         <zeroOrMore>
+            <choice>
+               <attribute name="extensibility">
+                  <ref name="_extensibility"/>
+               </attribute>
+               <attribute name="partial">
+                  <ref name="_boolean"/>
+               </attribute>
+               <attribute name="struct">
+                  <ref name="_boolean"/>
+               </attribute>
+               <attribute name="visibility">
+                  <ref name="_visibility"/>
+               </attribute>
+            </choice>
+         </zeroOrMore>
+         <optional>
+            <ref name="base-types"/>
+         </optional>
+         <optional>
+            <ref name="attributes"/>
+         </optional>
+         <optional>
+            <ref name="members"/>
+         </optional>
+      </element>
+   </define>
+
+   <define name="type-arguments">
+      <element name="type-arguments">
+         <zeroOrMore>
+            <ref name="type-reference"/>
+         </zeroOrMore>
+      </element>
+   </define>
+
+   <define name="type-parameters">
+      <element name="type-parameters">
+         <zeroOrMore>
+            <ref name="parameter"/>
+         </zeroOrMore>
+      </element>
+   </define>
+
+   <define name="type-reference">
+      <element name="type-reference">
+         <!--
+         <choice>
+            <group>
+               <attribute name="array-dimensions">
+                  <ref name="_positive-integer"/>
+               </attribute>
+               <ref name="type-reference"/>
+            </group>
+            <group>
+               <attribute name="name"/>
+               <optional>
+                  <choice>
+                     <attribute name="namespace"/>
+                     <ref name="type-reference"/>
+                  </choice>
+               </optional>
+               <optional>
+                  <ref name="type-arguments"/>
+               </optional>
+            </group>
+         </choice>
+         -->
+         <optional>
+            <attribute name="array-dimensions">
+               <ref name="_positive-integer"/>
+            </attribute>
+         </optional>
+         <optional>
+            <attribute name="name"/>
+         </optional>
+         <optional>
+            <choice>
+               <attribute name="namespace"/>
+               <ref name="type-reference"/>
+            </choice>
+         </optional>
+         <optional>
+            <ref name="type-arguments"/>
+         </optional>
+      </element>
+   </define>
+
+   <define name="typeof">
+      <element name="typeof">
+         <ref name="type-reference"/>
+      </element>
+   </define>
+
+   <define name="uint">
+      <element name="uint">
+         <attribute name="value"/>
+      </element>
+   </define>
+
+   <define name="ulong">
+      <element name="ulong">
+         <attribute name="value"/>
+      </element>
+   </define>
+
+   <define name="using">
+      <element name="using">
+         <choice>
+            <ref name="variable"/>
+            <ref name="_expression"/>
+         </choice>
+         <ref name="block"/>
+      </element>
+   </define>
+
+   <define name="variable">
+      <element name="variable">
+         <attribute name="name"/>
+         <optional>
+            <ref name="type-reference"/>
+         </optional>
+         <optional>
+            <ref name="_expression"/>
+         </optional>
+      </element>
+   </define>
+
+   <define name="variable-reference">
+      <element name="variable-reference">
+         <attribute name="name"/>
+      </element>
+   </define>
+
+   <define name="while">
+      <element name="while">
+         <ref name="_expression"/>
+         <ref name="block"/>
+      </element>
+   </define>
+
+   <define name="when">
+      <element name="when">
+         <ref name="_expression"/>
+      </element>
+   </define>
+
+   <define name="_boolean">
+      <choice>
+         <value>true</value>
+         <value>false</value>
+      </choice>
+   </define>
+
+   <define name="_positive-integer">
+      <data type="positiveInteger"/>
+   </define>
+
+   <define name="_visibility">
+      <choice>
+         <value>#default</value>
+         <value>internal</value>
+         <value>private</value>
+         <value>public</value>
+      </choice>
+   </define>
+
+   <define name="_extensibility">
+      <choice>
+         <value>#default</value>
+         <value>abstract</value>
+         <value>new</value>
+         <value>override</value>
+         <value>sealed</value>
+         <value>static</value>
+         <value>virtual</value>
+      </choice>
+   </define>
+
+</grammar>

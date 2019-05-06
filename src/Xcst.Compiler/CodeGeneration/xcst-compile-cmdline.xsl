@@ -22,9 +22,10 @@
    <!--
       This file is used to compile from the command line.
       It wouldn't be needed if Saxon implemented xsl:function/@override="no"
+      See <https://saxonica.plan.io/issues/4111>
    -->
 
-   <import href="xcst-compile.xsl"/>
+   <include href="xcst-compile.xsl"/>
 
    <function name="src:_package-manifest" as="document-node()?">
       <param name="p1" as="xs:string"/>

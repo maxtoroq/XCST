@@ -22,7 +22,8 @@ namespace Xcst.Runtime {
 
    public static class Sorting {
 
-      public static IOrderedEnumerable<TSource> SortBy<TSource, TKey>(IEnumerable<TSource> source, Func<TSource, TKey> keySelector, bool descending = false) {
+      public static IOrderedEnumerable<TSource> SortBy<TSource, TKey>(
+            IEnumerable<TSource> source, Func<TSource, TKey> keySelector, bool descending = false) {
 
          if (descending) {
             return Enumerable.OrderByDescending(source, keySelector);

@@ -10,6 +10,7 @@ using System.Xml.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
+using Microsoft.CodeAnalysis.VisualBasic;
 using Xcst.Compiler;
 using TestAssert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 
@@ -50,7 +51,7 @@ namespace Xcst.Tests {
 
          try {
 
-            Type packageType = CompileCode(xcstResult.CompilationUnits, packageName, packageUri);
+            Type packageType = CompileCode(packageName, packageUri, xcstResult.CompilationUnits, xcstResult.Language);
 
             if (!correct) {
                return;
@@ -151,15 +152,18 @@ namespace Xcst.Tests {
          return Tuple.Create(result, compiler.TargetNamespace + "." + compiler.TargetClass);
       }
 
-      public static Type CompileCode(IEnumerable<string> compilationUnits, string packageName, Uri packageUri) {
+      public static Type CompileCode(string packageName, Uri packageUri, IEnumerable<string> compilationUnits, string language) {
 
-         var parseOptions = new CSharpParseOptions(preprocessorSymbols: new[] { "DEBUG", "TRACE" });
+         bool isCSharp = language.Equals("C#", StringComparison.OrdinalIgnoreCase);
+
+         var csOptions = new CSharpParseOptions(preprocessorSymbols: new[] { "DEBUG", "TRACE" });
+         var vbOptions = new VisualBasicParseOptions(preprocessorSymbols: new[] { "DEBUG", "TRACE" }.ToDictionary(s => s, s => (object)null));
 
          SyntaxTree[] syntaxTrees = compilationUnits
-            .Select(c => CSharpSyntaxTree.ParseText(c, parseOptions, path: packageUri.LocalPath, encoding: Encoding.UTF8))
+            .Select(c => (isCSharp) ?
+               CSharpSyntaxTree.ParseText(c, csOptions, path: packageUri.LocalPath, encoding: Encoding.UTF8)
+               : VisualBasicSyntaxTree.ParseText(c, vbOptions, path: packageUri.LocalPath, encoding: Encoding.UTF8))
             .ToArray();
-
-         // TODO: Should compiler give list of assembly references?
 
          MetadataReference[] references = {
             // XCST dependencies
@@ -173,25 +177,32 @@ namespace Xcst.Tests {
             MetadataReference.CreateFromFile(typeof(Xcst.PackageModel.IXcstPackage).Assembly.Location),
             // Tests dependencies
             MetadataReference.CreateFromFile(typeof(Microsoft.CSharp.RuntimeBinder.RuntimeBinderException).Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(Microsoft.VisualBasic.Constants).Assembly.Location),
             MetadataReference.CreateFromFile(typeof(Microsoft.VisualStudio.TestTools.UnitTesting.Assert).Assembly.Location),
             MetadataReference.CreateFromFile(typeof(System.Data.DataTable).Assembly.Location),
             MetadataReference.CreateFromFile(Assembly.GetExecutingAssembly().Location)
          };
 
-         CSharpCompilation compilation = CSharpCompilation.Create(
-            Path.GetRandomFileName(),
-            syntaxTrees: syntaxTrees,
-            references: references,
-            options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+         Compilation compilation = (isCSharp) ?
+            (Compilation)CSharpCompilation.Create(
+               Path.GetRandomFileName(),
+               syntaxTrees: syntaxTrees,
+               references: references,
+               options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))
+            : VisualBasicCompilation.Create(
+               Path.GetRandomFileName(),
+               syntaxTrees: syntaxTrees,
+               references: references,
+               options: new VisualBasicCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
          using (var assemblyStream = new MemoryStream()) {
             using (var pdbStream = new MemoryStream()) {
 
-               EmitResult csharpResult = compilation.Emit(assemblyStream, pdbStream);
+               EmitResult codeResult = compilation.Emit(assemblyStream, pdbStream);
 
-               if (!csharpResult.Success) {
+               if (!codeResult.Success) {
 
-                  Diagnostic error = csharpResult.Diagnostics
+                  Diagnostic error = codeResult.Diagnostics
                      .Where(d => d.IsWarningAsError || d.Severity == DiagnosticSeverity.Error)
                      .FirstOrDefault();
 
@@ -200,7 +211,7 @@ namespace Xcst.Tests {
                      Console.WriteLine($"// Line number: {error.Location.GetLineSpan().StartLinePosition.Line}");
                   }
 
-                  throw new CompileException("C# compilation failed.");
+                  throw new CompileException($"{language} compilation failed.");
                }
 
                assemblyStream.Position = 0;

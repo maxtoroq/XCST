@@ -17,9 +17,9 @@ namespace Xcst {
    static class XmlNamespaces {
 
       public const string Xcst = "http://maxtoroq.github.io/XCST";
+      public const string XcstGrammar = Xcst + "/grammar";
       public const string XcstErrors = Xcst + "/errors";
+      public const string XcstCode = Xcst + "/code";
       public const string XcstCompiled = Xcst + "/compiled";
-      public const string XcstSyntax = Xcst + "/syntax";
-      public const string XcstApplication = Xcst + "/application";
    }
 }

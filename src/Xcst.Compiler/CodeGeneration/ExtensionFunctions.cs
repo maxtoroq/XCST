@@ -23,6 +23,79 @@ namespace Xcst.Compiler.CodeGeneration {
 
    using static XcstCompiler;
 
+   class ExtensionFunctions {
+
+      internal static string LocalPath(Uri uri) {
+
+         if (uri == null) throw new ArgumentNullException(nameof(uri));
+
+         if (!uri.IsAbsoluteUri) {
+            return uri.OriginalString;
+         }
+
+         if (uri.IsFile) {
+            return uri.LocalPath;
+         }
+
+         return uri.AbsoluteUri;
+      }
+
+      internal static Uri MakeRelativeUri(Uri current, Uri compare) {
+         return current.MakeRelativeUri(compare);
+      }
+
+      internal static Uri FindNamedPackage(string packageName, string packagesLocation, string fileExtension) {
+
+         if (packageName == null) throw new ArgumentNullException(nameof(packageName));
+
+         string dir = packagesLocation;
+         string search = "*." + fileExtension;
+
+         if (!Directory.Exists(dir)) {
+            return null;
+         }
+
+         foreach (string path in Directory.EnumerateFiles(dir, search, SearchOption.AllDirectories)) {
+
+            if (Path.GetFileNameWithoutExtension(path)[0] == '_') {
+               continue;
+            }
+
+            var readerSettings = new XmlReaderSettings {
+               IgnoreComments = true,
+               IgnoreProcessingInstructions = true,
+               IgnoreWhitespace = true,
+               ValidationType = ValidationType.None,
+               DtdProcessing = DtdProcessing.Ignore
+            };
+
+            using (var reader = XmlReader.Create(path, readerSettings)) {
+
+               while (reader.Read()) {
+
+                  if (reader.NodeType == XmlNodeType.Element) {
+
+                     if (reader.LocalName == "package"
+                        && reader.NamespaceURI == XmlNamespaces.Xcst
+                        && reader.GetAttribute("name") == packageName) {
+
+                        return new Uri(path, UriKind.Absolute);
+                     }
+
+                     break;
+                  }
+               }
+            }
+         }
+
+         return null;
+      }
+
+      internal static int QNameId(string namespaceUri, string localName) {
+         return $"Q{{{namespaceUri}}}{localName}".GetHashCode();
+      }
+   }
+
    class LineNumberFunction : ExtensionFunctionDefinition {
 
       public override QName FunctionName { get; } = CompilerQName("_line-number");
@@ -85,24 +158,9 @@ namespace Xcst.Compiler.CodeGeneration {
             Uri uri = value.Value as Uri
                ?? new Uri(value.ToString(), UriKind.RelativeOrAbsolute);
 
-            return LocalPath(uri)
+            return ExtensionFunctions.LocalPath(uri)
                .ToXdmAtomicValue()
                .GetXdmEnumerator();
-         }
-
-         static string LocalPath(Uri uri) {
-
-            if (uri == null) throw new ArgumentNullException(nameof(uri));
-
-            if (!uri.IsAbsoluteUri) {
-               return uri.OriginalString;
-            }
-
-            if (uri.IsFile) {
-               return uri.LocalPath;
-            }
-
-            return uri.AbsoluteUri;
          }
       }
    }
@@ -137,12 +195,8 @@ namespace Xcst.Compiler.CodeGeneration {
                .ToArray();
 
             return (IXdmEnumerator)new XdmAtomicValue(
-               MakeRelativeUri(uris[0], uris[1])
+               ExtensionFunctions.MakeRelativeUri(uris[0], uris[1])
             ).GetEnumerator();
-         }
-
-         static Uri MakeRelativeUri(Uri current, Uri compare) {
-            return current.MakeRelativeUri(compare);
          }
       }
    }
@@ -409,59 +463,12 @@ namespace Xcst.Compiler.CodeGeneration {
             } else if (!String.IsNullOrEmpty(packagesLocation)
                && !String.IsNullOrEmpty(packageFileExtension)) {
 
-               packageUri = FindNamedPackage(packageName, packagesLocation, packageFileExtension);
+               packageUri = ExtensionFunctions.FindNamedPackage(packageName, packagesLocation, packageFileExtension);
             }
 
             return packageUri?.ToXdmAtomicValue()
                .GetXdmEnumerator()
                ?? EmptyEnumerator.INSTANCE;
-         }
-
-         static Uri FindNamedPackage(string packageName, string packagesLocation, string fileExtension) {
-
-            if (packageName == null) throw new ArgumentNullException(nameof(packageName));
-
-            string dir = packagesLocation;
-            string search = "*." + fileExtension;
-
-            if (!Directory.Exists(dir)) {
-               return null;
-            }
-
-            foreach (string path in Directory.EnumerateFiles(dir, search, SearchOption.AllDirectories)) {
-
-               if (Path.GetFileNameWithoutExtension(path)[0] == '_') {
-                  continue;
-               }
-
-               var readerSettings = new XmlReaderSettings {
-                  IgnoreComments = true,
-                  IgnoreProcessingInstructions = true,
-                  IgnoreWhitespace = true,
-                  ValidationType = ValidationType.None,
-                  DtdProcessing = DtdProcessing.Ignore
-               };
-
-               using (var reader = XmlReader.Create(path, readerSettings)) {
-
-                  while (reader.Read()) {
-
-                     if (reader.NodeType == XmlNodeType.Element) {
-
-                        if (reader.LocalName == "package"
-                           && reader.NamespaceURI == XmlNamespaces.Xcst
-                           && reader.GetAttribute("name") == packageName) {
-
-                           return new Uri(path, UriKind.Absolute);
-                        }
-
-                        break;
-                     }
-                  }
-               }
-            }
-
-            return null;
          }
       }
    }
@@ -492,13 +499,9 @@ namespace Xcst.Compiler.CodeGeneration {
 
             QName qname = (QName)arguments[0].AsAtomicValues().Single().Value;
 
-            return QNameId(qname)
+            return ExtensionFunctions.QNameId(qname.Uri, qname.LocalName)
                .ToXdmAtomicValue()
                .GetXdmEnumerator();
-         }
-
-         static int QNameId(QName qname) {
-            return $"Q{{{qname.Uri}}}{qname.LocalName}".GetHashCode();
          }
       }
    }

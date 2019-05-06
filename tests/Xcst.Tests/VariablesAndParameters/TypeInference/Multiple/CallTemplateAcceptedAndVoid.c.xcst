@@ -15,6 +15,11 @@
          <c:assert test='true'/>
       </c:variable>
       <c:void value='Assert.AreEqual(typeof(int[]), CompileType(b))'/>
+      <c:variable name='c'>
+         <c:call-template name='foos'/>
+         <c:assert test='true'/>
+      </c:variable>
+      <c:void value='Assert.AreEqual(typeof(int[]), CompileType(c))'/>
    </c:template>
 
 </c:module>

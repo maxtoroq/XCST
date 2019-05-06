@@ -47,7 +47,11 @@
       <HintPath>..\..\packages\Microsoft.CodeAnalysis.CSharp.1.1.0\lib\net45\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.VisualBasic, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.CodeAnalysis.VisualBasic.1.1.0\lib\net45\Microsoft.CodeAnalysis.VisualBasic.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\src\Xcst.Runtime\bin\Debug\Newtonsoft.Json.dll</HintPath>
@@ -138,6 +142,7 @@
     <None Include="CallableComponents\CallTemplate\TypeCompatObjectToValueTypeUsedPackage.pxcst" />
     <None Include="CallableComponents\CallTemplate\TypeCompatObjectToValueTypeUsedPackage.c.xcst" />
     <None Include="CallableComponents\CallTemplate\TypeCompatObjectToValueType.c.xcst" />
+    <None Include="CallableComponents\CallTemplate\VerbatimParamName-vb.c.xcst" />
     <None Include="CallableComponents\CallTemplate\WithParam\TypeIncompatible.f.xcst" />
     <None Include="CallableComponents\CallTemplate\WithParam\TypeIncompatible.c.xcst" />
     <None Include="CallableComponents\CallTemplate\WithParam\TypeIncompatible.i.xcst" />
@@ -812,8 +817,6 @@
     <None Include="VariablesAndParameters\TypeInference\Single\Delegate.c.xcst" />
     <None Include="VariablesAndParameters\Variable\variable.foox.c.xcst" />
     <None Include="VariablesAndParameters\Variable\variable.value_seqctor.mutex.i.xcst" />
-    <None Include="VariablesAndParameters\TypeInference\Single\_NextFunctionVoid.xcst" />
-    <None Include="VariablesAndParameters\TypeInference\Single\_NextFunction.xcst" />
     <None Include="VariablesAndParameters\TypeInference\Single\_NextTemplate.xcst" />
     <None Include="VariablesAndParameters\TypeInference\Single\NextTemplate.c.xcst" />
     <None Include="VariablesAndParameters\TypeInference\Single\ValueOf.c.xcst" />

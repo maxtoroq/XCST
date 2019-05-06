@@ -61,7 +61,6 @@
     <Compile Include="..\Xcst.Runtime\XmlNamespaces.cs">
       <Link>XmlNamespaces.cs</Link>
     </Compile>
-    <Compile Include="CodeGeneration\CSharpExpression.cs" />
     <Compile Include="CodeGeneration\ExtensionFunctions.cs" />
     <Compile Include="CodeGeneration\PackageManifest.cs" />
     <Compile Include="CompileException.cs" />
@@ -75,6 +74,7 @@
   <ItemGroup>
     <Content Include="CodeGeneration\xcst-compile-cmdline.xsl" />
     <Content Include="CodeGeneration\xcst-compile.xsl" />
+    <Content Include="CodeGeneration\xcst-vb.xsl" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="CodeGeneration\xcst-xsl.zip" />
@@ -89,6 +89,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="CodeGeneration\xcst-core.xsl" />
+    <Content Include="CodeGeneration\xcst-csharp.xsl" />
     <Content Include="CodeGeneration\xcst-metadata.xsl" />
     <Content Include="CodeGeneration\xcst-extensions.xsl" />
   </ItemGroup>

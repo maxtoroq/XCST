@@ -24,6 +24,9 @@ try {
    &"$saxonPath\tools\Transform" -s:xcst.xsd -xsl:xsd-comment.xsl -o:xcst.xsd
    rm xcst-mod.rng
 
+   java -jar $trangPath\trang.jar -o any-process-contents=lax -o indent=3 xcst-code.rng xcst-code.xsd
+   &"$saxonPath\tools\Transform" -s:xcst-code.xsd -xsl:xsd-comment.xsl -o:xcst-code.xsd
+
 } finally {
    Pop-Location
 }

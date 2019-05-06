@@ -18,27 +18,30 @@
    xmlns="http://www.w3.org/1999/XSL/Transform"
    xmlns:xs="http://www.w3.org/2001/XMLSchema"
    xmlns:c="http://maxtoroq.github.io/XCST"
-   xmlns:src="http://maxtoroq.github.io/XCST/compiled"
-   xmlns:xcst="http://maxtoroq.github.io/XCST/syntax"
-   xmlns:err="http://maxtoroq.github.io/XCST/errors">
+   xmlns:xcst="http://maxtoroq.github.io/XCST/grammar"
+   xmlns:err="http://maxtoroq.github.io/XCST/errors"
+   xmlns:code="http://maxtoroq.github.io/XCST/code"
+   xmlns:src="http://maxtoroq.github.io/XCST/compiled">
 
    <template match="c:metadata" mode="src:attribute">
+
       <call-template name="xcst:validate-attribs">
          <with-param name="required" select="'name'"/>
          <with-param name="optional" select="'value'"/>
       </call-template>
+
       <call-template name="xcst:no-children"/>
       <call-template name="xcst:no-other-preceding"/>
-      <call-template name="src:line-number"/>
-      <call-template name="src:new-line-indented"/>
-      <text>[</text>
-      <value-of select="xcst:type(@name)"/>
-      <if test="@value">
-         <text>(</text>
-         <value-of select="xcst:expression(@value)"/>
-         <text>)</text>
-      </if>
-      <text>]</text>
+
+      <code:attribute>
+         <call-template name="src:line-number"/>
+         <code:type-reference name="{xcst:type(@name)}"/>
+         <if test="@value">
+            <code:arguments>
+               <code:expression value="{xcst:expression(@value)}"/>
+            </code:arguments>
+         </if>
+      </code:attribute>
    </template>
 
    <template name="src:type-attributes">
@@ -60,50 +63,11 @@
    </template>
 
    <template name="src:type-attribute-extra">
-      <call-template name="src:type-or-member-attribute-extra">
-         <with-param name="result" as="node()*">
-            <apply-templates select="." mode="src:type-attribute-extra"/>
-         </with-param>
-      </call-template>
+      <apply-templates select="." mode="src:type-attribute-extra"/>
    </template>
 
    <template name="src:member-attribute-extra">
-      <call-template name="src:type-or-member-attribute-extra">
-         <with-param name="result" as="node()*">
-            <apply-templates select="." mode="src:member-attribute-extra"/>
-         </with-param>
-      </call-template>
-   </template>
-
-   <template name="src:type-or-member-attribute-extra">
-      <param name="result" as="node()*" required="yes"/>
-
-      <if test="exists($result)">
-         <variable name="current" select="."/>
-         <for-each select="$result">
-            <choose>
-               <when test="self::text()">
-                  <!--
-                     Text is treated as output
-                  -->
-                  <sequence select="."/>
-               </when>
-               <otherwise>
-                  <variable name="node-from-source" select="root(.) is root($current)"/>
-                  <apply-templates select="." mode="src:attribute">
-                     <with-param name="line-number-offset" select="
-                        if ($node-from-source) then 0
-                        else (src:line-number(.) * -1) + src:line-number($current)"
-                        tunnel="yes"/>
-                     <with-param name="line-uri" select="
-                        if ($node-from-source) then ()
-                        else document-uri(root($current))"
-                        tunnel="yes"/>
-                  </apply-templates>
-               </otherwise>
-            </choose>
-         </for-each>
-      </if>
+      <apply-templates select="." mode="src:member-attribute-extra"/>
    </template>
 
    <template match="c:type/node()" mode="src:type-attribute-extra"/>
@@ -116,13 +80,15 @@
 
    <template name="src:display-column-attribute">
       <if test="@display-text-member">
-         <call-template name="src:line-number"/>
-         <call-template name="src:new-line-indented"/>
-         <text>[</text>
-         <value-of select="src:global-identifier('System.ComponentModel.DataAnnotations.DisplayColumn')"/>
-         <text>(</text>
-         <value-of select="concat('nameof(', xcst:name(@display-text-member), ')')"/>
-         <text>)]</text>
+         <code:attribute>
+            <call-template name="src:line-number"/>
+            <code:type-reference name="DisplayColumn" namespace="System.ComponentModel.DataAnnotations"/>
+            <code:arguments>
+               <code:string literal="true">
+                  <value-of select="xcst:name(@display-text-member)"/>
+               </code:string>
+            </code:arguments>
+         </code:attribute>
       </if>
    </template>
 
@@ -131,7 +97,8 @@
    -->
 
    <template name="src:display-attribute">
-      <variable name="setters" as="text()*">
+
+      <variable name="arguments" as="element()*">
          <apply-templates select="@display-name
             | @description
             | @short-name
@@ -139,45 +106,72 @@
             | @order
             | @group
             | ancestor::c:type[1]/@resource-type"
-            mode="src:display-setter"/>
+            mode="src:display-argument"/>
       </variable>
-      <if test="$setters">
-         <call-template name="src:line-number"/>
-         <call-template name="src:new-line-indented"/>
-         <text>[</text>
-         <value-of select="src:global-identifier('System.ComponentModel.DataAnnotations.Display')"/>
-         <text>(</text>
-         <value-of select="$setters/string()" separator=", "/>
-         <text>)]</text>
+
+      <if test="$arguments">
+         <code:attribute>
+            <call-template name="src:line-number"/>
+            <code:type-reference name="Display" namespace="System.ComponentModel.DataAnnotations"/>
+            <code:initializer>
+               <sequence select="$arguments"/>
+            </code:initializer>
+         </code:attribute>
       </if>
    </template>
 
-   <template match="@display-name" mode="src:display-setter">
-      <value-of select="'Name', src:verbatim-string(.)" separator=" = "/>
+   <template match="@display-name" mode="src:display-argument">
+      <code:member-initializer name="Name">
+         <code:string verbatim="true">
+            <value-of select="."/>
+         </code:string>
+      </code:member-initializer>
    </template>
 
-   <template match="@description" mode="src:display-setter">
-      <value-of select="'Description', src:verbatim-string(.)" separator=" = "/>
+   <template match="@description" mode="src:display-argument">
+      <code:member-initializer name="Description">
+         <code:string verbatim="true">
+            <value-of select="."/>
+         </code:string>
+      </code:member-initializer>
    </template>
 
-   <template match="@short-name" mode="src:display-setter">
-      <value-of select="'ShortName', src:verbatim-string(.)" separator=" = "/>
+   <template match="@short-name" mode="src:display-argument">
+      <code:member-initializer name="ShortName">
+         <code:string verbatim="true">
+            <value-of select="."/>
+         </code:string>
+      </code:member-initializer>
    </template>
 
-   <template match="@edit-hint" mode="src:display-setter">
-      <value-of select="'Prompt', src:verbatim-string(.)" separator=" = "/>
+   <template match="@edit-hint" mode="src:display-argument">
+      <code:member-initializer name="Prompt">
+         <code:string verbatim="true">
+            <value-of select="."/>
+         </code:string>
+      </code:member-initializer>
    </template>
 
-   <template match="@order" mode="src:display-setter">
-      <value-of select="'Order', src:integer(xcst:integer(.))" separator=" = "/>
+   <template match="@order" mode="src:display-argument">
+      <code:member-initializer name="Order">
+         <code:int value="{xcst:integer(.)}"/>
+      </code:member-initializer>
    </template>
 
-   <template match="@group" mode="src:display-setter">
-      <value-of select="'GroupName', src:verbatim-string(.)" separator=" = "/>
+   <template match="@group" mode="src:display-argument">
+      <code:member-initializer name="GroupName">
+         <code:string verbatim="true">
+            <value-of select="."/>
+         </code:string>
+      </code:member-initializer>
    </template>
 
-   <template match="@resource-type" mode="src:display-setter">
-      <value-of select="'ResourceType', concat('typeof(', xcst:type(.), ')')" separator=" = "/>
+   <template match="@resource-type" mode="src:display-argument">
+      <code:member-initializer name="ResourceType">
+         <code:typeof>
+            <code:type-reference name="{xcst:type(.)}"/>
+         </code:typeof>
+      </code:member-initializer>
    </template>
 
    <!--
@@ -185,43 +179,59 @@
    -->
 
    <template name="src:display-format-attribute">
-      <variable name="setters" as="text()*">
+
+      <variable name="arguments" as="element()*">
          <apply-templates select="@format
             | @apply-format-in-edit-mode
             | ancestor-or-self::c:*[(self::c:member or self::c:type) and @allow-empty-string][1]/@allow-empty-string
             | @disable-output-escaping
             | @null-display-text"
-            mode="src:display-format-setter"/>
+            mode="src:display-format-argument"/>
       </variable>
-      <if test="$setters">
-         <call-template name="src:line-number"/>
-         <call-template name="src:new-line-indented"/>
-         <text>[</text>
-         <value-of select="src:global-identifier('System.ComponentModel.DataAnnotations.DisplayFormat')"/>
-         <text>(</text>
-         <value-of select="$setters/string()" separator=", "/>
-         <text>)]</text>
+
+      <if test="$arguments">
+         <code:attribute>
+            <call-template name="src:line-number"/>
+            <code:type-reference name="DisplayFormat" namespace="System.ComponentModel.DataAnnotations"/>
+            <code:initializer>
+               <sequence select="$arguments"/>
+            </code:initializer>
+         </code:attribute>
       </if>
    </template>
 
-   <template match="@format" mode="src:display-format-setter">
-      <value-of select="'DataFormatString', src:verbatim-string(.)" separator=" = "/>
+   <template match="@format" mode="src:display-format-argument">
+      <code:member-initializer name="DataFormatString">
+         <code:string verbatim="true">
+            <value-of select="."/>
+         </code:string>
+      </code:member-initializer>
    </template>
 
-   <template match="@apply-format-in-edit-mode" mode="src:display-format-setter">
-      <value-of select="'ApplyFormatInEditMode', src:boolean(xcst:boolean(.))" separator=" = "/>
+   <template match="@apply-format-in-edit-mode" mode="src:display-format-argument">
+      <code:member-initializer name="ApplyFormatInEditMode">
+         <code:bool value="{xcst:boolean(.)}"/>
+      </code:member-initializer>
    </template>
 
-   <template match="@allow-empty-string" mode="src:display-format-setter">
-      <value-of select="'ConvertEmptyStringToNull', src:boolean(not(xcst:boolean(.)))" separator=" = "/>
+   <template match="@allow-empty-string" mode="src:display-format-argument">
+      <code:member-initializer name="ConvertEmptyStringToNull">
+         <code:bool value="{not(xcst:boolean(.))}"/>
+      </code:member-initializer>
    </template>
 
-   <template match="@disable-output-escaping" mode="src:display-format-setter">
-      <value-of select="'HtmlEncode', src:boolean(not(xcst:boolean(.)))" separator=" = "/>
+   <template match="@disable-output-escaping" mode="src:display-format-argument">
+      <code:member-initializer name="HtmlEncode">
+         <code:bool value="{not(xcst:boolean(.))}"/>
+      </code:member-initializer>
    </template>
 
-   <template match="@null-display-text" mode="src:display-format-setter">
-      <value-of select="'NullDisplayText', src:verbatim-string(.)" separator=" = "/>
+   <template match="@null-display-text" mode="src:display-format-argument">
+      <code:member-initializer name="NullDisplayText">
+         <code:string verbatim="true">
+            <value-of select="."/>
+         </code:string>
+      </code:member-initializer>
    </template>
 
    <!--
@@ -229,22 +239,17 @@
    -->
 
    <template name="src:ui-hint-attribute">
-      <variable name="setters" as="text()*">
-         <apply-templates select="@template" mode="src:ui-hint-setter"/>
-      </variable>
-      <if test="$setters">
-         <call-template name="src:line-number"/>
-         <call-template name="src:new-line-indented"/>
-         <text>[</text>
-         <value-of select="src:global-identifier('System.ComponentModel.DataAnnotations.UIHint')"/>
-         <text>(</text>
-         <value-of select="$setters/string()" separator=", "/>
-         <text>)]</text>
+      <if test="@template">
+         <code:attribute>
+            <call-template name="src:line-number"/>
+            <code:type-reference name="UIHint" namespace="System.ComponentModel.DataAnnotations"/>
+            <code:arguments>
+               <code:string verbatim="true">
+                  <value-of select="@template"/>
+               </code:string>
+            </code:arguments>
+         </code:attribute>
       </if>
-   </template>
-
-   <template match="@template" mode="src:ui-hint-setter">
-      <value-of select="src:verbatim-string(.)"/>
    </template>
 
    <!--
@@ -252,19 +257,21 @@
    -->
 
    <template name="src:scaffold-column-attribute">
-      <apply-templates select="@display" mode="src:scaffold-column-attribute"/>
-   </template>
 
-   <template match="@display" mode="src:scaffold-column-attribute">
-      <variable name="display" select="xcst:non-string(.)"/>
-      <variable name="scaffold" select="if ($display = ('view-only', 'edit-only', 'hidden')) then true() else xcst:boolean(.)"/>
-      <call-template name="src:line-number"/>
-      <call-template name="src:new-line-indented"/>
-      <text>[</text>
-      <value-of select="src:global-identifier('System.ComponentModel.DataAnnotations.ScaffoldColumn')"/>
-      <text>(</text>
-      <value-of select="src:boolean($scaffold)"/>
-      <text>)]</text>
+      <if test="@display">
+         <variable name="display" select="xcst:non-string(@display)"/>
+         <variable name="scaffold" select="
+            if ($display = ('view-only', 'edit-only', 'hidden')) then true()
+            else xcst:boolean(@display)"/>
+
+         <code:attribute>
+            <call-template name="src:line-number"/>
+            <code:type-reference name="ScaffoldColumn" namespace="System.ComponentModel.DataAnnotations"/>
+            <code:arguments>
+               <code:bool value="{$scaffold}"/>
+            </code:arguments>
+         </code:attribute>
+      </if>
    </template>
 
    <!--
@@ -272,47 +279,51 @@
    -->
 
    <template name="src:data-type-attribute">
+
       <if test="@data-type">
+
          <variable name="data-type" select="xcst:non-string(@data-type)"/>
-         <variable name="setters" as="text()*">
-            <call-template name="src:validation-setters">
+
+         <variable name="arguments" as="element()*">
+            <call-template name="src:validation-arguments">
                <with-param name="name" select="node-name(@data-type)"/>
             </call-template>
          </variable>
-         <call-template name="src:line-number"/>
-         <call-template name="src:new-line-indented"/>
-         <text>[</text>
-         <choose>
-            <when test="$data-type = ('EmailAddress', 'CreditCard', 'Url')">
-               <value-of select="src:global-identifier(concat('System.ComponentModel.DataAnnotations.', $data-type))"/>
-               <if test="$setters">
-                  <text>(</text>
-                  <value-of select="$setters/string()" separator=", "/>
-                  <text>)</text>
-               </if>
-            </when>
-            <when test="$data-type eq 'PhoneNumber'">
-               <value-of select="src:global-identifier('System.ComponentModel.DataAnnotations.Phone')"/>
-               <if test="$setters">
-                  <text>(</text>
-                  <value-of select="$setters/string()" separator=", "/>
-                  <text>)</text>
-               </if>
-            </when>
-            <otherwise>
-               <value-of select="src:global-identifier('System.ComponentModel.DataAnnotations.DataType')"/>
-               <text>(</text>
-               <value-of select="src:global-identifier('System.ComponentModel.DataAnnotations.DataType')"/>
-               <text>.</text>
-               <value-of select="$data-type"/>
-               <if test="$setters">
-                  <text>, </text>
-                  <value-of select="$setters/string()" separator=", "/>
-               </if>
-               <text>)</text>
-            </otherwise>
-         </choose>
-         <text>]</text>
+
+         <code:attribute>
+            <call-template name="src:line-number"/>
+            <choose>
+               <when test="$data-type = ('EmailAddress', 'CreditCard', 'Url')">
+                  <code:type-reference name="{$data-type}" namespace="System.ComponentModel.DataAnnotations"/>
+                  <if test="$arguments">
+                     <code:initializer>
+                        <sequence select="$arguments"/>
+                     </code:initializer>
+                  </if>
+               </when>
+               <when test="$data-type eq 'PhoneNumber'">
+                  <code:type-reference name="Phone" namespace="System.ComponentModel.DataAnnotations"/>
+                  <if test="$arguments">
+                     <code:initializer>
+                        <sequence select="$arguments"/>
+                     </code:initializer>
+                  </if>
+               </when>
+               <otherwise>
+                  <code:type-reference name="DataType" namespace="System.ComponentModel.DataAnnotations"/>
+                  <code:arguments>
+                     <code:field-reference name="{$data-type}">
+                        <code:type-reference name="DataType" namespace="System.ComponentModel.DataAnnotations"/>
+                     </code:field-reference>
+                  </code:arguments>
+                  <if test="$arguments">
+                     <code:initializer>
+                        <sequence select="$arguments"/>
+                     </code:initializer>
+                  </if>
+               </otherwise>
+            </choose>
+         </code:attribute>
       </if>
    </template>
 
@@ -321,28 +332,32 @@
    -->
 
    <template name="src:required-attribute">
+
       <if test="@required/xcst:boolean(.)">
-         <variable name="setters" as="text()*">
+
+         <variable name="arguments" as="element()*">
             <apply-templates select="ancestor-or-self::c:*[(self::c:member or self::c:type) and @allow-empty-string][1]/@allow-empty-string" mode="src:required-setter"/>
-            <call-template name="src:validation-setters">
+            <call-template name="src:validation-arguments">
                <with-param name="name" select="node-name(@required)"/>
             </call-template>
          </variable>
-         <call-template name="src:line-number"/>
-         <call-template name="src:new-line-indented"/>
-         <text>[</text>
-         <value-of select="src:global-identifier('System.ComponentModel.DataAnnotations.Required')"/>
-         <if test="$setters">
-            <text>(</text>
-            <value-of select="$setters/string()" separator=", "/>
-            <text>)</text>
-         </if>
-         <text>]</text>
+
+         <code:attribute>
+            <call-template name="src:line-number"/>
+            <code:type-reference name="Required" namespace="System.ComponentModel.DataAnnotations"/>
+            <if test="$arguments">
+               <code:initializer>
+                  <sequence select="$arguments"/>
+               </code:initializer>
+            </if>
+         </code:attribute>
       </if>
    </template>
 
    <template match="@allow-empty-string" mode="src:required-setter">
-      <value-of select="'AllowEmptyStrings', src:boolean(xcst:boolean(.))" separator=" = "/>
+      <code:member-initializer name="AllowEmptyStrings">
+         <code:bool value="{xcst:boolean(.)}"/>
+      </code:member-initializer>
    </template>
 
    <!--
@@ -351,24 +366,19 @@
 
    <template name="src:min-length-attribute">
       <if test="@min-length">
-         <variable name="setters" as="text()*">
-            <apply-templates select="@min-length" mode="src:min-length-setter"/>
-            <call-template name="src:validation-setters">
-               <with-param name="name" select="node-name(@min-length)"/>
-            </call-template>
-         </variable>
-         <call-template name="src:line-number"/>
-         <call-template name="src:new-line-indented"/>
-         <text>[</text>
-         <value-of select="src:global-identifier('System.ComponentModel.DataAnnotations.MinLength')"/>
-         <text>(</text>
-         <value-of select="$setters/string()" separator=", "/>
-         <text>)]</text>
+         <code:attribute>
+            <call-template name="src:line-number"/>
+            <code:type-reference name="MinLength" namespace="System.ComponentModel.DataAnnotations"/>
+            <code:arguments>
+               <code:int value="{xcst:integer(@min-length)}"/>
+            </code:arguments>
+            <code:initializer>
+               <call-template name="src:validation-arguments">
+                  <with-param name="name" select="node-name(@min-length)"/>
+               </call-template>
+            </code:initializer>
+         </code:attribute>
       </if>
-   </template>
-
-   <template match="@min-length" mode="src:min-length-setter">
-      <value-of select="src:integer(xcst:integer(.))"/>
    </template>
 
    <!--
@@ -377,24 +387,19 @@
 
    <template name="src:max-length-attribute">
       <if test="@max-length">
-         <variable name="setters" as="text()*">
-            <apply-templates select="@max-length" mode="src:max-length-setter"/>
-            <call-template name="src:validation-setters">
-               <with-param name="name" select="node-name(@max-length)"/>
-            </call-template>
-         </variable>
-         <call-template name="src:line-number"/>
-         <call-template name="src:new-line-indented"/>
-         <text>[</text>
-         <value-of select="src:global-identifier('System.ComponentModel.DataAnnotations.MaxLength')"/>
-         <text>(</text>
-         <value-of select="$setters/string()" separator=", "/>
-         <text>)]</text>
+         <code:attribute>
+            <call-template name="src:line-number"/>
+            <code:type-reference name="MaxLength" namespace="System.ComponentModel.DataAnnotations"/>
+            <code:arguments>
+               <code:int value="{xcst:integer(@max-length)}"/>
+            </code:arguments>
+            <code:initializer>
+               <call-template name="src:validation-arguments">
+                  <with-param name="name" select="node-name(@max-length)"/>
+               </call-template>
+            </code:initializer>
+         </code:attribute>
       </if>
-   </template>
-
-   <template match="@max-length" mode="src:max-length-setter">
-      <value-of select="src:integer(xcst:integer(.))"/>
    </template>
 
    <!--
@@ -403,24 +408,21 @@
 
    <template name="src:regular-expression-attribute">
       <if test="@pattern">
-         <variable name="setters" as="text()*">
-            <apply-templates select="@pattern" mode="src:regular-expression-setter"/>
-            <call-template name="src:validation-setters">
-               <with-param name="name" select="node-name(@pattern)"/>
-            </call-template>
-         </variable>
-         <call-template name="src:line-number"/>
-         <call-template name="src:new-line-indented"/>
-         <text>[</text>
-         <value-of select="src:global-identifier('System.ComponentModel.DataAnnotations.RegularExpression')"/>
-         <text>(</text>
-         <value-of select="$setters/string()" separator=", "/>
-         <text>)]</text>
+         <code:attribute>
+            <call-template name="src:line-number"/>
+            <code:type-reference name="RegularExpression" namespace="System.ComponentModel.DataAnnotations"/>
+            <code:arguments>
+               <code:string verbatim="true">
+                  <value-of select="@pattern"/>
+               </code:string>
+            </code:arguments>
+            <code:initializer>
+               <call-template name="src:validation-arguments">
+                  <with-param name="name" select="node-name(@pattern)"/>
+               </call-template>
+            </code:initializer>
+         </code:attribute>
       </if>
-   </template>
-
-   <template match="@pattern" mode="src:regular-expression-setter">
-      <value-of select="src:verbatim-string(.)"/>
    </template>
 
    <!--
@@ -428,29 +430,41 @@
    -->
 
    <template name="src:range-attribute">
+
       <if test="@min or @max">
+
          <if test="not(@as)">
             <sequence select="error((), 'The ''min'' and ''max'' attributes can only be used on members that declare their type using the ''as'' attribute.', src:error-object(.))"/>
          </if>
-         <variable name="setters" as="text()*">
-            <call-template name="src:validation-setters">
-               <with-param name="name" select="QName('', 'range')"/>
-            </call-template>
-         </variable>
-         <variable name="type" select="xcst:type(@as)"/>
-         <call-template name="src:line-number"/>
-         <call-template name="src:new-line-indented"/>
-         <text>[</text>
-         <value-of select="src:package-model-type('Range')"/>
-         <text>(</text>
-         <text>typeof(</text>
-         <value-of select="$type"/>
-         <text>), </text>
-         <value-of select="
-            @min/concat('minimum: ', src:verbatim-string(.)),
-            @max/concat('maximum: ', src:verbatim-string(.)),
-            $setters/string()" separator=", "/>
-         <text>)]</text>
+
+         <code:attribute>
+            <call-template name="src:line-number"/>
+            <sequence select="src:package-model-type('Range')"/>
+            <code:arguments>
+               <code:typeof>
+                  <code:type-reference name="{xcst:type(@as)}"/>
+               </code:typeof>
+               <if test="@min">
+                  <code:argument name="minimum">
+                     <code:string verbatim="true">
+                        <value-of select="@min"/>
+                     </code:string>
+                  </code:argument>
+               </if>
+               <if test="@max">
+                  <code:argument name="maximum">
+                     <code:string verbatim="true">
+                        <value-of select="@max"/>
+                     </code:string>
+                  </code:argument>
+               </if>
+            </code:arguments>
+            <code:initializer>
+               <call-template name="src:validation-arguments">
+                  <with-param name="name" select="QName('', 'range')"/>
+               </call-template>
+            </code:initializer>
+         </code:attribute>
       </if>
    </template>
 
@@ -460,31 +474,28 @@
 
    <template name="src:compare-attribute">
       <if test="@equal-to">
-         <variable name="setters" as="text()*">
-            <apply-templates select="@equal-to" mode="src:compare-setter"/>
-            <call-template name="src:validation-setters">
-               <with-param name="name" select="node-name(@equal-to)"/>
-            </call-template>
-         </variable>
-         <call-template name="src:line-number"/>
-         <call-template name="src:new-line-indented"/>
-         <text>[</text>
-         <value-of select="src:global-identifier('System.ComponentModel.DataAnnotations.Compare')"/>
-         <text>(</text>
-         <value-of select="$setters/string()" separator=", "/>
-         <text>)]</text>
+         <code:attribute>
+            <call-template name="src:line-number"/>
+            <code:type-reference name="Compare" namespace="System.ComponentModel.DataAnnotations"/>
+            <code:arguments>
+               <code:string literal="true">
+                  <value-of select="xcst:name(@equal-to)"/>
+               </code:string>
+            </code:arguments>
+            <code:initializer>
+               <call-template name="src:validation-arguments">
+                  <with-param name="name" select="node-name(@equal-to)"/>
+               </call-template>
+            </code:initializer>
+         </code:attribute>
       </if>
-   </template>
-
-   <template match="@equal-to" mode="src:compare-setter">
-      <value-of select="concat('nameof(', xcst:name(.), ')')"/>
    </template>
 
    <!--
       ## Validation
    -->
 
-   <template name="src:validation-setters">
+   <template name="src:validation-arguments">
       <param name="name" as="xs:QName"/>
       <param name="src:validation-attributes" as="attribute()*" tunnel="yes"/>
 
@@ -517,20 +528,29 @@
       <variable name="message" select="($member-message, $validation-message)[1]"/>
       <variable name="resource-type" select="($type-resource-type, $validation-resource-type[not($member-message)])[1]"/>
 
-      <apply-templates select="$message" mode="src:validation-setter">
+      <apply-templates select="$message" mode="src:validation-argument">
          <with-param name="is-resource" select="exists($resource-type)"/>
       </apply-templates>
-      <apply-templates select="$resource-type" mode="src:validation-setter"/>
+
+      <apply-templates select="$resource-type" mode="src:validation-argument"/>
    </template>
 
-   <template match="@*[ends-with(local-name(), '-message')]" mode="src:validation-setter">
+   <template match="@*[ends-with(local-name(), '-message')]" mode="src:validation-argument">
       <param name="is-resource" as="xs:boolean" required="yes"/>
 
-      <value-of select="('ErrorMessageResourceName'[$is-resource], 'ErrorMessage')[1], src:verbatim-string(.)" separator=" = "/>
+      <code:member-initializer name="{('ErrorMessageResourceName'[$is-resource], 'ErrorMessage')[1]}">
+         <code:string verbatim="true">
+            <value-of select="."/>
+         </code:string>
+      </code:member-initializer>
    </template>
 
-   <template match="@validation-resource-type" mode="src:validation-setter">
-      <value-of select="'ErrorMessageResourceType', concat('typeof(', xcst:type(.), ')')" separator=" = "/>
+   <template match="@validation-resource-type" mode="src:validation-argument">
+      <code:member-initializer name="ErrorMessageResourceType">
+         <code:typeof>
+            <code:type-reference name="{xcst:type(.)}"/>
+         </code:typeof>
+      </code:member-initializer>
    </template>
 
 </stylesheet>

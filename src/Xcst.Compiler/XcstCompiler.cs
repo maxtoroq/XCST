@@ -18,7 +18,6 @@ using System.IO;
 using System.Linq;
 using System.Xml;
 using Saxon.Api;
-using Xcst.Compiler.CodeGeneration;
 
 namespace Xcst.Compiler {
 
@@ -27,6 +26,8 @@ namespace Xcst.Compiler {
       readonly Lazy<XsltExecutable> compilerExec;
       readonly Processor processor;
       readonly Dictionary<QualifiedName, object> parameters = new Dictionary<QualifiedName, object>();
+
+      Type[] tbaseTypes;
 
       public string TargetNamespace { get; set; }
 
@@ -69,15 +70,7 @@ namespace Xcst.Compiler {
       }
 
       public void SetTargetBaseTypes(params Type[] targetBaseTypes) {
-         SetTargetBaseTypes("global", targetBaseTypes);
-      }
-
-      public void SetTargetBaseTypes(string namespaceAlias, params Type[] targetBaseTypes) {
-
-         this.TargetBaseTypes = targetBaseTypes?
-            .Where(t => t != null)
-            .Select(t => CSharpExpression.TypeReference(t, namespaceAlias))
-            .ToArray();
+         this.tbaseTypes = targetBaseTypes;
       }
 
       public void SetParameter(QualifiedName name, object value) {
@@ -86,6 +79,18 @@ namespace Xcst.Compiler {
          if (String.IsNullOrEmpty(name.Namespace)) throw new ArgumentException($"{nameof(name)} must be a qualified name.", nameof(name));
 
          this.parameters.Add(name, value);
+      }
+
+      public void SetParameter(QualifiedName name, Type value) {
+
+         object objValue = null;
+
+         if (value != null) {
+            DocumentBuilder docBuilder = this.processor.NewDocumentBuilder();
+            objValue = CodeTypeReference(value, docBuilder);
+         }
+
+         SetParameter(name, objValue);
       }
 
       public CompileResult Compile(Uri file) {
@@ -186,9 +191,9 @@ namespace Xcst.Compiler {
             @ref = CompilerQName("ref"),
          };
 
-         var syntax = new {
-            packageManifest = new QName(XmlNamespaces.XcstSyntax, "package-manifest"),
-            template = new QName(XmlNamespaces.XcstSyntax, "template"),
+         var grammar = new {
+            packageManifest = new QName(XmlNamespaces.XcstGrammar, "package-manifest"),
+            template = new QName(XmlNamespaces.XcstGrammar, "template"),
             visibility = new QName("visibility"),
             name = new QName("name")
          };
@@ -210,13 +215,13 @@ namespace Xcst.Compiler {
                   )
                ).ToArray(),
             Templates =
-               ((IXdmEnumerator)((IXdmEnumerator)docEl.EnumerateAxis(XdmAxis.Child, syntax.packageManifest))
+               ((IXdmEnumerator)((IXdmEnumerator)docEl.EnumerateAxis(XdmAxis.Child, grammar.packageManifest))
                   .AsNodes()
                   .Single()
-                  .EnumerateAxis(XdmAxis.Child, syntax.template))
+                  .EnumerateAxis(XdmAxis.Child, grammar.template))
                   .AsNodes()
-                  .Where(n => publicVisibility.Contains(n.GetAttributeValue(syntax.visibility)))
-                  .Select(n => QualifiedName.Parse(n.GetAttributeValue(syntax.name)))
+                  .Where(n => publicVisibility.Contains(n.GetAttributeValue(grammar.visibility)))
+                  .Select(n => QualifiedName.Parse(n.GetAttributeValue(grammar.name)))
                   .ToArray()
          };
 
@@ -245,7 +250,16 @@ namespace Xcst.Compiler {
             compiler.SetParameter(CompilerQName("visibility"), this.TargetVisibility.ToXdmItem());
          }
 
-         compiler.SetParameter(CompilerQName("base-types"), this.TargetBaseTypes.ToXdmValue());
+         DocumentBuilder baseTypesBuilder = this.processor.NewDocumentBuilder();
+
+         compiler.SetParameter(
+            CompilerQName("base-types"),
+            new XdmValue(
+               this.tbaseTypes?.Select(t => CodeTypeReference(t, baseTypesBuilder))
+                  ?? this.TargetBaseTypes?.Select(t => CodeTypeReference(t, baseTypesBuilder))
+                  ?? Enumerable.Empty<XdmNode>()
+            )
+         );
 
          compiler.SetParameter(CompilerQName("cls-compliant"), this.ClsCompliant.ToXdmValue());
 
@@ -334,6 +348,85 @@ namespace Xcst.Compiler {
             .FirstOrDefault();
 
          return Tuple.Create(moduleUri, lineNumber);
+      }
+
+      internal static XdmNode CodeTypeReference(string typeName, DocumentBuilder docBuilder) {
+
+         Action<XmlWriter> writeFn = writer => {
+
+            const string ns = XmlNamespaces.XcstCode;
+            const string prefix = "code";
+
+            writer.WriteStartElement(prefix, "type-reference", ns);
+            writer.WriteAttributeString("name", typeName);
+            writer.WriteEndElement();
+         };
+
+         return CodeTypeReferenceImpl(writeFn, docBuilder);
+      }
+
+      internal static XdmNode CodeTypeReference(Type type, DocumentBuilder docBuilder) {
+         return CodeTypeReferenceImpl(w => WriteTypeReference(type, w), docBuilder);
+      }
+
+      internal static XdmNode CodeTypeReferenceImpl(Action<XmlWriter> writeFn, DocumentBuilder docBuilder) {
+
+         using (var output = new MemoryStream()) {
+
+            using (XmlWriter writer = XmlWriter.Create(output)) {
+               writeFn(writer);
+            }
+
+            output.Position = 0;
+
+            docBuilder.BaseUri = docBuilder.BaseUri ?? new Uri("", UriKind.Relative);
+
+            return docBuilder.Build(output)
+               .FirstElementOrSelf();
+         }
+      }
+
+      internal static void WriteTypeReference(Type type, XmlWriter writer) {
+
+         const string ns = XmlNamespaces.XcstCode;
+         const string prefix = "code";
+
+         writer.WriteStartElement(prefix, "type-reference", ns);
+
+         if (type.IsArray) {
+
+            writer.WriteAttributeString("array-dimensions", XmlConvert.ToString(type.GetArrayRank()));
+            WriteTypeReference(type.GetElementType(), writer);
+
+         } else {
+
+            writer.WriteAttributeString("name", type.Name);
+
+            if (type.IsInterface) {
+               writer.WriteAttributeString("interface", "true");
+            }
+
+            if (type.IsNested) {
+               WriteTypeReference(type.DeclaringType, writer);
+            } else {
+               writer.WriteAttributeString("namespace", type.Namespace);
+            }
+
+            Type[] typeArguments = type.GetGenericArguments();
+
+            if (typeArguments.Length > 0) {
+
+               writer.WriteStartElement(prefix, "type-arguments", ns);
+
+               for (int i = 0; i < typeArguments.Length; i++) {
+                  WriteTypeReference(typeArguments[i], writer);
+               }
+
+               writer.WriteEndElement();
+            }
+         }
+
+         writer.WriteEndElement();
       }
    }
 
