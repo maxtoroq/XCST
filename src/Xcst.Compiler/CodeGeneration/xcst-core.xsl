@@ -2207,16 +2207,17 @@
                   <code:variable-reference name="{$eof}"/>
                </code:not>
                <code:block>
+                  <code:assign>
+                     <code:variable-reference name="{$eof}"/>
+                     <code:not>
+                        <code:method-call name="MoveNext">
+                           <code:variable-reference name="{$iter}"/>
+                        </code:method-call>
+                     </code:not>
+                  </code:assign>
                   <code:if>
                      <code:not>
-                        <code:assign>
-                           <code:variable-reference name="{$eof}"/>
-                           <code:not>
-                              <code:method-call name="MoveNext">
-                                 <code:variable-reference name="{$iter}"/>
-                              </code:method-call>
-                           </code:not>
-                        </code:assign>
+                        <code:variable-reference name="{$eof}"/>
                      </code:not>
                      <code:block>
                         <code:method-call name="Add">
