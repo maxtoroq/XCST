@@ -202,6 +202,7 @@
     <None Include="CallableComponents\Function\HiddenAbstract.c.xcst" />
     <None Include="CallableComponents\Function\AbstractNextFunction.i.xcst" />
     <None Include="CallableComponents\Function\NextFunction.c.xcst" />
+    <None Include="CallableComponents\Function\Param\DefaultValue.c.xcst" />
     <None Include="CallableComponents\Function\Param\param.foox.c.xcst" />
     <None Include="CallableComponents\Function\_HiddenAbstract.xcst" />
     <None Include="CallableComponents\Function\_HiddenAbstractWithContent.xcst" />

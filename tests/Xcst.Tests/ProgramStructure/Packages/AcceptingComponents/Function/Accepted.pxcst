@@ -2,6 +2,8 @@
 <c:package name='Accepted' version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
    <c:function name='foo' as='string' visibility='public'>
+      <c:param name='a' value='""' as='string'/>
+
       <c:return>foo</c:return>
    </c:function>
 

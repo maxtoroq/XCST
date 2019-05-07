@@ -2354,10 +2354,7 @@
                   <variable name="param-meta" select="$meta/xcst:param[$pos]"/>
                   <code:parameter name="{xcst:name(@name)}">
                      <call-template name="src:line-number"/>
-                     <sequence select="$param-meta/code:type-reference"/>
-                     <if test="$param-meta/@value">
-                        <code:expression value="{$param-meta/@value}"/>
-                     </if>
+                     <sequence select="$param-meta/code:*"/>
                   </code:parameter>
                </for-each>
             </code:parameters>
