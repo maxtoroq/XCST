@@ -3835,23 +3835,24 @@
 
       <choose>
          <when test="$tvt">
+            <variable name="format-expr" as="element()">
+               <call-template name="src:format-value-template">
+                  <with-param name="context-node" select="$el"/>
+                  <with-param name="text" select="$text"/>
+                  <with-param name="lre" select="true()"/>
+               </call-template>
+            </variable>
             <choose>
                <when test="$tt">
                   <code:method-call name="{if ($tt eq 'trim') then 'Trim' else 'NormalizeSpace'}">
                      <sequence select="src:helper-type('SimpleContent')"/>
                      <code:arguments>
-                        <call-template name="src:format-value-template">
-                           <with-param name="context-node" select="$el"/>
-                           <with-param name="text" select="$text"/>
-                        </call-template>
+                        <sequence select="$format-expr"/>
                      </code:arguments>
                   </code:method-call>
                </when>
                <otherwise>
-                  <call-template name="src:format-value-template">
-                     <with-param name="context-node" select="$el"/>
-                     <with-param name="text" select="$text"/>
-                  </call-template>
+                  <sequence select="$format-expr"/>
                </otherwise>
             </choose>
          </when>

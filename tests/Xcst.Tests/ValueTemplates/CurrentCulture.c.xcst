@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:import-namespace ns='System.Globalization'/>
+
+   <c:template name='c:initial-template'>
+      <foo bar='{1.0m:c0}' c:expand-text='yes'>{2.0m:c0}</foo>
+   </c:template>
+
+   <c:template name='expected'>
+      <foo bar='{1.0m.ToString("c0", CultureInfo.CurrentCulture)}'>
+         <c:value-of value='2.0m.ToString("c0", CultureInfo.CurrentCulture)'/>
+      </foo>
+   </c:template>
+
+</c:module>

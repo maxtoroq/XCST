@@ -437,6 +437,7 @@
     <None Include="SequenceConstructors\Raw\Map\Null.f.xcst" />
     <None Include="SequenceConstructors\Raw\Variable\Null.c.xcst" />
     <None Include="SequenceConstructors\Raw\Variable\MultipleItems.c.xcst" />
+    <None Include="ValueTemplates\CurrentCulture.c.xcst" />
     <None Include="SequenceConstructors\SimpleContent\FormatProviderSwitch.c.xcst" />
     <None Include="SequenceConstructors\SimpleContent\FromExpression\Attribute\EnumerableWithCustomToString.c.xcst" />
     <None Include="SequenceConstructors\SimpleContent\FromExpression\Attribute\MultipleItems.c.xcst" />
