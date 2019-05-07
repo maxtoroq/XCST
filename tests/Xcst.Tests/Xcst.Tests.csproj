@@ -368,6 +368,8 @@
     <None Include="ProgramStructure\CombiningModules\import.foox.c.xcst" />
     <None Include="ProgramStructure\ImportNamespace\import-namespace.foox.c.xcst" />
     <None Include="ProgramStructure\Modules\module.foox.c.xcst" />
+    <None Include="ProgramStructure\Packages\AcceptingComponents\GenericType.c.xcst" />
+    <None Include="ProgramStructure\Packages\AcceptingComponents\GenericType.pxcst" />
     <None Include="ProgramStructure\Packages\Dependencies\use-package.foox.c.xcst" />
     <None Include="ProgramStructure\Packages\OverridingComponents\Function\Original.c.xcst" />
     <None Include="ProgramStructure\Packages\OverridingComponents\Function\Original.pxcst" />

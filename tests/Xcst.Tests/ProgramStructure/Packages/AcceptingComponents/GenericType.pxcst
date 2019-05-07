@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:package name='GenericType' version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:import-namespace ns='System.Collections.Generic'/>
+
+   <c:variable name='foo' as='List&lt;string>' visibility='public'/>
+
+</c:package>

@@ -400,7 +400,13 @@ namespace Xcst.Compiler {
 
          } else {
 
-            writer.WriteAttributeString("name", type.Name);
+            Type[] typeArguments = type.GetGenericArguments();
+
+            string name = (typeArguments.Length > 0) ?
+               type.Name.Substring(0, type.Name.IndexOf('`'))
+               : type.Name;
+
+            writer.WriteAttributeString("name", name);
 
             if (type.IsInterface) {
                writer.WriteAttributeString("interface", "true");
@@ -411,8 +417,6 @@ namespace Xcst.Compiler {
             } else {
                writer.WriteAttributeString("namespace", type.Namespace);
             }
-
-            Type[] typeArguments = type.GetGenericArguments();
 
             if (typeArguments.Length > 0) {
 

@@ -9,7 +9,6 @@ namespace Xcst.Tests.ProgramStructure.Packages.AcceptingComponents {
 
    using ModuleResolver = AcceptingComponentsTests.Component_Using_Accepted_Type_Resolver;
 
-   [TestClass]
    public partial class AcceptingComponentsTests {
 
       const string TestCategory = nameof(ProgramStructure) + "." + nameof(Packages) + "." + nameof(AcceptingComponents);
