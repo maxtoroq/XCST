@@ -2549,7 +2549,7 @@
                   <code:new-object>
                      <code:type-reference name="OutputParameters" namespace="Xcst"/>
                      <code:initializer>
-                        <for-each select="@* except (@format, @href, @output, @version)">
+                        <for-each select="@* except (@format, @href, @output)">
                            <call-template name="src:output-parameter-initializer"/>
                         </for-each>
                      </code:initializer>
@@ -2605,7 +2605,7 @@
             <code:new-object>
                <code:type-reference name="OutputParameters" namespace="Xcst"/>
                <code:initializer>
-                  <for-each select="@* except (@format, @version)">
+                  <for-each select="@* except @format">
                      <call-template name="src:output-parameter-initializer"/>
                   </for-each>
                </code:initializer>
@@ -2663,9 +2663,14 @@
             </code:indexer-initializer>
          </when>
          <otherwise>
-            <code:member-initializer name="{src:output-parameter-property(.)}">
+            <variable name="expr" as="element()?">
                <apply-templates select="." mode="src:output-parameter"/>
-            </code:member-initializer>
+            </variable>
+            <if test="$expr">
+               <code:member-initializer name="{src:output-parameter-property(.)}">
+                  <sequence select="$expr"/>
+               </code:member-initializer>
+            </if>
          </otherwise>
       </choose>
    </template>
@@ -2822,6 +2827,12 @@
       </call-template>
    </template>
 
+   <template match="@output-version" mode="src:output-parameter">
+      <call-template name="src:expand-attribute">
+         <with-param name="attr" select="."/>
+      </call-template>
+   </template>
+
    <template match="@standalone" mode="src:output-parameter">
       <choose>
          <when test="parent::c:output or not(xcst:is-value-template(.))">
@@ -2847,25 +2858,16 @@
       </choose>
    </template>
 
-   <template match="@version | @output-version" mode="src:output-parameter">
-      <choose>
-         <when test="parent::c:output">
-            <code:string literal="true">
-               <value-of select="xcst:non-string(.)"/>
-            </code:string>
-         </when>
-         <otherwise>
-            <call-template name="src:expand-attribute">
-               <with-param name="attr" select="."/>
-            </call-template>
-         </otherwise>
-      </choose>
+   <template match="c:output/@version" mode="src:output-parameter">
+      <code:string literal="true">
+         <value-of select="xcst:non-string(.)"/>
+      </code:string>
    </template>
 
-   <function name="src:output-parameter-property" as="xs:string">
-      <param name="node" as="node()"/>
+   <function name="src:output-parameter-property" as="xs:string?">
+      <param name="attr" as="attribute()"/>
 
-      <sequence select="$src:output-parameters/*[local-name() eq local-name($node)]/string()"/>
+      <sequence select="$src:output-parameters/*[local-name() eq local-name($attr)]/string()"/>
    </function>
 
    <!--

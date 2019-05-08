@@ -3195,25 +3195,8 @@
             </code:parameter>
          </code:parameters>
          <code:block>
-            <for-each-group select="for $o in $declarations return $o/@*[not(self::attribute(name))]" group-by="node-name(.)">
-               <code:assign>
-                  <choose>
-                     <when test="namespace-uri()">
-                        <code:indexer-reference>
-                           <sequence select="$parameters-param"/>
-                           <code:arguments>
-                              <call-template name="src:QName">
-                                 <with-param name="qname" select="node-name(.)"/>
-                              </call-template>
-                           </code:arguments>
-                        </code:indexer-reference>
-                     </when>
-                     <otherwise>
-                        <code:property-reference name="{src:output-parameter-property(.)}">
-                           <sequence select="$parameters-param"/>
-                        </code:property-reference>
-                     </otherwise>
-                  </choose>
+            <for-each-group select="for $o in $declarations return $o/(@* except @name)" group-by="node-name(.)">
+               <variable name="expr" as="element()?">
                   <apply-templates select="." mode="src:output-parameter">
                      <with-param name="merged-list" as="xs:QName*">
                         <if test="self::attribute(cdata-section-elements)
@@ -3221,12 +3204,33 @@
                            <sequence select="distinct-values(
                               for $p in current-group()
                               return for $s in tokenize($p, '\s')[.]
-                              return xcst:EQName($p, $s, true())
-                           )"/>
+                              return xcst:EQName($p, $s, true()))"/>
                         </if>
                      </with-param>
                   </apply-templates>
-               </code:assign>
+               </variable>
+               <if test="$expr">
+                  <code:assign>
+                     <choose>
+                        <when test="namespace-uri()">
+                           <code:indexer-reference>
+                              <sequence select="$parameters-param"/>
+                              <code:arguments>
+                                 <call-template name="src:QName">
+                                    <with-param name="qname" select="node-name(.)"/>
+                                 </call-template>
+                              </code:arguments>
+                           </code:indexer-reference>
+                        </when>
+                        <otherwise>
+                           <code:property-reference name="{src:output-parameter-property(.)}">
+                              <sequence select="$parameters-param"/>
+                           </code:property-reference>
+                        </otherwise>
+                     </choose>
+                     <sequence select="$expr"/>
+                  </code:assign>
+               </if>
             </for-each-group>
          </code:block>
       </code:method>

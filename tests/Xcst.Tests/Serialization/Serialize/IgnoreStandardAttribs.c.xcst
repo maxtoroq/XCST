@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:template name='foo'>
+      <c:serialize expand-text='no'
+         extension-element-prefixes='a'
+         output-version='5.0'
+         transform-text='none'
+         version='1.0'/>
+   </c:template>
+
+</c:module>
