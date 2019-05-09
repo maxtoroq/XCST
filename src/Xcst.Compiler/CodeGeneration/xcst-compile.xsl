@@ -1887,7 +1887,7 @@
       <variable name="abstract" select="$principal-module and $package-manifest/xcst:*[@visibility eq 'abstract']"/>
 
       <code:type name="{$package-manifest/code:type-reference/@name}"
-            visibility="{('public'[$principal-module], '#default')[1]}"
+            visibility="{($src:visibility[$principal-module], '#default')[1]}"
             extensibility="{('abstract'[$abstract], '#default')[1]}"
             partial="true">
 
