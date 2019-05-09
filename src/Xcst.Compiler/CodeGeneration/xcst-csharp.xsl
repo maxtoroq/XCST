@@ -489,9 +489,11 @@
    </template>
 
    <template match="code:lambda" mode="cs:source">
-      <text>(</text>
+      <variable name="param-count" select="count(code:parameters/code:*)"/>
+      <if test="$param-count ne 1">(</if>
       <apply-templates select="code:parameters" mode="#current"/>
-      <text>) => </text>
+      <if test="$param-count ne 1">)</if>
+      <text> => </text>
       <apply-templates select="code:*[last()]" mode="#current"/>
    </template>
 
