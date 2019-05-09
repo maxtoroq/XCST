@@ -2823,77 +2823,80 @@
          <code:variable-reference name="overriddenParams"/>
       </variable>
 
-      <code:method visibility="private">
-         <choose>
-            <when test="$principal-module">
-               <attribute name="name" select="'Prime'"/>
-               <code:implements-interface>
-                  <sequence select="$src:package-interface"/>
-               </code:implements-interface>
-            </when>
-            <otherwise>
-               <attribute name="name" select="src:prime-method-name(.)"/>
-               <code:attributes>
-                  <call-template name="src:editor-browsable-never"/>
-               </code:attributes>
-            </otherwise>
-         </choose>
-         <code:parameters>
-            <code:parameter name="{$context/src:reference/code:*/@name}">
-               <sequence select="$context/code:type-reference"/>
-            </code:parameter>
-            <code:parameter name="{$overridden-params/@name}">
-               <code:type-reference array-dimensions="1">
-                  <code:type-reference name="String" namespace="System"/>
-               </code:type-reference>
-            </code:parameter>
-         </code:parameters>
-         <code:block>
-            <if test="$principal-module">
-               <for-each select="$used-packages">
-                  <variable name="overridden" select="
-                     src:overridden-components(., $package-manifest)[self::xcst:param and xs:boolean(@required)]"/>
+      <variable name="priming-params" select="
+         src:priming-parameters(., $package-manifest)" as="element(c:param)*"/>
 
-                  <code:method-call name="Prime">
-                     <code:cast>
-                        <sequence select="$src:package-interface"/>
-                        <code:field-reference name="{src:used-package-field-name(.)}">
-                           <code:this-reference/>
-                        </code:field-reference>
-                     </code:cast>
-                     <code:arguments>
-                        <sequence select="$context/src:reference/code:*"/>
-                        <choose>
-                           <when test="$overridden">
-                              <code:new-array>
-                                 <code:collection-initializer>
-                                    <for-each select="$overridden">
-                                       <code:string literal="true">
-                                          <value-of select="@name"/>
-                                       </code:string>
-                                    </for-each>
-                                 </code:collection-initializer>
-                              </code:new-array>
-                           </when>
-                           <otherwise>
-                              <code:null/>
-                           </otherwise>
-                        </choose>
-                     </code:arguments>
-                  </code:method-call>
-               </for-each>
-               <for-each select="$modules[position() ne last()]">
-                  <code:method-call name="{src:prime-method-name(.)}">
-                     <code:this-reference/>
-                     <code:arguments>
-                        <sequence select="$context/src:reference/code:*, $overridden-params"/>
-                     </code:arguments>
-                  </code:method-call>
-               </for-each>
-            </if>
-            <for-each select="(., c:use-package/c:override)/c:param">
-               <variable name="meta" select="$package-manifest/xcst:*[@declaration-id eq current()/generate-id()]"/>
-               <if test="$meta/@visibility ne 'hidden' and $meta/xs:boolean(@required)">
+      <if test="$principal-module or exists($priming-params)">
+         <code:method visibility="private">
+            <choose>
+               <when test="$principal-module">
+                  <attribute name="name" select="'Prime'"/>
+                  <code:implements-interface>
+                     <sequence select="$src:package-interface"/>
+                  </code:implements-interface>
+               </when>
+               <otherwise>
+                  <attribute name="name" select="src:prime-method-name(.)"/>
+                  <code:attributes>
+                     <call-template name="src:editor-browsable-never"/>
+                  </code:attributes>
+               </otherwise>
+            </choose>
+            <code:parameters>
+               <code:parameter name="{$context/src:reference/code:*/@name}">
+                  <sequence select="$context/code:type-reference"/>
+               </code:parameter>
+               <code:parameter name="{$overridden-params/@name}">
+                  <code:type-reference array-dimensions="1">
+                     <code:type-reference name="String" namespace="System"/>
+                  </code:type-reference>
+               </code:parameter>
+            </code:parameters>
+            <code:block>
+               <if test="$principal-module">
+                  <for-each select="$used-packages">
+                     <variable name="overridden" select="
+                        src:overridden-components(., $package-manifest)[self::xcst:param and xs:boolean(@required)]"/>
+
+                     <code:method-call name="Prime">
+                        <code:cast>
+                           <sequence select="$src:package-interface"/>
+                           <code:field-reference name="{src:used-package-field-name(.)}">
+                              <code:this-reference/>
+                           </code:field-reference>
+                        </code:cast>
+                        <code:arguments>
+                           <sequence select="$context/src:reference/code:*"/>
+                           <choose>
+                              <when test="$overridden">
+                                 <code:new-array>
+                                    <code:collection-initializer>
+                                       <for-each select="$overridden">
+                                          <code:string literal="true">
+                                             <value-of select="@name"/>
+                                          </code:string>
+                                       </for-each>
+                                    </code:collection-initializer>
+                                 </code:new-array>
+                              </when>
+                              <otherwise>
+                                 <code:null/>
+                              </otherwise>
+                           </choose>
+                        </code:arguments>
+                     </code:method-call>
+                  </for-each>
+                  <for-each select="$modules[position() ne last()][exists(src:priming-parameters(., $package-manifest))]">
+                     <code:method-call name="{src:prime-method-name(.)}">
+                        <code:this-reference/>
+                        <code:arguments>
+                           <sequence select="$context/src:reference/code:*, $overridden-params"/>
+                        </code:arguments>
+                     </code:method-call>
+                  </for-each>
+               </if>
+               <for-each select="$priming-params">
+                  <variable name="meta" select="$package-manifest/xcst:*[@declaration-id eq current()/generate-id()]"/>
                   <code:if>
                      <code:or-else>
                         <code:equal>
@@ -2919,16 +2922,28 @@
                         </apply-templates>
                      </code:block>
                   </code:if>
-               </if>
-            </for-each>
-         </code:block>
-      </code:method>
+               </for-each>
+            </code:block>
+         </code:method>
+      </if>
    </template>
 
    <function name="src:prime-method-name" as="xs:string">
       <param name="module" as="element()"/>
 
       <sequence select="concat(src:aux-variable('prime'), '_', generate-id($module))"/>
+   </function>
+
+   <function name="src:priming-parameters" as="element(c:param)*">
+      <param name="module" as="element()"/>
+      <param name="package-manifest" as="element(xcst:package-manifest)"/>
+
+      <for-each select="($module, $module/c:use-package/c:override)/c:param">
+         <variable name="meta" select="$package-manifest/xcst:*[@declaration-id eq current()/generate-id()]"/>
+         <if test="$meta/@visibility ne 'hidden' and $meta/xs:boolean(@required)">
+            <sequence select="."/>
+         </if>
+      </for-each>
    </function>
 
    <template name="src:get-template-method">
