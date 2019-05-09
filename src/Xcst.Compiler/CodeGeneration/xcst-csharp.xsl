@@ -382,7 +382,7 @@
       <text>foreach (</text>
       <apply-templates select="code:*[1]" mode="cs:source"/>
       <text>)</text>
-      <apply-templates select="code:*[2]" mode="#current"/>
+      <apply-templates select="code:*[2]" mode="cs:source"/>
    </template>
 
    <template match="code:getter" mode="cs:source">
@@ -427,7 +427,7 @@
       <text>if (</text>
       <apply-templates select="code:*[1]" mode="cs:source"/>
       <text>)</text>
-      <apply-templates select="code:*[2]" mode="#current"/>
+      <apply-templates select="code:*[2]" mode="cs:source"/>
    </template>
 
    <template match="code:import" mode="cs:source">
@@ -1024,7 +1024,7 @@
          <with-param name="indent" select="$indent + 1" tunnel="yes"/>
       </apply-templates>
       <text>)</text>
-      <apply-templates select="code:*[2]" mode="#current"/>
+      <apply-templates select="code:*[2]" mode="cs:source"/>
    </template>
 
    <template match="code:variable" mode="cs:statement">
@@ -1062,7 +1062,7 @@
       <text>while (</text>
       <apply-templates select="code:*[1]" mode="cs:source"/>
       <text>)</text>
-      <apply-templates select="code:*[2]" mode="#current"/>
+      <apply-templates select="code:*[2]" mode="cs:source"/>
    </template>
 
    <!--
