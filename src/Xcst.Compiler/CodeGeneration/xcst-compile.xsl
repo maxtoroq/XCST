@@ -1525,7 +1525,7 @@
 
       <variable name="qualified-types" select="xs:boolean(@qualified-types)"/>
 
-      <code:type name="{src:used-package-class-name(.)}" partial="{not($qualified-types)}">
+      <code:type name="{src:used-package-class-name(.)}" visibility="private" partial="{not($qualified-types)}">
          <code:base-types>
             <sequence select="code:type-reference"/>
          </code:base-types>
