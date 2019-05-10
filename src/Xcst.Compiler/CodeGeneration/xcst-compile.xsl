@@ -1191,7 +1191,9 @@
       <param name="meta" as="element()"/>
 
       <code:type-reference name="{src:params-type-name($meta)}">
-         <sequence select="($meta/xcst:package-type/code:type-reference, $meta/../code:type-reference)[1]"/>
+         <if test="$meta/@accepted/xs:boolean(.)">
+            <sequence select="$meta/xcst:package-type/code:type-reference"/>
+         </if>
       </code:type-reference>
    </function>
 
