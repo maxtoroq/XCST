@@ -1838,12 +1838,18 @@
    <template match="c:module | c:package" mode="src:namespace">
       <param name="package-manifest" required="yes" tunnel="yes"/>
 
-      <code:namespace name="{$package-manifest/code:type-reference/@namespace}">
-         <apply-templates select="$package-manifest/xcst:type[@accepted/xs:boolean(.) and @visibility ne 'hidden']" mode="src:import-namespace"/>
-         <apply-templates select="c:import-namespace" mode="src:import-namespace"/>
-         <apply-templates select="." mode="src:import-namespace-extra"/>
+      <variable name="class" as="element()">
          <apply-templates select="." mode="src:class"/>
-      </code:namespace>
+      </variable>
+
+      <if test="exists($class/code:members/code:*/(if (self::code:region) then code:* else .))">
+         <code:namespace name="{$package-manifest/code:type-reference/@namespace}">
+            <apply-templates select="$package-manifest/xcst:type[@accepted/xs:boolean(.) and @visibility ne 'hidden']" mode="src:import-namespace"/>
+            <apply-templates select="c:import-namespace" mode="src:import-namespace"/>
+            <apply-templates select="." mode="src:import-namespace-extra"/>
+            <sequence select="$class"/>
+         </code:namespace>
+      </if>
    </template>
 
    <template match="c:module/node() | c:package/node()" mode="src:import-namespace-extra"/>
@@ -1877,7 +1883,6 @@
    <template match="c:module | c:package" mode="src:class">
       <param name="modules" tunnel="yes"/>
       <param name="package-manifest" required="yes" tunnel="yes"/>
-      <param name="used-packages" tunnel="yes"/>
 
       <variable name="module-pos" select="
          for $pos in (1 to count($modules)) 
@@ -1922,7 +1927,9 @@
                   <call-template name="src:execution-context"/>
                   <call-template name="src:constructor"/>
                </if>
-               <call-template name="src:prime-method"/>
+               <call-template name="src:prime-method">
+                  <with-param name="principal-module" select="$principal-module"/>
+               </call-template>
                <if test="$principal-module">
                   <call-template name="src:get-template-method"/>
                   <call-template name="src:read-output-definition-method"/>
@@ -2800,15 +2807,10 @@
    </template>
 
    <template name="src:prime-method">
+      <param name="principal-module" as="xs:boolean"/>
       <param name="modules" tunnel="yes"/>
       <param name="package-manifest" required="yes" tunnel="yes"/>
       <param name="used-packages" tunnel="yes"/>
-
-      <variable name="module-pos" select="
-         for $pos in (1 to count($modules)) 
-         return if ($modules[$pos] is current()) then $pos else ()"/>
-
-      <variable name="principal-module" select="$module-pos eq count($modules)"/>
 
       <variable name="context" as="element()">
          <src:context>
