@@ -54,12 +54,12 @@ namespace Xcst.Xml {
          };
 
          if (parameters.Method != null
-            && parameters.Method != OutputParameters.StandardMethods.Xml) {
+            && parameters.Method != OutputParameters.Methods.Xml) {
 
-            if (parameters.Method == OutputParameters.StandardMethods.Html) {
+            if (parameters.Method == OutputParameters.Methods.Html) {
                setOutputMethod(settings, XmlOutputMethod.Html);
 
-            } else if (parameters.Method == OutputParameters.StandardMethods.Text) {
+            } else if (parameters.Method == OutputParameters.Methods.Text) {
                setOutputMethod(settings, XmlOutputMethod.Text);
             }
          }

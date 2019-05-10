@@ -2821,10 +2821,41 @@
       <if test="exists($qname) and not(namespace-uri-from-QName($qname)) and not(local-name-from-QName($qname) = ('xml', 'html', 'xhtml', 'text'))">
          <sequence select="error(xs:QName('err:XTSE1570'), concat('Invalid value for ''', name(), '''. Must be one of (xml|html|xhtml|text).'), src:error-object(.))"/>
       </if>
-      <call-template name="src:QName">
-         <with-param name="qname" select="$qname"/>
-         <with-param name="avt" select="."/>
-      </call-template>
+      <choose>
+         <when test="exists($qname) and not(namespace-uri-from-QName($qname))">
+            <code:property-reference>
+               <attribute name="name">
+                  <variable name="local" select="local-name-from-QName($qname)"/>
+                  <choose>
+                     <when test="$local eq 'xml'">
+                        <sequence select="'Xml'"/>
+                     </when>
+                     <when test="$local eq 'html'">
+                        <sequence select="'Html'"/>
+                     </when>
+                     <when test="$local eq 'xhtml'">
+                        <sequence select="'XHtml'"/>
+                     </when>
+                     <when test="$local eq 'text'">
+                        <sequence select="'Text'"/>
+                     </when>
+                     <otherwise>
+                        <sequence select="error()"/>
+                     </otherwise>
+                  </choose>
+               </attribute>
+               <code:type-reference name="Methods">
+                  <code:type-reference name="OutputParameters" namespace="Xcst"/>
+               </code:type-reference>
+            </code:property-reference>
+         </when>
+         <otherwise>
+            <call-template name="src:QName">
+               <with-param name="qname" select="$qname"/>
+               <with-param name="avt" select="."/>
+            </call-template>
+         </otherwise>
+      </choose>
    </template>
 
    <template match="@output-version" mode="src:output-parameter">

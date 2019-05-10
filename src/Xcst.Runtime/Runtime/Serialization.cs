@@ -51,7 +51,7 @@ namespace Xcst.Runtime {
             package,
             null,
             new OutputParameters {
-               Method = OutputParameters.StandardMethods.Text,
+               Method = OutputParameters.Methods.Text,
                ItemSeparator = separator
             },
             action

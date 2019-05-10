@@ -30,8 +30,8 @@ namespace Xcst.Xml {
          this.writer = writer;
          this.outputXmlDecl = !parameters.OmitXmlDeclaration.GetValueOrDefault()
             && (parameters.Method == null
-               || parameters.Method == OutputParameters.StandardMethods.Xml
-               || parameters.Method == OutputParameters.StandardMethods.XHtml);
+               || parameters.Method == OutputParameters.Methods.Xml
+               || parameters.Method == OutputParameters.Methods.XHtml);
 
          this.standalone = parameters.Standalone.GetValueOrDefault();
       }

@@ -103,7 +103,7 @@ namespace Xcst {
 
       static XmlWriter WrapHtmlWriter(XmlWriter writer, OutputParameters parameters) {
 
-         if (parameters.Method == OutputParameters.StandardMethods.Html
+         if (parameters.Method == OutputParameters.Methods.Html
             && parameters.DoctypePublic == null
             && parameters.DoctypeSystem == null
             && parameters.RequestedHtmlVersion() >= 5m) {
@@ -116,7 +116,7 @@ namespace Xcst {
 
       static XmlWriter WrapXHtmlWriter(XmlWriter writer, OutputParameters parameters) {
 
-         if (parameters.Method == OutputParameters.StandardMethods.XHtml) {
+         if (parameters.Method == OutputParameters.Methods.XHtml) {
             return new XHtmlWriter(writer);
          }
 

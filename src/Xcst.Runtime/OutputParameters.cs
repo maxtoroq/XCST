@@ -130,7 +130,7 @@ namespace Xcst {
             if (value != null
                && String.IsNullOrEmpty(value.Namespace)) {
 
-               value = StandardMethods.Parse(value.Name);
+               value = Methods.Parse(value.Name);
             }
 
             parameters[StandardParameters.Method] = value;
@@ -301,14 +301,14 @@ namespace Xcst {
          }
       }
 
-      internal static class StandardMethods {
+      public static class Methods {
 
          public static readonly QualifiedName Xml = new QualifiedName("xml");
          public static readonly QualifiedName Html = new QualifiedName("html");
          public static readonly QualifiedName XHtml = new QualifiedName("xhtml");
          public static readonly QualifiedName Text = new QualifiedName("text");
 
-         public static QualifiedName Parse(string method) {
+         internal static QualifiedName Parse(string method) {
 
             if (method == null) throw new ArgumentNullException(nameof(method));
 
