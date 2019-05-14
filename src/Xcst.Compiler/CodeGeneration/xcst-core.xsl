@@ -1864,6 +1864,7 @@
          </if>
          <if test="@tunnel-params">
             <code:method-call name="WithTunnelParams">
+               <code:chain-reference/>
                <code:arguments>
                   <code:expression value="{xcst:expression(@tunnel-params)}"/>
                </code:arguments>
