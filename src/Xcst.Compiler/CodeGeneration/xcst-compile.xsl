@@ -1601,16 +1601,20 @@
          <code:getter>
             <code:block>
                <code:return>
-                  <code:method-call name="Item1">
-                     <sequence select="$field"/>
+                  <code:method-call name="Invoke">
+                     <code:property-reference name="Item1">
+                        <sequence select="$field"/>
+                     </code:property-reference>
                   </code:method-call>
                </code:return>
             </code:block>
          </code:getter>
          <code:setter>
             <code:block>
-               <code:method-call name="Item2">
-                  <sequence select="$field"/>
+               <code:method-call name="Invoke">
+                  <code:property-reference name="Item2">
+                     <sequence select="$field"/>
+                  </code:property-reference>
                   <code:arguments>
                      <code:setter-value/>
                   </code:arguments>
