@@ -85,7 +85,6 @@
    </template>
 
    <template match="code:attribute" mode="vb:source">
-      <call-template name="vb:line-pragma"/>
       <call-template name="src:new-line-indented"/>
       <text>&lt;</text>
       <apply-templates select="code:type-reference" mode="#current"/>
@@ -99,7 +98,6 @@
          <text>)</text>
       </if>
       <text>></text>
-      <call-template name="vb:line-pragma-end"/>
    </template>
 
    <template match="code:base-reference" mode="vb:source">
@@ -225,8 +223,8 @@
 
    <template match="code:constructor" mode="vb:source">
       <value-of select="$src:new-line"/>
-      <apply-templates select="code:attributes/code:*" mode="#current"/>
       <call-template name="vb:line-pragma"/>
+      <apply-templates select="code:attributes/code:*" mode="#current"/>
       <call-template name="src:new-line-indented"/>
       <call-template name="vb:visibility"/>
       <text>Sub New(</text>
@@ -250,8 +248,8 @@
 
    <template match="code:conversion" mode="vb:source">
       <value-of select="$src:new-line"/>
-      <apply-templates select="code:attributes/code:*" mode="#current"/>
       <call-template name="vb:line-pragma"/>
+      <apply-templates select="code:attributes/code:*" mode="#current"/>
       <call-template name="src:new-line-indented"/>
       <text>Public Shared Widening Operator CType(</text>
       <apply-templates select="code:parameters" mode="#current"/>
@@ -320,8 +318,8 @@
       <if test="not(preceding-sibling::code:*[1] instance of element(code:field))">
          <value-of select="$src:new-line"/>
       </if>
-      <apply-templates select="code:attributes/code:*" mode="#current"/>
       <call-template name="vb:line-pragma"/>
+      <apply-templates select="code:attributes/code:*" mode="#current"/>
       <call-template name="src:new-line-indented"/>
       <choose>
          <when test="not(@visibility) or @visibility eq '#default'">Dim </when>
@@ -538,8 +536,8 @@
 
    <template match="code:method" mode="vb:source">
       <value-of select="$src:new-line"/>
-      <apply-templates select="code:attributes/code:*" mode="#current"/>
       <call-template name="vb:line-pragma"/>
+      <apply-templates select="code:attributes/code:*" mode="#current"/>
       <call-template name="src:new-line-indented"/>
       <call-template name="vb:visibility"/>
       <call-template name="vb:member-extensibility"/>
@@ -707,8 +705,8 @@
       <param name="indent" tunnel="yes"/>
 
       <value-of select="$src:new-line"/>
-      <apply-templates select="code:attributes/code:*" mode="#current"/>
       <call-template name="vb:line-pragma"/>
+      <apply-templates select="code:attributes/code:*" mode="#current"/>
       <call-template name="src:new-line-indented"/>
       <call-template name="vb:visibility"/>
       <if test="code:getter and not(code:getter/code:*) and not(code:setter)">ReadOnly </if>
@@ -896,8 +894,8 @@
       <param name="indent" tunnel="yes"/>
 
       <value-of select="$src:new-line"/>
-      <apply-templates select="code:attributes/code:*" mode="#current"/>
       <call-template name="vb:line-pragma"/>
+      <apply-templates select="code:attributes/code:*" mode="#current"/>
       <call-template name="src:new-line-indented"/>
       <call-template name="vb:visibility"/>
       <if test="@extensibility ne '#default'">
