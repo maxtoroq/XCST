@@ -84,6 +84,12 @@
       <call-template name="vb:line-pragma-end"/>
    </template>
 
+   <template match="code:lambda[@void/xs:boolean(.)]/code:assign" mode="vb:source">
+      <apply-templates select="code:*[1]" mode="#current"/>
+      <text> = </text>
+      <apply-templates select="code:*[2]" mode="#current"/>
+   </template>
+
    <template match="code:attribute" mode="vb:source">
       <call-template name="src:new-line-indented"/>
       <text>&lt;</text>
