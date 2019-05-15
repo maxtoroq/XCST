@@ -646,16 +646,15 @@
    </template>
 
    <template match="code:new-object" mode="vb:source">
+      <variable name="require-parens" select="exists((code:type-reference, code:arguments/code:*))"/>
       <text>New</text>
       <if test="code:type-reference">
          <text> </text>
          <apply-templates select="code:type-reference" mode="#current"/>
       </if>
-      <if test="code:arguments/code:*">
-         <text>(</text>
-         <apply-templates select="code:arguments" mode="#current"/>
-         <text>)</text>
-      </if>
+      <if test="$require-parens">(</if>
+      <apply-templates select="code:arguments" mode="#current"/>
+      <if test="$require-parens">)</if>
       <choose>
          <when test="code:initializer/code:*">
             <apply-templates select="code:initializer" mode="#current"/>
