@@ -1740,9 +1740,9 @@
          <code:block>
             <code:return>
                <code:lambda>
-                  <code:method-reference name="{@member-name}">
+                  <code:property-reference name="{@member-name}">
                      <code:base-reference/>
-                  </code:method-reference>
+                  </code:property-reference>
                </code:lambda>
             </code:return>
          </code:block>
@@ -1815,8 +1815,6 @@
 
    <function name="src:original-member" as="element()">
       <param name="meta" as="element()"/>
-
-      <variable name="property" select="$meta[self::xcst:variable] or $meta[self::xcst:param]"/>
 
       <code:method-reference name="{src:original-member-name($meta)}">
          <code:field-reference name="{src:used-package-field-name($meta)}">
