@@ -646,11 +646,16 @@
    </template>
 
    <template match="code:new-object" mode="vb:source">
-      <text>New </text>
-      <apply-templates select="code:type-reference" mode="#current"/>
-      <text>(</text>
-      <apply-templates select="code:arguments" mode="#current"/>
-      <text>)</text>
+      <text>New</text>
+      <if test="code:type-reference">
+         <text> </text>
+         <apply-templates select="code:type-reference" mode="#current"/>
+      </if>
+      <if test="code:arguments/code:*">
+         <text>(</text>
+         <apply-templates select="code:arguments" mode="#current"/>
+         <text>)</text>
+      </if>
       <choose>
          <when test="code:initializer/code:*">
             <apply-templates select="code:initializer" mode="#current"/>
