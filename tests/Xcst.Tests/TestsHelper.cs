@@ -12,6 +12,8 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
 using Microsoft.CodeAnalysis.VisualBasic;
 using Xcst.Compiler;
+using CSharpVersion = Microsoft.CodeAnalysis.CSharp.LanguageVersion;
+using VBVersion = Microsoft.CodeAnalysis.VisualBasic.LanguageVersion;
 using TestAssert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 
 namespace Xcst.Tests {
@@ -156,8 +158,8 @@ namespace Xcst.Tests {
 
          bool isCSharp = language.Equals("C#", StringComparison.OrdinalIgnoreCase);
 
-         var csOptions = new CSharpParseOptions(preprocessorSymbols: new[] { "DEBUG", "TRACE" });
-         var vbOptions = new VisualBasicParseOptions(preprocessorSymbols: new[] { "DEBUG", "TRACE" }.ToDictionary(s => s, s => (object)null));
+         var csOptions = new CSharpParseOptions(CSharpVersion.CSharp6, preprocessorSymbols: new[] { "DEBUG", "TRACE" });
+         var vbOptions = new VisualBasicParseOptions(VBVersion.VisualBasic14, preprocessorSymbols: new[] { "DEBUG", "TRACE" }.ToDictionary(s => s, s => (object)null));
 
          SyntaxTree[] syntaxTrees = compilationUnits
             .Select(c => (isCSharp) ?
