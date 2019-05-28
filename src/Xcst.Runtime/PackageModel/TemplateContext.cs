@@ -20,7 +20,6 @@ using Xcst.Runtime;
 namespace Xcst.PackageModel {
 
    /// <exclude/>
-
    public class TemplateContext {
 
       static readonly TemplateContext

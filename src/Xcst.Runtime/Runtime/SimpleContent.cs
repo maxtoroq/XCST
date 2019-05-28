@@ -32,7 +32,6 @@ using System.Text;
 namespace Xcst.Runtime {
 
    /// <exclude/>
-
    public class SimpleContent {
 
       static readonly char[]

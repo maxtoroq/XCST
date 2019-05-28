@@ -465,7 +465,6 @@ namespace Xcst {
          /// <summary>
          /// Cache an attribute's name and type.
          /// </summary>
-
          public void
          Init(string prefix, string localName, string ns, string separator, int hashCode) {
             this.localName = localName;
@@ -479,7 +478,6 @@ namespace Xcst {
          /// <summary>
          /// Cache all or part of the attribute's string value.
          /// </summary>
-
          public void
          Init(string text) {
             this.text = text;
@@ -493,7 +491,6 @@ namespace Xcst {
          /// <summary>
          /// Returns true if this attribute has the specified name (and thus is a duplicate).
          /// </summary>
-
          public bool
          IsDuplicate(string localName, string ns, int hashCode) {
 

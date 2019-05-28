@@ -325,7 +325,6 @@ namespace Xcst {
       }
 
       /// <exclude/>
-
       [EditorBrowsable(EditorBrowsableState.Never)]
       public XcstOutputter
       OutputToRaw<TBase>(ISequenceWriter<TBase> output) {

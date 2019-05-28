@@ -140,19 +140,16 @@ namespace Xcst.Compiler {
       }
 
       public CompileResult
-      Compile(Stream source, Uri baseUri = null) {
-         return Compile(docb => docb.Build(source), baseUri);
-      }
+      Compile(Stream source, Uri baseUri = null) =>
+         Compile(docb => docb.Build(source), baseUri);
 
       public CompileResult
-      Compile(TextReader source, Uri baseUri = null) {
-         return Compile(docb => docb.Build(source), baseUri);
-      }
+      Compile(TextReader source, Uri baseUri = null) =>
+         Compile(docb => docb.Build(source), baseUri);
 
       public CompileResult
-      Compile(XmlReader source) {
-         return Compile(docb => docb.Build(source));
-      }
+      Compile(XmlReader source) =>
+         Compile(docb => docb.Build(source));
 
       CompileResult
       Compile(Func<DocumentBuilder, XdmNode> buildFn, Uri baseUri = null) {
@@ -337,9 +334,8 @@ namespace Xcst.Compiler {
       }
 
       static XdmValue
-      WrapExternalObject(object obj) {
-         return new XdmExternalObjectValue(obj);
-      }
+      WrapExternalObject(object obj) =>
+         new XdmExternalObjectValue(obj);
 
       internal static T
       UnwrapExternalObject<T>(XdmItem item) {
@@ -358,14 +354,12 @@ namespace Xcst.Compiler {
       }
 
       internal static XmlResolver
-      GetModuleResolverOrDefault(XmlResolver moduleResolver) {
-         return moduleResolver ?? new XmlUrlResolver();
-      }
+      GetModuleResolverOrDefault(XmlResolver moduleResolver) =>
+         moduleResolver ?? new XmlUrlResolver();
 
       internal static QName
-      CompilerQName(string local) {
-         return new QName(XmlNamespaces.XcstCompiled, local);
-      }
+      CompilerQName(string local) =>
+         new QName(XmlNamespaces.XcstCompiled, local);
 
       internal static Tuple<string, int?>
       ModuleUriAndLineNumberFromErrorObject(XdmValue errorObject) {
@@ -404,9 +398,8 @@ namespace Xcst.Compiler {
       }
 
       internal static XdmNode
-      CodeTypeReference(Type type, DocumentBuilder docBuilder) {
-         return CodeTypeReferenceImpl(w => WriteTypeReference(type, w), docBuilder);
-      }
+      CodeTypeReference(Type type, DocumentBuilder docBuilder) =>
+         CodeTypeReferenceImpl(w => WriteTypeReference(type, w), docBuilder);
 
       internal static XdmNode
       CodeTypeReferenceImpl(Action<XmlWriter> writeFn, DocumentBuilder docBuilder) {
@@ -478,7 +471,6 @@ namespace Xcst.Compiler {
    /// <summary>
    /// The result of the <see cref="XcstCompiler.Compile"/> method.
    /// </summary>
-
    public class CompileResult {
 
       public string

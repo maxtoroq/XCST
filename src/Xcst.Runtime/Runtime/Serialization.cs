@@ -21,7 +21,6 @@ using Xcst.PackageModel;
 namespace Xcst.Runtime {
 
    /// <exclude/>
-
    public static class Serialization {
 
       public static string

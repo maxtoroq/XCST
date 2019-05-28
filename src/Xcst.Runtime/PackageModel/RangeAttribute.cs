@@ -28,7 +28,6 @@ namespace Xcst.PackageModel {
    using BaseInitializeAction = Action<BaseRangeAttribute, IComparable, IComparable, Func<object, object>>;
 
    /// <exclude/>
-
    public class RangeAttribute : BaseRangeAttribute {
 
       private static CultureInfo

@@ -19,7 +19,6 @@ using Xcst.Runtime;
 namespace Xcst.PackageModel {
 
    /// <exclude/>
-
    public interface ISequenceWriter<in TItem> {
 
       void

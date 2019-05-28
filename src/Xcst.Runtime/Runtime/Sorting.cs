@@ -19,7 +19,6 @@ using System.Linq;
 namespace Xcst.Runtime {
 
    /// <exclude/>
-
    public static class Sorting {
 
       public static IOrderedEnumerable<TSource>

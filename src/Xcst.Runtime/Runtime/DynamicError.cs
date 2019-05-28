@@ -17,7 +17,6 @@ using System;
 namespace Xcst.Runtime {
 
    /// <exclude/>
-
    public static class DynamicError {
 
       internal static QualifiedName

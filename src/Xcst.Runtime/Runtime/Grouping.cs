@@ -21,7 +21,6 @@ using System.Linq;
 namespace Xcst.Runtime {
 
    /// <exclude/>
-
    public static class Grouping {
 
       public static IEnumerable<IGrouping<object, object>>

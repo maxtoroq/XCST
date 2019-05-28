@@ -20,7 +20,6 @@ using Xcst.PackageModel;
 namespace Xcst.Runtime {
 
    /// <exclude/>
-
    public class SequenceWriter<TItem> : ISequenceWriter<TItem> {
 
       readonly ICollection<TItem>
@@ -138,7 +137,6 @@ namespace Xcst.Runtime {
    }
 
    /// <exclude/>
-
    public static class SequenceWriter {
 
       public static SequenceWriter<TItem>
