@@ -25,7 +25,8 @@ namespace Xcst.Compiler.CodeGeneration {
 
    class ExtensionFunctions {
 
-      internal static string LocalPath(Uri uri) {
+      internal static string
+      LocalPath(Uri uri) {
 
          if (uri == null) throw new ArgumentNullException(nameof(uri));
 
@@ -40,11 +41,12 @@ namespace Xcst.Compiler.CodeGeneration {
          return uri.AbsoluteUri;
       }
 
-      internal static Uri MakeRelativeUri(Uri current, Uri compare) {
-         return current.MakeRelativeUri(compare);
-      }
+      internal static Uri
+      MakeRelativeUri(Uri current, Uri compare) =>
+         current.MakeRelativeUri(compare);
 
-      internal static Uri FindNamedPackage(string packageName, string packagesLocation, string fileExtension) {
+      internal static Uri
+      FindNamedPackage(string packageName, string packagesLocation, string fileExtension) {
 
          if (packageName == null) throw new ArgumentNullException(nameof(packageName));
 
@@ -91,34 +93,38 @@ namespace Xcst.Compiler.CodeGeneration {
          return null;
       }
 
-      internal static int QNameId(string namespaceUri, string localName) {
-         return $"Q{{{namespaceUri}}}{localName}".GetHashCode();
-      }
+      internal static int
+      QNameId(string namespaceUri, string localName) =>
+         $"Q{{{namespaceUri}}}{localName}".GetHashCode();
    }
 
    class LineNumberFunction : ExtensionFunctionDefinition {
 
-      public override QName FunctionName { get; } = CompilerQName("_line-number");
+      public override QName
+      FunctionName { get; } = CompilerQName("_line-number");
 
-      public override XdmSequenceType[] ArgumentTypes { get; } = {
+      public override XdmSequenceType[]
+      ArgumentTypes { get; } = {
          new XdmSequenceType(XdmAnyNodeType.Instance, ' ')
       };
 
-      public override int MinimumNumberOfArguments => ArgumentTypes.Length;
+      public override int
+      MinimumNumberOfArguments => ArgumentTypes.Length;
 
-      public override int MaximumNumberOfArguments => MinimumNumberOfArguments;
+      public override int
+      MaximumNumberOfArguments => MinimumNumberOfArguments;
 
-      public override ExtensionFunctionCall MakeFunctionCall() {
-         return new FunctionCall();
-      }
+      public override ExtensionFunctionCall
+      MakeFunctionCall() => new FunctionCall();
 
-      public override XdmSequenceType ResultType(XdmSequenceType[] ArgumentTypes) {
-         return new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_INTEGER), ' ');
-      }
+      public override XdmSequenceType
+      ResultType(XdmSequenceType[] ArgumentTypes) =>
+         new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_INTEGER), ' ');
 
       class FunctionCall : ExtensionFunctionCall {
 
-         public override IXdmEnumerator Call(IXdmEnumerator[] arguments, DynamicContext context) {
+         public override IXdmEnumerator
+         Call(IXdmEnumerator[] arguments, DynamicContext context) {
 
             XdmNode node = arguments[0].AsNodes().Single();
 
@@ -131,27 +137,31 @@ namespace Xcst.Compiler.CodeGeneration {
 
    class LocalPathFunction : ExtensionFunctionDefinition {
 
-      public override QName FunctionName { get; } = CompilerQName("_local-path");
+      public override QName
+      FunctionName { get; } = CompilerQName("_local-path");
 
-      public override XdmSequenceType[] ArgumentTypes { get; } = {
+      public override XdmSequenceType[]
+      ArgumentTypes { get; } = {
          new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_ANYURI), ' ')
       };
 
-      public override int MinimumNumberOfArguments => ArgumentTypes.Length;
+      public override int
+      MinimumNumberOfArguments => ArgumentTypes.Length;
 
-      public override int MaximumNumberOfArguments => MinimumNumberOfArguments;
+      public override int
+      MaximumNumberOfArguments => MinimumNumberOfArguments;
 
-      public override ExtensionFunctionCall MakeFunctionCall() {
-         return new FunctionCall();
-      }
+      public override ExtensionFunctionCall
+      MakeFunctionCall() => new FunctionCall();
 
-      public override XdmSequenceType ResultType(XdmSequenceType[] ArgumentTypes) {
-         return new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_STRING), ' ');
-      }
+      public override XdmSequenceType
+      ResultType(XdmSequenceType[] ArgumentTypes) =>
+         new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_STRING), ' ');
 
       class FunctionCall : ExtensionFunctionCall {
 
-         public override IXdmEnumerator Call(IXdmEnumerator[] arguments, DynamicContext context) {
+         public override IXdmEnumerator
+         Call(IXdmEnumerator[] arguments, DynamicContext context) {
 
             XdmAtomicValue value = arguments[0].AsAtomicValues().Single();
 
@@ -167,28 +177,32 @@ namespace Xcst.Compiler.CodeGeneration {
 
    class MakeRelativeUriFunction : ExtensionFunctionDefinition {
 
-      public override QName FunctionName { get; } = CompilerQName("_make-relative-uri");
+      public override QName
+      FunctionName { get; } = CompilerQName("_make-relative-uri");
 
-      public override XdmSequenceType[] ArgumentTypes { get; } = {
+      public override XdmSequenceType[]
+      ArgumentTypes { get; } = {
          new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_ANYURI), ' '),
          new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_ANYURI), ' ')
       };
 
-      public override int MinimumNumberOfArguments => ArgumentTypes.Length;
+      public override int
+      MinimumNumberOfArguments => ArgumentTypes.Length;
 
-      public override int MaximumNumberOfArguments => MinimumNumberOfArguments;
+      public override int
+      MaximumNumberOfArguments => MinimumNumberOfArguments;
 
-      public override ExtensionFunctionCall MakeFunctionCall() {
-         return new FunctionCall();
-      }
+      public override ExtensionFunctionCall
+      MakeFunctionCall() => new FunctionCall();
 
-      public override XdmSequenceType ResultType(XdmSequenceType[] ArgumentTypes) {
-         return new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_ANYURI), ' ');
-      }
+      public override XdmSequenceType
+      ResultType(XdmSequenceType[] ArgumentTypes) =>
+         new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_ANYURI), ' ');
 
       class FunctionCall : ExtensionFunctionCall {
 
-         public override IXdmEnumerator Call(IXdmEnumerator[] arguments, DynamicContext context) {
+         public override IXdmEnumerator
+         Call(IXdmEnumerator[] arguments, DynamicContext context) {
 
             Uri[] uris = arguments.SelectMany(a => a.AsAtomicValues())
                .Select(a => (Uri)a.Value)
@@ -203,45 +217,54 @@ namespace Xcst.Compiler.CodeGeneration {
 
    class DocWithUrisFunction : ExtensionFunctionDefinition {
 
-      readonly Processor processor;
+      readonly Processor
+      processor;
 
-      public override QName FunctionName { get; } = CompilerQName("_doc-with-uris");
+      public override QName
+      FunctionName { get; } = CompilerQName("_doc-with-uris");
 
-      public override XdmSequenceType[] ArgumentTypes { get; } = {
+      public override XdmSequenceType[]
+      ArgumentTypes { get; } = {
          new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_ANYURI), ' '),
          new XdmSequenceType(XdmAnyItemType.Instance, '+'),
          new XdmSequenceType(XdmAnyItemType.Instance, '?')
       };
 
-      public override int MinimumNumberOfArguments => ArgumentTypes.Length;
+      public override int
+      MinimumNumberOfArguments => ArgumentTypes.Length;
 
-      public override int MaximumNumberOfArguments => MinimumNumberOfArguments;
+      public override int
+      MaximumNumberOfArguments => MinimumNumberOfArguments;
 
-      public DocWithUrisFunction(Processor processor) {
+      public
+      DocWithUrisFunction(Processor processor) {
          this.processor = processor;
       }
 
-      public override ExtensionFunctionCall MakeFunctionCall() {
-         return new FunctionCall(this.processor);
-      }
+      public override ExtensionFunctionCall
+      MakeFunctionCall() => new FunctionCall(this.processor);
 
-      public override XdmSequenceType ResultType(XdmSequenceType[] ArgumentTypes) {
-         return new XdmSequenceType(XdmAnyItemType.Instance, '+');
-      }
+      public override XdmSequenceType
+      ResultType(XdmSequenceType[] ArgumentTypes) =>
+         new XdmSequenceType(XdmAnyItemType.Instance, '+');
 
       class FunctionCall : ExtensionFunctionCall {
 
-         Processor processor;
+         Processor
+         processor;
 
-         public FunctionCall(Processor processor) {
+         public
+         FunctionCall(Processor processor) {
             this.processor = processor;
          }
 
-         public override void CopyLocalData(ExtensionFunctionCall destination) {
+         public override void
+         CopyLocalData(ExtensionFunctionCall destination) {
             ((FunctionCall)destination).processor = this.processor;
          }
 
-         public override IXdmEnumerator Call(IXdmEnumerator[] arguments, DynamicContext context) {
+         public override IXdmEnumerator
+         Call(IXdmEnumerator[] arguments, DynamicContext context) {
 
             XdmAtomicValue value = arguments[0].AsAtomicValues().Single();
 
@@ -304,47 +327,56 @@ namespace Xcst.Compiler.CodeGeneration {
 
    class PackageManifestFunction : ExtensionFunctionDefinition {
 
-      readonly Processor processor;
+      readonly Processor
+      processor;
 
-      public override QName FunctionName { get; } = CompilerQName("_package-manifest");
+      public override QName
+      FunctionName { get; } = CompilerQName("_package-manifest");
 
-      public override XdmSequenceType[] ArgumentTypes { get; } = {
+      public override XdmSequenceType[]
+      ArgumentTypes { get; } = {
          new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_STRING), ' '),
          new XdmSequenceType(XdmAnyItemType.Instance, '?'),
          new XdmSequenceType(XdmAnyItemType.Instance, '+')
       };
 
-      public override int MinimumNumberOfArguments => ArgumentTypes.Length;
+      public override int
+      MinimumNumberOfArguments => ArgumentTypes.Length;
 
-      public override int MaximumNumberOfArguments => MinimumNumberOfArguments;
+      public override int
+      MaximumNumberOfArguments => MinimumNumberOfArguments;
 
-      public PackageManifestFunction(Processor processor) {
+      public
+      PackageManifestFunction(Processor processor) {
          this.processor = processor;
       }
 
-      public override ExtensionFunctionCall MakeFunctionCall() {
-         return new FunctionCall(this.processor);
-      }
+      public override ExtensionFunctionCall
+      MakeFunctionCall() => new FunctionCall(this.processor);
 
-      public override XdmSequenceType ResultType(XdmSequenceType[] ArgumentTypes) {
-         return new XdmSequenceType(XdmNodeKind.Document, '?');
-      }
+      public override XdmSequenceType
+      ResultType(XdmSequenceType[] ArgumentTypes) =>
+         new XdmSequenceType(XdmNodeKind.Document, '?');
 
       class FunctionCall : ExtensionFunctionCall {
 
-         Processor processor;
+         Processor
+         processor;
 
-         public FunctionCall(Processor processor) {
+         public
+         FunctionCall(Processor processor) {
             this.processor = processor;
          }
 
-         public override void CopyLocalData(ExtensionFunctionCall destination) {
+         public override void
+         CopyLocalData(ExtensionFunctionCall destination) {
 
             var call = (FunctionCall)destination;
             call.processor = this.processor;
          }
 
-         public override IXdmEnumerator Call(IXdmEnumerator[] arguments, DynamicContext context) {
+         public override IXdmEnumerator
+         Call(IXdmEnumerator[] arguments, DynamicContext context) {
 
             string typeName = arguments[0].AsAtomicValues().Single().ToString();
 
@@ -407,9 +439,11 @@ namespace Xcst.Compiler.CodeGeneration {
 
    class PackageLocationFunction : ExtensionFunctionDefinition {
 
-      public override QName FunctionName { get; } = CompilerQName("_package-location");
+      public override QName
+      FunctionName { get; } = CompilerQName("_package-location");
 
-      public override XdmSequenceType[] ArgumentTypes { get; } = {
+      public override XdmSequenceType[]
+      ArgumentTypes { get; } = {
          new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_STRING), ' '),
          new XdmSequenceType(XdmAnyItemType.Instance, '?'),
          new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_ANYURI), '?'),
@@ -417,21 +451,23 @@ namespace Xcst.Compiler.CodeGeneration {
          new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_STRING), '?')
       };
 
-      public override int MinimumNumberOfArguments => ArgumentTypes.Length;
+      public override int
+      MinimumNumberOfArguments => ArgumentTypes.Length;
 
-      public override int MaximumNumberOfArguments => MinimumNumberOfArguments;
+      public override int
+      MaximumNumberOfArguments => MinimumNumberOfArguments;
 
-      public override ExtensionFunctionCall MakeFunctionCall() {
-         return new FunctionCall();
-      }
+      public override ExtensionFunctionCall
+      MakeFunctionCall() => new FunctionCall();
 
-      public override XdmSequenceType ResultType(XdmSequenceType[] ArgumentTypes) {
-         return new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_ANYURI), '?');
-      }
+      public override XdmSequenceType
+      ResultType(XdmSequenceType[] ArgumentTypes) =>
+         new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_ANYURI), '?');
 
       class FunctionCall : ExtensionFunctionCall {
 
-         public override IXdmEnumerator Call(IXdmEnumerator[] arguments, DynamicContext context) {
+         public override IXdmEnumerator
+         Call(IXdmEnumerator[] arguments, DynamicContext context) {
 
             string packageName = arguments[0].AsAtomicValues().Single().ToString();
 
@@ -475,27 +511,31 @@ namespace Xcst.Compiler.CodeGeneration {
 
    class QNameIdFunction : ExtensionFunctionDefinition {
 
-      public override QName FunctionName { get; } = CompilerQName("_qname-id");
+      public override QName
+      FunctionName { get; } = CompilerQName("_qname-id");
 
-      public override XdmSequenceType[] ArgumentTypes { get; } = {
+      public override XdmSequenceType[]
+      ArgumentTypes { get; } = {
          new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_QNAME), ' ')
       };
 
-      public override int MinimumNumberOfArguments => ArgumentTypes.Length;
+      public override int
+      MinimumNumberOfArguments => ArgumentTypes.Length;
 
-      public override int MaximumNumberOfArguments => MinimumNumberOfArguments;
+      public override int
+      MaximumNumberOfArguments => MinimumNumberOfArguments;
 
-      public override ExtensionFunctionCall MakeFunctionCall() {
-         return new FunctionCall();
-      }
+      public override ExtensionFunctionCall
+      MakeFunctionCall() => new FunctionCall();
 
-      public override XdmSequenceType ResultType(XdmSequenceType[] ArgumentTypes) {
-         return new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_INTEGER), ' ');
-      }
+      public override XdmSequenceType
+      ResultType(XdmSequenceType[] ArgumentTypes) =>
+         new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_INTEGER), ' ');
 
       class FunctionCall : ExtensionFunctionCall {
 
-         public override IXdmEnumerator Call(IXdmEnumerator[] arguments, DynamicContext context) {
+         public override IXdmEnumerator
+         Call(IXdmEnumerator[] arguments, DynamicContext context) {
 
             QName qname = (QName)arguments[0].AsAtomicValues().Single().Value;
 

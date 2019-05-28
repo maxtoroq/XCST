@@ -20,17 +20,26 @@ namespace Xcst.Compiler {
    [Serializable]
    public class CompileException : Exception {
 
-      readonly QualifiedName _ErrorCode;
-      readonly string _ModuleUri;
-      readonly int _LineNumber;
+      readonly QualifiedName
+      _ErrorCode;
 
-      public QualifiedName ErrorCode => _ErrorCode;
+      readonly string
+      _ModuleUri;
 
-      public string ModuleUri => _ModuleUri;
+      readonly int
+      _LineNumber;
 
-      public int LineNumber => _LineNumber;
+      public QualifiedName
+      ErrorCode => _ErrorCode;
 
-      public CompileException(string message,
+      public string
+      ModuleUri => _ModuleUri;
+
+      public int
+      LineNumber => _LineNumber;
+
+      public
+      CompileException(string message,
          QualifiedName errorCode = null,
          string moduleUri = null,
          int lineNumber = -1) : base(message) {
@@ -40,7 +49,8 @@ namespace Xcst.Compiler {
          _LineNumber = lineNumber;
       }
 
-      protected CompileException(SerializationInfo info, StreamingContext context)
+      protected
+      CompileException(SerializationInfo info, StreamingContext context)
          : base(info, context) { }
    }
 }

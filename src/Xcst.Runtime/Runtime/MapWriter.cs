@@ -15,7 +15,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Dynamic;
 using Xcst.PackageModel;
 
@@ -27,7 +26,8 @@ namespace Xcst.Runtime {
       // Having a default Create restricted to object avoids conflicts with other
       // implementations, like JObject
 
-      public static MapWriter Create(ISequenceWriter<object> output) {
+      public static MapWriter
+      Create(ISequenceWriter<object> output) {
 
          MapWriter mapWriter = output.TryCastToMapWriter();
 
@@ -44,7 +44,8 @@ namespace Xcst.Runtime {
          return new ExpandoMapWriter((ISequenceWriter<ExpandoObject>)output);
       }
 
-      public static MapWriter CreateArray(ISequenceWriter<object> output) {
+      public static MapWriter
+      CreateArray(ISequenceWriter<object> output) {
 
          MapWriter mapWriter = output.TryCastToMapWriter();
 
@@ -63,7 +64,8 @@ namespace Xcst.Runtime {
 
       // For object, cast to abstract MapWriter
 
-      public static MapWriter CastMapEntry(ISequenceWriter<object> output) {
+      public static MapWriter
+      CastMapEntry(ISequenceWriter<object> output) {
 
          MapWriter mapWriter = output.TryCastToMapWriter();
 
@@ -74,72 +76,78 @@ namespace Xcst.Runtime {
          throw new RuntimeException("Could not cast output to MapWriter.");
       }
 
-      public abstract void WriteStartMap();
-      public abstract void WriteStartMapEntry(string key);
-      public abstract void WriteEndMapEntry();
-      public abstract void WriteEndMap();
+      public abstract void
+      WriteStartMap();
 
-      public abstract void WriteStartArray();
-      public abstract void WriteEndArray();
+      public abstract void
+      WriteStartMapEntry(string key);
 
-      public abstract void WriteComment(string text);
+      public abstract void
+      WriteEndMapEntry();
+
+      public abstract void
+      WriteEndMap();
+
+      public abstract void
+      WriteStartArray();
+
+      public abstract void
+      WriteEndArray();
+
+      public abstract void
+      WriteComment(string text);
 
       #region ISequenceWriter<object> Members
 
-      public abstract void WriteObject(object value);
+      public abstract void
+      WriteObject(object value);
 
-      void ISequenceWriter<object>.WriteObject(IEnumerable<object> value) {
+      void ISequenceWriter<object>.
+      WriteObject(IEnumerable<object> value) =>
          WriteObject((IEnumerable)value);
-      }
 
-      void ISequenceWriter<object>.WriteObject<TDerived>(IEnumerable<TDerived> value) {
+      void ISequenceWriter<object>.
+      WriteObject<TDerived>(IEnumerable<TDerived> value) =>
          WriteObject((IEnumerable)value);
-      }
 
-      void ISequenceWriter<object>.WriteString(object text) {
-         WriteString((string)text);
-      }
+      void ISequenceWriter<object>.
+      WriteString(object text) => WriteString((string)text);
 
-      void ISequenceWriter<object>.WriteRaw(object data) {
-         WriteRaw((string)data);
-      }
+      void ISequenceWriter<object>.
+      WriteRaw(object data) => WriteRaw((string)data);
 
-      public virtual void CopyOf(object value) {
-         CopyOfImpl(value, recurse: false);
-      }
+      public virtual void
+      CopyOf(object value) => CopyOfImpl(value, recurse: false);
 
-      void ISequenceWriter<object>.CopyOf(IEnumerable<object> value) {
+      void ISequenceWriter<object>.
+      CopyOf(IEnumerable<object> value) => CopyOf((object)value);
+
+      void ISequenceWriter<object>.
+      CopyOf<TDerived>(IEnumerable<TDerived> value) =>
          CopyOf((object)value);
-      }
 
-      void ISequenceWriter<object>.CopyOf<TDerived>(IEnumerable<TDerived> value) {
-         CopyOf((object)value);
-      }
+      public virtual XcstWriter
+      TryCastToDocumentWriter() => null;
 
-      public virtual XcstWriter TryCastToDocumentWriter() {
-         return null;
-      }
-
-      public MapWriter TryCastToMapWriter() {
-         return this;
-      }
+      public MapWriter
+      TryCastToMapWriter() => this;
 
       #endregion
 
-      public void WriteString(string text) {
-         WriteObject(text);
-      }
+      public void
+      WriteString(string text) => WriteObject(text);
 
-      public abstract void WriteRaw(string data);
+      public abstract void
+      WriteRaw(string data);
 
       // string implements IEnumerable, treat as single value
       // IEnumerable<object> works for reference types only, IEnumerable for any type
 
-      public void WriteObject(string value) {
-         WriteObject((object)value);
-      }
+      public void
+      WriteObject(string value) => WriteObject((object)value);
 
-      public void WriteObject(IEnumerable value) {
+      public void
+      WriteObject(IEnumerable value) {
 
          if (value != null) {
 
@@ -149,7 +157,8 @@ namespace Xcst.Runtime {
          }
       }
 
-      void CopyOfImpl(object value, bool recurse) {
+      void
+      CopyOfImpl(object value, bool recurse) {
 
          if (value != null) {
 
@@ -171,11 +180,11 @@ namespace Xcst.Runtime {
          WriteObject(value);
       }
 
-      public virtual bool TryCopyOf(object value) {
-         return false;
-      }
+      public virtual bool
+      TryCopyOf(object value) => false;
 
-      void CopyOfSequence(IEnumerable value) {
+      void
+      CopyOfSequence(IEnumerable value) {
 
          if (value != null) {
 
@@ -185,8 +194,7 @@ namespace Xcst.Runtime {
          }
       }
 
-      public void CopyOf(Array value) {
-         CopyOfSequence(value);
-      }
+      public void
+      CopyOf(Array value) => CopyOfSequence(value);
    }
 }

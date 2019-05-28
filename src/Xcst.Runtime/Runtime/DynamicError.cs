@@ -20,47 +20,50 @@ namespace Xcst.Runtime {
 
    public static class DynamicError {
 
-      internal static QualifiedName Code(string code) {
-         return new QualifiedName(code, XmlNamespaces.XcstErrors);
-      }
+      internal static QualifiedName
+      Code(string code) => new QualifiedName(code, XmlNamespaces.XcstErrors);
 
-      public static Exception UnknownTemplate(QualifiedName templateName) {
+      public static Exception
+      UnknownTemplate(QualifiedName templateName) {
 
          if (templateName == null) throw new ArgumentNullException(nameof(templateName));
 
          return new RuntimeException($"No template exists named {templateName.ToString()}.", Code("XTDE0040"));
       }
 
-      public static Exception RequiredGlobalParameter(string parameterName) {
+      public static Exception
+      RequiredGlobalParameter(string parameterName) {
 
          if (parameterName == null) throw new ArgumentNullException(nameof(parameterName));
 
          return new RuntimeException($"No value supplied for required parameter '{parameterName}'.", Code("XTDE0050"));
       }
 
-      public static Exception RequiredTemplateParameter(string parameterName) {
+      public static Exception
+      RequiredTemplateParameter(string parameterName) {
 
          if (parameterName == null) throw new ArgumentNullException(nameof(parameterName));
 
          return new RuntimeException($"No value supplied for required parameter '{parameterName}'.", Code("XTDE0700"));
       }
 
-      public static Exception InvalidParameterCast(string parameterName) {
+      public static Exception
+      InvalidParameterCast(string parameterName) {
 
          if (parameterName == null) throw new ArgumentNullException(nameof(parameterName));
 
          return new RuntimeException($"Couldn't cast parameter '{parameterName}' to the required type.", Code("XTTE0590"));
       }
 
-      public static Exception UnknownOutputDefinition(QualifiedName outputName) {
+      public static Exception
+      UnknownOutputDefinition(QualifiedName outputName) {
 
          if (outputName == null) throw new ArgumentNullException(nameof(outputName));
 
          return new RuntimeException($"No output definition exists named {outputName.ToString()}.", Code("XTDE1460"));
       }
 
-      public static Exception Terminate(string message) {
-         return new RuntimeException(message, Code("XTMM9000"));
-      }
+      public static Exception
+      Terminate(string message) => new RuntimeException(message, Code("XTMM9000"));
    }
 }

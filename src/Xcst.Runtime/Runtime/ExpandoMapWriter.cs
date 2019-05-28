@@ -25,20 +25,28 @@ namespace Xcst.Runtime {
 
    class ExpandoEntry {
 
-      public readonly string Key;
+      public readonly string
+      Key;
 
-      public ExpandoEntry(string key) {
+      public
+      ExpandoEntry(string key) {
          this.Key = key;
       }
    }
 
    public class ExpandoMapWriter : MapWriter {
 
-      readonly ISequenceWriter<ExpandoObject> mapOutput;
-      readonly ISequenceWriter<object> arrayOutput;
-      readonly List<object> objects = new List<object>();
+      readonly ISequenceWriter<ExpandoObject>
+      mapOutput;
 
-      public ExpandoMapWriter(ISequenceWriter<ExpandoObject> output) {
+      readonly ISequenceWriter<object>
+      arrayOutput;
+
+      readonly List<object>
+      objects = new List<object>();
+
+      public
+      ExpandoMapWriter(ISequenceWriter<ExpandoObject> output) {
 
          if (output == null) throw new ArgumentNullException(nameof(output));
 
@@ -47,7 +55,8 @@ namespace Xcst.Runtime {
          this.mapOutput = output;
       }
 
-      public ExpandoMapWriter(ISequenceWriter<object> output) {
+      public
+      ExpandoMapWriter(ISequenceWriter<object> output) {
 
          if (output == null) throw new ArgumentNullException(nameof(output));
 
@@ -56,7 +65,8 @@ namespace Xcst.Runtime {
          this.arrayOutput = output;
       }
 
-      public override void WriteStartMap() {
+      public override void
+      WriteStartMap() {
 
          var map = new ExpandoObject();
 
@@ -87,11 +97,11 @@ namespace Xcst.Runtime {
          throw new RuntimeException("A map can only be written to an entry or array.");
       }
 
-      public override void WriteEndMap() {
-         Pop();
-      }
+      public override void
+      WriteEndMap() => Pop();
 
-      public override void WriteStartArray() {
+      public override void
+      WriteStartArray() {
 
          var arr = new ExpandoArray();
          object parent;
@@ -109,14 +119,16 @@ namespace Xcst.Runtime {
          throw new RuntimeException("An array can only be written to an entry or another array.");
       }
 
-      public override void WriteEndArray() {
+      public override void
+      WriteEndArray() {
 
          var array = Peek<ExpandoArray>();
 
          WriteEndArray(array);
       }
 
-      void WriteEndArray(ExpandoArray array) {
+      void
+      WriteEndArray(ExpandoArray array) {
 
          Debug.Assert(array != null);
 
@@ -154,7 +166,8 @@ namespace Xcst.Runtime {
          }
       }
 
-      public override void WriteStartMapEntry(string key) {
+      public override void
+      WriteStartMapEntry(string key) {
 
          if (key == null) throw new ArgumentNullException(nameof(key));
 
@@ -167,7 +180,8 @@ namespace Xcst.Runtime {
          Push(new ExpandoEntry(key));
       }
 
-      public override void WriteEndMapEntry() {
+      public override void
+      WriteEndMapEntry() {
 
          var parent = Peek<object>();
 
@@ -200,9 +214,11 @@ namespace Xcst.Runtime {
          Pop();
       }
 
-      public override void WriteComment(string text) { }
+      public override void
+      WriteComment(string text) { }
 
-      public override void WriteObject(object value) {
+      public override void
+      WriteObject(object value) {
 
          var parent = Peek<object>();
 
@@ -223,19 +239,21 @@ namespace Xcst.Runtime {
          throw new RuntimeException("A value can only be written to an entry or array.");
       }
 
-      public override void WriteRaw(string data) {
+      public override void
+      WriteRaw(string data) {
          throw new NotImplementedException();
       }
 
-      public override void CopyOf(object value) {
+      public override void
+      CopyOf(object value) {
          throw new NotImplementedException();
       }
 
-      void Push(object obj) {
-         this.objects.Add(obj);
-      }
+      void
+      Push(object obj) => this.objects.Add(obj);
 
-      T/*?*/ Peek<T>(int offset = 0) where T : class {
+      T/*?*/
+      Peek<T>(int offset = 0) where T : class {
 
          int index = this.objects.Count - 1 - offset;
 
@@ -244,14 +262,16 @@ namespace Xcst.Runtime {
          return this.objects[index] as T;
       }
 
-      void Pop() {
+      void
+      Pop() {
 
          Debug.Assert(this.objects.Count > 0);
 
          this.objects.RemoveAt(this.objects.Count - 1);
       }
 
-      void SetEntryValue(ExpandoEntry entry, object value) {
+      void
+      SetEntryValue(ExpandoEntry entry, object value) {
 
          var map = Peek<IExpandoMap>(1);
 

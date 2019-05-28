@@ -23,45 +23,68 @@ namespace Xcst.Compiler {
 
    public class XcstCompiler {
 
-      readonly Lazy<XsltExecutable> compilerExec;
-      readonly Processor processor;
-      readonly Dictionary<QualifiedName, object> parameters = new Dictionary<QualifiedName, object>();
+      readonly Lazy<XsltExecutable>
+      compilerExec;
 
-      Type[] tbaseTypes;
+      readonly Processor
+      processor;
 
-      public string TargetNamespace { get; set; }
+      readonly Dictionary<QualifiedName, object>
+      parameters = new Dictionary<QualifiedName, object>();
 
-      public string TargetClass { get; set; }
+      Type[]
+      tbaseTypes;
 
-      public string TargetVisibility { get; set; }
+      public string
+      TargetNamespace { get; set; }
 
-      public string[] TargetBaseTypes { get; set; }
+      public string
+      TargetClass { get; set; }
 
-      public bool ClsCompliant { get; set; }
+      public string
+      TargetVisibility { get; set; }
 
-      public bool NamedPackage { get; set; }
+      public string[]
+      TargetBaseTypes { get; set; }
 
-      public string UsePackageBase { get; set; }
+      public bool
+      ClsCompliant { get; set; }
 
-      public Func<string, Type> PackageTypeResolver { get; set; }
+      public bool
+      NamedPackage { get; set; }
 
-      public Func<string, Uri> PackageLocationResolver { get; set; }
+      public string
+      UsePackageBase { get; set; }
 
-      public string PackagesLocation { get; set; }
+      public Func<string, Type>
+      PackageTypeResolver { get; set; }
 
-      public string PackageFileExtension { get; set; }
+      public Func<string, Uri>
+      PackageLocationResolver { get; set; }
 
-      public XmlResolver ModuleResolver { get; set; }
+      public string
+      PackagesLocation { get; set; }
 
-      public bool UseLineDirective { get; set; }
+      public string
+      PackageFileExtension { get; set; }
 
-      public string NewLineChars { get; set; }
+      public XmlResolver
+      ModuleResolver { get; set; }
 
-      public string IndentChars { get; set; }
+      public bool
+      UseLineDirective { get; set; }
 
-      public bool OpenBraceOnNewLine { get; set; }
+      public string
+      NewLineChars { get; set; }
 
-      internal XcstCompiler(Func<XsltExecutable> compilerExecFn, Processor processor) {
+      public string
+      IndentChars { get; set; }
+
+      public bool
+      OpenBraceOnNewLine { get; set; }
+
+      internal
+      XcstCompiler(Func<XsltExecutable> compilerExecFn, Processor processor) {
 
          if (compilerExecFn == null) throw new ArgumentNullException(nameof(compilerExecFn));
 
@@ -69,11 +92,13 @@ namespace Xcst.Compiler {
          this.processor = processor;
       }
 
-      public void SetTargetBaseTypes(params Type[] targetBaseTypes) {
+      public void
+      SetTargetBaseTypes(params Type[] targetBaseTypes) {
          this.tbaseTypes = targetBaseTypes;
       }
 
-      public void SetParameter(QualifiedName name, object value) {
+      public void
+      SetParameter(QualifiedName name, object value) {
 
          if (name == null) throw new ArgumentNullException(nameof(name));
          if (String.IsNullOrEmpty(name.Namespace)) throw new ArgumentException($"{nameof(name)} must be a qualified name.", nameof(name));
@@ -81,7 +106,8 @@ namespace Xcst.Compiler {
          this.parameters.Add(name, value);
       }
 
-      public void SetParameter(QualifiedName name, Type value) {
+      public void
+      SetParameter(QualifiedName name, Type value) {
 
          object objValue = null;
 
@@ -93,7 +119,8 @@ namespace Xcst.Compiler {
          SetParameter(name, objValue);
       }
 
-      public CompileResult Compile(Uri file) {
+      public CompileResult
+      Compile(Uri file) {
 
          if (file == null) throw new ArgumentNullException(nameof(file));
 
@@ -112,19 +139,23 @@ namespace Xcst.Compiler {
          }
       }
 
-      public CompileResult Compile(Stream source, Uri baseUri = null) {
+      public CompileResult
+      Compile(Stream source, Uri baseUri = null) {
          return Compile(docb => docb.Build(source), baseUri);
       }
 
-      public CompileResult Compile(TextReader source, Uri baseUri = null) {
+      public CompileResult
+      Compile(TextReader source, Uri baseUri = null) {
          return Compile(docb => docb.Build(source), baseUri);
       }
 
-      public CompileResult Compile(XmlReader source) {
+      public CompileResult
+      Compile(XmlReader source) {
          return Compile(docb => docb.Build(source));
       }
 
-      CompileResult Compile(Func<DocumentBuilder, XdmNode> buildFn, Uri baseUri = null) {
+      CompileResult
+      Compile(Func<DocumentBuilder, XdmNode> buildFn, Uri baseUri = null) {
 
          var moduleResolver = GetModuleResolverOrDefault(this.ModuleResolver);
          var loggingResolver = new LoggingResolver(moduleResolver);
@@ -228,7 +259,8 @@ namespace Xcst.Compiler {
          return result;
       }
 
-      XsltTransformer GetCompiler(XdmNode sourceDoc) {
+      XsltTransformer
+      GetCompiler(XdmNode sourceDoc) {
 
          XsltTransformer compiler = this.compilerExec.Value.Load();
          compiler.InitialMode = CompilerQName("main");
@@ -304,11 +336,13 @@ namespace Xcst.Compiler {
          return compiler;
       }
 
-      static XdmValue WrapExternalObject(object obj) {
+      static XdmValue
+      WrapExternalObject(object obj) {
          return new XdmExternalObjectValue(obj);
       }
 
-      internal static T UnwrapExternalObject<T>(XdmItem item) {
+      internal static T
+      UnwrapExternalObject<T>(XdmItem item) {
 
          object obj = ((XdmExternalObjectValue)item).GetExternalObject();
 
@@ -323,15 +357,18 @@ namespace Xcst.Compiler {
          return (T)obj;
       }
 
-      internal static XmlResolver GetModuleResolverOrDefault(XmlResolver moduleResolver) {
+      internal static XmlResolver
+      GetModuleResolverOrDefault(XmlResolver moduleResolver) {
          return moduleResolver ?? new XmlUrlResolver();
       }
 
-      internal static QName CompilerQName(string local) {
+      internal static QName
+      CompilerQName(string local) {
          return new QName(XmlNamespaces.XcstCompiled, local);
       }
 
-      internal static Tuple<string, int?> ModuleUriAndLineNumberFromErrorObject(XdmValue errorObject) {
+      internal static Tuple<string, int?>
+      ModuleUriAndLineNumberFromErrorObject(XdmValue errorObject) {
 
          XdmAtomicValue[] values = errorObject
             .GetXdmEnumerator()
@@ -350,7 +387,8 @@ namespace Xcst.Compiler {
          return Tuple.Create(moduleUri, lineNumber);
       }
 
-      internal static XdmNode CodeTypeReference(string typeName, DocumentBuilder docBuilder) {
+      internal static XdmNode
+      CodeTypeReference(string typeName, DocumentBuilder docBuilder) {
 
          Action<XmlWriter> writeFn = writer => {
 
@@ -365,11 +403,13 @@ namespace Xcst.Compiler {
          return CodeTypeReferenceImpl(writeFn, docBuilder);
       }
 
-      internal static XdmNode CodeTypeReference(Type type, DocumentBuilder docBuilder) {
+      internal static XdmNode
+      CodeTypeReference(Type type, DocumentBuilder docBuilder) {
          return CodeTypeReferenceImpl(w => WriteTypeReference(type, w), docBuilder);
       }
 
-      internal static XdmNode CodeTypeReferenceImpl(Action<XmlWriter> writeFn, DocumentBuilder docBuilder) {
+      internal static XdmNode
+      CodeTypeReferenceImpl(Action<XmlWriter> writeFn, DocumentBuilder docBuilder) {
 
          using (var output = new MemoryStream()) {
 
@@ -386,7 +426,8 @@ namespace Xcst.Compiler {
          }
       }
 
-      internal static void WriteTypeReference(Type type, XmlWriter writer) {
+      internal static void
+      WriteTypeReference(Type type, XmlWriter writer) {
 
          const string ns = XmlNamespaces.XcstCode;
          const string prefix = "code";
@@ -440,12 +481,16 @@ namespace Xcst.Compiler {
 
    public class CompileResult {
 
-      public string Language { get; internal set; }
+      public string
+      Language { get; internal set; }
 
-      public IReadOnlyList<string> CompilationUnits { get; internal set; }
+      public IReadOnlyList<string>
+      CompilationUnits { get; internal set; }
 
-      public IReadOnlyList<Uri> Dependencies { get; internal set; }
+      public IReadOnlyList<Uri>
+      Dependencies { get; internal set; }
 
-      public IReadOnlyList<QualifiedName> Templates { get; internal set; }
+      public IReadOnlyList<QualifiedName>
+      Templates { get; internal set; }
    }
 }

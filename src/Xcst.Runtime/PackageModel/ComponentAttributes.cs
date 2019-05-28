@@ -18,7 +18,8 @@ namespace Xcst.PackageModel {
 
    public abstract class XcstComponentAttribute : Attribute {
 
-      public string Name { get; set; }
+      public string
+      Name { get; set; }
    }
 
    [AttributeUsage(AttributeTargets.Method)]
@@ -30,13 +31,15 @@ namespace Xcst.PackageModel {
    [AttributeUsage(AttributeTargets.Property)]
    public class XcstParameterAttribute : XcstComponentAttribute {
 
-      public bool Required { get; set; }
+      public bool
+      Required { get; set; }
    }
 
    [AttributeUsage(AttributeTargets.Method)]
    public class XcstTemplateAttribute : XcstComponentAttribute {
 
-      public XcstSequenceCardinality Cardinality { get; set; }
+      public XcstSequenceCardinality
+      Cardinality { get; set; }
    }
 
    public enum XcstSequenceCardinality {
@@ -47,15 +50,20 @@ namespace Xcst.PackageModel {
    [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
    public class XcstTemplateParameterAttribute : Attribute {
 
-      public string Name { get; }
+      public string
+      Name { get; }
 
-      public Type Type { get; }
+      public Type
+      Type { get; }
 
-      public bool Required { get; set; }
+      public bool
+      Required { get; set; }
 
-      public bool Tunnel { get; set; }
+      public bool
+      Tunnel { get; set; }
 
-      public XcstTemplateParameterAttribute(string name, Type type) {
+      public
+      XcstTemplateParameterAttribute(string name, Type type) {
 
          this.Name = name;
          this.Type = type;

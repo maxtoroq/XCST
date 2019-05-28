@@ -13,8 +13,6 @@
 // limitations under the License.
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -26,17 +24,18 @@ namespace Xcst.Runtime {
 
       // For the default output, create a JsonMapWriter
 
-      public static JsonMapWriter Create(XcstWriter output) {
-         return new JsonMapWriter(new JsonTextWriter(new XcstTextWriter(output)), output);
-      }
+      public static JsonMapWriter
+      Create(XcstWriter output) =>
+         new JsonMapWriter(new JsonTextWriter(new XcstTextWriter(output)), output);
 
-      public static JsonMapWriter CreateArray(XcstWriter output) {
-         return CreateArray((ISequenceWriter<JArray>)output);
-      }
+      public static JsonMapWriter
+      CreateArray(XcstWriter output) =>
+         CreateArray((ISequenceWriter<JArray>)output);
 
       // From object to JObject, create a JsonMapWriter
 
-      public static JsonMapWriter Create(ISequenceWriter<JObject> output) {
+      public static JsonMapWriter
+      Create(ISequenceWriter<JObject> output) {
 
          JsonMapWriter mapWriter = TryCast(output);
 
@@ -55,7 +54,8 @@ namespace Xcst.Runtime {
 
       // From object to JArray, create a JsonMapWriter
 
-      public static JsonMapWriter CreateArray(ISequenceWriter<JArray> output) {
+      public static JsonMapWriter
+      CreateArray(ISequenceWriter<JArray> output) {
 
          JsonMapWriter mapWriter = TryCast(output);
 
@@ -74,7 +74,8 @@ namespace Xcst.Runtime {
 
       // From object to JProperty, cast to JsonMapWriter
 
-      public static JsonMapWriter CastMapEntry(ISequenceWriter<JProperty> output) {
+      public static JsonMapWriter
+      CastMapEntry(ISequenceWriter<JProperty> output) {
 
          JsonMapWriter mapWriter = TryCast(output);
 
@@ -85,7 +86,8 @@ namespace Xcst.Runtime {
          throw new RuntimeException("Could not cast output to JsonMapWriter.");
       }
 
-      static JsonMapWriter/*?*/ TryCast<TItem>(ISequenceWriter<TItem> output) where TItem : JToken {
+      static JsonMapWriter/*?*/
+      TryCast<TItem>(ISequenceWriter<TItem> output) where TItem : JToken {
 
          MapWriter mapWriter = output.TryCastToMapWriter();
 
@@ -105,13 +107,20 @@ namespace Xcst.Runtime {
 
    public class JsonMapWriter : MapWriter {
 
-      readonly XcstWriter docWriter;
-      readonly ISequenceWriter<JObject> mapOutput;
-      readonly ISequenceWriter<JArray> arrayOutput;
+      readonly XcstWriter
+      docWriter;
 
-      protected JsonWriter BaseWriter { get; }
+      readonly ISequenceWriter<JObject>
+      mapOutput;
 
-      public JsonMapWriter(JsonWriter baseWriter, XcstWriter/*?*/ docWriter) {
+      readonly ISequenceWriter<JArray>
+      arrayOutput;
+
+      protected JsonWriter
+      BaseWriter { get; }
+
+      public
+      JsonMapWriter(JsonWriter baseWriter, XcstWriter/*?*/ docWriter) {
 
          if (baseWriter == null) throw new ArgumentNullException(nameof(baseWriter));
 
@@ -119,7 +128,8 @@ namespace Xcst.Runtime {
          this.docWriter = docWriter;
       }
 
-      public JsonMapWriter(ISequenceWriter<JObject> output)
+      public
+      JsonMapWriter(ISequenceWriter<JObject> output)
          : this(new JTokenWriter(), null) {
 
          Debug.Assert(output.TryCastToDocumentWriter() == null);
@@ -127,7 +137,8 @@ namespace Xcst.Runtime {
          this.mapOutput = output;
       }
 
-      public JsonMapWriter(ISequenceWriter<JArray> output)
+      public
+      JsonMapWriter(ISequenceWriter<JArray> output)
          : this(new JTokenWriter(), null) {
 
          Debug.Assert(output.TryCastToDocumentWriter() == null);
@@ -135,11 +146,12 @@ namespace Xcst.Runtime {
          this.arrayOutput = output;
       }
 
-      public override void WriteComment(string text) {
+      public override void
+      WriteComment(string text) =>
          this.BaseWriter.WriteComment(text);
-      }
 
-      public override void WriteEndArray() {
+      public override void
+      WriteEndArray() {
 
          // WriteEndArray is called in a finally block
          // Checking for error to not overwhelm writer when something goes wrong
@@ -149,7 +161,8 @@ namespace Xcst.Runtime {
          }
       }
 
-      public override void WriteEndMap() {
+      public override void
+      WriteEndMap() {
 
          // WriteEndMap is called in a finally block
          // Checking for error to not overwhelm writer when something goes wrong
@@ -159,7 +172,8 @@ namespace Xcst.Runtime {
          }
       }
 
-      public override void WriteEndMapEntry() {
+      public override void
+      WriteEndMapEntry() {
 
          // If WriteState is still Property means no value was written
          // Properties MUST have a value, so writing null
@@ -169,7 +183,8 @@ namespace Xcst.Runtime {
          }
       }
 
-      public override void WriteStartArray() {
+      public override void
+      WriteStartArray() {
 
          bool firstCall = this.BaseWriter.WriteState == WriteState.Start;
 
@@ -182,7 +197,8 @@ namespace Xcst.Runtime {
          }
       }
 
-      public override void WriteStartMap() {
+      public override void
+      WriteStartMap() {
 
          bool firstCall = this.BaseWriter.WriteState == WriteState.Start;
 
@@ -195,23 +211,23 @@ namespace Xcst.Runtime {
          }
       }
 
-      public override void WriteStartMapEntry(string key) {
+      public override void
+      WriteStartMapEntry(string key) =>
          this.BaseWriter.WritePropertyName(key);
-      }
 
-      public override void WriteObject(object value) {
+      public override void
+      WriteObject(object value) =>
          this.BaseWriter.WriteValue(value);
-      }
 
-      public override void WriteRaw(string data) {
+      public override void
+      WriteRaw(string data) =>
          this.BaseWriter.WriteRaw(data);
-      }
 
-      public override XcstWriter TryCastToDocumentWriter() {
-         return this.docWriter;
-      }
+      public override XcstWriter
+      TryCastToDocumentWriter() => this.docWriter;
 
-      public void CopyOf(JToken value) {
+      public void
+      CopyOf(JToken value) {
 
          if (value != null) {
             value.WriteTo(this.BaseWriter);
@@ -220,7 +236,8 @@ namespace Xcst.Runtime {
          }
       }
 
-      public override bool TryCopyOf(object value) {
+      public override bool
+      TryCopyOf(object value) {
 
          JToken jt = value as JToken;
 

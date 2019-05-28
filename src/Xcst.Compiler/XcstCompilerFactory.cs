@@ -28,13 +28,20 @@ namespace Xcst.Compiler {
 
    public class XcstCompilerFactory {
 
-      readonly Processor processor;
-      readonly Lazy<XsltExecutable> executable;
-      readonly Dictionary<Uri, Func<Stream>> extensions = new Dictionary<Uri, Func<Stream>>();
+      readonly Processor
+      processor;
 
-      public bool EnableExtensions { get; set; }
+      readonly Lazy<XsltExecutable>
+      executable;
 
-      public XcstCompilerFactory() {
+      readonly Dictionary<Uri, Func<Stream>>
+      extensions = new Dictionary<Uri, Func<Stream>>();
+
+      public bool
+      EnableExtensions { get; set; }
+
+      public
+      XcstCompilerFactory() {
 
          this.processor = new Processor();
          this.processor.SetProperty("http://saxon.sf.net/feature/linenumbering", "on");
@@ -53,7 +60,8 @@ namespace Xcst.Compiler {
          this.executable = new Lazy<XsltExecutable>(CreateCompilerExec);
       }
 
-      XsltExecutable CreateCompilerExec() {
+      XsltExecutable
+      CreateCompilerExec() {
 
          Type thisType = typeof(XcstCompiler);
 
@@ -105,11 +113,12 @@ namespace Xcst.Compiler {
          }
       }
 
-      public XcstCompiler CreateCompiler() {
-         return new XcstCompiler(() => this.executable.Value, this.processor);
-      }
+      public XcstCompiler
+      CreateCompiler() =>
+         new XcstCompiler(() => this.executable.Value, this.processor);
 
-      public void RegisterExtension(Uri extensionNamespace, Func<Stream> extensionLoader) {
+      public void
+      RegisterExtension(Uri extensionNamespace, Func<Stream> extensionLoader) {
 
          if (extensionNamespace == null) {
             throw new ArgumentNullException(nameof(extensionNamespace));
@@ -130,7 +139,8 @@ namespace Xcst.Compiler {
          this.extensions[extensionNamespace] = extensionLoader;
       }
 
-      public void RegisterExtensionsForAssembly(Assembly assembly) {
+      public void
+      RegisterExtensionsForAssembly(Assembly assembly) {
 
          if (assembly == null) throw new ArgumentNullException(nameof(assembly));
 
@@ -144,7 +154,8 @@ namespace Xcst.Compiler {
          }
       }
 
-      Stream LoadExtensionsModule() {
+      Stream
+      LoadExtensionsModule() {
 
          var stream = new MemoryStream();
 
@@ -157,7 +168,8 @@ namespace Xcst.Compiler {
          return stream;
       }
 
-      void BuildExtensionsModule(XmlWriter writer) {
+      void
+      BuildExtensionsModule(XmlWriter writer) {
 
          const string xsltNs = "http://www.w3.org/1999/XSL/Transform";
 
@@ -175,7 +187,8 @@ namespace Xcst.Compiler {
          writer.WriteEndElement();
       }
 
-      Stream LoadExtension(Uri ns) {
+      Stream
+      LoadExtension(Uri ns) {
 
          Func<Stream> loader;
 
@@ -190,18 +203,29 @@ namespace Xcst.Compiler {
 
       class CompilerResolver : XmlResolver {
 
-         public static readonly string UriSchemeClires = "clires";
+         public static readonly string
+         UriSchemeClires = "clires";
 
-         readonly ZipArchive archive;
-         readonly Uri principalModuleUri;
-         readonly Uri extensionsModuleUri;
+         readonly ZipArchive
+         archive;
 
-         readonly Func<Stream> loadExtensionsModuleFn;
-         readonly Func<Uri, Stream> loadExtensionXslt;
+         readonly Uri
+         principalModuleUri;
 
-         public override ICredentials Credentials { set { } }
+         readonly Uri
+         extensionsModuleUri;
 
-         public CompilerResolver(ZipArchive archive, Uri principalModuleUri, Func<Stream> loadExtensionsModuleFn, Func<Uri, Stream> loadExtensionXslt) {
+         readonly Func<Stream>
+         loadExtensionsModuleFn;
+
+         readonly Func<Uri, Stream>
+         loadExtensionXslt;
+
+         public override ICredentials
+         Credentials { set { } }
+
+         public
+         CompilerResolver(ZipArchive archive, Uri principalModuleUri, Func<Stream> loadExtensionsModuleFn, Func<Uri, Stream> loadExtensionXslt) {
 
             if (archive == null) throw new ArgumentNullException(nameof(archive));
             if (principalModuleUri == null) throw new ArgumentNullException(nameof(principalModuleUri));
@@ -216,7 +240,8 @@ namespace Xcst.Compiler {
             this.loadExtensionXslt = loadExtensionXslt;
          }
 
-         public override object GetEntity(Uri absoluteUri, string role, Type ofObjectToReturn) {
+         public override object
+         GetEntity(Uri absoluteUri, string role, Type ofObjectToReturn) {
 
             if (absoluteUri == null) throw new ArgumentNullException(nameof(absoluteUri));
 
@@ -238,7 +263,8 @@ namespace Xcst.Compiler {
                fileName = this.principalModuleUri.AbsoluteUri.Split('/').Last();
             }
 
-            return this.archive.GetEntry(fileName)
+            return this.archive
+               .GetEntry(fileName)
                .Open();
          }
       }

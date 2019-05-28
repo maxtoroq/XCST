@@ -21,11 +21,12 @@ namespace Xcst.Runtime {
 
    public static class DocumentWriter {
 
-      public static XcstWriter CreateDocument(IXcstPackage package, ISequenceWriter<object> output) {
-         return CreateDocument(package, (ISequenceWriter<XDocument>)output);
-      }
+      public static XcstWriter
+      CreateDocument(IXcstPackage package, ISequenceWriter<object> output) =>
+         CreateDocument(package, (ISequenceWriter<XDocument>)output);
 
-      public static XcstWriter CreateDocument(IXcstPackage package, ISequenceWriter<XDocument> output) {
+      public static XcstWriter
+      CreateDocument(IXcstPackage package, ISequenceWriter<XDocument> output) {
 
          var doc = new XDocument();
          output.WriteObject(doc);
@@ -38,7 +39,8 @@ namespace Xcst.Runtime {
             (defaultParams, null, package.Context);
       }
 
-      public static XcstWriter CreateDocument(IXcstPackage package, ISequenceWriter<XmlDocument> output) {
+      public static XcstWriter
+      CreateDocument(IXcstPackage package, ISequenceWriter<XmlDocument> output) {
 
          var doc = new XmlDocument();
          output.WriteObject(doc);
@@ -54,47 +56,40 @@ namespace Xcst.Runtime {
       // Sadly, cannot create writer for c:element
       // XNodeBuilder does not support top level attribute and text
 
-      public static XcstWriter CastElement(ISequenceWriter<object> output) {
-         return Cast(output);
-      }
+      public static XcstWriter
+      CastElement(ISequenceWriter<object> output) => Cast(output);
 
-      public static XcstWriter CastElement(ISequenceWriter<XElement> output) {
-         return Cast(output);
-      }
+      public static XcstWriter
+      CastElement(ISequenceWriter<XElement> output) => Cast(output);
 
-      public static XcstWriter CastElement(ISequenceWriter<XmlElement> output) {
-         return Cast(output);
-      }
+      public static XcstWriter
+      CastElement(ISequenceWriter<XmlElement> output) => Cast(output);
 
-      public static XcstWriter CastNamespace(ISequenceWriter<object> output) {
-         return Cast(output);
-      }
+      public static XcstWriter
+      CastNamespace(ISequenceWriter<object> output) => Cast(output);
 
-      public static XcstWriter CastAttribute(ISequenceWriter<object> output) {
-         return Cast(output);
-      }
+      public static XcstWriter
+      CastAttribute(ISequenceWriter<object> output) => Cast(output);
 
-      public static XcstWriter CastAttribute(ISequenceWriter<XAttribute> output) {
-         return Cast(output);
-      }
+      public static XcstWriter
+      CastAttribute(ISequenceWriter<XAttribute> output) => Cast(output);
 
-      public static XcstWriter CastAttribute(ISequenceWriter<XmlAttribute> output) {
-         return Cast(output);
-      }
+      public static XcstWriter
+      CastAttribute(ISequenceWriter<XmlAttribute> output) => Cast(output);
 
-      public static XcstWriter CastProcessingInstruction(ISequenceWriter<object> output) {
-         return Cast(output);
-      }
+      public static XcstWriter
+      CastProcessingInstruction(ISequenceWriter<object> output) => Cast(output);
 
-      public static XcstWriter CastProcessingInstruction(ISequenceWriter<XProcessingInstruction> output) {
-         return Cast(output);
-      }
+      public static XcstWriter
+      CastProcessingInstruction(ISequenceWriter<XProcessingInstruction> output) =>
+         Cast(output);
 
-      public static XcstWriter CastProcessingInstruction(ISequenceWriter<XmlProcessingInstruction> output) {
-         return Cast(output);
-      }
+      public static XcstWriter
+      CastProcessingInstruction(ISequenceWriter<XmlProcessingInstruction> output) =>
+         Cast(output);
 
-      static XcstWriter Cast<TItem>(ISequenceWriter<TItem> output) {
+      static XcstWriter
+      Cast<TItem>(ISequenceWriter<TItem> output) {
 
          XcstWriter docWriter = output.TryCastToDocumentWriter();
 

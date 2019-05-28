@@ -19,19 +19,27 @@ namespace Xcst {
 
    public class QualifiedName : IEquatable<QualifiedName> {
 
-      readonly string _Name;
-      readonly string _Namespace;
+      readonly string
+      _Name;
 
-      int hash;
+      readonly string
+      _Namespace;
 
-      public string Name => _Name;
+      int
+      hash;
 
-      public string Namespace => _Namespace;
+      public string
+      Name => _Name;
 
-      public QualifiedName(string name)
+      public string
+      Namespace => _Namespace;
+
+      public
+      QualifiedName(string name)
          : this(name, String.Empty) { }
 
-      public QualifiedName(string name, string ns) {
+      public
+      QualifiedName(string name, string ns) {
 
          if (name == null) throw new ArgumentNullException(nameof(name));
          if (String.IsNullOrWhiteSpace(name)) throw new ArgumentException($"{nameof(name)} cannot be empty.", nameof(name));
@@ -40,11 +48,13 @@ namespace Xcst {
          _Namespace = ns ?? String.Empty;
       }
 
-      public override bool Equals(object other) {
+      public override bool
+      Equals(object other) {
          return Equals(other as QualifiedName);
       }
 
-      public virtual bool Equals(QualifiedName other) {
+      public virtual bool
+      Equals(QualifiedName other) {
 
          if (other == null) {
             return false;
@@ -54,7 +64,8 @@ namespace Xcst {
             && this.Namespace == other.Namespace;
       }
 
-      public override int GetHashCode() {
+      public override int
+      GetHashCode() {
 
          if (this.hash == 0) {
             this.hash = ToString().GetHashCode();
@@ -63,7 +74,8 @@ namespace Xcst {
          return this.hash;
       }
 
-      public override string ToString() {
+      public override string
+      ToString() {
 
          if (this.Namespace.Length == 0) {
             return this.Name;
@@ -72,11 +84,13 @@ namespace Xcst {
          return ToUriQualifiedName();
       }
 
-      public string ToUriQualifiedName() {
+      public string
+      ToUriQualifiedName() {
          return String.Concat("Q{", this.Namespace, "}", this.Name);
       }
 
-      public static QualifiedName Parse(string localOrUriQualifiedName) {
+      public static QualifiedName
+      Parse(string localOrUriQualifiedName) {
 
          if (localOrUriQualifiedName == null) throw new ArgumentNullException(nameof(localOrUriQualifiedName));
          if (String.IsNullOrWhiteSpace(localOrUriQualifiedName)) throw new ArgumentException($"{nameof(localOrUriQualifiedName)} cannot be empty.", nameof(localOrUriQualifiedName));
@@ -100,7 +114,8 @@ namespace Xcst {
          return new QualifiedName(localOrUriQualifiedName);
       }
 
-      public static bool operator ==(QualifiedName left, QualifiedName right) {
+      public static bool operator
+      ==(QualifiedName left, QualifiedName right) {
 
          if (Object.ReferenceEquals(left, right)) {
             return true;
@@ -113,8 +128,7 @@ namespace Xcst {
          return left.Equals(right);
       }
 
-      public static bool operator !=(QualifiedName left, QualifiedName right) {
-         return !(left == right);
-      }
+      public static bool operator
+      !=(QualifiedName left, QualifiedName right) => !(left == right);
    }
 }

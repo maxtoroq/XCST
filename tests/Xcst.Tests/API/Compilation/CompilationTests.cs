@@ -9,10 +9,13 @@ namespace Xcst.Tests.API.Compilation {
    [TestClass]
    public class CompilationTests {
 
-      const string TestCategory = nameof(API) + "." + nameof(Compilation);
+      const string
+      TestCategory = nameof(API) + "." + nameof(Compilation);
 
-      [TestMethod, TestCategory(TestCategory)]
-      public void CompileResult_Lists_Public_Templates_Only() {
+      [TestMethod]
+      [TestCategory(TestCategory)]
+      public void
+      CompileResult_Lists_Public_Templates_Only() {
 
          var compiler = TestsHelper.CreateCompiler();
          compiler.TargetClass = "FooPackage";

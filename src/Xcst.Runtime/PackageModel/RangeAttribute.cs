@@ -31,11 +31,14 @@ namespace Xcst.PackageModel {
 
    public class RangeAttribute : BaseRangeAttribute {
 
-      private static CultureInfo MinMaxFormatCulture => CultureInfo.InvariantCulture;
+      private static CultureInfo
+      MinMaxFormatCulture => CultureInfo.InvariantCulture;
 
-      private static BaseInitializeAction BaseInitialize { get; }
+      private static BaseInitializeAction
+      BaseInitialize { get; }
 
-      static RangeAttribute() {
+      static
+      RangeAttribute() {
 
          BaseInitialize = (BaseInitializeAction)
             Delegate.CreateDelegate(
@@ -47,15 +50,18 @@ namespace Xcst.PackageModel {
                   null));
       }
 
-      bool conversionInit = false;
+      bool
+      conversionInit = false;
 
-      public RangeAttribute(Type type, string minimum = null, string maximum = null)
+      public
+      RangeAttribute(Type type, string minimum = null, string maximum = null)
          : base(
             GetUnderlyingType(type),
             minimum ?? DefaultMinMax(type, "MinValue"),
             maximum ?? DefaultMinMax(type, "MaxValue")) { }
 
-      static Type GetUnderlyingType(Type type) {
+      static Type
+      GetUnderlyingType(Type type) {
 
          // base class expects type to be IComparable
          // this excludes Nullable<T>
@@ -64,7 +70,8 @@ namespace Xcst.PackageModel {
             ?? type;
       }
 
-      static string DefaultMinMax(Type type, string minOrMax) {
+      static string
+      DefaultMinMax(Type type, string minOrMax) {
 
          type = GetUnderlyingType(type);
          FieldInfo fld = type.GetField(minOrMax, BindingFlags.Public | BindingFlags.Static);
@@ -78,17 +85,22 @@ namespace Xcst.PackageModel {
          return Convert.ToString(fld.GetValue(null), MinMaxFormatCulture);
       }
 
-      public override bool IsValid(object value) {
+      public override bool
+      IsValid(object value) {
+
          SetupConversion();
          return base.IsValid(value);
       }
 
-      public override string FormatErrorMessage(string name) {
+      public override string
+      FormatErrorMessage(string name) {
+
          SetupConversion();
          return base.FormatErrorMessage(name);
       }
 
-      void SetupConversion() {
+      void
+      SetupConversion() {
 
          if (this.conversionInit) {
             return;

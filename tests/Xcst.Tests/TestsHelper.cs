@@ -20,14 +20,19 @@ namespace Xcst.Tests {
 
    static class TestsHelper {
 
-      static readonly XcstCompilerFactory CompilerFactory = new XcstCompilerFactory {
+      static readonly XcstCompilerFactory
+      CompilerFactory = new XcstCompilerFactory {
          EnableExtensions = true
       };
 
-      static readonly QualifiedName InitialName = new QualifiedName("initial-template", "http://maxtoroq.github.io/XCST");
-      static readonly QualifiedName ExpectedName = new QualifiedName("expected");
+      static readonly QualifiedName
+      InitialName = new QualifiedName("initial-template", "http://maxtoroq.github.io/XCST");
 
-      public static void RunXcstTest(string packageFile, bool correct, bool fail) {
+      static readonly QualifiedName
+      ExpectedName = new QualifiedName("expected");
+
+      public static void
+      RunXcstTest(string packageFile, bool correct, bool fail) {
 
          var packageUri = new Uri(packageFile, UriKind.Absolute);
          MethodBase testMethod = new StackFrame(1, true).GetMethod();
@@ -132,7 +137,8 @@ namespace Xcst.Tests {
          }
       }
 
-      public static XcstCompiler CreateCompiler() {
+      public static XcstCompiler
+      CreateCompiler() {
 
          XcstCompiler compiler = CompilerFactory.CreateCompiler();
          compiler.UseLineDirective = true;
@@ -141,7 +147,8 @@ namespace Xcst.Tests {
          return compiler;
       }
 
-      static Tuple<CompileResult, string> GenerateCode(Uri packageUri, MethodBase testMethod) {
+      static Tuple<CompileResult, string>
+      GenerateCode(Uri packageUri, MethodBase testMethod) {
 
          XcstCompiler compiler = CreateCompiler();
          compiler.TargetNamespace = testMethod.DeclaringType.Namespace;
@@ -154,7 +161,8 @@ namespace Xcst.Tests {
          return Tuple.Create(result, compiler.TargetNamespace + "." + compiler.TargetClass);
       }
 
-      public static Type CompileCode(string packageName, Uri packageUri, IEnumerable<string> compilationUnits, string language) {
+      public static Type
+      CompileCode(string packageName, Uri packageUri, IEnumerable<string> compilationUnits, string language) {
 
          bool isCSharp = language.Equals("C#", StringComparison.OrdinalIgnoreCase);
 
@@ -227,7 +235,8 @@ namespace Xcst.Tests {
          }
       }
 
-      static bool OutputEqualsToDoc(Type packageType, Uri packageUri, string fileName) {
+      static bool
+      OutputEqualsToDoc(Type packageType, Uri packageUri, string fileName) {
 
          var expectedDoc = XDocument.Load(fileName, LoadOptions.PreserveWhitespace);
          var actualDoc = new XDocument();
@@ -245,7 +254,8 @@ namespace Xcst.Tests {
          return XDocumentNormalizer.DeepEqualsWithNormalization(expectedDoc, actualDoc);
       }
 
-      static bool OutputEqualsToText(Type packageType, Uri packageUri, string fileName) {
+      static bool
+      OutputEqualsToText(Type packageType, Uri packageUri, string fileName) {
 
          string result;
 
@@ -264,7 +274,8 @@ namespace Xcst.Tests {
          return String.Equals(result, File.ReadAllText(fileName));
       }
 
-      static bool OutputEqualsToExpected(Type packageType, Uri packageUri) {
+      static bool
+      OutputEqualsToExpected(Type packageType, Uri packageUri) {
 
          var expectedDoc = new XDocument();
          var actualDoc = new XDocument();
@@ -302,7 +313,8 @@ namespace Xcst.Tests {
          return equals;
       }
 
-      static void SimplyRun(Type packageType, Uri packageUri) {
+      static void
+      SimplyRun(Type packageType, Uri packageUri) {
 
          XcstEvaluator.Using(Activator.CreateInstance(packageType))
             .CallInitialTemplate()
@@ -315,27 +327,23 @@ namespace Xcst.Tests {
 
    public abstract class TestBase {
 
-      protected Type CompileType<T>(T obj) {
-         return typeof(T);
-      }
+      protected Type
+      CompileType<T>(T obj) => typeof(T);
 
       public static class Assert {
 
-         public static void IsTrue(bool condition) {
-            TestAssert.IsTrue(condition);
-         }
+         public static void
+         IsTrue(bool condition) => TestAssert.IsTrue(condition);
 
-         public static void IsFalse(bool condition) {
-            TestAssert.IsFalse(condition);
-         }
+         public static void
+         IsFalse(bool condition) => TestAssert.IsFalse(condition);
 
-         public static void AreEqual<T>(T expected, T actual) {
+         public static void
+         AreEqual<T>(T expected, T actual) =>
             TestAssert.AreEqual(expected, actual);
-         }
 
-         public static void IsNull(object value) {
-            TestAssert.IsNull(value);
-         }
+         public static void
+         IsNull(object value) => TestAssert.IsNull(value);
       }
    }
 }

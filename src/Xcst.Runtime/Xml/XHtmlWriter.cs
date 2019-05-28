@@ -53,34 +53,36 @@ using System.Xml;
 namespace Xcst.Xml {
 
    class XHtmlWriter : WrappingXmlWriter {
-      
-      readonly Stack<XmlQualifiedName> elementStack = new Stack<XmlQualifiedName>();
 
-      public XHtmlWriter(XmlWriter baseWriter)
+      readonly Stack<XmlQualifiedName>
+      elementStack = new Stack<XmlQualifiedName>();
+
+      public
+      XHtmlWriter(XmlWriter baseWriter)
          : base(baseWriter) { }
 
-      public override void WriteStartElement(string prefix, string localName, string ns) {
-         
+      public override void
+      WriteStartElement(string prefix, string localName, string ns) {
+
          this.elementStack.Push(new XmlQualifiedName(localName, ns));
          base.WriteStartElement(prefix, localName, ns);
       }
 
-      public override void WriteEndElement() {
-         WriteXHMLEndElement(fullEndTag: false);
-      }
+      public override void
+      WriteEndElement() => WriteXHMLEndElement(fullEndTag: false);
 
-      public override void WriteFullEndElement() {
-         WriteXHMLEndElement(fullEndTag: true);
-      }
+      public override void
+      WriteFullEndElement() => WriteXHMLEndElement(fullEndTag: true);
 
-      void WriteXHMLEndElement(bool fullEndTag) {
-         
+      void
+      WriteXHMLEndElement(bool fullEndTag) {
+
          bool writeFullEndTag = fullEndTag;
          XmlQualifiedName elementName = elementStack.Pop();
 
          if (String.IsNullOrEmpty(elementName.Namespace)
             || elementName.Namespace == "http://www.w3.org/1999/xhtml") {
-            
+
             switch (elementName.Name.ToLowerInvariant()) {
                case "area":
                case "base":

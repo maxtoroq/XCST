@@ -9,7 +9,8 @@ namespace Xcst.Tests {
 
    class XDocumentNormalizer {
 
-      public static bool DeepEqualsWithNormalization(XDocument doc1, XDocument doc2) {
+      public static bool
+      DeepEqualsWithNormalization(XDocument doc1, XDocument doc2) {
 
          XDocument d1 = Normalize(doc1);
          XDocument d2 = Normalize(doc2);
@@ -17,7 +18,8 @@ namespace Xcst.Tests {
          return XNode.DeepEquals(d1, d2);
       }
 
-      public static XDocument Normalize(XDocument source) {
+      public static XDocument
+      Normalize(XDocument source) {
 
          return new XDocument(
              source.Declaration,
@@ -42,7 +44,8 @@ namespace Xcst.Tests {
          );
       }
 
-      static XNode NormalizeNode(XNode node) {
+      static XNode
+      NormalizeNode(XNode node) {
 
          // trim comments and processing instructions from normalized tree
 
@@ -60,7 +63,8 @@ namespace Xcst.Tests {
          return node;
       }
 
-      static XElement NormalizeElement(XElement element) {
+      static XElement
+      NormalizeElement(XElement element) {
 
          return new XElement(element.Name,
             NormalizeAttributes(element),
@@ -68,7 +72,8 @@ namespace Xcst.Tests {
          );
       }
 
-      static IEnumerable<XAttribute> NormalizeAttributes(XElement element) {
+      static IEnumerable<XAttribute>
+      NormalizeAttributes(XElement element) {
 
          return element.Attributes()
             .Where(a => !a.IsNamespaceDeclaration
@@ -80,9 +85,14 @@ namespace Xcst.Tests {
 
       class Xsi {
 
-         public static XNamespace xsi = "http://www.w3.org/2001/XMLSchema-instance";
-         public static XName schemaLocation = xsi + "schemaLocation";
-         public static XName noNamespaceSchemaLocation = xsi + "noNamespaceSchemaLocation";
+         public static XNamespace
+         xsi = "http://www.w3.org/2001/XMLSchema-instance";
+
+         public static XName
+         schemaLocation = xsi + "schemaLocation";
+
+         public static XName
+         noNamespaceSchemaLocation = xsi + "noNamespaceSchemaLocation";
       }
    }
 }

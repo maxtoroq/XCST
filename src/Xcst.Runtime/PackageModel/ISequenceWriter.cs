@@ -22,29 +22,40 @@ namespace Xcst.PackageModel {
 
    public interface ISequenceWriter<in TItem> {
 
-      void WriteObject(TItem value);
+      void
+      WriteObject(TItem value);
 
-      void WriteObject(IEnumerable<TItem> value);
+      void
+      WriteObject(IEnumerable<TItem> value);
 
       // For cases where IEnumerable<TDerived> cannot be cast to IEnumerable<TItem>
       // e.g. IEnumerable<int> to IEnumerable<object>
 
-      void WriteObject<TDerived>(IEnumerable<TDerived> value) where TDerived : TItem;
+      void
+      WriteObject<TDerived>(IEnumerable<TDerived> value) where TDerived : TItem;
 
-      void WriteString(TItem text);
+      void
+      WriteString(TItem text);
 
-      void WriteRaw(TItem data);
+      void
+      WriteRaw(TItem data);
 
-      void WriteComment(string text);
+      void
+      WriteComment(string text);
 
-      void CopyOf(TItem value);
+      void
+      CopyOf(TItem value);
 
-      void CopyOf(IEnumerable<TItem> value);
+      void
+      CopyOf(IEnumerable<TItem> value);
 
-      void CopyOf<TDerived>(IEnumerable<TDerived> value) where TDerived : TItem;
+      void
+      CopyOf<TDerived>(IEnumerable<TDerived> value) where TDerived : TItem;
 
-      XcstWriter TryCastToDocumentWriter();
+      XcstWriter
+      TryCastToDocumentWriter();
 
-      MapWriter TryCastToMapWriter();
+      MapWriter
+      TryCastToMapWriter();
    }
 }

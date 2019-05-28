@@ -21,13 +21,16 @@ namespace Xcst {
 
    public class OutputParameters {
 
-      readonly Dictionary<QualifiedName, object> parameters = new Dictionary<QualifiedName, object>();
+      readonly Dictionary<QualifiedName, object>
+      parameters = new Dictionary<QualifiedName, object>();
 
-      public object this[string name] {
+      public object
+      this[string name] {
          get { return this[StandardParameters.Parse(name)]; }
       }
 
-      public object this[QualifiedName name] {
+      public object
+      this[QualifiedName name] {
          get {
             if (name == null) throw new ArgumentNullException(nameof(name));
 
@@ -53,12 +56,14 @@ namespace Xcst {
          }
       }
 
-      public bool? ByteOrderMark {
+      public bool?
+      ByteOrderMark {
          get { return (bool?)this[StandardParameters.ByteOrderMark]; }
          set { parameters[StandardParameters.ByteOrderMark] = value; }
       }
 
-      public IList<QualifiedName> CdataSectionElements {
+      public IList<QualifiedName>
+      CdataSectionElements {
          get {
             var value = (IList<QualifiedName>)this[StandardParameters.CdataSectionElements];
 
@@ -73,57 +78,68 @@ namespace Xcst {
          }
       }
 
-      public string DoctypePublic {
+      public string
+      DoctypePublic {
          get { return (string)this[StandardParameters.DoctypePublic]; }
          set { parameters[StandardParameters.DoctypePublic] = value; }
       }
 
-      public string DoctypeSystem {
+      public string
+      DoctypeSystem {
          get { return (string)this[StandardParameters.DoctypeSystem]; }
          set { parameters[StandardParameters.DoctypeSystem] = value; }
       }
 
-      public Encoding Encoding {
+      public Encoding
+      Encoding {
          get { return (Encoding)this[StandardParameters.Encoding]; }
          set { parameters[StandardParameters.Encoding] = value; }
       }
 
-      public bool? EscapeUriAttributes {
+      public bool?
+      EscapeUriAttributes {
          get { return (bool?)this[StandardParameters.EscapeUriAttributes]; }
          set { parameters[StandardParameters.EscapeUriAttributes] = value; }
       }
 
-      public decimal? HtmlVersion {
+      public decimal?
+      HtmlVersion {
          get { return (decimal?)this[StandardParameters.HtmlVersion]; }
          set { parameters[StandardParameters.HtmlVersion] = value; }
       }
 
-      public bool? IncludeContentType {
+      public bool?
+      IncludeContentType {
          get { return (bool?)this[StandardParameters.IncludeContentType]; }
          set { parameters[StandardParameters.IncludeContentType] = value; }
       }
 
-      public bool? Indent {
+      public bool?
+      Indent {
          get { return (bool?)this[StandardParameters.Indent]; }
          set { parameters[StandardParameters.Indent] = value; }
       }
 
-      public int? IndentSpaces {
+      public int?
+      IndentSpaces {
          get { return (int?)this[StandardParameters.IndentSpaces]; }
          set { parameters[StandardParameters.IndentSpaces] = value; }
       }
 
-      public string ItemSeparator {
+      public string
+      ItemSeparator {
          get { return (string)this[StandardParameters.ItemSeparator]; }
          set { parameters[StandardParameters.ItemSeparator] = value; }
       }
 
-      public string MediaType {
+      public string
+      MediaType {
          get { return (string)this[StandardParameters.MediaType]; }
          set { parameters[StandardParameters.MediaType] = value; }
       }
 
-      public QualifiedName Method {
+      public QualifiedName
+      Method {
          get { return (QualifiedName)this[StandardParameters.Method]; }
          set {
 
@@ -137,22 +153,26 @@ namespace Xcst {
          }
       }
 
-      public bool? OmitXmlDeclaration {
+      public bool?
+      OmitXmlDeclaration {
          get { return (bool?)this[StandardParameters.OmitXmlDeclaration]; }
          set { parameters[StandardParameters.OmitXmlDeclaration] = value; }
       }
 
-      public bool? SkipCharacterCheck {
+      public bool?
+      SkipCharacterCheck {
          get { return (bool?)this[StandardParameters.SkipCharacterCheck]; }
          set { parameters[StandardParameters.SkipCharacterCheck] = value; }
       }
 
-      public XmlStandalone? Standalone {
+      public XmlStandalone?
+      Standalone {
          get { return (XmlStandalone?)this[StandardParameters.Standalone]; }
          set { parameters[StandardParameters.Standalone] = value; }
       }
 
-      public IList<QualifiedName> SuppressIndentation {
+      public IList<QualifiedName>
+      SuppressIndentation {
          get {
             var value = (IList<QualifiedName>)this[StandardParameters.SuppressIndentation];
 
@@ -167,33 +187,39 @@ namespace Xcst {
          }
       }
 
-      public bool? UndeclarePrefixes {
+      public bool?
+      UndeclarePrefixes {
          get { return (bool?)this[StandardParameters.UndeclarePrefixes]; }
          set { parameters[StandardParameters.UndeclarePrefixes] = value; }
       }
 
-      public string Version {
+      public string
+      Version {
          get { return (string)this[StandardParameters.Version]; }
          set { parameters[StandardParameters.Version] = value; }
       }
 
-      public OutputParameters() { }
+      public
+      OutputParameters() { }
 
-      public OutputParameters(OutputParameters parameters) {
+      public
+      OutputParameters(OutputParameters parameters) {
 
          if (parameters == null) throw new ArgumentNullException(nameof(parameters));
 
          Merge(parameters);
       }
 
-      internal void Merge(OutputParameters other) {
+      internal void
+      Merge(OutputParameters other) {
 
          foreach (var pair in other.parameters) {
             this.parameters[pair.Key] = pair.Value;
          }
       }
 
-      internal decimal? RequestedHtmlVersion() {
+      internal decimal?
+      RequestedHtmlVersion() {
 
          decimal? value = this.HtmlVersion;
          decimal versionValue;
@@ -210,27 +236,65 @@ namespace Xcst {
 
       static class StandardParameters {
 
-         public static readonly QualifiedName ByteOrderMark = new QualifiedName("byte-order-mark");
-         public static readonly QualifiedName CdataSectionElements = new QualifiedName("cdata-section-elements");
-         public static readonly QualifiedName DoctypePublic = new QualifiedName("doctype-public");
-         public static readonly QualifiedName DoctypeSystem = new QualifiedName("doctype-system");
-         public static readonly QualifiedName Encoding = new QualifiedName("encoding");
-         public static readonly QualifiedName EscapeUriAttributes = new QualifiedName("escape-uri-attributes");
-         public static readonly QualifiedName HtmlVersion = new QualifiedName("html-version");
-         public static readonly QualifiedName IncludeContentType = new QualifiedName("include-content-type");
-         public static readonly QualifiedName Indent = new QualifiedName("indent");
-         public static readonly QualifiedName IndentSpaces = new QualifiedName("indent-spaces");
-         public static readonly QualifiedName ItemSeparator = new QualifiedName("item-separator");
-         public static readonly QualifiedName MediaType = new QualifiedName("media-type");
-         public static readonly QualifiedName Method = new QualifiedName("method");
-         public static readonly QualifiedName OmitXmlDeclaration = new QualifiedName("omit-xml-declaration");
-         public static readonly QualifiedName SkipCharacterCheck = new QualifiedName("skip-character-check");
-         public static readonly QualifiedName Standalone = new QualifiedName("standalone");
-         public static readonly QualifiedName SuppressIndentation = new QualifiedName("suppress-indentation");
-         public static readonly QualifiedName UndeclarePrefixes = new QualifiedName("undeclare-prefixes");
-         public static readonly QualifiedName Version = new QualifiedName("version");
+         public static readonly QualifiedName
+         ByteOrderMark = new QualifiedName("byte-order-mark");
 
-         public static QualifiedName Parse(string name) {
+         public static readonly QualifiedName
+         CdataSectionElements = new QualifiedName("cdata-section-elements");
+
+         public static readonly QualifiedName
+         DoctypePublic = new QualifiedName("doctype-public");
+
+         public static readonly QualifiedName
+         DoctypeSystem = new QualifiedName("doctype-system");
+
+         public static readonly QualifiedName
+         Encoding = new QualifiedName("encoding");
+
+         public static readonly QualifiedName
+         EscapeUriAttributes = new QualifiedName("escape-uri-attributes");
+
+         public static readonly QualifiedName
+         HtmlVersion = new QualifiedName("html-version");
+
+         public static readonly QualifiedName
+         IncludeContentType = new QualifiedName("include-content-type");
+
+         public static readonly QualifiedName
+         Indent = new QualifiedName("indent");
+
+         public static readonly QualifiedName
+         IndentSpaces = new QualifiedName("indent-spaces");
+
+         public static readonly QualifiedName
+         ItemSeparator = new QualifiedName("item-separator");
+
+         public static readonly QualifiedName
+         MediaType = new QualifiedName("media-type");
+
+         public static readonly QualifiedName
+         Method = new QualifiedName("method");
+
+         public static readonly QualifiedName
+         OmitXmlDeclaration = new QualifiedName("omit-xml-declaration");
+
+         public static readonly QualifiedName
+         SkipCharacterCheck = new QualifiedName("skip-character-check");
+
+         public static readonly QualifiedName
+         Standalone = new QualifiedName("standalone");
+
+         public static readonly QualifiedName
+         SuppressIndentation = new QualifiedName("suppress-indentation");
+
+         public static readonly QualifiedName
+         UndeclarePrefixes = new QualifiedName("undeclare-prefixes");
+
+         public static readonly QualifiedName
+         Version = new QualifiedName("version");
+
+         public static QualifiedName
+         Parse(string name) {
 
             if (name == null) throw new ArgumentNullException(nameof(name));
 
@@ -303,12 +367,20 @@ namespace Xcst {
 
       public static class Methods {
 
-         public static readonly QualifiedName Xml = new QualifiedName("xml");
-         public static readonly QualifiedName Html = new QualifiedName("html");
-         public static readonly QualifiedName XHtml = new QualifiedName("xhtml");
-         public static readonly QualifiedName Text = new QualifiedName("text");
+         public static readonly QualifiedName
+         Xml = new QualifiedName("xml");
 
-         internal static QualifiedName Parse(string method) {
+         public static readonly QualifiedName
+         Html = new QualifiedName("html");
+
+         public static readonly QualifiedName
+         XHtml = new QualifiedName("xhtml");
+
+         public static readonly QualifiedName
+         Text = new QualifiedName("text");
+
+         internal static QualifiedName
+         Parse(string method) {
 
             if (method == null) throw new ArgumentNullException(nameof(method));
 

@@ -28,25 +28,42 @@ namespace Xcst {
 
    class RuntimeWriter : WrappingWriter {
 
-      bool inAttr;
-      AttrNameVal[] arrAttrs;         // List of cached attribute names and value parts
-      int numEntries;                 // Number of attributes in the cache
-      int idxLastName;                // The entry containing the name of the last attribute to be cached
-      int hashCodeUnion;              // Set of hash bits that can quickly guarantee a name is not a duplicate
+      bool
+      inAttr;
 
-      string itemSeparator;
-      int depth;
-      ItemType? lastItem;
+      AttrNameVal[]
+      arrAttrs;         // List of cached attribute names and value parts
 
-      internal bool DisposeWriter { get; set; }
+      int
+      numEntries;       // Number of attributes in the cache
 
-      public RuntimeWriter(XcstWriter baseWriter, OutputParameters parameters)
+      int
+      idxLastName;      // The entry containing the name of the last attribute to be cached
+
+      int
+      hashCodeUnion;    // Set of hash bits that can quickly guarantee a name is not a duplicate
+
+      string
+      itemSeparator;
+
+      int
+      depth;
+
+      ItemType?
+      lastItem;
+
+      internal bool
+      DisposeWriter { get; set; }
+
+      public
+      RuntimeWriter(XcstWriter baseWriter, OutputParameters parameters)
          : base(baseWriter) {
 
          this.itemSeparator = parameters.ItemSeparator;
       }
 
-      public override void WriteStartElement(string prefix, string localName, string ns) {
+      public override void
+      WriteStartElement(string prefix, string localName, string ns) {
 
          if (this.inAttr) {
             throw new RuntimeException("Cannot create an element within an attribute.");
@@ -58,7 +75,8 @@ namespace Xcst {
          base.WriteStartElement(prefix, localName, ns);
       }
 
-      public override void WriteEndElement() {
+      public override void
+      WriteEndElement() {
 
          FlushAttributes();
 
@@ -67,7 +85,8 @@ namespace Xcst {
          ItemWritten(ItemType.Element);
       }
 
-      public override void WriteStartAttribute(string prefix, string localName, string ns, string separator) {
+      public override void
+      WriteStartAttribute(string prefix, string localName, string ns, string separator) {
 
          if (localName == null) throw new ArgumentNullException(nameof(localName));
 
@@ -126,11 +145,13 @@ namespace Xcst {
          this.arrAttrs[this.idxLastName].Init(prefix, localName, ns, separator, hashCode);
       }
 
-      public override void WriteEndAttribute() {
+      public override void
+      WriteEndAttribute() {
          this.inAttr = false;
       }
 
-      public override void WriteComment(string text) {
+      public override void
+      WriteComment(string text) {
 
          if (this.inAttr) {
             throw new RuntimeException("Cannot create a comment within an attribute.");
@@ -144,7 +165,8 @@ namespace Xcst {
          ItemWritten(ItemType.Comment);
       }
 
-      public override void WriteProcessingInstruction(string name, string text) {
+      public override void
+      WriteProcessingInstruction(string name, string text) {
 
          if (this.inAttr) {
             throw new RuntimeException("Cannot create a processing instruction within an attribute.");
@@ -158,7 +180,8 @@ namespace Xcst {
          ItemWritten(ItemType.ProcessingInstruction);
       }
 
-      public override void WriteString(string text) {
+      public override void
+      WriteString(string text) {
 
          if (this.inAttr) {
 
@@ -176,7 +199,8 @@ namespace Xcst {
          }
       }
 
-      public override void WriteChars(char[] buffer, int index, int count) {
+      public override void
+      WriteChars(char[] buffer, int index, int count) {
 
          if (this.inAttr) {
 
@@ -194,7 +218,8 @@ namespace Xcst {
          }
       }
 
-      public override void WriteRaw(string data) {
+      public override void
+      WriteRaw(string data) {
 
          if (this.inAttr) {
             throw new InvalidOperationException($"Calling {nameof(WriteRaw)} for attributes is not supported.");
@@ -208,7 +233,8 @@ namespace Xcst {
          ItemWritten(ItemType.Raw);
       }
 
-      protected internal override void WriteItem(object value) {
+      protected internal override void
+      WriteItem(object value) {
 
          if (this.inAttr) {
 
@@ -232,7 +258,8 @@ namespace Xcst {
          }
       }
 
-      void EnsureAttributeCache() {
+      void
+      EnsureAttributeCache() {
 
          // Ensure that attribute array has been created and is large enough for at least one
          // additional entry.
@@ -252,7 +279,8 @@ namespace Xcst {
          }
       }
 
-      void FlushAttributes() {
+      void
+      FlushAttributes() {
 
          int idx = 0, idxNext;
          string localName;
@@ -339,7 +367,8 @@ namespace Xcst {
          }
       }
 
-      void ItemWriting(ItemType type) {
+      void
+      ItemWriting(ItemType type) {
 
          if (this.lastItem != null
             && (this.lastItem.Value != ItemType.Text || type != ItemType.Text)) {
@@ -364,7 +393,8 @@ namespace Xcst {
          }
       }
 
-      void ItemWritten(ItemType type) {
+      void
+      ItemWritten(ItemType type) {
 
          if (type == ItemType.Element) {
             this.depth--;
@@ -384,28 +414,50 @@ namespace Xcst {
 
       struct AttrNameVal {
 
-         string localName;
-         string prefix;
-         string namespaceName;
-         string separator;
-         string text;
-         object obj;
-         int hashCode;
-         int nextNameIndex;
+         string
+         localName;
 
-         public string LocalName => this.localName;
+         string
+         prefix;
 
-         public string Prefix => this.prefix;
+         string
+         namespaceName;
 
-         public string Namespace => this.namespaceName;
+         string
+         separator;
 
-         public string Separator => this.separator;
+         string
+         text;
 
-         public string Text => this.text;
+         object
+         obj;
 
-         public object Object => this.obj;
+         int
+         hashCode;
 
-         public int NextNameIndex {
+         int
+         nextNameIndex;
+
+         public string
+         LocalName => this.localName;
+
+         public string
+         Prefix => this.prefix;
+
+         public string
+         Namespace => this.namespaceName;
+
+         public string
+         Separator => this.separator;
+
+         public string
+         Text => this.text;
+
+         public object
+         Object => this.obj;
+
+         public int
+         NextNameIndex {
             get { return this.nextNameIndex; }
             set { this.nextNameIndex = value; }
          }
@@ -414,7 +466,8 @@ namespace Xcst {
          /// Cache an attribute's name and type.
          /// </summary>
 
-         public void Init(string prefix, string localName, string ns, string separator, int hashCode) {
+         public void
+         Init(string prefix, string localName, string ns, string separator, int hashCode) {
             this.localName = localName;
             this.prefix = prefix;
             this.namespaceName = ns;
@@ -427,11 +480,13 @@ namespace Xcst {
          /// Cache all or part of the attribute's string value.
          /// </summary>
 
-         public void Init(string text) {
+         public void
+         Init(string text) {
             this.text = text;
          }
 
-         public void Init(object obj) {
+         public void
+         Init(object obj) {
             this.obj = obj;
          }
 
@@ -439,7 +494,8 @@ namespace Xcst {
          /// Returns true if this attribute has the specified name (and thus is a duplicate).
          /// </summary>
 
-         public bool IsDuplicate(string localName, string ns, int hashCode) {
+         public bool
+         IsDuplicate(string localName, string ns, int hashCode) {
 
             // If attribute is not marked as deleted
             if (this.localName != null) {

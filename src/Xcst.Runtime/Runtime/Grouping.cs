@@ -24,19 +24,20 @@ namespace Xcst.Runtime {
 
    public static class Grouping {
 
-      public static IEnumerable<IGrouping<object, object>> GroupBy(IEnumerable source, Func<object, object> keySelector) {
-         return Enumerable.GroupBy(source as IEnumerable<object> ?? source.Cast<object>(), keySelector);
-      }
+      public static IEnumerable<IGrouping<object, object>>
+      GroupBy(IEnumerable source, Func<object, object> keySelector) =>
+         Enumerable.GroupBy(source as IEnumerable<object> ?? source.Cast<object>(), keySelector);
 
-      public static IEnumerable<IGrouping<TKey, TSource>> GroupBy<TSource, TKey>(IEnumerable<TSource> source, Func<TSource, TKey> keySelector) {
-         return Enumerable.GroupBy(source, keySelector);
-      }
+      public static IEnumerable<IGrouping<TKey, TSource>>
+      GroupBy<TSource, TKey>(IEnumerable<TSource> source, Func<TSource, TKey> keySelector) =>
+         Enumerable.GroupBy(source, keySelector);
 
-      public static IEnumerable<IList<object>> GroupSize(IEnumerable source, int size) {
-         return GroupSize(source as IEnumerable<object> ?? source.Cast<object>(), size);
-      }
+      public static IEnumerable<IList<object>>
+      GroupSize(IEnumerable source, int size) =>
+         GroupSize(source as IEnumerable<object> ?? source.Cast<object>(), size);
 
-      public static IEnumerable<IList<TSource>> GroupSize<TSource>(IEnumerable<TSource> source, int size) {
+      public static IEnumerable<IList<TSource>>
+      GroupSize<TSource>(IEnumerable<TSource> source, int size) {
 
          ValidateGroupSize(size);
 
@@ -47,7 +48,8 @@ namespace Xcst.Runtime {
          }
       }
 
-      static IEnumerable<T> Batch<T>(IEnumerator<T> source, int size) {
+      static IEnumerable<T>
+      Batch<T>(IEnumerator<T> source, int size) {
 
          int i = 0;
 
@@ -59,36 +61,37 @@ namespace Xcst.Runtime {
       // Arrays implement IEnumerable<T>.GetEnumerator() explicitly
       // cast is needed to call it
 
-      public static IEnumerator GetEnumerator(IEnumerable seq) {
-         return seq.GetEnumerator();
-      }
+      public static IEnumerator
+      GetEnumerator(IEnumerable seq) => seq.GetEnumerator();
 
-      public static IEnumerator<T> GetEnumerator<T>(IEnumerable<T> seq) {
-         return seq.GetEnumerator();
-      }
+      public static IEnumerator<T>
+      GetEnumerator<T>(IEnumerable<T> seq) => seq.GetEnumerator();
 
       // Must return List instead of IList to avoid following issue (when T is dynamic):
       // 'System.Collections.Generic.IList<object>' does not contain a definition for 'Add'
 
-      public static List<object> CreateMutable(IEnumerator justForTypeInference, int capacity) {
+      public static List<object>
+      CreateMutable(IEnumerator justForTypeInference, int capacity) {
 
          ValidateGroupSize(capacity);
 
          return new List<object>(capacity);
       }
 
-      public static List<T> CreateMutable<T>(IEnumerator<T> justForTypeInference, int capacity) {
+      public static List<T>
+      CreateMutable<T>(IEnumerator<T> justForTypeInference, int capacity) {
 
          ValidateGroupSize(capacity);
 
          return new List<T>(capacity);
       }
 
-      public static IList<T> CreateImmutable<T>(IList<T> list) {
-         return new Collection<T>(new List<T>(list));
-      }
+      public static IList<T>
+      CreateImmutable<T>(IList<T> list) =>
+         new Collection<T>(new List<T>(list));
 
-      public static void Dispose(IEnumerator iter) {
+      public static void
+      Dispose(IEnumerator iter) {
 
          IDisposable disp = iter as IDisposable;
 
@@ -97,11 +100,11 @@ namespace Xcst.Runtime {
          }
       }
 
-      public static void Dispose<T>(IEnumerator<T> iter) {
-         iter.Dispose();
-      }
+      public static void
+      Dispose<T>(IEnumerator<T> iter) => iter.Dispose();
 
-      static void ValidateGroupSize(int size) {
+      static void
+      ValidateGroupSize(int size) {
 
          if (size <= 0) {
             throw new RuntimeException("'group-size' attribute must evaluate to an integer greater than zero.");

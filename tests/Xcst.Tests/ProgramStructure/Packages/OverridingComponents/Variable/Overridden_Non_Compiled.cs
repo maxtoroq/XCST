@@ -11,10 +11,13 @@ namespace Xcst.Tests.ProgramStructure.Packages.OverridingComponents.Variable {
 
    partial class VariableTests {
 
-      const string TestCategory = nameof(ProgramStructure) + "." + nameof(Packages) + "." + nameof(OverridingComponents) + "." + nameof(Variable);
+      const string
+      TestCategory = nameof(ProgramStructure) + "." + nameof(Packages) + "." + nameof(OverridingComponents) + "." + nameof(Variable);
 
-      [TestMethod, TestCategory(TestCategory)]
-      public void Overridden_Non_Compiled() {
+      [TestMethod]
+      [TestCategory(TestCategory)]
+      public void
+      Overridden_Non_Compiled() {
 
          var compilerA = TestsHelper.CreateCompiler();
          compilerA.TargetClass = "FooPackage";
@@ -56,7 +59,8 @@ namespace Xcst.Tests.ProgramStructure.Packages.OverridingComponents.Variable {
 
       internal class Overridden_Non_Compiled_Resolver : XmlResolver {
 
-         public static string GetPackageString(string name) {
+         public static string
+         GetPackageString(string name) {
 
             switch (name) {
                case "":
@@ -81,11 +85,12 @@ namespace Xcst.Tests.ProgramStructure.Packages.OverridingComponents.Variable {
             }
          }
 
-         public override object GetEntity(Uri absoluteUri, string role, System.Type ofObjectToReturn) {
-            return CreateStreamForString(GetPackageString(absoluteUri.AbsoluteUri.Substring("urn:x:".Length)));
-         }
+         public override object
+         GetEntity(Uri absoluteUri, string role, System.Type ofObjectToReturn) =>
+            CreateStreamForString(GetPackageString(absoluteUri.AbsoluteUri.Substring("urn:x:".Length)));
 
-         static Stream CreateStreamForString(string s) {
+         static Stream
+         CreateStreamForString(string s) {
 
             var stream = new MemoryStream();
             var writer = new StreamWriter(stream);

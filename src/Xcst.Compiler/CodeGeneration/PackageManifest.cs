@@ -24,7 +24,8 @@ namespace Xcst.Compiler.CodeGeneration {
 
    static class PackageManifest {
 
-      public static void WriteManifest(Type packageType, XmlWriter writer) {
+      public static void
+      WriteManifest(Type packageType, XmlWriter writer) {
 
          const string ns = XmlNamespaces.XcstGrammar;
          const string prefix = "xcst";
@@ -158,7 +159,8 @@ namespace Xcst.Compiler.CodeGeneration {
          writer.WriteEndElement();
       }
 
-      static void WriteConstant(object value, XmlWriter writer) {
+      static void
+      WriteConstant(object value, XmlWriter writer) {
 
          const string ns = XmlNamespaces.XcstCode;
          const string prefix = "code";

@@ -35,32 +35,39 @@ namespace Xcst.Runtime {
 
    public class SimpleContent {
 
-      static readonly char[] whiteSpaceChars = { (char)0x20, (char)0x9, (char)0xD, (char)0xA };
+      static readonly char[]
+      whiteSpaceChars = { (char)0x20, (char)0x9, (char)0xD, (char)0xA };
 
-      static readonly ConcurrentDictionary<Type, bool> customToString = new ConcurrentDictionary<Type, bool>();
+      static readonly ConcurrentDictionary<Type, bool>
+      customToString = new ConcurrentDictionary<Type, bool>();
 
-      readonly Func<IFormatProvider> formatProviderFn;
+      readonly Func<IFormatProvider>
+      formatProviderFn;
 
-      public static SimpleContent Invariant { get; } = new SimpleContent(() => CultureInfo.InvariantCulture);
+      public static SimpleContent
+      Invariant { get; } = new SimpleContent(() => CultureInfo.InvariantCulture);
 
-      internal IFormatProvider FormatProvider => formatProviderFn();
+      internal IFormatProvider
+      FormatProvider => formatProviderFn();
 
-      public SimpleContent(Func<IFormatProvider> formatProviderFn) {
+      public
+      SimpleContent(Func<IFormatProvider> formatProviderFn) {
 
          if (formatProviderFn == null) throw new ArgumentNullException(nameof(formatProviderFn));
 
          this.formatProviderFn = formatProviderFn;
       }
 
-      public string Join(string separator, Array value) {
-         return JoinSequence(separator, value);
-      }
+      public string
+      Join(string separator, Array value) =>
+         JoinSequence(separator, value);
 
-      public string Join(string separator, string[] value) {
-         return Join(separator, (IEnumerable<string>)value);
-      }
+      public string
+      Join(string separator, string[] value) =>
+         Join(separator, (IEnumerable<string>)value);
 
-      public string Join(string separator, IEnumerable<string> value) {
+      public string
+      Join(string separator, IEnumerable<string> value) {
 
          if (value == null) {
             return String.Empty;
@@ -69,7 +76,8 @@ namespace Xcst.Runtime {
          return String.Join(separator, value.Where(v => v != null));
       }
 
-      public string Join(string separator, object value) {
+      public string
+      Join(string separator, object value) {
 
          IEnumerable seq = ValueAsEnumerable(value);
 
@@ -80,17 +88,19 @@ namespace Xcst.Runtime {
          return Convert(value);
       }
 
-      public string Join(string separator, string value) {
-         return value ?? String.Empty;
-      }
+      public string
+      Join(string separator, string value) =>
+         value ?? String.Empty;
 
-      public string Join(string separator, IFormattable value) {
+      public string
+      Join(string separator, IFormattable value) {
 
          return value?.ToString(null, this.FormatProvider)
             ?? String.Empty;
       }
 
-      protected string JoinSequence(string separator, IEnumerable value) {
+      protected string
+      JoinSequence(string separator, IEnumerable value) {
 
          if (value == null) {
             return String.Empty;
@@ -102,7 +112,8 @@ namespace Xcst.Runtime {
             .Select(v => Convert(v)));
       }
 
-      internal static IEnumerable ValueAsEnumerable(object value, bool checkToString = true) {
+      internal static IEnumerable
+      ValueAsEnumerable(object value, bool checkToString = true) {
 
          if (value == null
             || value is string
@@ -124,11 +135,12 @@ namespace Xcst.Runtime {
          return null;
       }
 
-      static bool HasCustomToString(Type type) {
-         return customToString.GetOrAdd(type, HasCustomToStringImpl);
-      }
+      static bool
+      HasCustomToString(Type type) =>
+         customToString.GetOrAdd(type, HasCustomToStringImpl);
 
-      static bool HasCustomToStringImpl(Type type) {
+      static bool
+      HasCustomToStringImpl(Type type) {
 
          Type declaringType = type.GetMethod("ToString", Type.EmptyTypes).DeclaringType;
 
@@ -136,11 +148,12 @@ namespace Xcst.Runtime {
             typeof(ValueType) : typeof(object));
       }
 
-      public string Format(string format, params object[] args) {
-         return String.Format(this.FormatProvider, format, args);
-      }
+      public string
+      Format(string format, params object[] args) =>
+         String.Format(this.FormatProvider, format, args);
 
-      public string FormatValueTemplate(FormattableString value) {
+      public string
+      FormatValueTemplate(FormattableString value) {
 
          if (value.ArgumentCount == 0) {
             // Shouldn't be, but just in case...
@@ -161,11 +174,12 @@ namespace Xcst.Runtime {
          return Format(value.Format, args);
       }
 
-      public string Convert(object value) {
-         return System.Convert.ToString(value, this.FormatProvider);
-      }
+      public string
+      Convert(object value) =>
+         System.Convert.ToString(value, this.FormatProvider);
 
-      public static string Trim(string value) {
+      public static string
+      Trim(string value) {
 
          if (String.IsNullOrEmpty(value)) {
             return String.Empty;
@@ -174,7 +188,8 @@ namespace Xcst.Runtime {
          return value.Trim(whiteSpaceChars);
       }
 
-      public static string NormalizeSpace(string value) {
+      public static string
+      NormalizeSpace(string value) {
 
          if (String.IsNullOrEmpty(value)) {
             return String.Empty;
@@ -245,8 +260,8 @@ namespace Xcst.Runtime {
          return sb.ToString();
       }
 
-      static bool IsWhiteSpace(char c) {
-         return Array.IndexOf(whiteSpaceChars, c) != -1;
-      }
+      static bool
+      IsWhiteSpace(char c) =>
+         Array.IndexOf(whiteSpaceChars, c) != -1;
    }
 }

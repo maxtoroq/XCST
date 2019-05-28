@@ -19,115 +19,143 @@ namespace Xcst.Xml {
 
    class XcstXmlWriter : XmlWriter {
 
-      readonly XcstWriter writer;
-      WriteState state = WriteState.Content;
+      readonly XcstWriter
+      output;
 
-      public override WriteState WriteState => state;
+      WriteState
+      state = WriteState.Content;
 
-      public XcstXmlWriter(XcstWriter writer) {
-         this.writer = writer;
+      public override WriteState
+      WriteState => state;
+
+      public
+      XcstXmlWriter(XcstWriter writer) {
+         this.output = writer;
       }
 
-      public override void Flush() { }
+      public override void
+      Flush() { }
 
-      public override string LookupPrefix(string ns) {
+      public override string
+      LookupPrefix(string ns) {
          throw new NotImplementedException();
       }
 
-      public override void WriteBase64(byte[] buffer, int index, int count) {
+      public override void
+      WriteBase64(byte[] buffer, int index, int count) {
          throw new NotImplementedException();
       }
 
-      public override void WriteCData(string text) {
-         this.writer.WriteString(text);
+      public override void
+      WriteCData(string text) {
+         this.output.WriteString(text);
          this.state = WriteState.Content;
       }
 
-      public override void WriteCharEntity(char ch) {
+      public override void
+      WriteCharEntity(char ch) {
          throw new NotImplementedException();
       }
 
-      public override void WriteChars(char[] buffer, int index, int count) {
+      public override void
+      WriteChars(char[] buffer, int index, int count) {
 
-         this.writer.WriteChars(buffer, index, count);
+         this.output.WriteChars(buffer, index, count);
 
          if (this.state != WriteState.Attribute) {
             this.state = WriteState.Content;
          }
       }
 
-      public override void WriteComment(string text) {
-         this.writer.WriteComment(text);
+      public override void
+      WriteComment(string text) {
+         this.output.WriteComment(text);
          this.state = WriteState.Content;
       }
 
-      public override void WriteDocType(string name, string pubid, string sysid, string subset) { }
+      public override void
+      WriteDocType(string name, string pubid, string sysid, string subset) { }
 
-      public override void WriteEndAttribute() {
-         this.writer.WriteEndAttribute();
+      public override void
+      WriteEndAttribute() {
+         this.output.WriteEndAttribute();
          this.state = WriteState.Element;
       }
 
-      public override void WriteEndDocument() {
+      public override void
+      WriteEndDocument() {
          this.state = WriteState.Content;
       }
 
-      public override void WriteEndElement() {
-         this.writer.WriteEndElement();
+      public override void
+      WriteEndElement() {
+         this.output.WriteEndElement();
          this.state = WriteState.Content;
       }
 
-      public override void WriteEntityRef(string name) {
+      public override void
+      WriteEntityRef(string name) {
          throw new NotImplementedException();
       }
 
-      public override void WriteFullEndElement() {
-         this.writer.WriteEndElement();
+      public override void
+      WriteFullEndElement() {
+         this.output.WriteEndElement();
          this.state = WriteState.Content;
       }
 
-      public override void WriteProcessingInstruction(string name, string text) {
-         this.writer.WriteProcessingInstruction(name, text);
+      public override void
+      WriteProcessingInstruction(string name, string text) {
+         this.output.WriteProcessingInstruction(name, text);
          this.state = WriteState.Content;
       }
 
-      public override void WriteRaw(char[] buffer, int index, int count) {
+      public override void
+      WriteRaw(char[] buffer, int index, int count) {
          throw new NotImplementedException();
       }
 
-      public override void WriteRaw(string data) {
-         this.writer.WriteRaw(data);
+      public override void
+      WriteRaw(string data) {
+         this.output.WriteRaw(data);
       }
 
-      public override void WriteStartAttribute(string prefix, string localName, string ns) {
-         this.writer.WriteStartAttribute(prefix, localName, ns);
+      public override void
+      WriteStartAttribute(string prefix, string localName, string ns) {
+         this.output.WriteStartAttribute(prefix, localName, ns);
          this.state = WriteState.Attribute;
       }
 
-      public override void WriteStartDocument() { }
+      public override void
+      WriteStartDocument() { }
 
-      public override void WriteStartDocument(bool standalone) { }
+      public override void
+      WriteStartDocument(bool standalone) { }
 
-      public override void WriteStartElement(string prefix, string localName, string ns) {
-         this.writer.WriteStartElement(prefix, localName, ns);
+      public override void
+      WriteStartElement(string prefix, string localName, string ns) {
+         this.output.WriteStartElement(prefix, localName, ns);
          this.state = WriteState.Element;
       }
 
-      public override void WriteString(string text) {
+      public override void
+      WriteString(string text) {
 
-         this.writer.WriteString(text);
+         this.output.WriteString(text);
 
          if (this.state != WriteState.Attribute) {
             this.state = WriteState.Content;
          }
       }
 
-      public override void WriteSurrogateCharEntity(char lowChar, char highChar) {
+      public override void
+      WriteSurrogateCharEntity(char lowChar, char highChar) {
          throw new NotImplementedException();
       }
 
-      public override void WriteWhitespace(string ws) {
-         this.writer.WriteString(ws);
+      public override void
+      WriteWhitespace(string ws) {
+         this.output.WriteString(ws);
          this.state = WriteState.Content;
       }
    }

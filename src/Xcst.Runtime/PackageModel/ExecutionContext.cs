@@ -23,19 +23,26 @@ namespace Xcst.PackageModel {
 
    public class ExecutionContext {
 
-      readonly Func<IFormatProvider> formatProviderFn;
+      readonly Func<IFormatProvider>
+      formatProviderFn;
 
-      public IXcstPackage TopLevelPackage { get; }
+      public IXcstPackage
+      TopLevelPackage { get; }
 
-      public PrimingContext PrimingContext { get; }
+      public PrimingContext
+      PrimingContext { get; }
 
-      public SimpleContent SimpleContent { get; }
+      public SimpleContent
+      SimpleContent { get; }
 
-      public Uri/*?*/ StaticBaseUri { get; }
+      public Uri/*?*/
+      StaticBaseUri { get; }
 
-      public Uri/*?*/ BaseOutputUri { get; }
+      public Uri/*?*/
+      BaseOutputUri { get; }
 
-      internal ExecutionContext(
+      internal
+      ExecutionContext(
             IXcstPackage topLevelPackage,
             PrimingContext primingContext,
             Func<IFormatProvider>/*?*/ formatProviderFn,
@@ -62,7 +69,8 @@ namespace Xcst.PackageModel {
          this.BaseOutputUri = baseOutputUri;
       }
 
-      public Uri ResolveUri(string relativeUri) {
+      public Uri
+      ResolveUri(string relativeUri) {
 
          var relUri = new Uri(relativeUri, UriKind.RelativeOrAbsolute);
 
@@ -77,7 +85,8 @@ namespace Xcst.PackageModel {
          return NewUri(this.StaticBaseUri, relativeUri);
       }
 
-      public Uri ResolveOutputUri(string relativeUri) {
+      public Uri
+      ResolveOutputUri(string relativeUri) {
 
          var relUri = new Uri(relativeUri, UriKind.RelativeOrAbsolute);
 
@@ -92,7 +101,8 @@ namespace Xcst.PackageModel {
          return NewUri(this.BaseOutputUri, relativeUri);
       }
 
-      static Uri NewUri(Uri baseUri, string relativeUri) {
+      static Uri
+      NewUri(Uri baseUri, string relativeUri) {
 
          try {
             return new Uri(baseUri, relativeUri);

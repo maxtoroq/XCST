@@ -19,15 +19,23 @@ namespace Xcst.Xml {
 
    class XmlXcstWriter : XcstWriter {
 
-      readonly XmlWriter writer;
-      readonly bool outputXmlDecl;
-      readonly XmlStandalone standalone;
-      bool xmlDeclWritten;
+      readonly XmlWriter
+      output;
 
-      public XmlXcstWriter(XmlWriter writer, Uri outputUri, OutputParameters parameters)
+      readonly bool
+      outputXmlDecl;
+
+      readonly XmlStandalone
+      standalone;
+
+      bool
+      xmlDeclWritten;
+
+      public
+      XmlXcstWriter(XmlWriter writer, Uri outputUri, OutputParameters parameters)
          : base(outputUri) {
 
-         this.writer = writer;
+         this.output = writer;
          this.outputXmlDecl = !parameters.OmitXmlDeclaration.GetValueOrDefault()
             && (parameters.Method == null
                || parameters.Method == OutputParameters.Methods.Xml
@@ -36,84 +44,94 @@ namespace Xcst.Xml {
          this.standalone = parameters.Standalone.GetValueOrDefault();
       }
 
-      void WriteXmlDeclaration() {
+      void
+      WriteXmlDeclaration() {
 
          if (this.outputXmlDecl
             && !this.xmlDeclWritten
-            && this.writer.WriteState == WriteState.Start) {
+            && this.output.WriteState == WriteState.Start) {
 
             if (this.standalone == XmlStandalone.Omit) {
-               this.writer.WriteStartDocument();
+               this.output.WriteStartDocument();
             } else {
-               this.writer.WriteStartDocument(this.standalone == XmlStandalone.Yes);
+               this.output.WriteStartDocument(this.standalone == XmlStandalone.Yes);
             }
 
             this.xmlDeclWritten = true;
          }
       }
 
-      public override void WriteComment(string text) {
+      public override void
+      WriteComment(string text) {
          WriteXmlDeclaration();
-         this.writer.WriteComment(text);
+         this.output.WriteComment(text);
       }
 
-      public override void WriteEndAttribute() {
+      public override void
+      WriteEndAttribute() {
 
          // WriteEndAttribute is called in a finally block
          // Checking for error to not overwhelm writer when something goes wrong
 
-         if (this.writer.WriteState != WriteState.Error) {
-            this.writer.WriteEndAttribute();
+         if (this.output.WriteState != WriteState.Error) {
+            this.output.WriteEndAttribute();
          }
       }
 
-      public override void WriteEndElement() {
+      public override void
+      WriteEndElement() {
 
          // WriteEndElement is called in a finally block
          // Checking for error to not overwhelm writer when something goes wrong
 
-         if (this.writer.WriteState != WriteState.Error) {
-            this.writer.WriteEndElement();
+         if (this.output.WriteState != WriteState.Error) {
+            this.output.WriteEndElement();
          }
       }
 
-      public override void WriteProcessingInstruction(string name, string text) {
+      public override void
+      WriteProcessingInstruction(string name, string text) {
          WriteXmlDeclaration();
-         this.writer.WriteProcessingInstruction(name, text);
+         this.output.WriteProcessingInstruction(name, text);
       }
 
-      public override void WriteRaw(string data) {
+      public override void
+      WriteRaw(string data) {
          WriteXmlDeclaration();
-         this.writer.WriteRaw(data);
+         this.output.WriteRaw(data);
       }
 
-      public override void WriteStartAttribute(string prefix, string localName, string ns, string separator) {
-         this.writer.WriteStartAttribute(prefix, localName, ns);
+      public override void
+      WriteStartAttribute(string prefix, string localName, string ns, string separator) {
+         this.output.WriteStartAttribute(prefix, localName, ns);
       }
 
-      public override void WriteStartElement(string prefix, string localName, string ns) {
+      public override void
+      WriteStartElement(string prefix, string localName, string ns) {
          WriteXmlDeclaration();
-         this.writer.WriteStartElement(prefix, localName, ns);
+         this.output.WriteStartElement(prefix, localName, ns);
       }
 
-      public override void WriteString(string text) {
+      public override void
+      WriteString(string text) {
          WriteXmlDeclaration();
-         this.writer.WriteString(text);
+         this.output.WriteString(text);
       }
 
-      public override void WriteChars(char[] buffer, int index, int count) {
+      public override void
+      WriteChars(char[] buffer, int index, int count) {
          WriteXmlDeclaration();
-         this.writer.WriteChars(buffer, index, count);
+         this.output.WriteChars(buffer, index, count);
       }
 
-      public override void Flush() {
-         this.writer.Flush();
-      }
+      public override void
+      Flush() => this.output.Flush();
 
-      protected override void Dispose(bool disposing) {
+      protected override void
+      Dispose(bool disposing) {
 
          if (disposing) {
-            this.writer.Dispose();
+            this.output.Dispose();
          }
 
          base.Dispose(disposing);

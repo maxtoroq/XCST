@@ -23,12 +23,17 @@ namespace Xcst.PackageModel {
 
    public class TemplateContext {
 
-      static readonly TemplateContext EmptyContext = new TemplateContext(0, 0, null);
+      static readonly TemplateContext
+      EmptyContext = new TemplateContext(0, 0, null);
 
-      readonly Dictionary<string, object>/*?*/ templateParameters;
-      readonly Dictionary<string, object>/*?*/ tunnelParameters;
+      readonly Dictionary<string, object>/*?*/
+      templateParameters;
 
-      public static TemplateContext Create(int tmplCount, int tunnelCount, TemplateContext currentContext = null) {
+      readonly Dictionary<string, object>/*?*/
+      tunnelParameters;
+
+      public static TemplateContext
+      Create(int tmplCount, int tunnelCount, TemplateContext currentContext = null) {
 
          if (tmplCount == 0
             && tunnelCount == 0
@@ -41,11 +46,13 @@ namespace Xcst.PackageModel {
          return new TemplateContext(tmplCount, tunnelCount, currentContext);
       }
 
-      public static TemplateContext<TParams> CreateTyped<TParams>(TParams parameters, int tunnelCount, TemplateContext currentContext = null) {
+      public static TemplateContext<TParams>
+      CreateTyped<TParams>(TParams parameters, int tunnelCount, TemplateContext currentContext = null) {
          return new TemplateContext<TParams>(parameters, tunnelCount, currentContext);
       }
 
-      public TemplateContext(int tmplCount, int tunnelCount, TemplateContext/*?*/ currentContext) {
+      public
+      TemplateContext(int tmplCount, int tunnelCount, TemplateContext/*?*/ currentContext) {
 
          if (tmplCount > 0) {
             this.templateParameters = new Dictionary<string, object>(tmplCount);
@@ -65,7 +72,8 @@ namespace Xcst.PackageModel {
          }
       }
 
-      public TemplateContext WithParam(string name, object/*?*/ value, bool tunnel = false) {
+      public TemplateContext
+      WithParam(string name, object/*?*/ value, bool tunnel = false) {
 
          if (tunnel) {
 
@@ -81,7 +89,8 @@ namespace Xcst.PackageModel {
          return this;
       }
 
-      public TemplateContext WithParams(object/*?*/ parameters) {
+      public TemplateContext
+      WithParams(object/*?*/ parameters) {
 
          if (parameters != null) {
             WithParams(XcstEvaluator.ObjectToDictionary(parameters));
@@ -90,7 +99,8 @@ namespace Xcst.PackageModel {
          return this;
       }
 
-      public TemplateContext WithParams(IDictionary<string, object>/*?*/ parameters) {
+      public TemplateContext
+      WithParams(IDictionary<string, object>/*?*/ parameters) {
 
          if (parameters != null) {
 
@@ -102,12 +112,15 @@ namespace Xcst.PackageModel {
          return this;
       }
 
-      public bool HasParam(string name) {
-         return this.templateParameters?.ContainsKey(name) == true;
-      }
+      public bool
+      HasParam(string name) => this.templateParameters?.ContainsKey(name) == true;
 
-      public TDefault Param<TDefault>(
-            string name, Func<TDefault> defaultValue = null, bool required = false, bool tunnel = false) {
+      public TDefault
+      Param<TDefault>(
+            string name,
+            Func<TDefault> defaultValue = null,
+            bool required = false,
+            bool tunnel = false) {
 
          Dictionary<string, object>/*?*/ paramsDict = (tunnel) ?
             this.tunnelParameters
@@ -140,8 +153,13 @@ namespace Xcst.PackageModel {
          return default(TDefault);
       }
 
-      public static TDefault TypedParam<TValue, TDefault>(
-            string name, bool valueSet, TValue value, Func<TDefault> defaultValue = null, bool required = false) where TDefault : TValue {
+      public static TDefault
+      TypedParam<TValue, TDefault>(
+            string name,
+            bool valueSet,
+            TValue value,
+            Func<TDefault> defaultValue = null,
+            bool required = false) where TDefault : TValue {
 
          if (valueSet) {
 
@@ -167,15 +185,18 @@ namespace Xcst.PackageModel {
 
    public class TemplateContext<TParams> : TemplateContext {
 
-      public TParams Parameters { get; }
+      public TParams
+      Parameters { get; }
 
-      public TemplateContext(TParams parameters, int tunnelCount, TemplateContext/*?*/ currentContext)
+      public
+      TemplateContext(TParams parameters, int tunnelCount, TemplateContext/*?*/ currentContext)
          : base(0, tunnelCount, currentContext) {
 
          this.Parameters = parameters;
       }
 
-      public new TemplateContext<TParams> WithParam(string name, object value, bool tunnel = false) {
+      public new TemplateContext<TParams>
+      WithParam(string name, object value, bool tunnel = false) {
 
          base.WithParam(name, value, tunnel);
          return this;

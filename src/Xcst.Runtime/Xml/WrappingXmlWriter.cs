@@ -55,308 +55,269 @@ namespace Xcst.Xml {
 
    abstract class WrappingXmlWriter : XmlWriter {
 
-      readonly XmlWriter baseWriter;
+      readonly XmlWriter
+      output;
 
-      protected WrappingXmlWriter(XmlWriter baseWriter) {
+      public override XmlWriterSettings
+      Settings => this.output.Settings;
+
+      public override WriteState
+      WriteState => this.output.WriteState;
+
+      public override string
+      XmlLang => this.output.XmlLang;
+
+      public override XmlSpace
+      XmlSpace => this.output.XmlSpace;
+
+      protected
+      WrappingXmlWriter(XmlWriter baseWriter) {
 
          if (baseWriter == null) throw new ArgumentNullException(nameof(baseWriter));
 
-         this.baseWriter = baseWriter;
+         this.output = baseWriter;
       }
 
-      public override XmlWriterSettings Settings {
-         get { return this.baseWriter.Settings; }
-      }
+      public override void
+      Close() => this.output.Close();
 
-      public override WriteState WriteState {
-         get { return this.baseWriter.WriteState; }
-      }
-
-      public override string XmlLang {
-         get { return this.baseWriter.XmlLang; }
-      }
-
-      public override XmlSpace XmlSpace {
-         get { return this.baseWriter.XmlSpace; }
-      }
-
-      public override void Close() {
-         this.baseWriter.Close();
-      }
-
-      protected override void Dispose(bool disposing) {
+      protected override void
+      Dispose(bool disposing) {
 
          if (disposing) {
-            this.baseWriter.Dispose();
+            this.output.Dispose();
          }
       }
 
-      public override void Flush() {
-         this.baseWriter.Flush();
-      }
-
-      public override Task FlushAsync() {
-         return this.baseWriter.FlushAsync();
-      }
-
-      public override string LookupPrefix(string ns) {
-         return this.baseWriter.LookupPrefix(ns);
-      }
-
-      public override void WriteAttributes(XmlReader reader, bool defattr) {
-         this.baseWriter.WriteAttributes(reader, defattr);
-      }
-
-      public override Task WriteAttributesAsync(XmlReader reader, bool defattr) {
-         return this.baseWriter.WriteAttributesAsync(reader, defattr);
-      }
-
-      public override void WriteBase64(byte[] buffer, int index, int count) {
-         this.baseWriter.WriteBase64(buffer, index, count);
-      }
-
-      public override Task WriteBase64Async(byte[] buffer, int index, int count) {
-         return this.baseWriter.WriteBase64Async(buffer, index, count);
-      }
-
-      public override void WriteBinHex(byte[] buffer, int index, int count) {
-         this.baseWriter.WriteBinHex(buffer, index, count);
-      }
-
-      public override Task WriteBinHexAsync(byte[] buffer, int index, int count) {
-         return this.baseWriter.WriteBinHexAsync(buffer, index, count);
-      }
-
-      public override void WriteCData(string text) {
-         this.baseWriter.WriteCData(text);
-      }
-
-      public override Task WriteCDataAsync(string text) {
-         return this.baseWriter.WriteCDataAsync(text);
-      }
-
-      public override void WriteCharEntity(char ch) {
-         this.baseWriter.WriteCharEntity(ch);
-      }
-
-      public override Task WriteCharEntityAsync(char ch) {
-         return this.baseWriter.WriteCharEntityAsync(ch);
-      }
-
-      public override void WriteChars(char[] buffer, int index, int count) {
-         this.baseWriter.WriteChars(buffer, index, count);
-      }
-
-      public override Task WriteCharsAsync(char[] buffer, int index, int count) {
-         return this.baseWriter.WriteCharsAsync(buffer, index, count);
-      }
-
-      public override void WriteComment(string text) {
-         this.baseWriter.WriteComment(text);
-      }
-
-      public override Task WriteCommentAsync(string text) {
-         return this.baseWriter.WriteCommentAsync(text);
-      }
-
-      public override void WriteDocType(string name, string pubid, string sysid, string subset) {
-         this.baseWriter.WriteDocType(name, pubid, sysid, subset);
-      }
-
-      public override Task WriteDocTypeAsync(string name, string pubid, string sysid, string subset) {
-         return this.baseWriter.WriteDocTypeAsync(name, pubid, sysid, subset);
-      }
-
-      public override void WriteEndAttribute() {
-         this.baseWriter.WriteEndAttribute();
-      }
-
-      public override void WriteEndDocument() {
-         this.baseWriter.WriteEndDocument();
-      }
-
-      public override Task WriteEndDocumentAsync() {
-         return this.baseWriter.WriteEndDocumentAsync();
-      }
-
-      public override void WriteEndElement() {
-         this.baseWriter.WriteEndElement();
-      }
-
-      public override Task WriteEndElementAsync() {
-         return this.baseWriter.WriteEndElementAsync();
-      }
-
-      public override void WriteEntityRef(string name) {
-         this.baseWriter.WriteEntityRef(name);
-      }
-
-      public override Task WriteEntityRefAsync(string name) {
-         return this.baseWriter.WriteEntityRefAsync(name);
-      }
-
-      public override void WriteFullEndElement() {
-         this.baseWriter.WriteFullEndElement();
-      }
-
-      public override Task WriteFullEndElementAsync() {
-         return this.baseWriter.WriteFullEndElementAsync();
-      }
-
-      public override void WriteName(string name) {
-         this.baseWriter.WriteName(name);
-      }
-
-      public override Task WriteNameAsync(string name) {
-         return this.baseWriter.WriteNameAsync(name);
-      }
-
-      public override void WriteNmToken(string name) {
-         this.baseWriter.WriteNmToken(name);
-      }
-
-      public override Task WriteNmTokenAsync(string name) {
-         return this.baseWriter.WriteNmTokenAsync(name);
-      }
-
-      public override void WriteNode(XPathNavigator navigator, bool defattr) {
-         this.baseWriter.WriteNode(navigator, defattr);
-      }
-
-      public override Task WriteNodeAsync(XPathNavigator navigator, bool defattr) {
-         return this.baseWriter.WriteNodeAsync(navigator, defattr);
-      }
-
-      public override void WriteNode(XmlReader reader, bool defattr) {
-         this.baseWriter.WriteNode(reader, defattr);
-      }
-
-      public override Task WriteNodeAsync(XmlReader reader, bool defattr) {
-         return this.baseWriter.WriteNodeAsync(reader, defattr);
-      }
-
-      public override void WriteProcessingInstruction(string name, string text) {
-         this.baseWriter.WriteProcessingInstruction(name, text);
-      }
-
-      public override Task WriteProcessingInstructionAsync(string name, string text) {
-         return this.baseWriter.WriteProcessingInstructionAsync(name, text);
-      }
-
-      public override void WriteQualifiedName(string localName, string ns) {
-         this.baseWriter.WriteQualifiedName(localName, ns);
-      }
-
-      public override Task WriteQualifiedNameAsync(string localName, string ns) {
-         return this.baseWriter.WriteQualifiedNameAsync(localName, ns);
-      }
-
-      public override void WriteRaw(string data) {
-         this.baseWriter.WriteRaw(data);
-      }
-
-      public override Task WriteRawAsync(string data) {
-         return this.baseWriter.WriteRawAsync(data);
-      }
-
-      public override void WriteRaw(char[] buffer, int index, int count) {
-         this.baseWriter.WriteRaw(buffer, index, count);
-      }
-
-      public override Task WriteRawAsync(char[] buffer, int index, int count) {
-         return this.baseWriter.WriteRawAsync(buffer, index, count);
-      }
-
-      public override void WriteStartAttribute(string prefix, string localName, string ns) {
-         this.baseWriter.WriteStartAttribute(prefix, localName, ns);
-      }
-
-      public override Task WriteStartDocumentAsync() {
-         return this.baseWriter.WriteStartDocumentAsync();
-      }
-
-      public override void WriteStartDocument() {
-         this.baseWriter.WriteStartDocument();
-      }
-
-      public override void WriteStartDocument(bool standalone) {
-         this.baseWriter.WriteStartDocument(standalone);
-      }
-
-      public override Task WriteStartDocumentAsync(bool standalone) {
-         return this.baseWriter.WriteStartDocumentAsync(standalone);
-      }
-
-      public override void WriteStartElement(string prefix, string localName, string ns) {
-         this.baseWriter.WriteStartElement(prefix, localName, ns);
-      }
-
-      public override Task WriteStartElementAsync(string prefix, string localName, string ns) {
-         return this.baseWriter.WriteStartElementAsync(prefix, localName, ns);
-      }
-
-      public override void WriteString(string text) {
-         this.baseWriter.WriteString(text);
-      }
-
-      public override Task WriteStringAsync(string text) {
-         return this.baseWriter.WriteStringAsync(text);
-      }
-
-      public override void WriteSurrogateCharEntity(char lowChar, char highChar) {
-         this.baseWriter.WriteSurrogateCharEntity(lowChar, highChar);
-      }
-
-      public override Task WriteSurrogateCharEntityAsync(char lowChar, char highChar) {
-         return this.baseWriter.WriteSurrogateCharEntityAsync(lowChar, highChar);
-      }
-
-      public override void WriteValue(bool value) {
-         this.baseWriter.WriteValue(value);
-      }
-
-      public override void WriteValue(DateTime value) {
-         this.baseWriter.WriteValue(value);
-      }
-
-      public override void WriteValue(DateTimeOffset value) {
-         this.baseWriter.WriteValue(value);
-      }
-
-      public override void WriteValue(decimal value) {
-         this.baseWriter.WriteValue(value);
-      }
-
-      public override void WriteValue(double value) {
-         this.baseWriter.WriteValue(value);
-      }
-
-      public override void WriteValue(int value) {
-         this.baseWriter.WriteValue(value);
-      }
-
-      public override void WriteValue(long value) {
-         this.baseWriter.WriteValue(value);
-      }
-
-      public override void WriteValue(object value) {
-         this.baseWriter.WriteValue(value);
-      }
-
-      public override void WriteValue(float value) {
-         this.baseWriter.WriteValue(value);
-      }
-
-      public override void WriteValue(string value) {
-         this.baseWriter.WriteValue(value);
-      }
-
-      public override void WriteWhitespace(string ws) {
-         this.baseWriter.WriteWhitespace(ws);
-      }
-
-      public override Task WriteWhitespaceAsync(string ws) {
-         return this.baseWriter.WriteWhitespaceAsync(ws);
-      }
+      public override void
+      Flush() => this.output.Flush();
+
+      public override Task
+      FlushAsync() => this.output.FlushAsync();
+
+      public override string
+      LookupPrefix(string ns) => this.output.LookupPrefix(ns);
+
+      public override void
+      WriteAttributes(XmlReader reader, bool defattr) =>
+         this.output.WriteAttributes(reader, defattr);
+
+      public override Task
+      WriteAttributesAsync(XmlReader reader, bool defattr) =>
+         this.output.WriteAttributesAsync(reader, defattr);
+
+      public override void
+      WriteBase64(byte[] buffer, int index, int count) =>
+         this.output.WriteBase64(buffer, index, count);
+
+      public override Task
+      WriteBase64Async(byte[] buffer, int index, int count) =>
+         this.output.WriteBase64Async(buffer, index, count);
+
+      public override void
+      WriteBinHex(byte[] buffer, int index, int count) =>
+         this.output.WriteBinHex(buffer, index, count);
+
+      public override Task
+      WriteBinHexAsync(byte[] buffer, int index, int count) =>
+         this.output.WriteBinHexAsync(buffer, index, count);
+
+      public override void
+      WriteCData(string text) => this.output.WriteCData(text);
+
+      public override Task
+      WriteCDataAsync(string text) => this.output.WriteCDataAsync(text);
+
+      public override void
+      WriteCharEntity(char ch) => this.output.WriteCharEntity(ch);
+
+      public override Task
+      WriteCharEntityAsync(char ch) => this.output.WriteCharEntityAsync(ch);
+
+      public override void
+      WriteChars(char[] buffer, int index, int count) =>
+         this.output.WriteChars(buffer, index, count);
+
+      public override Task
+      WriteCharsAsync(char[] buffer, int index, int count) =>
+         this.output.WriteCharsAsync(buffer, index, count);
+
+      public override void
+      WriteComment(string text) => this.output.WriteComment(text);
+
+      public override Task
+      WriteCommentAsync(string text) =>
+         this.output.WriteCommentAsync(text);
+
+      public override void
+      WriteDocType(string name, string pubid, string sysid, string subset) =>
+         this.output.WriteDocType(name, pubid, sysid, subset);
+
+      public override Task
+      WriteDocTypeAsync(string name, string pubid, string sysid, string subset) =>
+         this.output.WriteDocTypeAsync(name, pubid, sysid, subset);
+
+      public override void
+      WriteEndAttribute() => this.output.WriteEndAttribute();
+
+      public override void
+      WriteEndDocument() => this.output.WriteEndDocument();
+
+      public override Task
+      WriteEndDocumentAsync() => this.output.WriteEndDocumentAsync();
+
+      public override void
+      WriteEndElement() => this.output.WriteEndElement();
+
+      public override Task
+      WriteEndElementAsync() => this.output.WriteEndElementAsync();
+
+      public override void
+      WriteEntityRef(string name) => this.output.WriteEntityRef(name);
+
+      public override Task
+      WriteEntityRefAsync(string name) => this.output.WriteEntityRefAsync(name);
+
+      public override void
+      WriteFullEndElement() => this.output.WriteFullEndElement();
+
+      public override Task
+      WriteFullEndElementAsync() => this.output.WriteFullEndElementAsync();
+
+      public override void
+      WriteName(string name) => this.output.WriteName(name);
+
+      public override Task
+      WriteNameAsync(string name) => this.output.WriteNameAsync(name);
+
+      public override void
+      WriteNmToken(string name) => this.output.WriteNmToken(name);
+
+      public override Task
+      WriteNmTokenAsync(string name) => this.output.WriteNmTokenAsync(name);
+
+      public override void
+      WriteNode(XPathNavigator navigator, bool defattr) =>
+         this.output.WriteNode(navigator, defattr);
+
+      public override Task
+      WriteNodeAsync(XPathNavigator navigator, bool defattr) =>
+         this.output.WriteNodeAsync(navigator, defattr);
+
+      public override void
+      WriteNode(XmlReader reader, bool defattr) =>
+         this.output.WriteNode(reader, defattr);
+
+      public override Task
+      WriteNodeAsync(XmlReader reader, bool defattr) =>
+         this.output.WriteNodeAsync(reader, defattr);
+
+      public override void
+      WriteProcessingInstruction(string name, string text) =>
+         this.output.WriteProcessingInstruction(name, text);
+
+      public override Task
+      WriteProcessingInstructionAsync(string name, string text) =>
+         this.output.WriteProcessingInstructionAsync(name, text);
+
+      public override void
+      WriteQualifiedName(string localName, string ns) =>
+         this.output.WriteQualifiedName(localName, ns);
+
+      public override Task
+      WriteQualifiedNameAsync(string localName, string ns) =>
+         this.output.WriteQualifiedNameAsync(localName, ns);
+
+      public override void
+      WriteRaw(string data) => this.output.WriteRaw(data);
+
+      public override Task
+      WriteRawAsync(string data) => this.output.WriteRawAsync(data);
+
+      public override void
+      WriteRaw(char[] buffer, int index, int count) =>
+         this.output.WriteRaw(buffer, index, count);
+
+      public override Task
+      WriteRawAsync(char[] buffer, int index, int count) =>
+         this.output.WriteRawAsync(buffer, index, count);
+
+      public override void
+      WriteStartAttribute(string prefix, string localName, string ns) =>
+         this.output.WriteStartAttribute(prefix, localName, ns);
+
+      public override Task
+      WriteStartDocumentAsync() => this.output.WriteStartDocumentAsync();
+
+      public override void
+      WriteStartDocument() => this.output.WriteStartDocument();
+
+      public override void
+      WriteStartDocument(bool standalone) =>
+         this.output.WriteStartDocument(standalone);
+
+      public override Task
+      WriteStartDocumentAsync(bool standalone) =>
+         this.output.WriteStartDocumentAsync(standalone);
+
+      public override void
+      WriteStartElement(string prefix, string localName, string ns) =>
+         this.output.WriteStartElement(prefix, localName, ns);
+
+      public override Task
+      WriteStartElementAsync(string prefix, string localName, string ns) =>
+         this.output.WriteStartElementAsync(prefix, localName, ns);
+
+      public override void
+      WriteString(string text) => this.output.WriteString(text);
+
+      public override Task
+      WriteStringAsync(string text) =>
+         this.output.WriteStringAsync(text);
+
+      public override void
+      WriteSurrogateCharEntity(char lowChar, char highChar) =>
+         this.output.WriteSurrogateCharEntity(lowChar, highChar);
+
+      public override Task
+      WriteSurrogateCharEntityAsync(char lowChar, char highChar) =>
+         this.output.WriteSurrogateCharEntityAsync(lowChar, highChar);
+
+      public override void WriteValue(bool value) =>
+         this.output.WriteValue(value);
+
+      public override void
+      WriteValue(DateTime value) => this.output.WriteValue(value);
+
+      public override void
+      WriteValue(DateTimeOffset value) => this.output.WriteValue(value);
+
+      public override void
+      WriteValue(decimal value) => this.output.WriteValue(value);
+
+      public override void
+      WriteValue(double value) => this.output.WriteValue(value);
+
+      public override void
+      WriteValue(int value) => this.output.WriteValue(value);
+
+      public override void
+      WriteValue(long value) => this.output.WriteValue(value);
+
+      public override void
+      WriteValue(object value) => this.output.WriteValue(value);
+
+      public override void
+      WriteValue(float value) => this.output.WriteValue(value);
+
+      public override void
+      WriteValue(string value) => this.output.WriteValue(value);
+
+      public override void
+      WriteWhitespace(string ws) => this.output.WriteWhitespace(ws);
+
+      public override Task
+      WriteWhitespaceAsync(string ws) =>
+         this.output.WriteWhitespaceAsync(ws);
    }
 }

@@ -19,7 +19,8 @@ namespace Xcst.Runtime {
 
    public static class EvaluateDelegate {
 
-      public static void Invoke<TDerived, TBase>(XcstDelegate<TDerived> del, TemplateContext context, ISequenceWriter<TBase> output)
+      public static void
+      Invoke<TDerived, TBase>(XcstDelegate<TDerived> del, TemplateContext context, ISequenceWriter<TBase> output)
             where TDerived : TBase {
 
          if (del == null) throw new ArgumentNullException(nameof(del));
@@ -32,7 +33,8 @@ namespace Xcst.Runtime {
          del.Invoke(context, derivedWriter);
       }
 
-      public static void Invoke<TItem>(Delegate del, TemplateContext context, ISequenceWriter<TItem> output) {
+      public static void
+      Invoke<TItem>(Delegate del, TemplateContext context, ISequenceWriter<TItem> output) {
 
          if (del == null) throw new ArgumentNullException(nameof(del));
          if (context == null) throw new ArgumentNullException(nameof(context));

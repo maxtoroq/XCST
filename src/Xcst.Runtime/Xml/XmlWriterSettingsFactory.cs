@@ -22,13 +22,23 @@ namespace Xcst.Xml {
 
    static class XmlWriterSettingsFactory {
 
-      static readonly Action<XmlWriterSettings, XmlOutputMethod> setOutputMethod;
-      static readonly Action<XmlWriterSettings, string> setDocTypePublic;
-      static readonly Action<XmlWriterSettings, string> setDocTypeSystem;
-      static readonly Action<XmlWriterSettings, string> setMediaType;
-      static readonly FieldInfo cdataSectionsField;
+      static readonly Action<XmlWriterSettings, XmlOutputMethod>
+      setOutputMethod;
 
-      static XmlWriterSettingsFactory() {
+      static readonly Action<XmlWriterSettings, string>
+      setDocTypePublic;
+
+      static readonly Action<XmlWriterSettings, string>
+      setDocTypeSystem;
+
+      static readonly Action<XmlWriterSettings, string>
+      setMediaType;
+
+      static readonly FieldInfo
+      cdataSectionsField;
+
+      static
+      XmlWriterSettingsFactory() {
 
          Type settingsType = typeof(XmlWriterSettings);
 
@@ -47,7 +57,8 @@ namespace Xcst.Xml {
          cdataSectionsField = settingsType.GetField("cdataSections", BindingFlags.Instance | BindingFlags.NonPublic);
       }
 
-      public static XmlWriterSettings Create(OutputParameters parameters) {
+      public static XmlWriterSettings
+      Create(OutputParameters parameters) {
 
          var settings = new XmlWriterSettings {
             ConformanceLevel = ConformanceLevel.Auto

@@ -24,7 +24,8 @@ namespace Xcst.Runtime {
 
    public static class Serialization {
 
-      public static string Serialize(IXcstPackage package, QualifiedName/*?*/ outputName, OutputParameters parameters, Action<XcstWriter> action) {
+      public static string
+      Serialize(IXcstPackage package, QualifiedName/*?*/ outputName, OutputParameters parameters, Action<XcstWriter> action) {
 
          if (package == null) throw new ArgumentNullException(nameof(package));
          if (parameters == null) throw new ArgumentNullException(nameof(parameters));
@@ -45,7 +46,8 @@ namespace Xcst.Runtime {
          return sb.ToString();
       }
 
-      public static string SimpleContent(IXcstPackage package, string separator, Action<XcstWriter> action) {
+      public static string
+      SimpleContent(IXcstPackage package, string separator, Action<XcstWriter> action) {
 
          return Serialize(
             package,
@@ -58,7 +60,8 @@ namespace Xcst.Runtime {
          );
       }
 
-      public static XcstWriter ResultDocument(
+      public static XcstWriter
+      ResultDocument(
             IXcstPackage package,
             OutputParameters parameters,
             QualifiedName/*?*/ outputName,
@@ -69,7 +72,8 @@ namespace Xcst.Runtime {
          return ResultDocumentImpl(u => WriterFactory.CreateWriter(u), false, package, parameters, outputName, outputUri);
       }
 
-      public static XcstWriter ResultDocument(
+      public static XcstWriter
+      ResultDocument(
             IXcstPackage package,
             OutputParameters parameters,
             QualifiedName/*?*/ outputName,
@@ -81,7 +85,8 @@ namespace Xcst.Runtime {
          return ResultDocumentImpl(u => WriterFactory.CreateWriter(output, u), true, package, parameters, outputName, outputUri);
       }
 
-      public static XcstWriter ResultDocument(
+      public static XcstWriter
+      ResultDocument(
             IXcstPackage package,
             OutputParameters parameters,
             QualifiedName/*?*/ outputName,
@@ -93,7 +98,8 @@ namespace Xcst.Runtime {
          return ResultDocumentImpl(u => WriterFactory.CreateWriter(output, u), true, package, parameters, outputName, outputUri);
       }
 
-      public static XcstWriter ResultDocument(
+      public static XcstWriter
+      ResultDocument(
             IXcstPackage package,
             OutputParameters parameters,
             QualifiedName/*?*/ outputName,
@@ -105,7 +111,8 @@ namespace Xcst.Runtime {
          return ResultDocumentImpl(u => WriterFactory.CreateWriter(output, u), true, package, parameters, outputName, outputUri);
       }
 
-      public static XcstWriter ResultDocument(
+      public static XcstWriter
+      ResultDocument(
             IXcstPackage package,
             OutputParameters parameters,
             QualifiedName/*?*/ outputName,
@@ -117,7 +124,8 @@ namespace Xcst.Runtime {
          return ResultDocumentImpl(u => WriterFactory.CreateWriter(output), true, package, parameters, outputName, outputUri);
       }
 
-      static XcstWriter ResultDocumentImpl(
+      static XcstWriter
+      ResultDocumentImpl(
             Func<Uri, CreateWriterDelegate> writerFn,
             bool customOutput,
             IXcstPackage package,
@@ -142,36 +150,46 @@ namespace Xcst.Runtime {
             (defaultParams, parameters, package.Context);
       }
 
-      public static XcstWriter Void(IXcstPackage package) {
-
-         return WriterFactory.CreateWriter(new NullWriter(WriterFactory.AbsentOutputUri))
+      public static XcstWriter
+      Void(IXcstPackage package) =>
+         WriterFactory.CreateWriter(new NullWriter(WriterFactory.AbsentOutputUri))
             (new OutputParameters(), null, package.Context);
-      }
    }
 
    class NullWriter : XcstWriter {
 
-      public NullWriter(Uri outputUri)
+      public
+      NullWriter(Uri outputUri)
          : base(outputUri) { }
 
-      public override void Flush() { }
+      public override void
+      Flush() { }
 
-      public override void WriteChars(char[] buffer, int index, int count) { }
+      public override void
+      WriteChars(char[] buffer, int index, int count) { }
 
-      public override void WriteComment(string text) { }
+      public override void
+      WriteComment(string text) { }
 
-      public override void WriteEndAttribute() { }
+      public override void
+      WriteEndAttribute() { }
 
-      public override void WriteEndElement() { }
+      public override void
+      WriteEndElement() { }
 
-      public override void WriteProcessingInstruction(string name, string text) { }
+      public override void
+      WriteProcessingInstruction(string name, string text) { }
 
-      public override void WriteRaw(string data) { }
+      public override void
+      WriteRaw(string data) { }
 
-      public override void WriteStartAttribute(string prefix, string localName, string ns, string separator) { }
+      public override void
+      WriteStartAttribute(string prefix, string localName, string ns, string separator) { }
 
-      public override void WriteStartElement(string prefix, string localName, string ns) { }
+      public override void
+      WriteStartElement(string prefix, string localName, string ns) { }
 
-      public override void WriteString(string text) { }
+      public override void
+      WriteString(string text) { }
    }
 }

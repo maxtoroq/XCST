@@ -11,10 +11,13 @@ namespace Xcst.Tests.ProgramStructure.Packages.AcceptingComponents {
 
    public partial class AcceptingComponentsTests {
 
-      const string TestCategory = nameof(ProgramStructure) + "." + nameof(Packages) + "." + nameof(AcceptingComponents);
+      const string
+      TestCategory = nameof(ProgramStructure) + "." + nameof(Packages) + "." + nameof(AcceptingComponents);
 
-      [TestMethod, TestCategory(TestCategory)]
-      public void Component_Using_Accepted_Type() {
+      [TestMethod]
+      [TestCategory(TestCategory)]
+      public void
+      Component_Using_Accepted_Type() {
 
          var compilerA = TestsHelper.CreateCompiler();
          compilerA.TargetClass = "FooPackage";
@@ -66,7 +69,8 @@ namespace Xcst.Tests.ProgramStructure.Packages.AcceptingComponents {
 
       internal class Component_Using_Accepted_Type_Resolver : XmlResolver {
 
-         public static string GetPackageString(string name) {
+         public static string
+         GetPackageString(string name) {
 
             switch (name) {
                case "":
@@ -96,11 +100,12 @@ namespace Xcst.Tests.ProgramStructure.Packages.AcceptingComponents {
             }
          }
 
-         public override object GetEntity(Uri absoluteUri, string role, System.Type ofObjectToReturn) {
-            return CreateStreamForString(GetPackageString(absoluteUri.AbsoluteUri.Substring("urn:x:".Length)));
-         }
+         public override object
+         GetEntity(Uri absoluteUri, string role, System.Type ofObjectToReturn) =>
+            CreateStreamForString(GetPackageString(absoluteUri.AbsoluteUri.Substring("urn:x:".Length)));
 
-         static Stream CreateStreamForString(string s) {
+         static Stream
+         CreateStreamForString(string s) {
 
             var stream = new MemoryStream();
             var writer = new StreamWriter(stream);

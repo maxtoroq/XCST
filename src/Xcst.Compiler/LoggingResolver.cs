@@ -22,22 +22,27 @@ namespace Xcst.Compiler {
 
    class LoggingResolver : XmlResolver {
 
-      readonly XmlResolver wrappedResolver;
+      readonly XmlResolver
+      wrappedResolver;
 
-      public HashSet<Uri> ResolvedUris { get; } = new HashSet<Uri>();
+      public HashSet<Uri>
+      ResolvedUris { get; } = new HashSet<Uri>();
 
-      public override ICredentials Credentials {
+      public override ICredentials
+      Credentials {
          set { wrappedResolver.Credentials = value; }
       }
 
-      public LoggingResolver(XmlResolver wrappedResolver) {
+      public
+      LoggingResolver(XmlResolver wrappedResolver) {
 
          if (wrappedResolver == null) throw new ArgumentNullException(nameof(wrappedResolver));
 
          this.wrappedResolver = wrappedResolver;
       }
 
-      public override object GetEntity(Uri absoluteUri, string role, Type ofObjectToReturn) {
+      public override object
+      GetEntity(Uri absoluteUri, string role, Type ofObjectToReturn) {
 
          object entity = this.wrappedResolver.GetEntity(absoluteUri, role, ofObjectToReturn);
 
@@ -46,7 +51,8 @@ namespace Xcst.Compiler {
          return entity;
       }
 
-      public override Task<object> GetEntityAsync(Uri absoluteUri, string role, Type ofObjectToReturn) {
+      public override Task<object>
+      GetEntityAsync(Uri absoluteUri, string role, Type ofObjectToReturn) {
 
          var task = this.wrappedResolver.GetEntityAsync(absoluteUri, role, ofObjectToReturn);
 
@@ -55,12 +61,10 @@ namespace Xcst.Compiler {
          return task;
       }
 
-      public override bool SupportsType(Uri absoluteUri, Type type) {
-         return this.wrappedResolver.SupportsType(absoluteUri, type);
-      }
+      public override bool
+      SupportsType(Uri absoluteUri, Type type) => this.wrappedResolver.SupportsType(absoluteUri, type);
 
-      public override Uri ResolveUri(Uri baseUri, string relativeUri) {
-         return this.wrappedResolver.ResolveUri(baseUri, relativeUri);
-      }
+      public override Uri
+      ResolveUri(Uri baseUri, string relativeUri) => this.wrappedResolver.ResolveUri(baseUri, relativeUri);
    }
 }

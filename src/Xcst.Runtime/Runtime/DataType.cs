@@ -23,7 +23,8 @@ namespace Xcst.Runtime {
 
    public static class DataType {
 
-      public static bool Boolean(string value) {
+      public static bool
+      Boolean(string value) {
 
          if (value == null) throw new ArgumentNullException(nameof(value));
 
@@ -45,7 +46,8 @@ namespace Xcst.Runtime {
          }
       }
 
-      public static decimal Decimal(string value) {
+      public static decimal
+      Decimal(string value) {
 
          if (value == null) throw new ArgumentNullException(nameof(value));
 
@@ -56,7 +58,8 @@ namespace Xcst.Runtime {
          return System.Decimal.Parse(SimpleContent.Trim(value), style, CultureInfo.InvariantCulture);
       }
 
-      public static int Integer(string value) {
+      public static int
+      Integer(string value) {
 
          if (value == null) throw new ArgumentNullException(nameof(value));
 
@@ -65,7 +68,8 @@ namespace Xcst.Runtime {
          return Int32.Parse(SimpleContent.Trim(value), style, CultureInfo.InvariantCulture);
       }
 
-      public static string/*?*/ ItemSeparator(string value) {
+      public static string/*?*/
+      ItemSeparator(string value) {
 
          if (value == null) throw new ArgumentNullException(nameof(value));
 
@@ -76,15 +80,16 @@ namespace Xcst.Runtime {
          return value;
       }
 
-      public static QualifiedName QName(string localOrUriQualifiedName) {
-         return QualifiedName.Parse(localOrUriQualifiedName);
-      }
+      public static QualifiedName
+      QName(string localOrUriQualifiedName) =>
+         QualifiedName.Parse(localOrUriQualifiedName);
 
-      public static QualifiedName QName(string ns, string localName) {
-         return new QualifiedName(localName, ns);
-      }
+      public static QualifiedName
+      QName(string ns, string localName) =>
+         new QualifiedName(localName, ns);
 
-      public static bool SortOrderDescending(string order) {
+      public static bool
+      SortOrderDescending(string order) {
 
          if (order == null) throw new ArgumentNullException(nameof(order));
 
@@ -100,7 +105,8 @@ namespace Xcst.Runtime {
          }
       }
 
-      public static XmlStandalone Standalone(string value) {
+      public static XmlStandalone
+      Standalone(string value) {
 
          if (value == null) throw new ArgumentNullException(nameof(value));
 
@@ -115,7 +121,8 @@ namespace Xcst.Runtime {
          return XmlStandalone.No;
       }
 
-      public static Uri Uri(string uriString) {
+      public static Uri
+      Uri(string uriString) {
 
          try {
             return new Uri(uriString);
@@ -124,7 +131,8 @@ namespace Xcst.Runtime {
          }
       }
 
-      public static Uri Uri(string baseUri, string relativeUri) {
+      public static Uri
+      Uri(string baseUri, string relativeUri) {
 
          try {
             return new Uri(new Uri(baseUri, UriKind.Absolute), relativeUri);
@@ -133,7 +141,8 @@ namespace Xcst.Runtime {
          }
       }
 
-      public static IList<TItem> List<TItem>(string list, Func<string, TItem> parseFn) {
+      public static IList<TItem>
+      List<TItem>(string list, Func<string, TItem> parseFn) {
 
          string normalized = SimpleContent.NormalizeSpace(list);
 

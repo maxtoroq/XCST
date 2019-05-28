@@ -8,11 +8,14 @@ namespace Xcst.Tests.API.Evaluation {
    [TestClass]
    public class EvaluationTests {
 
-      const string TestCategory = nameof(API) + "." + nameof(Evaluation);
+      const string
+      TestCategory = nameof(API) + "." + nameof(Evaluation);
 
-      [TestMethod, TestCategory(TestCategory)]
+      [TestMethod]
+      [TestCategory(TestCategory)]
       [ExpectedException(typeof(InvalidOperationException))]
-      public void Disallow_Re_Prime() {
+      public void
+      Disallow_Re_Prime() {
 
          var evaluator = XcstEvaluator.Using(new DisallowRePrime())
             .WithParam("foo", "foo");
@@ -27,8 +30,10 @@ namespace Xcst.Tests.API.Evaluation {
             .Run();
       }
 
-      [TestMethod, TestCategory(TestCategory)]
-      public void Lock_Template_Params() {
+      [TestMethod]
+      [TestCategory(TestCategory)]
+      public void
+      Lock_Template_Params() {
 
          var template = XcstEvaluator.Using(new LockTemplateParams())
             .CallInitialTemplate();
@@ -77,8 +82,10 @@ namespace Xcst.Tests.API.Evaluation {
          Assert.AreEqual("foo", output1.ToString());
       }
 
-      [TestMethod, TestCategory(TestCategory)]
-      public void Call_Public_Template() {
+      [TestMethod]
+      [TestCategory(TestCategory)]
+      public void
+      Call_Public_Template() {
 
          XcstEvaluator.Using(new ExposePublicTemplatesOnly())
             .CallTemplate("public")
@@ -87,7 +94,8 @@ namespace Xcst.Tests.API.Evaluation {
       }
 
       [TestMethod, TestCategory(TestCategory)]
-      public void Call_Final_Template() {
+      public void
+      Call_Final_Template() {
 
          XcstEvaluator.Using(new ExposePublicTemplatesOnly())
             .CallTemplate("final")
@@ -95,9 +103,11 @@ namespace Xcst.Tests.API.Evaluation {
             .Run();
       }
 
-      [TestMethod, TestCategory(TestCategory)]
+      [TestMethod]
+      [TestCategory(TestCategory)]
       [ExpectedException(typeof(RuntimeException))]
-      public void Call_Private_Template() {
+      public void
+      Call_Private_Template() {
 
          XcstEvaluator.Using(new ExposePublicTemplatesOnly())
             .CallTemplate("private")
@@ -105,8 +115,10 @@ namespace Xcst.Tests.API.Evaluation {
             .Run();
       }
 
-      [TestMethod, TestCategory(TestCategory)]
-      public void Copy_OutputParameters() {
+      [TestMethod]
+      [TestCategory(TestCategory)]
+      public void
+      Copy_OutputParameters() {
 
          var parameters = new OutputParameters {
             Method = new QualifiedName("xml"),
@@ -127,8 +139,10 @@ namespace Xcst.Tests.API.Evaluation {
          Assert.AreEqual("<div />", output.ToString());
       }
 
-      [TestMethod, TestCategory(TestCategory)]
-      public void Raw_Output() {
+      [TestMethod]
+      [TestCategory(TestCategory)]
+      public void
+      Raw_Output() {
 
          var output = new List<int>();
 

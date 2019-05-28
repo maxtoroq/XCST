@@ -19,79 +19,79 @@ namespace Xcst {
 
    abstract class WrappingWriter : XcstWriter {
 
-      readonly XcstWriter baseWriter;
+      readonly XcstWriter
+      output;
 
-      public override Uri OutputUri => baseWriter.OutputUri;
+      public override Uri
+      OutputUri => output.OutputUri;
 
-      public override SimpleContent SimpleContent {
+      public override SimpleContent
+      SimpleContent {
          get {
-            return baseWriter.SimpleContent;
+            return output.SimpleContent;
          }
          internal set {
-            baseWriter.SimpleContent = value;
+            output.SimpleContent = value;
          }
       }
 
-      protected WrappingWriter(XcstWriter baseWriter)
+      protected
+      WrappingWriter(XcstWriter baseWriter)
          : base(baseWriter.OutputUri) {
 
          if (baseWriter == null) throw new ArgumentNullException(nameof(baseWriter));
 
-         this.baseWriter = baseWriter;
+         this.output = baseWriter;
       }
 
-      public override bool TryCopyOf(object value) {
-         return this.baseWriter.TryCopyOf(value);
-      }
+      public override bool
+      TryCopyOf(object value) => this.output.TryCopyOf(value);
 
-      public override void WriteChars(char[] buffer, int index, int count) {
-         this.baseWriter.WriteChars(buffer, index, count);
-      }
+      public override void
+      WriteChars(char[] buffer, int index, int count) =>
+         this.output.WriteChars(buffer, index, count);
 
-      public override void WriteComment(string text) {
-         this.baseWriter.WriteComment(text);
-      }
+      public override void
+      WriteComment(string text) =>
+         this.output.WriteComment(text);
 
-      public override void WriteEndAttribute() {
-         this.baseWriter.WriteEndAttribute();
-      }
+      public override void
+      WriteEndAttribute() =>
+         this.output.WriteEndAttribute();
 
-      public override void WriteEndElement() {
-         this.baseWriter.WriteEndElement();
-      }
+      public override void
+      WriteEndElement() =>
+         this.output.WriteEndElement();
 
-      public override void WriteProcessingInstruction(string name, string text) {
-         this.baseWriter.WriteProcessingInstruction(name, text);
-      }
+      public override void
+      WriteProcessingInstruction(string name, string text) =>
+         this.output.WriteProcessingInstruction(name, text);
 
-      public override void WriteRaw(string data) {
-         this.baseWriter.WriteRaw(data);
-      }
+      public override void
+      WriteRaw(string data) => this.output.WriteRaw(data);
 
-      public override void WriteStartAttribute(string prefix, string localName, string ns, string separator) {
-         this.baseWriter.WriteStartAttribute(prefix, localName, ns, separator);
-      }
+      public override void
+      WriteStartAttribute(string prefix, string localName, string ns, string separator) =>
+         this.output.WriteStartAttribute(prefix, localName, ns, separator);
 
-      public override void WriteStartElement(string prefix, string localName, string ns) {
-         this.baseWriter.WriteStartElement(prefix, localName, ns);
-      }
+      public override void
+      WriteStartElement(string prefix, string localName, string ns) =>
+         this.output.WriteStartElement(prefix, localName, ns);
 
-      public override void WriteString(string text) {
-         this.baseWriter.WriteString(text);
-      }
+      public override void
+      WriteString(string text) => this.output.WriteString(text);
 
-      protected internal override void WriteItem(object value) {
-         this.baseWriter.WriteItem(value);
-      }
+      protected internal override void
+      WriteItem(object value) => this.output.WriteItem(value);
 
-      public override void Flush() {
-         this.baseWriter.Flush();
-      }
+      public override void
+      Flush() => this.output.Flush();
 
-      protected override void Dispose(bool disposing) {
+      protected override void
+      Dispose(bool disposing) {
 
          if (disposing) {
-            this.baseWriter.Dispose();
+            this.output.Dispose();
          }
 
          base.Dispose(disposing);

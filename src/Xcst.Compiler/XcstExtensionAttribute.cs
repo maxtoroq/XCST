@@ -20,11 +20,14 @@ namespace Xcst.Compiler {
    [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true)]
    public sealed class XcstExtensionAttribute : Attribute {
 
-      public Uri ExtensionNamespace { get; }
+      public Uri
+      ExtensionNamespace { get; }
 
-      public Type ExtensionLoaderType { get; set; }
+      public Type
+      ExtensionLoaderType { get; set; }
 
-      public XcstExtensionAttribute(string extensionNamespace, Type extensionLoaderType) {
+      public
+      XcstExtensionAttribute(string extensionNamespace, Type extensionLoaderType) {
 
          if (extensionNamespace == null) throw new ArgumentNullException(nameof(extensionNamespace));
          if (extensionLoaderType == null) throw new ArgumentNullException(nameof(extensionLoaderType));
@@ -42,6 +45,7 @@ namespace Xcst.Compiler {
 
    public abstract class XcstExtensionLoader {
 
-      public abstract Stream LoadSource();
+      public abstract Stream
+      LoadSource();
    }
 }

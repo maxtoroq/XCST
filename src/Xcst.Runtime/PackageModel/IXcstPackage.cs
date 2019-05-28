@@ -18,12 +18,16 @@ namespace Xcst.PackageModel {
 
    public interface IXcstPackage {
 
-      ExecutionContext Context { get; set; }
+      ExecutionContext
+      Context { get; set; }
 
-      void Prime(PrimingContext context, string[]/*?*/ overriddenParams);
+      void
+      Prime(PrimingContext context, string[]/*?*/ overriddenParams);
 
-      Action<TemplateContext> GetTemplate<TBase>(QualifiedName name, ISequenceWriter<TBase> output);
+      Action<TemplateContext>
+      GetTemplate<TBase>(QualifiedName name, ISequenceWriter<TBase> output);
 
-      void ReadOutputDefinition(QualifiedName/*?*/ name, OutputParameters parameters);
+      void
+      ReadOutputDefinition(QualifiedName/*?*/ name, OutputParameters parameters);
    }
 }
