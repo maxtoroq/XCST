@@ -444,20 +444,26 @@
                <code:typeof>
                   <code:type-reference name="{xcst:type(@as)}"/>
                </code:typeof>
-               <if test="@min">
-                  <code:argument name="minimum">
+               <choose>
+                  <when test="@min">
                      <code:string verbatim="true">
                         <value-of select="@min"/>
                      </code:string>
-                  </code:argument>
-               </if>
-               <if test="@max">
-                  <code:argument name="maximum">
+                  </when>
+                  <otherwise>
+                     <code:null/>
+                  </otherwise>
+               </choose>
+               <choose>
+                  <when test="@max">
                      <code:string verbatim="true">
                         <value-of select="@max"/>
                      </code:string>
-                  </code:argument>
-               </if>
+                  </when>
+                  <otherwise>
+                     <code:null/>
+                  </otherwise>
+               </choose>
             </code:arguments>
             <code:initializer>
                <call-template name="src:validation-arguments">
