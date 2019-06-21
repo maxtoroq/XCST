@@ -385,17 +385,17 @@
       <apply-templates select="code:*[2]" mode="cs:source"/>
    </template>
 
-   <template match="code:getter" mode="cs:source">
+   <template match="code:getter[code:block]" mode="cs:source">
+      <call-template name="cs:line-pragma"/>
       <call-template name="src:new-line-indented"/>
       <text>get</text>
-      <choose>
-         <when test="code:block">
-            <apply-templates select="code:block" mode="#current"/>
-         </when>
-         <otherwise>
-            <value-of select="$cs:statement-delimiter"/>
-         </otherwise>
-      </choose>
+      <apply-templates select="code:block" mode="#current"/>
+   </template>
+
+   <template match="code:getter[not(code:block)]" mode="cs:source">
+      <call-template name="cs:line-pragma"/>
+      <text> get</text>
+      <value-of select="$cs:statement-delimiter"/>
    </template>
 
    <template match="code:greater-than" mode="cs:source">
@@ -717,6 +717,8 @@
    <template match="code:property" mode="cs:source">
       <param name="indent" tunnel="yes"/>
 
+      <variable name="auto-impl" select="empty((code:getter, code:setter)/code:block)"/>
+
       <value-of select="$src:new-line"/>
       <apply-templates select="code:attributes/code:*" mode="#current"/>
       <call-template name="cs:line-pragma"/>
@@ -742,7 +744,12 @@
       <apply-templates select="code:getter, code:setter" mode="#current">
          <with-param name="indent" select="$indent + 1" tunnel="yes"/>
       </apply-templates>
-      <call-template name="cs:close-brace"/>
+      <if test="$auto-impl">
+         <text> </text>
+      </if>
+      <call-template name="cs:close-brace">
+         <with-param name="omit-new-line" select="$auto-impl"/>
+      </call-template>
       <if test="code:expression">
          <text> = </text>
          <apply-templates select="code:expression" mode="#current"/>
@@ -784,18 +791,17 @@
       <value-of select="text()"/>
    </template>
 
-   <template match="code:setter" mode="cs:source">
+   <template match="code:setter[code:block]" mode="cs:source">
       <call-template name="cs:line-pragma"/>
       <call-template name="src:new-line-indented"/>
       <text>set</text>
-      <choose>
-         <when test="code:block">
-            <apply-templates select="code:block" mode="#current"/>
-         </when>
-         <otherwise>
-            <value-of select="$cs:statement-delimiter"/>
-         </otherwise>
-      </choose>
+      <apply-templates select="code:block" mode="#current"/>
+   </template>
+
+   <template match="code:setter[not(code:block)]" mode="cs:source">
+      <call-template name="cs:line-pragma"/>
+      <text> set</text>
+      <value-of select="$cs:statement-delimiter"/>
    </template>
 
    <template match="code:setter-value" mode="cs:source">
@@ -1269,7 +1275,11 @@
    </template>
 
    <template name="cs:close-brace">
-      <call-template name="src:new-line-indented"/>
+      <param name="omit-new-line" select="false()" as="xs:boolean"/>
+
+      <if test="not($omit-new-line)">
+         <call-template name="src:new-line-indented"/>
+      </if>
       <text>}</text>
    </template>
 

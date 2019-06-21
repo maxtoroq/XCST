@@ -12,6 +12,6 @@ namespace Xcst {
    partial class AssemblyInfo {
 
       public const string
-      XcstPatch = "1";
+      XcstPatch = "0";
    }
 }
