@@ -112,6 +112,19 @@
       </choice>
    </define>
 
+   <define name="_member-attribs">
+      <zeroOrMore>
+         <choice>
+            <attribute name="visibility">
+               <ref name="_visibility"/>
+            </attribute>
+            <attribute name="verbatim">
+               <ref name="_boolean"/>
+            </attribute>
+         </choice>
+      </zeroOrMore>
+   </define>
+
    <define name="add">
       <element name="add">
          <ref name="_expression"/>
@@ -292,13 +305,7 @@
 
    <define name="constructor">
       <element name="constructor">
-         <zeroOrMore>
-            <choice>
-               <attribute name="visibility">
-                  <ref name="_visibility"/>
-               </attribute>
-            </choice>
-         </zeroOrMore>
+         <ref name="_member-attribs"/>
          <optional>
             <ref name="attributes"/>
          </optional>
@@ -390,6 +397,7 @@
    <define name="field">
       <element name="field">
          <attribute name="name"/>
+         <ref name="_member-attribs"/>
          <zeroOrMore>
             <choice>
                <attribute name="extensibility">
@@ -397,9 +405,6 @@
                </attribute>
                <attribute name="readonly">
                   <ref name="_boolean"/>
-               </attribute>
-               <attribute name="visibility">
-                  <ref name="_visibility"/>
                </attribute>
             </choice>
          </zeroOrMore>
@@ -416,6 +421,11 @@
    <define name="field-reference">
       <element name="field-reference">
          <attribute name="name"/>
+         <optional>
+            <attribute name="verbatim">
+               <ref name="_boolean"/>
+            </attribute>
+         </optional>
          <ref name="_member-binding"/>
       </element>
    </define>
@@ -497,6 +507,16 @@
                </attribute>
             </choice>
          </optional>
+         <zeroOrMore>
+            <choice>
+               <attribute name="verbatim">
+                  <ref name="_boolean"/>
+               </attribute>
+               <attribute name="type-verbatim">
+                  <ref name="_boolean"/>
+               </attribute>
+            </choice>
+         </zeroOrMore>
          <optional>
             <choice>
                <attribute name="namespace"/>
@@ -592,13 +612,14 @@
    <define name="method">
       <element name="method">
          <attribute name="name"/>
+         <ref name="_member-attribs"/>
          <zeroOrMore>
             <choice>
                <attribute name="extensibility">
                   <ref name="_extensibility"/>
                </attribute>
-               <attribute name="visibility">
-                  <ref name="_visibility"/>
+               <attribute name="return-type-verbatim">
+                  <ref name="_boolean"/>
                </attribute>
             </choice>
          </zeroOrMore>
@@ -645,6 +666,11 @@
 
    <define name="_method-reference-model">
       <attribute name="name"/>
+      <optional>
+         <attribute name="verbatim">
+            <ref name="_boolean"/>
+         </attribute>
+      </optional>
       <ref name="_member-binding"/>
       <optional>
          <ref name="type-arguments"/>
@@ -710,11 +736,16 @@
    <define name="parameter">
       <element name="parameter">
          <attribute name="name"/>
-         <optional>
-            <attribute name="params">
-               <ref name="_boolean"/>
-            </attribute>
-         </optional>
+         <zeroOrMore>
+            <choice>
+               <attribute name="params">
+                  <ref name="_boolean"/>
+               </attribute>
+               <attribute name="verbatim">
+                  <ref name="_boolean"/>
+               </attribute>
+            </choice>
+         </zeroOrMore>
          <optional>
             <ref name="type-reference"/>
          </optional>
@@ -735,19 +766,12 @@
    <define name="property">
       <element name="property">
          <attribute name="name"/>
-         <zeroOrMore>
-            <choice>
-               <attribute name="extensibility">
-                  <ref name="_extensibility"/>
-               </attribute>
-               <attribute name="visibility">
-                  <ref name="_visibility"/>
-               </attribute>
-               <attribute name="verbatim">
-                  <ref name="_boolean"/>
-               </attribute>
-            </choice>
-         </zeroOrMore>
+         <ref name="_member-attribs"/>
+         <optional>
+            <attribute name="extensibility">
+               <ref name="_extensibility"/>
+            </attribute>
+         </optional>
          <ref name="type-reference"/>
          <ref name="implements-interface"/>
          <optional>
@@ -882,6 +906,7 @@
    <define name="type">
       <element name="type">
          <attribute name="name"/>
+         <ref name="_member-attribs"/>
          <zeroOrMore>
             <choice>
                <attribute name="extensibility">
@@ -892,9 +917,6 @@
                </attribute>
                <attribute name="struct">
                   <ref name="_boolean"/>
-               </attribute>
-               <attribute name="visibility">
-                  <ref name="_visibility"/>
                </attribute>
             </choice>
          </zeroOrMore>

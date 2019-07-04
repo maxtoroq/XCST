@@ -142,7 +142,7 @@
     <None Include="CallableComponents\CallTemplate\TypeCompatObjectToValueTypeUsedPackage.pxcst" />
     <None Include="CallableComponents\CallTemplate\TypeCompatObjectToValueTypeUsedPackage.c.xcst" />
     <None Include="CallableComponents\CallTemplate\TypeCompatObjectToValueType.c.xcst" />
-    <None Include="CallableComponents\CallTemplate\VerbatimParamName-vb.c.xcst" />
+    <None Include="CallableComponents\CallTemplate\VerbatimParamNameVB.c.xcst" />
     <None Include="CallableComponents\CallTemplate\WithParam\TypeIncompatible.f.xcst" />
     <None Include="CallableComponents\CallTemplate\WithParam\TypeIncompatible.c.xcst" />
     <None Include="CallableComponents\CallTemplate\WithParam\TypeIncompatible.i.xcst" />
@@ -370,6 +370,10 @@
     <None Include="ProgramStructure\Modules\module.foox.c.xcst" />
     <None Include="ProgramStructure\Packages\AcceptingComponents\GenericType.c.xcst" />
     <None Include="ProgramStructure\Packages\AcceptingComponents\GenericType.pxcst" />
+    <None Include="ProgramStructure\Packages\AcceptingComponents\KeywordAsNameVB.c.xcst" />
+    <None Include="ProgramStructure\Packages\AcceptingComponents\KeywordAsNameVB.pxcst" />
+    <None Include="ProgramStructure\Packages\AcceptingComponents\KeywordAsName.c.xcst" />
+    <None Include="ProgramStructure\Packages\AcceptingComponents\KeywordAsName.pxcst" />
     <None Include="ProgramStructure\Packages\Dependencies\use-package.foox.c.xcst" />
     <None Include="ProgramStructure\Packages\OverridingComponents\Function\Original.c.xcst" />
     <None Include="ProgramStructure\Packages\OverridingComponents\Function\Original.pxcst" />

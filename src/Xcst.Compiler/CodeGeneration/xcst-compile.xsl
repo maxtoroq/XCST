@@ -474,7 +474,9 @@
          </if>
       </if>
 
-      <variable name="name" select="xcst:unescape-identifier(xcst:name(@name), $language)"/>
+      <variable name="name-expr" select="xcst:name(@name)"/>
+      <variable name="name" select="xcst:unescape-identifier($name-expr, $language)"/>
+      <variable name="name-was-escaped" select="$name-expr ne $name"/>
 
       <if test="(preceding-sibling::c:*, (
             if (parent::c:override) then ../preceding-sibling::c:override/c:*
@@ -513,6 +515,7 @@
          </if>
          <attribute name="visibility" select="$visibility"/>
          <attribute name="member-name" select="$name"/>
+         <attribute name="member-name-was-escaped" select="$name-was-escaped"/>
          <if test="$overridden-meta">
             <attribute name="overrides" select="generate-id($overridden-meta)"/>
          </if>
@@ -656,7 +659,9 @@
          <with-param name="optional" select="'as', 'visibility'"/>
       </call-template>
 
-      <variable name="name" select="xcst:unescape-identifier(xcst:name(@name), $language)"/>
+      <variable name="name-expr" select="xcst:name(@name)"/>
+      <variable name="name" select="xcst:unescape-identifier($name-expr, $language)"/>
+      <variable name="name-was-escaped" select="$name-expr ne $name"/>
 
       <if test="(preceding-sibling::c:*, (
             if (parent::c:override) then ../preceding-sibling::c:override/c:*
@@ -689,7 +694,7 @@
 
       <variable name="member-name" select="
          if ($visibility eq 'hidden') then 
-            src:aux-variable(concat('fn_', xcst:name(@name), '_', generate-id()))
+            src:aux-variable(concat('fn_', $name, '_', generate-id()))
          else $name"/>
 
       <xcst:function name="{$name}"
@@ -698,6 +703,9 @@
             member-name="{$member-name}"
             declaration-id="{generate-id()}"
             declaring-module-uri="{document-uri(root())}">
+         <if test="$name eq $member-name">
+            <attribute name="member-name-was-escaped" select="$name-was-escaped"/>
+         </if>
          <if test="$overridden-meta">
             <attribute name="overrides" select="generate-id($overridden-meta)"/>
          </if>
@@ -826,7 +834,9 @@
          <with-param name="allowed" select="'metadata', 'member'"/>
       </call-template>
 
-      <variable name="name" select="xcst:unescape-identifier(xcst:name(@name), $language)"/>
+      <variable name="name-expr" select="xcst:name(@name)"/>
+      <variable name="name" select="xcst:unescape-identifier($name-expr, $language)"/>
+      <variable name="name-was-escaped" select="$name-expr ne $name"/>
 
       <if test="preceding-sibling::c:type[xcst:homonymous(., current())]">
          <sequence select="error(xs:QName('err:XTSE0220'), 'Duplicate c:type declaration.', src:error-object(.))"/>
@@ -846,7 +856,12 @@
          <sequence select="error((), 'visibility=''abstract'' is not a valid value for c:type declarations.', src:error-object(.))"/>
       </if>
 
-      <xcst:type name="{$name}" visibility="{$visibility}" member-name="{$name}" declaration-id="{generate-id()}" declaring-module-uri="{document-uri(root())}"/>
+      <xcst:type name="{$name}"
+         visibility="{$visibility}"
+         member-name="{$name}"
+         member-name-was-escaped="{$name-was-escaped}"
+         declaration-id="{generate-id()}"
+         declaring-module-uri="{document-uri(root())}"/>
    </template>
 
    <template name="xcst:overridden-component" as="element()*">
@@ -1427,7 +1442,7 @@
       <variable name="public" select="@visibility ne 'private'"/>
 
       <variable name="used-pkg-field" as="element()">
-         <code:field-reference name="{@member-name}">
+         <code:field-reference name="{@member-name}" verbatim="true">
             <code:field-reference name="{src:used-package-field-name(.)}">
                <code:this-reference/>
             </code:field-reference>
@@ -1436,7 +1451,8 @@
 
       <code:property name="{@member-name}"
             visibility="{('public'[$public], 'private')[1]}"
-            extensibility="{if (@visibility eq 'public') then 'virtual' else '#default'}">
+            extensibility="{if (@visibility eq 'public') then 'virtual' else '#default'}"
+            verbatim="true">
          <sequence select="code:type-reference"/>
          <code:attributes>
             <if test="$public">
@@ -1478,7 +1494,11 @@
 
       <code:method name="{@member-name}"
             visibility="{('public'[$public], 'private')[1]}"
-            extensibility="{if (@visibility eq 'public') then 'virtual' else '#default'}">
+            extensibility="{if (@visibility eq 'public') then 'virtual' else '#default'}"
+            verbatim="true">
+         <if test="code:type-reference">
+            <attribute name="return-type-verbatim" select="true()"/>
+         </if>
          <sequence select="code:type-reference"/>
          <code:attributes>
             <if test="$public">
@@ -1487,20 +1507,20 @@
          </code:attributes>
          <code:parameters>
             <for-each select="xcst:param">
-               <code:parameter name="{@name}">
+               <code:parameter name="{@name}" verbatim="true">
                   <sequence select="code:*"/>
                </code:parameter>
             </for-each>
          </code:parameters>
          <code:block>
             <variable name="method-call" as="element()">
-               <code:method-call name="{@member-name}">
+               <code:method-call name="{@member-name}" verbatim="true">
                   <code:field-reference name="{src:used-package-field-name(.)}">
                      <code:this-reference/>
                   </code:field-reference>
                   <code:arguments>
                      <for-each select="xcst:param">
-                        <code:variable-reference name="{@name}"/>
+                        <code:variable-reference name="{@name}" verbatim="true"/>
                      </for-each>
                   </code:arguments>
                </code:method-call>
@@ -1859,7 +1879,7 @@
    <template match="c:module/node() | c:package/node()" mode="src:import-namespace-extra"/>
 
    <template match="xcst:type" mode="src:import-namespace">
-      <code:import alias="{@name}" line-hidden="true">
+      <code:import alias="{@name}" line-hidden="true" verbatim="true" type-verbatim="true">
          <code:type-reference name="{@name}">
             <sequence select="xcst:package-type/code:type-reference"/>
          </code:type-reference>
@@ -1995,6 +2015,9 @@
       <code:property name="{$meta/@member-name}"
             visibility="{('public'[$public], 'private')[1]}"
             extensibility="{('virtual'[$meta/@visibility eq 'public'], 'abstract'[$meta/@visibility eq 'abstract'], '#default')[1]}">
+         <if test="$meta/@member-name-was-escaped/xs:boolean(.)">
+            <attribute name="verbatim" select="true()"/>
+         </if>
          <call-template name="src:line-number"/>
          <sequence select="$meta/code:type-reference"/>
          <code:attributes>
@@ -2347,6 +2370,9 @@
          <code:method name="{$meta/@member-name}"
                visibility="{('public'[$public], 'private')[1]}"
                extensibility="{('virtual'[$meta/@visibility eq 'public'], 'abstract'[$abstract], '#default')[1]}">
+            <if test="$meta/@member-name-was-escaped/xs:boolean(.)">
+               <attribute name="verbatim" select="true()"/>
+            </if>
             <call-template name="src:line-number"/>
             <sequence select="$meta/code:type-reference"/>
             <code:attributes>
@@ -2507,6 +2533,9 @@
          <code:type name="{$meta/@member-name}"
                visibility="{('public'[$public], 'private')[1]}"
                extensibility="{('sealed'[$meta/@visibility eq 'final'], '#default')[1]}">
+            <if test="$meta/@member-name-was-escaped/xs:boolean(.)">
+               <attribute name="verbatim" select="true()"/>
+            </if>
             <call-template name="src:line-number"/>
             <code:attributes>
                <if test="$public">

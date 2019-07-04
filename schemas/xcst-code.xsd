@@ -40,6 +40,10 @@
       </xs:choice>
    </xs:group>
    <xs:element name="_member-binding" abstract="true"/>
+   <xs:attributeGroup name="_member-attribs">
+      <xs:attribute name="visibility" type="code:_visibility"/>
+      <xs:attribute name="verbatim" type="code:_boolean"/>
+   </xs:attributeGroup>
    <xs:element name="add" substitutionGroup="code:_expression">
       <xs:complexType>
          <xs:sequence>
@@ -193,7 +197,7 @@
             <xs:element minOccurs="0" ref="code:parameters"/>
             <xs:element minOccurs="0" ref="code:block"/>
          </xs:sequence>
-         <xs:attribute name="visibility" type="code:_visibility"/>
+         <xs:attributeGroup ref="code:_member-attribs"/>
       </xs:complexType>
    </xs:element>
    <xs:element name="continue">
@@ -263,9 +267,9 @@
             <xs:element minOccurs="0" ref="code:expression"/>
          </xs:sequence>
          <xs:attribute name="name" use="required"/>
+         <xs:attributeGroup ref="code:_member-attribs"/>
          <xs:attribute name="extensibility" type="code:_extensibility"/>
          <xs:attribute name="readonly" type="code:_boolean"/>
-         <xs:attribute name="visibility" type="code:_visibility"/>
       </xs:complexType>
    </xs:element>
    <xs:element name="field-reference" substitutionGroup="code:_expression">
@@ -274,6 +278,7 @@
             <xs:element ref="code:_member-binding"/>
          </xs:sequence>
          <xs:attribute name="name" use="required"/>
+         <xs:attribute name="verbatim" type="code:_boolean"/>
       </xs:complexType>
    </xs:element>
    <xs:element name="finally">
@@ -347,6 +352,8 @@
          </xs:sequence>
          <xs:attribute name="alias"/>
          <xs:attribute name="static" type="code:_boolean"/>
+         <xs:attribute name="verbatim" type="code:_boolean"/>
+         <xs:attribute name="type-verbatim" type="code:_boolean"/>
          <xs:attribute name="namespace"/>
       </xs:complexType>
    </xs:element>
@@ -436,8 +443,9 @@
             <xs:element minOccurs="0" ref="code:block"/>
          </xs:sequence>
          <xs:attribute name="name" use="required"/>
+         <xs:attributeGroup ref="code:_member-attribs"/>
          <xs:attribute name="extensibility" type="code:_extensibility"/>
-         <xs:attribute name="visibility" type="code:_visibility"/>
+         <xs:attribute name="return-type-verbatim" type="code:_boolean"/>
       </xs:complexType>
    </xs:element>
    <xs:element name="method-call" substitutionGroup="code:_expression">
@@ -450,6 +458,7 @@
             <xs:element minOccurs="0" ref="code:arguments"/>
          </xs:sequence>
          <xs:attribute name="name"/>
+         <xs:attribute name="verbatim" type="code:_boolean"/>
       </xs:complexType>
    </xs:element>
    <xs:element name="method-reference" substitutionGroup="code:_expression">
@@ -466,6 +475,7 @@
    </xs:group>
    <xs:attributeGroup name="_method-reference-model">
       <xs:attribute name="name" use="required"/>
+      <xs:attribute name="verbatim" type="code:_boolean"/>
    </xs:attributeGroup>
    <xs:element name="namespace">
       <xs:complexType>
@@ -521,6 +531,7 @@
          </xs:sequence>
          <xs:attribute name="name" use="required"/>
          <xs:attribute name="params" type="code:_boolean"/>
+         <xs:attribute name="verbatim" type="code:_boolean"/>
       </xs:complexType>
    </xs:element>
    <xs:element name="parameters">
@@ -541,9 +552,8 @@
             <xs:element minOccurs="0" ref="code:expression"/>
          </xs:sequence>
          <xs:attribute name="name" use="required"/>
+         <xs:attributeGroup ref="code:_member-attribs"/>
          <xs:attribute name="extensibility" type="code:_extensibility"/>
-         <xs:attribute name="visibility" type="code:_visibility"/>
-         <xs:attribute name="verbatim" type="code:_boolean"/>
       </xs:complexType>
    </xs:element>
    <xs:element name="property-reference" substitutionGroup="code:_expression">
@@ -623,10 +633,10 @@
             <xs:element minOccurs="0" ref="code:members"/>
          </xs:sequence>
          <xs:attribute name="name" use="required"/>
+         <xs:attributeGroup ref="code:_member-attribs"/>
          <xs:attribute name="extensibility" type="code:_extensibility"/>
          <xs:attribute name="partial" type="code:_boolean"/>
          <xs:attribute name="struct" type="code:_boolean"/>
-         <xs:attribute name="visibility" type="code:_visibility"/>
       </xs:complexType>
    </xs:element>
    <xs:element name="type-arguments">

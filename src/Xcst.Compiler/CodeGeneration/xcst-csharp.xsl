@@ -354,6 +354,7 @@
    <template match="code:field-reference" mode="cs:source">
       <apply-templates select="code:*[1]" mode="#current"/>
       <text>.</text>
+      <call-template name="cs:verbatim"/>
       <value-of select="@name"/>
    </template>
 
@@ -436,6 +437,7 @@
       <text>using </text>
       <if test="@static/xs:boolean(.)">static </if>
       <if test="@alias">
+         <call-template name="cs:verbatim"/>
          <value-of select="@alias"/>
          <text> = </text>
       </if>
@@ -444,7 +446,9 @@
             <value-of select="@namespace"/>
          </when>
          <otherwise>
-            <apply-templates select="code:type-reference" mode="#current"/>
+            <apply-templates select="code:type-reference" mode="#current">
+               <with-param name="verbatim" select="boolean(@type-verbatim/xs:boolean(.))" tunnel="yes"/>
+            </apply-templates>
          </otherwise>
       </choose>
       <value-of select="$cs:statement-delimiter"/>
@@ -541,7 +545,9 @@
       </if>
       <choose>
          <when test="code:type-reference">
-            <apply-templates select="code:type-reference" mode="#current"/>
+            <apply-templates select="code:type-reference" mode="#current">
+               <with-param name="verbatim" select="boolean(@return-type-verbatim/xs:boolean(.))" tunnel="yes"/>
+            </apply-templates>
          </when>
          <otherwise>void</otherwise>
       </choose>
@@ -550,6 +556,7 @@
          <apply-templates select="code:implements-interface/code:type-reference" mode="#current"/>
          <text>.</text>
       </if>
+      <call-template name="cs:verbatim"/>
       <value-of select="@name"/>
       <if test="code:type-parameters">
          <text>&lt;</text>
@@ -596,6 +603,7 @@
    <template name="cs:method-reference" match="code:method-reference" mode="cs:source">
       <apply-templates select="code:*[1]" mode="#current"/>
       <text>.</text>
+      <call-template name="cs:verbatim"/>
       <value-of select="@name"/>
       <if test="code:type-arguments">
          <text>&lt;</text>
@@ -700,6 +708,7 @@
          <apply-templates select="code:type-reference" mode="#current"/>
          <text> </text>
       </if>
+      <call-template name="cs:verbatim"/>
       <value-of select="@name"/>
       <if test="code:*[2]">
          <text> = </text>
@@ -926,6 +935,7 @@
          <when test="@struct/xs:boolean(.)">struct </when>
          <otherwise>class </otherwise>
       </choose>
+      <call-template name="cs:verbatim"/>
       <value-of select="@name"/>
       <if test="code:base-types/code:*">
          <text> : </text>
@@ -960,6 +970,7 @@
 
    <template match="code:type-reference" mode="cs:source">
       <param name="omit-namespace-alias" select="false()"/>
+      <param name="verbatim" select="false()" tunnel="yes"/>
 
       <choose>
          <when test="@array-dimensions">
@@ -976,9 +987,7 @@
          <otherwise>
             <choose>
                <when test="@namespace">
-                  <if test="not($omit-namespace-alias)">
-                     <text>global::</text>
-                  </if>
+                  <if test="not($omit-namespace-alias)">global::</if>
                   <value-of select="@namespace"/>
                   <text>.</text>
                </when>
@@ -989,6 +998,9 @@
                   <text>.</text>
                </when>
             </choose>
+            <call-template name="cs:verbatim">
+               <with-param name="verbatim" select="$verbatim"/>
+            </call-template>
             <value-of select="@name"/>
             <if test="code:type-arguments/code:*">
                <text>&lt;</text>
@@ -1059,6 +1071,7 @@
    </template>
 
    <template match="code:variable-reference" mode="cs:source">
+      <call-template name="cs:verbatim"/>
       <value-of select="@name"/>
    </template>
 
@@ -1255,7 +1268,9 @@
    </function>
 
    <template name="cs:verbatim">
-      <if test="@verbatim/xs:boolean(.)">@</if>
+      <param name="verbatim" as="xs:boolean?"/>
+
+      <if test="$verbatim or (empty($verbatim) and @verbatim/xs:boolean(.))">@</if>
    </template>
 
    <!--

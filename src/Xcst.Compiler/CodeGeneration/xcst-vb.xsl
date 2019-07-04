@@ -436,7 +436,9 @@
       <call-template name="src:new-line-indented"/>
       <text>Imports </text>
       <if test="@alias">
-         <value-of select="@alias"/>
+         <call-template name="vb:escaped-name">
+            <with-param name="name" select="@alias"/>
+         </call-template>
          <text> = </text>
       </if>
       <choose>
@@ -692,7 +694,7 @@
          <when test="@params/xs:boolean(.)">ParamArray </when>
          <when test="code:*[2]">Optional </when>
       </choose>
-      <value-of select="@name"/>
+      <call-template name="vb:escaped-name"/>
       <if test="code:type-reference">
          <text> As </text>
          <apply-templates select="code:type-reference" mode="#current"/>
@@ -1064,7 +1066,7 @@
    </template>
 
    <template match="code:variable-reference" mode="vb:source">
-      <value-of select="@name"/>
+      <call-template name="vb:escaped-name"/>
    </template>
 
    <template match="code:while" mode="vb:statement">
@@ -1221,12 +1223,18 @@
             <value-of select="code:implements-interface/code:type-reference/@name, @name" separator="_"/>
          </when>
          <otherwise>
-            <variable name="escape" select="@verbatim/xs:boolean(.)"/>
-            <if test="$escape">[</if>
-            <value-of select="@name"/>
-            <if test="$escape">]</if>
+            <call-template name="vb:escaped-name"/>
          </otherwise>
       </choose>
+   </template>
+
+   <template name="vb:escaped-name">
+      <param name="name" select="@name"/>
+
+      <variable name="escape" select="@verbatim/xs:boolean(.)"/>
+      <if test="$escape">[</if>
+      <value-of select="$name"/>
+      <if test="$escape">]</if>
    </template>
 
    <template name="vb:visibility">
