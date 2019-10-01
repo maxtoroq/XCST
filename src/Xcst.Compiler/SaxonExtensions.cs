@@ -69,90 +69,75 @@ namespace Xcst.Compiler {
          return (IXdmEnumerator)value.GetEnumerator();
       }
 
-      public static XdmValue
-      ToXdmValue(this string value) {
-         return (value != null) ? (XdmValue)ToXdmItem(value) : XdmEmptySequence.INSTANCE;
-      }
+      // ## ToXdmValue
 
       public static XdmValue
-      ToXdmValue(this Boolean value) {
-         return ToXdmAtomicValue(value);
-      }
+      ToXdmValue(this string value) =>
+         (value != null) ? (XdmValue)ToXdmItem(value) : XdmEmptySequence.INSTANCE;
 
       public static XdmValue
-      ToXdmValue(this Int16 value) {
-         return ToXdmAtomicValue(value);
-      }
+      ToXdmValue(this Boolean value) =>
+         ToXdmAtomicValue(value);
 
       public static XdmValue
-      ToXdmValue(this Int32 value) {
-         return ToXdmAtomicValue(value);
-      }
+      ToXdmValue(this Int16 value) =>
+         ToXdmAtomicValue(value);
 
       public static XdmValue
-      ToXdmValue(this Int64 value) {
-         return ToXdmAtomicValue(value);
-      }
+      ToXdmValue(this Int32 value) =>
+         ToXdmAtomicValue(value);
 
       public static XdmValue
-      ToXdmValue(this Byte value) {
-         return ToXdmAtomicValue(value);
-      }
+      ToXdmValue(this Int64 value) =>
+         ToXdmAtomicValue(value);
 
       public static XdmValue
-      ToXdmValue(this SByte value) {
-         return ToXdmAtomicValue(value);
-      }
+      ToXdmValue(this Byte value) =>
+         ToXdmAtomicValue(value);
 
       public static XdmValue
-      ToXdmValue(this UInt16 value) {
-         return ToXdmAtomicValue(value);
-      }
+      ToXdmValue(this SByte value) =>
+         ToXdmAtomicValue(value);
 
       public static XdmValue
-      ToXdmValue(this UInt32 value) {
-         return ToXdmAtomicValue(value);
-      }
+      ToXdmValue(this UInt16 value) =>
+         ToXdmAtomicValue(value);
 
       public static XdmValue
-      ToXdmValue(this UInt64 value) {
-         return ToXdmAtomicValue(value);
-      }
+      ToXdmValue(this UInt32 value) =>
+         ToXdmAtomicValue(value);
 
       public static XdmValue
-      ToXdmValue(this Single value) {
-         return ToXdmAtomicValue(value);
-      }
+      ToXdmValue(this UInt64 value) =>
+         ToXdmAtomicValue(value);
 
       public static XdmValue
-      ToXdmValue(this Double value) {
-         return ToXdmAtomicValue(value);
-      }
+      ToXdmValue(this Single value) =>
+         ToXdmAtomicValue(value);
 
       public static XdmValue
-      ToXdmValue(this Decimal value) {
-         return ToXdmAtomicValue(value);
-      }
+      ToXdmValue(this Double value) =>
+         ToXdmAtomicValue(value);
 
       public static XdmValue
-      ToXdmValue(this Uri value) {
-         return (value != null) ? (XdmValue)ToXdmItem(value) : XdmEmptySequence.INSTANCE;
-      }
+      ToXdmValue(this Decimal value) =>
+         ToXdmAtomicValue(value);
 
       public static XdmValue
-      ToXdmValue(this XmlQualifiedName value) {
-         return (value != null) ? (XdmValue)ToXdmItem(value) : XdmEmptySequence.INSTANCE;
-      }
+      ToXdmValue(this Uri value) =>
+         (value != null) ? (XdmValue)ToXdmItem(value) : XdmEmptySequence.INSTANCE;
 
       public static XdmValue
-      ToXdmValue(this QualifiedName value) {
-         return (value != null) ? (XdmValue)ToXdmItem(value) : XdmEmptySequence.INSTANCE;
-      }
+      ToXdmValue(this XmlQualifiedName value) =>
+         (value != null) ? (XdmValue)ToXdmItem(value) : XdmEmptySequence.INSTANCE;
 
       public static XdmValue
-      ToXdmValue(this QName value) {
-         return (value != null) ? (XdmValue)ToXdmItem(value) : XdmEmptySequence.INSTANCE;
-      }
+      ToXdmValue(this QualifiedName value) =>
+         (value != null) ? (XdmValue)ToXdmItem(value) : XdmEmptySequence.INSTANCE;
+
+      public static XdmValue
+      ToXdmValue(this QName value) =>
+         (value != null) ? (XdmValue)ToXdmItem(value) : XdmEmptySequence.INSTANCE;
 
       public static XdmValue
       ToXdmValue(this IEnumerable<string> value) {
@@ -165,9 +150,8 @@ namespace Xcst.Compiler {
       }
 
       public static XdmValue
-      ToXdmValue(this IEnumerable<XdmItem> value) {
-         return new XdmValue(value);
-      }
+      ToXdmValue(this IEnumerable<XdmItem> value) =>
+         new XdmValue(value);
 
       public static XdmValue
       ToXdmValue(this IEnumerable value) {
@@ -193,15 +177,12 @@ namespace Xcst.Compiler {
          }
 
          // Must check for string before checking for IEnumerable
-         var str = value as string;
 
-         if (str != null) {
+         if (value is string str) {
             return ToXdmAtomicValue(str);
          }
 
-         var xdmVal = value as XdmValue;
-
-         if (xdmVal != null) {
+         if (value is XdmValue xdmVal) {
             return xdmVal;
          }
 
@@ -216,90 +197,75 @@ namespace Xcst.Compiler {
          return ToXdmItem(value);
       }
 
-      public static XdmItem
-      ToXdmItem(this string value) {
-         return ToXdmAtomicValue(value);
-      }
+      // ## ToXdmItem
 
       public static XdmItem
-      ToXdmItem(this Boolean value) {
-         return ToXdmAtomicValue(value);
-      }
+      ToXdmItem(this string value) =>
+         ToXdmAtomicValue(value);
 
       public static XdmItem
-      ToXdmItem(this Int16 value) {
-         return ToXdmAtomicValue(value);
-      }
+      ToXdmItem(this Boolean value) =>
+         ToXdmAtomicValue(value);
 
       public static XdmItem
-      ToXdmItem(this Int32 value) {
-         return ToXdmAtomicValue(value);
-      }
+      ToXdmItem(this Int16 value) =>
+         ToXdmAtomicValue(value);
 
       public static XdmItem
-      ToXdmItem(this Int64 value) {
-         return ToXdmAtomicValue(value);
-      }
+      ToXdmItem(this Int32 value) =>
+         ToXdmAtomicValue(value);
 
       public static XdmItem
-      ToXdmItem(this Byte value) {
-         return ToXdmAtomicValue(value);
-      }
+      ToXdmItem(this Int64 value) =>
+         ToXdmAtomicValue(value);
 
       public static XdmItem
-      ToXdmItem(this SByte value) {
-         return ToXdmAtomicValue(value);
-      }
+      ToXdmItem(this Byte value) =>
+         ToXdmAtomicValue(value);
 
       public static XdmItem
-      ToXdmItem(this UInt16 value) {
-         return ToXdmAtomicValue(value);
-      }
+      ToXdmItem(this SByte value) =>
+         ToXdmAtomicValue(value);
 
       public static XdmItem
-      ToXdmItem(this UInt32 value) {
-         return ToXdmAtomicValue(value);
-      }
+      ToXdmItem(this UInt16 value) =>
+         ToXdmAtomicValue(value);
 
       public static XdmItem
-      ToXdmItem(this UInt64 value) {
-         return ToXdmAtomicValue(value);
-      }
+      ToXdmItem(this UInt32 value) =>
+         ToXdmAtomicValue(value);
 
       public static XdmItem
-      ToXdmItem(this Single value) {
-         return ToXdmAtomicValue(value);
-      }
+      ToXdmItem(this UInt64 value) =>
+         ToXdmAtomicValue(value);
 
       public static XdmItem
-      ToXdmItem(this Double value) {
-         return ToXdmAtomicValue(value);
-      }
+      ToXdmItem(this Single value) =>
+         ToXdmAtomicValue(value);
 
       public static XdmItem
-      ToXdmItem(this Decimal value) {
-         return ToXdmAtomicValue(value);
-      }
+      ToXdmItem(this Double value) =>
+         ToXdmAtomicValue(value);
 
       public static XdmItem
-      ToXdmItem(this Uri value) {
-         return ToXdmAtomicValue(value);
-      }
+      ToXdmItem(this Decimal value) =>
+         ToXdmAtomicValue(value);
 
       public static XdmItem
-      ToXdmItem(this XmlQualifiedName value) {
-         return ToXdmAtomicValue(value);
-      }
+      ToXdmItem(this Uri value) =>
+         ToXdmAtomicValue(value);
 
       public static XdmItem
-      ToXdmItem(this QualifiedName value) {
-         return ToXdmAtomicValue(value);
-      }
+      ToXdmItem(this XmlQualifiedName value) =>
+         ToXdmAtomicValue(value);
 
       public static XdmItem
-      ToXdmItem(this QName value) {
-         return ToXdmAtomicValue(value);
-      }
+      ToXdmItem(this QualifiedName value) =>
+         ToXdmAtomicValue(value);
+
+      public static XdmItem
+      ToXdmItem(this QName value) =>
+         ToXdmAtomicValue(value);
 
       public static XdmItem
       ToXdmItem(this object value) {
@@ -309,80 +275,67 @@ namespace Xcst.Compiler {
          return ToXdmAtomicValue(value);
       }
 
-      public static XdmAtomicValue
-      ToXdmAtomicValue(this string value) {
-         return new XdmAtomicValue(value);
-      }
+      // ## ToXdmAtomicValue
 
       public static XdmAtomicValue
-      ToXdmAtomicValue(this Boolean value) {
-         return new XdmAtomicValue(value);
-      }
+      ToXdmAtomicValue(this string value) =>
+         new XdmAtomicValue(value);
 
       public static XdmAtomicValue
-      ToXdmAtomicValue(this Int16 value) {
-         return ToXdmAtomicValue((Int64)value);
-      }
+      ToXdmAtomicValue(this Boolean value) =>
+         new XdmAtomicValue(value);
 
       public static XdmAtomicValue
-      ToXdmAtomicValue(this Int32 value) {
-         return ToXdmAtomicValue((Int64)value);
-      }
+      ToXdmAtomicValue(this Int16 value) =>
+         ToXdmAtomicValue((Int64)value);
 
       public static XdmAtomicValue
-      ToXdmAtomicValue(this Int64 value) {
-         return new XdmAtomicValue(value);
-      }
+      ToXdmAtomicValue(this Int32 value) =>
+         ToXdmAtomicValue((Int64)value);
 
       public static XdmAtomicValue
-      ToXdmAtomicValue(this Byte value) {
-         return ToXdmAtomicValue((Int64)value);
-      }
+      ToXdmAtomicValue(this Int64 value) =>
+         new XdmAtomicValue(value);
 
       public static XdmAtomicValue
-      ToXdmAtomicValue(this SByte value) {
-         return ToXdmAtomicValue((Int64)value);
-      }
+      ToXdmAtomicValue(this Byte value) =>
+         ToXdmAtomicValue((Int64)value);
 
       public static XdmAtomicValue
-      ToXdmAtomicValue(this UInt16 value) {
-         return ToXdmAtomicValue((Int64)value);
-      }
+      ToXdmAtomicValue(this SByte value) =>
+         ToXdmAtomicValue((Int64)value);
 
       public static XdmAtomicValue
-      ToXdmAtomicValue(this UInt32 value) {
-         return ToXdmAtomicValue((Int64)value);
-      }
+      ToXdmAtomicValue(this UInt16 value) =>
+         ToXdmAtomicValue((Int64)value);
 
       public static XdmAtomicValue
-      ToXdmAtomicValue(this UInt64 value) {
-         return ToXdmAtomicValue((Int64)value);
-      }
+      ToXdmAtomicValue(this UInt32 value) =>
+         ToXdmAtomicValue((Int64)value);
 
       public static XdmAtomicValue
-      ToXdmAtomicValue(this Single value) {
-         return new XdmAtomicValue(value);
-      }
+      ToXdmAtomicValue(this UInt64 value) =>
+         ToXdmAtomicValue((Int64)value);
 
       public static XdmAtomicValue
-      ToXdmAtomicValue(this Double value) {
-         return new XdmAtomicValue(value);
-      }
+      ToXdmAtomicValue(this Single value) =>
+         new XdmAtomicValue(value);
 
       public static XdmAtomicValue
-      ToXdmAtomicValue(this Decimal value) {
-         return new XdmAtomicValue(value);
-      }
+      ToXdmAtomicValue(this Double value) =>
+         new XdmAtomicValue(value);
 
       public static XdmAtomicValue
-      ToXdmAtomicValue(this Uri value) {
-         return new XdmAtomicValue(value);
-      }
+      ToXdmAtomicValue(this Decimal value) =>
+         new XdmAtomicValue(value);
 
       public static XdmAtomicValue
-      ToXdmAtomicValue(this XmlQualifiedName value) {
-         return ToXdmAtomicValue(new QName(value));
-      }
+      ToXdmAtomicValue(this Uri value) =>
+         new XdmAtomicValue(value);
+
+      public static XdmAtomicValue
+      ToXdmAtomicValue(this XmlQualifiedName value) =>
+         ToXdmAtomicValue(new QName(value));
 
       public static XdmAtomicValue
       ToXdmAtomicValue(this QualifiedName value) {
@@ -393,9 +346,8 @@ namespace Xcst.Compiler {
       }
 
       public static XdmAtomicValue
-      ToXdmAtomicValue(this QName value) {
-         return new XdmAtomicValue(value);
-      }
+      ToXdmAtomicValue(this QName value) =>
+         new XdmAtomicValue(value);
 
       public static XdmAtomicValue
       ToXdmAtomicValue(this object value) {
@@ -482,18 +434,18 @@ namespace Xcst.Compiler {
          throw new ArgumentException($"{nameof(value)} of type {type.FullName} is not supported.", nameof(value));
       }
 
+      // Other
+
       public static XdmValue
       FirstElementOrSelf(this XdmValue value) {
 
          if (value == null) throw new ArgumentNullException(nameof(value));
 
-         var node = value as XdmNode;
-
-         if (node == null) {
-            return value;
+         if (value is XdmNode node) {
+            return FirstElementOrSelf(node);
          }
 
-         return FirstElementOrSelf(node);
+         return value;
       }
 
       public static XdmNode
@@ -505,28 +457,26 @@ namespace Xcst.Compiler {
             return value;
          }
 
-         return ((IXdmEnumerator)value.EnumerateAxis(XdmAxis.Child)).AsNodes().SingleOrDefault(n => n.NodeKind == XmlNodeType.Element)
+         return ((IXdmEnumerator)value.EnumerateAxis(XdmAxis.Child))
+            .AsNodes()
+            .SingleOrDefault(n => n.NodeKind == XmlNodeType.Element)
             ?? value;
       }
 
       public static XdmValue
-      GetErrorObject(this DynamicError error) {
-         return XdmValue.Wrap(error.UnderlyingException.getErrorObject());
-      }
+      GetErrorObject(this DynamicError error) =>
+         XdmValue.Wrap(error.UnderlyingException.getErrorObject());
 
       public static int
-      GetLineNumber(this XdmNode value) {
-         return value.Implementation.getLineNumber();
-      }
+      GetLineNumber(this XdmNode value) =>
+         value.Implementation.getLineNumber();
 
       public static QualifiedName
-      ToQualifiedName(this QName value) {
-         return new QualifiedName(value.LocalName, value.Uri);
-      }
+      ToQualifiedName(this QName value) =>
+         new QualifiedName(value.LocalName, value.Uri);
 
       public static QName
-      ToQName(this QualifiedName value) {
-         return new QName(value.Namespace, value.Name);
-      }
+      ToQName(this QualifiedName value) =>
+         new QName(value.Namespace, value.Name);
    }
 }

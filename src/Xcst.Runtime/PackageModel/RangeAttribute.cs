@@ -122,7 +122,7 @@ namespace Xcst.PackageModel {
          IComparable min = (IComparable)converter.ConvertFromString(null, MinMaxFormatCulture, minimum);
          IComparable max = (IComparable)converter.ConvertFromString(null, MinMaxFormatCulture, maximum);
 
-         Func<object, object> conversion = value =>
+         object conversion(object value) =>
             (value != null && value.GetType() == type) ? value
             : converter.ConvertFrom(value); // uses current culture
 

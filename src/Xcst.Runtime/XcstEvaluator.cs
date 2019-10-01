@@ -44,13 +44,11 @@ namespace Xcst {
 
          if (package == null) throw new ArgumentNullException(nameof(package));
 
-         var pkg = package as IXcstPackage;
-
-         if (pkg == null) {
-            throw new ArgumentException("Provided instance is not a valid XCST package.", nameof(package));
+         if (package is IXcstPackage pkg) {
+            return new XcstEvaluator(pkg);
          }
 
-         return new XcstEvaluator(pkg);
+         throw new ArgumentException("Provided instance is not a valid XCST package.", nameof(package));
       }
 
       private

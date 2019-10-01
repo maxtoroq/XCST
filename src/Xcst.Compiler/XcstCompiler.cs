@@ -344,9 +344,7 @@ namespace Xcst.Compiler {
 
          // See <https://saxonica.plan.io/issues/3359>
 
-         var objValue = obj as net.sf.saxon.value.ObjectValue;
-
-         if (objValue != null) {
+         if (obj is net.sf.saxon.value.ObjectValue objValue) {
             obj = objValue.getObject();
          }
 

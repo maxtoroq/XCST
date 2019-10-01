@@ -95,9 +95,7 @@ namespace Xcst.Runtime {
             return null;
          }
 
-         var jsonWriter = mapWriter as JsonMapWriter;
-
-         if (jsonWriter != null) {
+         if (mapWriter is JsonMapWriter jsonWriter) {
             return jsonWriter;
          }
 
@@ -239,9 +237,7 @@ namespace Xcst.Runtime {
       public override bool
       TryCopyOf(object value) {
 
-         JToken jt = value as JToken;
-
-         if (jt != null) {
+         if (value is JToken jt) {
             CopyOf(jt);
             return true;
          }

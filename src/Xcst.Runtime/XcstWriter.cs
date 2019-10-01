@@ -322,51 +322,37 @@ namespace Xcst {
       public virtual bool
       TryCopyOf(object value) {
 
-         XNode xNode = value as XNode;
-
-         if (xNode != null) {
+         if (value is XNode xNode) {
             CopyOf(xNode);
             return true;
          }
 
-         XmlNode xmlNode = value as XmlNode;
-
-         if (xmlNode != null) {
+         if (value is XmlNode xmlNode) {
             CopyOf(xmlNode);
             return true;
          }
 
-         IXPathNavigable xpathNav = value as IXPathNavigable;
-
-         if (xpathNav != null) {
+         if (value is IXPathNavigable xpathNav) {
             CopyOf(xpathNav);
             return true;
          }
 
-         IXmlSerializable xmlSer = value as IXmlSerializable;
-
-         if (xmlSer != null) {
+         if (value is IXmlSerializable xmlSer) {
             CopyOf(xmlSer);
             return true;
          }
 
-         XmlReader reader = value as XmlReader;
-
-         if (reader != null) {
+         if (value is XmlReader reader) {
             CopyOf(reader);
             return true;
          }
 
-         JObject jObj = value as JObject;
-
-         if (jObj != null) {
+         if (value is JObject jObj) {
             CopyOf(jObj);
             return true;
          }
 
-         JArray jArr = value as JArray;
-
-         if (jArr != null) {
+         if (value is JArray jArr) {
             CopyOf(jArr);
             return true;
          }

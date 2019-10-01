@@ -161,9 +161,7 @@ namespace Xcst.Runtime {
 
          if (output == null) throw new ArgumentNullException(nameof(output));
 
-         var derivedWriter = output as ISequenceWriter<TDerived>;
-
-         if (derivedWriter != null) {
+         if (output is ISequenceWriter<TDerived> derivedWriter) {
             return derivedWriter;
          }
 

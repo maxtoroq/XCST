@@ -121,10 +121,9 @@ namespace Xcst.Runtime {
             return null;
          }
 
-         IEnumerable seq = value as IEnumerable;
          Type type;
 
-         if (seq != null
+         if (value is IEnumerable seq
             && ((type = value.GetType()).IsArray
                || (!checkToString || !HasCustomToString(type)))) {
 

@@ -95,9 +95,7 @@ namespace Xcst.Compiler {
 
                   if (xsltCompiler.ErrorList.Count > 0) {
 
-                     StaticError error = xsltCompiler.ErrorList[0] as StaticError;
-
-                     if (error != null) {
+                     if (xsltCompiler.ErrorList[0] is StaticError error) {
                         message = $"{error.Message}{Environment.NewLine}Module URI: {error.ModuleUri}{Environment.NewLine}Line Number: {error.LineNumber}";
                      } else {
                         message = xsltCompiler.ErrorList[0].ToString();

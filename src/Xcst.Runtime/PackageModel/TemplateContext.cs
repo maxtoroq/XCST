@@ -46,9 +46,8 @@ namespace Xcst.PackageModel {
       }
 
       public static TemplateContext<TParams>
-      CreateTyped<TParams>(TParams parameters, int tunnelCount, TemplateContext currentContext = null) {
-         return new TemplateContext<TParams>(parameters, tunnelCount, currentContext);
-      }
+      CreateTyped<TParams>(TParams parameters, int tunnelCount, TemplateContext currentContext = null) =>
+         new TemplateContext<TParams>(parameters, tunnelCount, currentContext);
 
       public
       TemplateContext(int tmplCount, int tunnelCount, TemplateContext/*?*/ currentContext) {

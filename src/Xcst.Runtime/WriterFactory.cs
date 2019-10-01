@@ -29,29 +29,24 @@ namespace Xcst {
       AbsentOutputUri = new Uri("", UriKind.Relative);
 
       public static CreateWriterDelegate
-      CreateWriter(Stream output, Uri/*?*/ outputUri) {
-         return CreateWriter(p => CreateXmlWriter(output, p), outputUri);
-      }
+      CreateWriter(Stream output, Uri/*?*/ outputUri) =>
+         CreateWriter(p => CreateXmlWriter(output, p), outputUri);
 
       public static CreateWriterDelegate
-      CreateWriter(TextWriter output, Uri/*?*/ outputUri) {
-         return CreateWriter(p => CreateXmlWriter(output, p), outputUri);
-      }
+      CreateWriter(TextWriter output, Uri/*?*/ outputUri) =>
+         CreateWriter(p => CreateXmlWriter(output, p), outputUri);
 
       public static CreateWriterDelegate
-      CreateWriter(StringBuilder output) {
-         return CreateWriter(p => CreateXmlWriter(output, p), null);
-      }
+      CreateWriter(StringBuilder output) =>
+         CreateWriter(p => CreateXmlWriter(output, p), null);
 
       public static CreateWriterDelegate
-      CreateWriter(Uri file) {
-         return CreateWriter(p => CreateXmlWriter(file, p), file, dispose: true);
-      }
+      CreateWriter(Uri file) =>
+         CreateWriter(p => CreateXmlWriter(file, p), file, dispose: true);
 
       public static CreateWriterDelegate
-      CreateWriter(XmlWriter output, Uri/*?*/ outputUri) {
-         return CreateWriter(p => output, outputUri);
-      }
+      CreateWriter(XmlWriter output, Uri/*?*/ outputUri) =>
+         CreateWriter(p => output, outputUri);
 
       public static CreateWriterDelegate
       CreateWriter(XcstWriter output) {

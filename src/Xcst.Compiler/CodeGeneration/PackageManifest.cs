@@ -84,9 +84,7 @@ namespace Xcst.Compiler.CodeGeneration {
 
                writer.WriteEndElement();
 
-            } else if (attr is XcstParameterAttribute) {
-
-               XcstParameterAttribute paramAttr = (XcstParameterAttribute)attr;
+            } else if (attr is XcstParameterAttribute paramAttr) {
 
                writer.WriteStartElement(prefix, "param", ns);
                writer.WriteAttributeString("name", attr.Name ?? member.Name);
@@ -96,15 +94,12 @@ namespace Xcst.Compiler.CodeGeneration {
                WriteTypeReference(((PropertyInfo)member).PropertyType, writer);
                writer.WriteEndElement();
 
-            } else if (attr is XcstTemplateAttribute) {
+            } else if (attr is XcstTemplateAttribute tmplAttr) {
 
                writer.WriteStartElement(prefix, "template", ns);
                writer.WriteAttributeString("name", attr.Name);
                writer.WriteAttributeString("visibility", memberVisibility(member));
                writer.WriteAttributeString("member-name", member.Name);
-
-               XcstTemplateAttribute tmplAttr = (XcstTemplateAttribute)attr;
-
                writer.WriteAttributeString("cardinality", tmplAttr.Cardinality.ToString());
 
                foreach (var param in member.GetCustomAttributes<XcstTemplateParameterAttribute>(inherit: true)) {

@@ -78,17 +78,14 @@ namespace Xcst.Runtime {
          }
 
          var parent = Peek<object>();
-         var parentArr = parent as ExpandoArray;
 
-         if (parentArr != null) {
+         if (parent is ExpandoArray parentArr) {
             parentArr.Add(map);
             Push(map);
             return;
          }
 
-         var entry = parent as ExpandoEntry;
-
-         if (entry != null) {
+         if (parent is ExpandoEntry entry) {
             SetEntryValue(entry, map);
             Push(map);
             return;
@@ -149,9 +146,8 @@ namespace Xcst.Runtime {
          } else {
 
             var parent = Peek<object>();
-            var entry = parent as ExpandoEntry;
 
-            if (entry != null) {
+            if (parent is ExpandoEntry entry) {
 
                SetEntryValue(entry, items);
 
@@ -185,9 +181,7 @@ namespace Xcst.Runtime {
 
          var parent = Peek<object>();
 
-         var entry = parent as ExpandoEntry;
-
-         if (entry != null) {
+         if (parent is ExpandoEntry entry) {
 
             var map = Peek<IExpandoMap>(1);
 
@@ -222,16 +216,12 @@ namespace Xcst.Runtime {
 
          var parent = Peek<object>();
 
-         var arr = parent as ExpandoArray;
-
-         if (arr != null) {
+         if (parent is ExpandoArray arr) {
             arr.Add(value);
             return;
          }
 
-         var entry = parent as ExpandoEntry;
-
-         if (entry != null) {
+         if (parent is ExpandoEntry entry) {
             SetEntryValue(entry, value);
             return;
          }

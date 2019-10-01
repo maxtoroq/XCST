@@ -92,9 +92,7 @@ namespace Xcst.Runtime {
       public static void
       Dispose(IEnumerator iter) {
 
-         IDisposable disp = iter as IDisposable;
-
-         if (disp != null) {
+         if (iter is IDisposable disp) {
             disp.Dispose();
          }
       }
