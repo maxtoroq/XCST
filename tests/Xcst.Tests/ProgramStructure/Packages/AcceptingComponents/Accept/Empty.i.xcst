@@ -2,7 +2,11 @@
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
    <c:use-package name='Grammar'>
-      <a/>
+      <c:accept component='function' names=''/>
    </c:use-package>
+
+   <c:template name='tmpl'>
+      <c:void value='foo()'/>
+   </c:template>
 
 </c:module>

@@ -140,51 +140,19 @@
       </variable>
 
       <variable name="modules" select="$modules-and-uris[. instance of node()]" as="element()+"/>
-      <variable name="refs" select="$modules-and-uris[not(. instance of node())], $modules//c:script[@src]/resolve-uri(@src, base-uri())"/>
+      <variable name="refs" select="
+         $modules-and-uris[not(. instance of node())],
+         $modules//c:script[@src]/resolve-uri(@src, base-uri())"/>
+
       <variable name="implicit-package" select="self::c:module"/>
 
       <variable name="used-packages" as="element()*">
          <for-each-group select="for $m in $modules return $m/c:use-package" group-by="src:resolve-package-name(., $ns)">
-            <variable name="used-package-name" select="current-grouping-key()"/>
-            <variable name="manifest" as="element()">
-               <variable name="man" select="src:package-manifest(
-                  $used-package-name,
-                  $src:package-type-resolver,
-                  src:error-object(.))"/>
-               <choose>
-                  <when test="$man">
-                     <sequence select="$man/xcst:package-manifest"/>
-                  </when>
-                  <otherwise>
-                     <variable name="used-package-uri" select="src:package-location(
-                        $used-package-name,
-                        $src:package-location-resolver,
-                        $package-uri,
-                        $src:packages-location,
-                        $src:package-file-extension)"/>
-                     <if test="not($used-package-uri)">
-                        <sequence select="error(xs:QName('err:XTSE3000'), concat('Cannot find package ''', $used-package-name, '''.'), src:error-object(.))"/>
-                     </if>
-                     <variable name="result">
-                        <apply-templates select="doc(string($used-package-uri))/c:package" mode="src:main">
-                           <with-param name="namespace" select="()"/>
-                           <with-param name="class" select="()"/>
-                           <with-param name="named-package" select="true()"/>
-                           <with-param name="manifest-only" select="true()"/>
-                        </apply-templates>
-                     </variable>
-                     <if test="not(xcst:language-equal($result/*/@language, $language))">
-                        <sequence select="error((), 'Used packages that are not pre-compiled must use the same value for the ''language'' attribute as the top-level package.', src:error-object(.))"/>
-                     </if>
-                     <sequence select="$result/*/xcst:package-manifest"/>
-                  </otherwise>
-               </choose>
-            </variable>
-            <xcst:package-manifest package-id="{generate-id($manifest)}">
-               <sequence select="$manifest/@*"/>
-               <sequence select="$manifest/code:type-reference"/>
-               <sequence select="$manifest/xcst:*[@visibility ne 'hidden']"/>
-            </xcst:package-manifest>
+            <call-template name="src:used-package-manifest">
+               <with-param name="used-package-name" select="current-grouping-key()"/>
+               <with-param name="using-package-uri" select="$package-uri"/>
+               <with-param name="language" select="$language"/>
+            </call-template>
          </for-each-group>
       </variable>
 
@@ -303,16 +271,6 @@
       <sequence select="$result[position() gt 1]"/>
    </template>
 
-   <function name="src:resolve-package-name" as="xs:string">
-      <param name="use-package" as="element(c:use-package)"/>
-      <param name="namespace" as="xs:string"/>
-
-      <variable name="name" select="xcst:name($use-package/@name)"/>
-      <sequence select="
-         if (contains($name, '.')) then $name
-         else concat(($src:use-package-base, $namespace)[1], '.', $name)"/>
-   </function>
-
    <template name="xcst:check-document-element-attributes">
 
       <variable name="required" select="'version', 'language'"/>
@@ -359,7 +317,40 @@
       <sequence select="upper-case($strings[1]) eq upper-case($strings[2])"/>
    </function>
 
-   <template match="c:attribute-set | c:function | c:import | c:output | c:param | c:template | c:type | c:import-namespace | c:use-package | c:variable" mode="xcst:check-top-level"/>
+   <template match="c:attribute-set | c:function | c:import | c:output | c:param | c:template | c:type | c:import-namespace | c:variable" mode="xcst:check-top-level"/>
+
+   <template match="c:use-package" mode="xcst:check-top-level">
+      <call-template name="xcst:validate-attribs">
+         <with-param name="required" select="'name'"/>
+      </call-template>
+      <call-template name="xcst:validate-children">
+         <with-param name="allowed" select="'accept', 'override'"/>
+      </call-template>
+      <if test="preceding-sibling::c:use-package[xcst:name-equal(@name, current()/@name)]">
+         <sequence select="error((), 'Duplicate c:use-package declaration.', src:error-object(.))"/>
+      </if>
+      <apply-templates select="c:accept | c:override" mode="#current"/>
+   </template>
+
+   <template match="c:use-package/c:accept" mode="xcst:check-top-level">
+      <call-template name="xcst:validate-attribs">
+         <with-param name="required" select="'component', 'names'"/>
+      </call-template>
+      <call-template name="xcst:no-children"/>
+      <variable name="component-choice" select="'attribute-set', 'function', 'template', 'type', 'variable'"/>
+      <variable name="component-attr" select="@component"/>
+      <variable name="component" select="xcst:non-string($component-attr)"/>
+      <if test="not($component = $component-choice)">
+         <sequence select="error(xs:QName('err:XTSE0020'), concat('Invalid value for ''', name($component-attr), '''. Must be one of (', string-join($component-choice, '|'), ').'), src:error-object(.))"/>
+      </if>
+   </template>
+
+   <template match="c:use-package/c:override" mode="xcst:check-top-level">
+      <call-template name="xcst:validate-attribs"/>
+      <call-template name="xcst:validate-children">
+         <with-param name="allowed" select="'template', 'function', 'attribute-set', 'param', 'variable'"/>
+      </call-template>
+   </template>
 
    <template match="c:validation" mode="xcst:check-top-level">
       <call-template name="xcst:validate-attribs">
@@ -383,6 +374,144 @@
    <template match="text()" mode="xcst:check-top-level">
       <sequence select="error(xs:QName('err:XTSE0120'), 'No character data is allowed between top-level elements.', src:error-object(.))"/>
    </template>
+
+   <template name="src:used-package-manifest" as="element(xcst:package-manifest)">
+      <param name="used-package-name" as="xs:string" required="yes"/>
+      <param name="using-package-uri" as="xs:anyURI" required="yes"/>
+      <param name="language" as="xs:string" required="yes"/>
+
+      <variable name="manifest" as="element()">
+         <variable name="man" select="src:package-manifest(
+            $used-package-name,
+            $src:package-type-resolver,
+            src:error-object(.))"/>
+         <choose>
+            <when test="$man">
+               <sequence select="$man/xcst:package-manifest"/>
+            </when>
+            <otherwise>
+               <variable name="used-package-uri" select="src:package-location(
+                  $used-package-name,
+                  $src:package-location-resolver,
+                  $using-package-uri,
+                  $src:packages-location,
+                  $src:package-file-extension)"/>
+               <if test="not($used-package-uri)">
+                  <sequence select="error(xs:QName('err:XTSE3000'), concat('Cannot find package ''', $used-package-name, '''.'), src:error-object(.))"/>
+               </if>
+               <variable name="result">
+                  <apply-templates select="doc(string($used-package-uri))/c:package" mode="src:main">
+                     <with-param name="namespace" select="()"/>
+                     <with-param name="class" select="()"/>
+                     <with-param name="named-package" select="true()"/>
+                     <with-param name="manifest-only" select="true()"/>
+                  </apply-templates>
+               </variable>
+               <if test="not(xcst:language-equal($result/*/@language, $language))">
+                  <sequence select="error((), 'Used packages that are not pre-compiled must use the same value for the ''language'' attribute as the top-level package.', src:error-object(.))"/>
+               </if>
+               <sequence select="$result/*/xcst:package-manifest"/>
+            </otherwise>
+         </choose>
+      </variable>
+
+      <variable name="components" select="$manifest/xcst:*"/>
+      <variable name="use-pkgs" select="current-group()" as="element(c:use-package)+"/>
+
+      <for-each select="$use-pkgs/c:accept">
+         <variable name="accept-component" select="xcst:non-string(@component)"/>
+         <variable name="qname" select="$accept-component = ('template', 'attribute-set')"/>
+         <variable name="names" select="xcst:accept-names(.)"/>
+         <variable name="accept" select="."/>
+         <if test="not(empty($names) or xcst:accept-names-is-wildcard($names))">
+            <for-each select="$names">
+               <variable name="name" select="."/>
+               <variable name="matches" select="$components[
+                  local-name() eq $accept-component
+                  and $name eq @name/(if ($qname) then xcst:EQName(.) else .)]"/>
+               <choose>
+                  <when test="empty($matches)">
+                     <sequence select="error(xs:QName('err:XTSE3030'), concat('No ', $accept-component, ' ', $name, ' exists in the used package.'), src:error-object($accept))"/>
+                  </when>
+                  <when test="count($matches) eq 1">
+                     <variable name="match" select="$matches"/>
+                     <if test="$match/@visibility eq 'abstract'">
+                        <sequence select="error(xs:QName('err:XTSE3040'), concat('Cannot match abstract component ''', $name, ''', it must be overridden.'), src:error-object($accept))"/>
+                     </if>
+                  </when>
+               </choose>
+            </for-each>
+         </if>
+      </for-each>
+
+      <variable name="accept-all" select="boolean($use-pkgs[not(c:accept)])"/>
+
+      <variable name="merged-accepts" as="element()*">
+         <if test="not($accept-all)">
+            <for-each-group select="$use-pkgs/c:accept" group-by="xcst:non-string(@component)">
+               <variable name="names" select="distinct-values(current-group()/xcst:accept-names(.))"/>
+               <src:accept component="{current-grouping-key()}">
+                  <attribute name="names" select="
+                     if (some $n in $names satisfies string($n) eq '*') then '*'
+                     else string-join(
+                        for $n in $names
+                        return if ($n instance of xs:QName) then
+                           xcst:uri-qualified-name($n)
+                           else $n, ' ')"/>
+               </src:accept>
+            </for-each-group>
+         </if>
+      </variable>
+
+      <xcst:package-manifest package-id="{generate-id($manifest)}">
+         <sequence select="$manifest/@*"/>
+         <sequence select="$manifest/code:type-reference"/>
+         <for-each select="$components[@visibility ne 'hidden']">
+            <choose>
+               <when test="$accept-all">
+                  <sequence select="."/>
+               </when>
+               <otherwise>
+                  <variable name="accept-component" select="local-name()"/>
+                  <variable name="qname" select="$accept-component = ('template', 'attribute-set')"/>
+                  <variable name="name" select="@name/(if ($qname) then xcst:EQName(.) else string())"/>
+                  <variable name="accept" select="$merged-accepts[@component eq $accept-component]"/>
+                  <sequence select=".[$accept/(@names eq '*' or $name = xcst:accept-names(.))]"/>
+               </otherwise>
+            </choose>
+         </for-each>
+      </xcst:package-manifest>
+   </template>
+
+   <function name="xcst:accept-names" as="xs:anyAtomicType*">
+      <param name="accept" as="element()"/>
+
+      <variable name="component" select="xcst:non-string($accept/@component)"/>
+      <variable name="qname" select="$component = ('template', 'attribute-set')"/>
+      <sequence select="$accept/@names/(
+         for $n in xcst:list(.)
+         return if ($qname and $n ne '*') then xcst:EQName(., $n) else $n)"/>
+   </function>
+
+   <function name="xcst:accept-names-is-wildcard" as="xs:boolean">
+      <param name="names" as="xs:anyAtomicType*"/>
+
+      <sequence select="
+         if (count($names) eq 1 and $names[1] instance of xs:string) then
+            $names[1] eq '*'
+         else
+            false()"/>
+   </function>
+
+   <function name="src:resolve-package-name" as="xs:string">
+      <param name="use-package" as="element(c:use-package)"/>
+      <param name="namespace" as="xs:string"/>
+
+      <variable name="name" select="xcst:name($use-package/@name)"/>
+      <sequence select="
+         if (contains($name, '.')) then $name
+         else concat(($src:use-package-base, $namespace)[1], '.', $name)"/>
+   </function>
 
    <function name="src:package-manifest" as="document-node()?">
       <param name="p1" as="xs:string"/>
@@ -429,24 +558,7 @@
    <template match="c:*" mode="xcst:package-manifest"/>
 
    <template match="c:use-package" mode="xcst:package-manifest">
-      <call-template name="xcst:validate-attribs">
-         <with-param name="required" select="'name'"/>
-      </call-template>
-      <call-template name="xcst:validate-children">
-         <with-param name="allowed" select="'override'"/>
-      </call-template>
-      <if test="preceding-sibling::c:use-package[xcst:name-equal(@name, current()/@name)]">
-         <sequence select="error((), 'Duplicate c:use-package declaration.', src:error-object(.))"/>
-      </if>
-      <apply-templates select="c:override" mode="#current"/>
-   </template>
-
-   <template match="c:use-package/c:override" mode="xcst:package-manifest">
-      <call-template name="xcst:validate-attribs"/>
-      <call-template name="xcst:validate-children">
-         <with-param name="allowed" select="'template', 'function', 'attribute-set', 'param', 'variable'"/>
-      </call-template>
-      <apply-templates select="c:*" mode="#current"/>
+      <apply-templates select="c:override/c:*" mode="#current"/>
    </template>
 
    <template match="c:param | c:variable" mode="xcst:package-manifest">
@@ -454,18 +566,20 @@
       <param name="module-pos" tunnel="yes"/>
       <param name="language" tunnel="yes"/>
 
+      <variable name="param" select="boolean(self::c:param)"/>
+
       <call-template name="xcst:validate-attribs">
          <with-param name="required" select="'name'"/>
-         <with-param name="optional" select="'value', 'as', ('required', 'tunnel')[current()/self::c:param], 'visibility'[current()/self::c:variable]"/>
+         <with-param name="optional" select="'value', 'as', ('required', 'tunnel')[$param], 'visibility'[current()/self::c:variable]"/>
       </call-template>
 
       <call-template name="xcst:value-or-sequence-constructor"/>
 
       <variable name="text" select="xcst:text(.)"/>
       <variable name="has-default-value" select="xcst:has-value(., $text)"/>
-      <variable name="required" select="self::c:param/(@required/xcst:boolean(.), false())[1]"/>
+      <variable name="required" select=".[$param]/(@required/xcst:boolean(.), false())[1]"/>
 
-      <if test="self::c:param">
+      <if test="$param">
          <if test="@tunnel/xcst:boolean(.)">
             <sequence select="error(xs:QName('err:XTSE0020'), 'For attribute ''tunnel'' within a global parameter, the only permitted values are: ''no'', ''false'', ''0''.', src:error-object(.))"/>
          </if>
@@ -494,7 +608,7 @@
          <call-template name="xcst:overridden-component"/>
       </variable>
 
-      <variable name="declared-visibility" select="('public'[current()/self::c:param], @visibility/xcst:visibility(.), 'private')[1]"/>
+      <variable name="declared-visibility" select="('public'[$param], @visibility/xcst:visibility(.), 'private')[1]"/>
 
       <variable name="visibility" select="
          if (parent::c:override) then
@@ -510,7 +624,7 @@
       <element name="xcst:{local-name()}">
          <attribute name="name" select="$name"/>
          <attribute name="has-default-value" select="$has-default-value"/>
-         <if test="self::c:param">
+         <if test="$param">
             <attribute name="required" select="$required"/>
          </if>
          <attribute name="visibility" select="$visibility"/>
@@ -879,6 +993,18 @@
          <if test="$meta[@visibility eq 'final']">
             <sequence select="error(xs:QName('err:XTSE3060'), 'Cannot override a component with final visibility.', src:error-object(.))"/>
          </if>
+         <variable name="declaration" select="."/>
+         <variable name="component" select="if (self::c:param) then 'variable' else local-name()"/>
+         <variable name="qname" select="$component = ('template', 'attribute-set')"/>
+         <for-each select="../../c:accept[@component/xcst:non-string(.) eq $component]">
+            <variable name="names" select="xcst:accept-names(.)"/>
+            <if test="not(empty($names) or xcst:accept-names-is-wildcard($names))">
+               <variable name="matches" select="$names[. eq (if ($qname) then $declaration/xcst:EQName(@name) else .)]"/>
+               <if test="exists($matches)">
+                  <sequence select="error(xs:QName('err:XTSE3051'), 'An c:accept specifies a name that matches an overriding component within the same c:use-package element.', src:error-object($declaration))"/>
+               </if>
+            </if>
+         </for-each>
          <sequence select="$meta"/>
       </if>
    </template>
@@ -895,13 +1021,16 @@
       <param name="modules" tunnel="yes"/>
       <param name="local-components" tunnel="yes"/>
 
+      <variable name="overriding" select="$local-components[@overrides eq current()/generate-id()]"/>
+
       <variable name="visibility" select="
-         if ($local-components[@overrides eq current()/generate-id()]) then 'hidden'
+         if ($overriding) then 'hidden'
          else if (self::xcst:param) then 'public'
          else 'private'"/>
 
       <variable name="local-duplicate" select="
-         if ($visibility ne 'hidden') then ($local-components[xcst:homonymous(., current())])[1]
+         if ($visibility ne 'hidden') then
+            ($local-components[xcst:homonymous(., current())])[1]
          else ()"/>
 
       <variable name="package-type" select="../code:type-reference"/>
@@ -991,20 +1120,20 @@
                and xcst:name-equal($a/@name, $b/@name)"/>
          </when>
          <when test="local-name($a) eq 'template'">
-            <sequence select="local-name($b) eq 'template'
+            <sequence select="local-name($b) eq local-name($a)
                and $a/xcst:EQName(@name) eq $b/xcst:EQName(@name)"/>
          </when>
          <when test="local-name($a) eq 'function'">
-            <sequence select="local-name($b) eq 'function'
+            <sequence select="local-name($b) eq local-name($a)
                and xcst:name-equal($a/@name, $b/@name)
                and $a/count(*:param) eq $b/count(*:param)"/>
          </when>
          <when test="local-name($a) eq 'attribute-set'">
-            <sequence select="local-name($b) eq 'attribute-set'
+            <sequence select="local-name($b) eq local-name($a)
                and $a/xcst:EQName(@name) eq $b/xcst:EQName(@name)"/>
          </when>
          <when test="local-name($a) eq 'type'">
-            <sequence select="local-name($b) eq 'type'
+            <sequence select="local-name($b) eq local-name($a)
                and xcst:name-equal($a/@name, $b/@name)"/>
          </when>
          <otherwise>
@@ -3253,7 +3382,7 @@
                               or self::attribute(suppress-indentation)">
                            <sequence select="distinct-values(
                               for $p in current-group()
-                              return for $s in tokenize($p, '\s')[.]
+                              return for $s in xcst:list($p)
                               return xcst:EQName($p, $s, true()))"/>
                         </if>
                      </with-param>

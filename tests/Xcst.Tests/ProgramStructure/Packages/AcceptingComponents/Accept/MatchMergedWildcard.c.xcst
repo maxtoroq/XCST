@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:import href='_MatchMergedWildcard.xcst'/>
+
+   <c:use-package name='Grammar'>
+      <c:accept component='function' names='bar'/>
+   </c:use-package>
+
+   <c:template name='tmpl'>
+      <c:void value='foo()'/>
+      <c:void value='bar()'/>
+   </c:template>
+
+</c:module>

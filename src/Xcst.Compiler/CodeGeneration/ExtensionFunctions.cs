@@ -18,6 +18,7 @@ using System.Linq;
 using System.Xml;
 using Saxon.Api;
 using Xcst.PackageModel;
+using Xcst.Runtime;
 
 namespace Xcst.Compiler.CodeGeneration {
 
@@ -49,6 +50,7 @@ namespace Xcst.Compiler.CodeGeneration {
       FindNamedPackage(string packageName, string packagesLocation, string fileExtension) {
 
          if (packageName == null) throw new ArgumentNullException(nameof(packageName));
+         if (packageName.Length == 0) throw new ArgumentException(nameof(packageName));
 
          string dir = packagesLocation;
          string search = "*." + fileExtension;
@@ -79,7 +81,7 @@ namespace Xcst.Compiler.CodeGeneration {
 
                      if (reader.LocalName == "package"
                         && reader.NamespaceURI == XmlNamespaces.Xcst
-                        && reader.GetAttribute("name") == packageName) {
+                        && SimpleContent.Trim(reader.GetAttribute("name")) == packageName) {
 
                         return new Uri(path, UriKind.Absolute);
                      }

@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <!--
+      XTSE3040
+      Cannot match an abstract component, it must be overridden
+   -->
+
+   <c:use-package name='Abstract'>
+      <c:accept component='function' names='AbstractFn'/>
+   </c:use-package>
+
+</c:module>

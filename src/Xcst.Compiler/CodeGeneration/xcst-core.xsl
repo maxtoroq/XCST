@@ -703,7 +703,7 @@
 
       <if test="$attr">
          <variable name="names" select="
-            for $s in tokenize($attr, '\s')[.]
+            for $s in xcst:list($attr)
             return xcst:EQName($attr, $s)"/>
          <variable name="sets" as="element()*">
             <variable name="current" select="."/>
@@ -2700,7 +2700,7 @@
                if (parent::c:output) then
                   $merged-list
                else
-                  for $s in tokenize(., '\s')[.]
+                  for $s in xcst:list(.)
                   return xcst:EQName(., $s, true())"/>
             <code:new-array>
                <code:type-reference name="QualifiedName" namespace="Xcst"/>
@@ -3408,7 +3408,7 @@
                /(if (self::c:*) then @extension-element-prefixes else @c:extension-element-prefixes)">
                <variable name="attr" select="."/>
                <variable name="el" select=".."/>
-               <for-each select="tokenize(., '\s')[.]">
+               <for-each select="xcst:list(.)">
                   <variable name="default" select=". eq '#default'"/>
                   <variable name="prefix" select="if ($default) then '' else string(xcst:ncname($attr, false(), .))"/>
                   <variable name="ns" select="namespace-uri-for-prefix($prefix, $el)"/>
@@ -3519,6 +3519,12 @@
       <param name="item" as="item()"/>
 
       <sequence select="replace($item, '^\s*(.+?)\s*$', '$1')"/>
+   </function>
+
+   <function name="xcst:list" as="xs:string*">
+      <param name="attr" as="item()"/>
+
+      <sequence select="tokenize($attr, '\s')[.]"/>
    </function>
 
    <!--

@@ -178,7 +178,7 @@ namespace Xcst.Runtime {
          System.Convert.ToString(value, this.FormatProvider);
 
       public static string
-      Trim(string value) {
+      Trim(string/*?*/ value) {
 
          if (String.IsNullOrEmpty(value)) {
             return String.Empty;

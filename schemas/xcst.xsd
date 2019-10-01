@@ -196,15 +196,54 @@
          <xs:documentation>Specifies a package dependency.</xs:documentation>
       </xs:annotation>
       <xs:complexType>
-         <xs:sequence>
-            <xs:element minOccurs="0" maxOccurs="unbounded" ref="c:override"/>
-         </xs:sequence>
+         <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element ref="c:accept"/>
+            <xs:element ref="c:override"/>
+         </xs:choice>
          <xs:attribute name="name" use="required" type="c:type_name">
             <xs:annotation>
                <xs:documentation>The class name of the package to use. Must be a fully-qualified name when using from implicit or unnamed packages.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="accept">
+      <xs:annotation>
+         <xs:documentation>Specifies component dependencies.</xs:documentation>
+      </xs:annotation>
+      <xs:complexType>
+         <xs:attribute name="component" use="required">
+            <xs:annotation>
+               <xs:documentation>The type of component to accept.</xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+               <xs:restriction base="xs:token">
+                  <xs:enumeration value="attribute-set"/>
+                  <xs:enumeration value="function"/>
+                  <xs:enumeration value="template"/>
+                  <xs:enumeration value="type"/>
+                  <xs:enumeration value="variable"/>
+               </xs:restriction>
+            </xs:simpleType>
+         </xs:attribute>
+         <xs:attribute name="names" use="required">
+            <xs:annotation>
+               <xs:documentation>A list of space separated component names, or "*" to accept all. Unprefixed qualified names are in the null namespace.</xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+               <xs:union>
+                  <xs:simpleType>
+                     <xs:list itemType="xs:token"/>
+                  </xs:simpleType>
+                  <xs:simpleType>
+                     <xs:restriction base="xs:token">
+                        <xs:enumeration value="*"/>
+                     </xs:restriction>
+                  </xs:simpleType>
+               </xs:union>
+            </xs:simpleType>
+         </xs:attribute>
       </xs:complexType>
    </xs:element>
    <xs:element name="override">

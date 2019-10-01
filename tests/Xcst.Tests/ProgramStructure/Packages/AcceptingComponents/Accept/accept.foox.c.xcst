@@ -2,7 +2,7 @@
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
    <c:use-package name='Grammar'>
-      <a/>
+      <c:accept component='function' names='foo' foo:foo='foo' xmlns:foo='urn:foo'/>
    </c:use-package>
 
 </c:module>

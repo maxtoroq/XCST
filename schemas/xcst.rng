@@ -306,8 +306,38 @@
          </attribute>
          <ref name="standard-attributes"/>
          <zeroOrMore>
-            <ref name="override"/>
+            <choice>
+               <ref name="accept"/>
+               <ref name="override"/>
+            </choice>
          </zeroOrMore>
+      </element>
+   </define>
+
+   <define name="accept">
+      <element name="accept">
+         <ann:documentation>Specifies component dependencies.</ann:documentation>
+         <attribute name="component">
+            <ann:documentation>The type of component to accept.</ann:documentation>
+            <choice>
+               <value>attribute-set</value>
+               <value>function</value>
+               <value>template</value>
+               <value>type</value>
+               <value>variable</value>
+            </choice>
+         </attribute>
+         <attribute name="names">
+            <ann:documentation>A list of space separated component names, or "*" to accept all. Unprefixed qualified names are in the null namespace.</ann:documentation>
+            <choice>
+               <list>
+                  <zeroOrMore>
+                     <data type="token"/>
+                  </zeroOrMore>
+               </list>
+               <value>*</value>
+            </choice>
+         </attribute>
       </element>
    </define>
 
