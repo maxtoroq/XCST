@@ -379,6 +379,8 @@
     <None Include="ProgramStructure\Packages\AcceptingComponents\Accept\MatchMergedImplicit.c.xcst" />
     <None Include="ProgramStructure\Packages\AcceptingComponents\Accept\MatchMergedEmpty.c.xcst" />
     <None Include="ProgramStructure\Packages\AcceptingComponents\Accept\MatchMergedWildcard.c.xcst" />
+    <None Include="ProgramStructure\Packages\AcceptingComponents\Accept\OverriddenEmpty.c.xcst" />
+    <None Include="ProgramStructure\Packages\AcceptingComponents\Accept\OverriddenNoMatch.c.xcst" />
     <None Include="ProgramStructure\Packages\AcceptingComponents\Accept\UnspecifiedTemplate.i.xcst" />
     <None Include="ProgramStructure\Packages\AcceptingComponents\Accept\WildcardNoComponents.c.xcst" />
     <None Include="ProgramStructure\Packages\AcceptingComponents\Accept\_MatchMergedImplicit.xcst" />

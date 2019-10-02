@@ -448,7 +448,18 @@
 
       <variable name="merged-accepts" as="element()*">
          <if test="not($accept-all)">
-            <for-each-group select="$use-pkgs/c:accept" group-by="xcst:non-string(@component)">
+            <variable name="implicit-accepts" as="element()*">
+               <for-each-group select="$use-pkgs/c:override/c:*" group-by="if (self::c:param) then 'variable' else local-name()">
+                  <variable name="accept-component" select="current-grouping-key()"/>
+                  <variable name="qname" select="$accept-component = ('template', 'attribute-set')"/>
+                  <variable name="names" select="current-group()/@name/
+                     (if ($qname) then
+                        xcst:uri-qualified-name(xcst:EQName(.))
+                     else xcst:unescape-identifier(xcst:name(.), $language))"/>
+                  <src:accept component="{$accept-component}" names="{$names}"/>
+               </for-each-group>
+            </variable>
+            <for-each-group select="$use-pkgs/c:accept, $implicit-accepts" group-by="xcst:non-string(@component)">
                <variable name="names" select="distinct-values(current-group()/xcst:accept-names(.))"/>
                <src:accept component="{current-grouping-key()}">
                   <attribute name="names" select="
