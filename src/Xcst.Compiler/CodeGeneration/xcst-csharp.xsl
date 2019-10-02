@@ -741,7 +741,9 @@
          <if test="@extensibility eq 'sealed'"> override</if>
          <text> </text>
       </if>
-      <apply-templates select="code:type-reference" mode="#current"/>
+      <apply-templates select="code:type-reference" mode="#current">
+         <with-param name="verbatim" select="boolean(@return-type-verbatim/xs:boolean(.))" tunnel="yes"/>
+      </apply-templates>
       <text> </text>
       <if test="code:implements-interface">
          <apply-templates select="code:implements-interface/code:type-reference" mode="#current"/>

@@ -87,6 +87,7 @@
   <ItemGroup>
     <Compile Include="API\Compilation\CompilationTests.cs" />
     <Compile Include="API\Evaluation\EvaluationTests.cs" />
+    <Compile Include="ProgramStructure\Packages\AcceptingComponents\Keyword_As_Return_Type.cs" />
     <Compile Include="ProgramStructure\Packages\AcceptingComponents\Component_Using_Accepted_Type.cs" />
     <Compile Include="ProgramStructure\Packages\OverridingComponents\Variable\Overridden_Non_Compiled.cs" />
     <Compile Include="TestsHelper.cs" />
@@ -405,6 +406,8 @@
     <None Include="ProgramStructure\Packages\AcceptingComponents\Accept\accept.names.req.i.xcst" />
     <None Include="ProgramStructure\Packages\AcceptingComponents\GenericType.c.xcst" />
     <None Include="ProgramStructure\Packages\AcceptingComponents\GenericType.pxcst" />
+    <None Include="ProgramStructure\Packages\AcceptingComponents\KeywordAsReturnType.pxcst" />
+    <None Include="ProgramStructure\Packages\AcceptingComponents\KeywordAsReturnType.c.xcst" />
     <None Include="ProgramStructure\Packages\AcceptingComponents\KeywordAsNameVB.c.xcst" />
     <None Include="ProgramStructure\Packages\AcceptingComponents\KeywordAsNameVB.pxcst" />
     <None Include="ProgramStructure\Packages\AcceptingComponents\KeywordAsName.c.xcst" />

@@ -554,6 +554,7 @@
          <xs:attribute name="name" use="required"/>
          <xs:attributeGroup ref="code:_member-attribs"/>
          <xs:attribute name="extensibility" type="code:_extensibility"/>
+         <xs:attribute name="return-type-verbatim" type="code:_boolean"/>
       </xs:complexType>
    </xs:element>
    <xs:element name="property-reference" substitutionGroup="code:_expression">

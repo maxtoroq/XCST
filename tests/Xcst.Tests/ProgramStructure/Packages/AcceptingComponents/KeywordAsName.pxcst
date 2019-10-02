@@ -2,16 +2,13 @@
 <c:package name='KeywordAsName' version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
    <c:param name='@int' value='1' as='int'/>
+
    <c:variable name='@string' value='"string"' as='string' visibility='public'/>
 
    <c:type name='@class' visibility='public'/>
 
-   <c:function name='@void' as='@class' visibility='public'>
+   <c:function name='@void' visibility='public'>
       <c:param name='@in'/>
-
-      <c:return value='null'/>
    </c:function>
-
-   <c:template name='foo' as='@class[]' visibility='public'/>
 
 </c:package>

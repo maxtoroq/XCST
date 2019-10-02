@@ -767,11 +767,16 @@
       <element name="property">
          <attribute name="name"/>
          <ref name="_member-attribs"/>
-         <optional>
-            <attribute name="extensibility">
-               <ref name="_extensibility"/>
-            </attribute>
-         </optional>
+         <zeroOrMore>
+            <choice>
+               <attribute name="extensibility">
+                  <ref name="_extensibility"/>
+               </attribute>
+               <attribute name="return-type-verbatim">
+                  <ref name="_boolean"/>
+               </attribute>
+            </choice>
+         </zeroOrMore>
          <ref name="type-reference"/>
          <ref name="implements-interface"/>
          <optional>

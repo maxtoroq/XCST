@@ -1582,6 +1582,9 @@
             visibility="{('public'[$public], 'private')[1]}"
             extensibility="{if (@visibility eq 'public') then 'virtual' else '#default'}"
             verbatim="true">
+         <if test="code:type-reference/src:qualified-type(.)">
+            <attribute name="return-type-verbatim" select="true()"/>
+         </if>
          <sequence select="code:type-reference"/>
          <code:attributes>
             <if test="$public">
@@ -1625,7 +1628,7 @@
             visibility="{('public'[$public], 'private')[1]}"
             extensibility="{if (@visibility eq 'public') then 'virtual' else '#default'}"
             verbatim="true">
-         <if test="code:type-reference">
+         <if test="code:type-reference/src:qualified-type(.)">
             <attribute name="return-type-verbatim" select="true()"/>
          </if>
          <sequence select="code:type-reference"/>
