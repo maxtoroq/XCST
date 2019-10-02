@@ -1,12 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
-   <!--
-      XTSE3051
-   -->
-
    <c:use-package name='Grammar'>
-      <c:accept component='function' names='foo'/>
+      <c:accept component='function' names='*'/>
       <c:override>
          <c:function name='foo'/>
       </c:override>

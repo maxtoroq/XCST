@@ -996,15 +996,6 @@
          <variable name="declaration" select="."/>
          <variable name="component" select="if (self::c:param) then 'variable' else local-name()"/>
          <variable name="qname" select="$component = ('template', 'attribute-set')"/>
-         <for-each select="../../c:accept[@component/xcst:non-string(.) eq $component]">
-            <variable name="names" select="xcst:accept-names(.)"/>
-            <if test="not(empty($names) or xcst:accept-names-is-wildcard($names))">
-               <variable name="matches" select="$names[. eq (if ($qname) then $declaration/xcst:EQName(@name) else .)]"/>
-               <if test="exists($matches)">
-                  <sequence select="error(xs:QName('err:XTSE3051'), 'An c:accept specifies a name that matches an overriding component within the same c:use-package element.', src:error-object($declaration))"/>
-               </if>
-            </if>
-         </for-each>
          <sequence select="$meta"/>
       </if>
    </template>

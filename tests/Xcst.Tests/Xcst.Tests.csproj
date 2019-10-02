@@ -386,14 +386,14 @@
     <None Include="ProgramStructure\Packages\AcceptingComponents\Accept\_MatchMergedWildcard.xcst" />
     <None Include="ProgramStructure\Packages\AcceptingComponents\Accept\_MatchMerged.xcst" />
     <None Include="ProgramStructure\Packages\AcceptingComponents\Accept\MatchMerged.c.xcst" />
-    <None Include="ProgramStructure\Packages\AcceptingComponents\Accept\Overridden.c.xcst" />
+    <None Include="ProgramStructure\Packages\AcceptingComponents\Accept\OverriddenWildcard.c.xcst" />
     <None Include="ProgramStructure\Packages\AcceptingComponents\Accept\PrivateWildcard.c.xcst" />
     <None Include="ProgramStructure\Packages\AcceptingComponents\Accept\Wildcard.c.xcst" />
     <None Include="ProgramStructure\Packages\AcceptingComponents\Accept\WildcardNoComponents.pxcst" />
     <None Include="ProgramStructure\Packages\AcceptingComponents\Accept\Private.i.xcst" />
     <None Include="ProgramStructure\Packages\AcceptingComponents\Accept\Private.pxcst" />
     <None Include="ProgramStructure\Packages\AcceptingComponents\Accept\NoMatch.i.xcst" />
-    <None Include="ProgramStructure\Packages\AcceptingComponents\Accept\Overridden.i.xcst" />
+    <None Include="ProgramStructure\Packages\AcceptingComponents\Accept\Overridden.c.xcst" />
     <None Include="ProgramStructure\Packages\AcceptingComponents\Accept\Duplicate.c.xcst" />
     <None Include="ProgramStructure\Packages\AcceptingComponents\Accept\Unspecified.i.xcst" />
     <None Include="ProgramStructure\Packages\AcceptingComponents\Accept\Match.c.xcst" />
