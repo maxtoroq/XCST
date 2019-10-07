@@ -382,10 +382,12 @@ namespace Xcst.Compiler.CodeGeneration {
 
             string typeName = arguments[0].AsAtomicValues().Single().ToString();
 
+            Type defaultTypeResolver(string n) => Type.GetType(n, throwOnError: false);
+
             Func<string, Type> packageTypeResolver = arguments[1].AsItems()
                .Select(i => UnwrapExternalObject<Func<string, Type>>(i))
                .SingleOrDefault()
-               ?? new Func<string, Type>(n => Type.GetType(n, throwOnError: false));
+               ?? defaultTypeResolver;
 
             XdmValue errorObject = new XdmValue(arguments[2].AsItems());
             var errorData = ModuleUriAndLineNumberFromErrorObject(errorObject);

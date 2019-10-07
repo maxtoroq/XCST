@@ -30,12 +30,12 @@ namespace Xcst.Compiler.CodeGeneration {
          const string ns = XmlNamespaces.XcstGrammar;
          const string prefix = "xcst";
 
-         Func<MethodBase, string> methodVisibility = m =>
+         string methodVisibility(MethodBase m) =>
             (m.IsAbstract) ? "abstract"
             : (m.IsVirtual) ? "public"
             : "final";
 
-         Func<MemberInfo, string> memberVisibility = m =>
+         string memberVisibility(MemberInfo m) =>
             methodVisibility(m as MethodBase ?? ((PropertyInfo)m).GetGetMethod());
 
          writer.WriteStartElement(prefix, "package-manifest", ns);
@@ -112,7 +112,7 @@ namespace Xcst.Compiler.CodeGeneration {
                   writer.WriteEndElement();
                }
 
-               MethodInfo method = ((MethodInfo)member);
+               MethodInfo method = (MethodInfo)member;
                Type outputType = method.GetParameters()[1].ParameterType;
                Type itemType;
 

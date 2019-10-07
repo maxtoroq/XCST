@@ -50,14 +50,12 @@ namespace Xcst {
       }
 
       public void
-      WriteStartElement(string localName) {
+      WriteStartElement(string localName) =>
          WriteStartElement(null, localName, default(string));
-      }
 
       public void
-      WriteStartElement(string localName, string ns) {
+      WriteStartElement(string localName, string ns) =>
          WriteStartElement(null, localName, ns);
-      }
 
       public abstract void
       WriteStartElement(string prefix, string localName, string ns);
@@ -114,19 +112,16 @@ namespace Xcst {
       }
 
       public void
-      WriteStartAttribute(string localName) {
+      WriteStartAttribute(string localName) =>
          WriteStartAttribute(null, localName, default(string), default(string));
-      }
 
       public void
-      WriteStartAttribute(string localName, string ns) {
+      WriteStartAttribute(string localName, string ns) =>
          WriteStartAttribute(null, localName, ns, default(string));
-      }
 
       public void
-      WriteStartAttribute(string prefix, string localName, string ns) {
+      WriteStartAttribute(string prefix, string localName, string ns) =>
          WriteStartAttribute(prefix, localName, ns, default(string));
-      }
 
       public abstract void
       WriteStartAttribute(string prefix, string localName, string ns, string separator);
@@ -147,9 +142,8 @@ namespace Xcst {
       /// <exclude/>
       [EditorBrowsable(EditorBrowsableState.Never)]
       public void
-      WriteStartAttributeLexical(string lexical, string ns) {
+      WriteStartAttributeLexical(string lexical, string ns) =>
          WriteStartAttributeLexical(lexical, ns, null);
-      }
 
       /// <exclude/>
       [EditorBrowsable(EditorBrowsableState.Never)]
@@ -209,14 +203,12 @@ namespace Xcst {
       #region ISequenceWriter<object> Members
 
       void ISequenceWriter<object>.
-      WriteString(object text) {
+      WriteString(object text) =>
          WriteString((string)text);
-      }
 
       void ISequenceWriter<object>.
-      WriteRaw(object data) {
+      WriteRaw(object data) =>
          WriteRaw((string)data);
-      }
 
       public void
       WriteObject(object value) {
@@ -231,29 +223,24 @@ namespace Xcst {
       }
 
       void ISequenceWriter<object>.
-      WriteObject(IEnumerable<object> value) {
+      WriteObject(IEnumerable<object> value) =>
          WriteObject((object)value);
-      }
 
       void ISequenceWriter<object>.
-      WriteObject<TDerived>(IEnumerable<TDerived> value) {
+      WriteObject<TDerived>(IEnumerable<TDerived> value) =>
          WriteObject((object)value);
-      }
 
       public void
-      CopyOf(object value) {
+      CopyOf(object value) =>
          CopyOfImpl(value, recurse: false);
-      }
 
       void ISequenceWriter<object>.
-      CopyOf(IEnumerable<object> value) {
+      CopyOf(IEnumerable<object> value) =>
          CopyOf((object)value);
-      }
 
       void ISequenceWriter<object>.
-      CopyOf<TDerived>(IEnumerable<TDerived> value) {
+      CopyOf<TDerived>(IEnumerable<TDerived> value) =>
          CopyOf((object)value);
-      }
 
       public XcstWriter
       TryCastToDocumentWriter() => this;
@@ -264,19 +251,16 @@ namespace Xcst {
       #endregion
 
       public void
-      WriteObject(string value) {
+      WriteObject(string value) =>
          WriteItem(value);
-      }
 
       public void
-      WriteObject(IFormattable value) {
+      WriteObject(IFormattable value) =>
          WriteItem(value);
-      }
 
       public void
-      WriteObject(Array value) {
+      WriteObject(Array value) =>
          WriteSequence(value);
-      }
 
       protected internal virtual void
       WriteItem(object value) {
@@ -374,14 +358,12 @@ namespace Xcst {
       // These don't need to be public, but it's a small optimization
 
       public void
-      CopyOf(XNode value) {
+      CopyOf(XNode value) =>
          value?.WriteTo(new XcstXmlWriter(this));
-      }
 
       public void
-      CopyOf(XmlNode value) {
+      CopyOf(XmlNode value) =>
          value?.WriteTo(new XcstXmlWriter(this));
-      }
 
       public void
       CopyOf(IXPathNavigable value) {
@@ -396,12 +378,9 @@ namespace Xcst {
       }
 
       public void
-      CopyOf(IXmlSerializable value) {
-
+      CopyOf(IXmlSerializable value) =>
          // Don't output root element, gives caller more flexibility and choice
-
          value?.WriteXml(new XcstXmlWriter(this));
-      }
 
       public void
       CopyOf(XmlReader value) {
@@ -412,9 +391,8 @@ namespace Xcst {
       }
 
       public void
-      CopyOf(Array value) {
+      CopyOf(Array value) =>
          CopyOfSequence(value);
-      }
 
       // These are private to not force code that depends on XcstWriter
       // having to reference Newtonsoft.Json

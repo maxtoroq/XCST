@@ -49,9 +49,8 @@ namespace Xcst {
       }
 
       public override bool
-      Equals(object other) {
-         return Equals(other as QualifiedName);
-      }
+      Equals(object other) =>
+         Equals(other as QualifiedName);
 
       public virtual bool
       Equals(QualifiedName other) {
@@ -85,9 +84,8 @@ namespace Xcst {
       }
 
       public string
-      ToUriQualifiedName() {
-         return String.Concat("Q{", this.Namespace, "}", this.Name);
-      }
+      ToUriQualifiedName() =>
+         String.Concat("Q{", this.Namespace, "}", this.Name);
 
       public static QualifiedName
       Parse(string localOrUriQualifiedName) {

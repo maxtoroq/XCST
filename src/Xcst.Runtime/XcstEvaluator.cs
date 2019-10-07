@@ -132,9 +132,7 @@ namespace Xcst {
       }
 
       public XcstTemplateEvaluator
-      CallInitialTemplate() {
-         return CallTemplate(InitialTemplate);
-      }
+      CallInitialTemplate() => CallTemplate(InitialTemplate);
 
       public XcstTemplateEvaluator
       CallTemplate(string name) {
@@ -331,9 +329,8 @@ namespace Xcst {
 
          Action<TemplateContext> tmplFn = this.package.GetTemplate<TBase>(this.name, output);
 
-         Action<OutputParameters, bool, TemplateContext> executionFn =
-            (overrideParams, skipFlush, tmplContext) =>
-               tmplFn(tmplContext);
+         void executionFn(OutputParameters overrideParams, bool skipFlush, TemplateContext tmplContext) =>
+            tmplFn(tmplContext);
 
          return CreateOutputter(executionFn);
       }
@@ -341,9 +338,8 @@ namespace Xcst {
       XcstOutputter
       CreateOutputter(CreateWriterDelegate writerFn) {
 
-         Action<OutputParameters, bool, TemplateContext> executionFn =
-            (overrideParams, skipFlush, tmplContext) =>
-               EvaluateToWriter(writerFn, overrideParams, skipFlush, tmplContext);
+         void executionFn(OutputParameters overrideParams, bool skipFlush, TemplateContext tmplContext) =>
+            EvaluateToWriter(writerFn, overrideParams, skipFlush, tmplContext);
 
          return CreateOutputter(executionFn);
       }
@@ -357,9 +353,8 @@ namespace Xcst {
          var templateParams = new Dictionary<string, object>(this.templateParameters);
          var tunnelParams = new Dictionary<string, object>(this.tunnelParameters);
 
-         Action<OutputParameters, bool> executionFn2 =
-            (overrideParams, skipFlush) =>
-               executionFn(overrideParams, skipFlush, CreateTemplateContext(templateParams, tunnelParams));
+         void executionFn2(OutputParameters overrideParams, bool skipFlush) =>
+            executionFn(overrideParams, skipFlush, CreateTemplateContext(templateParams, tunnelParams));
 
          return new XcstOutputter(this.package, this.primeFn, executionFn2);
       }

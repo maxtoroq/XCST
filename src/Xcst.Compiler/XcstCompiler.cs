@@ -382,7 +382,7 @@ namespace Xcst.Compiler {
       internal static XdmNode
       CodeTypeReference(string typeName, DocumentBuilder docBuilder) {
 
-         Action<XmlWriter> writeFn = writer => {
+         void writeFn(XmlWriter writer) {
 
             const string ns = XmlNamespaces.XcstCode;
             const string prefix = "code";
@@ -390,7 +390,7 @@ namespace Xcst.Compiler {
             writer.WriteStartElement(prefix, "type-reference", ns);
             writer.WriteAttributeString("name", typeName);
             writer.WriteEndElement();
-         };
+         }
 
          return CodeTypeReferenceImpl(writeFn, docBuilder);
       }
@@ -410,7 +410,8 @@ namespace Xcst.Compiler {
 
             output.Position = 0;
 
-            docBuilder.BaseUri = docBuilder.BaseUri ?? new Uri("", UriKind.Relative);
+            docBuilder.BaseUri = docBuilder.BaseUri
+               ?? new Uri("", UriKind.Relative);
 
             return docBuilder.Build(output)
                .FirstElementOrSelf();

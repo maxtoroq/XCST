@@ -25,9 +25,8 @@ namespace Xcst {
       parameters = new Dictionary<QualifiedName, object>();
 
       public object
-      this[string name] {
-         get { return this[StandardParameters.Parse(name)]; }
-      }
+      this[string name] =>
+         this[StandardParameters.Parse(name)];
 
       public object
       this[QualifiedName name] {

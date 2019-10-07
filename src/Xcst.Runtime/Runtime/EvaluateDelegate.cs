@@ -52,7 +52,9 @@ namespace Xcst.Runtime {
          Type baseType = typeof(TItem);
 
          object derivedWriter = output;
-         bool compatibleOutput = typeof(ISequenceWriter<>).MakeGenericType(derivedType)
+
+         bool compatibleOutput = typeof(ISequenceWriter<>)
+            .MakeGenericType(derivedType)
             .IsAssignableFrom(output.GetType());
 
          if (!compatibleOutput) {
