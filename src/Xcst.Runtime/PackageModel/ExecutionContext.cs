@@ -34,19 +34,19 @@ namespace Xcst.PackageModel {
       public SimpleContent
       SimpleContent { get; }
 
-      public Uri/*?*/
+      public Uri?
       StaticBaseUri { get; }
 
-      public Uri/*?*/
+      public Uri?
       BaseOutputUri { get; }
 
       internal
       ExecutionContext(
             IXcstPackage topLevelPackage,
             PrimingContext primingContext,
-            Func<IFormatProvider>/*?*/ formatProviderFn,
-            Uri/*?*/ staticBaseUri,
-            Uri/*?*/ baseOutputUri) {
+            Func<IFormatProvider>? formatProviderFn,
+            Uri? staticBaseUri,
+            Uri? baseOutputUri) {
 
          if (topLevelPackage == null) throw new ArgumentNullException(nameof(topLevelPackage));
          if (primingContext == null) throw new ArgumentNullException(nameof(primingContext));

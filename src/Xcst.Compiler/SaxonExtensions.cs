@@ -24,7 +24,7 @@ namespace Xcst.Compiler {
    static class SaxonExtensions {
 
       public static IEnumerable<XdmItem>
-      AsItems(this IXdmEnumerator enumerator) {
+      AsItems(this IXdmEnumerator? enumerator) {
 
          if (enumerator == null) {
             yield break;
@@ -36,7 +36,7 @@ namespace Xcst.Compiler {
       }
 
       public static IEnumerable<XdmNode>
-      AsNodes(this IXdmEnumerator enumerator) {
+      AsNodes(this IXdmEnumerator? enumerator) {
 
          if (enumerator == null) {
             yield break;
@@ -48,7 +48,7 @@ namespace Xcst.Compiler {
       }
 
       public static IEnumerable<XdmAtomicValue>
-      AsAtomicValues(this IXdmEnumerator enumerator) {
+      AsAtomicValues(this IXdmEnumerator? enumerator) {
 
          if (enumerator == null) {
             yield break;
@@ -60,7 +60,7 @@ namespace Xcst.Compiler {
       }
 
       public static IXdmEnumerator
-      GetXdmEnumerator(this XdmValue value) {
+      GetXdmEnumerator(this XdmValue? value) {
 
          if (value == null) {
             return EmptyEnumerator.INSTANCE;
@@ -69,10 +69,11 @@ namespace Xcst.Compiler {
          return (IXdmEnumerator)value.GetEnumerator();
       }
 
+
       // ## ToXdmValue
 
       public static XdmValue
-      ToXdmValue(this string value) =>
+      ToXdmValue(this string? value) =>
          (value != null) ? (XdmValue)ToXdmItem(value) : XdmEmptySequence.INSTANCE;
 
       public static XdmValue
@@ -124,23 +125,23 @@ namespace Xcst.Compiler {
          ToXdmAtomicValue(value);
 
       public static XdmValue
-      ToXdmValue(this Uri value) =>
+      ToXdmValue(this Uri? value) =>
          (value != null) ? (XdmValue)ToXdmItem(value) : XdmEmptySequence.INSTANCE;
 
       public static XdmValue
-      ToXdmValue(this XmlQualifiedName value) =>
+      ToXdmValue(this XmlQualifiedName? value) =>
          (value != null) ? (XdmValue)ToXdmItem(value) : XdmEmptySequence.INSTANCE;
 
       public static XdmValue
-      ToXdmValue(this QualifiedName value) =>
+      ToXdmValue(this QualifiedName? value) =>
          (value != null) ? (XdmValue)ToXdmItem(value) : XdmEmptySequence.INSTANCE;
 
       public static XdmValue
-      ToXdmValue(this QName value) =>
+      ToXdmValue(this QName? value) =>
          (value != null) ? (XdmValue)ToXdmItem(value) : XdmEmptySequence.INSTANCE;
 
       public static XdmValue
-      ToXdmValue(this IEnumerable<string> value) {
+      ToXdmValue(this IEnumerable<string?>? value) {
 
          if (value == null) {
             return XdmEmptySequence.INSTANCE;
@@ -154,7 +155,7 @@ namespace Xcst.Compiler {
          new XdmValue(value);
 
       public static XdmValue
-      ToXdmValue(this IEnumerable value) {
+      ToXdmValue(this IEnumerable? value) {
 
          if (value == null) {
             return XdmEmptySequence.INSTANCE;
@@ -170,7 +171,7 @@ namespace Xcst.Compiler {
       }
 
       public static XdmValue
-      ToXdmValue(this object value) {
+      ToXdmValue(this object? value) {
 
          if (value == null) {
             return XdmEmptySequence.INSTANCE;
@@ -196,6 +197,7 @@ namespace Xcst.Compiler {
 
          return ToXdmItem(value);
       }
+
 
       // ## ToXdmItem
 
@@ -274,6 +276,7 @@ namespace Xcst.Compiler {
 
          return ToXdmAtomicValue(value);
       }
+
 
       // ## ToXdmAtomicValue
 
@@ -434,7 +437,8 @@ namespace Xcst.Compiler {
          throw new ArgumentException($"{nameof(value)} of type {type.FullName} is not supported.", nameof(value));
       }
 
-      // Other
+
+      // ## Other
 
       public static XdmValue
       FirstElementOrSelf(this XdmValue value) {

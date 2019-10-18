@@ -150,7 +150,7 @@ namespace Xcst.Xml {
          this.output.WriteCommentAsync(text);
 
       public override void
-      WriteDocType(string name, string pubid, string sysid, string subset) =>
+      WriteDocType(string name, string? pubid, string? sysid, string? subset) =>
          this.output.WriteDocType(name, pubid, sysid, subset);
 
       public override Task

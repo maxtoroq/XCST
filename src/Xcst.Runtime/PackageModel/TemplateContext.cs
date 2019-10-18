@@ -25,14 +25,14 @@ namespace Xcst.PackageModel {
       static readonly TemplateContext
       EmptyContext = new TemplateContext(0, 0, null);
 
-      readonly Dictionary<string, object>/*?*/
+      readonly Dictionary<string, object?>?
       templateParameters;
 
-      readonly Dictionary<string, object>/*?*/
+      readonly Dictionary<string, object?>?
       tunnelParameters;
 
       public static TemplateContext
-      Create(int tmplCount, int tunnelCount, TemplateContext currentContext = null) {
+      Create(int tmplCount, int tunnelCount, TemplateContext? currentContext = null) {
 
          if (tmplCount == 0
             && tunnelCount == 0
@@ -46,20 +46,20 @@ namespace Xcst.PackageModel {
       }
 
       public static TemplateContext<TParams>
-      CreateTyped<TParams>(TParams parameters, int tunnelCount, TemplateContext currentContext = null) =>
+      CreateTyped<TParams>(TParams parameters, int tunnelCount, TemplateContext? currentContext = null) =>
          new TemplateContext<TParams>(parameters, tunnelCount, currentContext);
 
       public
-      TemplateContext(int tmplCount, int tunnelCount, TemplateContext/*?*/ currentContext) {
+      TemplateContext(int tmplCount, int tunnelCount, TemplateContext? currentContext) {
 
          if (tmplCount > 0) {
-            this.templateParameters = new Dictionary<string, object>(tmplCount);
+            this.templateParameters = new Dictionary<string, object?>(tmplCount);
          }
 
          int tunnelTotalCount = tunnelCount + (currentContext?.tunnelParameters?.Count ?? 0);
 
          if (tunnelTotalCount > 0) {
-            this.tunnelParameters = new Dictionary<string, object>(tunnelTotalCount);
+            this.tunnelParameters = new Dictionary<string, object?>(tunnelTotalCount);
          }
 
          if (currentContext?.tunnelParameters != null) {
@@ -71,7 +71,7 @@ namespace Xcst.PackageModel {
       }
 
       public TemplateContext
-      WithParam(string name, object/*?*/ value, bool tunnel = false) {
+      WithParam(string name, object? value, bool tunnel = false) {
 
          if (tunnel) {
 
@@ -88,7 +88,7 @@ namespace Xcst.PackageModel {
       }
 
       public TemplateContext
-      WithParams(object/*?*/ parameters) {
+      WithParams(object? parameters) {
 
          if (parameters != null) {
             WithParams(XcstEvaluator.ObjectToDictionary(parameters));
@@ -98,7 +98,7 @@ namespace Xcst.PackageModel {
       }
 
       public TemplateContext
-      WithParams(IDictionary<string, object>/*?*/ parameters) {
+      WithParams(IDictionary<string, object?>? parameters) {
 
          if (parameters != null) {
 
@@ -116,15 +116,15 @@ namespace Xcst.PackageModel {
       public TDefault
       Param<TDefault>(
             string name,
-            Func<TDefault> defaultValue = null,
+            Func<TDefault>? defaultValue = null,
             bool required = false,
             bool tunnel = false) {
 
-         Dictionary<string, object>/*?*/ paramsDict = (tunnel) ?
+         Dictionary<string, object?>? paramsDict = (tunnel) ?
             this.tunnelParameters
             : this.templateParameters;
 
-         object value = null;
+         object? value = null;
 
          if (paramsDict?.TryGetValue(name, out value) == true) {
 
@@ -156,7 +156,7 @@ namespace Xcst.PackageModel {
             string name,
             bool valueSet,
             TValue value,
-            Func<TDefault> defaultValue = null,
+            Func<TDefault>? defaultValue = null,
             bool required = false) where TDefault : TValue {
 
          if (valueSet) {
@@ -187,7 +187,7 @@ namespace Xcst.PackageModel {
       Parameters { get; }
 
       public
-      TemplateContext(TParams parameters, int tunnelCount, TemplateContext/*?*/ currentContext)
+      TemplateContext(TParams parameters, int tunnelCount, TemplateContext? currentContext)
          : base(0, tunnelCount, currentContext) {
 
          this.Parameters = parameters;

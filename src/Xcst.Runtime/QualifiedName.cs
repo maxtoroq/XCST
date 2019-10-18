@@ -36,10 +36,10 @@ namespace Xcst {
 
       public
       QualifiedName(string name)
-         : this(name, String.Empty) { }
+         : this(name, null) { }
 
       public
-      QualifiedName(string name, string ns) {
+      QualifiedName(string name, string? ns) {
 
          if (name == null) throw new ArgumentNullException(nameof(name));
          if (String.IsNullOrWhiteSpace(name)) throw new ArgumentException($"{nameof(name)} cannot be empty.", nameof(name));
@@ -53,7 +53,7 @@ namespace Xcst {
          Equals(other as QualifiedName);
 
       public virtual bool
-      Equals(QualifiedName other) {
+      Equals(QualifiedName? other) {
 
          if (other == null) {
             return false;
@@ -113,7 +113,7 @@ namespace Xcst {
       }
 
       public static bool operator
-      ==(QualifiedName left, QualifiedName right) {
+      ==(QualifiedName? left, QualifiedName? right) {
 
          if (Object.ReferenceEquals(left, right)) {
             return true;
@@ -127,6 +127,6 @@ namespace Xcst {
       }
 
       public static bool operator
-      !=(QualifiedName left, QualifiedName right) => !(left == right);
+      !=(QualifiedName? left, QualifiedName? right) => !(left == right);
    }
 }

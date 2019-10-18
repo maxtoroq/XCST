@@ -53,7 +53,7 @@ namespace Xcst.PackageModel {
       conversionInit = false;
 
       public
-      RangeAttribute(Type type, string minimum = null, string maximum = null)
+      RangeAttribute(Type type, string? minimum = null, string? maximum = null)
          : base(
             GetUnderlyingType(type),
             minimum ?? DefaultMinMax(type, "MinValue"),
@@ -73,13 +73,10 @@ namespace Xcst.PackageModel {
       DefaultMinMax(Type type, string minOrMax) {
 
          type = GetUnderlyingType(type);
-         FieldInfo fld = type.GetField(minOrMax, BindingFlags.Public | BindingFlags.Static);
 
-         if (fld == null) {
-            throw new ArgumentException(
-               $"Could not find a '{minOrMax}' static field on type '{type.FullName}'. Specify an explicit value.",
-               nameof(type));
-         }
+         FieldInfo fld = type.GetField(minOrMax, BindingFlags.Public | BindingFlags.Static)
+            ?? throw new ArgumentException(
+                  $"Could not find a '{minOrMax}' static field on type '{type.FullName}'. Specify an explicit value.", nameof(type));
 
          return Convert.ToString(fld.GetValue(null), MinMaxFormatCulture);
       }

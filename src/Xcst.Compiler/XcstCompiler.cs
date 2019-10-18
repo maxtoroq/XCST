@@ -29,22 +29,22 @@ namespace Xcst.Compiler {
       readonly Processor
       processor;
 
-      readonly Dictionary<QualifiedName, object>
-      parameters = new Dictionary<QualifiedName, object>();
+      readonly Dictionary<QualifiedName, object?>
+      parameters = new Dictionary<QualifiedName, object?>();
 
-      Type[]
+      Type[]?
       tbaseTypes;
 
-      public string
+      public string?
       TargetNamespace { get; set; }
 
-      public string
+      public string?
       TargetClass { get; set; }
 
-      public string
+      public string?
       TargetVisibility { get; set; }
 
-      public string[]
+      public string[]?
       TargetBaseTypes { get; set; }
 
       public bool
@@ -53,31 +53,31 @@ namespace Xcst.Compiler {
       public bool
       NamedPackage { get; set; }
 
-      public string
+      public string?
       UsePackageBase { get; set; }
 
-      public Func<string, Type>
+      public Func<string, Type?>?
       PackageTypeResolver { get; set; }
 
-      public Func<string, Uri>
+      public Func<string, Uri?>?
       PackageLocationResolver { get; set; }
 
-      public string
+      public string?
       PackagesLocation { get; set; }
 
-      public string
+      public string?
       PackageFileExtension { get; set; }
 
-      public XmlResolver
+      public XmlResolver?
       ModuleResolver { get; set; }
 
       public bool
       UseLineDirective { get; set; }
 
-      public string
+      public string?
       NewLineChars { get; set; }
 
-      public string
+      public string?
       IndentChars { get; set; }
 
       public bool
@@ -93,12 +93,12 @@ namespace Xcst.Compiler {
       }
 
       public void
-      SetTargetBaseTypes(params Type[] targetBaseTypes) {
+      SetTargetBaseTypes(params Type[]? targetBaseTypes) {
          this.tbaseTypes = targetBaseTypes;
       }
 
       public void
-      SetParameter(QualifiedName name, object value) {
+      SetParameter(QualifiedName name, object? value) {
 
          if (name == null) throw new ArgumentNullException(nameof(name));
          if (String.IsNullOrEmpty(name.Namespace)) throw new ArgumentException($"{nameof(name)} must be a qualified name.", nameof(name));
@@ -107,9 +107,9 @@ namespace Xcst.Compiler {
       }
 
       public void
-      SetParameter(QualifiedName name, Type value) {
+      SetParameter(QualifiedName name, Type? value) {
 
-         object objValue = null;
+         object? objValue = null;
 
          if (value != null) {
             DocumentBuilder docBuilder = this.processor.NewDocumentBuilder();
@@ -140,11 +140,11 @@ namespace Xcst.Compiler {
       }
 
       public CompileResult
-      Compile(Stream source, Uri baseUri = null) =>
+      Compile(Stream source, Uri? baseUri = null) =>
          Compile(docb => docb.Build(source), baseUri);
 
       public CompileResult
-      Compile(TextReader source, Uri baseUri = null) =>
+      Compile(TextReader source, Uri? baseUri = null) =>
          Compile(docb => docb.Build(source), baseUri);
 
       public CompileResult
@@ -152,7 +152,7 @@ namespace Xcst.Compiler {
          Compile(docb => docb.Build(source));
 
       CompileResult
-      Compile(Func<DocumentBuilder, XdmNode> buildFn, Uri baseUri = null) {
+      Compile(Func<DocumentBuilder, XdmNode> buildFn, Uri? baseUri = null) {
 
          var moduleResolver = GetModuleResolverOrDefault(this.ModuleResolver);
          var loggingResolver = new LoggingResolver(moduleResolver);
@@ -173,8 +173,8 @@ namespace Xcst.Compiler {
 
             var locator = ex.getLocator();
 
-            QualifiedName errorCode = null;
-            string errorLocal = ex.getErrorCodeLocalPart();
+            QualifiedName? errorCode = null;
+            string? errorLocal = ex.getErrorCodeLocalPart();
 
             if (!String.IsNullOrEmpty(errorLocal)) {
                errorCode = new QualifiedName(errorLocal, ex.getErrorCodeNamespace());
@@ -200,7 +200,7 @@ namespace Xcst.Compiler {
             XdmValue errorObject = ex.GetErrorObject();
             var errorData = ModuleUriAndLineNumberFromErrorObject(errorObject);
 
-            string moduleUri = errorData.Item1 ?? ex.ModuleUri;
+            string? moduleUri = errorData.Item1 ?? ex.ModuleUri;
             int lineNumber = errorData.Item2 ?? ex.LineNumber;
 
             throw new CompileException(ex.Message,
@@ -352,14 +352,14 @@ namespace Xcst.Compiler {
       }
 
       internal static XmlResolver
-      GetModuleResolverOrDefault(XmlResolver moduleResolver) =>
+      GetModuleResolverOrDefault(XmlResolver? moduleResolver) =>
          moduleResolver ?? new XmlUrlResolver();
 
       internal static QName
       CompilerQName(string local) =>
          new QName(XmlNamespaces.XcstCompiled, local);
 
-      internal static Tuple<string, int?>
+      internal static Tuple<string?, int?>
       ModuleUriAndLineNumberFromErrorObject(XdmValue errorObject) {
 
          XdmAtomicValue[] values = errorObject
@@ -367,7 +367,7 @@ namespace Xcst.Compiler {
             .AsAtomicValues()
             .ToArray();
 
-         string moduleUri = values
+         string? moduleUri = values
             .Select(x => x.ToString())
             .FirstOrDefault();
 
@@ -411,7 +411,7 @@ namespace Xcst.Compiler {
             output.Position = 0;
 
             docBuilder.BaseUri = docBuilder.BaseUri
-               ?? new Uri("", UriKind.Relative);
+               ?? new Uri(String.Empty, UriKind.Relative);
 
             return docBuilder.Build(output)
                .FirstElementOrSelf();

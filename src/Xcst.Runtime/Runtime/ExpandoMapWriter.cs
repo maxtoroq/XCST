@@ -20,8 +20,8 @@ using Xcst.PackageModel;
 
 namespace Xcst.Runtime {
 
-   using IExpandoMap = IDictionary<string, object>;
-   using ExpandoArray = List<object>;
+   using IExpandoMap = IDictionary<string, object?>;
+   using ExpandoArray = List<object?>;
 
    class ExpandoEntry {
 
@@ -36,10 +36,10 @@ namespace Xcst.Runtime {
 
    public class ExpandoMapWriter : MapWriter {
 
-      readonly ISequenceWriter<ExpandoObject>
+      readonly ISequenceWriter<ExpandoObject>?
       mapOutput;
 
-      readonly ISequenceWriter<object>
+      readonly ISequenceWriter<object>?
       arrayOutput;
 
       readonly List<object>
@@ -72,6 +72,8 @@ namespace Xcst.Runtime {
 
          if (this.objects.Count == 0) {
 
+            Debug.Assert(this.mapOutput != null);
+
             this.mapOutput.WriteObject(map);
             Push(map);
             return;
@@ -101,7 +103,7 @@ namespace Xcst.Runtime {
       WriteStartArray() {
 
          var arr = new ExpandoArray();
-         object parent;
+         object? parent;
 
          if (this.objects.Count == 0
             || (parent = Peek<object>()) is ExpandoEntry
@@ -121,6 +123,8 @@ namespace Xcst.Runtime {
 
          var array = Peek<ExpandoArray>();
 
+         Debug.Assert(array != null);
+
          WriteEndArray(array);
       }
 
@@ -129,7 +133,7 @@ namespace Xcst.Runtime {
 
          Debug.Assert(array != null);
 
-         object[] items = array.ToArray();
+         object?[] items = array.ToArray();
 
          array.Clear();
 
@@ -140,7 +144,6 @@ namespace Xcst.Runtime {
          if (this.objects.Count == 0) {
 
             // Cast to object to avoid flattening
-
             this.arrayOutput.WriteObject((object)items);
 
          } else {
@@ -167,11 +170,8 @@ namespace Xcst.Runtime {
 
          if (key == null) throw new ArgumentNullException(nameof(key));
 
-         var map = Peek<IExpandoMap>();
-
-         if (map == null) {
-            throw new RuntimeException("An entry can only be written to a map.");
-         }
+         var map = Peek<IExpandoMap>()
+            ?? throw new RuntimeException("An entry can only be written to a map.");
 
          Push(new ExpandoEntry(key));
       }
@@ -200,19 +200,19 @@ namespace Xcst.Runtime {
 
             WriteEndArray(implicitArray);
 
-            entry = Peek<ExpandoEntry>();
+            var entry2 = Peek<ExpandoEntry>();
 
-            Debug.Assert(entry != null);
+            Debug.Assert(entry2 != null);
          }
 
          Pop();
       }
 
       public override void
-      WriteComment(string text) { }
+      WriteComment(string? text) { }
 
       public override void
-      WriteObject(object value) {
+      WriteObject(object? value) {
 
          var parent = Peek<object>();
 
@@ -230,26 +230,26 @@ namespace Xcst.Runtime {
       }
 
       public override void
-      WriteRaw(string data) {
+      WriteRaw(string? data) {
          throw new NotImplementedException();
       }
 
       public override void
-      CopyOf(object value) {
+      CopyOf(object? value) {
          throw new NotImplementedException();
       }
 
       void
       Push(object obj) => this.objects.Add(obj);
 
-      T/*?*/
+      T?
       Peek<T>(int offset = 0) where T : class {
 
-         int index = this.objects.Count - 1 - offset;
+         int i = this.objects.Count - 1 - offset;
 
-         Debug.Assert(index >= 0);
+         Debug.Assert(i >= 0);
 
-         return this.objects[index] as T;
+         return this.objects[i] as T;
       }
 
       void
@@ -261,7 +261,7 @@ namespace Xcst.Runtime {
       }
 
       void
-      SetEntryValue(ExpandoEntry entry, object value) {
+      SetEntryValue(ExpandoEntry entry, object? value) {
 
          var map = Peek<IExpandoMap>(1);
 
@@ -271,7 +271,7 @@ namespace Xcst.Runtime {
             map[entry.Key] = value;
          } else {
 
-            object existingValue = map[entry.Key];
+            object? existingValue = map[entry.Key];
             var implicitArray = new ExpandoArray { existingValue, value };
 
             Push(implicitArray);

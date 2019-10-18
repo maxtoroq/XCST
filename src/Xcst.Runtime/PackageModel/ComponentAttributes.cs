@@ -18,7 +18,7 @@ namespace Xcst.PackageModel {
 
    public abstract class XcstComponentAttribute : Attribute {
 
-      public string
+      public string?
       Name { get; set; }
    }
 

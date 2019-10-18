@@ -21,17 +21,19 @@ namespace Xcst {
    [Serializable]
    public class RuntimeException : Exception {
 
-      readonly QualifiedName
+      static readonly QualifiedName DefaultCode = DynamicError.Code("XTDE0000");
+
+      readonly QualifiedName?
       _ErrorCode;
 
       public QualifiedName
-      ErrorCode => _ErrorCode;
+      ErrorCode => _ErrorCode ?? DefaultCode;
 
       public
-      RuntimeException(string message, QualifiedName errorCode = null)
+      RuntimeException(string message, QualifiedName? errorCode = null)
          : base(message) {
 
-         _ErrorCode = errorCode ?? DynamicError.Code("XTDE0000");
+         _ErrorCode = errorCode;
       }
 
       protected

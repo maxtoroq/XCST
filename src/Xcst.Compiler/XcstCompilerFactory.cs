@@ -185,18 +185,16 @@ namespace Xcst.Compiler {
          writer.WriteEndElement();
       }
 
-      Stream
+      Stream?
       LoadExtension(Uri ns) {
 
-         Func<Stream> loader;
+         if (this.EnableExtensions
+            && this.extensions.TryGetValue(ns, out Func<Stream> loader)) {
 
-         if (!this.EnableExtensions
-            || !this.extensions.TryGetValue(ns, out loader)) {
-
-            return null;
+            return loader();
          }
 
-         return loader();
+         return null;
       }
 
       class CompilerResolver : XmlResolver {
@@ -216,14 +214,14 @@ namespace Xcst.Compiler {
          readonly Func<Stream>
          loadExtensionsModuleFn;
 
-         readonly Func<Uri, Stream>
+         readonly Func<Uri, Stream?>
          loadExtensionXslt;
 
          public override ICredentials
          Credentials { set { } }
 
          public
-         CompilerResolver(ZipArchive archive, Uri principalModuleUri, Func<Stream> loadExtensionsModuleFn, Func<Uri, Stream> loadExtensionXslt) {
+         CompilerResolver(ZipArchive archive, Uri principalModuleUri, Func<Stream> loadExtensionsModuleFn, Func<Uri, Stream?> loadExtensionXslt) {
 
             if (archive == null) throw new ArgumentNullException(nameof(archive));
             if (principalModuleUri == null) throw new ArgumentNullException(nameof(principalModuleUri));
@@ -238,7 +236,7 @@ namespace Xcst.Compiler {
             this.loadExtensionXslt = loadExtensionXslt;
          }
 
-         public override object
+         public override object?
          GetEntity(Uri absoluteUri, string role, Type ofObjectToReturn) {
 
             if (absoluteUri == null) throw new ArgumentNullException(nameof(absoluteUri));

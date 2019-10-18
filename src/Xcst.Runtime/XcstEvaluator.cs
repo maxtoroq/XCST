@@ -30,13 +30,13 @@ namespace Xcst {
       readonly IXcstPackage
       package;
 
-      readonly Dictionary<string, object>
-      parameters = new Dictionary<string, object>();
+      readonly Dictionary<string, object?>
+      parameters = new Dictionary<string, object?>();
 
       bool
       paramsLocked = false;
 
-      PrimingContext
+      PrimingContext?
       primingContext;
 
       public static XcstEvaluator
@@ -60,7 +60,7 @@ namespace Xcst {
       }
 
       public XcstEvaluator
-      WithParam(string name, object/*?*/ value) {
+      WithParam(string name, object? value) {
 
          if (name == null) throw new ArgumentNullException(nameof(name));
 
@@ -78,7 +78,7 @@ namespace Xcst {
       }
 
       public XcstEvaluator
-      WithParams(object/*?*/ parameters) {
+      WithParams(object? parameters) {
 
          if (parameters != null) {
             WithParams(ObjectToDictionary(parameters));
@@ -88,7 +88,7 @@ namespace Xcst {
       }
 
       public XcstEvaluator
-      WithParams(IDictionary<string, object>/*?*/ parameters) {
+      WithParams(IDictionary<string, object?>? parameters) {
 
          if (parameters != null) {
 
@@ -100,14 +100,14 @@ namespace Xcst {
          return this;
       }
 
-      internal static IDictionary<string, object>
-      ObjectToDictionary(object/*?*/ values) {
+      internal static IDictionary<string, object?>
+      ObjectToDictionary(object? values) {
 
-         IDictionary<string, object> dict = null;
+         IDictionary<string, object?>? dict = null;
 
          if (values != null) {
 
-            dict = values as IDictionary<string, object>;
+            dict = values as IDictionary<string, object?>;
 
             if (dict != null) {
                return dict;
@@ -115,7 +115,7 @@ namespace Xcst {
          }
 
          if (dict == null) {
-            dict = new Dictionary<string, object>();
+            dict = new Dictionary<string, object?>();
          }
 
          if (values != null) {
@@ -182,11 +182,11 @@ namespace Xcst {
       readonly QualifiedName
       name;
 
-      readonly Dictionary<string, object>
-      templateParameters = new Dictionary<string, object>();
+      readonly Dictionary<string, object?>
+      templateParameters = new Dictionary<string, object?>();
 
-      readonly Dictionary<string, object>
-      tunnelParameters = new Dictionary<string, object>();
+      readonly Dictionary<string, object?>
+      tunnelParameters = new Dictionary<string, object?>();
 
       internal
       XcstTemplateEvaluator(IXcstPackage package, Func<PrimingContext> primeFn, QualifiedName name) {
@@ -201,7 +201,7 @@ namespace Xcst {
       }
 
       public XcstTemplateEvaluator
-      WithParam(string name, object/*?*/ value, bool tunnel = false) {
+      WithParam(string name, object? value, bool tunnel = false) {
 
          if (name == null) throw new ArgumentNullException(nameof(name));
 
@@ -215,7 +215,7 @@ namespace Xcst {
       }
 
       public XcstTemplateEvaluator
-      WithParams(object/*?*/ parameters) {
+      WithParams(object? parameters) {
 
          if (parameters != null) {
             WithParams(XcstEvaluator.ObjectToDictionary(parameters));
@@ -225,7 +225,7 @@ namespace Xcst {
       }
 
       public XcstTemplateEvaluator
-      WithParams(IDictionary<string, object>/*?*/ parameters) {
+      WithParams(IDictionary<string, object?>? parameters) {
 
          if (parameters != null) {
 
@@ -238,7 +238,7 @@ namespace Xcst {
       }
 
       public XcstTemplateEvaluator
-      WithTunnelParams(object/*?*/ parameters) {
+      WithTunnelParams(object? parameters) {
 
          if (parameters != null) {
             WithTunnelParams(XcstEvaluator.ObjectToDictionary(parameters));
@@ -248,7 +248,7 @@ namespace Xcst {
       }
 
       public XcstTemplateEvaluator
-      WithTunnelParams(IDictionary<string, object>/*?*/ parameters) {
+      WithTunnelParams(IDictionary<string, object?>? parameters) {
 
          if (parameters != null) {
 
@@ -329,7 +329,7 @@ namespace Xcst {
 
          Action<TemplateContext> tmplFn = this.package.GetTemplate<TBase>(this.name, output);
 
-         void executionFn(OutputParameters overrideParams, bool skipFlush, TemplateContext tmplContext) =>
+         void executionFn(OutputParameters? overrideParams, bool skipFlush, TemplateContext tmplContext) =>
             tmplFn(tmplContext);
 
          return CreateOutputter(executionFn);
@@ -338,29 +338,29 @@ namespace Xcst {
       XcstOutputter
       CreateOutputter(CreateWriterDelegate writerFn) {
 
-         void executionFn(OutputParameters overrideParams, bool skipFlush, TemplateContext tmplContext) =>
+         void executionFn(OutputParameters? overrideParams, bool skipFlush, TemplateContext tmplContext) =>
             EvaluateToWriter(writerFn, overrideParams, skipFlush, tmplContext);
 
          return CreateOutputter(executionFn);
       }
 
       XcstOutputter
-      CreateOutputter(Action<OutputParameters, bool, TemplateContext> executionFn) {
+      CreateOutputter(Action<OutputParameters?, bool, TemplateContext> executionFn) {
 
          // it's important to keep template parameters' variables outside the execution delegate
          // so subsequent modifications do not affect previously created outputters
 
-         var templateParams = new Dictionary<string, object>(this.templateParameters);
-         var tunnelParams = new Dictionary<string, object>(this.tunnelParameters);
+         var templateParams = new Dictionary<string, object?>(this.templateParameters);
+         var tunnelParams = new Dictionary<string, object?>(this.tunnelParameters);
 
-         void executionFn2(OutputParameters overrideParams, bool skipFlush) =>
+         void executionFn2(OutputParameters? overrideParams, bool skipFlush) =>
             executionFn(overrideParams, skipFlush, CreateTemplateContext(templateParams, tunnelParams));
 
          return new XcstOutputter(this.package, this.primeFn, executionFn2);
       }
 
       static TemplateContext
-      CreateTemplateContext(Dictionary<string, object> templateParams, Dictionary<string, object> tunnelParams) {
+      CreateTemplateContext(Dictionary<string, object?> templateParams, Dictionary<string, object?> tunnelParams) {
 
          var context = TemplateContext.Create(templateParams.Count, tunnelParams.Count);
 
@@ -376,7 +376,7 @@ namespace Xcst {
       }
 
       void
-      EvaluateToWriter(CreateWriterDelegate writerFn, OutputParameters overrideParams, bool skipFlush, TemplateContext tmplContext) {
+      EvaluateToWriter(CreateWriterDelegate writerFn, OutputParameters? overrideParams, bool skipFlush, TemplateContext tmplContext) {
 
          var defaultParams = new OutputParameters();
          this.package.ReadOutputDefinition(null, defaultParams);
@@ -411,23 +411,23 @@ namespace Xcst {
       readonly Func<PrimingContext>
       primeFn;
 
-      readonly Action<OutputParameters, bool>
+      readonly Action<OutputParameters?, bool>
       executionFn;
 
-      OutputParameters
+      OutputParameters?
       parameters;
 
-      Func<IFormatProvider>
+      Func<IFormatProvider>?
       formatProviderFn;
 
-      Uri
+      Uri?
       baseUri;
 
-      Uri
+      Uri?
       baseOutputUri;
 
       internal
-      XcstOutputter(IXcstPackage package, Func<PrimingContext> primeFn, Action<OutputParameters, bool> executionFn) {
+      XcstOutputter(IXcstPackage package, Func<PrimingContext> primeFn, Action<OutputParameters?, bool> executionFn) {
 
          if (package == null) throw new ArgumentNullException(nameof(package));
          if (primeFn == null) throw new ArgumentNullException(nameof(primeFn));
@@ -439,7 +439,7 @@ namespace Xcst {
       }
 
       public XcstOutputter
-      WithParams(OutputParameters/*?*/ parameters) {
+      WithParams(OutputParameters? parameters) {
 
          if (parameters != null) {
             parameters = new OutputParameters(parameters);
@@ -450,7 +450,7 @@ namespace Xcst {
       }
 
       public XcstOutputter
-      WithFormatProvider(IFormatProvider/*?*/ formatProvider) {
+      WithFormatProvider(IFormatProvider? formatProvider) {
 
          if (formatProvider != null) {
             return WithFormatProvider(() => formatProvider);
@@ -461,14 +461,14 @@ namespace Xcst {
       }
 
       public XcstOutputter
-      WithFormatProvider(Func<IFormatProvider>/*?*/ formatProviderFn) {
+      WithFormatProvider(Func<IFormatProvider>? formatProviderFn) {
 
          this.formatProviderFn = formatProviderFn;
          return this;
       }
 
       public XcstOutputter
-      WithBaseUri(Uri/*?*/ baseUri) {
+      WithBaseUri(Uri? baseUri) {
 
          if (baseUri != null
             && !baseUri.IsAbsoluteUri) {
@@ -481,7 +481,7 @@ namespace Xcst {
       }
 
       public XcstOutputter
-      WithBaseOutputUri(Uri/*?*/ baseOutputUri) {
+      WithBaseOutputUri(Uri? baseOutputUri) {
 
          if (baseOutputUri != null
             && !baseOutputUri.IsAbsoluteUri) {

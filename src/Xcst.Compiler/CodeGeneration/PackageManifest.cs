@@ -30,12 +30,12 @@ namespace Xcst.Compiler.CodeGeneration {
          const string ns = XmlNamespaces.XcstGrammar;
          const string prefix = "xcst";
 
-         string methodVisibility(MethodBase m) =>
+         static string methodVisibility(MethodBase m) =>
             (m.IsAbstract) ? "abstract"
             : (m.IsVirtual) ? "public"
             : "final";
 
-         string memberVisibility(MemberInfo m) =>
+         static string memberVisibility(MemberInfo m) =>
             methodVisibility(m as MethodBase ?? ((PropertyInfo)m).GetGetMethod());
 
          writer.WriteStartElement(prefix, "package-manifest", ns);

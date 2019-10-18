@@ -21,21 +21,19 @@ namespace Xcst {
 
    public class OutputParameters {
 
-      readonly Dictionary<QualifiedName, object>
-      parameters = new Dictionary<QualifiedName, object>();
+      readonly Dictionary<QualifiedName, object?>
+      parameters = new Dictionary<QualifiedName, object?>();
 
-      public object
+      public object?
       this[string name] =>
          this[StandardParameters.Parse(name)];
 
-      public object
+      public object?
       this[QualifiedName name] {
          get {
             if (name == null) throw new ArgumentNullException(nameof(name));
 
-            object value;
-
-            if (parameters.TryGetValue(name, out value)) {
+            if (parameters.TryGetValue(name, out var value)) {
                return value;
             }
 
@@ -46,7 +44,7 @@ namespace Xcst {
 
             if (String.IsNullOrEmpty(name.Namespace)) {
 
-               name = StandardParameters.Parse(name.Name);
+               StandardParameters.Parse(name.Name);
 
                throw new ArgumentException("Use the strongly-typed properties to set standard parameters.", nameof(name));
             }
@@ -61,10 +59,10 @@ namespace Xcst {
          set { parameters[StandardParameters.ByteOrderMark] = value; }
       }
 
-      public IList<QualifiedName>
+      public IList<QualifiedName>?
       CdataSectionElements {
          get {
-            var value = (IList<QualifiedName>)this[StandardParameters.CdataSectionElements];
+            var value = (IList<QualifiedName>?)this[StandardParameters.CdataSectionElements];
 
             if (value != null) {
                value = value.ToList();
@@ -77,21 +75,21 @@ namespace Xcst {
          }
       }
 
-      public string
+      public string?
       DoctypePublic {
-         get { return (string)this[StandardParameters.DoctypePublic]; }
+         get { return (string?)this[StandardParameters.DoctypePublic]; }
          set { parameters[StandardParameters.DoctypePublic] = value; }
       }
 
-      public string
+      public string?
       DoctypeSystem {
-         get { return (string)this[StandardParameters.DoctypeSystem]; }
+         get { return (string?)this[StandardParameters.DoctypeSystem]; }
          set { parameters[StandardParameters.DoctypeSystem] = value; }
       }
 
-      public Encoding
+      public Encoding?
       Encoding {
-         get { return (Encoding)this[StandardParameters.Encoding]; }
+         get { return (Encoding?)this[StandardParameters.Encoding]; }
          set { parameters[StandardParameters.Encoding] = value; }
       }
 
@@ -125,21 +123,21 @@ namespace Xcst {
          set { parameters[StandardParameters.IndentSpaces] = value; }
       }
 
-      public string
+      public string?
       ItemSeparator {
-         get { return (string)this[StandardParameters.ItemSeparator]; }
+         get { return (string?)this[StandardParameters.ItemSeparator]; }
          set { parameters[StandardParameters.ItemSeparator] = value; }
       }
 
-      public string
+      public string?
       MediaType {
-         get { return (string)this[StandardParameters.MediaType]; }
+         get { return (string?)this[StandardParameters.MediaType]; }
          set { parameters[StandardParameters.MediaType] = value; }
       }
 
-      public QualifiedName
+      public QualifiedName?
       Method {
-         get { return (QualifiedName)this[StandardParameters.Method]; }
+         get { return (QualifiedName?)this[StandardParameters.Method]; }
          set {
 
             if (value != null
@@ -170,10 +168,10 @@ namespace Xcst {
          set { parameters[StandardParameters.Standalone] = value; }
       }
 
-      public IList<QualifiedName>
+      public IList<QualifiedName>?
       SuppressIndentation {
          get {
-            var value = (IList<QualifiedName>)this[StandardParameters.SuppressIndentation];
+            var value = (IList<QualifiedName>?)this[StandardParameters.SuppressIndentation];
 
             if (value != null) {
                value = value.ToList();
@@ -192,9 +190,9 @@ namespace Xcst {
          set { parameters[StandardParameters.UndeclarePrefixes] = value; }
       }
 
-      public string
+      public string?
       Version {
-         get { return (string)this[StandardParameters.Version]; }
+         get { return (string?)this[StandardParameters.Version]; }
          set { parameters[StandardParameters.Version] = value; }
       }
 

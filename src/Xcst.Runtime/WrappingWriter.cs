@@ -45,14 +45,14 @@ namespace Xcst {
       }
 
       public override bool
-      TryCopyOf(object value) => this.output.TryCopyOf(value);
+      TryCopyOf(object? value) => this.output.TryCopyOf(value);
 
       public override void
       WriteChars(char[] buffer, int index, int count) =>
          this.output.WriteChars(buffer, index, count);
 
       public override void
-      WriteComment(string text) =>
+      WriteComment(string? text) =>
          this.output.WriteComment(text);
 
       public override void
@@ -64,25 +64,25 @@ namespace Xcst {
          this.output.WriteEndElement();
 
       public override void
-      WriteProcessingInstruction(string name, string text) =>
+      WriteProcessingInstruction(string name, string? text) =>
          this.output.WriteProcessingInstruction(name, text);
 
       public override void
-      WriteRaw(string data) => this.output.WriteRaw(data);
+      WriteRaw(string? data) => this.output.WriteRaw(data);
 
       public override void
-      WriteStartAttribute(string prefix, string localName, string ns, string separator) =>
+      WriteStartAttribute(string? prefix, string localName, string? ns, string? separator) =>
          this.output.WriteStartAttribute(prefix, localName, ns, separator);
 
       public override void
-      WriteStartElement(string prefix, string localName, string ns) =>
+      WriteStartElement(string? prefix, string localName, string? ns) =>
          this.output.WriteStartElement(prefix, localName, ns);
 
       public override void
-      WriteString(string text) => this.output.WriteString(text);
+      WriteString(string? text) => this.output.WriteString(text);
 
       protected internal override void
-      WriteItem(object value) => this.output.WriteItem(value);
+      WriteItem(object? value) => this.output.WriteItem(value);
 
       public override void
       Flush() => this.output.Flush();

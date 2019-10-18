@@ -91,13 +91,10 @@ namespace Xcst.Runtime {
       static XcstWriter
       Cast<TItem>(ISequenceWriter<TItem> output) {
 
-         XcstWriter docWriter = output.TryCastToDocumentWriter();
+         XcstWriter docWriter = output.TryCastToDocumentWriter()
+            ?? throw new RuntimeException("Could not cast output to XcstWriter.");
 
-         if (docWriter != null) {
-            return docWriter;
-         }
-
-         throw new RuntimeException("Could not cast output to XcstWriter.");
+         return docWriter;
       }
    }
 }

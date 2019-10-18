@@ -28,7 +28,7 @@ using JArray = Newtonsoft.Json.Linq.JArray;
 
 namespace Xcst {
 
-   public abstract class XcstWriter : ISequenceWriter<object>, IDisposable {
+   public abstract class XcstWriter : ISequenceWriter<object?>, IDisposable {
 
       bool
       disposed;
@@ -54,11 +54,11 @@ namespace Xcst {
          WriteStartElement(null, localName, default(string));
 
       public void
-      WriteStartElement(string localName, string ns) =>
+      WriteStartElement(string localName, string? ns) =>
          WriteStartElement(null, localName, ns);
 
       public abstract void
-      WriteStartElement(string prefix, string localName, string ns);
+      WriteStartElement(string? prefix, string localName, string? ns);
 
       public abstract void
       WriteEndElement();
@@ -71,7 +71,7 @@ namespace Xcst {
          int prefixIndex = lexical.IndexOf(':');
          bool hasPrefix = prefixIndex > 0;
 
-         string prefix = (hasPrefix) ? lexical.Substring(0, prefixIndex) : null;
+         string? prefix = (hasPrefix) ? lexical.Substring(0, prefixIndex) : null;
          string localName = (hasPrefix) ? lexical.Substring(prefixIndex + 1) : lexical;
 
          if (hasPrefix) {
@@ -96,7 +96,7 @@ namespace Xcst {
       }
 
       public void
-      WriteAttributeString(string localName, string value) {
+      WriteAttributeString(string localName, string? value) {
 
          WriteStartAttribute(null, localName, default(string));
          WriteString(value);
@@ -104,7 +104,7 @@ namespace Xcst {
       }
 
       public void
-      WriteAttributeString(string prefix, string localName, string ns, string value) {
+      WriteAttributeString(string? prefix, string localName, string? ns, string value) {
 
          WriteStartAttribute(prefix, localName, ns);
          WriteString(value);
@@ -116,15 +116,15 @@ namespace Xcst {
          WriteStartAttribute(null, localName, default(string), default(string));
 
       public void
-      WriteStartAttribute(string localName, string ns) =>
+      WriteStartAttribute(string localName, string? ns) =>
          WriteStartAttribute(null, localName, ns, default(string));
 
       public void
-      WriteStartAttribute(string prefix, string localName, string ns) =>
+      WriteStartAttribute(string? prefix, string localName, string? ns) =>
          WriteStartAttribute(prefix, localName, ns, default(string));
 
       public abstract void
-      WriteStartAttribute(string prefix, string localName, string ns, string separator);
+      WriteStartAttribute(string? prefix, string localName, string? ns, string? separator);
 
       public abstract void
       WriteEndAttribute();
@@ -148,12 +148,12 @@ namespace Xcst {
       /// <exclude/>
       [EditorBrowsable(EditorBrowsableState.Never)]
       public void
-      WriteStartAttributeLexical(string lexical, string ns, string separator) {
+      WriteStartAttributeLexical(string lexical, string ns, string? separator) {
 
          int prefixIndex = lexical.IndexOf(':');
          bool hasPrefix = prefixIndex > 0;
 
-         string prefix = (hasPrefix) ? lexical.Substring(0, prefixIndex) : null;
+         string? prefix = (hasPrefix) ? lexical.Substring(0, prefixIndex) : null;
          string localName = (hasPrefix) ? lexical.Substring(prefixIndex + 1) : lexical;
 
          if (hasPrefix
@@ -166,19 +166,19 @@ namespace Xcst {
       }
 
       public abstract void
-      WriteProcessingInstruction(string name, string text);
+      WriteProcessingInstruction(string name, string? text);
 
       public abstract void
-      WriteComment(string text);
+      WriteComment(string? text);
 
       public abstract void
-      WriteString(string text);
+      WriteString(string? text);
 
       public abstract void
       WriteChars(char[] buffer, int index, int count);
 
       public abstract void
-      WriteRaw(string data);
+      WriteRaw(string? data);
 
       public abstract void
       Flush();
@@ -202,68 +202,66 @@ namespace Xcst {
 
       #region ISequenceWriter<object> Members
 
-      void ISequenceWriter<object>.
-      WriteString(object text) =>
-         WriteString((string)text);
+      void
+      ISequenceWriter<object?>.WriteString(object? text) =>
+         WriteString((string?)text);
 
-      void ISequenceWriter<object>.
-      WriteRaw(object data) =>
-         WriteRaw((string)data);
+      void
+      ISequenceWriter<object?>.WriteRaw(object? data) =>
+         WriteRaw((string?)data);
 
       public void
-      WriteObject(object value) {
+      WriteObject(object? value) {
 
-         IEnumerable seq = SimpleContent.ValueAsEnumerable(value);
-
-         if (seq != null) {
+         if (SimpleContent.ValueAsEnumerable(value) is IEnumerable seq) {
             WriteSequence(seq);
          } else {
             WriteItem(value);
          }
       }
 
-      void ISequenceWriter<object>.
-      WriteObject(IEnumerable<object> value) =>
-         WriteObject((object)value);
+      void
+      ISequenceWriter<object?>.WriteObject(IEnumerable<object?>? value) =>
+         WriteObject((object?)value);
 
-      void ISequenceWriter<object>.
-      WriteObject<TDerived>(IEnumerable<TDerived> value) =>
-         WriteObject((object)value);
+      void
+      ISequenceWriter<object?>.WriteObject<TDerived>(IEnumerable<TDerived>? value) =>
+         WriteObject((object?)value);
 
       public void
-      CopyOf(object value) =>
+      CopyOf(object? value) =>
          CopyOfImpl(value, recurse: false);
 
-      void ISequenceWriter<object>.
-      CopyOf(IEnumerable<object> value) =>
-         CopyOf((object)value);
+      void
+      ISequenceWriter<object?>.CopyOf(IEnumerable<object?>? value) =>
+         CopyOf((object?)value);
 
-      void ISequenceWriter<object>.
-      CopyOf<TDerived>(IEnumerable<TDerived> value) =>
-         CopyOf((object)value);
+      void
+      ISequenceWriter<object?>.CopyOf<TDerived>(IEnumerable<TDerived>? value) =>
+         CopyOf((object?)value);
 
-      public XcstWriter
+      public XcstWriter?
       TryCastToDocumentWriter() => this;
 
-      public MapWriter
+      public MapWriter?
       TryCastToMapWriter() => null;
 
       #endregion
 
       public void
-      WriteObject(string value) =>
+      WriteObject(string? value) =>
          WriteItem(value);
 
       public void
-      WriteObject(IFormattable value) =>
+      WriteObject(IFormattable? value) =>
          WriteItem(value);
 
       public void
-      WriteObject(Array value) =>
+      WriteObject(Array? value) =>
          WriteSequence(value);
 
       protected internal virtual void
-      WriteItem(object value) {
+      WriteItem(object? value) {
 
          if (value != null) {
             WriteString(this.SimpleContent.Convert(value));
@@ -271,7 +269,7 @@ namespace Xcst {
       }
 
       protected void
-      WriteSequence(IEnumerable value) {
+      WriteSequence(IEnumerable? value) {
 
          if (value != null) {
 
@@ -282,7 +280,7 @@ namespace Xcst {
       }
 
       void
-      CopyOfImpl(object value, bool recurse) {
+      CopyOfImpl(object? value, bool recurse) {
 
          if (value == null
             || TryCopyOf(value)) {
@@ -292,9 +290,7 @@ namespace Xcst {
 
          if (!recurse) {
 
-            IEnumerable seq = SimpleContent.ValueAsEnumerable(value, checkToString: false);
-
-            if (seq != null) {
+            if (SimpleContent.ValueAsEnumerable(value, checkToString: false) is IEnumerable seq) {
                CopyOfSequence(seq);
                return;
             }
@@ -304,7 +300,7 @@ namespace Xcst {
       }
 
       public virtual bool
-      TryCopyOf(object value) {
+      TryCopyOf(object? value) {
 
          if (value is XNode xNode) {
             CopyOf(xNode);
@@ -386,7 +382,7 @@ namespace Xcst {
       CopyOf(XmlReader value) {
 
          if (value != null) {
-            new XcstXmlWriter(this).WriteNode(value, true);
+            new XcstXmlWriter(this).WriteNode(value, defattr: true);
          }
       }
 

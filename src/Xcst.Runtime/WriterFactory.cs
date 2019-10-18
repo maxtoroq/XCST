@@ -21,19 +21,19 @@ using Xcst.Xml;
 
 namespace Xcst {
 
-   delegate RuntimeWriter CreateWriterDelegate(OutputParameters defaultParams, OutputParameters/*?*/ overrideParams, ExecutionContext context);
+   delegate RuntimeWriter CreateWriterDelegate(OutputParameters defaultParams, OutputParameters? overrideParams, ExecutionContext context);
 
    static class WriterFactory {
 
       internal static readonly Uri
-      AbsentOutputUri = new Uri("", UriKind.Relative);
+      AbsentOutputUri = new Uri(String.Empty, UriKind.Relative);
 
       public static CreateWriterDelegate
-      CreateWriter(Stream output, Uri/*?*/ outputUri) =>
+      CreateWriter(Stream output, Uri? outputUri) =>
          CreateWriter(p => CreateXmlWriter(output, p), outputUri);
 
       public static CreateWriterDelegate
-      CreateWriter(TextWriter output, Uri/*?*/ outputUri) =>
+      CreateWriter(TextWriter output, Uri? outputUri) =>
          CreateWriter(p => CreateXmlWriter(output, p), outputUri);
 
       public static CreateWriterDelegate
@@ -45,7 +45,7 @@ namespace Xcst {
          CreateWriter(p => CreateXmlWriter(file, p), file, dispose: true);
 
       public static CreateWriterDelegate
-      CreateWriter(XmlWriter output, Uri/*?*/ outputUri) =>
+      CreateWriter(XmlWriter output, Uri? outputUri) =>
          CreateWriter(p => output, outputUri);
 
       public static CreateWriterDelegate
@@ -60,7 +60,7 @@ namespace Xcst {
       }
 
       static CreateWriterDelegate
-      CreateWriter(Func<OutputParameters, XmlWriter> writerFn, Uri/*?*/ outputUri, bool dispose = false) {
+      CreateWriter(Func<OutputParameters, XmlWriter> writerFn, Uri? outputUri, bool dispose = false) {
 
          return (defaultParams, overrideParams, context) => {
 
@@ -84,7 +84,7 @@ namespace Xcst {
       }
 
       static OutputParameters
-      MergedParameters(OutputParameters defaultParams, OutputParameters overrideParams) {
+      MergedParameters(OutputParameters defaultParams, OutputParameters? overrideParams) {
 
          if (defaultParams == null) throw new ArgumentNullException(nameof(defaultParams));
 
@@ -107,7 +107,7 @@ namespace Xcst {
          return new XmlXcstWriter(finalWriter, outputUri, parameters);
       }
 
-      static XmlWriter
+      static XmlWriter?
       WrapHtmlWriter(XmlWriter writer, OutputParameters parameters) {
 
          if (parameters.Method == OutputParameters.Methods.Html
@@ -121,7 +121,7 @@ namespace Xcst {
          return null;
       }
 
-      static XmlWriter
+      static XmlWriter?
       WrapXHtmlWriter(XmlWriter writer, OutputParameters parameters) {
 
          if (parameters.Method == OutputParameters.Methods.XHtml) {

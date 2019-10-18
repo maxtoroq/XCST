@@ -14,7 +14,7 @@ namespace Xcst {
    partial class AssemblyInfo {
 
       public const string
-      XcstMajorMinor = "0.104";
+      XcstMajorMinor = "0.105";
 
       public const string
       XcstAssemblyVersion = "1.0.0";

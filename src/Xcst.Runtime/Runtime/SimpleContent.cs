@@ -78,9 +78,7 @@ namespace Xcst.Runtime {
       public string
       Join(string separator, object value) {
 
-         IEnumerable seq = ValueAsEnumerable(value);
-
-         if (seq != null) {
+         if (ValueAsEnumerable(value) is IEnumerable seq) {
             return JoinSequence(separator, seq);
          }
 
@@ -111,8 +109,8 @@ namespace Xcst.Runtime {
             .Select(v => Convert(v)));
       }
 
-      internal static IEnumerable
-      ValueAsEnumerable(object value, bool checkToString = true) {
+      internal static IEnumerable?
+      ValueAsEnumerable(object? value, bool checkToString = true) {
 
          if (value == null
             || value is string
@@ -162,9 +160,7 @@ namespace Xcst.Runtime {
 
          for (int i = 0; i < args.Length; i++) {
 
-            IEnumerable seq = ValueAsEnumerable(args[i]);
-
-            if (seq != null) {
+            if (ValueAsEnumerable(args[i]) is IEnumerable seq) {
                args[i] = Join(" ", seq);
             }
          }
@@ -177,7 +173,7 @@ namespace Xcst.Runtime {
          System.Convert.ToString(value, this.FormatProvider);
 
       public static string
-      Trim(string/*?*/ value) {
+      Trim(string? value) {
 
          if (String.IsNullOrEmpty(value)) {
             return String.Empty;
@@ -193,7 +189,7 @@ namespace Xcst.Runtime {
             return String.Empty;
          }
 
-         StringBuilder sb = null;
+         StringBuilder? sb = null;
          int idx, idxStart = 0, idxSpace = 0;
 
          for (idx = 0; idx < value.Length; idx++) {

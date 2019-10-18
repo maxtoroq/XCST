@@ -20,19 +20,19 @@ namespace Xcst.Compiler {
    [Serializable]
    public class CompileException : Exception {
 
-      readonly QualifiedName
+      readonly QualifiedName?
       _ErrorCode;
 
-      readonly string
+      readonly string?
       _ModuleUri;
 
       readonly int
       _LineNumber;
 
-      public QualifiedName
+      public QualifiedName?
       ErrorCode => _ErrorCode;
 
-      public string
+      public string?
       ModuleUri => _ModuleUri;
 
       public int
@@ -40,8 +40,8 @@ namespace Xcst.Compiler {
 
       public
       CompileException(string message,
-         QualifiedName errorCode = null,
-         string moduleUri = null,
+         QualifiedName? errorCode = null,
+         string? moduleUri = null,
          int lineNumber = -1) : base(message) {
 
          _ErrorCode = errorCode;

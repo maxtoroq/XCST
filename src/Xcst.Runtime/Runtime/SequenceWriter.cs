@@ -41,7 +41,7 @@ namespace Xcst.Runtime {
       WriteObject(TItem value) => this.buffer.Add(value);
 
       public void
-      WriteObject(IEnumerable<TItem> value) {
+      WriteObject(IEnumerable<TItem>? value) {
 
          if (value != null) {
 
@@ -52,7 +52,7 @@ namespace Xcst.Runtime {
       }
 
       public void
-      WriteObject<TDerived>(IEnumerable<TDerived> value) where TDerived : TItem =>
+      WriteObject<TDerived>(IEnumerable<TDerived>? value) where TDerived : TItem =>
          WriteObject(value as IEnumerable<TItem> ?? value?.Cast<TItem>());
 
       public void
@@ -62,7 +62,7 @@ namespace Xcst.Runtime {
       WriteRaw(TItem data) => WriteObject(data);
 
       public void
-      WriteComment(string text) { }
+      WriteComment(string? text) { }
 
       public void
       CopyOf(TItem value) {
@@ -70,7 +70,7 @@ namespace Xcst.Runtime {
       }
 
       public void
-      CopyOf(IEnumerable<TItem> value) {
+      CopyOf(IEnumerable<TItem>? value) {
 
          if (value != null) {
 
@@ -81,13 +81,13 @@ namespace Xcst.Runtime {
       }
 
       public void
-      CopyOf<TDerived>(IEnumerable<TDerived> value) where TDerived : TItem =>
+      CopyOf<TDerived>(IEnumerable<TDerived>? value) where TDerived : TItem =>
          CopyOf(value as IEnumerable<TItem> ?? value?.Cast<TItem>());
 
-      public XcstWriter
+      public XcstWriter?
       TryCastToDocumentWriter() => null;
 
-      public MapWriter
+      public MapWriter?
       TryCastToMapWriter() => null;
 
       public SequenceWriter<TItem>
@@ -112,7 +112,7 @@ namespace Xcst.Runtime {
       WriteTemplate<TDerived>(
             Action<TemplateContext, ISequenceWriter<TDerived>> template,
             TemplateContext context,
-            Func<TDerived> forTypeInference = null) where TDerived : TItem {
+            Func<TDerived>? forTypeInference = null) where TDerived : TItem {
 
          ISequenceWriter<TDerived> derivedWriter = SequenceWriter.AdjustWriter<TItem, TDerived>(this);
 
@@ -140,13 +140,13 @@ namespace Xcst.Runtime {
    public static class SequenceWriter {
 
       public static SequenceWriter<TItem>
-      Create<TItem>(Func<TItem> forTypeInference = null) =>
+      Create<TItem>(Func<TItem>? forTypeInference = null) =>
          new SequenceWriter<TItem>();
 
       public static ISequenceWriter<TDerived>
       AdjustWriter<TBase, TDerived>(
             ISequenceWriter<TBase> output,
-            Func<TDerived> forTypeInference = null) where TDerived : TBase {
+            Func<TDerived>? forTypeInference = null) where TDerived : TBase {
 
          if (output == null) throw new ArgumentNullException(nameof(output));
 
@@ -157,7 +157,7 @@ namespace Xcst.Runtime {
       public static ISequenceWriter<TDerived>
       AdjustWriterDynamically<TBase, TDerived>(
             ISequenceWriter<TBase> output,
-            Func<TDerived> forTypeInference = null) {
+            Func<TDerived>? forTypeInference = null) {
 
          if (output == null) throw new ArgumentNullException(nameof(output));
 
@@ -174,7 +174,7 @@ namespace Xcst.Runtime {
          throw new RuntimeException($"{typeof(TDerived).FullName} is not compatible with {typeof(TBase).FullName}.");
       }
 
-      public static object
+      public static object?
       DefaultInfer() => default(object);
 
       public static XcstDelegate<TBase>
@@ -200,7 +200,7 @@ namespace Xcst.Runtime {
          this.output.WriteObject(value);
 
       public void
-      WriteObject(IEnumerable<TDerived> value) {
+      WriteObject(IEnumerable<TDerived>? value) {
 
          if (value != null) {
 
@@ -211,7 +211,7 @@ namespace Xcst.Runtime {
       }
 
       public void
-      WriteObject<TDerived2>(IEnumerable<TDerived2> value) where TDerived2 : TDerived =>
+      WriteObject<TDerived2>(IEnumerable<TDerived2>? value) where TDerived2 : TDerived =>
          WriteObject(value as IEnumerable<TDerived> ?? value?.Cast<TDerived>());
 
       public void
@@ -221,13 +221,13 @@ namespace Xcst.Runtime {
       WriteRaw(TDerived data) => this.output.WriteRaw(data);
 
       public void
-      WriteComment(string text) => this.output.WriteComment(text);
+      WriteComment(string? text) => this.output.WriteComment(text);
 
       public void
       CopyOf(TDerived value) => this.output.CopyOf(value);
 
       public void
-      CopyOf(IEnumerable<TDerived> value) {
+      CopyOf(IEnumerable<TDerived>? value) {
 
          if (value != null) {
 
@@ -238,14 +238,14 @@ namespace Xcst.Runtime {
       }
 
       public void
-      CopyOf<TDerived2>(IEnumerable<TDerived2> value) where TDerived2 : TDerived =>
+      CopyOf<TDerived2>(IEnumerable<TDerived2>? value) where TDerived2 : TDerived =>
          CopyOf(value as IEnumerable<TDerived> ?? value?.Cast<TDerived>());
 
-      public XcstWriter
+      public XcstWriter?
       TryCastToDocumentWriter() =>
          this.output.TryCastToDocumentWriter();
 
-      public MapWriter
+      public MapWriter?
       TryCastToMapWriter() => this.output.TryCastToMapWriter();
    }
 }

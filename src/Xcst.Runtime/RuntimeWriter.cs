@@ -43,7 +43,7 @@ namespace Xcst {
       int
       hashCodeUnion;    // Set of hash bits that can quickly guarantee a name is not a duplicate
 
-      string
+      string?
       itemSeparator;
 
       int
@@ -63,7 +63,7 @@ namespace Xcst {
       }
 
       public override void
-      WriteStartElement(string prefix, string localName, string ns) {
+      WriteStartElement(string? prefix, string localName, string? ns) {
 
          if (this.inAttr) {
             throw new RuntimeException("Cannot create an element within an attribute.");
@@ -86,7 +86,7 @@ namespace Xcst {
       }
 
       public override void
-      WriteStartAttribute(string prefix, string localName, string ns, string separator) {
+      WriteStartAttribute(string? prefix, string localName, string? ns, string? separator) {
 
          if (localName == null) throw new ArgumentNullException(nameof(localName));
 
@@ -151,7 +151,7 @@ namespace Xcst {
       }
 
       public override void
-      WriteComment(string text) {
+      WriteComment(string? text) {
 
          if (this.inAttr) {
             throw new RuntimeException("Cannot create a comment within an attribute.");
@@ -166,7 +166,7 @@ namespace Xcst {
       }
 
       public override void
-      WriteProcessingInstruction(string name, string text) {
+      WriteProcessingInstruction(string name, string? text) {
 
          if (this.inAttr) {
             throw new RuntimeException("Cannot create a processing instruction within an attribute.");
@@ -181,7 +181,7 @@ namespace Xcst {
       }
 
       public override void
-      WriteString(string text) {
+      WriteString(string? text) {
 
          if (this.inAttr) {
 
@@ -219,7 +219,7 @@ namespace Xcst {
       }
 
       public override void
-      WriteRaw(string data) {
+      WriteRaw(string? data) {
 
          if (this.inAttr) {
             throw new InvalidOperationException($"Calling {nameof(WriteRaw)} for attributes is not supported.");
@@ -234,7 +234,7 @@ namespace Xcst {
       }
 
       protected internal override void
-      WriteItem(object value) {
+      WriteItem(object? value) {
 
          if (this.inAttr) {
 
@@ -283,7 +283,7 @@ namespace Xcst {
       FlushAttributes() {
 
          int idx = 0, idxNext;
-         string localName;
+         string? localName;
 
          while (idx != this.numEntries) {
 
@@ -299,9 +299,9 @@ namespace Xcst {
 
             if (localName != null) {
 
-               string prefix = this.arrAttrs[idx].Prefix;
-               string ns = this.arrAttrs[idx].Namespace;
-               string separator = this.arrAttrs[idx].Separator;
+               string? prefix = this.arrAttrs[idx].Prefix;
+               string? ns = this.arrAttrs[idx].Namespace;
+               string? separator = this.arrAttrs[idx].Separator;
 
                base.WriteStartAttribute(prefix, localName, ns, null);
 
@@ -311,8 +311,8 @@ namespace Xcst {
                // Output all of this attribute's text
                while (++idx != idxNext) {
 
-                  object obj = this.arrAttrs[idx].Object;
-                  string sep = separator;
+                  object? obj = this.arrAttrs[idx].Object;
+                  string? sep = separator;
 
                   if (obj != null) {
 
@@ -336,7 +336,7 @@ namespace Xcst {
                         base.WriteString(sep);
                      }
 
-                     string text = this.arrAttrs[idx].Text;
+                     string? text = this.arrAttrs[idx].Text;
                      base.WriteString(text);
 
                      lastWasText = true;
@@ -373,7 +373,7 @@ namespace Xcst {
          if (this.lastItem != null
             && (this.lastItem.Value != ItemType.Text || type != ItemType.Text)) {
 
-            string separator = (this.depth == 0 ? this.itemSeparator : null);
+            string? separator = (this.depth == 0 ? this.itemSeparator : null);
 
             if (separator == null
                && this.lastItem.Value == ItemType.Object
@@ -414,22 +414,22 @@ namespace Xcst {
 
       struct AttrNameVal {
 
-         string
+         string?
          localName;
 
-         string
+         string?
          prefix;
 
-         string
+         string?
          namespaceName;
 
-         string
+         string?
          separator;
 
-         string
+         string?
          text;
 
-         object
+         object?
          obj;
 
          int
@@ -438,22 +438,22 @@ namespace Xcst {
          int
          nextNameIndex;
 
-         public string
+         public string?
          LocalName => this.localName;
 
-         public string
+         public string?
          Prefix => this.prefix;
 
-         public string
+         public string?
          Namespace => this.namespaceName;
 
-         public string
+         public string?
          Separator => this.separator;
 
-         public string
+         public string?
          Text => this.text;
 
-         public object
+         public object?
          Object => this.obj;
 
          public int
@@ -466,7 +466,7 @@ namespace Xcst {
          /// Cache an attribute's name and type.
          /// </summary>
          public void
-         Init(string prefix, string localName, string ns, string separator, int hashCode) {
+         Init(string? prefix, string? localName, string? ns, string? separator, int hashCode) {
             this.localName = localName;
             this.prefix = prefix;
             this.namespaceName = ns;
@@ -479,12 +479,12 @@ namespace Xcst {
          /// Cache all or part of the attribute's string value.
          /// </summary>
          public void
-         Init(string text) {
+         Init(string? text) {
             this.text = text;
          }
 
          public void
-         Init(object obj) {
+         Init(object? obj) {
             this.obj = obj;
          }
 
@@ -492,7 +492,7 @@ namespace Xcst {
          /// Returns true if this attribute has the specified name (and thus is a duplicate).
          /// </summary>
          public bool
-         IsDuplicate(string localName, string ns, int hashCode) {
+         IsDuplicate(string localName, string? ns, int hashCode) {
 
             // If attribute is not marked as deleted
             if (this.localName != null) {
@@ -504,7 +504,7 @@ namespace Xcst {
                   if (this.localName.Equals(localName)) {
 
                      // And if namespaces match,
-                     if (this.namespaceName.Equals(ns)) {
+                     if (String.Equals(this.namespaceName, ns)) {
 
                         // Then found duplicate attribute, so mark the attribute as deleted
                         this.localName = null;

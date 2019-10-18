@@ -25,7 +25,7 @@ namespace Xcst.PackageModel {
       static readonly PrimingContext
       EmptyContext = new PrimingContext(0);
 
-      readonly Dictionary<string, object>
+      readonly Dictionary<string, object?>?
       parameters;
 
       public static PrimingContext
@@ -42,12 +42,12 @@ namespace Xcst.PackageModel {
       PrimingContext(int paramCount) {
 
          if (paramCount > 0) {
-            this.parameters = new Dictionary<string, object>(paramCount);
+            this.parameters = new Dictionary<string, object?>(paramCount);
          }
       }
 
       public PrimingContext
-      WithParam(string name, object value) {
+      WithParam(string name, object? value) {
 
          if (name == null) throw new ArgumentNullException(nameof(name));
 
@@ -58,9 +58,9 @@ namespace Xcst.PackageModel {
       }
 
       public TValue
-      Param<TValue>(string name, Func<TValue> defaultValue = null, bool required = false) {
+      Param<TValue>(string name, Func<TValue>? defaultValue = null, bool required = false) {
 
-         object value = null;
+         object? value = null;
 
          if (this.parameters?.TryGetValue(name, out value) == true) {
 

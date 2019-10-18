@@ -2,4 +2,4 @@ before_build:
   - ps: .\build\restore-packages.ps1
 
 version: '{build}'
-image: Visual Studio 2017
+image: Visual Studio 2019

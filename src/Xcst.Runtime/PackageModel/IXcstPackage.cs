@@ -22,12 +22,12 @@ namespace Xcst.PackageModel {
       Context { get; set; }
 
       void
-      Prime(PrimingContext context, string[]/*?*/ overriddenParams);
+      Prime(PrimingContext context, string[]? overriddenParams);
 
       Action<TemplateContext>
       GetTemplate<TBase>(QualifiedName name, ISequenceWriter<TBase> output);
 
       void
-      ReadOutputDefinition(QualifiedName/*?*/ name, OutputParameters parameters);
+      ReadOutputDefinition(QualifiedName? name, OutputParameters parameters);
    }
 }

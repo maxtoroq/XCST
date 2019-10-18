@@ -67,7 +67,7 @@ namespace Xcst.Runtime {
          return Int32.Parse(SimpleContent.Trim(value), style, CultureInfo.InvariantCulture);
       }
 
-      public static string/*?*/
+      public static string?
       ItemSeparator(string value) {
 
          if (value == null) throw new ArgumentNullException(nameof(value));

@@ -62,7 +62,7 @@ namespace Xcst.Xml {
       }
 
       public override void
-      WriteComment(string text) {
+      WriteComment(string? text) {
          WriteXmlDeclaration();
          this.output.WriteComment(text);
       }
@@ -90,30 +90,30 @@ namespace Xcst.Xml {
       }
 
       public override void
-      WriteProcessingInstruction(string name, string text) {
+      WriteProcessingInstruction(string name, string? text) {
          WriteXmlDeclaration();
          this.output.WriteProcessingInstruction(name, text);
       }
 
       public override void
-      WriteRaw(string data) {
+      WriteRaw(string? data) {
          WriteXmlDeclaration();
          this.output.WriteRaw(data);
       }
 
       public override void
-      WriteStartAttribute(string prefix, string localName, string ns, string separator) {
+      WriteStartAttribute(string? prefix, string localName, string? ns, string? separator) {
          this.output.WriteStartAttribute(prefix, localName, ns);
       }
 
       public override void
-      WriteStartElement(string prefix, string localName, string ns) {
+      WriteStartElement(string? prefix, string localName, string? ns) {
          WriteXmlDeclaration();
          this.output.WriteStartElement(prefix, localName, ns);
       }
 
       public override void
-      WriteString(string text) {
+      WriteString(string? text) {
          WriteXmlDeclaration();
          this.output.WriteString(text);
       }

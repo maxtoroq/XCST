@@ -46,7 +46,7 @@ namespace Xcst.Compiler.CodeGeneration {
       MakeRelativeUri(Uri current, Uri compare) =>
          current.MakeRelativeUri(compare);
 
-      internal static Uri
+      internal static Uri?
       FindNamedPackage(string packageName, string packagesLocation, string fileExtension) {
 
          if (packageName == null) throw new ArgumentNullException(nameof(packageName));
@@ -272,10 +272,10 @@ namespace Xcst.Compiler.CodeGeneration {
 
             XdmValue errorObject = new XdmValue(arguments[1].AsItems());
             var errorData = ModuleUriAndLineNumberFromErrorObject(errorObject);
-            string moduleUri = errorData.Item1;
+            string? moduleUri = errorData.Item1;
             int lineNumber = errorData.Item2.GetValueOrDefault();
 
-            XmlResolver moduleResolver = arguments[2].AsItems()
+            XmlResolver? moduleResolver = arguments[2].AsItems()
                .Select(i => UnwrapExternalObject<XmlResolver>(i))
                .SingleOrDefault();
 
@@ -307,8 +307,8 @@ namespace Xcst.Compiler.CodeGeneration {
 
                var locator = ex.getLocator();
 
-               QualifiedName errorCode = null;
-               string errorLocal = ex.getErrorCodeLocalPart();
+               QualifiedName? errorCode = null;
+               string? errorLocal = ex.getErrorCodeLocalPart();
 
                if (!String.IsNullOrEmpty(errorLocal)) {
                   errorCode = new QualifiedName(errorLocal, ex.getErrorCodeNamespace());
@@ -382,19 +382,20 @@ namespace Xcst.Compiler.CodeGeneration {
 
             string typeName = arguments[0].AsAtomicValues().Single().ToString();
 
-            Type defaultTypeResolver(string n) => Type.GetType(n, throwOnError: false);
+            static Type? defaultTypeResolver(string n) =>
+               Type.GetType(n, throwOnError: false);
 
-            Func<string, Type> packageTypeResolver = arguments[1].AsItems()
-               .Select(i => UnwrapExternalObject<Func<string, Type>>(i))
+            Func<string, Type?> packageTypeResolver = arguments[1].AsItems()
+               .Select(i => UnwrapExternalObject<Func<string, Type?>>(i))
                .SingleOrDefault()
                ?? defaultTypeResolver;
 
             XdmValue errorObject = new XdmValue(arguments[2].AsItems());
             var errorData = ModuleUriAndLineNumberFromErrorObject(errorObject);
-            string moduleUri = errorData.Item1;
+            string? moduleUri = errorData.Item1;
             int lineNumber = errorData.Item2.GetValueOrDefault();
 
-            Type packageType;
+            Type? packageType;
             var packageResolveError = new QualifiedName("XTSE3000", XmlNamespaces.XcstErrors);
 
             try {
@@ -431,7 +432,7 @@ namespace Xcst.Compiler.CodeGeneration {
                output.Position = 0;
 
                DocumentBuilder builder = this.processor.NewDocumentBuilder();
-               builder.BaseUri = new Uri("", UriKind.Relative);
+               builder.BaseUri = new Uri(String.Empty, UriKind.Relative);
 
                XdmNode result = builder.Build(output);
 
@@ -473,20 +474,22 @@ namespace Xcst.Compiler.CodeGeneration {
          public override IXdmEnumerator
          Call(IXdmEnumerator[] arguments, DynamicContext context) {
 
-            string packageName = arguments[0].AsAtomicValues().Single().ToString();
+            string packageName = arguments[0].AsAtomicValues()
+               .Single()
+               .ToString();
 
-            Func<string, Uri> packageLocationResolver = arguments[1].AsItems()
-               .Select(i => UnwrapExternalObject<Func<string, Uri>>(i))
+            Func<string, Uri?>? packageLocationResolver = arguments[1].AsItems()
+               .Select(i => UnwrapExternalObject<Func<string, Uri?>>(i))
                .SingleOrDefault();
 
-            Uri/*?*/ usingPackageUri = arguments[2].AsAtomicValues()
+            Uri? usingPackageUri = arguments[2].AsAtomicValues()
                .Select(i => i.Value as Uri ?? new Uri(i.ToString(), UriKind.RelativeOrAbsolute))
                .SingleOrDefault();
 
-            string/*?*/ packagesLocation = arguments[3].AsAtomicValues()
+            string? packagesLocation = arguments[3].AsAtomicValues()
                .SingleOrDefault()?.ToString();
 
-            string/*?*/ packageFileExtension = arguments[4].AsAtomicValues()
+            string? packageFileExtension = arguments[4].AsAtomicValues()
                .SingleOrDefault()?.ToString();
 
             if (packagesLocation == null
@@ -495,7 +498,7 @@ namespace Xcst.Compiler.CodeGeneration {
                packagesLocation = Path.GetDirectoryName(usingPackageUri.LocalPath);
             }
 
-            Uri packageUri = null;
+            Uri? packageUri = null;
 
             if (packageLocationResolver != null) {
                packageUri = packageLocationResolver(packageName);

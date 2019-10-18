@@ -25,13 +25,13 @@ namespace Xcst.PackageModel {
       WriteObject(TItem value);
 
       void
-      WriteObject(IEnumerable<TItem> value);
+      WriteObject(IEnumerable<TItem>? value);
 
       // For cases where IEnumerable<TDerived> cannot be cast to IEnumerable<TItem>
       // e.g. IEnumerable<int> to IEnumerable<object>
 
       void
-      WriteObject<TDerived>(IEnumerable<TDerived> value) where TDerived : TItem;
+      WriteObject<TDerived>(IEnumerable<TDerived>? value) where TDerived : TItem;
 
       void
       WriteString(TItem text);
@@ -40,21 +40,21 @@ namespace Xcst.PackageModel {
       WriteRaw(TItem data);
 
       void
-      WriteComment(string text);
+      WriteComment(string? text);
 
       void
       CopyOf(TItem value);
 
       void
-      CopyOf(IEnumerable<TItem> value);
+      CopyOf(IEnumerable<TItem>? value);
 
       void
-      CopyOf<TDerived>(IEnumerable<TDerived> value) where TDerived : TItem;
+      CopyOf<TDerived>(IEnumerable<TDerived>? value) where TDerived : TItem;
 
-      XcstWriter
+      XcstWriter?
       TryCastToDocumentWriter();
 
-      MapWriter
+      MapWriter?
       TryCastToMapWriter();
    }
 }
