@@ -3354,15 +3354,16 @@
    </function>
 
    <function name="xcst:name-equal" as="xs:boolean">
-      <param name="a" as="item()"/>
-      <param name="b" as="item()"/>
+      <!-- xcst:homonymous might pass empty values -->
+      <param name="a" as="item()?"/>
+      <param name="b" as="item()?"/>
 
       <variable name="strings" select="
          for $item in ($a, $b)
          return if ($item instance of node()) then xcst:name($item)
          else $item"/>
 
-      <sequence select="$strings[1] eq $strings[2]"/>
+      <sequence select="boolean($strings[1] eq $strings[2])"/>
    </function>
 
    <function name="xcst:is-value-template" as="xs:boolean">
