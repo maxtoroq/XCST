@@ -44,7 +44,7 @@ namespace Xcst {
       protected
       XcstWriter(Uri outputUri) {
 
-         if (outputUri == null) throw new ArgumentNullException(nameof(outputUri));
+         if (outputUri is null) throw new ArgumentNullException(nameof(outputUri));
 
          this.OutputUri = outputUri;
       }
@@ -282,7 +282,7 @@ namespace Xcst {
       void
       CopyOfImpl(object? value, bool recurse) {
 
-         if (value == null
+         if (value is null
             || TryCopyOf(value)) {
 
             return;

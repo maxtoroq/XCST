@@ -118,7 +118,7 @@ namespace Xcst.Compiler {
       public void
       RegisterExtension(Uri extensionNamespace, Func<Stream> extensionLoader) {
 
-         if (extensionNamespace == null) {
+         if (extensionNamespace is null) {
             throw new ArgumentNullException(nameof(extensionNamespace));
          }
 
@@ -130,7 +130,7 @@ namespace Xcst.Compiler {
             throw new ArgumentException("Invalid URI.", nameof(extensionNamespace));
          }
 
-         if (extensionLoader == null) {
+         if (extensionLoader is null) {
             throw new ArgumentNullException(nameof(extensionLoader));
          }
 
@@ -140,7 +140,7 @@ namespace Xcst.Compiler {
       public void
       RegisterExtensionsForAssembly(Assembly assembly) {
 
-         if (assembly == null) throw new ArgumentNullException(nameof(assembly));
+         if (assembly is null) throw new ArgumentNullException(nameof(assembly));
 
          var attribs = assembly.GetCustomAttributes<XcstExtensionAttribute>();
 
@@ -223,10 +223,10 @@ namespace Xcst.Compiler {
          public
          CompilerResolver(ZipArchive archive, Uri principalModuleUri, Func<Stream> loadExtensionsModuleFn, Func<Uri, Stream?> loadExtensionXslt) {
 
-            if (archive == null) throw new ArgumentNullException(nameof(archive));
-            if (principalModuleUri == null) throw new ArgumentNullException(nameof(principalModuleUri));
-            if (loadExtensionsModuleFn == null) throw new ArgumentNullException(nameof(loadExtensionsModuleFn));
-            if (loadExtensionXslt == null) throw new ArgumentNullException(nameof(loadExtensionXslt));
+            if (archive is null) throw new ArgumentNullException(nameof(archive));
+            if (principalModuleUri is null) throw new ArgumentNullException(nameof(principalModuleUri));
+            if (loadExtensionsModuleFn is null) throw new ArgumentNullException(nameof(loadExtensionsModuleFn));
+            if (loadExtensionXslt is null) throw new ArgumentNullException(nameof(loadExtensionXslt));
 
             this.archive = archive;
             this.principalModuleUri = principalModuleUri;
@@ -239,7 +239,7 @@ namespace Xcst.Compiler {
          public override object?
          GetEntity(Uri absoluteUri, string role, Type ofObjectToReturn) {
 
-            if (absoluteUri == null) throw new ArgumentNullException(nameof(absoluteUri));
+            if (absoluteUri is null) throw new ArgumentNullException(nameof(absoluteUri));
 
             if (absoluteUri.AbsolutePath.Length <= 1) {
                throw new ArgumentException("The embedded resource name must be specified in the AbsolutePath portion of the supplied Uri.", nameof(absoluteUri));

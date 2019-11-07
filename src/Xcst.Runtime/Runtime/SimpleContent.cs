@@ -52,7 +52,7 @@ namespace Xcst.Runtime {
       public
       SimpleContent(Func<IFormatProvider> formatProviderFn) {
 
-         if (formatProviderFn == null) throw new ArgumentNullException(nameof(formatProviderFn));
+         if (formatProviderFn is null) throw new ArgumentNullException(nameof(formatProviderFn));
 
          this.formatProviderFn = formatProviderFn;
       }
@@ -68,7 +68,7 @@ namespace Xcst.Runtime {
       public string
       Join(string separator, IEnumerable<string> value) {
 
-         if (value == null) {
+         if (value is null) {
             return String.Empty;
          }
 
@@ -99,7 +99,7 @@ namespace Xcst.Runtime {
       protected string
       JoinSequence(string separator, IEnumerable value) {
 
-         if (value == null) {
+         if (value is null) {
             return String.Empty;
          }
 
@@ -112,7 +112,7 @@ namespace Xcst.Runtime {
       internal static IEnumerable?
       ValueAsEnumerable(object? value, bool checkToString = true) {
 
-         if (value == null
+         if (value is null
             || value is string
             || value is IFormattable) {
 
@@ -204,7 +204,7 @@ namespace Xcst.Runtime {
                } else if (value[idx] != ' ' || idxSpace == idx) {
 
                   // Space was previous character or this is a non-space character
-                  if (sb == null) {
+                  if (sb is null) {
                      sb = new StringBuilder(value.Length);
                   } else {
                      sb.Append(' ');
@@ -226,7 +226,7 @@ namespace Xcst.Runtime {
             }
          }
 
-         if (sb == null) {
+         if (sb is null) {
 
             // Check for string that is entirely composed of whitespace
             if (idxStart == idx) {

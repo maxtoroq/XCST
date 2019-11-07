@@ -73,7 +73,7 @@ namespace Xcst.Xml {
       protected
       WrappingXmlWriter(XmlWriter baseWriter) {
 
-         if (baseWriter == null) throw new ArgumentNullException(nameof(baseWriter));
+         if (baseWriter is null) throw new ArgumentNullException(nameof(baseWriter));
 
          this.output = baseWriter;
       }

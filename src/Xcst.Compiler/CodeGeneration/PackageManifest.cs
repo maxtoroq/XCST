@@ -160,7 +160,7 @@ namespace Xcst.Compiler.CodeGeneration {
          const string ns = XmlNamespaces.XcstCode;
          const string prefix = "code";
 
-         if (value == null) {
+         if (value is null) {
             writer.WriteStartElement(prefix, "null", ns);
             writer.WriteEndElement();
             return;

@@ -88,17 +88,17 @@ namespace Xcst {
       public override void
       WriteStartAttribute(string? prefix, string localName, string? ns, string? separator) {
 
-         if (localName == null) throw new ArgumentNullException(nameof(localName));
+         if (localName is null) throw new ArgumentNullException(nameof(localName));
 
          if (this.inAttr) {
             throw new RuntimeException("Cannot create an attribute within another attribute.");
          }
 
-         if (prefix == null) {
+         if (prefix is null) {
             prefix = String.Empty;
          }
 
-         if (ns == null) {
+         if (ns is null) {
             ns = String.Empty;
          }
 
@@ -264,7 +264,7 @@ namespace Xcst {
          // Ensure that attribute array has been created and is large enough for at least one
          // additional entry.
 
-         if (this.arrAttrs == null) {
+         if (this.arrAttrs is null) {
 
             // Create caching array
             this.arrAttrs = new AttrNameVal[32];
@@ -375,7 +375,7 @@ namespace Xcst {
 
             string? separator = (this.depth == 0 ? this.itemSeparator : null);
 
-            if (separator == null
+            if (separator is null
                && this.lastItem.Value == ItemType.Object
                && type == ItemType.Object) {
 

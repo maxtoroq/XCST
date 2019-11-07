@@ -29,7 +29,7 @@ namespace Xcst.Compiler.CodeGeneration {
       internal static string
       LocalPath(Uri uri) {
 
-         if (uri == null) throw new ArgumentNullException(nameof(uri));
+         if (uri is null) throw new ArgumentNullException(nameof(uri));
 
          if (!uri.IsAbsoluteUri) {
             return uri.OriginalString;
@@ -49,7 +49,7 @@ namespace Xcst.Compiler.CodeGeneration {
       internal static Uri?
       FindNamedPackage(string packageName, string packagesLocation, string fileExtension) {
 
-         if (packageName == null) throw new ArgumentNullException(nameof(packageName));
+         if (packageName is null) throw new ArgumentNullException(nameof(packageName));
          if (packageName.Length == 0) throw new ArgumentException(nameof(packageName));
 
          string dir = packagesLocation;
@@ -410,7 +410,7 @@ namespace Xcst.Compiler.CodeGeneration {
                );
             }
 
-            if (packageType == null) {
+            if (packageType is null) {
                return EmptyEnumerator.INSTANCE;
             }
 
@@ -492,7 +492,7 @@ namespace Xcst.Compiler.CodeGeneration {
             string? packageFileExtension = arguments[4].AsAtomicValues()
                .SingleOrDefault()?.ToString();
 
-            if (packagesLocation == null
+            if (packagesLocation is null
                && usingPackageUri?.IsFile == true) {
 
                packagesLocation = Path.GetDirectoryName(usingPackageUri.LocalPath);

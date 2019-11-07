@@ -41,7 +41,7 @@ namespace Xcst {
       public
       QualifiedName(string name, string? ns) {
 
-         if (name == null) throw new ArgumentNullException(nameof(name));
+         if (name is null) throw new ArgumentNullException(nameof(name));
          if (String.IsNullOrWhiteSpace(name)) throw new ArgumentException($"{nameof(name)} cannot be empty.", nameof(name));
 
          _Name = name;
@@ -55,7 +55,7 @@ namespace Xcst {
       public virtual bool
       Equals(QualifiedName? other) {
 
-         if (other == null) {
+         if (other is null) {
             return false;
          }
 
@@ -90,7 +90,7 @@ namespace Xcst {
       public static QualifiedName
       Parse(string localOrUriQualifiedName) {
 
-         if (localOrUriQualifiedName == null) throw new ArgumentNullException(nameof(localOrUriQualifiedName));
+         if (localOrUriQualifiedName is null) throw new ArgumentNullException(nameof(localOrUriQualifiedName));
          if (String.IsNullOrWhiteSpace(localOrUriQualifiedName)) throw new ArgumentException($"{nameof(localOrUriQualifiedName)} cannot be empty.", nameof(localOrUriQualifiedName));
 
          if (localOrUriQualifiedName.Length > 2
@@ -119,7 +119,7 @@ namespace Xcst {
             return true;
          }
 
-         if ((object)left == null || (object)right == null) {
+         if (left is null || right is null) {
             return false;
          }
 

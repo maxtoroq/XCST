@@ -31,7 +31,7 @@ namespace Xcst {
       public object?
       this[QualifiedName name] {
          get {
-            if (name == null) throw new ArgumentNullException(nameof(name));
+            if (name is null) throw new ArgumentNullException(nameof(name));
 
             if (parameters.TryGetValue(name, out var value)) {
                return value;
@@ -40,7 +40,7 @@ namespace Xcst {
             return null;
          }
          set {
-            if (name == null) throw new ArgumentNullException(nameof(name));
+            if (name is null) throw new ArgumentNullException(nameof(name));
 
             if (String.IsNullOrEmpty(name.Namespace)) {
 
@@ -202,7 +202,7 @@ namespace Xcst {
       public
       OutputParameters(OutputParameters parameters) {
 
-         if (parameters == null) throw new ArgumentNullException(nameof(parameters));
+         if (parameters is null) throw new ArgumentNullException(nameof(parameters));
 
          Merge(parameters);
       }
@@ -222,7 +222,7 @@ namespace Xcst {
          decimal versionValue;
 
          if (value != null
-            || this.Version == null
+            || this.Version is null
             || !Decimal.TryParse(this.Version, out versionValue)) {
 
             return value;
@@ -293,7 +293,7 @@ namespace Xcst {
          public static QualifiedName
          Parse(string name) {
 
-            if (name == null) throw new ArgumentNullException(nameof(name));
+            if (name is null) throw new ArgumentNullException(nameof(name));
 
             switch (name) {
                case "byte-order-mark":
@@ -379,7 +379,7 @@ namespace Xcst {
          internal static QualifiedName
          Parse(string method) {
 
-            if (method == null) throw new ArgumentNullException(nameof(method));
+            if (method is null) throw new ArgumentNullException(nameof(method));
 
             switch (method) {
                case "xml":

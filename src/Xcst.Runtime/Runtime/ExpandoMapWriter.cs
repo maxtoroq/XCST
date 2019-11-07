@@ -48,9 +48,9 @@ namespace Xcst.Runtime {
       public
       ExpandoMapWriter(ISequenceWriter<ExpandoObject> output) {
 
-         if (output == null) throw new ArgumentNullException(nameof(output));
+         if (output is null) throw new ArgumentNullException(nameof(output));
 
-         Debug.Assert(output.TryCastToDocumentWriter() == null);
+         Debug.Assert(output.TryCastToDocumentWriter() is null);
 
          this.mapOutput = output;
       }
@@ -58,9 +58,9 @@ namespace Xcst.Runtime {
       public
       ExpandoMapWriter(ISequenceWriter<object> output) {
 
-         if (output == null) throw new ArgumentNullException(nameof(output));
+         if (output is null) throw new ArgumentNullException(nameof(output));
 
-         Debug.Assert(output.TryCastToDocumentWriter() == null);
+         Debug.Assert(output.TryCastToDocumentWriter() is null);
 
          this.arrayOutput = output;
       }
@@ -168,7 +168,7 @@ namespace Xcst.Runtime {
       public override void
       WriteStartMapEntry(string key) {
 
-         if (key == null) throw new ArgumentNullException(nameof(key));
+         if (key is null) throw new ArgumentNullException(nameof(key));
 
          var map = Peek<IExpandoMap>()
             ?? throw new RuntimeException("An entry can only be written to a map.");

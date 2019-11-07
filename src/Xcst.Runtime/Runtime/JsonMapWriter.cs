@@ -80,7 +80,7 @@ namespace Xcst.Runtime {
 
          MapWriter? mapWriter = output.TryCastToMapWriter();
 
-         if (mapWriter == null) {
+         if (mapWriter is null) {
             return null;
          }
 
@@ -109,7 +109,7 @@ namespace Xcst.Runtime {
       public
       JsonMapWriter(JsonWriter baseWriter, XcstWriter? docWriter) {
 
-         if (baseWriter == null) throw new ArgumentNullException(nameof(baseWriter));
+         if (baseWriter is null) throw new ArgumentNullException(nameof(baseWriter));
 
          this.BaseWriter = baseWriter;
          this.docWriter = docWriter;
@@ -119,7 +119,7 @@ namespace Xcst.Runtime {
       JsonMapWriter(ISequenceWriter<JObject> output)
          : this(new JTokenWriter(), null) {
 
-         Debug.Assert(output.TryCastToDocumentWriter() == null);
+         Debug.Assert(output.TryCastToDocumentWriter() is null);
 
          this.mapOutput = output;
       }
@@ -128,7 +128,7 @@ namespace Xcst.Runtime {
       JsonMapWriter(ISequenceWriter<JArray> output)
          : this(new JTokenWriter(), null) {
 
-         Debug.Assert(output.TryCastToDocumentWriter() == null);
+         Debug.Assert(output.TryCastToDocumentWriter() is null);
 
          this.arrayOutput = output;
       }

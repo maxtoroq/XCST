@@ -26,7 +26,7 @@ namespace Xcst.Compiler {
       public static IEnumerable<XdmItem>
       AsItems(this IXdmEnumerator? enumerator) {
 
-         if (enumerator == null) {
+         if (enumerator is null) {
             yield break;
          }
 
@@ -38,7 +38,7 @@ namespace Xcst.Compiler {
       public static IEnumerable<XdmNode>
       AsNodes(this IXdmEnumerator? enumerator) {
 
-         if (enumerator == null) {
+         if (enumerator is null) {
             yield break;
          }
 
@@ -50,7 +50,7 @@ namespace Xcst.Compiler {
       public static IEnumerable<XdmAtomicValue>
       AsAtomicValues(this IXdmEnumerator? enumerator) {
 
-         if (enumerator == null) {
+         if (enumerator is null) {
             yield break;
          }
 
@@ -62,7 +62,7 @@ namespace Xcst.Compiler {
       public static IXdmEnumerator
       GetXdmEnumerator(this XdmValue? value) {
 
-         if (value == null) {
+         if (value is null) {
             return EmptyEnumerator.INSTANCE;
          }
 
@@ -143,7 +143,7 @@ namespace Xcst.Compiler {
       public static XdmValue
       ToXdmValue(this IEnumerable<string?>? value) {
 
-         if (value == null) {
+         if (value is null) {
             return XdmEmptySequence.INSTANCE;
          }
 
@@ -157,7 +157,7 @@ namespace Xcst.Compiler {
       public static XdmValue
       ToXdmValue(this IEnumerable? value) {
 
-         if (value == null) {
+         if (value is null) {
             return XdmEmptySequence.INSTANCE;
          }
 
@@ -173,7 +173,7 @@ namespace Xcst.Compiler {
       public static XdmValue
       ToXdmValue(this object? value) {
 
-         if (value == null) {
+         if (value is null) {
             return XdmEmptySequence.INSTANCE;
          }
 
@@ -272,7 +272,7 @@ namespace Xcst.Compiler {
       public static XdmItem
       ToXdmItem(this object value) {
 
-         if (value == null) throw new ArgumentNullException(nameof(value));
+         if (value is null) throw new ArgumentNullException(nameof(value));
 
          return ToXdmAtomicValue(value);
       }
@@ -343,7 +343,7 @@ namespace Xcst.Compiler {
       public static XdmAtomicValue
       ToXdmAtomicValue(this QualifiedName value) {
 
-         if (value == null) throw new ArgumentNullException(nameof(value));
+         if (value is null) throw new ArgumentNullException(nameof(value));
 
          return ToXdmAtomicValue(ToQName(value));
       }
@@ -355,7 +355,7 @@ namespace Xcst.Compiler {
       public static XdmAtomicValue
       ToXdmAtomicValue(this object value) {
 
-         if (value == null) throw new ArgumentNullException(nameof(value));
+         if (value is null) throw new ArgumentNullException(nameof(value));
 
          Type type = value.GetType();
 
@@ -443,7 +443,7 @@ namespace Xcst.Compiler {
       public static XdmValue
       FirstElementOrSelf(this XdmValue value) {
 
-         if (value == null) throw new ArgumentNullException(nameof(value));
+         if (value is null) throw new ArgumentNullException(nameof(value));
 
          if (value is XdmNode node) {
             return FirstElementOrSelf(node);
@@ -455,7 +455,7 @@ namespace Xcst.Compiler {
       public static XdmNode
       FirstElementOrSelf(this XdmNode value) {
 
-         if (value == null) throw new ArgumentNullException(nameof(value));
+         if (value is null) throw new ArgumentNullException(nameof(value));
 
          if (value.NodeKind == XmlNodeType.Element) {
             return value;

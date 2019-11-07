@@ -29,8 +29,8 @@ namespace Xcst.Compiler {
       public
       XcstExtensionAttribute(string extensionNamespace, Type extensionLoaderType) {
 
-         if (extensionNamespace == null) throw new ArgumentNullException(nameof(extensionNamespace));
-         if (extensionLoaderType == null) throw new ArgumentNullException(nameof(extensionLoaderType));
+         if (extensionNamespace is null) throw new ArgumentNullException(nameof(extensionNamespace));
+         if (extensionLoaderType is null) throw new ArgumentNullException(nameof(extensionLoaderType));
 
          Type expectedType = typeof(XcstExtensionLoader);
 

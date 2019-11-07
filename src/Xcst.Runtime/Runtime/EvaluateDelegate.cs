@@ -23,9 +23,9 @@ namespace Xcst.Runtime {
       Invoke<TDerived, TBase>(XcstDelegate<TDerived> del, TemplateContext context, ISequenceWriter<TBase> output)
             where TDerived : TBase {
 
-         if (del == null) throw new ArgumentNullException(nameof(del));
-         if (context == null) throw new ArgumentNullException(nameof(context));
-         if (output == null) throw new ArgumentNullException(nameof(output));
+         if (del is null) throw new ArgumentNullException(nameof(del));
+         if (context is null) throw new ArgumentNullException(nameof(context));
+         if (output is null) throw new ArgumentNullException(nameof(output));
 
          var derivedWriter = output as ISequenceWriter<TDerived>
             ?? new CastingSequenceWriter<TDerived, TBase>(output);
@@ -36,9 +36,9 @@ namespace Xcst.Runtime {
       public static void
       Invoke<TItem>(Delegate del, TemplateContext context, ISequenceWriter<TItem> output) {
 
-         if (del == null) throw new ArgumentNullException(nameof(del));
-         if (context == null) throw new ArgumentNullException(nameof(context));
-         if (output == null) throw new ArgumentNullException(nameof(output));
+         if (del is null) throw new ArgumentNullException(nameof(del));
+         if (context is null) throw new ArgumentNullException(nameof(context));
+         if (output is null) throw new ArgumentNullException(nameof(output));
 
          Type delType = del.GetType();
          Type xcstType = delType.GetGenericTypeDefinition();

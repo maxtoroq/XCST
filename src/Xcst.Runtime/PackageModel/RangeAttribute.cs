@@ -106,9 +106,9 @@ namespace Xcst.PackageModel {
          string maximum = (string)this.Maximum;
          Type type = this.OperandType;
 
-         if (minimum == null
-            || maximum == null
-            || type == null
+         if (minimum is null
+            || maximum is null
+            || type is null
             || !typeof(IComparable).IsAssignableFrom(type)) {
 
             // let base throw

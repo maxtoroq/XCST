@@ -25,7 +25,7 @@ namespace Xcst.Runtime {
       public static Exception
       UnknownTemplate(QualifiedName templateName) {
 
-         if (templateName == null) throw new ArgumentNullException(nameof(templateName));
+         if (templateName is null) throw new ArgumentNullException(nameof(templateName));
 
          return new RuntimeException($"No template exists named {templateName.ToString()}.", Code("XTDE0040"));
       }
@@ -33,7 +33,7 @@ namespace Xcst.Runtime {
       public static Exception
       RequiredGlobalParameter(string parameterName) {
 
-         if (parameterName == null) throw new ArgumentNullException(nameof(parameterName));
+         if (parameterName is null) throw new ArgumentNullException(nameof(parameterName));
 
          return new RuntimeException($"No value supplied for required parameter '{parameterName}'.", Code("XTDE0050"));
       }
@@ -41,7 +41,7 @@ namespace Xcst.Runtime {
       public static Exception
       RequiredTemplateParameter(string parameterName) {
 
-         if (parameterName == null) throw new ArgumentNullException(nameof(parameterName));
+         if (parameterName is null) throw new ArgumentNullException(nameof(parameterName));
 
          return new RuntimeException($"No value supplied for required parameter '{parameterName}'.", Code("XTDE0700"));
       }
@@ -49,7 +49,7 @@ namespace Xcst.Runtime {
       public static Exception
       InvalidParameterCast(string parameterName) {
 
-         if (parameterName == null) throw new ArgumentNullException(nameof(parameterName));
+         if (parameterName is null) throw new ArgumentNullException(nameof(parameterName));
 
          return new RuntimeException($"Couldn't cast parameter '{parameterName}' to the required type.", Code("XTTE0590"));
       }
@@ -57,7 +57,7 @@ namespace Xcst.Runtime {
       public static Exception
       UnknownOutputDefinition(QualifiedName outputName) {
 
-         if (outputName == null) throw new ArgumentNullException(nameof(outputName));
+         if (outputName is null) throw new ArgumentNullException(nameof(outputName));
 
          return new RuntimeException($"No output definition exists named {outputName.ToString()}.", Code("XTDE1460"));
       }

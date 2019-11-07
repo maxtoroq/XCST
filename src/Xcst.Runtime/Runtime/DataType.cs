@@ -25,7 +25,7 @@ namespace Xcst.Runtime {
       public static bool
       Boolean(string value) {
 
-         if (value == null) throw new ArgumentNullException(nameof(value));
+         if (value is null) throw new ArgumentNullException(nameof(value));
 
          switch (SimpleContent.Trim(value)) {
             case "yes":
@@ -48,7 +48,7 @@ namespace Xcst.Runtime {
       public static decimal
       Decimal(string value) {
 
-         if (value == null) throw new ArgumentNullException(nameof(value));
+         if (value is null) throw new ArgumentNullException(nameof(value));
 
          NumberStyles style = NumberStyles.AllowLeadingSign
             | NumberStyles.AllowTrailingSign
@@ -60,7 +60,7 @@ namespace Xcst.Runtime {
       public static int
       Integer(string value) {
 
-         if (value == null) throw new ArgumentNullException(nameof(value));
+         if (value is null) throw new ArgumentNullException(nameof(value));
 
          NumberStyles style = NumberStyles.AllowLeadingSign;
 
@@ -70,7 +70,7 @@ namespace Xcst.Runtime {
       public static string?
       ItemSeparator(string value) {
 
-         if (value == null) throw new ArgumentNullException(nameof(value));
+         if (value is null) throw new ArgumentNullException(nameof(value));
 
          if (value == "#absent") {
             return null;
@@ -90,7 +90,7 @@ namespace Xcst.Runtime {
       public static bool
       SortOrderDescending(string order) {
 
-         if (order == null) throw new ArgumentNullException(nameof(order));
+         if (order is null) throw new ArgumentNullException(nameof(order));
 
          switch (SimpleContent.Trim(order)) {
             case "ascending":
@@ -107,7 +107,7 @@ namespace Xcst.Runtime {
       public static XmlStandalone
       Standalone(string value) {
 
-         if (value == null) throw new ArgumentNullException(nameof(value));
+         if (value is null) throw new ArgumentNullException(nameof(value));
 
          if (SimpleContent.Trim(value) == "omit") {
             return XmlStandalone.Omit;

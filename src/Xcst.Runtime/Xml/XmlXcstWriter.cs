@@ -37,7 +37,7 @@ namespace Xcst.Xml {
 
          this.output = writer;
          this.outputXmlDecl = !parameters.OmitXmlDeclaration.GetValueOrDefault()
-            && (parameters.Method == null
+            && (parameters.Method is null
                || parameters.Method == OutputParameters.Methods.Xml
                || parameters.Method == OutputParameters.Methods.XHtml);
 

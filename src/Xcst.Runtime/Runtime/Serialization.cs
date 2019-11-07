@@ -26,9 +26,9 @@ namespace Xcst.Runtime {
       public static string
       Serialize(IXcstPackage package, QualifiedName? outputName, OutputParameters parameters, Action<XcstWriter> action) {
 
-         if (package == null) throw new ArgumentNullException(nameof(package));
-         if (parameters == null) throw new ArgumentNullException(nameof(parameters));
-         if (action == null) throw new ArgumentNullException(nameof(action));
+         if (package is null) throw new ArgumentNullException(nameof(package));
+         if (parameters is null) throw new ArgumentNullException(nameof(parameters));
+         if (action is null) throw new ArgumentNullException(nameof(action));
 
          var sb = new StringBuilder();
 
@@ -66,7 +66,7 @@ namespace Xcst.Runtime {
             QualifiedName? outputName,
             Uri outputUri) {
 
-         if (outputUri == null) throw new ArgumentNullException(nameof(outputUri));
+         if (outputUri is null) throw new ArgumentNullException(nameof(outputUri));
 
          return ResultDocumentImpl(u => WriterFactory.CreateWriter(u), false, package, parameters, outputName, outputUri);
       }
@@ -79,7 +79,7 @@ namespace Xcst.Runtime {
             Uri? outputUri,
             Stream output) {
 
-         if (output == null) throw new ArgumentNullException(nameof(output));
+         if (output is null) throw new ArgumentNullException(nameof(output));
 
          return ResultDocumentImpl(u => WriterFactory.CreateWriter(output, u), true, package, parameters, outputName, outputUri);
       }
@@ -92,7 +92,7 @@ namespace Xcst.Runtime {
             Uri? outputUri,
             TextWriter output) {
 
-         if (output == null) throw new ArgumentNullException(nameof(output));
+         if (output is null) throw new ArgumentNullException(nameof(output));
 
          return ResultDocumentImpl(u => WriterFactory.CreateWriter(output, u), true, package, parameters, outputName, outputUri);
       }
@@ -105,7 +105,7 @@ namespace Xcst.Runtime {
             Uri? outputUri,
             XmlWriter output) {
 
-         if (output == null) throw new ArgumentNullException(nameof(output));
+         if (output is null) throw new ArgumentNullException(nameof(output));
 
          return ResultDocumentImpl(u => WriterFactory.CreateWriter(output, u), true, package, parameters, outputName, outputUri);
       }
@@ -118,7 +118,7 @@ namespace Xcst.Runtime {
             Uri? outputUri,
             XcstWriter output) {
 
-         if (output == null) throw new ArgumentNullException(nameof(output));
+         if (output is null) throw new ArgumentNullException(nameof(output));
 
          return ResultDocumentImpl(u => WriterFactory.CreateWriter(output), true, package, parameters, outputName, outputUri);
       }
@@ -132,8 +132,8 @@ namespace Xcst.Runtime {
             QualifiedName? outputName,
             Uri? outputUri) {
 
-         if (package == null) throw new ArgumentNullException(nameof(package));
-         if (parameters == null) throw new ArgumentNullException(nameof(parameters));
+         if (package is null) throw new ArgumentNullException(nameof(package));
+         if (parameters is null) throw new ArgumentNullException(nameof(parameters));
 
          if (outputUri != null
             && !customOutput

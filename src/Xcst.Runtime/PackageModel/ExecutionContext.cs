@@ -48,8 +48,8 @@ namespace Xcst.PackageModel {
             Uri? staticBaseUri,
             Uri? baseOutputUri) {
 
-         if (topLevelPackage == null) throw new ArgumentNullException(nameof(topLevelPackage));
-         if (primingContext == null) throw new ArgumentNullException(nameof(primingContext));
+         if (topLevelPackage is null) throw new ArgumentNullException(nameof(topLevelPackage));
+         if (primingContext is null) throw new ArgumentNullException(nameof(primingContext));
 
          this.TopLevelPackage = topLevelPackage;
          this.PrimingContext = primingContext;
@@ -77,7 +77,7 @@ namespace Xcst.PackageModel {
             return relUri;
          }
 
-         if (this.StaticBaseUri == null) {
+         if (this.StaticBaseUri is null) {
             throw new RuntimeException("Cannot resolve relative URI. Specify a base URI.");
          }
 
@@ -93,7 +93,7 @@ namespace Xcst.PackageModel {
             return relUri;
          }
 
-         if (this.BaseOutputUri == null) {
+         if (this.BaseOutputUri is null) {
             throw new RuntimeException("Cannot resolve relative URI. Specify a base output URI.");
          }
 

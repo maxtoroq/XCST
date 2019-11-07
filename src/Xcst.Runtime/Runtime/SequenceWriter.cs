@@ -32,7 +32,7 @@ namespace Xcst.Runtime {
       public
       SequenceWriter(ICollection<TItem> buffer) {
 
-         if (buffer == null) throw new ArgumentNullException(nameof(buffer));
+         if (buffer is null) throw new ArgumentNullException(nameof(buffer));
 
          this.buffer = buffer;
       }
@@ -148,7 +148,7 @@ namespace Xcst.Runtime {
             ISequenceWriter<TBase> output,
             Func<TDerived>? forTypeInference = null) where TDerived : TBase {
 
-         if (output == null) throw new ArgumentNullException(nameof(output));
+         if (output is null) throw new ArgumentNullException(nameof(output));
 
          return output as ISequenceWriter<TDerived>
             ?? new CastingSequenceWriter<TDerived, TBase>(output);
@@ -159,7 +159,7 @@ namespace Xcst.Runtime {
             ISequenceWriter<TBase> output,
             Func<TDerived>? forTypeInference = null) {
 
-         if (output == null) throw new ArgumentNullException(nameof(output));
+         if (output is null) throw new ArgumentNullException(nameof(output));
 
          if (output is ISequenceWriter<TDerived> derivedWriter) {
             return derivedWriter;
@@ -190,7 +190,7 @@ namespace Xcst.Runtime {
       public
       CastingSequenceWriter(ISequenceWriter<TBase> baseWriter) {
 
-         if (baseWriter == null) throw new ArgumentNullException(nameof(baseWriter));
+         if (baseWriter is null) throw new ArgumentNullException(nameof(baseWriter));
 
          this.output = baseWriter;
       }

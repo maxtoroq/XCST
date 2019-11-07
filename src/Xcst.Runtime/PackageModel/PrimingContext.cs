@@ -49,7 +49,7 @@ namespace Xcst.PackageModel {
       public PrimingContext
       WithParam(string name, object? value) {
 
-         if (name == null) throw new ArgumentNullException(nameof(name));
+         if (name is null) throw new ArgumentNullException(nameof(name));
 
          Debug.Assert(this.parameters != null);
          this.parameters[name] = value;

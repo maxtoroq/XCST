@@ -86,7 +86,7 @@ namespace Xcst {
       static OutputParameters
       MergedParameters(OutputParameters defaultParams, OutputParameters? overrideParams) {
 
-         if (defaultParams == null) throw new ArgumentNullException(nameof(defaultParams));
+         if (defaultParams is null) throw new ArgumentNullException(nameof(defaultParams));
 
          if (overrideParams != null) {
             defaultParams.Merge(overrideParams);
@@ -111,8 +111,8 @@ namespace Xcst {
       WrapHtmlWriter(XmlWriter writer, OutputParameters parameters) {
 
          if (parameters.Method == OutputParameters.Methods.Html
-            && parameters.DoctypePublic == null
-            && parameters.DoctypeSystem == null
+            && parameters.DoctypePublic is null
+            && parameters.DoctypeSystem is null
             && parameters.RequestedHtmlVersion() >= 5m) {
 
             return new HtmlWriter(writer, outputHtml5Doctype: true);

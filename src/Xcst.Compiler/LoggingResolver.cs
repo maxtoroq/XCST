@@ -36,7 +36,7 @@ namespace Xcst.Compiler {
       public
       LoggingResolver(XmlResolver wrappedResolver) {
 
-         if (wrappedResolver == null) throw new ArgumentNullException(nameof(wrappedResolver));
+         if (wrappedResolver is null) throw new ArgumentNullException(nameof(wrappedResolver));
 
          this.wrappedResolver = wrappedResolver;
       }

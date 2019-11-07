@@ -36,7 +36,7 @@ namespace Xcst.PackageModel {
 
          if (tmplCount == 0
             && tunnelCount == 0
-            && (currentContext?.tunnelParameters == null
+            && (currentContext?.tunnelParameters is null
                || currentContext.tunnelParameters.Count == 0)) {
 
             return EmptyContext;

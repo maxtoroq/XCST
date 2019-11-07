@@ -42,7 +42,7 @@ namespace Xcst {
       public static XcstEvaluator
       Using(object package) {
 
-         if (package == null) throw new ArgumentNullException(nameof(package));
+         if (package is null) throw new ArgumentNullException(nameof(package));
 
          if (package is IXcstPackage pkg) {
             return new XcstEvaluator(pkg);
@@ -54,7 +54,7 @@ namespace Xcst {
       private
       XcstEvaluator(IXcstPackage package) {
 
-         if (package == null) throw new ArgumentNullException(nameof(package));
+         if (package is null) throw new ArgumentNullException(nameof(package));
 
          this.package = package;
       }
@@ -62,7 +62,7 @@ namespace Xcst {
       public XcstEvaluator
       WithParam(string name, object? value) {
 
-         if (name == null) throw new ArgumentNullException(nameof(name));
+         if (name is null) throw new ArgumentNullException(nameof(name));
 
          // since there's no way to un-prime, a second prime would still use the values
          // of the first prime (for parameters not specified in the second prime)
@@ -114,7 +114,7 @@ namespace Xcst {
             }
          }
 
-         if (dict == null) {
+         if (dict is null) {
             dict = new Dictionary<string, object?>();
          }
 
@@ -137,7 +137,7 @@ namespace Xcst {
       public XcstTemplateEvaluator
       CallTemplate(string name) {
 
-         if (name == null) throw new ArgumentNullException(nameof(name));
+         if (name is null) throw new ArgumentNullException(nameof(name));
 
          return CallTemplate(new QualifiedName(name));
       }
@@ -145,7 +145,7 @@ namespace Xcst {
       public XcstTemplateEvaluator
       CallTemplate(QualifiedName name) {
 
-         if (name == null) throw new ArgumentNullException(nameof(name));
+         if (name is null) throw new ArgumentNullException(nameof(name));
 
          this.paramsLocked = true;
 
@@ -155,7 +155,7 @@ namespace Xcst {
       PrimingContext
       Prime() {
 
-         if (this.primingContext == null) {
+         if (this.primingContext is null) {
 
             this.primingContext = PrimingContext.Create(this.parameters.Count);
 
@@ -191,9 +191,9 @@ namespace Xcst {
       internal
       XcstTemplateEvaluator(IXcstPackage package, Func<PrimingContext> primeFn, QualifiedName name) {
 
-         if (package == null) throw new ArgumentNullException(nameof(package));
-         if (primeFn == null) throw new ArgumentNullException(nameof(primeFn));
-         if (name == null) throw new ArgumentNullException(nameof(name));
+         if (package is null) throw new ArgumentNullException(nameof(package));
+         if (primeFn is null) throw new ArgumentNullException(nameof(primeFn));
+         if (name is null) throw new ArgumentNullException(nameof(name));
 
          this.package = package;
          this.primeFn = primeFn;
@@ -203,7 +203,7 @@ namespace Xcst {
       public XcstTemplateEvaluator
       WithParam(string name, object? value, bool tunnel = false) {
 
-         if (name == null) throw new ArgumentNullException(nameof(name));
+         if (name is null) throw new ArgumentNullException(nameof(name));
 
          if (tunnel) {
             this.tunnelParameters[name] = value;
@@ -271,7 +271,7 @@ namespace Xcst {
       public XcstOutputter
       OutputTo(Uri file) {
 
-         if (file == null) throw new ArgumentNullException(nameof(file));
+         if (file is null) throw new ArgumentNullException(nameof(file));
          if (!file.IsAbsoluteUri) throw new ArgumentException("file must be an absolute URI.", nameof(file));
          if (!file.IsFile) throw new ArgumentException("file must be a file URI", nameof(file));
 
@@ -281,7 +281,7 @@ namespace Xcst {
       public XcstOutputter
       OutputTo(Stream output) {
 
-         if (output == null) throw new ArgumentNullException(nameof(output));
+         if (output is null) throw new ArgumentNullException(nameof(output));
 
          return CreateOutputter(WriterFactory.CreateWriter(output, null));
       }
@@ -289,7 +289,7 @@ namespace Xcst {
       public XcstOutputter
       OutputTo(TextWriter output) {
 
-         if (output == null) throw new ArgumentNullException(nameof(output));
+         if (output is null) throw new ArgumentNullException(nameof(output));
 
          return CreateOutputter(WriterFactory.CreateWriter(output, null));
       }
@@ -297,7 +297,7 @@ namespace Xcst {
       public XcstOutputter
       OutputTo(XmlWriter output) {
 
-         if (output == null) throw new ArgumentNullException(nameof(output));
+         if (output is null) throw new ArgumentNullException(nameof(output));
 
          return CreateOutputter(WriterFactory.CreateWriter(output, null));
       }
@@ -305,7 +305,7 @@ namespace Xcst {
       public XcstOutputter
       OutputTo(XcstWriter output) {
 
-         if (output == null) throw new ArgumentNullException(nameof(output));
+         if (output is null) throw new ArgumentNullException(nameof(output));
 
          return CreateOutputter(WriterFactory.CreateWriter(output));
       }
@@ -313,7 +313,7 @@ namespace Xcst {
       public XcstOutputter
       OutputTo<TItem>(ICollection<TItem> output) {
 
-         if (output == null) throw new ArgumentNullException(nameof(output));
+         if (output is null) throw new ArgumentNullException(nameof(output));
 
          var seqWriter = new SequenceWriter<TItem>(output);
 
@@ -325,7 +325,7 @@ namespace Xcst {
       public XcstOutputter
       OutputToRaw<TBase>(ISequenceWriter<TBase> output) {
 
-         if (output == null) throw new ArgumentNullException(nameof(output));
+         if (output is null) throw new ArgumentNullException(nameof(output));
 
          Action<TemplateContext> tmplFn = this.package.GetTemplate<TBase>(this.name, output);
 
@@ -429,9 +429,9 @@ namespace Xcst {
       internal
       XcstOutputter(IXcstPackage package, Func<PrimingContext> primeFn, Action<OutputParameters?, bool> executionFn) {
 
-         if (package == null) throw new ArgumentNullException(nameof(package));
-         if (primeFn == null) throw new ArgumentNullException(nameof(primeFn));
-         if (executionFn == null) throw new ArgumentNullException(nameof(executionFn));
+         if (package is null) throw new ArgumentNullException(nameof(package));
+         if (primeFn is null) throw new ArgumentNullException(nameof(primeFn));
+         if (executionFn is null) throw new ArgumentNullException(nameof(executionFn));
 
          this.package = package;
          this.primeFn = primeFn;

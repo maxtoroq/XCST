@@ -86,7 +86,7 @@ namespace Xcst.Compiler {
       internal
       XcstCompiler(Func<XsltExecutable> compilerExecFn, Processor processor) {
 
-         if (compilerExecFn == null) throw new ArgumentNullException(nameof(compilerExecFn));
+         if (compilerExecFn is null) throw new ArgumentNullException(nameof(compilerExecFn));
 
          this.compilerExec = new Lazy<XsltExecutable>(compilerExecFn);
          this.processor = processor;
@@ -100,7 +100,7 @@ namespace Xcst.Compiler {
       public void
       SetParameter(QualifiedName name, object? value) {
 
-         if (name == null) throw new ArgumentNullException(nameof(name));
+         if (name is null) throw new ArgumentNullException(nameof(name));
          if (String.IsNullOrEmpty(name.Namespace)) throw new ArgumentException($"{nameof(name)} must be a qualified name.", nameof(name));
 
          this.parameters.Add(name, value);
@@ -122,7 +122,7 @@ namespace Xcst.Compiler {
       public CompileResult
       Compile(Uri file) {
 
-         if (file == null) throw new ArgumentNullException(nameof(file));
+         if (file is null) throw new ArgumentNullException(nameof(file));
 
          XmlResolver resolver = GetModuleResolverOrDefault(this.ModuleResolver);
 
