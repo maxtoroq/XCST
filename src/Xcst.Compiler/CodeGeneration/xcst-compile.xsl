@@ -1157,7 +1157,7 @@
 
       <variable name="id" select="
          if ($deterministic and exists($qname)) then
-            replace(string(src:qname-id($qname)), '-', '_')
+            replace(string(src:string-id(xcst:uri-qualified-name($qname))), '-', '_')
          else
             generate-id($declaration)"/>
 
@@ -1168,10 +1168,10 @@
             src:aux-variable(string-join(($component-kind, $escaped-name, $id), '_'))"/>
    </function>
 
-   <function name="src:qname-id" as="xs:integer">
-      <param name="p1" as="xs:QName"/>
+   <function name="src:string-id" as="xs:integer">
+      <param name="p1" as="xs:string"/>
 
-      <sequence select="src:_qname-id($p1)"/>
+      <sequence select="src:_string-id($p1)"/>
    </function>
 
    <function name="xcst:item-type" as="xs:string">
@@ -2685,12 +2685,11 @@
                <apply-templates select="c:member" mode="#current">
                   <with-param name="src:validation-attributes" select="$validation-attributes" tunnel="yes"/>
                </apply-templates>
+               <apply-templates select="c:member[c:member]" mode="src:anonymous-type">
+                  <with-param name="src:validation-attributes" select="$validation-attributes" tunnel="yes"/>
+               </apply-templates>
             </code:members>
          </code:type>
-
-         <apply-templates select="c:member[c:member]" mode="src:anonymous-type">
-            <with-param name="src:validation-attributes" select="$validation-attributes" tunnel="yes"/>
-         </apply-templates>
       </if>
    </template>
 
@@ -2787,7 +2786,8 @@
    <function name="src:anonymous-type-name" as="xs:string">
       <param name="member" as="element(c:member)"/>
 
-      <sequence select="concat($member/@name/xcst:name(.), '_', generate-id($member))"/>
+      <variable name="property-name" select="$member/@name/xcst:name(.)"/>
+      <sequence select="src:aux-variable(string-join(('type', $property-name, replace(string(src:string-id($property-name)), '-', '_')), '_'))"/>
    </function>
 
    <function name="src:backing-field" as="xs:string">

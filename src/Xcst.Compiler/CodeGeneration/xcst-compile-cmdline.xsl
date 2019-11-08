@@ -53,8 +53,8 @@
       <sequence select="error()"/>
    </function>
 
-   <function name="src:_qname-id" as="xs:integer">
-      <param name="p1" as="xs:QName"/>
+   <function name="src:_string-id" as="xs:integer">
+      <param name="p1" as="xs:string"/>
 
       <sequence select="error()"/>
    </function>

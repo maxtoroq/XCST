@@ -96,8 +96,7 @@ namespace Xcst.Compiler.CodeGeneration {
       }
 
       internal static int
-      QNameId(string namespaceUri, string localName) =>
-         $"Q{{{namespaceUri}}}{localName}".GetHashCode();
+      StringId(string str) => str.GetHashCode();
    }
 
    class LineNumberFunction : ExtensionFunctionDefinition {
@@ -380,7 +379,10 @@ namespace Xcst.Compiler.CodeGeneration {
          public override IXdmEnumerator
          Call(IXdmEnumerator[] arguments, DynamicContext context) {
 
-            string typeName = arguments[0].AsAtomicValues().Single().ToString();
+            string typeName = arguments[0]
+               .AsAtomicValues()
+               .Single()
+               .ToString();
 
             static Type? defaultTypeResolver(string n) =>
                Type.GetType(n, throwOnError: false);
@@ -516,14 +518,14 @@ namespace Xcst.Compiler.CodeGeneration {
       }
    }
 
-   class QNameIdFunction : ExtensionFunctionDefinition {
+   class StringIdFunction : ExtensionFunctionDefinition {
 
       public override QName
-      FunctionName { get; } = CompilerQName("_qname-id");
+      FunctionName { get; } = CompilerQName("_string-id");
 
       public override XdmSequenceType[]
       ArgumentTypes { get; } = {
-         new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_QNAME), ' ')
+         new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_STRING), ' ')
       };
 
       public override int
@@ -544,9 +546,12 @@ namespace Xcst.Compiler.CodeGeneration {
          public override IXdmEnumerator
          Call(IXdmEnumerator[] arguments, DynamicContext context) {
 
-            QName qname = (QName)arguments[0].AsAtomicValues().Single().Value;
+            string str = arguments[0]
+               .AsAtomicValues()
+               .Single()
+               .ToString();
 
-            return ExtensionFunctions.QNameId(qname.Uri, qname.LocalName)
+            return ExtensionFunctions.StringId(str)
                .ToXdmAtomicValue()
                .GetXdmEnumerator();
          }
