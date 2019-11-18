@@ -25,11 +25,11 @@ namespace Xcst.Tests {
          EnableExtensions = true
       };
 
-      static readonly QualifiedName
-      InitialName = new QualifiedName("initial-template", "http://maxtoroq.github.io/XCST");
+      static readonly string
+      InitialName = "Q{http://maxtoroq.github.io/XCST}initial-template";
 
-      static readonly QualifiedName
-      ExpectedName = new QualifiedName("expected");
+      static readonly string
+      ExpectedName = "expected";
 
       public static void
       RunXcstTest(string packageFile, bool correct, bool fail) {
@@ -293,7 +293,7 @@ namespace Xcst.Tests {
 
          using (XmlWriter expectedWriter = expectedDoc.CreateWriter()) {
 
-            evaluator.CallTemplate("expected")
+            evaluator.CallTemplate(ExpectedName)
                .OutputTo(expectedWriter)
                .Run();
          }

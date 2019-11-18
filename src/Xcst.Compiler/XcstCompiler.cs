@@ -18,6 +18,7 @@ using System.IO;
 using System.Linq;
 using System.Xml;
 using Saxon.Api;
+using XPathException = net.sf.saxon.trans.XPathException;
 
 namespace Xcst.Compiler {
 
@@ -29,8 +30,8 @@ namespace Xcst.Compiler {
       readonly Processor
       processor;
 
-      readonly Dictionary<QualifiedName, object?>
-      parameters = new Dictionary<QualifiedName, object?>();
+      readonly Dictionary<string[], object?>
+      parameters = new Dictionary<string[], object?>();
 
       Type[]?
       tbaseTypes;
@@ -98,25 +99,19 @@ namespace Xcst.Compiler {
       }
 
       public void
-      SetParameter(QualifiedName name, object? value) {
+      SetParameter(string ns, string name, object? value) {
 
+         if (ns is null) throw new ArgumentNullException(nameof(ns));
+         if (ns.Length == 0) throw new ArgumentException("ns cannot be empty.", nameof(ns));
          if (name is null) throw new ArgumentNullException(nameof(name));
-         if (String.IsNullOrEmpty(name.Namespace)) throw new ArgumentException($"{nameof(name)} must be a qualified name.", nameof(name));
+         if (name.Length == 0) throw new ArgumentException("name cannot be empty.", nameof(name));
 
-         this.parameters.Add(name, value);
-      }
-
-      public void
-      SetParameter(QualifiedName name, Type? value) {
-
-         object? objValue = null;
-
-         if (value != null) {
+         if (value is Type t) {
             DocumentBuilder docBuilder = this.processor.NewDocumentBuilder();
-            objValue = CodeTypeReference(value, docBuilder);
+            value = CodeTypeReference(t, docBuilder);
          }
 
-         SetParameter(name, objValue);
+         this.parameters.Add(new[] { ns, name }, value);
       }
 
       public CompileResult
@@ -169,19 +164,12 @@ namespace Xcst.Compiler {
          try {
             moduleDoc = buildFn(docBuilder);
 
-         } catch (net.sf.saxon.trans.XPathException ex) {
+         } catch (XPathException ex) {
 
             var locator = ex.getLocator();
 
-            QualifiedName? errorCode = null;
-            string? errorLocal = ex.getErrorCodeLocalPart();
-
-            if (!String.IsNullOrEmpty(errorLocal)) {
-               errorCode = new QualifiedName(errorLocal, ex.getErrorCodeNamespace());
-            }
-
             throw new CompileException(ex.Message,
-               errorCode: errorCode,
+               errorCode: ErrorCode(ex),
                moduleUri: locator?.getSystemId() ?? baseUri?.OriginalString,
                lineNumber: locator?.getLineNumber() ?? -1
             );
@@ -204,7 +192,7 @@ namespace Xcst.Compiler {
             int lineNumber = errorData.Item2 ?? ex.LineNumber;
 
             throw new CompileException(ex.Message,
-               errorCode: ex.ErrorCode?.ToQualifiedName(),
+               errorCode: ErrorCode(ex),
                moduleUri: moduleUri,
                lineNumber: lineNumber
             );
@@ -249,7 +237,7 @@ namespace Xcst.Compiler {
                   .EnumerateAxis(XdmAxis.Child, grammar.template))
                   .AsNodes()
                   .Where(n => publicVisibility.Contains(n.GetAttributeValue(grammar.visibility)))
-                  .Select(n => QualifiedName.Parse(n.GetAttributeValue(grammar.name)))
+                  .Select(n => QualifiedName.Parse(n.GetAttributeValue(grammar.name)).ToString())
                   .ToArray()
          };
 
@@ -264,7 +252,7 @@ namespace Xcst.Compiler {
          compiler.InitialContextNode = sourceDoc;
 
          foreach (var pair in this.parameters) {
-            compiler.SetParameter(pair.Key.ToQName(), pair.Value.ToXdmValue());
+            compiler.SetParameter(new QName(pair.Key[0], pair.Key[1]), pair.Value.ToXdmValue());
          }
 
          if (this.TargetNamespace != null) {
@@ -379,6 +367,28 @@ namespace Xcst.Compiler {
          return Tuple.Create(moduleUri, lineNumber);
       }
 
+      internal static string ErrorCode(XPathException ex) =>
+         ErrorCode(ex.getErrorCodeNamespace(), ex.getErrorCodeLocalPart());
+
+      internal static string ErrorCode(DynamicError ex) =>
+         ErrorCode(ex.ErrorCode?.Uri, ex.ErrorCode?.LocalName);
+
+      internal static string ErrorCode(string? ns, string? name) {
+
+         if (name != null) {
+
+            if (!String.IsNullOrEmpty(ns)
+               && ns != XmlNamespaces.XcstErrors) {
+
+               return QualifiedName.UriQualifiedName(ns, name);
+            }
+
+            return name;
+         }
+
+         return null;
+      }
+
       internal static XdmNode
       CodeTypeReference(string typeName, DocumentBuilder docBuilder) {
 
@@ -481,7 +491,7 @@ namespace Xcst.Compiler {
       public IReadOnlyList<Uri>
       Dependencies { get; internal set; }
 
-      public IReadOnlyList<QualifiedName>
+      public IReadOnlyList<string>
       Templates { get; internal set; }
    }
 }

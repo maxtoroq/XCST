@@ -59,6 +59,12 @@
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="..\Xcst.Runtime\QualifiedName.cs">
+      <Link>QualifiedName.cs</Link>
+    </Compile>
+    <Compile Include="..\Xcst.Runtime\Runtime\SimpleContent.cs">
+      <Link>SimpleContent.cs</Link>
+    </Compile>
     <Compile Include="..\Xcst.Runtime\XmlNamespaces.cs">
       <Link>XmlNamespaces.cs</Link>
     </Compile>
@@ -81,12 +87,6 @@
     <EmbeddedResource Include="CodeGeneration\xcst-xsl.zip" />
     <None Include="CodeGeneration\zip-source.ps1" />
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Xcst.Runtime\Xcst.Runtime.csproj">
-      <Project>{4387c5be-1873-4060-b547-9467d5e2c779}</Project>
-      <Name>Xcst.Runtime</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="CodeGeneration\xcst-core.xsl" />

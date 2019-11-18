@@ -17,7 +17,10 @@ using Xcst.Runtime;
 
 namespace Xcst {
 
-   public class QualifiedName : IEquatable<QualifiedName> {
+#if XCST_RUNTIME
+   public
+#endif
+   class QualifiedName : IEquatable<QualifiedName> {
 
       readonly string
       _Name;
@@ -85,7 +88,10 @@ namespace Xcst {
 
       public string
       ToUriQualifiedName() =>
-         String.Concat("Q{", this.Namespace, "}", this.Name);
+         UriQualifiedName(this.Namespace, this.Name);
+
+      internal static string UriQualifiedName(string? ns, string name) =>
+         "Q{" + ns + "}" + name;
 
       public static QualifiedName
       Parse(string localOrUriQualifiedName) {

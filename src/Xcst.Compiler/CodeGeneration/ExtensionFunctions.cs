@@ -17,7 +17,7 @@ using System.IO;
 using System.Linq;
 using System.Xml;
 using Saxon.Api;
-using Xcst.PackageModel;
+using XPathException = net.sf.saxon.trans.XPathException;
 using Xcst.Runtime;
 
 namespace Xcst.Compiler.CodeGeneration {
@@ -297,24 +297,17 @@ namespace Xcst.Compiler.CodeGeneration {
             } catch (FileNotFoundException) {
 
                throw new CompileException("Could not retrieve imported module.",
-                  errorCode: new QualifiedName("XTSE0165", XmlNamespaces.XcstErrors),
+                  errorCode: "XTSE0165",
                   moduleUri: moduleUri,
                   lineNumber: lineNumber
                );
 
-            } catch (net.sf.saxon.trans.XPathException ex) {
+            } catch (XPathException ex) {
 
                var locator = ex.getLocator();
 
-               QualifiedName? errorCode = null;
-               string? errorLocal = ex.getErrorCodeLocalPart();
-
-               if (!String.IsNullOrEmpty(errorLocal)) {
-                  errorCode = new QualifiedName(errorLocal, ex.getErrorCodeNamespace());
-               }
-
                throw new CompileException(ex.Message,
-                  errorCode: errorCode,
+                  errorCode: ErrorCode(ex),
                   moduleUri: locator?.getSystemId() ?? uri?.AbsoluteUri,
                   lineNumber: locator?.getLineNumber() ?? -1
                );
@@ -398,7 +391,7 @@ namespace Xcst.Compiler.CodeGeneration {
             int lineNumber = errorData.Item2.GetValueOrDefault();
 
             Type? packageType;
-            var packageResolveError = new QualifiedName("XTSE3000", XmlNamespaces.XcstErrors);
+            string errorCode = "XTSE3000";
 
             try {
                packageType = packageTypeResolver(typeName);
@@ -406,7 +399,7 @@ namespace Xcst.Compiler.CodeGeneration {
             } catch (Exception ex) {
 
                throw new CompileException(ex.Message,
-                  errorCode: packageResolveError,
+                  errorCode: errorCode,
                   moduleUri: moduleUri,
                   lineNumber: lineNumber
                );
@@ -416,10 +409,10 @@ namespace Xcst.Compiler.CodeGeneration {
                return EmptyEnumerator.INSTANCE;
             }
 
-            if (!typeof(IXcstPackage).IsAssignableFrom(packageType)) {
+            if (!PackageManifest.IsXcstPackage(packageType)) {
 
                throw new CompileException($"{packageType.FullName} is not a valid XCST package.",
-                  errorCode: packageResolveError,
+                  errorCode: errorCode,
                   moduleUri: moduleUri,
                   lineNumber: lineNumber
                );

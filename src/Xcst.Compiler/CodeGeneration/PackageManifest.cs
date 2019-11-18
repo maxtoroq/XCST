@@ -15,8 +15,9 @@
 using System;
 using System.Globalization;
 using System.Reflection;
+using System.Linq;
 using System.Xml;
-using Xcst.PackageModel;
+//using Xcst.PackageModel;
 
 namespace Xcst.Compiler.CodeGeneration {
 
@@ -43,22 +44,32 @@ namespace Xcst.Compiler.CodeGeneration {
 
          WriteTypeReference(packageType, writer);
 
+         Type pkgInterface = PackageInterface(packageType);
+         Type componentAttrType = ComponentAttributeType(pkgInterface, "XcstComponentAttribute");
+
          foreach (MemberInfo member in packageType.GetMembers(BindingFlags.Instance | BindingFlags.Public)) {
 
-            XcstComponentAttribute attr = member.GetCustomAttribute<XcstComponentAttribute>(inherit: true);
+            dynamic attr = member.GetCustomAttribute(componentAttrType, inherit: true);
 
-            if (attr is XcstAttributeSetAttribute) {
+            if (attr is null) {
+               continue;
+            }
+
+            string name = attr.Name;
+            string attrName = attr.GetType().Name;
+
+            if (attrName == "XcstAttributeSetAttribute") {
 
                writer.WriteStartElement(prefix, "attribute-set", ns);
-               writer.WriteAttributeString("name", attr.Name);
+               writer.WriteAttributeString("name", name);
                writer.WriteAttributeString("visibility", memberVisibility(member));
                writer.WriteAttributeString("member-name", member.Name);
                writer.WriteEndElement();
 
-            } else if (attr is XcstFunctionAttribute) {
+            } else if (attrName == "XcstFunctionAttribute") {
 
                writer.WriteStartElement(prefix, "function", ns);
-               writer.WriteAttributeString("name", attr.Name ?? member.Name);
+               writer.WriteAttributeString("name", name ?? member.Name);
                writer.WriteAttributeString("visibility", memberVisibility(member));
                writer.WriteAttributeString("member-name", member.Name);
 
@@ -84,25 +95,27 @@ namespace Xcst.Compiler.CodeGeneration {
 
                writer.WriteEndElement();
 
-            } else if (attr is XcstParameterAttribute paramAttr) {
+            } else if (attrName == "XcstParameterAttribute") {
 
                writer.WriteStartElement(prefix, "param", ns);
-               writer.WriteAttributeString("name", attr.Name ?? member.Name);
-               writer.WriteAttributeString("required", XmlConvert.ToString(paramAttr.Required));
+               writer.WriteAttributeString("name", name ?? member.Name);
+               writer.WriteAttributeString("required", XmlConvert.ToString(attr.Required));
                writer.WriteAttributeString("visibility", memberVisibility(member));
                writer.WriteAttributeString("member-name", member.Name);
                WriteTypeReference(((PropertyInfo)member).PropertyType, writer);
                writer.WriteEndElement();
 
-            } else if (attr is XcstTemplateAttribute tmplAttr) {
+            } else if (attrName == "XcstTemplateAttribute") {
 
                writer.WriteStartElement(prefix, "template", ns);
-               writer.WriteAttributeString("name", attr.Name);
+               writer.WriteAttributeString("name", name);
                writer.WriteAttributeString("visibility", memberVisibility(member));
                writer.WriteAttributeString("member-name", member.Name);
-               writer.WriteAttributeString("cardinality", tmplAttr.Cardinality.ToString());
+               writer.WriteAttributeString("cardinality", attr.Cardinality.ToString());
 
-               foreach (var param in member.GetCustomAttributes<XcstTemplateParameterAttribute>(inherit: true)) {
+               Type paramAttrType = ComponentAttributeType(pkgInterface, "XcstTemplateParameterAttribute");
+
+               foreach (dynamic param in member.GetCustomAttributes(paramAttrType, inherit: true)) {
 
                   writer.WriteStartElement(prefix, "param", ns);
                   writer.WriteAttributeString("name", param.Name);
@@ -126,12 +139,12 @@ namespace Xcst.Compiler.CodeGeneration {
 
                writer.WriteEndElement();
 
-            } else if (attr is XcstTypeAttribute) {
+            } else if (attrName == "XcstTypeAttribute") {
 
                Type type = (Type)member;
 
                writer.WriteStartElement(prefix, "type", ns);
-               writer.WriteAttributeString("name", attr.Name ?? member.Name);
+               writer.WriteAttributeString("name", name ?? member.Name);
 
                writer.WriteAttributeString("visibility",
                   type.IsAbstract ? "abstract"
@@ -140,10 +153,10 @@ namespace Xcst.Compiler.CodeGeneration {
 
                writer.WriteEndElement();
 
-            } else if (attr is XcstVariableAttribute) {
+            } else if (attrName == "XcstVariableAttribute") {
 
                writer.WriteStartElement(prefix, "variable", ns);
-               writer.WriteAttributeString("name", attr.Name ?? member.Name);
+               writer.WriteAttributeString("name", name ?? member.Name);
                writer.WriteAttributeString("visibility", memberVisibility(member));
                writer.WriteAttributeString("member-name", member.Name);
                WriteTypeReference(((PropertyInfo)member).PropertyType, writer);
@@ -230,5 +243,16 @@ namespace Xcst.Compiler.CodeGeneration {
          writer.WriteEndElement();
          return;
       }
+
+      public static bool IsXcstPackage(Type t) =>
+         PackageInterface(t) != null;
+
+      static Type? PackageInterface(Type t) =>
+         (t.GetInterface("Xcst.PackageModel.IXcstPackage") is Type pkgInterface
+            && pkgInterface.Assembly.GetName().Name == "Xcst.Runtime") ? pkgInterface
+         : null;
+
+      static Type ComponentAttributeType(Type pkgInterface, string attributeName) =>
+         pkgInterface.Assembly.GetType("Xcst.PackageModel." + attributeName);
    }
 }

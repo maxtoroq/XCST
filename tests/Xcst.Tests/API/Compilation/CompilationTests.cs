@@ -32,10 +32,10 @@ namespace Xcst.Tests.API.Compilation {
 
          CompileResult result = compiler.Compile(module, baseUri: new Uri("http://localhost"));
 
-         Assert.IsFalse(result.Templates.Contains(new QualifiedName("private")));
-         Assert.IsTrue(result.Templates.Contains(new QualifiedName("public")));
-         Assert.IsTrue(result.Templates.Contains(new QualifiedName("final")));
-         Assert.IsTrue(result.Templates.Contains(new QualifiedName("abstract")));
+         Assert.IsFalse(result.Templates.Contains("private"));
+         Assert.IsTrue(result.Templates.Contains("public"));
+         Assert.IsTrue(result.Templates.Contains("final"));
+         Assert.IsTrue(result.Templates.Contains("abstract"));
       }
    }
 }

@@ -71,7 +71,6 @@ function script:NuSpec {
       "<description>XCST compilation API. Use this package to translate your XCST programs into C# or Visual Basic code.</description>"
 
       "<dependencies>"
-         "<dependency id='Xcst.Runtime' version='$(DependencyVersionRange Xcst.Runtime)'/>"
          "<dependency id='Saxon-HE' version='$($packagesDoc.DocumentElement.SelectSingleNode('package[@id=''Saxon-HE'']').Attributes['allowedVersions'].Value)'/>"
       "</dependencies>"
 
