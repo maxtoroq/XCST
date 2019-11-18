@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+   <metadata>
+      <description>XCST compilation API. Use this package to translate your XCST programs into C# or Visual Basic code.</description>
+      <dependencies>
+         <dependency id="Saxon-HE"/>
+      </dependencies>
+      <frameworkAssemblies>
+         <frameworkAssembly assemblyName="System"/>
+         <frameworkAssembly assemblyName="System.Xml"/>
+      </frameworkAssemblies>
+   </metadata>
+</package>

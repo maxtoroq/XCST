@@ -87,6 +87,7 @@
     <EmbeddedResource Include="CodeGeneration\xcst-xsl.zip" />
     <None Include="CodeGeneration\zip-source.ps1" />
     <None Include="packages.config" />
+    <None Include="Xcst.Compiler.nuspec" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="CodeGeneration\xcst-core.xsl" />
