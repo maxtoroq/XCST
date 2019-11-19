@@ -10,4 +10,8 @@
          <frameworkAssembly assemblyName="System.Xml"/>
       </frameworkAssemblies>
    </metadata>
+   <files>
+      <file src="..\..\schemas\xcst.rng" target="schemas"/>
+      <file src="..\..\schemas\xcst.xsd" target="schemas"/>
+   </files>
 </package>

@@ -36,7 +36,7 @@ function NuSpec {
       "<metadata>"
          "<id>$($project.name)</id>"
          "<version>$pkgVersion</version>"
-         "<description>$($project.metadata.description)</description>"
+         "<description>$($project.nuspec.package.metadata.description)</description>"
          "<authors>$($notice.authors)</authors>"
          "<license type='expression'>$($notice.license.name)</license>"
          "<projectUrl>$($notice.website)</projectUrl>"
@@ -46,7 +46,7 @@ function NuSpec {
 
          "<dependencies>"
 
-   foreach ($dep in $project.metadata.dependencies.dependency) {
+   foreach ($dep in $project.nuspec.package.metadata.dependencies.dependency) {
 
       $local = $dep.GetAttribute("local-dependency", "http://maxtoroq.github.io/XCST/nuspec")
       $version = $null
@@ -67,20 +67,21 @@ function NuSpec {
 
          "</dependencies>"
 
-   $project.metadata.frameworkAssemblies.OuterXml
+   $project.nuspec.package.metadata.frameworkAssemblies.OuterXml
 
       "</metadata>"
 
    "<files>"
       "<file src='$($project.temp)\NOTICE.xml'/>"
       "<file src='$solutionPath\LICENSE.txt'/>"
+      "<file src='$($project.path)\bin\$configuration\$($project.assemblyName).*' target='lib\$targetFxMoniker'/>"
 
-   if ($project.name -eq "Xcst.Compiler") {
-      "<file src='$solutionPath\schemas\xcst.rng' target='schemas'/>"
-      "<file src='$solutionPath\schemas\xcst.xsd' target='schemas'/>"
+   foreach ($file in $project.nuspec.package.files.file) {
+      foreach ($path in Resolve-Path (Join-Path $project.path $file.src)) {
+      "<file src='$path' target='$($file.target)'/>"
+      }
    }
 
-      "<file src='$($project.path)\bin\$configuration\$($project.assemblyName).*' target='lib\$targetFxMoniker'/>"
    "</files>"
 
    "</package>"
@@ -118,15 +119,13 @@ function ProjectData([string]$projName) {
    $project.doc = [xml](Get-Content $project.file)
    $project.assemblyName = $project.doc.Project.PropertyGroup[0].AssemblyName
    $project.targetFx = $project.doc.Project.PropertyGroup[0].TargetFrameworkVersion
+   $project.nuspec = [xml](Get-Content "$($project.path)\$($project.name).nuspec")
 
    $project.temp = Join-Path (Get-Item .) temp\$($project.name)
 
    if (-not (Test-Path $project.temp -PathType Container)) {
       md $project.temp | Out-Null
    }
-
-   [xml]$baseSpecDoc = Get-Content "$($project.path)\$($project.name).nuspec"
-   $project.metadata = $baseSpecDoc.package.metadata
 
    return $project
 }
@@ -154,7 +153,7 @@ using System;
 using System.Reflection;
 
 [assembly: AssemblyTitle("$($project.assemblyName)")]
-[assembly: AssemblyDescription("$($project.metadata.description)")]
+[assembly: AssemblyDescription("$($project.nuspec.package.metadata.description)")]
 [assembly: AssemblyProduct("$($notice.work)")]
 [assembly: AssemblyCompany("$($notice.website)")]
 [assembly: AssemblyCopyright("$($notice.copyright)")]
