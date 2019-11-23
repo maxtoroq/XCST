@@ -16,6 +16,8 @@ The [release script](build/release.ps1) (which creates the NuGet packages) and o
 
 The [XCST schema](schemas/xcst.rng) is written in Relax NG and converted to XSD using [Trang], which requires Java.
 
+The compiler produces code that is compatible with C# 6 and Visual Basic 14.
+
 Building
 --------
 Run the following commands in PowerShell to build everything (source and tests).
