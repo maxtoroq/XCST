@@ -430,6 +430,7 @@
    -->
 
    <template name="src:range-attribute">
+      <param name="language" required="yes" tunnel="yes"/>
 
       <if test="@min or @max">
 
@@ -442,7 +443,7 @@
             <sequence select="src:package-model-type('Range')"/>
             <code:arguments>
                <code:typeof>
-                  <code:type-reference name="{xcst:type(@as)}"/>
+                  <code:type-reference name="{xcst:non-nullable-type(xcst:type(@as), $language)}"/>
                </code:typeof>
                <choose>
                   <when test="@min">

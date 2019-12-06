@@ -121,7 +121,7 @@ namespace Xcst.Compiler.CodeGeneration {
                   writer.WriteAttributeString("name", param.Name);
                   writer.WriteAttributeString("required", XmlConvert.ToString(param.Required));
                   writer.WriteAttributeString("tunnel", XmlConvert.ToString(param.Tunnel));
-                  WriteTypeReference(param.Type, writer);
+                  WriteTypeReference(param.Type, writer, param.Nullable);
                   writer.WriteEndElement();
                }
 

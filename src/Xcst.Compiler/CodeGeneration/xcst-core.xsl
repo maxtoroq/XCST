@@ -3557,6 +3557,24 @@
       </code:type-reference>
    </function>
 
+   <function name="src:non-nullable-type" as="element(code:type-reference)">
+      <param name="type" as="element(code:type-reference)"/>
+      <param name="language" as="xs:string"/>
+
+      <choose>
+         <when test="$type/@name">
+            <variable name="non-nullable" select="xcst:non-nullable-type($type/@name, $language)"/>
+            <code:type-reference name="{$non-nullable}">
+               <copy-of select="$type/@* except $type/@name"/>
+               <copy-of select="$type/node()"/>
+            </code:type-reference>
+         </when>
+         <otherwise>
+            <sequence select="$type"/>
+         </otherwise>
+      </choose>
+   </function>
+
    <function name="src:type-cardinality" as="xs:string">
       <param name="type" as="element(code:type-reference)"/>
       <param name="language" as="xs:string"/>

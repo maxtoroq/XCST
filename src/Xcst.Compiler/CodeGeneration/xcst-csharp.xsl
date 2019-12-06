@@ -1102,6 +1102,12 @@
       <sequence select="('ZeroOrMore'[ends-with($name, '[]')], 'One')[1]"/>
    </function>
 
+   <function name="cs:non-nullable-type" as="xs:string">
+      <param name="name" as="xs:string"/>
+
+      <sequence select="replace($name, '\?$', '')"/>
+   </function>
+
    <function name="cs:unescape-identifier" as="xs:string">
       <param name="name" as="xs:string"/>
 

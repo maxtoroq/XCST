@@ -429,12 +429,28 @@ namespace Xcst.Compiler {
       }
 
       internal static void
-      WriteTypeReference(Type type, XmlWriter writer) {
+      WriteTypeReference(Type type, XmlWriter writer, bool nullable = false) {
 
          const string ns = XmlNamespaces.XcstCode;
          const string prefix = "code";
 
+         bool isNullableValueType = Nullable.GetUnderlyingType(type) != null;
+
+         if (nullable
+            && type.IsValueType
+            && !isNullableValueType) {
+
+            WriteTypeReference(typeof(Nullable<>).MakeGenericType(type), writer);
+            return;
+         }
+
          writer.WriteStartElement(prefix, "type-reference", ns);
+
+         if (nullable
+            && !isNullableValueType) {
+
+            writer.WriteAttributeString("nullable", XmlConvert.ToString(nullable));
+         }
 
          if (type.IsArray) {
 

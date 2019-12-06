@@ -575,7 +575,7 @@
    <template match="c:param | c:variable" mode="xcst:package-manifest">
       <param name="modules" tunnel="yes"/>
       <param name="module-pos" tunnel="yes"/>
-      <param name="language" tunnel="yes"/>
+      <param name="language" required="yes" tunnel="yes"/>
 
       <variable name="param" select="boolean(self::c:param)"/>
 
@@ -777,7 +777,7 @@
    <template match="c:function" mode="xcst:package-manifest">
       <param name="modules" tunnel="yes"/>
       <param name="module-pos" tunnel="yes"/>
-      <param name="language" tunnel="yes"/>
+      <param name="language" required="yes" tunnel="yes"/>
 
       <call-template name="xcst:validate-attribs">
          <with-param name="required" select="'name'"/>
@@ -1204,6 +1204,20 @@
          </when>
          <otherwise>
             <sequence select="error()"/>
+         </otherwise>
+      </choose>
+   </function>
+
+   <function name="xcst:non-nullable-type" as="xs:string">
+      <param name="name" as="xs:string"/>
+      <param name="language" as="xs:string"/>
+
+      <choose>
+         <when test="xcst:language-equal($language, $xcst:csharp-lang)">
+            <sequence select="cs:non-nullable-type($name)"/>
+         </when>
+         <otherwise>
+            <sequence select="$name"/>
          </otherwise>
       </choose>
    </function>
@@ -2240,6 +2254,7 @@
 
    <template match="c:template" mode="src:member">
       <param name="package-manifest" required="yes" tunnel="yes"/>
+      <param name="language" required="yes" tunnel="yes"/>
 
       <variable name="meta" select="$package-manifest/xcst:template[@declaration-id eq current()/generate-id()]"/>
       <variable name="public" select="$meta/@visibility = ('public', 'final', 'abstract')"/>
@@ -2274,6 +2289,8 @@
                   </code:attribute>
 
                   <for-each select="$meta/xcst:param">
+                     <variable name="non-nullable-type" select="src:non-nullable-type(code:type-reference, $language)"/>
+                     <variable name="nullable" select="not(src:type-reference-equal(code:type-reference, $non-nullable-type))"/>
                      <code:attribute>
                         <sequence select="src:package-model-type('XcstTemplateParameter')"/>
                         <code:arguments>
@@ -2281,7 +2298,7 @@
                               <value-of select="@name"/>
                            </code:string>
                            <code:typeof>
-                              <sequence select="code:type-reference"/>
+                              <sequence select="$non-nullable-type"/>
                            </code:typeof>
                         </code:arguments>
                         <code:initializer>
@@ -2292,6 +2309,11 @@
                            </if>
                            <if test="@tunnel/xs:boolean(.)">
                               <code:member-initializer name="Tunnel">
+                                 <code:bool value="true"/>
+                              </code:member-initializer>
+                           </if>
+                           <if test="$nullable">
+                              <code:member-initializer name="Nullable">
                                  <code:bool value="true"/>
                               </code:member-initializer>
                            </if>

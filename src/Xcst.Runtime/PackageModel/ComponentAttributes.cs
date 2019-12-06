@@ -57,6 +57,9 @@ namespace Xcst.PackageModel {
       Type { get; }
 
       public bool
+      Nullable { get; set; }
+
+      public bool
       Required { get; set; }
 
       public bool
