@@ -501,7 +501,7 @@ namespace Xcst.Compiler.CodeGeneration {
             } else if (!String.IsNullOrEmpty(packagesLocation)
                && !String.IsNullOrEmpty(packageFileExtension)) {
 
-               packageUri = ExtensionFunctions.FindNamedPackage(packageName, packagesLocation, packageFileExtension);
+               packageUri = ExtensionFunctions.FindNamedPackage(packageName, packagesLocation!, packageFileExtension!);
             }
 
             return packageUri?.ToXdmAtomicValue()

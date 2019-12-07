@@ -76,12 +76,12 @@ namespace Xcst.PackageModel {
          if (tunnel) {
 
             Debug.Assert(this.tunnelParameters != null);
-            this.tunnelParameters[name] = value;
+            this.tunnelParameters![name] = value;
 
          } else {
 
             Debug.Assert(this.templateParameters != null);
-            this.templateParameters[name] = value;
+            this.templateParameters![name] = value;
          }
 
          return this;

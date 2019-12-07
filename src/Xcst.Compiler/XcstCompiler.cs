@@ -367,13 +367,13 @@ namespace Xcst.Compiler {
          return Tuple.Create(moduleUri, lineNumber);
       }
 
-      internal static string ErrorCode(XPathException ex) =>
+      internal static string? ErrorCode(XPathException ex) =>
          ErrorCode(ex.getErrorCodeNamespace(), ex.getErrorCodeLocalPart());
 
-      internal static string ErrorCode(DynamicError ex) =>
+      internal static string? ErrorCode(DynamicError ex) =>
          ErrorCode(ex.ErrorCode?.Uri, ex.ErrorCode?.LocalName);
 
-      internal static string ErrorCode(string? ns, string? name) {
+      internal static string? ErrorCode(string? ns, string? name) {
 
          if (name != null) {
 

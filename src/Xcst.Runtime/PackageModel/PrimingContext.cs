@@ -52,7 +52,7 @@ namespace Xcst.PackageModel {
          if (name is null) throw new ArgumentNullException(nameof(name));
 
          Debug.Assert(this.parameters != null);
-         this.parameters[name] = value;
+         this.parameters![name] = value;
 
          return this;
       }

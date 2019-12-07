@@ -182,7 +182,7 @@ namespace Xcst.Runtime {
             return String.Empty;
          }
 
-         return value.Trim(whiteSpaceChars);
+         return value!.Trim(whiteSpaceChars);
       }
 
       public static string

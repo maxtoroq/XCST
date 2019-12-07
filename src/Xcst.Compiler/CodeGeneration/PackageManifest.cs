@@ -44,7 +44,7 @@ namespace Xcst.Compiler.CodeGeneration {
 
          WriteTypeReference(packageType, writer);
 
-         Type pkgInterface = PackageInterface(packageType);
+         Type pkgInterface = PackageInterface(packageType)!;
          Type componentAttrType = ComponentAttributeType(pkgInterface, "XcstComponentAttribute");
 
          foreach (MemberInfo member in packageType.GetMembers(BindingFlags.Instance | BindingFlags.Public)) {

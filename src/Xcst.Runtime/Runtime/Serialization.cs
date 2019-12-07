@@ -68,7 +68,7 @@ namespace Xcst.Runtime {
 
          if (outputUri is null) throw new ArgumentNullException(nameof(outputUri));
 
-         return ResultDocumentImpl(u => WriterFactory.CreateWriter(u), false, package, parameters, outputName, outputUri);
+         return ResultDocumentImpl(u => WriterFactory.CreateWriter(u!), false, package, parameters, outputName, outputUri);
       }
 
       public static XcstWriter

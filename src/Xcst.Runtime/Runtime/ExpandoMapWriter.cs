@@ -74,7 +74,7 @@ namespace Xcst.Runtime {
 
             Debug.Assert(this.mapOutput != null);
 
-            this.mapOutput.WriteObject(map);
+            this.mapOutput!.WriteObject(map);
             Push(map);
             return;
          }
@@ -125,7 +125,7 @@ namespace Xcst.Runtime {
 
          Debug.Assert(array != null);
 
-         WriteEndArray(array);
+         WriteEndArray(array!);
       }
 
       void
@@ -144,7 +144,7 @@ namespace Xcst.Runtime {
          if (this.objects.Count == 0) {
 
             // Cast to object to avoid flattening
-            this.arrayOutput.WriteObject((object)items);
+            this.arrayOutput!.WriteObject((object)items);
 
          } else {
 
@@ -160,7 +160,7 @@ namespace Xcst.Runtime {
 
                Debug.Assert(parentArray != null);
 
-               parentArray.Add(items);
+               parentArray!.Add(items);
             }
          }
       }
@@ -187,7 +187,7 @@ namespace Xcst.Runtime {
 
             Debug.Assert(map != null);
 
-            if (!map.ContainsKey(entry.Key)) {
+            if (!map!.ContainsKey(entry.Key)) {
                // No value written, write null
                map[entry.Key] = null;
             }
@@ -198,7 +198,7 @@ namespace Xcst.Runtime {
 
             Debug.Assert(implicitArray != null);
 
-            WriteEndArray(implicitArray);
+            WriteEndArray(implicitArray!);
 
             var entry2 = Peek<ExpandoEntry>();
 
@@ -267,7 +267,7 @@ namespace Xcst.Runtime {
 
          Debug.Assert(map != null);
 
-         if (!map.ContainsKey(entry.Key)) {
+         if (!map!.ContainsKey(entry.Key)) {
             map[entry.Key] = value;
          } else {
 
