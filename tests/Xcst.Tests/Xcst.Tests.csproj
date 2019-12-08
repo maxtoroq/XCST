@@ -141,7 +141,14 @@
   </Choose>
   <ItemGroup>
     <Compile Include="API\Compilation\CompilationTests.cs" />
+    <Compile Include="API\Evaluation\CallFinalTemplate.cs" />
+    <Compile Include="API\Evaluation\CallPrivateTemplate.cs" />
+    <Compile Include="API\Evaluation\CallPublicTemplate.cs" />
+    <Compile Include="API\Evaluation\CopyOutputParameters.cs" />
+    <Compile Include="API\Evaluation\DisallowRePrime.cs" />
     <Compile Include="API\Evaluation\EvaluationTests.cs" />
+    <Compile Include="API\Evaluation\LockTemplateParams.cs" />
+    <Compile Include="API\Evaluation\RawOutput.cs" />
     <Compile Include="ProgramStructure\Packages\AcceptingComponents\Keyword_As_Return_Type.cs" />
     <Compile Include="ProgramStructure\Packages\AcceptingComponents\Component_Using_Accepted_Type.cs" />
     <Compile Include="ProgramStructure\Packages\OverridingComponents\Variable\Overridden_Non_Compiled.cs" />
