@@ -916,6 +916,12 @@
             <ann:documentation>The name of the template to invoke.</ann:documentation>
             <ref name="eqname"/>
          </attribute>
+         <optional>
+            <attribute name="tunnel-params">
+               <ann:documentation>An object with tunnel parameters.</ann:documentation>
+               <ref name="expr-obj-dict"/>
+            </attribute>
+         </optional>
          <ref name="standard-attributes"/>
          <zeroOrMore>
             <ref name="with-param"/>

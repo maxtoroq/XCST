@@ -1543,6 +1543,7 @@
 
       <call-template name="xcst:validate-attribs">
          <with-param name="required" select="'name'"/>
+         <with-param name="optional" select="'tunnel-params'"/>
       </call-template>
 
       <call-template name="xcst:validate-children">
@@ -1668,7 +1669,7 @@
                      </code:new-object>
                   </otherwise>
                </choose>
-               <code:int value="{count(c:with-param[@tunnel/xcst:boolean(.)])}"/>
+               <code:int value="{count(c:with-param[@tunnel/xcst:boolean(.)]) + count(self::c:call-template/@tunnel-params)}"/>
                <if test="$context">
                   <sequence select="$context/src:reference/code:*"/>
                </if>
@@ -1691,6 +1692,15 @@
                </code:arguments>
             </code:method-call>
          </for-each>
+         <if test="@tunnel-params">
+            <code:method-call name="WithTunnelParams">
+               <call-template name="src:line-number"/>
+               <code:chain-reference/>
+               <code:arguments>
+                  <code:expression value="{xcst:expression(@tunnel-params)}"/>
+               </code:arguments>
+            </code:method-call>
+         </if>
       </code:chain>
    </template>
 

@@ -869,6 +869,11 @@
                <xs:documentation>The name of the template to invoke.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
+         <xs:attribute name="tunnel-params" type="c:expr-obj-dict">
+            <xs:annotation>
+               <xs:documentation>An object with tunnel parameters. Expression (System.Object | System.Collections.Generic.IDictionary&lt;System.String, System.Object&gt;).</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>

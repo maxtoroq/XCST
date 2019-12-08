@@ -110,6 +110,29 @@ namespace Xcst.PackageModel {
          return this;
       }
 
+      public TemplateContext
+      WithTunnelParams(object? parameters) {
+
+         if (parameters != null) {
+            WithTunnelParams(XcstEvaluator.ObjectToDictionary(parameters));
+         }
+
+         return this;
+      }
+
+      public TemplateContext
+      WithTunnelParams(IDictionary<string, object?>? parameters) {
+
+         if (parameters != null) {
+
+            foreach (var pair in parameters) {
+               WithParam(pair.Key, pair.Value, tunnel: true);
+            }
+         }
+
+         return this;
+      }
+
       public bool
       HasParam(string name) => this.templateParameters?.ContainsKey(name) == true;
 
@@ -197,6 +220,20 @@ namespace Xcst.PackageModel {
       WithParam(string name, object value, bool tunnel = false) {
 
          base.WithParam(name, value, tunnel);
+         return this;
+      }
+
+      public new TemplateContext<TParams>
+      WithTunnelParams(object? parameters) {
+
+         base.WithTunnelParams(parameters);
+         return this;
+      }
+
+      public new TemplateContext<TParams>
+      WithTunnelParams(IDictionary<string, object?>? parameters) {
+
+         base.WithTunnelParams(parameters);
          return this;
       }
    }

@@ -196,6 +196,7 @@
     <None Include="CallableComponents\AttributeSet\Children.c.xcst" />
     <None Include="CallableComponents\AttributeSet\Children.i.xcst" />
     <None Include="CallableComponents\AttributeSet\ChildrenText.i.xcst" />
+    <None Include="CallableComponents\CallTemplate\call-template.tunnel-params.i.xcst" />
     <None Include="CallableComponents\CallTemplate\call-template.foox.c.xcst" />
     <None Include="CallableComponents\CallTemplate\Children.c.xcst" />
     <None Include="CallableComponents\CallTemplate\Children.i.xcst" />
@@ -209,6 +210,7 @@
     <None Include="CallableComponents\CallTemplate\TypeCompatObjectToValueTypeUsedPackage.c.xcst" />
     <None Include="CallableComponents\CallTemplate\TypeCompatObjectToValueType.c.xcst" />
     <None Include="CallableComponents\CallTemplate\VerbatimParamNameVB.c.xcst" />
+    <None Include="CallableComponents\CallTemplate\WithParamAndWithTunnelParams.c.xcst" />
     <None Include="CallableComponents\CallTemplate\WithParam\TypeIncompatible.f.xcst" />
     <None Include="CallableComponents\CallTemplate\WithParam\TypeIncompatible.c.xcst" />
     <None Include="CallableComponents\CallTemplate\WithParam\TypeIncompatible.i.xcst" />
