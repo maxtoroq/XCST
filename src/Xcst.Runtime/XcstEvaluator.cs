@@ -51,7 +51,15 @@ namespace Xcst {
          throw new ArgumentException("Provided instance is not a valid XCST package.", nameof(package));
       }
 
-      private
+      public static XcstEvaluator<TPackage>
+      Using<TPackage>(TPackage package) where TPackage : IXcstPackage {
+
+         if (package is null) throw new ArgumentNullException(nameof(package));
+
+         return new XcstEvaluator<TPackage>(package);
+      }
+
+      internal
       XcstEvaluator(IXcstPackage package) {
 
          if (package is null) throw new ArgumentNullException(nameof(package));
@@ -152,7 +160,7 @@ namespace Xcst {
          return new XcstTemplateEvaluator(this.package, Prime, name);
       }
 
-      PrimingContext
+      internal PrimingContext
       Prime() {
 
          if (this.primingContext is null) {
@@ -168,6 +176,62 @@ namespace Xcst {
          }
 
          return this.primingContext;
+      }
+   }
+
+   public class XcstEvaluator<TPackage> : XcstEvaluator
+         where TPackage : IXcstPackage {
+
+      readonly TPackage
+      package;
+
+      internal
+      XcstEvaluator(TPackage package)
+         : base(package) {
+
+         this.package = package;
+      }
+
+      public new XcstEvaluator<TPackage>
+      WithParam(string name, object? value) {
+
+         base.WithParam(name, value);
+         return this;
+      }
+
+      public new XcstEvaluator<TPackage>
+      WithParams(object? parameters) {
+
+         base.WithParams(parameters);
+         return this;
+      }
+
+      public new XcstEvaluator<TPackage>
+      WithParams(IDictionary<string, object?>? parameters) {
+
+         base.WithParams(parameters);
+         return this;
+      }
+
+      public XcstOutputter
+      CallFunction(Action<TPackage> functionCaller) {
+
+         if (functionCaller is null) throw new ArgumentNullException(nameof(functionCaller));
+
+         void executionFn(OutputParameters? overrideParams, bool skipFlush) =>
+            functionCaller(this.package);
+
+         return new XcstOutputter(this.package, Prime, executionFn);
+      }
+
+      public XcstOutputter<TResult>
+      CallFunction<TResult>(Func<TPackage, TResult> functionCaller) {
+
+         if (functionCaller is null) throw new ArgumentNullException(nameof(functionCaller));
+
+         TResult executionFn() => functionCaller(this.package);
+
+         return new XcstOutputter<TResult>(this.package, Prime, executionFn);
       }
    }
 
@@ -496,13 +560,73 @@ namespace Xcst {
       public void
       Run(bool skipFlush = false) {
 
+         InitPackage();
+         this.executionFn(this.parameters, skipFlush);
+      }
+
+      internal void
+      InitPackage() {
+
          PrimingContext primingContext = this.primeFn();
 
          var execContext = new ExecutionContext(this.package, primingContext, this.formatProviderFn, this.baseUri, this.baseOutputUri);
 
          this.package.Context = execContext;
+      }
+   }
 
-         this.executionFn(this.parameters, skipFlush);
+   public class XcstOutputter<TResult> : XcstOutputter {
+
+      readonly Func<TResult>
+      executionFn;
+
+      internal
+      XcstOutputter(IXcstPackage package, Func<PrimingContext> primeFn, Func<TResult> executionFn)
+         : base(package, primeFn, (p, sf) => executionFn()) {
+
+         this.executionFn = executionFn;
+      }
+
+      public new XcstOutputter<TResult>
+      WithParams(OutputParameters? parameters) {
+
+         base.WithParams(parameters);
+         return this;
+      }
+
+      public new XcstOutputter<TResult>
+      WithFormatProvider(IFormatProvider? formatProvider) {
+
+         base.WithFormatProvider(formatProvider);
+         return this;
+      }
+
+      public new XcstOutputter<TResult>
+      WithFormatProvider(Func<IFormatProvider>? formatProviderFn) {
+
+         base.WithFormatProvider(formatProviderFn);
+         return this;
+      }
+
+      public new XcstOutputter<TResult>
+      WithBaseUri(Uri? baseUri) {
+
+         base.WithBaseUri(baseUri);
+         return this;
+      }
+
+      public new XcstOutputter<TResult>
+      WithBaseOutputUri(Uri? baseOutputUri) {
+
+         base.WithBaseOutputUri(baseOutputUri);
+         return this;
+      }
+
+      public TResult
+      Evaluate() {
+
+         InitPackage();
+         return this.executionFn();
       }
    }
 }

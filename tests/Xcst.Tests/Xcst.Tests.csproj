@@ -141,6 +141,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="API\Compilation\CompilationTests.cs" />
+    <Compile Include="API\Evaluation\CallFunction.cs" />
     <Compile Include="API\Evaluation\CallFinalTemplate.cs" />
     <Compile Include="API\Evaluation\CallPrivateTemplate.cs" />
     <Compile Include="API\Evaluation\CallPublicTemplate.cs" />
@@ -180,6 +181,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="XDocumentNormalizer.cs" />
+    <None Include="API\Evaluation\CallFunction.xcst" />
     <None Include="API\Evaluation\RawOutput.xcst" />
     <None Include="API\Evaluation\CopyOutputParameters.xcst" />
     <None Include="API\Evaluation\ExposePublicTemplatesOnly.xcst" />

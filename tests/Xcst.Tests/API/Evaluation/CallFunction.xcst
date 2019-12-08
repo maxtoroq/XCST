@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:param name='i' value='1' as='int'/>
+
+   <c:function name='Foo' as='string' visibility='public' expand-text='yes'>
+      <c:return>foo{i}</c:return>
+   </c:function>
+
+</c:module>
