@@ -384,6 +384,16 @@ namespace Xcst {
          return OutputToRaw(seqWriter);
       }
 
+      public XcstOutputter
+      OutputTo<TItem>(Action<TItem> outputFn) {
+
+         if (outputFn is null) throw new ArgumentNullException(nameof(outputFn));
+
+         var seqWriter = new StreamedSequenceWriter<TItem>(outputFn);
+
+         return OutputToRaw(seqWriter);
+      }
+
       /// <exclude/>
       [EditorBrowsable(EditorBrowsableState.Never)]
       public XcstOutputter

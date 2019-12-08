@@ -19,26 +19,10 @@ using Xcst.PackageModel;
 
 namespace Xcst.Runtime {
 
-   /// <exclude/>
-   public class SequenceWriter<TItem> : ISequenceWriter<TItem> {
+   public abstract class BaseSequenceWriter<TItem> : ISequenceWriter<TItem> {
 
-      readonly ICollection<TItem>
-      buffer;
-
-      public
-      SequenceWriter()
-         : this(new List<TItem>()) { }
-
-      public
-      SequenceWriter(ICollection<TItem> buffer) {
-
-         if (buffer is null) throw new ArgumentNullException(nameof(buffer));
-
-         this.buffer = buffer;
-      }
-
-      public void
-      WriteObject(TItem value) => this.buffer.Add(value);
+      public abstract void
+      WriteObject(TItem value);
 
       public void
       WriteObject(IEnumerable<TItem>? value) {
@@ -89,6 +73,28 @@ namespace Xcst.Runtime {
 
       public MapWriter?
       TryCastToMapWriter() => null;
+   }
+
+   /// <exclude/>
+   public class SequenceWriter<TItem> : BaseSequenceWriter<TItem> {
+
+      readonly ICollection<TItem>
+      buffer;
+
+      public
+      SequenceWriter()
+         : this(new List<TItem>()) { }
+
+      public
+      SequenceWriter(ICollection<TItem> buffer) {
+
+         if (buffer is null) throw new ArgumentNullException(nameof(buffer));
+
+         this.buffer = buffer;
+      }
+
+      public override void
+      WriteObject(TItem value) => this.buffer.Add(value);
 
       public SequenceWriter<TItem>
       WriteSequenceConstructor(Action<ISequenceWriter<TItem>> seqCtor) {
@@ -247,5 +253,22 @@ namespace Xcst.Runtime {
 
       public MapWriter?
       TryCastToMapWriter() => this.output.TryCastToMapWriter();
+   }
+
+   class StreamedSequenceWriter<TItem> : BaseSequenceWriter<TItem> {
+
+      readonly Action<TItem>
+      outputFn;
+
+      public
+      StreamedSequenceWriter(Action<TItem> outputFn) {
+
+         if (outputFn is null) throw new ArgumentNullException(nameof(outputFn));
+
+         this.outputFn = outputFn;
+      }
+
+      public override void
+      WriteObject(TItem value) => this.outputFn(value);
    }
 }
