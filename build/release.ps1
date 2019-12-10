@@ -199,7 +199,7 @@ using System.Reflection;
 
       ""
 
-      $lastTag = git describe --abbrev=0 --tags
+      $lastTag = .\last-tag.ps1
       $lastRelease = New-Object Version $lastTag.Substring(1)
       $pkgVersion = PackageVersion $project
 
