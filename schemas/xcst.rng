@@ -1295,6 +1295,12 @@
    <define name="next-template">
       <element name="next-template">
          <ann:documentation>Invokes the overridden template.</ann:documentation>
+         <optional>
+            <attribute name="tunnel-params">
+               <ann:documentation>An object with tunnel parameters.</ann:documentation>
+               <ref name="expr-obj-dict"/>
+            </attribute>
+         </optional>
          <ref name="standard-attributes"/>
          <zeroOrMore>
             <ref name="with-param"/>

@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:import href='_WithParamAndWithTunnelParams.xcst'/>
+
+   <c:template name='c:initial-template'>
+      <doc>
+         <c:next-template tunnel-params='new { a = 10 }'>
+            <c:with-param name='a' value='1' tunnel='yes'/>
+         </c:next-template>
+         <c:next-template tunnel-params='new { b = 1 }'>
+            <c:with-param name='a' value='2' tunnel='yes'/>
+         </c:next-template>
+      </doc>
+   </c:template>
+
+   <c:template name='expected'>
+      <doc>
+         <foo>10</foo>
+         <foo>2</foo>
+      </doc>
+   </c:template>
+
+</c:module>

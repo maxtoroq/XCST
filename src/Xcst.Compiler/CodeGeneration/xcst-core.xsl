@@ -1641,6 +1641,7 @@
       <param name="language" required="yes" tunnel="yes"/>
 
       <variable name="typed-params" select="boolean($meta/xcst:typed-params(.))"/>
+      <variable name="tunnel-params" select="(self::c:call-template | self::c:next-template)/@tunnel-params"/>
 
       <code:chain>
          <code:method-call name="Create{'Typed'[$typed-params]}">
@@ -1669,7 +1670,7 @@
                      </code:new-object>
                   </otherwise>
                </choose>
-               <code:int value="{count(c:with-param[@tunnel/xcst:boolean(.)]) + count(self::c:call-template/@tunnel-params)}"/>
+               <code:int value="{count(c:with-param[@tunnel/xcst:boolean(.)]) + count($tunnel-params)}"/>
                <if test="$context">
                   <sequence select="$context/src:reference/code:*"/>
                </if>
@@ -1692,12 +1693,12 @@
                </code:arguments>
             </code:method-call>
          </for-each>
-         <if test="@tunnel-params">
+         <if test="$tunnel-params">
             <code:method-call name="WithTunnelParams">
                <call-template name="src:line-number"/>
                <code:chain-reference/>
                <code:arguments>
-                  <code:expression value="{xcst:expression(@tunnel-params)}"/>
+                  <code:expression value="{xcst:expression($tunnel-params)}"/>
                </code:arguments>
             </code:method-call>
          </if>
@@ -1761,7 +1762,9 @@
    <template name="xcst:validate-next-template">
       <param name="package-manifest" required="yes" tunnel="yes"/>
 
-      <call-template name="xcst:validate-attribs"/>
+      <call-template name="xcst:validate-attribs">
+         <with-param name="optional" select="'tunnel-params'"/>
+      </call-template>
 
       <call-template name="xcst:validate-children">
          <with-param name="allowed" select="'with-param'"/>
