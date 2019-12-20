@@ -217,7 +217,7 @@ namespace Xcst.PackageModel {
       }
 
       public new TemplateContext<TParams>
-      WithParam(string name, object value, bool tunnel = false) {
+      WithParam(string name, object? value, bool tunnel = false) {
 
          base.WithParam(name, value, tunnel);
          return this;

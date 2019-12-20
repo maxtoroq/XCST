@@ -61,15 +61,15 @@ namespace Xcst.Runtime {
       }
 
       public string
-      Join(string separator, Array value) =>
+      Join(string separator, Array? value) =>
          JoinSequence(separator, value);
 
       public string
-      Join(string separator, string[] value) =>
-         Join(separator, (IEnumerable<string>)value);
+      Join(string separator, string?[]? value) =>
+         Join(separator, (IEnumerable<string?>?)value);
 
       public string
-      Join(string separator, IEnumerable<string> value) {
+      Join(string separator, IEnumerable<string?>? value) {
 
          if (value is null) {
             return String.Empty;
@@ -79,7 +79,7 @@ namespace Xcst.Runtime {
       }
 
       public string
-      Join(string separator, object value) {
+      Join(string separator, object? value) {
 
          if (ValueAsEnumerable(value) is IEnumerable seq) {
             return JoinSequence(separator, seq);
@@ -89,18 +89,18 @@ namespace Xcst.Runtime {
       }
 
       public string
-      Join(string separator, string value) =>
+      Join(string separator, string? value) =>
          value ?? String.Empty;
 
       public string
-      Join(string separator, IFormattable value) {
+      Join(string separator, IFormattable? value) {
 
          return value?.ToString(null, this.FormatProvider)
             ?? String.Empty;
       }
 
       protected string
-      JoinSequence(string separator, IEnumerable value) {
+      JoinSequence(string separator, IEnumerable? value) {
 
          if (value is null) {
             return String.Empty;
@@ -148,7 +148,7 @@ namespace Xcst.Runtime {
       }
 
       public string
-      Format(string format, params object[] args) =>
+      Format(string format, params object?[]? args) =>
          String.Format(this.FormatProvider, format, args);
 
       public string
@@ -172,7 +172,7 @@ namespace Xcst.Runtime {
       }
 
       public string
-      Convert(object value) =>
+      Convert(object? value) =>
          System.Convert.ToString(value, this.FormatProvider);
 
       public static string
@@ -186,7 +186,7 @@ namespace Xcst.Runtime {
       }
 
       public static string
-      NormalizeSpace(string value) {
+      NormalizeSpace(string? value) {
 
          if (String.IsNullOrEmpty(value)) {
             return String.Empty;

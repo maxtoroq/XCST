@@ -66,7 +66,7 @@ namespace Xcst {
       /// <exclude/>
       [EditorBrowsable(EditorBrowsableState.Never)]
       public void
-      WriteStartElementLexical(string lexical, string ns, string defaultNs) {
+      WriteStartElementLexical(string lexical, string? ns, string defaultNs) {
 
          int prefixIndex = lexical.IndexOf(':');
          bool hasPrefix = prefixIndex > 0;
@@ -88,7 +88,7 @@ namespace Xcst {
       }
 
       public void
-      WriteAttributeString(string localName, string ns, string value) {
+      WriteAttributeString(string localName, string? ns, string value) {
 
          WriteStartAttribute(null, localName, ns);
          WriteString(value);
@@ -132,7 +132,7 @@ namespace Xcst {
       /// <exclude/>
       [EditorBrowsable(EditorBrowsableState.Never)]
       public void
-      WriteAttributeStringLexical(string lexical, string ns, string value) {
+      WriteAttributeStringLexical(string lexical, string? ns, string value) {
 
          WriteStartAttributeLexical(lexical, ns, null);
          WriteString(value);
@@ -142,13 +142,13 @@ namespace Xcst {
       /// <exclude/>
       [EditorBrowsable(EditorBrowsableState.Never)]
       public void
-      WriteStartAttributeLexical(string lexical, string ns) =>
+      WriteStartAttributeLexical(string lexical, string? ns) =>
          WriteStartAttributeLexical(lexical, ns, null);
 
       /// <exclude/>
       [EditorBrowsable(EditorBrowsableState.Never)]
       public void
-      WriteStartAttributeLexical(string lexical, string ns, string? separator) {
+      WriteStartAttributeLexical(string lexical, string? ns, string? separator) {
 
          int prefixIndex = lexical.IndexOf(':');
          bool hasPrefix = prefixIndex > 0;
