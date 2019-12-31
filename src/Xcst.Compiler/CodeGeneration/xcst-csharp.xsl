@@ -869,7 +869,7 @@
                <sequence select="$text"/>
             </when>
             <otherwise>
-               <sequence select="replace($text, '&quot;', concat(if ($verbatim) then '&quot;' else '\', '&quot;'))"/>
+               <sequence select="replace($text, '&quot;', concat(if ($verbatim) then '&quot;' else '\\', '&quot;'))"/>
             </otherwise>
          </choose>
       </variable>
