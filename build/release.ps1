@@ -192,6 +192,8 @@ using System.Reflection;
    }
    
    $projectsToRelease = if ($ProjectName -eq '*') { $projects } else { @($ProjectName) }
+   $newPackages = New-Object Collections.Generic.List[string]
+   $createdTag = $false
 
    foreach ($projName in $projectsToRelease) {
 
@@ -207,26 +209,26 @@ using System.Reflection;
          throw "The package version ($pkgVersion) cannot be less than the last tag ($lastTag). Don't forget to update the project's AssemblyInfo file."
       }
 
-      $pkgPath = NuPack
+      $newPackages.Add((NuPack))
 
-      $createdTag = $false
-
-      if ($pkgVersion -gt $lastRelease) {
+      if (-not $createdTag -and $pkgVersion -gt $lastRelease) {
 
          $newTag = "v$pkgVersion"
          git tag -a $newTag -m $newTag
          Write-Warning "Created tag: $newTag"
          $createdTag = $true
       }
+   }
 
-      if ((Prompt-Choices -Message "Push package to gallery?" -Default 1) -eq 0) {
+   if ((Prompt-Choices -Message "Push package(s) to gallery?" -Default 1) -eq 0) {
+      foreach ($pkgPath in $newPackages) {
          &$nuget push $pkgPath -Source nuget.org
       }
+   }
 
-      if ($createdTag) {
-         if ((Prompt-Choices -Message "Push new tag $newTag to origin?" -Default 1) -eq 0) {
-            git push origin $newTag
-         }
+   if ($createdTag) {
+      if ((Prompt-Choices -Message "Push new tag $newTag to origin?" -Default 1) -eq 0) {
+         git push origin $newTag
       }
    }
 }
