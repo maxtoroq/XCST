@@ -10,7 +10,7 @@ See the [project home][XCST] for more information.
 
 System Requirements
 -------------------
-The codebase is written in C# 8 and requires .NET 4.6 or higher. The compiler is written in XSLT 2 and depends on [Saxon-HE].
+The runtime and APIs are written in C# 8 and require .NET 4.6 or higher. The compiler is written in XSLT 2 and depends on [Saxon-HE].
 
 The [release script](build/release.ps1) (which creates the NuGet packages) and other utility scripts are written in PowerShell 3.
 
@@ -34,6 +34,6 @@ cd XCST
 MSBuild
 ```
 
-[XCST]: http://maxtoroq.github.io/XCST/
+[XCST]: https://maxtoroq.github.io/XCST/
 [Saxon-HE]: http://saxon.sf.net/
 [Trang]: https://github.com/relaxng/jing-trang
