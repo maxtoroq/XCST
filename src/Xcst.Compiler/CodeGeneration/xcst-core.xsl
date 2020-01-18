@@ -1845,7 +1845,10 @@
             <call-template name="src:line-number"/>
             <code:type-reference name="XcstEvaluator" namespace="Xcst"/>
             <code:arguments>
-               <code:expression value="{xcst:expression(@package)}"/>
+               <code:cast>
+                  <sequence select="$src:object-type"/>
+                  <code:expression value="{xcst:expression(@package)}"/>
+               </code:cast>
             </code:arguments>
          </code:method-call>
          <if test="@global-params">
