@@ -15,10 +15,11 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Xml;
 using Saxon.Api;
-using XPathException = net.sf.saxon.trans.XPathException;
 using Xcst.Runtime;
+using XPathException = net.sf.saxon.trans.XPathException;
 
 namespace Xcst.Compiler.CodeGeneration {
 
@@ -93,6 +94,28 @@ namespace Xcst.Compiler.CodeGeneration {
          }
 
          return null;
+      }
+
+      internal static Type?
+      ResolvePackageType(string packageName) {
+
+         Type? type = null;
+
+         foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies()) {
+
+            Type? type2 = asm.GetType(packageName);
+
+            if (type2 != null) {
+
+               if (type != null && type2 != type) {
+                  throw new Exception($"Ambiguous type '{packageName}'.");
+               }
+
+               type = type2;
+            }
+         }
+
+         return type;
       }
 
       internal static int
@@ -377,13 +400,10 @@ namespace Xcst.Compiler.CodeGeneration {
                .Single()
                .ToString();
 
-            static Type? defaultTypeResolver(string n) =>
-               Type.GetType(n, throwOnError: false);
-
             Func<string, Type?> packageTypeResolver = arguments[1].AsItems()
                .Select(i => UnwrapExternalObject<Func<string, Type?>>(i))
                .SingleOrDefault()
-               ?? defaultTypeResolver;
+               ?? ExtensionFunctions.ResolvePackageType;
 
             XdmValue errorObject = new XdmValue(arguments[2].AsItems());
             var errorData = ModuleUriAndLineNumberFromErrorObject(errorObject);
@@ -391,7 +411,7 @@ namespace Xcst.Compiler.CodeGeneration {
             int lineNumber = errorData.Item2.GetValueOrDefault();
 
             Type? packageType;
-            string errorCode = "XTSE3000";
+            const string errorCode = "XTSE3000";
 
             try {
                packageType = packageTypeResolver(typeName);
