@@ -1294,7 +1294,7 @@
 
    <define name="next-template">
       <element name="next-template">
-         <ann:documentation>Invokes the overridden template.</ann:documentation>
+         <ann:documentation>Invokes the hidden template.</ann:documentation>
          <optional>
             <attribute name="tunnel-params">
                <ann:documentation>An object with tunnel parameters.</ann:documentation>
