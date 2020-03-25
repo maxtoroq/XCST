@@ -1,19 +1,19 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using Xcst.Compiler;
 
 namespace Xcst.Tests.API.Compilation {
 
-   [TestClass]
+   [TestFixture]
    public class CompilationTests {
 
       const string
       TestCategory = nameof(API) + "." + nameof(Compilation);
 
-      [TestMethod]
-      [TestCategory(TestCategory)]
+      [Test]
+      [Category(TestCategory)]
       public void
       CompileResult_Lists_Public_Templates_Only() {
 

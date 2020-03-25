@@ -2,7 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Xml;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using Xcst.Compiler;
 
 namespace Xcst.Tests.ProgramStructure.Packages.AcceptingComponents {
@@ -11,8 +11,8 @@ namespace Xcst.Tests.ProgramStructure.Packages.AcceptingComponents {
 
    public partial class AcceptingComponentsTests {
 
-      [TestMethod]
-      [TestCategory(TestCategory)]
+      [Test]
+      [Category(TestCategory)]
       public void
       Keyword_As_Return_Type() {
 

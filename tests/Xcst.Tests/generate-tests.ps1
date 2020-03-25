@@ -64,7 +64,7 @@ function GenerateTests {
 //------------------------------------------------------------------------------
 using System;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using TestFx = NUnit.Framework;
 using static Xcst.Tests.TestsHelper;
 "@
 
@@ -105,7 +105,7 @@ function GenerateTestsForDirectory([IO.DirectoryInfo]$directory, [string]$relati
       PushIndent
    
       WriteLine
-      WriteLine "[TestClass]"
+      WriteLine "[TestFx.TestFixture]"
       WriteLine "public partial class $($directory.Name)Tests {"
       PushIndent
 
@@ -115,25 +115,29 @@ function GenerateTestsForDirectory([IO.DirectoryInfo]$directory, [string]$relati
          $fail = $fileName -like '*.f'
          $correct = $fail -or $fileName -like '*.c'
          $testName = ($fileName -replace '[.-]', '_') -creplace '([a-z])([A-Z])', '$1_$2'
+         $assertThrows = !$correct -or $fail
 
          WriteLine
          WriteLine "#line 1 ""$($file.FullName)"""
-         WriteLine "[TestMethod, TestCategory(""$relativeNs"")]"
-
-         if (!$correct) {
-            WriteLine "[ExpectedException(typeof(Xcst.Compiler.CompileException))]"
-         
-         } elseif ($fail) {
-            WriteLine "[ExpectedException(typeof(Xcst.RuntimeException))]"
-         }
+         WriteLine "[TestFx.Test, TestFx.Category(""$relativeNs"")]"
 
          if (IgnoreTest($file)) {
-            WriteLine "[Ignore]"
+            WriteLine "[TestFx.Ignore("""")]"
          }
 
          WriteLine "public void $testName() {"
          PushIndent
-         WriteLine "RunXcstTest(@""$($file.FullName)"", correct: $($correct.ToString().ToLower()), fail: $($fail.ToString().ToLower()));"
+
+         $testCall = "RunXcstTest(@""$($file.FullName)"", ""$testName"", ""$ns"", correct: $($correct.ToString().ToLower()), fail: $($fail.ToString().ToLower()))"
+
+         if ($assertThrows) {
+
+            $testException = if (!$correct) { "Xcst.Compiler.CompileException" } else { "Xcst.RuntimeException" }
+            WriteLine "TestFx.Assert.Throws<$testException>(() => $testCall);"
+         } else {
+            WriteLine ($testCall + ";")
+         }
+
          PopIndent
          WriteLine "}"
       }

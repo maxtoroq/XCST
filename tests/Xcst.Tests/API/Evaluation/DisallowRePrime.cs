@@ -1,14 +1,13 @@
 ﻿using System;
 using System.IO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace Xcst.Tests.API.Evaluation {
 
    partial class EvaluationTests {
 
-      [TestMethod]
-      [TestCategory(TestCategory)]
-      [ExpectedException(typeof(InvalidOperationException))]
+      [Test]
+      [Category(TestCategory)]
       public void
       Disallow_Re_Prime() {
 
@@ -19,10 +18,7 @@ namespace Xcst.Tests.API.Evaluation {
             .OutputTo(new StringWriter())
             .Run();
 
-         evaluator.WithParam("bar", "bar")
-            .CallInitialTemplate()
-            .OutputTo(new StringWriter())
-            .Run();
+         Assert.Throws<InvalidOperationException>(() => evaluator.WithParam("bar", "bar"));
       }
    }
 }

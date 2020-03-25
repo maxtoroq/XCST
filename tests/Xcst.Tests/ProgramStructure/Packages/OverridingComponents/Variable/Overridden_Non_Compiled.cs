@@ -2,7 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Xml;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using Xcst.Compiler;
 
 namespace Xcst.Tests.ProgramStructure.Packages.OverridingComponents.Variable {
@@ -14,8 +14,8 @@ namespace Xcst.Tests.ProgramStructure.Packages.OverridingComponents.Variable {
       const string
       TestCategory = nameof(ProgramStructure) + "." + nameof(Packages) + "." + nameof(OverridingComponents) + "." + nameof(Variable);
 
-      [TestMethod]
-      [TestCategory(TestCategory)]
+      [Test]
+      [Category(TestCategory)]
       public void
       Overridden_Non_Compiled() {
 

@@ -2,7 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Xml;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using Xcst.Compiler;
 
 namespace Xcst.Tests.ProgramStructure.Packages.AcceptingComponents {
@@ -14,8 +14,8 @@ namespace Xcst.Tests.ProgramStructure.Packages.AcceptingComponents {
       const string
       TestCategory = nameof(ProgramStructure) + "." + nameof(Packages) + "." + nameof(AcceptingComponents);
 
-      [TestMethod]
-      [TestCategory(TestCategory)]
+      [Test]
+      [Category(TestCategory)]
       public void
       Component_Using_Accepted_Type() {
 

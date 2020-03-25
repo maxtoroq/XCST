@@ -1,11 +1,11 @@
 ﻿using System.IO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace Xcst.Tests.API.Evaluation {
 
    partial class EvaluationTests {
 
-      [TestMethod, TestCategory(TestCategory)]
+      [Test, Category(TestCategory)]
       public void
       Call_Final_Template() {
 

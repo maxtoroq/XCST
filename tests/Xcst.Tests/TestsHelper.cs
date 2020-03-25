@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -14,7 +13,7 @@ using Microsoft.CodeAnalysis.VisualBasic;
 using Xcst.Compiler;
 using CSharpVersion = Microsoft.CodeAnalysis.CSharp.LanguageVersion;
 using VBVersion = Microsoft.CodeAnalysis.VisualBasic.LanguageVersion;
-using TestAssert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
+using TestAssert = NUnit.Framework.Assert;
 
 namespace Xcst.Tests {
 
@@ -32,16 +31,15 @@ namespace Xcst.Tests {
       ExpectedName = "expected";
 
       public static void
-      RunXcstTest(string packageFile, bool correct, bool fail) {
+      RunXcstTest(string packageFile, string testName, string testNamespace, bool correct, bool fail) {
 
          var packageUri = new Uri(packageFile, UriKind.Absolute);
-         MethodBase testMethod = new StackFrame(1, true).GetMethod();
 
          CompileResult xcstResult;
          string packageName;
 
          try {
-            var codegenResult = GenerateCode(packageUri, testMethod);
+            var codegenResult = GenerateCode(packageUri, testName, testNamespace);
             xcstResult = codegenResult.Item1;
             packageName = codegenResult.Item2;
 
@@ -148,12 +146,12 @@ namespace Xcst.Tests {
       }
 
       static Tuple<CompileResult, string>
-      GenerateCode(Uri packageUri, MethodBase testMethod) {
+      GenerateCode(Uri packageUri, string testName, string testNamespace) {
 
          XcstCompiler compiler = CreateCompiler();
-         compiler.TargetNamespace = testMethod.DeclaringType.Namespace;
-         compiler.TargetClass = testMethod.Name;
-         compiler.UsePackageBase = testMethod.DeclaringType.Namespace;
+         compiler.TargetNamespace = testNamespace;
+         compiler.TargetClass = testName;
+         compiler.UsePackageBase = testNamespace;
          compiler.SetTargetBaseTypes(typeof(TestBase));
 
          CompileResult result = compiler.Compile(packageUri);
@@ -188,7 +186,7 @@ namespace Xcst.Tests {
             // Tests dependencies
             MetadataReference.CreateFromFile(typeof(Microsoft.CSharp.RuntimeBinder.RuntimeBinderException).Assembly.Location),
             MetadataReference.CreateFromFile(typeof(Microsoft.VisualBasic.Constants).Assembly.Location),
-            MetadataReference.CreateFromFile(typeof(Microsoft.VisualStudio.TestTools.UnitTesting.Assert).Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(TestAssert).Assembly.Location),
             MetadataReference.CreateFromFile(typeof(System.Data.DataTable).Assembly.Location),
             MetadataReference.CreateFromFile(Assembly.GetExecutingAssembly().Location)
          };

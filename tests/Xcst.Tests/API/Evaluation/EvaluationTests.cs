@@ -1,8 +1,8 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using NUnit.Framework;
 
 namespace Xcst.Tests.API.Evaluation {
 
-   [TestClass]
+   [TestFixture]
    public partial class EvaluationTests {
 
       const string
