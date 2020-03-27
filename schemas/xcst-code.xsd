@@ -20,14 +20,21 @@
          <xs:element ref="code:using"/>
          <xs:element ref="code:variable"/>
          <xs:element ref="code:while"/>
+         <xs:element ref="code:_directive"/>
       </xs:choice>
    </xs:group>
    <xs:group name="_namespace-member">
       <xs:choice>
          <xs:element ref="code:region"/>
          <xs:element ref="code:type"/>
+         <xs:element ref="code:_directive"/>
       </xs:choice>
    </xs:group>
+   <xs:element name="_directive" abstract="true">
+      <xs:complexType>
+         <xs:attribute name="codes" type="code:_warning-codes"/>
+      </xs:complexType>
+   </xs:element>
    <xs:group name="_type-member">
       <xs:choice>
          <xs:element ref="code:constructor"/>
@@ -37,6 +44,7 @@
          <xs:element ref="code:method"/>
          <xs:element ref="code:region"/>
          <xs:element ref="code:type"/>
+         <xs:element ref="code:_directive"/>
       </xs:choice>
    </xs:group>
    <xs:element name="_member-binding" abstract="true"/>
@@ -226,6 +234,7 @@
          </xs:sequence>
       </xs:complexType>
    </xs:element>
+   <xs:element name="disable-warning" substitutionGroup="code:_directive"/>
    <xs:element name="double" substitutionGroup="code:_literal">
       <xs:complexType>
          <xs:attribute name="value" use="required"/>
@@ -571,6 +580,7 @@
          <xs:attribute name="name" use="required"/>
       </xs:complexType>
    </xs:element>
+   <xs:element name="restore-warning" substitutionGroup="code:_directive"/>
    <xs:element name="return">
       <xs:complexType>
          <xs:sequence>
@@ -662,6 +672,7 @@
          </xs:sequence>
          <xs:attribute name="array-dimensions" type="code:_positive-integer"/>
          <xs:attribute name="name"/>
+         <xs:attribute name="nullable" type="code:_boolean"/>
          <xs:attribute name="namespace"/>
       </xs:complexType>
    </xs:element>
@@ -748,6 +759,14 @@
          <xs:enumeration value="sealed"/>
          <xs:enumeration value="static"/>
          <xs:enumeration value="virtual"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="_warning-codes">
+      <xs:restriction>
+         <xs:simpleType>
+            <xs:list itemType="xs:token"/>
+         </xs:simpleType>
+         <xs:minLength value="1"/>
       </xs:restriction>
    </xs:simpleType>
 </xs:schema>

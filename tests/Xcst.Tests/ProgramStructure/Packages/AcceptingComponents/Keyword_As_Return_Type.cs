@@ -83,7 +83,7 @@ namespace Xcst.Tests.ProgramStructure.Packages.AcceptingComponents {
 ";
 
                default:
-                  return null;
+                  throw new ArgumentException("Invalid name.", nameof(name));
             }
          }
 

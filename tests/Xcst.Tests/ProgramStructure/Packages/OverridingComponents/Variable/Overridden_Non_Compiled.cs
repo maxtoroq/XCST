@@ -81,7 +81,7 @@ namespace Xcst.Tests.ProgramStructure.Packages.OverridingComponents.Variable {
 </c:package>
 ";
                default:
-                  return null;
+                  throw new ArgumentException("Invalid name.", nameof(name));
             }
          }
 

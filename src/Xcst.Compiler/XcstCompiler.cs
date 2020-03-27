@@ -54,6 +54,9 @@ namespace Xcst.Compiler {
       public bool
       NamedPackage { get; set; }
 
+      public bool
+      NullableAnnotate { get; set; }
+
       public string?
       UsePackageBase { get; set; }
 
@@ -277,6 +280,8 @@ namespace Xcst.Compiler {
                   ?? Enumerable.Empty<XdmNode>()
             )
          );
+
+         compiler.SetParameter(CompilerQName("nullable-annotate"), this.NullableAnnotate.ToXdmValue());
 
          compiler.SetParameter(CompilerQName("cls-compliant"), this.ClsCompliant.ToXdmValue());
 

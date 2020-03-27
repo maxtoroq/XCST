@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:param name='p1'/>
+   <c:param name='p2' required='yes'/>
+   <c:param name='p3' value='default(object)'/>
+
+   <c:variable name='v1'/>
+   <c:variable name='v2' value='default(object)'/>
+
+   <c:variable name='v3'>
+      <!-- c:script to avoid expression -->
+      <c:script/>
+      <c:object value='default(object)'/>
+   </c:variable>
+
+   <c:type name='Type1'>
+      <c:member name='mem1'/>
+      <c:member name='mem2'>
+         <c:member name='mem3'/>
+      </c:member>
+   </c:type>
+
+   <c:function name='f1'>
+      <c:param name='fp1'/>
+      <c:param name='fp2' value='default(object)'/>
+
+   </c:function>
+
+   <c:template name='t1'>
+      <c:object value='default(object)'/>
+      <c:call-template name='t2'/>
+   </c:template>
+
+   <c:template name='t2' as='object'>
+      <c:param name='tp1'/>
+      <c:param name='tp2' value='default(object)'/>
+   </c:template>
+
+   <c:template name='declarations'>
+
+      <c:set ref='this.p1' value='null'/>
+      <c:set ref='this.p2' value='null'/>
+      <c:set ref='this.p3' value='null'/>
+      <c:set ref='this.v1' value='null'/>
+      <c:set ref='this.v2' value='null'/>
+      <c:set ref='this.v3[0]' value='null'/>
+
+      <c:void value='f1(null, null)'/>
+
+      <c:call-template name='t2'>
+         <c:with-param name='tp1' value='null'/>
+         <c:with-param name='tp2' value='null'/>
+      </c:call-template>
+
+      <c:variable name='type1' value='new Type1 { mem1 = null, mem2 = null }'/>
+   </c:template>
+
+   <c:template name='instructions'>
+
+      <c:variable name='lv1' value='default(object)'/>
+
+      <!-- avoid CS0219 -->
+      <c:if test='lv1 is null'/>
+
+      <c:variable name='lv2'>
+         <!-- c:script to avoid expression -->
+         <c:script/>
+         <c:object value='default(object)'/>
+      </c:variable>
+
+      <c:variable name='lv3'/>
+      <c:set ref='lv3' value='null'/>
+
+      <!-- avoid CS0219 -->
+      <c:if test='lv3 is null'/>
+
+      <c:variable name='lv4'>
+         <!-- c:script to avoid expression -->
+         <c:script/>
+         <c:call-template name='t1'/>
+      </c:variable>
+
+      <c:set ref='lv4[0]' value='null'/>
+
+      <c:variable name='del1'>
+         <c:delegate>
+            <c:object value='default(object)'/>
+         </c:delegate>
+      </c:variable>
+   </c:template>
+
+</c:module>

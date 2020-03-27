@@ -282,6 +282,12 @@
       <text>)</text>
    </template>
 
+   <template match="code:disable-warning" mode="cs:source">
+      <value-of select="$src:new-line"/>
+      <text>#pragma warning disable </text>
+      <value-of select="tokenize(@codes, '\s')" separator=","/>
+   </template>
+
    <template match="code:double" mode="cs:source">
       <value-of select="@value"/>
       <text>d</text>
@@ -785,6 +791,12 @@
       <text>#endregion</text>
    </template>
 
+   <template match="code:restore-warning" mode="cs:source">
+      <value-of select="$src:new-line"/>
+      <text>#pragma warning restore </text>
+      <value-of select="tokenize(@codes, '\s')" separator=","/>
+   </template>
+
    <template match="code:return" mode="cs:statement">
       <call-template name="cs:line-pragma"/>
       <call-template name="src:new-line-indented"/>
@@ -963,6 +975,7 @@
                   <value-of select="$primitive/../local-name()"/>
                </otherwise>
             </choose>
+            <call-template name="cs:nullable"/>
          </when>
          <otherwise>
             <next-match/>
@@ -1016,6 +1029,7 @@
             </if>
          </otherwise>
       </choose>
+      <call-template name="cs:nullable"/>
    </template>
 
    <template match="code:typeof" mode="cs:source">
@@ -1279,6 +1293,10 @@
       <param name="verbatim" as="xs:boolean?"/>
 
       <if test="$verbatim or (empty($verbatim) and @verbatim/xs:boolean(.))">@</if>
+   </template>
+
+   <template name="cs:nullable">
+      <if test="$src:nullable-annotate and @nullable/xs:boolean(.)">?</if>
    </template>
 
    <!--

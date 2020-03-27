@@ -64,5 +64,8 @@ namespace Xcst.Runtime {
 
       public static Exception
       Terminate(string message) => new RuntimeException(message, Code("XTMM9000"));
+
+      public static Exception
+      InferMethodIsNotMeantToBeCalled() => new RuntimeException("Infer method is not meant to be called.");
    }
 }

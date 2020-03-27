@@ -181,7 +181,7 @@ namespace Xcst.Runtime {
       }
 
       public static object?
-      DefaultInfer() => default(object);
+      DefaultInfer() => throw DynamicError.InferMethodIsNotMeantToBeCalled();
 
       public static XcstDelegate<TBase>
       CastDelegate<TBase, TDerived>(XcstDelegate<TDerived> del) where TDerived : TBase =>

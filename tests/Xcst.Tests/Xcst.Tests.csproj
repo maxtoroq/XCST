@@ -21,7 +21,8 @@
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
     <TargetFrameworkProfile />
-    <LangVersion>7</LangVersion>
+    <LangVersion>8</LangVersion>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -427,6 +428,7 @@
     <None Include="Grouping\ForEachGroup\Enumerable.c.xcst" />
     <None Include="Grouping\ForEachGroup\GroupSizeSorted.c.xcst" />
     <None Include="Grouping\ForEachGroup\Sort\sort.foox.c.xcst" />
+    <None Include="Nullable\NullablePackage.xcst" />
     <None Include="packages.config" />
     <None Include="ProgramStructure\CombiningModules\import.foox.c.xcst" />
     <None Include="ProgramStructure\ImportNamespace\import-namespace.foox.c.xcst" />

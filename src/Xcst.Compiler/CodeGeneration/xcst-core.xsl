@@ -57,9 +57,17 @@
       <code:type-reference name="Object" namespace="System"/>
    </variable>
 
+   <variable name="src:nullable-object-type" as="element()">
+      <code:type-reference name="Object" namespace="System">
+         <if test="$src:nullable-annotate">
+            <attribute name="nullable" select="'true'"/>
+         </if>
+      </code:type-reference>
+   </variable>
+
    <variable name="src:default-template-type" as="element()">
       <code:type-reference array-dimensions="1">
-         <sequence select="$src:object-type"/>
+         <sequence select="$src:nullable-object-type"/>
       </code:type-reference>
    </variable>
 
@@ -1270,7 +1278,7 @@
                <code:type-reference name="{xcst:type(@as)}"/>
             </when>
             <otherwise>
-               <sequence select="$src:object-type"/>
+               <sequence select="$src:nullable-object-type"/>
             </otherwise>
          </choose>
       </variable>
@@ -1966,7 +1974,7 @@
       <code:new-object>
          <code:type-reference name="XcstDelegate" namespace="Xcst">
             <code:type-arguments>
-               <sequence select="($item-type, $src:object-type)[1]"/>
+               <sequence select="($item-type, $src:nullable-object-type)[1]"/>
             </code:type-arguments>
          </code:type-reference>
          <code:arguments>
@@ -3106,7 +3114,7 @@
                      </call-template>
                   </variable>
                   <variable name="item-type" select="
-                     ($seqctor-meta/xcst:item-type/code:type-reference, $src:object-type)[1]"/>
+                     ($seqctor-meta/xcst:item-type/code:type-reference, $src:nullable-object-type)[1]"/>
                   <sequence select="
                      if ($seqctor-meta/@cardinality eq 'ZeroOrMore') then
                         src:item-to-sequence-type($item-type)
@@ -3116,7 +3124,7 @@
             </choose>
          </when>
          <otherwise>
-            <sequence select="$src:object-type"/>
+            <sequence select="$src:nullable-object-type"/>
          </otherwise>
       </choose>
    </template>
@@ -3578,6 +3586,19 @@
       <param name="language" as="xs:string"/>
 
       <choose>
+         <when test="$type/@nullable">
+            <choose>
+               <when test="$type/xs:boolean(@nullable)">
+                  <code:type-reference nullable="false">
+                     <copy-of select="$type/@* except $type/@nullable"/>
+                     <copy-of select="$type/node()"/>
+                  </code:type-reference>
+               </when>
+               <otherwise>
+                  <sequence select="$type"/>
+               </otherwise>
+            </choose>
+         </when>
          <when test="$type/@name">
             <variable name="non-nullable" select="xcst:non-nullable-type($type/@name, $language)"/>
             <code:type-reference name="{$non-nullable}">
@@ -3604,6 +3625,14 @@
       <param name="t1" as="element(code:type-reference)?"/>
       <param name="t2" as="element(code:type-reference)?"/>
 
+      <sequence select="src:type-reference-equal($t1, $t2, false())"/>
+   </function>
+
+   <function name="src:type-reference-equal" as="xs:boolean">
+      <param name="t1" as="element(code:type-reference)?"/>
+      <param name="t2" as="element(code:type-reference)?"/>
+      <param name="check-nullability" as="xs:boolean"/>
+
       <choose>
          <when test="count(($t1, $t2)) eq 2">
             <variable name="array-dims" select="$t1/@array-dimensions, $t2/@array-dimensions"/>
@@ -3617,18 +3646,25 @@
                <when test="count($array-dims) eq 2">
                   <sequence select="
                      $array-dims[1]/xs:integer(.) eq $array-dims[2]/xs:integer(.)
-                     and src:type-reference-equal($types[1], $types[2])"/>
+                     and src:type-reference-equal($types[1], $types[2], $check-nullability)"/>
                </when>
                <otherwise>
+                  <variable name="nullables" select="($t1/@nullable, $t2/@nullable)/xs:boolean(.)"/>
                   <sequence select="
                      empty($array-dims)
                      and $names[1] eq $names[2]
                      and (empty($namespaces) or $namespaces[1] eq $namespaces[2])
-                     and src:type-reference-equal($types[1], $types[2])
+                     and (not($check-nullability)
+                        or empty($nullables)
+                        (: if both types have @nullable, then must be equal :)
+                        or (count($nullables) eq 2 and count(distinct-values($nullables)) eq 1)
+                        (: if only one type has @nullable, it must be false :)
+                        or (count($nullables) eq 1 and not($nullables[1])))
+                     and src:type-reference-equal($types[1], $types[2], $check-nullability)
                      and (count($targs1) eq count($targs2)
                         and (every $b in (
                            for $p in 1 to count($targs1)
-                           return src:type-reference-equal($targs1[$p], $targs2[$p]))
+                           return src:type-reference-equal($targs1[$p], $targs2[$p], $check-nullability))
                            satisfies $b))"/>
                </otherwise>
             </choose>
@@ -3829,7 +3865,7 @@
                         <code:method-call name="Create">
                            <sequence select="src:helper-type('SequenceWriter')"/>
                            <code:type-arguments>
-                              <sequence select="($item-type-ref, $src:object-type)[1]"/>
+                              <sequence select="($item-type-ref, $src:nullable-object-type)[1]"/>
                            </code:type-arguments>
                         </code:method-call>
                         <code:arguments>

@@ -9,7 +9,7 @@
    <c:function name='Sub' as='Class' visibility='public'>
       <c:param name='ByVal'/>
 
-      <c:return value='null'/>
+      <c:return value='new Class()'/>
    </c:function>
 
    <c:template name='foo' as='Class[]' visibility='public'/>

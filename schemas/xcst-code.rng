@@ -83,6 +83,7 @@
          <ref name="using"/>
          <ref name="variable"/>
          <ref name="while"/>
+         <ref name="_directive"/>
       </choice>
    </define>
 
@@ -90,6 +91,14 @@
       <choice>
          <ref name="region"/>
          <ref name="type"/>
+         <ref name="_directive"/>
+      </choice>
+   </define>
+
+   <define name="_directive">
+      <choice>
+         <ref name="disable-warning"/>
+         <ref name="restore-warning"/>
       </choice>
    </define>
 
@@ -102,6 +111,7 @@
          <ref name="method"/>
          <ref name="region"/>
          <ref name="type"/>
+         <ref name="_directive"/>
       </choice>
    </define>
 
@@ -353,6 +363,16 @@
    <define name="default">
       <element name="default">
          <ref name="type-reference"/>
+      </element>
+   </define>
+
+   <define name="disable-warning">
+      <element name="disable-warning">
+         <optional>
+            <attribute name="codes">
+               <ref name="_warning-codes"/>
+            </attribute>
+         </optional>
       </element>
    </define>
 
@@ -825,6 +845,16 @@
       </element>
    </define>
 
+   <define name="restore-warning">
+      <element name="restore-warning">
+         <optional>
+            <attribute name="codes">
+               <ref name="_warning-codes"/>
+            </attribute>
+         </optional>
+      </element>
+   </define>
+
    <define name="return">
       <element name="return">
          <optional>
@@ -977,14 +1007,17 @@
             </group>
          </choice>
          -->
-         <optional>
-            <attribute name="array-dimensions">
-               <ref name="_positive-integer"/>
-            </attribute>
-         </optional>
-         <optional>
-            <attribute name="name"/>
-         </optional>
+         <zeroOrMore>
+            <choice>
+               <attribute name="array-dimensions">
+                  <ref name="_positive-integer"/>
+               </attribute>
+               <attribute name="name"/>
+               <attribute name="nullable">
+                  <ref name="_boolean"/>
+               </attribute>
+            </choice>
+         </zeroOrMore>
          <optional>
             <choice>
                <attribute name="namespace"/>
@@ -1086,6 +1119,14 @@
          <value>static</value>
          <value>virtual</value>
       </choice>
+   </define>
+
+   <define name="_warning-codes">
+      <list>
+         <oneOrMore>
+            <data type="token"/>
+         </oneOrMore>
+      </list>
    </define>
 
 </grammar>

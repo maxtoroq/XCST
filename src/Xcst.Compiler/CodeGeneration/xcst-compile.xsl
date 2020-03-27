@@ -35,6 +35,7 @@
    <param name="src:base-types" as="element(code:type-reference)*"/>
    <param name="src:visibility" select="'public'" as="xs:string"/>
    <param name="src:cls-compliant" select="false()" as="xs:boolean"/>
+   <param name="src:nullable-annotate" select="false()" as="xs:boolean"/>
 
    <param name="src:named-package" select="false()" as="xs:boolean"/>
    <param name="src:use-package-base" as="xs:string?"/>
@@ -652,7 +653,7 @@
                <with-param name="text" select="$text"/>
             </call-template>
          </variable>
-         <sequence select="($type, $src:object-type)[1]"/>
+         <sequence select="($type, $src:nullable-object-type)[1]"/>
       </element>
    </template>
 
@@ -763,7 +764,7 @@
                      <with-param name="text" select="$text"/>
                   </call-template>
                </variable>
-               <sequence select="($type, $src:object-type)[1]"/>
+               <sequence select="($type, $src:nullable-object-type)[1]"/>
             </xcst:param>
          </for-each>
          <if test="$as">
@@ -872,7 +873,7 @@
                      <with-param name="text" select="$text"/>
                   </call-template>
                </variable>
-               <sequence select="($type, $src:object-type)[1]"/>
+               <sequence select="($type, $src:nullable-object-type)[1]"/>
                <if test="$has-value">
                   <call-template name="src:value">
                      <with-param name="text" select="$text"/>
@@ -1392,7 +1393,7 @@
                <code:type-reference>
                   <copy-of select="src:package-model-type('ISequenceWriter')/@*"/>
                   <code:type-arguments>
-                     <sequence select="($item-type-ref, $src:object-type)[1]"/>
+                     <sequence select="($item-type-ref, $src:nullable-object-type)[1]"/>
                   </code:type-arguments>
                </code:type-reference>
                <src:reference>
@@ -2119,6 +2120,7 @@
 
    <template match="c:param | c:variable" mode="src:member">
       <param name="package-manifest" required="yes" tunnel="yes"/>
+      <param name="language" required="yes" tunnel="yes"/>
 
       <variable name="meta" select="$package-manifest/xcst:*[@declaration-id eq current()/generate-id()]"/>
       <variable name="public" select="$meta/@visibility = ('public', 'final', 'abstract')"/>
@@ -2133,6 +2135,10 @@
       <variable name="init-field-name" select="
          if ($use-backing-field) then src:aux-variable(concat('init_', $meta/@name)) else ()"/>
 
+      <variable name="disable-CS8618" select="
+         xcst:language-equal($language, $xcst:csharp-lang)
+            and $src:nullable-annotate"/>
+
       <variable name="init-field" as="element()">
          <code:field-reference name="{$init-field-name}">
             <code:this-reference/>
@@ -2146,18 +2152,32 @@
       </variable>
 
       <if test="$use-backing-field">
+
+         <if test="$disable-CS8618">
+            <code:disable-warning codes="CS8618"/>
+         </if>
+
          <code:field name="{$backing-field-name}" line-hidden="true">
             <sequence select="$meta/code:type-reference"/>
             <code:attributes>
                <call-template name="src:editor-browsable-never"/>
             </code:attributes>
          </code:field>
+
+         <if test="$disable-CS8618">
+            <code:restore-warning codes="CS8618"/>
+         </if>
+
          <code:field name="{$init-field-name}" line-hidden="true">
             <code:type-reference name="Boolean" namespace="System"/>
             <code:attributes>
                <call-template name="src:editor-browsable-never"/>
             </code:attributes>
          </code:field>
+      </if>
+
+      <if test="not($use-backing-field) and $disable-CS8618">
+         <code:disable-warning codes="CS8618"/>
       </if>
 
       <code:property name="{$meta/@member-name}"
@@ -2250,6 +2270,10 @@
             </if>
          </code:setter>
       </code:property>
+
+      <if test="not($use-backing-field) and $disable-CS8618">
+         <code:restore-warning codes="CS8618"/>
+      </if>
    </template>
 
    <template match="c:template" mode="src:member">
@@ -2290,7 +2314,7 @@
 
                   <for-each select="$meta/xcst:param">
                      <variable name="non-nullable-type" select="src:non-nullable-type(code:type-reference, $language)"/>
-                     <variable name="nullable" select="not(src:type-reference-equal(code:type-reference, $non-nullable-type))"/>
+                     <variable name="nullable" select="not(src:type-reference-equal(code:type-reference, $non-nullable-type, $src:nullable-annotate))"/>
                      <code:attribute>
                         <sequence select="src:package-model-type('XcstTemplateParameter')"/>
                         <code:arguments>
@@ -2368,11 +2392,11 @@
                <call-template name="src:editor-browsable-never"/>
             </code:attributes>
             <code:block>
-               <code:return>
-                  <code:default>
-                     <sequence select="$item-type-ref"/>
-                  </code:default>
-               </code:return>
+               <code:throw>
+                  <code:method-call name="InferMethodIsNotMeantToBeCalled">
+                     <sequence select="src:helper-type('DynamicError')"/>
+                  </code:method-call>
+               </code:throw>
             </code:block>
          </code:method>
       </if>
@@ -2745,13 +2769,13 @@
       <variable name="type" as="element()">
          <choose>
             <when test="c:member">
-               <code:type-reference name="{src:anonymous-type-name(.)}"/>
+               <code:type-reference name="{src:anonymous-type-name(.)}" nullable="true"/>
             </when>
             <when test="@as">
                <code:type-reference name="{xcst:type(@as)}"/>
             </when>
             <otherwise>
-               <sequence select="$src:object-type"/>
+               <sequence select="$src:nullable-object-type"/>
             </otherwise>
          </choose>
       </variable>
@@ -2951,10 +2975,23 @@
 
    <template name="src:execution-context">
       <param name="used-packages" tunnel="yes"/>
+      <param name="language" tunnel="yes"/>
+
+      <variable name="disable-CS8618" select="
+         xcst:language-equal($language, $xcst:csharp-lang)
+            and $src:nullable-annotate"/>
+
+      <if test="$disable-CS8618">
+         <code:disable-warning codes="CS8618"/>
+      </if>
 
       <code:field name="{$src:context-field/src:reference/code:field-reference/@name}">
          <sequence select="$src:context-field/code:type-reference"/>
       </code:field>
+
+      <if test="$disable-CS8618">
+         <code:restore-warning codes="CS8618"/>
+      </if>
 
       <code:property name="Context" visibility="private">
          <sequence select="$src:context-field/code:type-reference"/>
@@ -3038,7 +3075,7 @@
                   <sequence select="$context/code:type-reference"/>
                </code:parameter>
                <code:parameter name="{$overridden-params/@name}">
-                  <code:type-reference array-dimensions="1">
+                  <code:type-reference array-dimensions="1" nullable="true">
                      <code:type-reference name="String" namespace="System"/>
                   </code:type-reference>
                </code:parameter>
@@ -3292,7 +3329,7 @@
          </code:implements-interface>
          <code:parameters>
             <code:parameter name="{$name-param/@name}">
-               <code:type-reference name="QualifiedName" namespace="Xcst"/>
+               <code:type-reference name="QualifiedName" namespace="Xcst" nullable="true"/>
             </code:parameter>
             <code:parameter name="{$parameters-param/@name}">
                <code:type-reference name="OutputParameters" namespace="Xcst"/>

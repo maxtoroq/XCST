@@ -66,6 +66,8 @@ using System;
 using System.Linq;
 using TestFx = NUnit.Framework;
 using static Xcst.Tests.TestsHelper;
+
+#nullable enable
 "@
 
    foreach ($subDirectory in ls -Directory) {
@@ -82,6 +84,7 @@ function GenerateTestsForDirectory([IO.DirectoryInfo]$directory, [string]$relati
       $compiler = $compilerFactory.CreateCompiler()
       $compiler.TargetNamespace = $ns
       $compiler.IndentChars = $singleIndent
+      $compiler.NullableAnnotate = $true
 
       if ($file.Extension -eq ".pxcst") {
          $compiler.NamedPackage = $true
@@ -140,6 +143,7 @@ function GenerateTestsForDirectory([IO.DirectoryInfo]$directory, [string]$relati
 
          PopIndent
          WriteLine "}"
+         WriteLine "#line default"
       }
 
       PopIndent

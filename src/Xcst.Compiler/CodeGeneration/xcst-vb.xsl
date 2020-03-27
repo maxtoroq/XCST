@@ -279,6 +279,12 @@
       <text>)</text>
    </template>
 
+   <template match="code:disable-warning" mode="vb:source">
+      <value-of select="$src:new-line"/>
+      <text>#Disable Warning </text>
+      <value-of select="tokenize(@codes, '\s')" separator=","/>
+   </template>
+
    <template match="code:double" mode="vb:source">
       <value-of select="@value"/>
       <text>R</text>
@@ -764,6 +770,12 @@
       <apply-templates mode="#current"/>
       <call-template name="src:new-line-indented"/>
       <text>#End Region</text>
+   </template>
+
+   <template match="code:restore-warning" mode="vb:source">
+      <value-of select="$src:new-line"/>
+      <text>#Enable Warning </text>
+      <value-of select="tokenize(@codes, '\s')" separator=","/>
    </template>
 
    <template match="code:return" mode="vb:statement">

@@ -165,7 +165,7 @@ namespace Xcst.Tests {
          bool isCSharp = language.Equals("C#", StringComparison.OrdinalIgnoreCase);
 
          var csOptions = new CSharpParseOptions(CSharpVersion.CSharp6, preprocessorSymbols: new[] { "DEBUG", "TRACE" });
-         var vbOptions = new VisualBasicParseOptions(VBVersion.VisualBasic14, preprocessorSymbols: new[] { "DEBUG", "TRACE" }.ToDictionary(s => s, s => (object)null));
+         var vbOptions = new VisualBasicParseOptions(VBVersion.VisualBasic14, preprocessorSymbols: new[] { "DEBUG", "TRACE" }.ToDictionary(s => s, s => (object)String.Empty));
 
          SyntaxTree[] syntaxTrees = compilationUnits
             .Select(c => (isCSharp) ?
