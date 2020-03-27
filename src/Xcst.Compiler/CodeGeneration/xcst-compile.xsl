@@ -34,7 +34,6 @@
    <param name="src:class" as="xs:string?"/>
    <param name="src:base-types" as="element(code:type-reference)*"/>
    <param name="src:visibility" select="'public'" as="xs:string"/>
-   <param name="src:cls-compliant" select="false()" as="xs:boolean"/>
    <param name="src:nullable-annotate" select="false()" as="xs:boolean"/>
 
    <param name="src:named-package" select="false()" as="xs:boolean"/>
@@ -1162,11 +1161,7 @@
          else
             generate-id($declaration)"/>
 
-      <sequence select="
-         if ($src:cls-compliant and $deterministic) then
-            string-join(($escaped-name, $component-kind, $id), '_')
-         else
-            src:aux-variable(string-join(($component-kind, $escaped-name, $id), '_'))"/>
+      <sequence select="src:aux-variable(string-join(($component-kind, $escaped-name, $id), '_'))"/>
    </function>
 
    <function name="src:string-id" as="xs:integer">
@@ -2419,7 +2414,7 @@
                      <sequence select="$type-ref"/>
                   </code:field>
 
-                  <code:field name="{$init-field}" visibility="public" disable-warning="CS3008">
+                  <code:field name="{$init-field}" visibility="public">
                      <code:type-reference name="Boolean" namespace="System"/>
                   </code:field>
 

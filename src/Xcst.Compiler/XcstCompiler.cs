@@ -49,9 +49,6 @@ namespace Xcst.Compiler {
       TargetBaseTypes { get; set; }
 
       public bool
-      ClsCompliant { get; set; }
-
-      public bool
       NamedPackage { get; set; }
 
       public bool
@@ -282,8 +279,6 @@ namespace Xcst.Compiler {
          );
 
          compiler.SetParameter(CompilerQName("nullable-annotate"), this.NullableAnnotate.ToXdmValue());
-
-         compiler.SetParameter(CompilerQName("cls-compliant"), this.ClsCompliant.ToXdmValue());
 
          compiler.SetParameter(CompilerQName("use-line-directive"), this.UseLineDirective.ToXdmValue());
 
