@@ -59,12 +59,9 @@ namespace Xcst.Tests.ProgramStructure.Packages.AcceptingComponents {
             compilerA.TargetNamespace + "." + compilerA.TargetClass,
             usingPackageUri,
             compilationUnits,
-            resultA.Language
+            resultA.Language,
+            correct: true
          );
-
-         foreach (string unit in compilationUnits) {
-            Console.WriteLine(unit);
-         }
       }
 
       internal class Component_Using_Accepted_Type_Resolver : XmlResolver {

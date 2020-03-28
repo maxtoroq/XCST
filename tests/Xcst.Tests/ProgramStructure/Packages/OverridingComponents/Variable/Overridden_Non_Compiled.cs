@@ -49,12 +49,9 @@ namespace Xcst.Tests.ProgramStructure.Packages.OverridingComponents.Variable {
             compilerA.TargetNamespace + "." + compilerA.TargetClass,
             usingPackageUri,
             compilationUnits,
-            resultA.Language
+            resultA.Language,
+            correct: true
          );
-
-         foreach (string unit in compilationUnits) {
-            Console.WriteLine(unit);
-         }
       }
 
       internal class Overridden_Non_Compiled_Resolver : XmlResolver {

@@ -46,12 +46,9 @@ namespace Xcst.Tests.ProgramStructure.Packages.AcceptingComponents {
             compilerA.TargetNamespace + "." + compilerA.TargetClass,
             usingPackageUri,
             compilationUnits,
-            resultA.Language
+            resultA.Language,
+            correct: true
          );
-
-         foreach (string unit in compilationUnits) {
-            Console.WriteLine(unit);
-         }
       }
 
       internal class Keyword_As_Return_Type_Resolver : XmlResolver {

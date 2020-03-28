@@ -45,18 +45,20 @@ namespace Xcst.Tests {
 
          } catch (CompileException ex) {
 
-            Console.WriteLine($"// {ex.Message}");
-            Console.WriteLine($"// Module URI: {ex.ModuleUri}");
-            Console.WriteLine($"// Line number: {ex.LineNumber}");
+            if (correct) {
+               Console.WriteLine($"// {ex.Message}");
+               Console.WriteLine($"// Module URI: {ex.ModuleUri}");
+               Console.WriteLine($"// Line number: {ex.LineNumber}");
+            }
 
             throw;
          }
 
-         bool printCode = true;
+         bool printCode = false;
 
          try {
 
-            Type packageType = CompileCode(packageName, packageUri, xcstResult.CompilationUnits, xcstResult.Language);
+            Type packageType = CompileCode(packageName, packageUri, xcstResult.CompilationUnits, xcstResult.Language, correct);
 
             if (!correct) {
                return;
@@ -73,6 +75,9 @@ namespace Xcst.Tests {
                   }
 
                   SimplyRun(packageType, packageUri);
+
+                  // did not fail, print code
+                  printCode = true;
 
                } else {
 
@@ -107,8 +112,12 @@ namespace Xcst.Tests {
                      if (xcstResult.Templates.Contains(InitialName)) {
 
                         if (xcstResult.Templates.Contains(ExpectedName)) {
-                           bool equals = printCode = OutputEqualsToExpected(packageType, packageUri);
+
+                           bool equals = OutputEqualsToExpected(packageType, packageUri);
+                           printCode = !equals;
+
                            TestAssert.IsTrue(equals);
+
                         } else {
                            SimplyRun(packageType, packageUri);
                         }
@@ -121,7 +130,11 @@ namespace Xcst.Tests {
 
             } catch (RuntimeException ex) {
 
-               Console.WriteLine($"// {ex.Message}");
+               if (!fail) {
+                  Console.WriteLine($"// {ex.Message}");
+                  printCode = true;
+               }
+
                throw;
             }
 
@@ -160,7 +173,7 @@ namespace Xcst.Tests {
       }
 
       public static Type
-      CompileCode(string packageName, Uri packageUri, IEnumerable<string> compilationUnits, string language) {
+      CompileCode(string packageName, Uri packageUri, IEnumerable<string> compilationUnits, string language, bool correct) {
 
          bool isCSharp = language.Equals("C#", StringComparison.OrdinalIgnoreCase);
 
@@ -214,7 +227,9 @@ namespace Xcst.Tests {
                      .Where(d => d.IsWarningAsError || d.Severity == DiagnosticSeverity.Error)
                      .FirstOrDefault();
 
-                  if (error != null) {
+                  if (error != null
+                     && correct) {
+
                      Console.WriteLine($"// {error.Id}: {error.GetMessage()}");
                      Console.WriteLine($"// Line number: {error.Location.GetLineSpan().StartLinePosition.Line}");
                   }
