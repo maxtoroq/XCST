@@ -280,18 +280,6 @@ namespace Xcst.Compiler {
 
          compiler.SetParameter(CompilerQName("nullable-annotate"), this.NullableAnnotate.ToXdmValue());
 
-         compiler.SetParameter(CompilerQName("use-line-directive"), this.UseLineDirective.ToXdmValue());
-
-         if (this.NewLineChars != null) {
-            compiler.SetParameter(CompilerQName("new-line"), this.NewLineChars.ToXdmItem());
-         }
-
-         if (this.IndentChars != null) {
-            compiler.SetParameter(CompilerQName("indent"), this.IndentChars.ToXdmItem());
-         }
-
-         compiler.SetParameter(CompilerQName("open-brace-on-new-line"), this.OpenBraceOnNewLine.ToXdmItem());
-
          compiler.SetParameter(CompilerQName("named-package"), this.NamedPackage.ToXdmItem());
 
          if (this.UsePackageBase != null) {
@@ -317,6 +305,18 @@ namespace Xcst.Compiler {
          if (this.ModuleResolver != null) {
             compiler.SetParameter(CompilerQName("module-resolver"), WrapExternalObject(this.ModuleResolver));
          }
+
+         compiler.SetParameter(CompilerQName("use-line-directive"), this.UseLineDirective.ToXdmValue());
+
+         if (this.NewLineChars != null) {
+            compiler.SetParameter(CompilerQName("new-line"), this.NewLineChars.ToXdmItem());
+         }
+
+         if (this.IndentChars != null) {
+            compiler.SetParameter(CompilerQName("indent"), this.IndentChars.ToXdmItem());
+         }
+
+         compiler.SetParameter(CompilerQName("open-brace-on-new-line"), this.OpenBraceOnNewLine.ToXdmItem());
 
          return compiler;
       }
@@ -498,6 +498,7 @@ namespace Xcst.Compiler {
    /// </summary>
    public class CompileResult {
 
+#pragma warning disable CS8618
       public string
       Language { get; internal set; }
 
@@ -509,5 +510,6 @@ namespace Xcst.Compiler {
 
       public IReadOnlyList<string>
       Templates { get; internal set; }
+#pragma warning restore CS8618
    }
 }
