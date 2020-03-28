@@ -13,9 +13,8 @@
 // limitations under the License.
 
 using System;
-using Xcst.Runtime;
 
-namespace Xcst {
+namespace Xcst.Runtime {
 
    abstract class WrappingWriter : XcstWriter {
 

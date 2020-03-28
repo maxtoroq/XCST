@@ -15,9 +15,9 @@
 using System;
 using System.Diagnostics;
 using System.Globalization;
-using Xcst.Runtime;
+using Xcst.PackageModel;
 
-namespace Xcst.PackageModel {
+namespace Xcst.Runtime {
 
    /// <exclude/>
    public class ExecutionContext {

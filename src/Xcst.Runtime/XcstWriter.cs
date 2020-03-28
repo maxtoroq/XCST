@@ -20,7 +20,6 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 using System.Xml.XPath;
-using Xcst.PackageModel;
 using Xcst.Runtime;
 using Xcst.Xml;
 using JObject = Newtonsoft.Json.Linq.JObject;

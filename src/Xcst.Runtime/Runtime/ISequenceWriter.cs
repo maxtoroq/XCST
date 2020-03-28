@@ -14,9 +14,8 @@
 
 using System;
 using System.Collections.Generic;
-using Xcst.Runtime;
 
-namespace Xcst.PackageModel {
+namespace Xcst.Runtime {
 
    /// <exclude/>
    public interface ISequenceWriter<in TItem> {

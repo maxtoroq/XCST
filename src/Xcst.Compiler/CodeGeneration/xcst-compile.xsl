@@ -53,7 +53,7 @@
 
    <variable name="src:context-field" as="element()">
       <src:context>
-         <sequence select="src:package-model-type('ExecutionContext')"/>
+         <sequence select="src:helper-type('ExecutionContext')"/>
          <src:reference>
             <code:field-reference name="{src:aux-variable('exec_context')}">
                <code:this-reference/>
@@ -1315,7 +1315,7 @@
       <param name="meta" as="element()?"/>
       <param name="el" as="element()?"/>
 
-      <variable name="base-type" select="src:package-model-type('TemplateContext')"/>
+      <variable name="base-type" select="src:helper-type('TemplateContext')"/>
 
       <src:context>
          <choose>
@@ -1386,7 +1386,7 @@
                   <attribute name="item-type-is-object" select="true()"/>
                </if>
                <code:type-reference>
-                  <copy-of select="src:package-model-type('ISequenceWriter')/@*"/>
+                  <copy-of select="src:helper-type('ISequenceWriter')/@*"/>
                   <code:type-arguments>
                      <sequence select="($item-type-ref, $src:nullable-object-type)[1]"/>
                   </code:type-arguments>
@@ -2229,7 +2229,7 @@
                         <apply-templates select="." mode="src:statement">
                            <with-param name="context" as="element()" tunnel="yes">
                               <src:context>
-                                 <sequence select="src:package-model-type('PrimingContext')"/>
+                                 <sequence select="src:helper-type('PrimingContext')"/>
                                  <src:reference>
                                     <code:property-reference name="PrimingContext">
                                        <sequence select="$src:context-field/src:reference/code:*"/>
@@ -3035,7 +3035,7 @@
 
       <variable name="context" as="element()">
          <src:context>
-            <sequence select="src:package-model-type('PrimingContext')"/>
+            <sequence select="src:helper-type('PrimingContext')"/>
             <src:reference>
                <code:variable-reference name="{src:aux-variable('context')}"/>
             </src:reference>
@@ -3183,7 +3183,7 @@
       <variable name="output" as="element()">
          <src:output kind="obj">
             <code:type-reference>
-               <copy-of select="src:package-model-type('ISequenceWriter')/@*"/>
+               <copy-of select="src:helper-type('ISequenceWriter')/@*"/>
                <code:type-arguments>
                   <code:type-reference name="{$tbase-param/@name}"/>
                </code:type-arguments>

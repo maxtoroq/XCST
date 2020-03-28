@@ -49,7 +49,7 @@
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="OutputParameters.cs" />
-    <Compile Include="PackageModel\ISequenceWriter.cs" />
+    <Compile Include="Runtime\ISequenceWriter.cs" />
     <Compile Include="PackageModel\ComponentAttributes.cs" />
     <Compile Include="QualifiedName.cs" />
     <Compile Include="RuntimeException.cs" />
@@ -67,16 +67,16 @@
     <Compile Include="XcstEvaluator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Runtime\DataType.cs" />
-    <Compile Include="PackageModel\TemplateContext.cs" />
+    <Compile Include="Runtime\TemplateContext.cs" />
     <Compile Include="Runtime\DynamicError.cs" />
-    <Compile Include="PackageModel\ExecutionContext.cs" />
+    <Compile Include="Runtime\ExecutionContext.cs" />
     <Compile Include="WriterFactory.cs" />
     <Compile Include="PackageModel\IXcstPackage.cs" />
-    <Compile Include="PackageModel\PrimingContext.cs" />
+    <Compile Include="Runtime\PrimingContext.cs" />
     <Compile Include="Runtime\SimpleContent.cs" />
     <Compile Include="Runtime\Sorting.cs" />
-    <Compile Include="RuntimeWriter.cs" />
-    <Compile Include="WrappingWriter.cs" />
+    <Compile Include="Runtime\RuntimeWriter.cs" />
+    <Compile Include="Runtime\WrappingWriter.cs" />
     <Compile Include="XcstWriter.cs" />
     <Compile Include="XmlNamespaces.cs" />
     <Compile Include="Xml\HtmlWriter.cs" />

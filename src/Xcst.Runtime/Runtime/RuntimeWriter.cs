@@ -24,7 +24,7 @@
 using System;
 using System.Diagnostics;
 
-namespace Xcst {
+namespace Xcst.Runtime {
 
    class RuntimeWriter : WrappingWriter {
 

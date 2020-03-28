@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using Xcst.Runtime;
 
 namespace Xcst.PackageModel {
 

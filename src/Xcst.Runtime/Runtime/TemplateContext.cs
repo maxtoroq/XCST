@@ -15,9 +15,8 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Xcst.Runtime;
 
-namespace Xcst.PackageModel {
+namespace Xcst.Runtime {
 
    /// <exclude/>
    public class TemplateContext {

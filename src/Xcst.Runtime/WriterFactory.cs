@@ -16,7 +16,7 @@ using System;
 using System.IO;
 using System.Text;
 using System.Xml;
-using Xcst.PackageModel;
+using Xcst.Runtime;
 using Xcst.Xml;
 
 namespace Xcst {
