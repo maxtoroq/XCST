@@ -58,7 +58,19 @@ namespace Xcst.Tests {
 
          try {
 
-            Type packageType = CompileCode(packageName, packageUri, xcstResult.CompilationUnits, xcstResult.Language, correct);
+            Type packageType;
+
+            try {
+               packageType = CompileCode(packageName, packageUri, xcstResult.CompilationUnits, xcstResult.Language, correct);
+
+            } catch (CompileException) {
+
+               if (correct) {
+                  printCode = true;
+               }
+
+               throw;
+            }
 
             if (!correct) {
                return;

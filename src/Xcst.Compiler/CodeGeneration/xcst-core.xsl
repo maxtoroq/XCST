@@ -1261,6 +1261,11 @@
          or parent::c:package
          or parent::c:override"/>
 
+      <variable name="meta" select="
+         if ($global) then
+            $package-manifest/xcst:*[@declaration-id eq current()/generate-id()]
+         else ()"/>
+
       <variable name="name" select="xcst:name(@name)"/>
 
       <variable name="name-str" as="element()">
@@ -1274,6 +1279,9 @@
 
       <variable name="type" as="element()">
          <choose>
+            <when test="$global">
+               <sequence select="$meta/code:type-reference"/>
+            </when>
             <when test="@as">
                <code:type-reference name="{xcst:type(@as)}"/>
             </when>
@@ -1353,7 +1361,9 @@
             <otherwise>
                <code:method-call name="Param">
                   <sequence select="$context/src:reference/code:*"/>
-                  <if test="$required or not($has-default-value)">
+                  <if test="$required
+                        or not($has-default-value)
+                        or $global">
                      <code:type-arguments>
                         <sequence select="$type"/>
                      </code:type-arguments>
@@ -1383,7 +1393,6 @@
 
       <choose>
          <when test="$global">
-            <variable name="meta" select="$package-manifest/xcst:*[@declaration-id eq current()/generate-id()]"/>
             <code:assign>
                <call-template name="src:line-number"/>
                <choose>

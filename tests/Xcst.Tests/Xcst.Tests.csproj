@@ -262,6 +262,7 @@
     <None Include="CallableComponents\Function\HiddenAbstract.c.xcst" />
     <None Include="CallableComponents\Function\AbstractNextFunction.i.xcst" />
     <None Include="CallableComponents\Function\NextFunction.c.xcst" />
+    <None Include="CallableComponents\Function\Param\NullLiteral.c.xcst" />
     <None Include="CallableComponents\Function\Param\DefaultValue.c.xcst" />
     <None Include="CallableComponents\Function\Param\param.foox.c.xcst" />
     <None Include="CallableComponents\Function\_HiddenAbstract.xcst" />
@@ -873,6 +874,7 @@
     <None Include="VariablesAndParameters\Global\SetVariable.c.xcst" />
     <None Include="VariablesAndParameters\Global\HiddenAbstract.c.xcst" />
     <None Include="VariablesAndParameters\Global\LazyEvaluation.c.xcst" />
+    <None Include="VariablesAndParameters\Global\NullLiteral.c.xcst" />
     <None Include="VariablesAndParameters\Global\variable.foox.c.xcst" />
     <None Include="VariablesAndParameters\Global\_HiddenAbstract.xcst" />
     <None Include="VariablesAndParameters\Global\_HiddenAbstractWithContent.xcst" />
