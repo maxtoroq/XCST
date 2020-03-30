@@ -552,6 +552,7 @@
     <None Include="Serialization\Output\IgnoreStandardAttribs.c.xcst" />
     <None Include="Serialization\ResultDocument\IgnoreStandardAttribs.c.xcst" />
     <None Include="Serialization\Serialize\IgnoreStandardAttribs.c.xcst" />
+    <None Include="Types\Member\AnonymousTypeFactory.c.xcst" />
     <None Include="ValueTemplates\CurrentCulture.c.xcst" />
     <None Include="SequenceConstructors\SimpleContent\FormatProviderSwitch.c.xcst" />
     <None Include="SequenceConstructors\SimpleContent\FromExpression\Attribute\EnumerableWithCustomToString.c.xcst" />

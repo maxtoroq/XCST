@@ -2735,6 +2735,7 @@
    </template>
 
    <template match="c:member" mode="src:member">
+      <param name="language" tunnel="yes" required="yes"/>
 
       <call-template name="xcst:validate-attribs">
          <with-param name="required" select="'name'"/>
@@ -2764,7 +2765,7 @@
       <variable name="type" as="element()">
          <choose>
             <when test="c:member">
-               <code:type-reference name="{src:anonymous-type-name(.)}" nullable="true"/>
+               <code:type-reference name="{src:anonymous-type-name(., $language)}" nullable="true"/>
             </when>
             <when test="@as">
                <code:type-reference name="{xcst:type(@as)}"/>
@@ -2811,7 +2812,20 @@
    </template>
 
    <template match="c:member[c:member]" mode="src:anonymous-type">
-      <code:type name="{src:anonymous-type-name(.)}" visibility="public">
+      <param name="language" tunnel="yes" required="yes"/>
+
+      <variable name="type-name" select="src:anonymous-type-name(., $language)"/>
+      <code:method name="{src:aux-variable(concat('new_', xcst:unescape-identifier(xcst:name(@name), $language)))}" visibility="public">
+         <code:type-reference name="{$type-name}"/>
+         <code:block>
+            <code:return>
+               <code:new-object>
+                  <code:type-reference name="{$type-name}"/>
+               </code:new-object>
+            </code:return>
+         </code:block>
+      </code:method>
+      <code:type name="{$type-name}" visibility="public">
          <call-template name="src:line-number"/>
          <code:attributes>
             <call-template name="src:type-attributes"/>
@@ -2826,8 +2840,9 @@
 
    <function name="src:anonymous-type-name" as="xs:string">
       <param name="member" as="element(c:member)"/>
+      <param name="language" as="xs:string"/>
 
-      <variable name="property-name" select="$member/@name/xcst:name(.)"/>
+      <variable name="property-name" select="$member/@name/xcst:unescape-identifier(xcst:name(.), $language)"/>
       <sequence select="src:aux-variable(string-join(('type', $property-name, replace(string(src:string-id($property-name)), '-', '_')), '_'))"/>
    </function>
 
