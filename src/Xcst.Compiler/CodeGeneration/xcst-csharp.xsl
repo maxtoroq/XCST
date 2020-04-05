@@ -1100,9 +1100,8 @@
       <apply-templates select="code:*[2]" mode="cs:source"/>
    </template>
 
-   <!--
-      ## Syntax
-   -->
+
+   <!-- ## Syntax -->
 
    <function name="cs:item-type" as="xs:string">
       <param name="name" as="xs:string"/>
@@ -1279,9 +1278,8 @@
       </choose>
    </function>
 
-   <!--
-      ## Expressions
-   -->
+
+   <!-- ## Expressions -->
 
    <function name="cs:string" as="xs:string">
       <param name="item" as="item()"/>
@@ -1299,9 +1297,8 @@
       <if test="$src:nullable-annotate and @nullable/xs:boolean(.)">?</if>
    </template>
 
-   <!--
-      ## Helpers
-   -->
+
+   <!-- ## Helpers -->
 
    <template name="cs:open-brace">
       <choose>

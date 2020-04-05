@@ -834,9 +834,8 @@
       </zeroOrMore>
    </define>
 
-   <!--
-      ## Instructions
-   -->
+
+   <!-- ## Instructions -->
 
    <define name="array">
       <element name="array">
@@ -1780,9 +1779,8 @@
       </zeroOrMore>
    </define>
 
-   <!--
-      ## Data Types
-   -->
+
+   <!-- ## Data Types -->
 
    <define name="string">
       <data type="string"/>
@@ -1869,9 +1867,8 @@
       </data>
    </define>
 
-   <!--
-      ## Attributes
-   -->
+
+   <!-- ## Attributes -->
 
    <define name="version">
       <ref name="decimal"/>
@@ -1980,9 +1977,8 @@
       </list>
    </define>
 
-   <!--
-      ## Expressions
-   -->
+
+   <!-- ## Expressions -->
 
    <define name="expression">
       <ann:documentation>Expression.</ann:documentation>

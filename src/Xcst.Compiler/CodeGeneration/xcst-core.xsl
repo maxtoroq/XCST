@@ -121,9 +121,8 @@
       </choose>
    </template>
 
-   <!--
-      ## Creating Nodes and Objects
-   -->
+
+   <!-- ## Creating Nodes and Objects -->
 
    <template match="c:attribute" mode="src:statement">
       <param name="output" tunnel="yes"/>
@@ -936,9 +935,8 @@
       <sequence select="$output instance of element() and $output/@kind[. eq 'map']"/>
    </function>
 
-   <!--
-      ## Repetition
-   -->
+
+   <!-- ## Repetition -->
 
    <template match="c:for-each" mode="src:statement">
 
@@ -993,9 +991,8 @@
       </code:while>
    </template>
 
-   <!--
-      ## Conditional Processing
-   -->
+
+   <!-- ## Conditional Processing -->
 
    <template match="c:choose" mode="src:statement">
 
@@ -1248,9 +1245,8 @@
       </code:using>
    </template>
 
-   <!--
-      ## Variables and Parameters
-   -->
+
+   <!-- ## Variables and Parameters -->
 
    <template match="c:module/c:param | c:package/c:param | c:override/c:param | c:template/c:param | c:delegate/c:param" mode="src:statement">
       <param name="package-manifest" required="yes" tunnel="yes"/>
@@ -1491,9 +1487,8 @@
       <xcst:instruction void="true"/>
    </template>
 
-   <!--
-      ## Callable Components
-   -->
+
+   <!-- ## Callable Components -->
 
    <template match="c:call-template" mode="src:statement">
 
@@ -1954,9 +1949,8 @@
       </code:method-reference>
    </function>
 
-   <!--
-      ## Delegated Templates
-   -->
+
+   <!-- ## Delegated Templates -->
 
    <template match="c:delegate" mode="src:expression">
       <param name="language" required="yes" tunnel="yes"/>
@@ -2069,9 +2063,8 @@
       </code:method-call>
    </template>
 
-   <!--
-      ## Sorting
-   -->
+
+   <!-- ## Sorting -->
 
    <template name="src:sort">
       <param name="in" required="yes"/>
@@ -2135,9 +2128,8 @@
       </code:chain>
    </template>
 
-   <!--
-      ## Grouping
-   -->
+
+   <!-- ## Grouping -->
 
    <template match="c:for-each-group[not(@group-size and not(c:sort))]" mode="src:statement">
 
@@ -2330,9 +2322,8 @@
       </if>
    </template>
 
-   <!--
-      ## Diagnostics
-   -->
+
+   <!-- ## Diagnostics -->
 
    <template match="c:assert" mode="src:statement">
 
@@ -2429,9 +2420,8 @@
       <xcst:instruction void="true"/>
    </template>
 
-   <!--
-      ## Extensibility and Fallback
-   -->
+
+   <!-- ## Extensibility and Fallback -->
 
    <template match="c:fallback" mode="src:statement src:expression">
       <call-template name="xcst:validate-attribs"/>
@@ -2556,9 +2546,8 @@
       <xcst:instruction void="true"/>
    </template>
 
-   <!--
-      ## Final Result Trees and Serialization
-   -->
+
+   <!-- ## Final Result Trees and Serialization -->
 
    <template match="c:result-document" mode="src:statement">
       <param name="output" tunnel="yes"/>
@@ -2935,9 +2924,8 @@
       <sequence select="$src:output-parameters/*[local-name() eq local-name($attr)]/string()"/>
    </function>
 
-   <!--
-      ## Grammar
-   -->
+
+   <!-- ## Grammar -->
 
    <template name="xcst:validate-attribs">
       <param name="required" as="xs:string*"/>
@@ -3561,9 +3549,8 @@
       <sequence select="tokenize($attr, '\s')[.]"/>
    </function>
 
-   <!--
-      ## Code Helpers
-   -->
+
+   <!-- ## Code Helpers -->
 
    <function name="src:sequence-to-item-type" as="element(code:type-reference)">
       <param name="type" as="element(code:type-reference)"/>
@@ -3706,9 +3693,8 @@
       </value-of>
    </function>
 
-   <!--
-      ## Expressions
-   -->
+
+   <!-- ## Expressions -->
 
    <template name="src:simple-content" as="element()">
       <param name="attribute" as="attribute()?"/>
@@ -4254,9 +4240,8 @@
       </choose>
    </template>
 
-   <!--
-      ## Helpers
-   -->
+
+   <!-- ## Helpers -->
 
    <template name="src:line-number">
       <param name="line-number-offset" select="0" as="xs:integer" tunnel="yes"/>

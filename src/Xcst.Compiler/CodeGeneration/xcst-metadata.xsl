@@ -74,27 +74,8 @@
 
    <template match="c:member/node()" mode="src:type-attribute-extra src:member-attribute-extra"/>
 
-   <!--
-      ## DisplayColumn
-   -->
 
-   <template name="src:display-column-attribute">
-      <if test="@display-text-member">
-         <code:attribute>
-            <call-template name="src:line-number"/>
-            <code:type-reference name="DisplayColumn" namespace="System.ComponentModel.DataAnnotations"/>
-            <code:arguments>
-               <code:string literal="true">
-                  <value-of select="xcst:name(@display-text-member)"/>
-               </code:string>
-            </code:arguments>
-         </code:attribute>
-      </if>
-   </template>
-
-   <!--
-      ## Display
-   -->
+   <!-- ## Display -->
 
    <template name="src:display-attribute">
 
@@ -174,9 +155,8 @@
       </code:member-initializer>
    </template>
 
-   <!--
-      ## DisplayFormat
-   -->
+
+   <!-- ## DisplayFormat -->
 
    <template name="src:display-format-attribute">
 
@@ -234,9 +214,22 @@
       </code:member-initializer>
    </template>
 
-   <!--
-      ## UIHint
-   -->
+
+   <!-- ## Other -->
+
+   <template name="src:display-column-attribute">
+      <if test="@display-text-member">
+         <code:attribute>
+            <call-template name="src:line-number"/>
+            <code:type-reference name="DisplayColumn" namespace="System.ComponentModel.DataAnnotations"/>
+            <code:arguments>
+               <code:string literal="true">
+                  <value-of select="xcst:name(@display-text-member)"/>
+               </code:string>
+            </code:arguments>
+         </code:attribute>
+      </if>
+   </template>
 
    <template name="src:ui-hint-attribute">
       <if test="@template">
@@ -251,10 +244,6 @@
          </code:attribute>
       </if>
    </template>
-
-   <!--
-      ## ScaffoldColumn
-   -->
 
    <template name="src:scaffold-column-attribute">
 
@@ -273,10 +262,6 @@
          </code:attribute>
       </if>
    </template>
-
-   <!--
-      ## DataType
-   -->
 
    <template name="src:data-type-attribute">
 
@@ -327,10 +312,6 @@
       </if>
    </template>
 
-   <!--
-      ## Required
-   -->
-
    <template name="src:required-attribute">
 
       <if test="@required/xcst:boolean(.)">
@@ -360,10 +341,6 @@
       </code:member-initializer>
    </template>
 
-   <!--
-      ## MinLength
-   -->
-
    <template name="src:min-length-attribute">
       <if test="@min-length">
          <code:attribute>
@@ -381,10 +358,6 @@
       </if>
    </template>
 
-   <!--
-      ## MaxLength
-   -->
-
    <template name="src:max-length-attribute">
       <if test="@max-length">
          <code:attribute>
@@ -401,10 +374,6 @@
          </code:attribute>
       </if>
    </template>
-
-   <!--
-      ## RegularExpression
-   -->
 
    <template name="src:regular-expression-attribute">
       <if test="@pattern">
@@ -424,10 +393,6 @@
          </code:attribute>
       </if>
    </template>
-
-   <!--
-      ## Range
-   -->
 
    <template name="src:range-attribute">
       <param name="language" required="yes" tunnel="yes"/>
@@ -475,10 +440,6 @@
       </if>
    </template>
 
-   <!--
-      ## Compare
-   -->
-
    <template name="src:compare-attribute">
       <if test="@equal-to">
          <code:attribute>
@@ -498,9 +459,8 @@
       </if>
    </template>
 
-   <!--
-      ## Validation
-   -->
+
+   <!-- ## Validation -->
 
    <template name="src:validation-arguments">
       <param name="name" as="xs:QName"/>

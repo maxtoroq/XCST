@@ -550,9 +550,8 @@
       <sequence select="src:_doc-with-uris($p1, $p2, $p3)"/>
    </function>
 
-   <!--
-      ## Package Analysis
-   -->
+
+   <!-- ## Package Analysis -->
 
    <template match="c:module | c:package" mode="xcst:package-manifest">
       <param name="modules" tunnel="yes"/>
@@ -1256,9 +1255,8 @@
       </choose>
    </function>
 
-   <!--
-      ## Code Generation
-   -->
+
+   <!-- ## Code Generation -->
 
    <template name="src:compilation-units">
       <param name="modules" tunnel="yes"/>
@@ -1504,9 +1502,8 @@
       <sequence select="src:_make-relative-uri($p1, $p2)"/>
    </function>
 
-   <!--
-      ### Used Packages
-   -->
+
+   <!-- ### Used Packages -->
 
    <template match="xcst:package-manifest[xs:boolean(@qualified-types)]" mode="src:namespace">
       <param name="package-manifest" required="yes" tunnel="yes"/>
@@ -1999,9 +1996,8 @@
       <sequence select="src:aux-variable(concat('pkg_', $meta/@package-id))"/>
    </function>
 
-   <!--
-      ### Top-level Package
-   -->
+
+   <!-- ### Top-level Package -->
 
    <template match="c:module | c:package" mode="src:namespace">
       <param name="package-manifest" required="yes" tunnel="yes"/>
@@ -2858,9 +2854,8 @@
       <sequence select="concat($meta/@member-name, '_del')"/>
    </function>
 
-   <!--
-      ### Infrastructure
-   -->
+
+   <!-- ### Infrastructure -->
 
    <template name="src:constructor">
       <param name="package-manifest" required="yes" tunnel="yes"/>

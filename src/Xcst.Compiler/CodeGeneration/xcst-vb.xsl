@@ -1091,9 +1091,8 @@
       <call-template name="vb:line-pragma-end"/>
    </template>
 
-   <!--
-      ## Syntax
-   -->
+
+   <!-- ## Syntax -->
 
    <function name="vb:item-type" as="xs:string">
       <param name="name" as="xs:string"/>
@@ -1219,9 +1218,8 @@
       </choose>
    </function>
 
-   <!--
-      ## Expressions
-   -->
+
+   <!-- ## Expressions -->
 
    <function name="vb:string" as="xs:string">
       <param name="item" as="item()"/>
@@ -1274,9 +1272,8 @@
       </if>
    </template>
 
-   <!--
-      ## Helpers
-   -->
+
+   <!-- ## Helpers -->
 
    <template name="vb:line-pragma">
       <param name="append-line" select="false()" as="xs:boolean"/>
