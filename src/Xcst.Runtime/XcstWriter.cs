@@ -48,6 +48,9 @@ namespace Xcst {
          this.OutputUri = outputUri;
       }
 
+
+      // ## Nodes
+
       public void
       WriteStartElement(string localName) =>
          WriteStartElement(null, localName, default(string));
@@ -179,28 +182,6 @@ namespace Xcst {
       public abstract void
       WriteRaw(string? data);
 
-      public abstract void
-      Flush();
-
-      public void
-      Dispose() {
-
-         Dispose(true);
-         GC.SuppressFinalize(this);
-      }
-
-      protected virtual void
-      Dispose(bool disposing) {
-
-         if (this.disposed) {
-            return;
-         }
-
-         this.disposed = true;
-      }
-
-      #region ISequenceWriter<object> Members
-
       void
       ISequenceWriter<object?>.WriteString(object? text) =>
          WriteString((string?)text);
@@ -208,6 +189,9 @@ namespace Xcst {
       void
       ISequenceWriter<object?>.WriteRaw(object? data) =>
          WriteRaw((string?)data);
+
+
+      // ## WriteObject
 
       public void
       WriteObject(object? value) {
@@ -219,6 +203,10 @@ namespace Xcst {
          }
       }
 
+      // Because in XcstWriter sequence flattening is done dynamically
+      // and does not depend on overload resolution, these two can be private.
+      // Same with CopyOf below.
+
       void
       ISequenceWriter<object?>.WriteObject(IEnumerable<object?>? value) =>
          WriteObject((object?)value);
@@ -227,25 +215,7 @@ namespace Xcst {
       ISequenceWriter<object?>.WriteObject<TDerived>(IEnumerable<TDerived>? value) =>
          WriteObject((object?)value);
 
-      public void
-      CopyOf(object? value) =>
-         CopyOfImpl(value, recurse: false);
-
-      void
-      ISequenceWriter<object?>.CopyOf(IEnumerable<object?>? value) =>
-         CopyOf((object?)value);
-
-      void
-      ISequenceWriter<object?>.CopyOf<TDerived>(IEnumerable<TDerived>? value) =>
-         CopyOf((object?)value);
-
-      public XcstWriter?
-      TryCastToDocumentWriter() => this;
-
-      public MapWriter?
-      TryCastToMapWriter() => null;
-
-      #endregion
+      // Shortcut overloads
 
       public void
       WriteObject(string? value) =>
@@ -277,6 +247,21 @@ namespace Xcst {
             }
          }
       }
+
+
+      // ## CopyOf
+
+      public void
+      CopyOf(object? value) =>
+         CopyOfImpl(value, recurse: false);
+
+      void
+      ISequenceWriter<object?>.CopyOf(IEnumerable<object?>? value) =>
+         CopyOf((object?)value);
+
+      void
+      ISequenceWriter<object?>.CopyOf<TDerived>(IEnumerable<TDerived>? value) =>
+         CopyOf((object?)value);
 
       void
       CopyOfImpl(object? value, bool recurse) {
@@ -342,26 +327,23 @@ namespace Xcst {
       void
       CopyOfSequence(IEnumerable value) {
 
-         if (value != null) {
-
-            foreach (var item in value) {
-               CopyOfImpl(item, recurse: true);
-            }
+         foreach (var item in value) {
+            CopyOfImpl(item, recurse: true);
          }
       }
 
-      // These don't need to be public, but it's a small optimization
+      // Shortcut overloads
 
       public void
-      CopyOf(XNode value) =>
+      CopyOf(XNode? value) =>
          value?.WriteTo(new XcstXmlWriter(this));
 
       public void
-      CopyOf(XmlNode value) =>
+      CopyOf(XmlNode? value) =>
          value?.WriteTo(new XcstXmlWriter(this));
 
       public void
-      CopyOf(IXPathNavigable value) {
+      CopyOf(IXPathNavigable? value) {
 
          if (value != null) {
 
@@ -373,12 +355,12 @@ namespace Xcst {
       }
 
       public void
-      CopyOf(IXmlSerializable value) =>
+      CopyOf(IXmlSerializable? value) =>
          // Don't output root element, gives caller more flexibility and choice
          value?.WriteXml(new XcstXmlWriter(this));
 
       public void
-      CopyOf(XmlReader value) {
+      CopyOf(XmlReader? value) {
 
          if (value != null) {
             new XcstXmlWriter(this).WriteNode(value, defattr: true);
@@ -386,26 +368,51 @@ namespace Xcst {
       }
 
       public void
-      CopyOf(Array value) =>
-         CopyOfSequence(value);
+      CopyOf(Array? value) {
+
+         if (value != null) {
+            CopyOfSequence(value);
+         }
+      }
 
       // These are private to not force code that depends on XcstWriter
       // having to reference Newtonsoft.Json
 
       void
-      CopyOf(JObject value) {
-
-         if (value != null) {
-            MapWriter.Create(this).CopyOf(value);
-         }
-      }
+      CopyOf(JObject value) =>
+         MapWriter.Create(this).CopyOf(value);
 
       void
-      CopyOf(JArray value) {
+      CopyOf(JArray value) =>
+         MapWriter.Create(this).CopyOf(value);
 
-         if (value != null) {
-            MapWriter.Create(this).CopyOf(value);
+
+      // ## Other
+
+      public XcstWriter?
+      TryCastToDocumentWriter() => this;
+
+      public MapWriter?
+      TryCastToMapWriter() => null;
+
+      public abstract void
+      Flush();
+
+      public void
+      Dispose() {
+
+         Dispose(true);
+         GC.SuppressFinalize(this);
+      }
+
+      protected virtual void
+      Dispose(bool disposing) {
+
+         if (this.disposed) {
+            return;
          }
+
+         this.disposed = true;
       }
    }
 }

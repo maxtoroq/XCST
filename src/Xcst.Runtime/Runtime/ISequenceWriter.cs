@@ -32,6 +32,10 @@ namespace Xcst.Runtime {
       void
       WriteObject<TDerived>(IEnumerable<TDerived>? value) where TDerived : TItem;
 
+      // WriteString and WriteRaw are always called with a string argument.
+      // It therefore works only when TItem is string or object,
+      // otherwise it's a compile error.
+
       void
       WriteString(TItem text);
 
