@@ -14,6 +14,7 @@ using Xcst.Compiler;
 using CSharpVersion = Microsoft.CodeAnalysis.CSharp.LanguageVersion;
 using VBVersion = Microsoft.CodeAnalysis.VisualBasic.LanguageVersion;
 using TestAssert = NUnit.Framework.Assert;
+using TestAssertException = NUnit.Framework.AssertionException;
 
 namespace Xcst.Tests {
 
@@ -124,12 +125,7 @@ namespace Xcst.Tests {
                      if (xcstResult.Templates.Contains(InitialName)) {
 
                         if (xcstResult.Templates.Contains(ExpectedName)) {
-
-                           bool equals = OutputEqualsToExpected(packageType, packageUri);
-                           printCode = !equals;
-
-                           TestAssert.IsTrue(equals);
-
+                           TestAssert.IsTrue(OutputEqualsToExpected(packageType, packageUri));
                         } else {
                            SimplyRun(packageType, packageUri);
                         }
@@ -147,6 +143,11 @@ namespace Xcst.Tests {
                   printCode = true;
                }
 
+               throw;
+
+            } catch (TestAssertException) {
+
+               printCode = true;
                throw;
             }
 
