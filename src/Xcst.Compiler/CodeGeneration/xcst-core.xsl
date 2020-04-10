@@ -3815,7 +3815,7 @@
                </call-template>
             </variable>
             <choose>
-               <when test="$seqctor-meta/@expression/xs:boolean(.)">
+               <when test="$seqctor-meta/@expression/xs:boolean(.) and not($as)">
                   <variable name="value" as="element()">
                      <apply-templates select="$children" mode="src:expression"/>
                   </variable>

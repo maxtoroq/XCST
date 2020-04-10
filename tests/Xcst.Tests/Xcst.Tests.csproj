@@ -548,6 +548,7 @@
     <None Include="SequenceConstructors\Raw\Map\CopyOf\JToken.c.xcst" />
     <None Include="SequenceConstructors\Raw\Map\Null.f.xcst" />
     <None Include="SequenceConstructors\Raw\NullLiteral.c.xcst" />
+    <None Include="SequenceConstructors\Raw\Variable\ExpressionAndAs.c.xcst" />
     <None Include="SequenceConstructors\Raw\Variable\Null.c.xcst" />
     <None Include="SequenceConstructors\Raw\Variable\MultipleItems.c.xcst" />
     <None Include="Serialization\Output\IgnoreStandardAttribs.c.xcst" />
