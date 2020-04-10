@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<?ignore-test ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:template name='c:initial-template'>
+
+      <c:variable name='foo' as='object[]'>
+         <c:call-template name='foo'/>
+      </c:variable>
+
+      <c:void value='Assert.AreEqual(1, foo.Length)'/>
+      <c:void value='Assert.IsNull(foo[0])'/>
+
+      <c:variable name='bar' as='string[]'>
+         <c:call-template name='bar'/>
+      </c:variable>
+
+      <c:void value='Assert.AreEqual(1, bar.Length)'/>
+      <c:void value='Assert.IsNull(bar[0])'/>
+   </c:template>
+
+   <c:template name='foo' as='object[]'>
+      <c:object value='null'/>
+   </c:template>
+
+   <c:template name='bar' as='string[]'>
+      <c:object value='null'/>
+   </c:template>
+
+</c:module>
