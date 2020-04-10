@@ -20,6 +20,8 @@ namespace Xcst.Tests {
 
    static class TestsHelper {
 
+      const bool PrintCode = false;
+
       static readonly XcstCompilerFactory
       CompilerFactory = new XcstCompilerFactory {
          EnableExtensions = true
@@ -55,14 +57,62 @@ namespace Xcst.Tests {
             throw;
          }
 
-         bool printCode = false;
+         string? outputFileXml, outputFileTxt;
+         char outputOpt;
+
+         if (fail) {
+
+            if (!xcstResult.Templates.Contains(InitialName)) {
+               TestAssert.Fail("A failing package should define an initial template.");
+            } else if (xcstResult.Templates.Contains(ExpectedName)) {
+               TestAssert.Fail("A failing package should not define an 'expected' template.");
+            }
+
+            outputFileXml = null;
+            outputFileTxt = null;
+            outputOpt = ' ';
+
+         } else {
+
+            string packageDir = Path.GetDirectoryName(packageFile);
+            string packageFileWithoutExt = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(packageFile));
+
+            outputFileXml = Path.Combine(packageDir, packageFileWithoutExt + ".xml");
+            outputFileTxt = Path.Combine(packageDir, packageFileWithoutExt + ".txt");
+
+            outputOpt = File.Exists(outputFileXml) ? 'x'
+               : File.Exists(outputFileTxt) ? 't'
+               : ' ';
+
+            if (outputOpt != ' ') {
+
+               if (!xcstResult.Templates.Contains(InitialName)) {
+                  TestAssert.Fail("When an output document exists the package should define an initial template.");
+               } else if (xcstResult.Templates.Contains(ExpectedName)) {
+                  TestAssert.Fail("When an output document exists the package should not define an 'expected' template.");
+               }
+
+            } else if (xcstResult.Templates.Contains(ExpectedName)
+               && !xcstResult.Templates.Contains(InitialName)) {
+
+               TestAssert.Fail("A package that defines an 'expected' template without an initial template makes no sense.");
+            }
+         }
+
+         bool printCode = PrintCode;
 
          try {
 
             Type packageType;
 
             try {
+
                packageType = CompileCode(packageName, packageUri, xcstResult.CompilationUnits, xcstResult.Language, correct);
+
+               if (!correct) {
+                  // did not fail, caller Assert.Throws will
+                  return;
+               }
 
             } catch (CompileException) {
 
@@ -73,66 +123,32 @@ namespace Xcst.Tests {
                throw;
             }
 
-            if (!correct) {
-               return;
-            }
-
             try {
 
                if (fail) {
-
-                  if (!xcstResult.Templates.Contains(InitialName)) {
-                     TestAssert.Fail("A failing package should define an initial template.");
-                  } else if (xcstResult.Templates.Contains(ExpectedName)) {
-                     TestAssert.Fail("A failing package should not define an 'expected' template.");
-                  }
 
                   SimplyRun(packageType, packageUri);
 
                   // did not fail, print code
                   printCode = true;
 
-               } else {
+               } else if (outputOpt != ' ') {
 
-                  string packageDir = Path.GetDirectoryName(packageFile);
-                  string packageFileWithoutExt = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(packageFile));
-                  string outputFileXml = Path.Combine(packageDir, packageFileWithoutExt + ".xml");
-                  string outputFileTxt = Path.Combine(packageDir, packageFileWithoutExt + ".txt");
+                  switch (outputOpt) {
+                     case 'x':
+                        TestAssert.IsTrue(OutputEqualsToDoc(packageType, packageUri, outputFileXml!));
+                        break;
+                     case 't':
+                        TestAssert.IsTrue(OutputEqualsToText(packageType, packageUri, outputFileTxt!));
+                        break;
+                  }
 
-                  char outputOpt = File.Exists(outputFileXml) ? 'x'
-                     : File.Exists(outputFileTxt) ? 't'
-                     : ' ';
+               } else if (xcstResult.Templates.Contains(InitialName)) {
 
-                  if (outputOpt != ' ') {
-
-                     if (!xcstResult.Templates.Contains(InitialName)) {
-                        TestAssert.Fail("When an output document exists the package should define an initial template.");
-                     } else if (xcstResult.Templates.Contains(ExpectedName)) {
-                        TestAssert.Fail("When an output document exists the package should not define an 'expected' template.");
-                     }
-
-                     switch (outputOpt) {
-                        case 'x':
-                           TestAssert.IsTrue(OutputEqualsToDoc(packageType, packageUri, outputFileXml));
-                           break;
-                        case 't':
-                           TestAssert.IsTrue(OutputEqualsToText(packageType, packageUri, outputFileTxt));
-                           break;
-                     }
-
+                  if (xcstResult.Templates.Contains(ExpectedName)) {
+                     TestAssert.IsTrue(OutputEqualsToExpected(packageType, packageUri));
                   } else {
-
-                     if (xcstResult.Templates.Contains(InitialName)) {
-
-                        if (xcstResult.Templates.Contains(ExpectedName)) {
-                           TestAssert.IsTrue(OutputEqualsToExpected(packageType, packageUri));
-                        } else {
-                           SimplyRun(packageType, packageUri);
-                        }
-
-                     } else if (xcstResult.Templates.Contains(ExpectedName)) {
-                        TestAssert.Fail("A package that defines an 'expected' template without an initial template makes no sense.");
-                     }
+                     SimplyRun(packageType, packageUri);
                   }
                }
 
