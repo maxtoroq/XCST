@@ -8,6 +8,11 @@
       <c:void value='Assert.AreEqual(typeof(int[]), CompileType(a))'/>
       <c:void value='Assert.AreEqual(1, a.Length)'/>
       <c:void value='Assert.AreEqual(1, a[0])'/>
+      <c:variable name='b' as='int'>
+         <c:object value='1'/>
+      </c:variable>
+      <c:void value='Assert.AreEqual(typeof(int), CompileType(b))'/>
+      <c:void value='Assert.AreEqual(1, b)'/>
    </c:template>
 
 </c:module>
