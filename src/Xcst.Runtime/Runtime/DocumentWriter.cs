@@ -16,6 +16,7 @@ using System;
 using System.Xml;
 using System.Xml.Linq;
 using Xcst.PackageModel;
+using Xcst.Xml;
 
 namespace Xcst.Runtime {
 
@@ -53,17 +54,32 @@ namespace Xcst.Runtime {
             (defaultParams, null, package.Context);
       }
 
-      // Sadly, cannot create writer for c:element
-      // XNodeBuilder does not support top level attribute and text
+      public static XcstWriter
+      CastElement(IXcstPackage package, ISequenceWriter<object> output) =>
+         CastElement(package, (ISequenceWriter<XElement>)output);
 
       public static XcstWriter
-      CastElement(ISequenceWriter<object> output) => Cast(output);
+      CastElement(IXcstPackage package, ISequenceWriter<XElement> output) {
+
+         if (output.TryCastToDocumentWriter() is XcstWriter docWriter) {
+
+            return docWriter;
+
+         } else {
+
+            var doc = new XDocument();
+
+            var defaultParams = new OutputParameters {
+               OmitXmlDeclaration = true
+            };
+
+            return WriterFactory.CreateWriter(new XElementWriter(doc, output), WriterFactory.AbsentOutputUri)
+               (defaultParams, null, package.Context);
+         }
+      }
 
       public static XcstWriter
-      CastElement(ISequenceWriter<XElement> output) => Cast(output);
-
-      public static XcstWriter
-      CastElement(ISequenceWriter<XmlElement> output) => Cast(output);
+      CastElement(IXcstPackage package, ISequenceWriter<XmlElement> output) => Cast(output);
 
       public static XcstWriter
       CastNamespace(ISequenceWriter<object> output) => Cast(output);

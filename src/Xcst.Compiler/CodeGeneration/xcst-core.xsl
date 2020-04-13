@@ -335,6 +335,7 @@
             <code:method-call name="CastElement">
                <sequence select="src:helper-type('DocumentWriter')"/>
                <code:arguments>
+                  <code:this-reference/>
                   <sequence select="$output/src:reference/code:*"/>
                </code:arguments>
             </code:method-call>
@@ -417,6 +418,12 @@
             </code:method-call>
          </code:finally>
       </code:try>
+   </template>
+
+   <template match="c:element" mode="xcst:instruction">
+      <xcst:instruction>
+         <code:type-reference name="XElement" namespace="System.Xml.Linq"/>
+      </xcst:instruction>
    </template>
 
    <template match="c:namespace" mode="src:statement">
@@ -633,6 +640,7 @@
             <code:method-call name="CastElement">
                <sequence select="src:helper-type('DocumentWriter')"/>
                <code:arguments>
+                  <code:this-reference/>
                   <sequence select="$output/src:reference/code:*"/>
                </code:arguments>
             </code:method-call>
@@ -700,6 +708,12 @@
             </code:method-call>
          </code:finally>
       </code:try>
+   </template>
+
+   <template name="xcst:literal-result-element-instruction">
+      <xcst:instruction>
+         <code:type-reference name="XElement" namespace="System.Xml.Linq"/>
+      </xcst:instruction>
    </template>
 
    <template name="src:use-attribute-sets">
@@ -3163,6 +3177,9 @@
                               <when test="xcst:is-extension-instruction(.)">
                                  <apply-templates select="." mode="xcst:extension-instruction"/>
                               </when>
+                              <otherwise>
+                                 <call-template name="xcst:literal-result-element-instruction"/>
+                              </otherwise>
                            </choose>
                         </variable>
                         <sequence select="($i, $default-meta)[1]"/>

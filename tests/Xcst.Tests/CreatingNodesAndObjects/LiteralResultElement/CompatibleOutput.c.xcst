@@ -11,4 +11,32 @@
       <foo/>
    </c:template>
 
+   <c:template name='XObject' as='System.Xml.Linq.XObject'>
+      <foo/>
+   </c:template>
+
+   <c:template name='XNode' as='System.Xml.Linq.XNode'>
+      <foo/>
+   </c:template>
+
+   <c:template name='XContainer' as='System.Xml.Linq.XContainer'>
+      <foo/>
+   </c:template>
+
+   <c:template name='XElement' as='System.Xml.Linq.XElement'>
+      <foo/>
+   </c:template>
+
+   <c:template name='XmlNode' as='System.Xml.XmlNode'>
+      <foo/>
+   </c:template>
+
+   <c:template name='XmlLinkedNode' as='System.Xml.XmlLinkedNode'>
+      <foo/>
+   </c:template>
+
+   <c:template name='XmlElement' as='System.Xml.XmlElement'>
+      <foo/>
+   </c:template>
+
 </c:module>

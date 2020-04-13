@@ -81,6 +81,7 @@
     <Compile Include="XmlNamespaces.cs" />
     <Compile Include="Xml\HtmlWriter.cs" />
     <Compile Include="Xml\XcstXmlWriter.cs" />
+    <Compile Include="Xml\XElementWriter.cs" />
     <Compile Include="Xml\XmlXcstWriter.cs" />
     <Compile Include="Xml\XHtmlWriter.cs" />
     <Compile Include="Xml\WrappingXmlWriter.cs" />

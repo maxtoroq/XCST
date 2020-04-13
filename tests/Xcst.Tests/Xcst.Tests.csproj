@@ -405,8 +405,10 @@
     <None Include="CreatingNodesAndObjects\Element\element.foox.c.xcst" />
     <None Include="CreatingNodesAndObjects\Element\ValueTypeOutput.i.xcst" />
     <None Include="CreatingNodesAndObjects\Element\CompatibleOutput.c.xcst" />
+    <None Include="CreatingNodesAndObjects\Element\XElement.c.xcst" />
     <None Include="CreatingNodesAndObjects\LiteralResultElement\CompatibleOutput.c.xcst" />
     <None Include="CreatingNodesAndObjects\LiteralResultElement\ValueTypeOutput.i.xcst" />
+    <None Include="CreatingNodesAndObjects\LiteralResultElement\XElement.c.xcst" />
     <None Include="CreatingNodesAndObjects\MapEntry\map-entry.foox.c.xcst" />
     <None Include="CreatingNodesAndObjects\Map\map.foox.c.xcst" />
     <None Include="CreatingNodesAndObjects\Namespace\CompatibleOutput.c.xcst" />
@@ -919,6 +921,8 @@
     <None Include="VariablesAndParameters\TypeInference\Multiple\TemplateParamKnownType.i.xcst" />
     <None Include="VariablesAndParameters\TypeInference\Multiple\TemplateParamUnknownType.i.xcst" />
     <None Include="VariablesAndParameters\TypeInference\Single\Array.c.xcst" />
+    <None Include="VariablesAndParameters\TypeInference\Single\LiteralResultElement.c.xcst" />
+    <None Include="VariablesAndParameters\TypeInference\Single\Element.c.xcst" />
     <None Include="VariablesAndParameters\TypeInference\Single\Document.c.xcst" />
     <None Include="VariablesAndParameters\TypeInference\Single\Map.c.xcst" />
     <None Include="VariablesAndParameters\TypeInference\Single\FunctionParamKnownType.i.xcst" />
