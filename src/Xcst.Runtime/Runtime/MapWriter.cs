@@ -64,6 +64,9 @@ namespace Xcst.Runtime {
          return mapWriter;
       }
 
+
+      // ## Maps and Arrays
+
       public abstract void
       WriteStartMap();
 
@@ -85,7 +88,22 @@ namespace Xcst.Runtime {
       public abstract void
       WriteComment(string? text);
 
-      #region ISequenceWriter<object> Members
+      public void
+      WriteString(string? text) => WriteObject(text);
+
+      public abstract void
+      WriteRaw(string? data);
+
+      void
+      ISequenceWriter<object?>.WriteString(object? text) =>
+         WriteString((string?)text);
+
+      void
+      ISequenceWriter<object?>.WriteRaw(object? data) =>
+         WriteRaw((string?)data);
+
+
+      // ## WriteObject
 
       public abstract void
       WriteObject(object? value);
@@ -97,39 +115,6 @@ namespace Xcst.Runtime {
       void
       ISequenceWriter<object?>.WriteObject<TDerived>(IEnumerable<TDerived>? value) =>
          WriteObject((IEnumerable?)value);
-
-      void
-      ISequenceWriter<object?>.WriteString(object? text) =>
-         WriteString((string?)text);
-
-      void
-      ISequenceWriter<object?>.WriteRaw(object? data) =>
-         WriteRaw((string?)data);
-
-      public virtual void
-      CopyOf(object? value) => CopyOfImpl(value, recurse: false);
-
-      void
-      ISequenceWriter<object?>.CopyOf(IEnumerable<object?>? value) =>
-         CopyOf((object?)value);
-
-      void
-      ISequenceWriter<object?>.CopyOf<TDerived>(IEnumerable<TDerived>? value) =>
-         CopyOf((object?)value);
-
-      public virtual XcstWriter?
-      TryCastToDocumentWriter() => null;
-
-      public MapWriter?
-      TryCastToMapWriter() => this;
-
-      #endregion
-
-      public void
-      WriteString(string? text) => WriteObject(text);
-
-      public abstract void
-      WriteRaw(string? data);
 
       // string implements IEnumerable, treat as single value
       // IEnumerable<object> works for reference types only, IEnumerable for any type
@@ -147,6 +132,20 @@ namespace Xcst.Runtime {
             }
          }
       }
+
+
+      // ## CopyOf
+
+      public virtual void
+      CopyOf(object? value) => CopyOfImpl(value, recurse: false);
+
+      void
+      ISequenceWriter<object?>.CopyOf(IEnumerable<object?>? value) =>
+         CopyOf((object?)value);
+
+      void
+      ISequenceWriter<object?>.CopyOf<TDerived>(IEnumerable<TDerived>? value) =>
+         CopyOf((object?)value);
 
       void
       CopyOfImpl(object? value, bool recurse) {
@@ -185,5 +184,14 @@ namespace Xcst.Runtime {
 
       public void
       CopyOf(Array? value) => CopyOfSequence(value);
+
+
+      // ## Other
+
+      public virtual XcstWriter?
+      TryCastToDocumentWriter() => null;
+
+      public MapWriter?
+      TryCastToMapWriter() => this;
    }
 }
