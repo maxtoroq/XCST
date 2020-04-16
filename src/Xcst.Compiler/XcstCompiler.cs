@@ -84,6 +84,9 @@ namespace Xcst.Compiler {
       public bool
       OpenBraceOnNewLine { get; set; }
 
+      public Func<string, TextWriter>?
+      CompilationUnitHandler { get; set; }
+
       internal
       XcstCompiler(Func<XsltExecutable> compilerExecFn, Processor processor) {
 
@@ -218,11 +221,12 @@ namespace Xcst.Compiler {
 
          var result = new CompileResult {
             Language = docEl.GetAttributeValue(compiled.language),
-            CompilationUnits =
+            CompilationUnits = (this.CompilationUnitHandler == null) ?
                ((IXdmEnumerator)docEl.EnumerateAxis(XdmAxis.Child, compiled.compilationUnit))
                   .AsNodes()
                   .Select(n => n.StringValue)
-                  .ToArray(),
+                  .ToArray()
+               : Array.Empty<string>(),
             Dependencies =
                new HashSet<Uri>(loggingResolver.ResolvedUris
                   .Concat(((IXdmEnumerator)docEl.EnumerateAxis(XdmAxis.Child, compiled.@ref))
@@ -250,6 +254,11 @@ namespace Xcst.Compiler {
          XsltTransformer compiler = this.compilerExec.Value.Load();
          compiler.InitialMode = CompilerQName("main");
          compiler.InitialContextNode = sourceDoc;
+
+         if (this.CompilationUnitHandler != null) {
+            compiler.ResultDocumentHandler = new CompilationUnitResultHandler(this.CompilationUnitHandler, this.processor);
+            compiler.SetParameter(CompilerQName("source-to-result-document"), true.ToXdmItem());
+         }
 
          foreach (var pair in this.parameters) {
             compiler.SetParameter(new QName(pair.Key[0], pair.Key[1]), pair.Value.ToXdmValue());
@@ -367,13 +376,16 @@ namespace Xcst.Compiler {
          return Tuple.Create(moduleUri, lineNumber);
       }
 
-      internal static string? ErrorCode(XPathException ex) =>
+      internal static string?
+      ErrorCode(XPathException ex) =>
          ErrorCode(ex.getErrorCodeNamespace(), ex.getErrorCodeLocalPart());
 
-      internal static string? ErrorCode(DynamicError ex) =>
+      internal static string?
+      ErrorCode(DynamicError ex) =>
          ErrorCode(ex.ErrorCode?.Uri, ex.ErrorCode?.LocalName);
 
-      internal static string? ErrorCode(string? ns, string? name) {
+      internal static string?
+      ErrorCode(string? ns, string? name) {
 
          if (name != null) {
 
@@ -490,6 +502,36 @@ namespace Xcst.Compiler {
          }
 
          writer.WriteEndElement();
+      }
+
+      class CompilationUnitResultHandler : IResultDocumentHandler {
+
+         readonly Func<string, TextWriter>
+         writerFn;
+
+         readonly Processor
+         processor;
+
+         public
+         CompilationUnitResultHandler(Func<string, TextWriter> writerFn, Processor processor) {
+
+            this.writerFn = writerFn;
+            this.processor = processor;
+         }
+
+         public XmlDestination
+         HandleResultDocument(string href, Uri? baseUri) {
+
+            var serializer = new Serializer();
+            serializer.SetOutputProperty(Serializer.METHOD, "text");
+
+            TextWriter output = this.writerFn(href)
+               ?? throw new CompileException($"The function of {nameof(XcstCompiler)}.{nameof(CompilationUnitHandler)} must not return null.");
+
+            serializer.SetOutputWriter(output);
+
+            return serializer;
+         }
       }
    }
 

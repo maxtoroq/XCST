@@ -7,7 +7,7 @@ using Xcst.Compiler;
 namespace Xcst.Tests.API.Compilation {
 
    [TestFixture]
-   public class CompilationTests {
+   public partial class CompilationTests {
 
       const string
       TestCategory = nameof(API) + "." + nameof(Compilation);

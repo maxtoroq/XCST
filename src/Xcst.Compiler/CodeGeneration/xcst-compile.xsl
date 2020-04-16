@@ -48,6 +48,7 @@
 
    <param name="src:new-line" select="'&#xA;'" as="xs:string"/>
    <param name="src:indent" select="'    '" as="xs:string"/>
+   <param name="src:source-to-result-document" select="false()" as="xs:boolean"/>
 
    <variable name="src:package-interface" select="src:package-model-type('IXcstPackage', true())"/>
 
@@ -1267,13 +1268,27 @@
          <apply-templates select="$used-packages, $modules" mode="src:namespace"/>
       </variable>
 
+      <variable name="name-prefix" select="'xcst'"/>
+      <variable name="name-suffix" select="'generated'"/>
+
       <choose>
          <when test="xcst:language-equal($language, $xcst:csharp-lang)">
-            <src:compilation-unit>
-               <apply-templates select="$namespaces" mode="cs:source">
-                  <with-param name="indent" select="0" tunnel="yes"/>
-               </apply-templates>
-            </src:compilation-unit>
+            <choose>
+               <when test="$src:source-to-result-document">
+                  <result-document href="{$name-prefix}.{$name-suffix}.cs" method="text">
+                     <apply-templates select="$namespaces" mode="cs:source">
+                        <with-param name="indent" select="0" tunnel="yes"/>
+                     </apply-templates>
+                  </result-document>
+               </when>
+               <otherwise>
+                  <src:compilation-unit>
+                     <apply-templates select="$namespaces" mode="cs:source">
+                        <with-param name="indent" select="0" tunnel="yes"/>
+                     </apply-templates>
+                  </src:compilation-unit>
+               </otherwise>
+            </choose>
          </when>
          <when test="xcst:language-equal($language, $xcst:vb-lang)">
             <for-each select="$namespaces">
@@ -1293,11 +1308,22 @@
                      </otherwise>
                   </choose>
                </variable>
-               <src:compilation-unit>
-                  <apply-templates select="$comp-unit" mode="vb:source">
-                     <with-param name="indent" select="0" tunnel="yes"/>
-                  </apply-templates>
-               </src:compilation-unit>
+               <choose>
+                  <when test="$src:source-to-result-document">
+                     <result-document href="{$name-prefix}.{position()}.{$name-suffix}.vb" method="text">
+                        <apply-templates select="$comp-unit" mode="vb:source">
+                           <with-param name="indent" select="0" tunnel="yes"/>
+                        </apply-templates>
+                     </result-document>
+                  </when>
+                  <otherwise>
+                     <src:compilation-unit>
+                        <apply-templates select="$comp-unit" mode="vb:source">
+                           <with-param name="indent" select="0" tunnel="yes"/>
+                        </apply-templates>
+                     </src:compilation-unit>
+                  </otherwise>
+               </choose>
             </for-each>
          </when>
       </choose>
