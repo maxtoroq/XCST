@@ -333,6 +333,7 @@ namespace Xcst {
       }
 
       // Shortcut overloads
+      // Keeping interfaces private to avoid ambiguous calls
 
       public void
       CopyOf(XNode? value) =>
@@ -342,7 +343,7 @@ namespace Xcst {
       CopyOf(XmlNode? value) =>
          value?.WriteTo(new XcstXmlWriter(this));
 
-      public void
+      void
       CopyOf(IXPathNavigable? value) {
 
          if (value != null) {
@@ -354,7 +355,7 @@ namespace Xcst {
          }
       }
 
-      public void
+      void
       CopyOf(IXmlSerializable? value) =>
          // Don't output root element, gives caller more flexibility and choice
          value?.WriteXml(new XcstXmlWriter(this));

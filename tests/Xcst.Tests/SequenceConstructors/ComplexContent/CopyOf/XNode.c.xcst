@@ -10,13 +10,22 @@
          </c:document>
       </c:variable>
       <foo>
+         <!-- XDocument -->
          <c:copy-of value='doc'/>
          <c:copy-of value='(object)doc'/>
+         <!-- XElement -->
+         <c:copy-of value='doc.Root'/>
+         <c:copy-of value='(object)doc.Root'/>
+         <!-- XNode -->
+         <c:copy-of value='(XNode)doc'/>
       </foo>
    </c:template>
 
    <c:template name='expected'>
       <foo>
+         <bar of='5'>baz</bar>
+         <bar of='5'>baz</bar>
+         <bar of='5'>baz</bar>
          <bar of='5'>baz</bar>
          <bar of='5'>baz</bar>
       </foo>
