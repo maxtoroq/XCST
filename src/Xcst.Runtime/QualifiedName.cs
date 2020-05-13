@@ -17,10 +17,7 @@ using Xcst.Runtime;
 
 namespace Xcst {
 
-#if XCST_RUNTIME
-   public
-#endif
-   class QualifiedName : IEquatable<QualifiedName> {
+   partial class QualifiedName : IEquatable<QualifiedName> {
 
       readonly string
       _Name;

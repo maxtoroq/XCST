@@ -65,7 +65,7 @@
     <Compile Include="..\Xcst.Runtime\Runtime\SimpleContent.cs">
       <Link>SimpleContent.cs</Link>
     </Compile>
-    <Compile Include="..\Xcst.Runtime\XmlNamespaces.cs">
+    <Compile Include="..\XmlNamespaces.cs">
       <Link>XmlNamespaces.cs</Link>
     </Compile>
     <Compile Include="CodeGeneration\ExtensionFunctions.cs" />

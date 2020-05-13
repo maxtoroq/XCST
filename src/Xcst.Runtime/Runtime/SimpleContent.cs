@@ -32,10 +32,7 @@ using System.Text;
 namespace Xcst.Runtime {
 
    /// <exclude/>
-#if XCST_RUNTIME
-   public
-#endif
-   class SimpleContent {
+   partial class SimpleContent {
 
       static readonly char[]
       whiteSpaceChars = { (char)0x20, (char)0x9, (char)0xD, (char)0xA };

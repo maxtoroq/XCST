@@ -21,7 +21,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;XCST_RUNTIME</DefineConstants>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -29,7 +29,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;XCST_RUNTIME</DefineConstants>
+    <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -48,7 +48,11 @@
     <Compile Include="..\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="..\XmlNamespaces.cs">
+      <Link>XmlNamespaces.cs</Link>
+    </Compile>
     <Compile Include="OutputParameters.cs" />
+    <Compile Include="QualifiedName.pub.cs" />
     <Compile Include="Runtime\ISequenceWriter.cs" />
     <Compile Include="PackageModel\ComponentAttributes.cs" />
     <Compile Include="QualifiedName.cs" />
@@ -62,6 +66,7 @@
     <Compile Include="Runtime\Serialization.cs" />
     <Compile Include="Runtime\Grouping.cs" />
     <Compile Include="Runtime\SequenceWriter.cs" />
+    <Compile Include="Runtime\SimpleContent.pub.cs" />
     <Compile Include="Runtime\XcstTextWriter.cs" />
     <Compile Include="XcstDelegate.cs" />
     <Compile Include="XcstEvaluator.cs" />
@@ -78,7 +83,6 @@
     <Compile Include="Runtime\RuntimeWriter.cs" />
     <Compile Include="Runtime\WrappingWriter.cs" />
     <Compile Include="XcstWriter.cs" />
-    <Compile Include="XmlNamespaces.cs" />
     <Compile Include="Xml\HtmlWriter.cs" />
     <Compile Include="Xml\XcstXmlWriter.cs" />
     <Compile Include="Xml\XElementWriter.cs" />
