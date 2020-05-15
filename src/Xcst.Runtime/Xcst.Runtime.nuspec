@@ -4,6 +4,7 @@
       <description>XCST runtime and evaluation API.</description>
       <dependencies>
          <dependency id="Newtonsoft.Json"/>
+         <dependency id="System.ComponentModel.Annotations"/>
       </dependencies>
       <frameworkAssemblies>
          <frameworkAssembly assemblyName="System"/>

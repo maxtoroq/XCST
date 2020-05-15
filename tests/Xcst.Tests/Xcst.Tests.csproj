@@ -55,7 +55,7 @@
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\src\Xcst.Runtime\bin\Debug\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\src\Xcst.Runtime\bin\Debug\net46\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework, Version=3.12.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
       <HintPath>..\..\packages\NUnit.3.12.0\lib\net45\nunit.framework.dll</HintPath>
@@ -1422,7 +1422,7 @@
       <Name>Xcst.Compiler</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\src\Xcst.Runtime\Xcst.Runtime.csproj">
-      <Project>{4387c5be-1873-4060-b547-9467d5e2c779}</Project>
+      <Project>{5ebe14dc-3556-4d80-82e9-7b9919e3a866}</Project>
       <Name>Xcst.Runtime</Name>
     </ProjectReference>
   </ItemGroup>

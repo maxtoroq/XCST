@@ -11,7 +11,9 @@ $configuration = "Release"
 
 function PackageVersion($project) {
    
-   $assemblyPath = Resolve-Path "$($project.path)\bin\$configuration\$($project.assemblyName).dll"
+   $assemblyPath = if ($project.sdkStyle) { Resolve-Path "$($project.path)\bin\$configuration\$($project.targetFx.Split(';')[0])\$($project.assemblyName).dll" }
+      else { Resolve-Path "$($project.path)\bin\$configuration\$($project.assemblyName).dll" }
+
    $fvi = [Diagnostics.FileVersionInfo]::GetVersionInfo($assemblyPath.Path)
    return New-Object Version $fvi.FileVersion
 }
@@ -29,8 +31,6 @@ function NuSpec {
 
    $packagesPath = "$($project.path)\packages.config"
    [xml]$packagesDoc = if (Test-Path $packagesPath) { Get-Content $packagesPath } else { $null }
-
-   $targetFxMoniker = "net" + $project.targetFx.Substring(1).Replace(".", "")
 
    "<package xmlns='http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd'>"
       "<metadata>"
@@ -53,13 +53,21 @@ function NuSpec {
 
       if ($local -eq 'yes') {
          $version = DependencyVersionRange $solution[$dep.id]
-      } else {
+
+      } elseif ($packagesDoc -ne $null) {
+
          $pkgRef = $packagesDoc.packages.package | where { $_.id -eq $dep.id }
          $version = $pkgRef.allowedVersions
 
          if ($version -eq $null) {
             $version = $pkgRef.version
          }
+
+      } else {
+
+         # $project.sdkStyle should be true
+         $pkgRef = $project.doc.SelectSingleNode("//PackageReference[@Include = '$($dep.id)']")
+         $version = $pkgRef.Version
       }
 
             "<dependency id='$($dep.id)' version='$version'/>"
@@ -74,7 +82,17 @@ function NuSpec {
    "<files>"
       "<file src='$($project.temp)\NOTICE.xml'/>"
       "<file src='$solutionPath\LICENSE.txt'/>"
-      "<file src='$($project.path)\bin\$configuration\$($project.assemblyName).*' target='lib\$targetFxMoniker'/>"
+
+   if ($project.sdkStyle) {
+      foreach ($tf in $project.targetFx.Split(';')) {
+         $binPath = "$($project.path)\bin\$configuration\$tf"
+      "<file src='$binPath\$($project.assemblyName).*' target='lib\$tf' exclude='**\*.deps.json'/>"
+      }
+   } else {
+      $binPath = "$($project.path)\bin\$configuration"
+      "<file src='$binPath\$($project.assemblyName).*' target='lib\$($project.targetFx)'/>"
+   }
+
 
    foreach ($file in $project.nuspec.package.files.file) {
       foreach ($path in Resolve-Path (Join-Path $project.path $file.src)) {
@@ -117,8 +135,11 @@ function ProjectData([string]$projName) {
    $project.path = Resolve-Path $solutionPath\src\$($project.name)
    $project.file = "$($project.path)\$($project.name).csproj"
    $project.doc = [xml](Get-Content $project.file)
-   $project.assemblyName = $project.doc.Project.PropertyGroup[0].AssemblyName
-   $project.targetFx = $project.doc.Project.PropertyGroup[0].TargetFrameworkVersion
+   $project.sdkStyle = $project.doc.Project.GetAttributeNode("Sdk") -ne $null
+   $project.assemblyName = ((($project.doc.Project.PropertyGroup | select -first 1).AssemblyName, $projName) -ne $null)[0]
+   $project.targetFx = if ($project.sdkStyle) { (($project.doc.Project.PropertyGroup | select -first 1) | %{ (($_.TargetFramework, $_.TargetFrameworks) -ne $null)[0] }) }
+      else { "net" + ($project.doc.Project.PropertyGroup | select -first 1).TargetFrameworkVersion.Substring(1).Replace(".", "") }
+
    $project.nuspec = [xml](Get-Content "$($project.path)\$($project.name).nuspec")
 
    $project.temp = Join-Path (Get-Item .) temp\$($project.name)
@@ -211,7 +232,9 @@ using System.Reflection;
 
       $newPackages.Add((NuPack))
 
-      if (-not $createdTag -and $pkgVersion -gt $lastRelease) {
+      if (-not $createdTag -and
+            $pkgVersion -gt $lastRelease -and
+            (Prompt-Choices -Message "Create tag?" -Default 1) -eq 0) {
 
          $newTag = "v$pkgVersion"
          git tag -a $newTag -m $newTag
@@ -220,13 +243,14 @@ using System.Reflection;
       }
    }
 
-   if ((Prompt-Choices -Message "Push package(s) to gallery?" -Default 1) -eq 0) {
-      foreach ($pkgPath in $newPackages) {
-         &$nuget push $pkgPath -Source nuget.org
-      }
-   }
-
    if ($createdTag) {
+
+      if ((Prompt-Choices -Message "Push package(s) to gallery?" -Default 1) -eq 0) {
+         foreach ($pkgPath in $newPackages) {
+            &$nuget push $pkgPath -Source nuget.org
+         }
+      }
+
       if ((Prompt-Choices -Message "Push new tag $newTag to origin?" -Default 1) -eq 0) {
          git push origin $newTag
       }
