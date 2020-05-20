@@ -43,10 +43,6 @@ namespace Xcst.Compiler.CodeGeneration {
          return uri.AbsoluteUri;
       }
 
-      internal static Uri
-      MakeRelativeUri(Uri current, Uri compare) =>
-         current.MakeRelativeUri(compare);
-
       internal static Uri?
       FindNamedPackage(string packageName, string packagesLocation, string fileExtension) {
 
@@ -195,46 +191,6 @@ namespace Xcst.Compiler.CodeGeneration {
             return ExtensionFunctions.LocalPath(uri)
                .ToXdmAtomicValue()
                .GetXdmEnumerator();
-         }
-      }
-   }
-
-   class MakeRelativeUriFunction : ExtensionFunctionDefinition {
-
-      public override QName
-      FunctionName { get; } = CompilerQName("_make-relative-uri");
-
-      public override XdmSequenceType[]
-      ArgumentTypes { get; } = {
-         new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_ANYURI), ' '),
-         new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_ANYURI), ' ')
-      };
-
-      public override int
-      MinimumNumberOfArguments => ArgumentTypes.Length;
-
-      public override int
-      MaximumNumberOfArguments => MinimumNumberOfArguments;
-
-      public override ExtensionFunctionCall
-      MakeFunctionCall() => new FunctionCall();
-
-      public override XdmSequenceType
-      ResultType(XdmSequenceType[] ArgumentTypes) =>
-         new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_ANYURI), ' ');
-
-      class FunctionCall : ExtensionFunctionCall {
-
-         public override IXdmEnumerator
-         Call(IXdmEnumerator[] arguments, DynamicContext context) {
-
-            Uri[] uris = arguments.SelectMany(a => a.AsAtomicValues())
-               .Select(a => (Uri)a.Value)
-               .ToArray();
-
-            return (IXdmEnumerator)new XdmAtomicValue(
-               ExtensionFunctions.MakeRelativeUri(uris[0], uris[1])
-            ).GetEnumerator();
          }
       }
    }
@@ -566,6 +522,52 @@ namespace Xcst.Compiler.CodeGeneration {
 
             return ExtensionFunctions.StringId(str)
                .ToXdmAtomicValue()
+               .GetXdmEnumerator();
+         }
+      }
+   }
+
+   class InvokeExternalFunctionFunction : ExtensionFunctionDefinition {
+
+      public override QName
+      FunctionName { get; } = CompilerQName("invoke-external-function");
+
+      public override XdmSequenceType[]
+      ArgumentTypes { get; } = {
+         new XdmSequenceType(XdmAnyItemType.Instance, ' '),
+         new XdmSequenceType(XdmAnyItemType.Instance, '*')
+      };
+
+      public override int
+      MinimumNumberOfArguments => ArgumentTypes.Length;
+
+      public override int
+      MaximumNumberOfArguments => MinimumNumberOfArguments;
+
+      public override ExtensionFunctionCall
+      MakeFunctionCall() => new FunctionCall();
+
+      public override XdmSequenceType
+      ResultType(XdmSequenceType[] ArgumentTypes) =>
+         new XdmSequenceType(XdmAnyItemType.Instance, '*');
+
+      class FunctionCall : ExtensionFunctionCall {
+
+         public override IXdmEnumerator
+         Call(IXdmEnumerator[] arguments, DynamicContext context) {
+
+            Delegate externalFunction = arguments[0].AsItems()
+               .Cast<XdmExternalObjectValue>()
+               .Select(x => UnwrapExternalObject<Delegate>(x))
+               .Single();
+
+            object[] functionArgs = arguments[1].AsItems()
+               .Select(x => (x is XdmAtomicValue atomic) ? atomic.Value : x)
+               .ToArray();
+
+            object? result = externalFunction.DynamicInvoke(functionArgs);
+
+            return result.ToXdmValue()
                .GetXdmEnumerator();
          }
       }

@@ -110,8 +110,13 @@ namespace Xcst.Compiler {
          if (name.Length == 0) throw new ArgumentException("name cannot be empty.", nameof(name));
 
          if (value is Type t) {
+
             DocumentBuilder docBuilder = this.processor.NewDocumentBuilder();
             value = CodeTypeReference(t, docBuilder);
+
+         } else if (value is Delegate) {
+
+            value = WrapExternalObject(value);
          }
 
          this.parameters.Add(new[] { ns, name }, value);

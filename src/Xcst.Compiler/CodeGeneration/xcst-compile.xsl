@@ -1519,15 +1519,6 @@
       <sequence select="src:_local-path($p1)"/>
    </function>
 
-   <function name="src:make-relative-uri" as="xs:anyURI">
-      <param name="p1" as="xs:anyURI"/>
-      <param name="p2" as="xs:anyURI"/>
-
-      <!-- This function is used by XCST-a -->
-
-      <sequence select="src:_make-relative-uri($p1, $p2)"/>
-   </function>
-
 
    <!-- ### Used Packages -->
 

@@ -71,11 +71,4 @@
       <sequence select="error()"/>
    </function>
 
-   <function name="src:_make-relative-uri" as="xs:anyURI">
-      <param name="p1" as="xs:anyURI"/>
-      <param name="p2" as="xs:anyURI"/>
-
-      <sequence select="error()"/>
-   </function>
-
 </stylesheet>
