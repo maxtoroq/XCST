@@ -45,7 +45,7 @@
    </variable>
 
    <template match="code:*" mode="cs:source cs:statement">
-      <sequence select="error((), concat('Element code:', local-name(), ' cannot be compiled to C#.'), src:error-object(.))"/>
+      <sequence select="error(xs:QName('err:CS0001'), concat('Element code:', local-name(), ' cannot be compiled to C#.'), src:error-object(.))"/>
    </template>
 
    <template match="code:add" mode="cs:source">

@@ -89,7 +89,7 @@
    </template>
 
    <template match="c:*" mode="src:expression">
-      <sequence select="error((), concat('Element c:', local-name(), ' cannot be compiled into an expression.'), src:error-object(.))"/>
+      <sequence select="error(xs:QName('err:XTSE0010'), concat('Element c:', local-name(), ' cannot be compiled into an expression.'), src:error-object(.))"/>
    </template>
 
    <template match="c:*" mode="xcst:instruction"/>
@@ -1094,7 +1094,7 @@
 
       <if test="$rollback">
          <!-- TODO: Buffering -->
-         <sequence select="error((), 'Buffering not supported yet. Use rollback-output=''no''.', src:error-object(.))"/>
+         <sequence select="error(xs:QName('err:XTSE0020'), 'Buffering not supported yet. Use rollback-output=''no''.', src:error-object(.))"/>
       </if>
 
       <code:try>
@@ -1824,7 +1824,7 @@
       </if>
 
       <if test="$meta/@declared-visibility eq 'abstract'">
-         <sequence select="error((), 'Cannot call a next template with visibility=''abstract''.', src:error-object(.))"/>
+         <sequence select="error(xs:QName('err:XTSE3075'), 'Cannot call a next template with visibility=''abstract''.', src:error-object(.))"/>
       </if>
 
       <variable name="current" select="."/>
@@ -3056,10 +3056,10 @@
       <param name="kind" as="xs:string*"/>
 
       <if test="not($output)">
-         <sequence select="error((), 'Output required.', src:error-object(.))"/>
+         <sequence select="error(xs:QName('err:XTSE0010'), 'Output required.', src:error-object(.))"/>
       </if>
       <if test="exists($kind) and not($output instance of element() and $output/@kind = $kind)">
-         <sequence select="error((), 'Incompatible output.', src:error-object(.))"/>
+         <sequence select="error(xs:QName('err:XTSE0010'), 'Incompatible output.', src:error-object(.))"/>
       </if>
    </template>
 

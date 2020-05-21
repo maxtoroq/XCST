@@ -400,7 +400,7 @@
       <if test="@min or @max">
 
          <if test="not(@as)">
-            <sequence select="error((), 'The ''min'' and ''max'' attributes can only be used on members that declare their type using the ''as'' attribute.', src:error-object(.))"/>
+            <sequence select="error(xs:QName('err:XTSE0020'), 'The ''min'' and ''max'' attributes can only be used on members that declare their type using the ''as'' attribute.', src:error-object(.))"/>
          </if>
 
          <code:attribute>

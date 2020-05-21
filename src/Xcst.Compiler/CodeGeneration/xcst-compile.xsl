@@ -86,7 +86,7 @@
 
       <if test="$named-package
             and not($package-name)">
-         <sequence select="error((), 'A named package is expected. Use the c:package element with a ''name'' attribute.', src:error-object(.))"/>
+         <sequence select="error(xs:QName('err:XCST9001'), 'A named package is expected. Use the c:package element with a ''name'' attribute.', src:error-object(.))"/>
       </if>
 
       <variable name="ns" as="xs:string">
@@ -95,13 +95,13 @@
                <choose>
                   <when test="count($package-name-parts) eq 1">
                      <if test="not($namespace)">
-                        <sequence select="error((), 'The ''namespace'' parameter is required if the package name is not multipart.', src:error-object(.))"/>
+                        <sequence select="error(xs:QName('err:XCST9002'), 'The ''namespace'' parameter is required if the package name is not multipart.', src:error-object(.))"/>
                      </if>
                      <sequence select="$namespace"/>
                   </when>
                   <otherwise>
                      <if test="$namespace">
-                        <sequence select="error((), 'The ''namespace'' parameter should be omitted if the package name is multipart.', src:error-object(.))"/>
+                        <sequence select="error(xs:QName('err:XCST9003'), 'The ''namespace'' parameter should be omitted if the package name is multipart.', src:error-object(.))"/>
                      </if>
                      <sequence select="string-join($package-name-parts[position() ne last()], '.')"/>
                   </otherwise>
@@ -109,7 +109,7 @@
             </when>
             <otherwise>
                <if test="not($namespace)">
-                  <sequence select="error((), 'The ''namespace'' parameter is required for implicit and unnamed packages.', src:error-object(.))"/>
+                  <sequence select="error(xs:QName('err:XCST9004'), 'The ''namespace'' parameter is required for implicit and unnamed packages.', src:error-object(.))"/>
                </if>
                <sequence select="$namespace"/>
             </otherwise>
@@ -120,13 +120,13 @@
          <choose>
             <when test="$package-name">
                <if test="$class">
-                  <sequence select="error((), 'The ''class'' parameter should be omitted for named packages.', src:error-object(.))"/>
+                  <sequence select="error(xs:QName('err:XCST9005'), 'The ''class'' parameter should be omitted for named packages.', src:error-object(.))"/>
                </if>
                <sequence select="$package-name-parts[last()]"/>
             </when>
             <otherwise>
                <if test="not($class)">
-                  <sequence select="error((), 'The ''class'' parameter is required for implicit and unnamed packages.', src:error-object(.))"/>
+                  <sequence select="error(xs:QName('err:XCST9006'), 'The ''class'' parameter is required for implicit and unnamed packages.', src:error-object(.))"/>
                </if>
                <sequence select="$class"/>
             </otherwise>
@@ -226,7 +226,7 @@
 
    <template match="*[not(self::c:*)]" mode="src:main">
       <call-template name="xcst:check-document-element-attributes"/>
-      <sequence select="error((), 'Simplified module not implemented yet.', src:error-object(.))"/>
+      <sequence select="error(xs:QName('err:XTSE0010'), 'Simplified module not implemented yet.', src:error-object(.))"/>
    </template>
 
    <template match="c:module | c:package" mode="src:load-imports">
@@ -328,7 +328,7 @@
          <with-param name="allowed" select="'accept', 'override'"/>
       </call-template>
       <if test="preceding-sibling::c:use-package[xcst:name-equal(@name, current()/@name)]">
-         <sequence select="error((), 'Duplicate c:use-package declaration.', src:error-object(.))"/>
+         <sequence select="error(xs:QName('err:XTSE0020'), 'Duplicate c:use-package declaration.', src:error-object(.))"/>
       </if>
       <apply-templates select="c:accept | c:override" mode="#current"/>
    </template>
@@ -409,7 +409,7 @@
                   </apply-templates>
                </variable>
                <if test="not(xcst:language-equal($result/*/@language, $language))">
-                  <sequence select="error((), 'Used packages that are not pre-compiled must use the same value for the ''language'' attribute as the top-level package.', src:error-object(.))"/>
+                  <sequence select="error(xs:QName('err:XTSE0020'), 'Used packages that are not pre-compiled must use the same value for the ''language'' attribute as the top-level package.', src:error-object(.))"/>
                </if>
                <sequence select="$result/*/xcst:package-manifest"/>
             </otherwise>
@@ -968,7 +968,7 @@
       </if>
 
       <if test="parent::c:override">
-         <sequence select="error((), 'Cannot override a c:type component.', src:error-object(.))"/>
+         <sequence select="error(xs:QName('err:XTSE0010'), 'Cannot override a c:type component.', src:error-object(.))"/>
       </if>
 
       <variable name="declared-visibility" select="(@visibility/xcst:visibility(.), 'private')[1]"/>
@@ -978,7 +978,7 @@
          else $declared-visibility"/>
 
       <if test="$declared-visibility eq 'abstract'">
-         <sequence select="error((), 'visibility=''abstract'' is not a valid value for c:type declarations.', src:error-object(.))"/>
+         <sequence select="error(xs:QName('err:XTSE0020'), 'visibility=''abstract'' is not a valid value for c:type declarations.', src:error-object(.))"/>
       </if>
 
       <xcst:type name="{$name}"
@@ -1072,7 +1072,7 @@
             </call-template>
             <call-template name="xcst:no-children"/>
             <if test="preceding-sibling::c:output[(empty($output-name) and empty(@name)) or (xcst:EQName(@name) eq $output-name)]">
-               <sequence select="error((), 'Duplicate c:output declaration.', src:error-object(.))"/>
+               <sequence select="error(xs:QName('err:XTSE0020'), 'Duplicate c:output declaration.', src:error-object(.))"/>
             </if>
          </for-each>
 
@@ -2760,11 +2760,11 @@
       </call-template>
 
       <if test="@as and c:member">
-         <sequence select="error((), 'The ''as'' attribute must be omitted when the member has child members.', src:error-object(.))"/>
+         <sequence select="error(xs:QName('err:XTSE0020'), 'The ''as'' attribute must be omitted when the member has child members.', src:error-object(.))"/>
       </if>
 
       <if test="count((@value, @expression)) gt 1">
-         <sequence select="error((), 'The attributes ''value'' and ''expression'' are mutually exclusive.', src:error-object(.))"/>
+         <sequence select="error(xs:QName('err:XTSE0020'), 'The attributes ''value'' and ''expression'' are mutually exclusive.', src:error-object(.))"/>
       </if>
 
       <call-template name="xcst:no-other-following"/>

@@ -41,7 +41,7 @@
    </variable>
 
    <template match="code:*" mode="vb:source vb:statement">
-      <sequence select="error((), concat('Element code:', local-name(), ' cannot be compiled to Visual Basic.'), src:error-object(.))"/>
+      <sequence select="error(xs:QName('err:VB0001'), concat('Element code:', local-name(), ' cannot be compiled to Visual Basic.'), src:error-object(.))"/>
    </template>
 
    <template match="code:add" mode="vb:source">
