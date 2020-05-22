@@ -150,9 +150,10 @@ namespace Xcst.Compiler {
       Compile(TextReader source, Uri? baseUri = null) =>
          Compile(docb => docb.Build(source), baseUri);
 
-      public CompileResult
-      Compile(XmlReader source) =>
-         Compile(docb => docb.Build(source));
+      // Cannot use XmlReader when XInclude is enabled, see <https://saxonica.plan.io/issues/4559>
+      //public CompileResult
+      //Compile(XmlReader source) =>
+      //   Compile(docb => docb.Build(source));
 
       CompileResult
       Compile(Func<DocumentBuilder, XdmNode> buildFn, Uri? baseUri = null) {
