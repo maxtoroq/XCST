@@ -1702,6 +1702,11 @@
    <template match="xcst:package-manifest" mode="src:used-package-class">
       <param name="package-manifest" required="yes" tunnel="yes"/>
       <param name="overridden" select="src:overridden-components(., $package-manifest)"/>
+      <param name="language" required="yes" tunnel="yes"/>
+
+      <variable name="disable-CS8618" select="
+         xcst:language-equal($language, $xcst:csharp-lang)
+            and $src:nullable-annotate"/>
 
       <variable name="qualified-types" select="xs:boolean(@qualified-types)"/>
 
@@ -1715,7 +1720,17 @@
             </if>
          </code:attributes>
          <code:members>
+
+            <if test="$disable-CS8618">
+               <code:disable-warning codes="CS8618"/>
+            </if>
+
             <apply-templates select="$overridden" mode="src:used-package-overriding"/>
+
+            <if test="$disable-CS8618">
+               <code:restore-warning codes="CS8618"/>
+            </if>
+
             <apply-templates select="$overridden" mode="src:used-package-override"/>
             <apply-templates select="$overridden[@original-visibility ne 'abstract']" mode="src:used-package-original"/>
             <apply-templates select="$overridden[self::xcst:param or self::xcst:variable]" mode="src:used-package-tuple"/>
@@ -2128,7 +2143,6 @@
 
    <template match="c:param | c:variable" mode="src:member">
       <param name="package-manifest" required="yes" tunnel="yes"/>
-      <param name="language" required="yes" tunnel="yes"/>
 
       <variable name="meta" select="$package-manifest/xcst:*[@declaration-id eq current()/generate-id()]"/>
       <variable name="public" select="$meta/@visibility = ('public', 'final', 'abstract')"/>
@@ -2142,10 +2156,6 @@
 
       <variable name="init-field-name" select="
          if ($use-backing-field) then src:aux-variable(concat('init_', $meta/@name)) else ()"/>
-
-      <variable name="disable-CS8618" select="
-         xcst:language-equal($language, $xcst:csharp-lang)
-            and $src:nullable-annotate"/>
 
       <variable name="init-field" as="element()">
          <code:field-reference name="{$init-field-name}">
@@ -2161,10 +2171,6 @@
 
       <if test="$use-backing-field">
 
-         <if test="$disable-CS8618">
-            <code:disable-warning codes="CS8618"/>
-         </if>
-
          <code:field name="{$backing-field-name}" line-hidden="true">
             <sequence select="$meta/code:type-reference"/>
             <code:attributes>
@@ -2172,20 +2178,12 @@
             </code:attributes>
          </code:field>
 
-         <if test="$disable-CS8618">
-            <code:restore-warning codes="CS8618"/>
-         </if>
-
          <code:field name="{$init-field-name}" line-hidden="true">
             <code:type-reference name="Boolean" namespace="System"/>
             <code:attributes>
                <call-template name="src:editor-browsable-never"/>
             </code:attributes>
          </code:field>
-      </if>
-
-      <if test="not($use-backing-field) and $disable-CS8618">
-         <code:disable-warning codes="CS8618"/>
       </if>
 
       <code:property name="{$meta/@member-name}"
@@ -2278,10 +2276,6 @@
             </if>
          </code:setter>
       </code:property>
-
-      <if test="not($use-backing-field) and $disable-CS8618">
-         <code:restore-warning codes="CS8618"/>
-      </if>
    </template>
 
    <template match="c:template" mode="src:member">
@@ -2742,6 +2736,7 @@
                <apply-templates select="c:member[c:member]" mode="src:anonymous-type">
                   <with-param name="src:validation-attributes" select="$validation-attributes" tunnel="yes"/>
                </apply-templates>
+               <call-template name="src:type-constructor"/>
             </code:members>
          </code:type>
       </if>
@@ -2847,8 +2842,29 @@
          <code:members>
             <apply-templates select="c:member" mode="src:member"/>
             <apply-templates select="c:member[c:member]" mode="#current"/>
+            <call-template name="src:type-constructor"/>
          </code:members>
       </code:type>
+   </template>
+
+   <template name="src:type-constructor">
+      <param name="language" required="yes" tunnel="yes"/>
+
+      <variable name="disable-CS8618" select="
+         xcst:language-equal($language, $xcst:csharp-lang)
+            and $src:nullable-annotate"/>
+
+      <if test="$disable-CS8618">
+         <code:disable-warning codes="CS8618"/>
+      </if>
+
+      <code:constructor visibility="public">
+         <code:block/>
+      </code:constructor>
+
+      <if test="$disable-CS8618">
+         <code:restore-warning codes="CS8618"/>
+      </if>
    </template>
 
    <function name="src:anonymous-type-name" as="xs:string">
@@ -2877,33 +2893,44 @@
    <template name="src:constructor">
       <param name="package-manifest" required="yes" tunnel="yes"/>
       <param name="used-packages" tunnel="yes"/>
+      <param name="language" required="yes" tunnel="yes"/>
 
-      <if test="$used-packages">
-         <code:constructor visibility="public" line-hidden="true">
-            <code:block>
-               <for-each select="$used-packages">
-                  <variable name="overridden" select="src:overridden-components(., $package-manifest)"/>
-                  <code:assign>
-                     <code:field-reference name="{src:used-package-field-name(.)}">
-                        <code:this-reference/>
-                     </code:field-reference>
-                     <code:new-object>
-                        <code:type-reference name="{src:used-package-class-name(.)}"/>
-                        <code:initializer>
-                           <for-each select="$overridden">
-                              <variable name="meta" select="$package-manifest/xcst:*[@overrides eq current()/@id and @visibility ne 'hidden']"/>
-                              <code:member-initializer name="{src:overriding-field-name(.)}">
-                                 <apply-templates select="." mode="src:used-package-overriding-value">
-                                    <with-param name="meta" select="$meta"/>
-                                 </apply-templates>
-                              </code:member-initializer>
-                           </for-each>
-                        </code:initializer>
-                     </code:new-object>
-                  </code:assign>
-               </for-each>
-            </code:block>
-         </code:constructor>
+      <variable name="disable-CS8618" select="
+         xcst:language-equal($language, $xcst:csharp-lang)
+            and $src:nullable-annotate"/>
+
+      <if test="$disable-CS8618">
+         <code:disable-warning codes="CS8618"/>
+      </if>
+
+      <code:constructor visibility="public" line-hidden="true">
+         <code:block>
+            <for-each select="$used-packages">
+               <variable name="overridden" select="src:overridden-components(., $package-manifest)"/>
+               <code:assign>
+                  <code:field-reference name="{src:used-package-field-name(.)}">
+                     <code:this-reference/>
+                  </code:field-reference>
+                  <code:new-object>
+                     <code:type-reference name="{src:used-package-class-name(.)}"/>
+                     <code:initializer>
+                        <for-each select="$overridden">
+                           <variable name="meta" select="$package-manifest/xcst:*[@overrides eq current()/@id and @visibility ne 'hidden']"/>
+                           <code:member-initializer name="{src:overriding-field-name(.)}">
+                              <apply-templates select="." mode="src:used-package-overriding-value">
+                                 <with-param name="meta" select="$meta"/>
+                              </apply-templates>
+                           </code:member-initializer>
+                        </for-each>
+                     </code:initializer>
+                  </code:new-object>
+               </code:assign>
+            </for-each>
+         </code:block>
+      </code:constructor>
+
+      <if test="$disable-CS8618">
+         <code:restore-warning codes="CS8618"/>
       </if>
    </template>
 
@@ -2997,23 +3024,10 @@
 
    <template name="src:execution-context">
       <param name="used-packages" tunnel="yes"/>
-      <param name="language" tunnel="yes"/>
-
-      <variable name="disable-CS8618" select="
-         xcst:language-equal($language, $xcst:csharp-lang)
-            and $src:nullable-annotate"/>
-
-      <if test="$disable-CS8618">
-         <code:disable-warning codes="CS8618"/>
-      </if>
 
       <code:field name="{$src:context-field/src:reference/code:field-reference/@name}">
          <sequence select="$src:context-field/code:type-reference"/>
       </code:field>
-
-      <if test="$disable-CS8618">
-         <code:restore-warning codes="CS8618"/>
-      </if>
 
       <code:property name="Context" visibility="private">
          <sequence select="$src:context-field/code:type-reference"/>

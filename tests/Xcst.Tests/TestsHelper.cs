@@ -20,7 +20,8 @@ namespace Xcst.Tests {
 
    static class TestsHelper {
 
-      const bool PrintCode = false;
+      const bool
+      PrintCode = false;
 
       static readonly XcstCompilerFactory
       CompilerFactory = new XcstCompilerFactory {

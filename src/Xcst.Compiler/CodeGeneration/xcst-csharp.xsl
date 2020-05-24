@@ -243,7 +243,10 @@
          <value-of select="@visibility"/>
          <text> </text>
       </if>
-      <value-of select="ancestor::code:type[1]/@name"/>
+      <for-each select="ancestor::code:type[1]">
+         <call-template name="cs:verbatim"/>
+         <value-of select="@name"/>
+      </for-each>
       <text>(</text>
       <apply-templates select="code:parameters" mode="#current"/>
       <text>)</text>
