@@ -38,7 +38,7 @@ namespace Xcst {
       /// <exclude/>
       [EditorBrowsable(EditorBrowsableState.Never)]
       public virtual SimpleContent
-      SimpleContent { get; internal set; }
+      SimpleContent { get; internal set; } = null!;
 
       protected
       XcstWriter(Uri outputUri) {

@@ -192,7 +192,7 @@ namespace Xcst.Runtime {
          StringBuilder? sb = null;
          int idx, idxStart = 0, idxSpace = 0;
 
-         for (idx = 0; idx < value.Length; idx++) {
+         for (idx = 0; idx < value!.Length; idx++) {
 
             if (IsWhiteSpace(value[idx])) {
 

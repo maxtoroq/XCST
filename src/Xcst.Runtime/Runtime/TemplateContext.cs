@@ -155,7 +155,9 @@ namespace Xcst.Runtime {
             }
 
             try {
+#pragma warning disable CS8603 // let caller decide nullability
                return (TDefault)value;
+#pragma warning restore CS8603
 
             } catch (InvalidCastException) {
                throw DynamicError.InvalidParameterCast(name);
@@ -170,7 +172,9 @@ namespace Xcst.Runtime {
             throw DynamicError.RequiredTemplateParameter(name);
          }
 
+#pragma warning disable CS8603 // let caller decide nullability
          return default(TDefault);
+#pragma warning restore CS8603
       }
 
       public static TDefault
@@ -184,7 +188,9 @@ namespace Xcst.Runtime {
          if (valueSet) {
 
             try {
+#pragma warning disable CS8603 // let caller decide nullability
                return (TDefault)value;
+#pragma warning restore CS8603
 
             } catch (InvalidCastException) {
                throw DynamicError.InvalidParameterCast(name);
@@ -199,7 +205,9 @@ namespace Xcst.Runtime {
             throw DynamicError.RequiredTemplateParameter(name);
          }
 
+#pragma warning disable CS8603 // let caller decide nullability
          return default(TDefault);
+#pragma warning restore CS8603
       }
    }
 

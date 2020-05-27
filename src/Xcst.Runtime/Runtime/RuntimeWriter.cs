@@ -32,7 +32,7 @@ namespace Xcst.Runtime {
       inAttr;
 
       AttrNameVal[]
-      arrAttrs;         // List of cached attribute names and value parts
+      arrAttrs = null!; // List of cached attribute names and value parts
 
       int
       numEntries;       // Number of attributes in the cache
@@ -106,7 +106,11 @@ namespace Xcst.Runtime {
 
          int hashCode;
          int idx = 0;
-         Debug.Assert(localName != null && localName.Length != 0 && prefix != null && ns != null);
+
+         Assert.IsNotNull(localName);
+         Debug.Assert(localName.Length != 0);
+         Assert.IsNotNull(prefix);
+         Assert.IsNotNull(ns);
 
          // Compute hashcode based on first letter of the localName
          hashCode = (1 << ((int)localName[0] & 31));

@@ -70,7 +70,7 @@ namespace Xcst.Xml {
 
             XElement el = this.document.Root;
 
-            Debug.Assert(el != null);
+            Assert.IsNotNull(el);
 
             el.Remove();
 

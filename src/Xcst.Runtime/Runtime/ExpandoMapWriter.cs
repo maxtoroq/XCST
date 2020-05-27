@@ -130,7 +130,7 @@ namespace Xcst.Runtime {
       void
       WriteEndArray(ExpandoArray array) {
 
-         Debug.Assert(array != null);
+         Assert.IsNotNull(array);
 
          object?[] items = array.ToArray();
 

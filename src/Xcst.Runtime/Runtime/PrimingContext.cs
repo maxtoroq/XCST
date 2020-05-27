@@ -15,6 +15,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Xcst.Runtime {
 
@@ -66,7 +67,9 @@ namespace Xcst.Runtime {
             this.parameters.Remove(name);
 
             try {
+#pragma warning disable CS8603 // let caller decide nullability
                return (TValue)value;
+#pragma warning restore CS8603
 
             } catch (InvalidCastException) {
                throw DynamicError.InvalidParameterCast(name);
@@ -81,7 +84,9 @@ namespace Xcst.Runtime {
             throw DynamicError.RequiredGlobalParameter(name);
          }
 
+#pragma warning disable CS8603 // let caller decide nullability
          return default(TValue);
+#pragma warning restore CS8603
       }
    }
 }
