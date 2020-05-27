@@ -133,7 +133,8 @@ namespace Xcst.Runtime {
       }
 
       public bool
-      HasParam(string name) => this.templateParameters?.ContainsKey(name) == true;
+      HasParam(string name) =>
+         this.templateParameters?.ContainsKey(name) == true;
 
       public TDefault
       Param<TDefault>(

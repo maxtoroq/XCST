@@ -229,14 +229,12 @@ namespace Xcst.Runtime {
       }
 
       public override void
-      WriteRaw(string? data) {
+      WriteRaw(string? data) =>
          throw new NotImplementedException();
-      }
 
       public override void
-      CopyOf(object? value) {
+      CopyOf(object? value) =>
          throw new NotImplementedException();
-      }
 
       void
       Push(object obj) => this.objects.Add(obj);

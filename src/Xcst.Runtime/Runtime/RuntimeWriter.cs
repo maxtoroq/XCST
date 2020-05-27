@@ -462,8 +462,8 @@ namespace Xcst.Runtime {
 
          public int
          NextNameIndex {
-            get { return this.nextNameIndex; }
-            set { this.nextNameIndex = value; }
+            get => this.nextNameIndex;
+            set => this.nextNameIndex = value;
          }
 
          /// <summary>

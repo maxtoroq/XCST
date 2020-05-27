@@ -37,14 +37,12 @@ namespace Xcst.Xml {
       Flush() { }
 
       public override string
-      LookupPrefix(string ns) {
+      LookupPrefix(string ns) =>
          throw new NotImplementedException();
-      }
 
       public override void
-      WriteBase64(byte[] buffer, int index, int count) {
+      WriteBase64(byte[] buffer, int index, int count) =>
          throw new NotImplementedException();
-      }
 
       public override void
       WriteCData(string text) {
@@ -53,9 +51,8 @@ namespace Xcst.Xml {
       }
 
       public override void
-      WriteCharEntity(char ch) {
+      WriteCharEntity(char ch) =>
          throw new NotImplementedException();
-      }
 
       public override void
       WriteChars(char[] buffer, int index, int count) {
@@ -94,9 +91,8 @@ namespace Xcst.Xml {
       }
 
       public override void
-      WriteEntityRef(string name) {
+      WriteEntityRef(string name) =>
          throw new NotImplementedException();
-      }
 
       public override void
       WriteFullEndElement() {
@@ -111,9 +107,8 @@ namespace Xcst.Xml {
       }
 
       public override void
-      WriteRaw(char[] buffer, int index, int count) {
+      WriteRaw(char[] buffer, int index, int count) =>
          throw new NotImplementedException();
-      }
 
       public override void
       WriteRaw(string data) {
@@ -149,9 +144,8 @@ namespace Xcst.Xml {
       }
 
       public override void
-      WriteSurrogateCharEntity(char lowChar, char highChar) {
+      WriteSurrogateCharEntity(char lowChar, char highChar) =>
          throw new NotImplementedException();
-      }
 
       public override void
       WriteWhitespace(string ws) {

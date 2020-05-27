@@ -30,7 +30,7 @@ namespace Xcst.Compiler {
 
       public override ICredentials
       Credentials {
-         set { wrappedResolver.Credentials = value; }
+         set => wrappedResolver.Credentials = value;
       }
 
       public
@@ -62,9 +62,11 @@ namespace Xcst.Compiler {
       }
 
       public override bool
-      SupportsType(Uri absoluteUri, Type type) => this.wrappedResolver.SupportsType(absoluteUri, type);
+      SupportsType(Uri absoluteUri, Type type) =>
+         this.wrappedResolver.SupportsType(absoluteUri, type);
 
       public override Uri
-      ResolveUri(Uri baseUri, string relativeUri) => this.wrappedResolver.ResolveUri(baseUri, relativeUri);
+      ResolveUri(Uri baseUri, string relativeUri) =>
+         this.wrappedResolver.ResolveUri(baseUri, relativeUri);
    }
 }

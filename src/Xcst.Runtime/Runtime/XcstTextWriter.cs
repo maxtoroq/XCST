@@ -24,9 +24,7 @@ namespace Xcst.Runtime {
       output;
 
       public override Encoding
-      Encoding {
-         get { throw new NotImplementedException(); }
-      }
+      Encoding => throw new NotImplementedException();
 
       public
       XcstTextWriter(XcstWriter baseWriter)

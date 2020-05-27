@@ -55,8 +55,8 @@ namespace Xcst {
 
       public bool?
       ByteOrderMark {
-         get { return (bool?)this[StandardParameters.ByteOrderMark]; }
-         set { parameters[StandardParameters.ByteOrderMark] = value; }
+         get => (bool?)this[StandardParameters.ByteOrderMark];
+         set => parameters[StandardParameters.ByteOrderMark] = value;
       }
 
       public IList<QualifiedName>?
@@ -70,74 +70,72 @@ namespace Xcst {
 
             return value;
          }
-         set {
-            parameters[StandardParameters.CdataSectionElements] = value?.ToList();
-         }
+         set => parameters[StandardParameters.CdataSectionElements] = value?.ToList();
       }
 
       public string?
       DoctypePublic {
-         get { return (string?)this[StandardParameters.DoctypePublic]; }
-         set { parameters[StandardParameters.DoctypePublic] = value; }
+         get => (string?)this[StandardParameters.DoctypePublic];
+         set => parameters[StandardParameters.DoctypePublic] = value;
       }
 
       public string?
       DoctypeSystem {
-         get { return (string?)this[StandardParameters.DoctypeSystem]; }
-         set { parameters[StandardParameters.DoctypeSystem] = value; }
+         get => (string?)this[StandardParameters.DoctypeSystem];
+         set => parameters[StandardParameters.DoctypeSystem] = value;
       }
 
       public Encoding?
       Encoding {
-         get { return (Encoding?)this[StandardParameters.Encoding]; }
-         set { parameters[StandardParameters.Encoding] = value; }
+         get => (Encoding?)this[StandardParameters.Encoding];
+         set => parameters[StandardParameters.Encoding] = value;
       }
 
       public bool?
       EscapeUriAttributes {
-         get { return (bool?)this[StandardParameters.EscapeUriAttributes]; }
-         set { parameters[StandardParameters.EscapeUriAttributes] = value; }
+         get => (bool?)this[StandardParameters.EscapeUriAttributes];
+         set => parameters[StandardParameters.EscapeUriAttributes] = value;
       }
 
       public decimal?
       HtmlVersion {
-         get { return (decimal?)this[StandardParameters.HtmlVersion]; }
-         set { parameters[StandardParameters.HtmlVersion] = value; }
+         get => (decimal?)this[StandardParameters.HtmlVersion];
+         set => parameters[StandardParameters.HtmlVersion] = value;
       }
 
       public bool?
       IncludeContentType {
-         get { return (bool?)this[StandardParameters.IncludeContentType]; }
-         set { parameters[StandardParameters.IncludeContentType] = value; }
+         get => (bool?)this[StandardParameters.IncludeContentType];
+         set => parameters[StandardParameters.IncludeContentType] = value;
       }
 
       public bool?
       Indent {
-         get { return (bool?)this[StandardParameters.Indent]; }
-         set { parameters[StandardParameters.Indent] = value; }
+         get => (bool?)this[StandardParameters.Indent];
+         set => parameters[StandardParameters.Indent] = value;
       }
 
       public int?
       IndentSpaces {
-         get { return (int?)this[StandardParameters.IndentSpaces]; }
-         set { parameters[StandardParameters.IndentSpaces] = value; }
+         get => (int?)this[StandardParameters.IndentSpaces];
+         set => parameters[StandardParameters.IndentSpaces] = value;
       }
 
       public string?
       ItemSeparator {
-         get { return (string?)this[StandardParameters.ItemSeparator]; }
-         set { parameters[StandardParameters.ItemSeparator] = value; }
+         get => (string?)this[StandardParameters.ItemSeparator];
+         set => parameters[StandardParameters.ItemSeparator] = value;
       }
 
       public string?
       MediaType {
-         get { return (string?)this[StandardParameters.MediaType]; }
-         set { parameters[StandardParameters.MediaType] = value; }
+         get => (string?)this[StandardParameters.MediaType];
+         set => parameters[StandardParameters.MediaType] = value;
       }
 
       public QualifiedName?
       Method {
-         get { return (QualifiedName?)this[StandardParameters.Method]; }
+         get => (QualifiedName?)this[StandardParameters.Method];
          set {
 
             if (value != null
@@ -152,20 +150,20 @@ namespace Xcst {
 
       public bool?
       OmitXmlDeclaration {
-         get { return (bool?)this[StandardParameters.OmitXmlDeclaration]; }
-         set { parameters[StandardParameters.OmitXmlDeclaration] = value; }
+         get => (bool?)this[StandardParameters.OmitXmlDeclaration];
+         set => parameters[StandardParameters.OmitXmlDeclaration] = value;
       }
 
       public bool?
       SkipCharacterCheck {
-         get { return (bool?)this[StandardParameters.SkipCharacterCheck]; }
-         set { parameters[StandardParameters.SkipCharacterCheck] = value; }
+         get => (bool?)this[StandardParameters.SkipCharacterCheck];
+         set => parameters[StandardParameters.SkipCharacterCheck] = value;
       }
 
       public XmlStandalone?
       Standalone {
-         get { return (XmlStandalone?)this[StandardParameters.Standalone]; }
-         set { parameters[StandardParameters.Standalone] = value; }
+         get => (XmlStandalone?)this[StandardParameters.Standalone];
+         set => parameters[StandardParameters.Standalone] = value;
       }
 
       public IList<QualifiedName>?
@@ -179,21 +177,19 @@ namespace Xcst {
 
             return value;
          }
-         set {
-            parameters[StandardParameters.SuppressIndentation] = value?.ToList();
-         }
+         set => parameters[StandardParameters.SuppressIndentation] = value?.ToList();
       }
 
       public bool?
       UndeclarePrefixes {
-         get { return (bool?)this[StandardParameters.UndeclarePrefixes]; }
-         set { parameters[StandardParameters.UndeclarePrefixes] = value; }
+         get => (bool?)this[StandardParameters.UndeclarePrefixes];
+         set => parameters[StandardParameters.UndeclarePrefixes] = value;
       }
 
       public string?
       Version {
-         get { return (string?)this[StandardParameters.Version]; }
-         set { parameters[StandardParameters.Version] = value; }
+         get => (string?)this[StandardParameters.Version];
+         set => parameters[StandardParameters.Version] = value;
       }
 
       public
@@ -291,75 +287,31 @@ namespace Xcst {
          Version = new QualifiedName("version");
 
          public static QualifiedName
-         Parse(string name) {
-
-            if (name is null) throw new ArgumentNullException(nameof(name));
-
-            switch (name) {
-               case "byte-order-mark":
-                  return ByteOrderMark;
-
-               case "cdata-section-elements":
-                  return CdataSectionElements;
-
-               case "doctype-public":
-                  return DoctypePublic;
-
-               case "doctype-system":
-                  return DoctypeSystem;
-
-               case "encoding":
-                  return Encoding;
-
-               case "escape-uri-attributes":
-                  return EscapeUriAttributes;
-
-               case "html-version":
-                  return HtmlVersion;
-
-               case "include-content-type":
-                  return IncludeContentType;
-
-               case "indent":
-                  return Indent;
-
-               case "indent-spaces":
-                  return IndentSpaces;
-
-               case "item-separator":
-                  return ItemSeparator;
-
-               case "media-type":
-                  return MediaType;
-
-               case "method":
-                  return Method;
-
-               case "omit-xml-declaration":
-                  return OmitXmlDeclaration;
-
-               case "output-version":
-                  return Version;
-
-               case "skip-character-check":
-                  return SkipCharacterCheck;
-
-               case "standalone":
-                  return Standalone;
-
-               case "suppress-indentation":
-                  return SuppressIndentation;
-
-               case "undeclare-prefixes":
-                  return UndeclarePrefixes;
-
-               case "version":
-                  return Version;
-
-               default:
-                  throw new ArgumentException("Invalid standard parameter.", nameof(name));
-            }
-         }
+         Parse(string name) =>
+            name switch {
+               null => throw new ArgumentNullException(nameof(name)),
+               "byte-order-mark" => ByteOrderMark,
+               "cdata-section-elements" => CdataSectionElements,
+               "doctype-public" => DoctypePublic,
+               "doctype-system" => DoctypeSystem,
+               "encoding" => Encoding,
+               "escape-uri-attributes" => EscapeUriAttributes,
+               "html-version" => HtmlVersion,
+               "include-content-type" => IncludeContentType,
+               "indent" => Indent,
+               "indent-spaces" => IndentSpaces,
+               "item-separator" => ItemSeparator,
+               "media-type" => MediaType,
+               "method" => Method,
+               "omit-xml-declaration" => OmitXmlDeclaration,
+               "output-version" => Version,
+               "skip-character-check" => SkipCharacterCheck,
+               "standalone" => Standalone,
+               "suppress-indentation" => SuppressIndentation,
+               "undeclare-prefixes" => UndeclarePrefixes,
+               "version" => Version,
+               _ => throw new ArgumentException("Invalid standard parameter.", nameof(name))
+            };
       }
 
       public static class Methods {
@@ -377,27 +329,15 @@ namespace Xcst {
          Text = new QualifiedName("text");
 
          internal static QualifiedName
-         Parse(string method) {
-
-            if (method is null) throw new ArgumentNullException(nameof(method));
-
-            switch (method) {
-               case "xml":
-                  return Xml;
-
-               case "html":
-                  return Html;
-
-               case "xhtml":
-                  return XHtml;
-
-               case "text":
-                  return Text;
-
-               default:
-                  throw new ArgumentException("Invalid standard method.", nameof(method));
-            }
-         }
+         Parse(string method) =>
+            method switch {
+               null => throw new ArgumentNullException(nameof(method)),
+               "xml" => Xml,
+               "html" => Html,
+               "xhtml" => XHtml,
+               "text" => Text,
+               _ => throw new ArgumentException("Invalid standard method.", nameof(method))
+            };
       }
    }
 

@@ -26,12 +26,8 @@ namespace Xcst.Runtime {
 
       public override SimpleContent
       SimpleContent {
-         get {
-            return output.SimpleContent;
-         }
-         internal set {
-            output.SimpleContent = value;
-         }
+         get => output.SimpleContent;
+         internal set => output.SimpleContent = value;
       }
 
       protected
