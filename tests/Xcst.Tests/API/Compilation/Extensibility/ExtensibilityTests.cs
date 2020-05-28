@@ -22,7 +22,7 @@ namespace Xcst.Tests.API.Compilation.Extensibility {
             EnableExtensions = true
          };
 
-         factory.RegisterExtension(new ExternalFunctionLoader());
+         factory.RegisterExtension(new Uri("http://localhost/ns/ext"), new ExternalFunctionLoader());
 
          var compiler = factory.CreateCompiler();
          compiler.TargetClass = "FooPackage";
@@ -33,13 +33,10 @@ namespace Xcst.Tests.API.Compilation.Extensibility {
 </c:package>
 ");
 
-         CompileResult result = compiler.Compile(module, baseUri: new Uri("http://localhost"));
+         compiler.Compile(module, baseUri: new Uri("http://localhost"));
       }
 
       class ExternalFunctionLoader : XcstExtensionLoader {
-
-         public override Uri
-         ExtensionNamespace { get; } = new Uri("http://localhost/ns/ext");
 
          public override Stream
          LoadSource() =>

@@ -135,25 +135,19 @@ namespace Xcst.Compiler {
          new XcstCompiler(() => this.executable.Value, GetExtensions, this.processor);
 
       public void
-      RegisterExtension(XcstExtensionLoader extensionLoader) {
+      RegisterExtension(Uri extensionNamespace, XcstExtensionLoader extensionLoader) {
 
+         if (extensionNamespace is null) throw new ArgumentNullException(nameof(extensionNamespace));
          if (extensionLoader is null) throw new ArgumentNullException(nameof(extensionLoader));
 
          EnsureExecNotCreated();
 
-         Uri extensionNamespace = extensionLoader.ExtensionNamespace
-            ?? throw new ArgumentException($"{nameof(extensionLoader)}.ExtensionNamespace cannot be null.", nameof(extensionLoader));
-
          if (!extensionNamespace.IsAbsoluteUri) {
-            throw new ArgumentException($"{nameof(extensionNamespace)}.ExtensionNamespace must be an absolute URI.", nameof(extensionLoader));
+            throw new ArgumentException($"{nameof(extensionNamespace)} must be an absolute URI.", nameof(extensionNamespace));
          }
 
          if (extensionNamespace.Scheme.Equals(CompilerResolver.UriSchemeClires, StringComparison.OrdinalIgnoreCase)) {
-            throw new ArgumentException("Invalid URI.", nameof(extensionLoader));
-         }
-
-         if (extensionLoader is null) {
-            throw new ArgumentNullException(nameof(extensionLoader));
+            throw new ArgumentException("Invalid URI.", nameof(extensionNamespace));
          }
 
          this.extensions[extensionNamespace] = extensionLoader;
@@ -170,7 +164,7 @@ namespace Xcst.Compiler {
 
             var loader = (XcstExtensionLoader)Activator.CreateInstance(item.ExtensionLoaderType);
 
-            RegisterExtension(loader);
+            RegisterExtension(item.ExtensionNamespace, loader);
          }
       }
 
@@ -301,13 +295,19 @@ namespace Xcst.Compiler {
    [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true)]
    public sealed class XcstExtensionAttribute : Attribute {
 
+      public Uri
+      ExtensionNamespace { get; }
+
       public Type
-      ExtensionLoaderType { get; set; }
+      ExtensionLoaderType { get; }
 
       public
-      XcstExtensionAttribute(Type extensionLoaderType) {
+      XcstExtensionAttribute(string extensionNamespace, Type extensionLoaderType) {
 
+         if (extensionNamespace is null) throw new ArgumentNullException(nameof(extensionNamespace));
          if (extensionLoaderType is null) throw new ArgumentNullException(nameof(extensionLoaderType));
+
+         this.ExtensionNamespace = new Uri(extensionNamespace, UriKind.Absolute);
 
          Type expectedType = typeof(XcstExtensionLoader);
 
@@ -320,9 +320,6 @@ namespace Xcst.Compiler {
    }
 
    public abstract class XcstExtensionLoader {
-
-      public abstract Uri
-      ExtensionNamespace { get; }
 
       public abstract Stream
       LoadSource();
