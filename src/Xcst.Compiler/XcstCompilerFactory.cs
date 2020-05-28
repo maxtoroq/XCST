@@ -28,17 +28,29 @@ namespace Xcst.Compiler {
 
    public class XcstCompilerFactory {
 
+      static readonly IDictionary<Uri, XcstExtensionLoader>
+      emptyExtensions = new Dictionary<Uri, XcstExtensionLoader>(0);
+
       readonly Processor
       processor;
 
       readonly Lazy<XsltExecutable>
       executable;
 
-      readonly Dictionary<Uri, Func<Stream>>
-      extensions = new Dictionary<Uri, Func<Stream>>();
+      readonly Dictionary<Uri, XcstExtensionLoader>
+      extensions = new Dictionary<Uri, XcstExtensionLoader>();
+
+      bool
+      _EnableExtensions;
 
       public bool
-      EnableExtensions { get; set; }
+      EnableExtensions {
+         get => _EnableExtensions;
+         set {
+            EnsureExecNotCreated();
+            _EnableExtensions = value;
+         }
+      }
 
       public
       XcstCompilerFactory() {
@@ -111,23 +123,33 @@ namespace Xcst.Compiler {
          }
       }
 
+      void
+      EnsureExecNotCreated() {
+         if (this.executable.IsValueCreated) {
+            throw new InvalidOperationException();
+         }
+      }
+
       public XcstCompiler
       CreateCompiler() =>
-         new XcstCompiler(() => this.executable.Value, this.processor);
+         new XcstCompiler(() => this.executable.Value, GetExtensions, this.processor);
 
       public void
-      RegisterExtension(Uri extensionNamespace, Func<Stream> extensionLoader) {
+      RegisterExtension(XcstExtensionLoader extensionLoader) {
 
-         if (extensionNamespace is null) {
-            throw new ArgumentNullException(nameof(extensionNamespace));
-         }
+         if (extensionLoader is null) throw new ArgumentNullException(nameof(extensionLoader));
+
+         EnsureExecNotCreated();
+
+         Uri extensionNamespace = extensionLoader.ExtensionNamespace
+            ?? throw new ArgumentException($"{nameof(extensionLoader)}.ExtensionNamespace cannot be null.", nameof(extensionLoader));
 
          if (!extensionNamespace.IsAbsoluteUri) {
-            throw new ArgumentException($"{nameof(extensionNamespace)} must be an absolute URI.", nameof(extensionNamespace));
+            throw new ArgumentException($"{nameof(extensionNamespace)}.ExtensionNamespace must be an absolute URI.", nameof(extensionLoader));
          }
 
          if (extensionNamespace.Scheme.Equals(CompilerResolver.UriSchemeClires, StringComparison.OrdinalIgnoreCase)) {
-            throw new ArgumentException("Invalid URI.", nameof(extensionNamespace));
+            throw new ArgumentException("Invalid URI.", nameof(extensionLoader));
          }
 
          if (extensionLoader is null) {
@@ -148,7 +170,7 @@ namespace Xcst.Compiler {
 
             var loader = (XcstExtensionLoader)Activator.CreateInstance(item.ExtensionLoaderType);
 
-            RegisterExtension(item.ExtensionNamespace, loader.LoadSource);
+            RegisterExtension(loader);
          }
       }
 
@@ -189,12 +211,22 @@ namespace Xcst.Compiler {
       LoadExtension(Uri ns) {
 
          if (this.EnableExtensions
-            && this.extensions.TryGetValue(ns, out Func<Stream> loader)) {
+            && this.extensions.TryGetValue(ns, out var loader)) {
 
-            return loader();
+            return loader.LoadSource();
          }
 
          return null;
+      }
+
+      IDictionary<Uri, XcstExtensionLoader>
+      GetExtensions() {
+
+         if (this.EnableExtensions) {
+            return this.extensions;
+         }
+
+         return emptyExtensions;
       }
 
       class CompilerResolver : XmlResolver {
@@ -264,5 +296,38 @@ namespace Xcst.Compiler {
                .Open();
          }
       }
+   }
+
+   [AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true)]
+   public sealed class XcstExtensionAttribute : Attribute {
+
+      public Type
+      ExtensionLoaderType { get; set; }
+
+      public
+      XcstExtensionAttribute(Type extensionLoaderType) {
+
+         if (extensionLoaderType is null) throw new ArgumentNullException(nameof(extensionLoaderType));
+
+         Type expectedType = typeof(XcstExtensionLoader);
+
+         if (!expectedType.IsAssignableFrom(extensionLoaderType)) {
+            throw new ArgumentException($"extensionLoaderType must inherit from '{expectedType}'.");
+         }
+
+         this.ExtensionLoaderType = extensionLoaderType;
+      }
+   }
+
+   public abstract class XcstExtensionLoader {
+
+      public abstract Uri
+      ExtensionNamespace { get; }
+
+      public abstract Stream
+      LoadSource();
+
+      public virtual IEnumerable<KeyValuePair<string, object?>>
+      GetParameters() => Enumerable.Empty<KeyValuePair<string, object?>>();
    }
 }

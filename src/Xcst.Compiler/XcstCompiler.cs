@@ -27,6 +27,9 @@ namespace Xcst.Compiler {
       readonly Lazy<XsltExecutable>
       compilerExec;
 
+      readonly Lazy<IDictionary<Uri, XcstExtensionLoader>>
+      extensions;
+
       readonly Processor
       processor;
 
@@ -88,11 +91,16 @@ namespace Xcst.Compiler {
       CompilationUnitHandler { get; set; }
 
       internal
-      XcstCompiler(Func<XsltExecutable> compilerExecFn, Processor processor) {
+      XcstCompiler(
+            Func<XsltExecutable> compilerExecFn, Func<IDictionary<Uri, XcstExtensionLoader>> extensionsFn,
+            Processor processor) {
 
          if (compilerExecFn is null) throw new ArgumentNullException(nameof(compilerExecFn));
+         if (extensionsFn is null) throw new ArgumentNullException(nameof(extensionsFn));
+         if (processor is null) throw new ArgumentNullException(nameof(processor));
 
          this.compilerExec = new Lazy<XsltExecutable>(compilerExecFn);
+         this.extensions = new Lazy<IDictionary<Uri, XcstExtensionLoader>>(extensionsFn);
          this.processor = processor;
       }
 
@@ -109,6 +117,12 @@ namespace Xcst.Compiler {
          if (name is null) throw new ArgumentNullException(nameof(name));
          if (name.Length == 0) throw new ArgumentException("name cannot be empty.", nameof(name));
 
+         this.parameters.Add(new[] { ns, name }, ConvertParameter(value));
+      }
+
+      object?
+      ConvertParameter(object? value) {
+
          if (value is Type t) {
 
             DocumentBuilder docBuilder = this.processor.NewDocumentBuilder();
@@ -119,7 +133,7 @@ namespace Xcst.Compiler {
             value = WrapExternalObject(value);
          }
 
-         this.parameters.Add(new[] { ns, name }, value);
+         return value;
       }
 
       public CompileResult
@@ -261,13 +275,25 @@ namespace Xcst.Compiler {
          compiler.InitialMode = CompilerQName("main");
          compiler.InitialContextNode = sourceDoc;
 
-         if (this.CompilationUnitHandler != null) {
-            compiler.ResultDocumentHandler = new CompilationUnitResultHandler(this.CompilationUnitHandler, this.processor);
-            compiler.SetParameter(CompilerQName("source-to-result-document"), true.ToXdmItem());
+         // Extension params are loaded first
+
+         foreach (var extension in this.extensions.Value) {
+            foreach (var param in extension.Value.GetParameters()) {
+               compiler.SetParameter(new QName(extension.Key.AbsoluteUri, param.Key), ConvertParameter(param.Value).ToXdmValue());
+            }
          }
+
+         // User params can override extension params
 
          foreach (var pair in this.parameters) {
             compiler.SetParameter(new QName(pair.Key[0], pair.Key[1]), pair.Value.ToXdmValue());
+         }
+
+         // Compiler params always win
+
+         if (this.CompilationUnitHandler != null) {
+            compiler.ResultDocumentHandler = new CompilationUnitResultHandler(this.CompilationUnitHandler, this.processor);
+            compiler.SetParameter(CompilerQName("source-to-result-document"), true.ToXdmItem());
          }
 
          if (this.TargetNamespace != null) {

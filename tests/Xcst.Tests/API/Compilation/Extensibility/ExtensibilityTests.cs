@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using NUnit.Framework;
@@ -17,19 +18,15 @@ namespace Xcst.Tests.API.Compilation.Extensibility {
       public void
       External_Function() {
 
-         const string extNs = "http://localhost/ns/ext";
-
          var factory = new XcstCompilerFactory {
             EnableExtensions = true
          };
 
-         factory.RegisterExtension(new Uri(extNs), extensionLoader);
+         factory.RegisterExtension(new ExternalFunctionLoader());
 
          var compiler = factory.CreateCompiler();
          compiler.TargetClass = "FooPackage";
          compiler.TargetNamespace = typeof(ExtensibilityTests).Namespace;
-
-         compiler.SetParameter(extNs, "make-relative-uri", new Func<Uri, Uri, Uri>(makeRelativeUri));
 
          var module = new StringReader(@"
 <c:package version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
@@ -37,8 +34,15 @@ namespace Xcst.Tests.API.Compilation.Extensibility {
 ");
 
          CompileResult result = compiler.Compile(module, baseUri: new Uri("http://localhost"));
+      }
 
-         static Stream extensionLoader() =>
+      class ExternalFunctionLoader : XcstExtensionLoader {
+
+         public override Uri
+         ExtensionNamespace { get; } = new Uri("http://localhost/ns/ext");
+
+         public override Stream
+         LoadSource() =>
             new MemoryStream(new UTF8Encoding(false).GetBytes(@"
 <stylesheet version='2.0'
       xmlns='http://www.w3.org/1999/XSL/Transform'
@@ -60,7 +64,12 @@ namespace Xcst.Tests.API.Compilation.Extensibility {
 </stylesheet>
 "));
 
-         static Uri makeRelativeUri(Uri current, Uri compare) =>
+         public override IEnumerable<KeyValuePair<string, object?>>
+         GetParameters() {
+            yield return new KeyValuePair<string, object?>("make-relative-uri", new Func<Uri, Uri, Uri>(MakeRelativeUri));
+         }
+
+         static Uri MakeRelativeUri(Uri current, Uri compare) =>
             current.MakeRelativeUri(compare);
       }
    }
