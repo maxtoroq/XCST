@@ -12,7 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Xcst.Runtime {
+namespace Xcst {
+   public partial class QualifiedName { }
+}
 
+namespace Xcst.Runtime {
    public partial class SimpleContent { }
 }
