@@ -135,6 +135,23 @@ namespace Xcst.Compiler {
          new XcstCompiler(() => this.executable.Value, GetExtensions, this.processor);
 
       public void
+      RegisterExtension(XcstExtensionLoader extensionLoader) {
+
+         if (extensionLoader is null) throw new ArgumentNullException(nameof(extensionLoader));
+
+         Type loaderType = extensionLoader.GetType();
+         Assembly assembly = loaderType.Assembly;
+
+         var attrib = assembly.GetCustomAttributes<XcstExtensionAttribute>()
+            .Where(x => x.ExtensionLoaderType == loaderType)
+            .SingleOrDefault()
+            ?? throw new ArgumentException($"Couldn't find extension namespace for loader type '{loaderType}'. "
+               + "Use RegisterExtension(Uri, XcstExtensionLoader) instead.", nameof(extensionLoader));
+
+         RegisterExtension(attrib.ExtensionNamespace, extensionLoader);
+      }
+
+      public void
       RegisterExtension(Uri extensionNamespace, XcstExtensionLoader extensionLoader) {
 
          if (extensionNamespace is null) throw new ArgumentNullException(nameof(extensionNamespace));
