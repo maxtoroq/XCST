@@ -2102,6 +2102,9 @@
                </variable>
                <sequence select="$base-types, $src:package-interface"/>
             </code:base-types>
+            <code:attributes>
+               <apply-templates select="." mode="src:package-attribute-extra"/>
+            </code:attributes>
          </if>
 
          <code:members>
@@ -2138,6 +2141,8 @@
    </template>
 
    <template match="c:module/node() | c:package/node()" mode="src:base-types"/>
+
+   <template match="c:module/node() | c:package/node()" mode="src:package-attribute-extra"/>
 
    <template match="c:module/node() | c:package/node()" mode="src:infrastructure-extra"/>
 
