@@ -146,7 +146,7 @@ namespace Xcst.Compiler {
             .Where(x => x.ExtensionLoaderType == loaderType)
             .SingleOrDefault()
             ?? throw new ArgumentException($"Couldn't find extension namespace for loader type '{loaderType}'. "
-               + "Use RegisterExtension(Uri, XcstExtensionLoader) instead.", nameof(extensionLoader));
+               + $"Use {nameof(RegisterExtension)}({nameof(Uri)}, {nameof(XcstExtensionLoader)}) instead.", nameof(extensionLoader));
 
          RegisterExtension(attrib.ExtensionNamespace, extensionLoader);
       }
