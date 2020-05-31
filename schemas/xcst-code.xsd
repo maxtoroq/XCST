@@ -554,7 +554,7 @@
       <xs:complexType>
          <xs:sequence>
             <xs:element ref="code:type-reference"/>
-            <xs:element ref="code:implements-interface"/>
+            <xs:element minOccurs="0" ref="code:implements-interface"/>
             <xs:element minOccurs="0" ref="code:attributes"/>
             <xs:element minOccurs="0" ref="code:getter"/>
             <xs:element minOccurs="0" ref="code:setter"/>
