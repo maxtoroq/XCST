@@ -44,36 +44,41 @@ function NuSpec {
          "<iconUrl>$($notice.website)nuget/icon.png</iconUrl>"
          "<repository type='git' url='https://github.com/maxtoroq/XCST' commit='$(git rev-parse HEAD)'/>"
 
-         "<dependencies>"
+   $dependencies = $project.nuspec.package.metadata.dependencies
 
-   foreach ($dep in $project.nuspec.package.metadata.dependencies.dependency) {
+   if ($dependencies) {
 
-      $local = $dep.GetAttribute("local-dependency", "http://maxtoroq.github.io/XCST/nuspec")
-      $version = $null
+      $depsCopy = $dependencies.CloneNode($true)
 
-      if ($local -eq 'yes') {
-         $version = DependencyVersionRange $solution[$dep.id]
+      foreach ($dep in $depsCopy.SelectNodes("//*[local-name() = 'dependency']")) {
 
-      } elseif ($packagesDoc -ne $null) {
+         $local = $dep.GetAttribute("local-dependency", "http://maxtoroq.github.io/XCST/nuspec")
+         $version = $null
 
-         $pkgRef = $packagesDoc.packages.package | where { $_.id -eq $dep.id }
-         $version = $pkgRef.allowedVersions
+         if ($local -eq 'yes') {
+            $version = DependencyVersionRange $solution[$dep.id]
 
-         if ($version -eq $null) {
-            $version = $pkgRef.version
+         } elseif ($packagesDoc -ne $null) {
+
+            $pkgRef = $packagesDoc.packages.package | where { $_.id -eq $dep.id }
+            $version = $pkgRef.allowedVersions
+
+            if ($version -eq $null) {
+               $version = $pkgRef.version
+            }
+
+         } else {
+
+            # $project.sdkStyle should be true
+            $pkgRef = $project.doc.SelectSingleNode("//PackageReference[@Include = '$($dep.id)']")
+            $version = $pkgRef.Version
          }
 
-      } else {
-
-         # $project.sdkStyle should be true
-         $pkgRef = $project.doc.SelectSingleNode("//PackageReference[@Include = '$($dep.id)']")
-         $version = $pkgRef.Version
+         $dep.SetAttribute("version", $version)
       }
 
-            "<dependency id='$($dep.id)' version='$version'/>"
+      $depsCopy.OuterXml
    }
-
-         "</dependencies>"
 
    $project.nuspec.package.metadata.frameworkAssemblies.OuterXml
 
