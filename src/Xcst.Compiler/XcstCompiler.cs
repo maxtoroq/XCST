@@ -45,8 +45,8 @@ namespace Xcst.Compiler {
       public string?
       TargetClass { get; set; }
 
-      public string?
-      TargetVisibility { get; set; }
+      public CodeVisibility
+      TargetVisibility { get; set; } = CodeVisibility.Public;
 
       public string[]?
       TargetBaseTypes { get; set; }
@@ -304,9 +304,10 @@ namespace Xcst.Compiler {
             compiler.SetParameter(CompilerQName("class"), this.TargetClass.ToXdmItem());
          }
 
-         if (this.TargetVisibility != null) {
-            compiler.SetParameter(CompilerQName("visibility"), this.TargetVisibility.ToXdmItem());
-         }
+         compiler.SetParameter(
+            CompilerQName("visibility"),
+            (this.TargetVisibility == CodeVisibility.Default ? "#default" : this.TargetVisibility.ToString().ToLowerInvariant())
+               .ToXdmItem());
 
          DocumentBuilder baseTypesBuilder = this.processor.NewDocumentBuilder();
 
@@ -565,6 +566,13 @@ namespace Xcst.Compiler {
             return serializer;
          }
       }
+   }
+
+   public enum CodeVisibility {
+      Default,
+      Internal,
+      Private,
+      Public
    }
 
    /// <summary>
