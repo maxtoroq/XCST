@@ -35,6 +35,7 @@
    <param name="src:base-types" as="element(code:type-reference)*"/>
    <param name="src:visibility" select="'public'" as="xs:string"/>
    <param name="src:nullable-annotate" select="false()" as="xs:boolean"/>
+   <param name="src:nullable-context" as="xs:string?"/>
 
    <param name="src:named-package" select="false()" as="xs:boolean"/>
    <param name="src:use-package-base" as="xs:string?"/>
@@ -1276,51 +1277,33 @@
             <choose>
                <when test="$src:source-to-result-document">
                   <result-document href="{$name-prefix}.{$name-suffix}.cs" method="text">
-                     <apply-templates select="$namespaces" mode="cs:source">
-                        <with-param name="indent" select="0" tunnel="yes"/>
-                     </apply-templates>
+                     <call-template name="cs:nullable-directive"/>
+                     <for-each select="$namespaces">
+                        <call-template name="cs:serialize"/>
+                     </for-each>
                   </result-document>
                </when>
                <otherwise>
                   <src:compilation-unit>
-                     <apply-templates select="$namespaces" mode="cs:source">
-                        <with-param name="indent" select="0" tunnel="yes"/>
-                     </apply-templates>
+                     <call-template name="cs:nullable-directive"/>
+                     <for-each select="$namespaces">
+                        <call-template name="cs:serialize"/>
+                     </for-each>
                   </src:compilation-unit>
                </otherwise>
             </choose>
          </when>
          <when test="xcst:language-equal($language, $xcst:vb-lang)">
             <for-each select="$namespaces">
-               <variable name="comp-unit" as="element()">
-                  <choose>
-                     <when test="code:import">
-                        <code:compilation-unit>
-                           <sequence select="code:import"/>
-                           <code:namespace>
-                              <sequence select="@*"/>
-                              <sequence select="code:* except code:import"/>
-                           </code:namespace>
-                        </code:compilation-unit>
-                     </when>
-                     <otherwise>
-                        <sequence select="."/>
-                     </otherwise>
-                  </choose>
-               </variable>
                <choose>
                   <when test="$src:source-to-result-document">
                      <result-document href="{$name-prefix}.{position()}.{$name-suffix}.vb" method="text">
-                        <apply-templates select="$comp-unit" mode="vb:source">
-                           <with-param name="indent" select="0" tunnel="yes"/>
-                        </apply-templates>
+                        <call-template name="vb:serialize"/>
                      </result-document>
                   </when>
                   <otherwise>
                      <src:compilation-unit>
-                        <apply-templates select="$comp-unit" mode="vb:source">
-                           <with-param name="indent" select="0" tunnel="yes"/>
-                        </apply-templates>
+                        <call-template name="vb:serialize"/>
                      </src:compilation-unit>
                   </otherwise>
                </choose>

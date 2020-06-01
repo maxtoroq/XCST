@@ -40,6 +40,28 @@
       </data>
    </variable>
 
+   <template name="vb:serialize">
+      <variable name="comp-unit" as="element()">
+         <choose>
+            <when test="code:import">
+               <code:compilation-unit>
+                  <sequence select="code:import"/>
+                  <code:namespace>
+                     <sequence select="@*"/>
+                     <sequence select="code:* except code:import"/>
+                  </code:namespace>
+               </code:compilation-unit>
+            </when>
+            <otherwise>
+               <sequence select="."/>
+            </otherwise>
+         </choose>
+      </variable>
+      <apply-templates select="$comp-unit" mode="vb:source">
+         <with-param name="indent" select="0" tunnel="yes"/>
+      </apply-templates>
+   </template>
+
    <template match="code:*" mode="vb:source vb:statement">
       <sequence select="error(xs:QName('err:VB0001'), concat('Element code:', local-name(), ' cannot be compiled to Visual Basic.'), src:error-object(.))"/>
    </template>

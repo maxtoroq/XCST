@@ -44,6 +44,20 @@
       </data>
    </variable>
 
+   <template name="cs:serialize">
+      <apply-templates select="." mode="cs:source">
+         <with-param name="indent" select="0" tunnel="yes"/>
+      </apply-templates>
+   </template>
+
+   <template name="cs:nullable-directive">
+      <if test="$src:nullable-context">
+         <call-template name="src:new-line-indented"/>
+         <text>#nullable </text>
+         <value-of select="$src:nullable-context"/>
+      </if>
+   </template>
+
    <template match="code:*" mode="cs:source cs:statement">
       <sequence select="error(xs:QName('err:CS0001'), concat('Element code:', local-name(), ' cannot be compiled to C#.'), src:error-object(.))"/>
    </template>

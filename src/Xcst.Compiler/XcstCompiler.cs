@@ -58,6 +58,9 @@ namespace Xcst.Compiler {
       NullableAnnotate { get; set; }
 
       public string?
+      NullableContext { get; set; }
+
+      public string?
       UsePackageBase { get; set; }
 
       public Func<string, Type?>?
@@ -320,7 +323,11 @@ namespace Xcst.Compiler {
             )
          );
 
-         compiler.SetParameter(CompilerQName("nullable-annotate"), this.NullableAnnotate.ToXdmValue());
+         compiler.SetParameter(CompilerQName("nullable-annotate"), this.NullableAnnotate.ToXdmItem());
+
+         if (this.NullableContext != null) {
+            compiler.SetParameter(CompilerQName("nullable-context"), this.NullableContext.ToXdmItem());
+         }
 
          compiler.SetParameter(CompilerQName("named-package"), this.NamedPackage.ToXdmItem());
 
@@ -348,7 +355,7 @@ namespace Xcst.Compiler {
             compiler.SetParameter(CompilerQName("module-resolver"), WrapExternalObject(this.ModuleResolver));
          }
 
-         compiler.SetParameter(CompilerQName("use-line-directive"), this.UseLineDirective.ToXdmValue());
+         compiler.SetParameter(CompilerQName("use-line-directive"), this.UseLineDirective.ToXdmItem());
 
          if (this.NewLineChars != null) {
             compiler.SetParameter(CompilerQName("new-line"), this.NewLineChars.ToXdmItem());
