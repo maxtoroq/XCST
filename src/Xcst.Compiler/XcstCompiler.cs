@@ -175,11 +175,10 @@ namespace Xcst.Compiler {
       CompileResult
       Compile(Func<DocumentBuilder, XdmNode> buildFn, Uri? baseUri = null) {
 
-         var moduleResolver = GetModuleResolverOrDefault(this.ModuleResolver);
-         var loggingResolver = new LoggingResolver(moduleResolver);
+         XmlResolver moduleResolver = GetModuleResolverOrDefault(this.ModuleResolver);
 
          DocumentBuilder docBuilder = this.processor.NewDocumentBuilder();
-         docBuilder.XmlResolver = loggingResolver;
+         docBuilder.XmlResolver = moduleResolver;
 
          if (baseUri != null) {
             docBuilder.BaseUri = baseUri;
@@ -250,13 +249,6 @@ namespace Xcst.Compiler {
                   .Select(n => n.StringValue)
                   .ToArray()
                : Array.Empty<string>(),
-            Dependencies =
-               new HashSet<Uri>(loggingResolver.ResolvedUris
-                  .Concat(((IXdmEnumerator)docEl.EnumerateAxis(XdmAxis.Child, compiled.@ref))
-                     .AsNodes()
-                     .Select(n => new Uri(n.GetAttributeValue(compiled.href), UriKind.Absolute))
-                  )
-               ).ToArray(),
             Templates =
                ((IXdmEnumerator)((IXdmEnumerator)docEl.EnumerateAxis(XdmAxis.Child, grammar.packageManifest))
                   .AsNodes()
@@ -349,10 +341,6 @@ namespace Xcst.Compiler {
 
          if (this.PackageFileExtension != null) {
             compiler.SetParameter(CompilerQName("package-file-extension"), this.PackageFileExtension.ToXdmItem());
-         }
-
-         if (this.ModuleResolver != null) {
-            compiler.SetParameter(CompilerQName("module-resolver"), WrapExternalObject(this.ModuleResolver));
          }
 
          compiler.SetParameter(CompilerQName("use-line-directive"), this.UseLineDirective.ToXdmItem());
@@ -593,9 +581,6 @@ namespace Xcst.Compiler {
 
       public IReadOnlyList<string>
       CompilationUnits { get; internal set; }
-
-      public IReadOnlyList<Uri>
-      Dependencies { get; internal set; }
 
       public IReadOnlyList<string>
       Templates { get; internal set; }

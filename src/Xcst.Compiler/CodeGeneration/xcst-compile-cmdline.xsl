@@ -45,14 +45,6 @@
       <sequence select="error()"/>
    </function>
 
-   <function name="src:_doc-with-uris" as="item()+">
-      <param name="p1" as="xs:anyURI"/>
-      <param name="p2" as="item()+"/>
-      <param name="p3" as="item()?"/>
-
-      <sequence select="error()"/>
-   </function>
-
    <function name="src:_string-id" as="xs:integer">
       <param name="p1" as="xs:string"/>
 

@@ -45,7 +45,6 @@
    <param name="src:package-location-resolver" as="item()?"/>
    <param name="src:packages-location" as="xs:string?"/>
    <param name="src:package-file-extension" as="xs:string?"/>
-   <param name="src:module-resolver" as="item()?"/>
 
    <param name="src:new-line" select="'&#xA;'" as="xs:string"/>
    <param name="src:indent" select="'    '" as="xs:string"/>
@@ -206,9 +205,6 @@
       </if>
 
       <src:program language="{$language}">
-         <for-each select="distinct-values($refs)">
-            <src:ref href="{.}"/>
-         </for-each>
          <sequence select="$package-manifest"/>
          <if test="not($manifest-only)">
             <call-template name="src:compilation-units">
@@ -255,8 +251,11 @@
 
       <variable name="href" select="resolve-uri(xcst:uri(@href), base-uri())"/>
 
-      <variable name="result" select="src:doc-with-uris($href, src:error-object(.), $src:module-resolver)"/>
-      <variable name="imported" select="$result[1]"/>
+      <if test="not(doc-available($href))">
+         <sequence select="error(xs:QName('err:XTSE0165'), 'Could not retrieve imported module.', src:error-object(.))"/>
+      </if>
+
+      <variable name="imported" select="doc($href)"/>
 
       <if test="some $m in $module-docs satisfies $m is $imported">
          <sequence select="error(xs:QName('err:XTSE0210'), 'A module cannot directly or indirectly import itself.', src:error-object(.))"/>
@@ -269,8 +268,6 @@
       <apply-templates select="$imported/c:module" mode="#current">
          <with-param name="module-docs" select="$module-docs, $imported" tunnel="yes"/>
       </apply-templates>
-
-      <sequence select="$result[position() gt 1]"/>
    </template>
 
    <template name="xcst:check-document-element-attributes">
@@ -542,14 +539,6 @@
       <param name="p5" as="xs:string?"/>
 
       <sequence select="src:_package-location($p1, $p2, $p3, $p4, $p5)"/>
-   </function>
-
-   <function name="src:doc-with-uris" as="item()+">
-      <param name="p1" as="xs:anyURI"/>
-      <param name="p2" as="item()+"/>
-      <param name="p3" as="item()?"/>
-
-      <sequence select="src:_doc-with-uris($p1, $p2, $p3)"/>
    </function>
 
 

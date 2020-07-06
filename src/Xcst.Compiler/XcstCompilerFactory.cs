@@ -61,7 +61,6 @@ namespace Xcst.Compiler {
 
          this.processor.ErrorWriter = TextWriter.Null;
 
-         this.processor.RegisterExtensionFunction(new DocWithUrisFunction(this.processor));
          this.processor.RegisterExtensionFunction(new InvokeExternalFunctionFunction());
          this.processor.RegisterExtensionFunction(new LineNumberFunction());
          this.processor.RegisterExtensionFunction(new LocalPathFunction());
