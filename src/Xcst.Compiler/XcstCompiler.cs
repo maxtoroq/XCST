@@ -376,7 +376,7 @@ namespace Xcst.Compiler {
          return (T)obj;
       }
 
-      internal static XmlResolver
+      static XmlResolver
       GetModuleResolverOrDefault(XmlResolver? moduleResolver) =>
          moduleResolver ?? new XmlUrlResolver();
 

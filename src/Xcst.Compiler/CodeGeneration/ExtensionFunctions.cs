@@ -19,7 +19,6 @@ using System.Reflection;
 using System.Xml;
 using Saxon.Api;
 using Xcst.Runtime;
-using XPathException = net.sf.saxon.trans.XPathException;
 
 namespace Xcst.Compiler.CodeGeneration {
 
@@ -190,109 +189,6 @@ namespace Xcst.Compiler.CodeGeneration {
 
             return ExtensionFunctions.LocalPath(uri)
                .ToXdmAtomicValue()
-               .GetXdmEnumerator();
-         }
-      }
-   }
-
-   class DocWithUrisFunction : ExtensionFunctionDefinition {
-
-      readonly Processor
-      processor;
-
-      public override QName
-      FunctionName { get; } = CompilerQName("_doc-with-uris");
-
-      public override XdmSequenceType[]
-      ArgumentTypes { get; } = {
-         new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_ANYURI), ' '),
-         new XdmSequenceType(XdmAnyItemType.Instance, '+'),
-         new XdmSequenceType(XdmAnyItemType.Instance, '?')
-      };
-
-      public override int
-      MinimumNumberOfArguments => ArgumentTypes.Length;
-
-      public override int
-      MaximumNumberOfArguments => MinimumNumberOfArguments;
-
-      public
-      DocWithUrisFunction(Processor processor) {
-         this.processor = processor;
-      }
-
-      public override ExtensionFunctionCall
-      MakeFunctionCall() => new FunctionCall(this.processor);
-
-      public override XdmSequenceType
-      ResultType(XdmSequenceType[] ArgumentTypes) =>
-         new XdmSequenceType(XdmAnyItemType.Instance, '+');
-
-      class FunctionCall : ExtensionFunctionCall {
-
-         Processor
-         processor;
-
-         public
-         FunctionCall(Processor processor) {
-            this.processor = processor;
-         }
-
-         public override void
-         CopyLocalData(ExtensionFunctionCall destination) {
-            ((FunctionCall)destination).processor = this.processor;
-         }
-
-         public override IXdmEnumerator
-         Call(IXdmEnumerator[] arguments, DynamicContext context) {
-
-            XdmAtomicValue value = arguments[0].AsAtomicValues().Single();
-
-            XdmValue errorObject = new XdmValue(arguments[1].AsItems());
-            var errorData = ModuleUriAndLineNumberFromErrorObject(errorObject);
-            string? moduleUri = errorData.Item1;
-            int lineNumber = errorData.Item2.GetValueOrDefault();
-
-            XmlResolver? moduleResolver = arguments[2].AsItems()
-               .Select(i => UnwrapExternalObject<XmlResolver>(i))
-               .SingleOrDefault();
-
-            Uri uri = (Uri)value.Value;
-
-            if (!uri.IsAbsoluteUri) {
-               throw new InvalidOperationException("Supplied URI must be absolute.");
-            }
-
-            var resolver = new LoggingResolver(GetModuleResolverOrDefault(moduleResolver));
-
-            DocumentBuilder docb = this.processor.NewDocumentBuilder();
-            docb.XmlResolver = resolver;
-
-            XdmNode doc;
-
-            try {
-               doc = docb.Build(uri);
-
-            } catch (FileNotFoundException) {
-
-               throw new CompileException("Could not retrieve imported module.",
-                  errorCode: "XTSE0165",
-                  moduleUri: moduleUri,
-                  lineNumber: lineNumber
-               );
-
-            } catch (XPathException ex) {
-
-               var locator = ex.getLocator();
-
-               throw new CompileException(ex.Message,
-                  errorCode: ErrorCode(ex),
-                  moduleUri: locator?.getSystemId() ?? uri?.AbsoluteUri,
-                  lineNumber: locator?.getLineNumber() ?? -1
-               );
-            }
-
-            return doc.Append(new XdmValue(resolver.ResolvedUris.Select(u => u.ToXdmAtomicValue())))
                .GetXdmEnumerator();
          }
       }

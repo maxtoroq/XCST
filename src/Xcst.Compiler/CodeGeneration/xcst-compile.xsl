@@ -252,7 +252,7 @@
       <variable name="href" select="resolve-uri(xcst:uri(@href), base-uri())"/>
 
       <if test="not(doc-available($href))">
-         <sequence select="error(xs:QName('err:XTSE0165'), 'Could not retrieve imported module.', src:error-object(.))"/>
+         <sequence select="error(xs:QName('err:XTSE0165'), 'Could not retrieve imported module, or it''s not a well-formed XML document.', src:error-object(.))"/>
       </if>
 
       <variable name="imported" select="doc($href)"/>
