@@ -23,6 +23,7 @@ using System.Reflection;
 using System.Xml;
 using Saxon.Api;
 using Xcst.Compiler.CodeGeneration;
+using XPathException = net.sf.saxon.trans.XPathException;
 
 namespace Xcst.Compiler {
 
@@ -100,7 +101,7 @@ namespace Xcst.Compiler {
                try {
                   return xsltCompiler.Compile(compilerSource);
 
-               } catch (StaticError ex) {
+               } catch (Exception ex) when (ex is StaticError || ex is XPathException) {
 
                   string message;
 
