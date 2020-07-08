@@ -5,8 +5,13 @@ XCST is a language optimized for the production of XML and other formats. It's b
 See the [project home][XCST] for more information.
 
 [![Build status](https://ci.appveyor.com/api/projects/status/93bvxpo3x4bg2po8?svg=true)](https://ci.appveyor.com/project/maxtoroq/xcst)
-[![NuGet](https://img.shields.io/nuget/v/Xcst.Runtime.svg?label=Xcst.Runtime)](https://www.nuget.org/packages/Xcst.Runtime)
-[![NuGet](https://img.shields.io/nuget/v/Xcst.Compiler.svg?label=Xcst.Compiler)](https://www.nuget.org/packages/Xcst.Compiler)
+
+### Packages Built From This Repository
+
+Package                                        | Description
+---------------------------------------------- | -----------
+[![NuGet][Xcst.Compiler-badge]][Xcst.Compiler] | Compilation API. Use this package to translate your XCST programs into C# or Visual Basic code.
+[![NuGet][Xcst.Runtime-badge]][Xcst.Runtime]   | Runtime and evaluation API.
 
 System Requirements
 -------------------
@@ -35,5 +40,9 @@ MSBuild
 ```
 
 [XCST]: https://maxtoroq.github.io/XCST/
+[Xcst.Compiler]: https://www.nuget.org/packages/Xcst.Compiler
+[Xcst.Runtime]: https://www.nuget.org/packages/Xcst.Runtime
+[Xcst.Compiler-badge]: https://img.shields.io/nuget/v/Xcst.Compiler.svg?label=Xcst.Compiler
+[Xcst.Runtime-badge]: https://img.shields.io/nuget/v/Xcst.Runtime.svg?label=Xcst.Runtime
 [Saxon-HE]: http://saxon.sf.net/
 [Trang]: https://github.com/relaxng/jing-trang
