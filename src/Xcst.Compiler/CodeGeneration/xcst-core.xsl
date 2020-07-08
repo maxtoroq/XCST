@@ -4288,10 +4288,10 @@
       <sequence select="(document-uri(root($node)), xs:anyURI(''))[1], src:line-number($node)"/>
    </function>
 
-   <function name="src:line-number" as="xs:integer">
+   <function name="src:line-number" as="xs:integer" override="no">
       <param name="p1" as="node()"/>
 
-      <sequence select="src:_line-number($p1)"/>
+      <sequence select="error()"/>
    </function>
 
 </stylesheet>

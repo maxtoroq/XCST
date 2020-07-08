@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -75,17 +74,17 @@ namespace Xcst.Compiler {
       XsltExecutable
       CreateCompilerExec() {
 
-         Type thisType = typeof(XcstCompiler);
+         Assembly thisAssembly = GetType().Assembly;
 
          XsltCompiler xsltCompiler = this.processor.NewXsltCompiler();
 
          Uri baseUri = new UriBuilder {
             Scheme = CompilerResolver.UriSchemeClires,
             Host = null,
-            Path = $"{thisType.Assembly.GetName().Name}/{nameof(CodeGeneration)}/xcst-compile.xsl"
+            Path = $"{thisAssembly.GetName().Name}/{nameof(CodeGeneration)}/xcst-compile.xsl"
          }.Uri;
 
-         Stream zipSource = thisType.Assembly
+         Stream zipSource = thisAssembly
             .GetManifestResourceStream(typeof(CodeGeneration.PackageManifest), "xcst-xsl.zip");
 
          using (var archive = new ZipArchive(zipSource, ZipArchiveMode.Read)) {
@@ -94,7 +93,7 @@ namespace Xcst.Compiler {
 
             xsltCompiler.BaseUri = baseUri;
             xsltCompiler.XmlResolver = resolver;
-            xsltCompiler.ErrorList = new ArrayList();
+            xsltCompiler.ErrorList = new List<StaticError>();
 
             using (var compilerSource = (Stream)resolver.GetEntity(baseUri, null, typeof(Stream))) {
 
@@ -107,11 +106,11 @@ namespace Xcst.Compiler {
 
                   if (xsltCompiler.ErrorList.Count > 0) {
 
-                     if (xsltCompiler.ErrorList[0] is StaticError error) {
-                        message = $"{error.Message}{Environment.NewLine}Module URI: {error.ModuleUri}{Environment.NewLine}Line Number: {error.LineNumber}";
-                     } else {
-                        message = xsltCompiler.ErrorList[0].ToString();
-                     }
+                     StaticError error = xsltCompiler.ErrorList[0];
+
+                     message = error.Message + Environment.NewLine
+                        + "Module URI: " + error.ModuleUri + Environment.NewLine
+                        + "Line Number: " + error.LineNumber;
 
                   } else {
                      message = ex.Message;

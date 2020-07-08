@@ -523,22 +523,22 @@
          else concat(($src:use-package-base, $namespace)[1], '.', $name)"/>
    </function>
 
-   <function name="src:package-manifest" as="document-node()?">
+   <function name="src:package-manifest" as="document-node()?" override="no">
       <param name="p1" as="xs:string"/>
       <param name="p2" as="item()?"/>
       <param name="p3" as="item()+"/>
 
-      <sequence select="src:_package-manifest($p1, $p2, $p3)"/>
+      <sequence select="error()"/>
    </function>
 
-   <function name="src:package-location" as="xs:anyURI?">
+   <function name="src:package-location" as="xs:anyURI?" override="no">
       <param name="p1" as="xs:string"/>
       <param name="p2" as="item()?"/>
       <param name="p3" as="xs:anyURI?"/>
       <param name="p4" as="xs:string?"/>
       <param name="p5" as="xs:string?"/>
 
-      <sequence select="src:_package-location($p1, $p2, $p3, $p4, $p5)"/>
+      <sequence select="error()"/>
    </function>
 
 
@@ -1154,10 +1154,10 @@
       <sequence select="src:aux-variable(string-join(($component-kind, $escaped-name, $id), '_'))"/>
    </function>
 
-   <function name="src:string-id" as="xs:integer">
+   <function name="src:string-id" as="xs:integer" override="no">
       <param name="p1" as="xs:string"/>
 
-      <sequence select="src:_string-id($p1)"/>
+      <sequence select="error()"/>
    </function>
 
    <function name="xcst:item-type" as="xs:string">
@@ -1485,10 +1485,10 @@
       <value-of select="for $p in (1 to $indent) return $src:indent" separator=""/>
    </template>
 
-   <function name="src:local-path" as="xs:string">
+   <function name="src:local-path" as="xs:string" override="no">
       <param name="p1" as="xs:anyURI"/>
 
-      <sequence select="src:_local-path($p1)"/>
+      <sequence select="error()"/>
    </function>
 
 

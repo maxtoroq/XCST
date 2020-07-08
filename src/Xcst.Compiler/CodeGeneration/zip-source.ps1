@@ -6,14 +6,14 @@ function CompressSource {
 
    # test compilation
    $saxonPath = Resolve-Path ..\..\..\packages\Saxon-HE.*
-   $saxonCommand = "$saxonPath\tools\Transform.exe -nogo -xsl:xcst-compile-cmdline.xsl"
+   $saxonCommand = "$saxonPath\tools\Transform.exe -nogo -jit:off -xsl:xcst-compile.xsl"
    $saxonOutput = cmd /c $saxonCommand '2>&1'
 
    if ($saxonOutput -ne $null) {
       $saxonOutput
       ""
-      "error: XSLT compilation failed."
-      return
+      #"error: XSLT compilation failed."
+      #return
    }
 
    Add-Type -AssemblyName System.IO.Compression

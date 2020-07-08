@@ -244,16 +244,16 @@ namespace Xcst.Compiler {
          var result = new CompileResult {
             Language = docEl.GetAttributeValue(compiled.language),
             CompilationUnits = (this.CompilationUnitHandler == null) ?
-               ((IXdmEnumerator)docEl.EnumerateAxis(XdmAxis.Child, compiled.compilationUnit))
+               docEl.EnumerateAxis(XdmAxis.Child, compiled.compilationUnit)
                   .AsNodes()
                   .Select(n => n.StringValue)
                   .ToArray()
                : Array.Empty<string>(),
             Templates =
-               ((IXdmEnumerator)((IXdmEnumerator)docEl.EnumerateAxis(XdmAxis.Child, grammar.packageManifest))
+               docEl.EnumerateAxis(XdmAxis.Child, grammar.packageManifest)
                   .AsNodes()
                   .Single()
-                  .EnumerateAxis(XdmAxis.Child, grammar.template))
+                  .EnumerateAxis(XdmAxis.Child, grammar.template)
                   .AsNodes()
                   .Where(n => publicVisibility.Contains(n.GetAttributeValue(grammar.visibility)))
                   .Select(n => QualifiedName.Parse(n.GetAttributeValue(grammar.name)).ToString())
@@ -287,6 +287,7 @@ namespace Xcst.Compiler {
          // Compiler params always win
 
          if (this.CompilationUnitHandler != null) {
+            compiler.BaseOutputUri = new Uri("urn:foo"); // Saxon fails if null
             compiler.ResultDocumentHandler = new CompilationUnitResultHandler(this.CompilationUnitHandler, this.processor);
             compiler.SetParameter(CompilerQName("source-to-result-document"), true.ToXdmItem());
          }
@@ -367,12 +368,6 @@ namespace Xcst.Compiler {
 
          object obj = ((XdmExternalObjectValue)item).GetExternalObject();
 
-         // See <https://saxonica.plan.io/issues/3359>
-
-         if (obj is net.sf.saxon.value.ObjectValue objValue) {
-            obj = objValue.getObject();
-         }
-
          return (T)obj;
       }
 
@@ -388,7 +383,7 @@ namespace Xcst.Compiler {
       ModuleUriAndLineNumberFromErrorObject(XdmValue errorObject) {
 
          XdmAtomicValue[] values = errorObject
-            .GetXdmEnumerator()
+            .GetEnumerator()
             .AsAtomicValues()
             .ToArray();
 
@@ -550,13 +545,11 @@ namespace Xcst.Compiler {
          public XmlDestination
          HandleResultDocument(string href, Uri? baseUri) {
 
-            var serializer = new Serializer();
-            serializer.SetOutputProperty(Serializer.METHOD, "text");
-
             TextWriter output = this.writerFn(href)
                ?? throw new CompileException($"The function of {nameof(XcstCompiler)}.{nameof(CompilationUnitHandler)} must not return null.");
 
-            serializer.SetOutputWriter(output);
+            var serializer = processor.NewSerializer(output);
+            serializer.SetOutputProperty(Serializer.METHOD, "text");
 
             return serializer;
          }

@@ -34,20 +34,17 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="IKVM.OpenJDK.Core, Version=7.2.4630.5, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Saxon-HE.9.7.0.21\lib\net40\IKVM.OpenJDK.Core.dll</HintPath>
+    <Reference Include="IKVM.OpenJDK.Core">
+      <HintPath>..\..\packages\Saxon-HE.9.9.1.5\lib\net40\IKVM.OpenJDK.Core.dll</HintPath>
     </Reference>
-    <Reference Include="IKVM.OpenJDK.XML.API, Version=7.2.4630.5, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Saxon-HE.9.7.0.21\lib\net40\IKVM.OpenJDK.XML.API.dll</HintPath>
+    <Reference Include="IKVM.OpenJDK.XML.API">
+      <HintPath>..\..\packages\Saxon-HE.9.9.1.5\lib\net40\IKVM.OpenJDK.XML.API.dll</HintPath>
     </Reference>
-    <Reference Include="saxon9he, Version=9.7.0.21, Culture=neutral, PublicKeyToken=e1fdd002d5083fe6, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Saxon-HE.9.7.0.21\lib\net40\saxon9he.dll</HintPath>
+    <Reference Include="saxon9he">
+      <HintPath>..\..\packages\Saxon-HE.9.9.1.5\lib\net40\saxon9he.dll</HintPath>
     </Reference>
-    <Reference Include="saxon9he-api, Version=9.7.0.21, Culture=neutral, PublicKeyToken=e1fdd002d5083fe6, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Saxon-HE.9.7.0.21\lib\net40\saxon9he-api.dll</HintPath>
+    <Reference Include="saxon9he-api, Version=9.9.1.5, Culture=neutral, PublicKeyToken=e1fdd002d5083fe6, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Saxon-HE.9.9.1.5\lib\net40\saxon9he-api.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -77,7 +74,6 @@
     <Compile Include="XcstCompilerFactory.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="CodeGeneration\xcst-compile-cmdline.xsl" />
     <Content Include="CodeGeneration\xcst-compile.xsl" />
     <Content Include="CodeGeneration\xcst-vb.xsl" />
   </ItemGroup>

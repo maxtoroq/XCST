@@ -24,19 +24,19 @@ namespace Xcst.Compiler {
    static class SaxonExtensions {
 
       public static IEnumerable<XdmItem>
-      AsItems(this IXdmEnumerator? enumerator) {
+      AsItems(this IEnumerator<XdmItem>? enumerator) {
 
          if (enumerator is null) {
             yield break;
          }
 
          while (enumerator.MoveNext()) {
-            yield return (XdmItem)enumerator.Current;
+            yield return enumerator.Current;
          }
       }
 
       public static IEnumerable<XdmNode>
-      AsNodes(this IXdmEnumerator? enumerator) {
+      AsNodes(this IEnumerator<XdmItem>? enumerator) {
 
          if (enumerator is null) {
             yield break;
@@ -48,7 +48,7 @@ namespace Xcst.Compiler {
       }
 
       public static IEnumerable<XdmAtomicValue>
-      AsAtomicValues(this IXdmEnumerator? enumerator) {
+      AsAtomicValues(this IEnumerator<XdmItem>? enumerator) {
 
          if (enumerator is null) {
             yield break;
@@ -57,16 +57,6 @@ namespace Xcst.Compiler {
          while (enumerator.MoveNext()) {
             yield return (XdmAtomicValue)enumerator.Current;
          }
-      }
-
-      public static IXdmEnumerator
-      GetXdmEnumerator(this XdmValue? value) {
-
-         if (value is null) {
-            return EmptyEnumerator.INSTANCE;
-         }
-
-         return (IXdmEnumerator)value.GetEnumerator();
       }
 
 
@@ -139,16 +129,6 @@ namespace Xcst.Compiler {
       public static XdmValue
       ToXdmValue(this QName? value) =>
          (value != null) ? (XdmValue)ToXdmItem(value) : XdmEmptySequence.INSTANCE;
-
-      public static XdmValue
-      ToXdmValue(this IEnumerable<string?>? value) {
-
-         if (value is null) {
-            return XdmEmptySequence.INSTANCE;
-         }
-
-         return new XdmValue(value.Select(s => ToXdmValue(s)));
-      }
 
       public static XdmValue
       ToXdmValue(this IEnumerable<XdmItem> value) =>
@@ -461,7 +441,7 @@ namespace Xcst.Compiler {
             return value;
          }
 
-         return ((IXdmEnumerator)value.EnumerateAxis(XdmAxis.Child))
+         return value.EnumerateAxis(XdmAxis.Child)
             .AsNodes()
             .SingleOrDefault(n => n.NodeKind == XmlNodeType.Element)
             ?? value;

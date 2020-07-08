@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -120,7 +121,7 @@ namespace Xcst.Compiler.CodeGeneration {
    class LineNumberFunction : ExtensionFunctionDefinition {
 
       public override QName
-      FunctionName { get; } = CompilerQName("_line-number");
+      FunctionName { get; } = CompilerQName("line-number");
 
       public override XdmSequenceType[]
       ArgumentTypes { get; } = {
@@ -142,14 +143,14 @@ namespace Xcst.Compiler.CodeGeneration {
 
       class FunctionCall : ExtensionFunctionCall {
 
-         public override IXdmEnumerator
-         Call(IXdmEnumerator[] arguments, DynamicContext context) {
+         public override IEnumerator<XdmItem>
+         Call(IEnumerator<XdmItem>[] arguments, DynamicContext context) {
 
             XdmNode node = arguments[0].AsNodes().Single();
 
             return node.GetLineNumber()
                .ToXdmAtomicValue()
-               .GetXdmEnumerator();
+               .GetEnumerator();
          }
       }
    }
@@ -157,7 +158,7 @@ namespace Xcst.Compiler.CodeGeneration {
    class LocalPathFunction : ExtensionFunctionDefinition {
 
       public override QName
-      FunctionName { get; } = CompilerQName("_local-path");
+      FunctionName { get; } = CompilerQName("local-path");
 
       public override XdmSequenceType[]
       ArgumentTypes { get; } = {
@@ -179,8 +180,8 @@ namespace Xcst.Compiler.CodeGeneration {
 
       class FunctionCall : ExtensionFunctionCall {
 
-         public override IXdmEnumerator
-         Call(IXdmEnumerator[] arguments, DynamicContext context) {
+         public override IEnumerator<XdmItem>
+         Call(IEnumerator<XdmItem>[] arguments, DynamicContext context) {
 
             XdmAtomicValue value = arguments[0].AsAtomicValues().Single();
 
@@ -189,7 +190,7 @@ namespace Xcst.Compiler.CodeGeneration {
 
             return ExtensionFunctions.LocalPath(uri)
                .ToXdmAtomicValue()
-               .GetXdmEnumerator();
+               .GetEnumerator();
          }
       }
    }
@@ -200,7 +201,7 @@ namespace Xcst.Compiler.CodeGeneration {
       processor;
 
       public override QName
-      FunctionName { get; } = CompilerQName("_package-manifest");
+      FunctionName { get; } = CompilerQName("package-manifest");
 
       public override XdmSequenceType[]
       ArgumentTypes { get; } = {
@@ -244,8 +245,8 @@ namespace Xcst.Compiler.CodeGeneration {
             call.processor = this.processor;
          }
 
-         public override IXdmEnumerator
-         Call(IXdmEnumerator[] arguments, DynamicContext context) {
+         public override IEnumerator<XdmItem>
+         Call(IEnumerator<XdmItem>[] arguments, DynamicContext context) {
 
             string typeName = arguments[0]
                .AsAtomicValues()
@@ -278,7 +279,7 @@ namespace Xcst.Compiler.CodeGeneration {
             }
 
             if (packageType is null) {
-               return EmptyEnumerator.INSTANCE;
+               return EmptyEnumerator<XdmItem>.INSTANCE;
             }
 
             if (!PackageManifest.IsXcstPackage(packageType)) {
@@ -303,7 +304,7 @@ namespace Xcst.Compiler.CodeGeneration {
 
                XdmNode result = builder.Build(output);
 
-               return result.GetXdmEnumerator();
+               return result.GetEnumerator();
             }
          }
       }
@@ -312,7 +313,7 @@ namespace Xcst.Compiler.CodeGeneration {
    class PackageLocationFunction : ExtensionFunctionDefinition {
 
       public override QName
-      FunctionName { get; } = CompilerQName("_package-location");
+      FunctionName { get; } = CompilerQName("package-location");
 
       public override XdmSequenceType[]
       ArgumentTypes { get; } = {
@@ -338,8 +339,8 @@ namespace Xcst.Compiler.CodeGeneration {
 
       class FunctionCall : ExtensionFunctionCall {
 
-         public override IXdmEnumerator
-         Call(IXdmEnumerator[] arguments, DynamicContext context) {
+         public override IEnumerator<XdmItem>
+         Call(IEnumerator<XdmItem>[] arguments, DynamicContext context) {
 
             string packageName = arguments[0].AsAtomicValues()
                .Single()
@@ -377,8 +378,8 @@ namespace Xcst.Compiler.CodeGeneration {
             }
 
             return packageUri?.ToXdmAtomicValue()
-               .GetXdmEnumerator()
-               ?? EmptyEnumerator.INSTANCE;
+               .GetEnumerator()
+               ?? EmptyEnumerator<XdmItem>.INSTANCE;
          }
       }
    }
@@ -386,7 +387,7 @@ namespace Xcst.Compiler.CodeGeneration {
    class StringIdFunction : ExtensionFunctionDefinition {
 
       public override QName
-      FunctionName { get; } = CompilerQName("_string-id");
+      FunctionName { get; } = CompilerQName("string-id");
 
       public override XdmSequenceType[]
       ArgumentTypes { get; } = {
@@ -408,8 +409,8 @@ namespace Xcst.Compiler.CodeGeneration {
 
       class FunctionCall : ExtensionFunctionCall {
 
-         public override IXdmEnumerator
-         Call(IXdmEnumerator[] arguments, DynamicContext context) {
+         public override IEnumerator<XdmItem>
+         Call(IEnumerator<XdmItem>[] arguments, DynamicContext context) {
 
             string str = arguments[0]
                .AsAtomicValues()
@@ -418,7 +419,7 @@ namespace Xcst.Compiler.CodeGeneration {
 
             return ExtensionFunctions.StringId(str)
                .ToXdmAtomicValue()
-               .GetXdmEnumerator();
+               .GetEnumerator();
          }
       }
    }
@@ -449,8 +450,8 @@ namespace Xcst.Compiler.CodeGeneration {
 
       class FunctionCall : ExtensionFunctionCall {
 
-         public override IXdmEnumerator
-         Call(IXdmEnumerator[] arguments, DynamicContext context) {
+         public override IEnumerator<XdmItem>
+         Call(IEnumerator<XdmItem>[] arguments, DynamicContext context) {
 
             Delegate externalFunction = arguments[0].AsItems()
                .Cast<XdmExternalObjectValue>()
@@ -464,7 +465,7 @@ namespace Xcst.Compiler.CodeGeneration {
             object? result = externalFunction.DynamicInvoke(functionArgs);
 
             return result.ToXdmValue()
-               .GetXdmEnumerator();
+               .GetEnumerator();
          }
       }
    }

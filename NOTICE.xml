@@ -112,9 +112,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.]]></l
    <foreign-work type="object">
       <notice>
          <work>Saxon-HE</work>
-         <website>http://saxon.sf.net/</website>
-         <copyright>Saxonica 2014</copyright>
-         <license name="MPL-2.0" src="packages/Saxon-HE.9.7.0.21/notices/LICENSE.txt"/>
+         <website>http://www.saxonica.com/</website>
+         <copyright>Saxonica 2019</copyright>
+         <license name="MPL-2.0" src="packages/Saxon-HE.9.9.1.5/notices/LICENSE.txt"/>
       </notice>
       <used-by-source path="src/Xcst.Compiler/"/>
    </foreign-work>
