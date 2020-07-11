@@ -102,11 +102,12 @@ namespace Xcst.Compiler {
 
                } catch (Exception ex) when (ex is StaticError || ex is XPathException) {
 
+                  StaticError? error = xsltCompiler.ErrorList
+                     .FirstOrDefault(e => !e.IsWarning);
+
                   string message;
 
-                  if (xsltCompiler.ErrorList.Count > 0) {
-
-                     StaticError error = xsltCompiler.ErrorList[0];
+                  if (error != null) {
 
                      message = error.Message + Environment.NewLine
                         + "Module URI: " + error.ModuleUri + Environment.NewLine
