@@ -19,7 +19,7 @@ The runtime is written in **C# 8** and requires **.NET 4.6**. It's also compiled
 
 The compiler is written in **XSLT 2** (depends on [Saxon-HE]) and sits behind a C# 8 .NET 4.6 API. There are no plans to support other targets beyond Saxon's requirements. This means you need Windows to compile, but can run anywhere. The compiler produces code that is compatible with **C# 6** and **Visual Basic 14**.
 
-The [release script](build/release.ps1) (which creates the NuGet packages) and other utility scripts are written in **PowerShell 3**.
+The [release script](build/release.ps1) (which creates the NuGet packages) and other utility scripts are written in **PowerShell 5.1**.
 
 The [XCST schema](schemas/xcst.rng) is written in **Relax NG** and converted to XSD using [Trang], which requires **Java**.
 

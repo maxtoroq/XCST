@@ -1,13 +1,13 @@
 ﻿$ErrorActionPreference = "Stop"
 Push-Location (Split-Path $script:MyInvocation.MyCommand.Path)
 
-function script:EnsureTrang {
+function EnsureTrang {
 
    if (-not (Test-Path $trangPath -PathType Container)) {
-      Add-Type -AssemblyName System.IO.Compression.FileSystem
       $trangTemp = Join-Path (Resolve-Path .) trang.zip
-      Invoke-WebRequest https://storage.googleapis.com/google-code-archive-downloads/v2/code.google.com/jing-trang/trang-20091111.zip -OutFile $trangTemp
-      [IO.Compression.ZipFile]::ExtractToDirectory($trangTemp, (Resolve-Path .))
+      [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+      Invoke-WebRequest https://github.com/relaxng/jing-trang/releases/download/V20181222/trang-20181222.zip -OutFile $trangTemp
+      Expand-Archive $trangTemp (Resolve-Path .)
       rm $trangTemp
    }
 }
@@ -15,7 +15,7 @@ function script:EnsureTrang {
 try {
 
    $saxonPath = Resolve-Path ..\packages\Saxon-HE.*
-   $trangPath = Join-Path (Resolve-Path .) trang-20091111
+   $trangPath = Join-Path (Resolve-Path .) trang-20181222
 
    EnsureTrang
 
