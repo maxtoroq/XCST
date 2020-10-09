@@ -1,7 +1,7 @@
 ﻿$ErrorActionPreference = "Stop"
 Push-Location (Split-Path $script:MyInvocation.MyCommand.Path)
 
-$nuget = "..\.nuget\nuget.exe"
+$nuget = ".\nuget.exe"
 
 try {
 
@@ -12,9 +12,12 @@ try {
    }
 
    if (-not (Test-Path $nuget -PathType Leaf)) {
-      write "Downloading NuGet..."
+      Write-Host "Downloading NuGet..."
+      [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
       Invoke-WebRequest https://dist.nuget.org/win-x86-commandline/latest/nuget.exe -OutFile $nuget
    }
+
+   Resolve-Path $nuget
 
 } finally {
    Pop-Location
