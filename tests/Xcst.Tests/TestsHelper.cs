@@ -47,13 +47,11 @@ namespace Xcst.Tests {
             xcstResult = codegenResult.Item1;
             packageName = codegenResult.Item2;
 
-         } catch (CompileException ex) {
+         } catch (CompileException ex) when (correct) {
 
-            if (correct) {
-               Console.WriteLine($"// {ex.Message}");
-               Console.WriteLine($"// Module URI: {ex.ModuleUri}");
-               Console.WriteLine($"// Line number: {ex.LineNumber}");
-            }
+            Console.WriteLine($"// {ex.Message}");
+            Console.WriteLine($"// Module URI: {ex.ModuleUri}");
+            Console.WriteLine($"// Line number: {ex.LineNumber}");
 
             throw;
          }

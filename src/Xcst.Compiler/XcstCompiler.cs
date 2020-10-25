@@ -548,7 +548,7 @@ namespace Xcst.Compiler {
             TextWriter output = this.writerFn(href)
                ?? throw new CompileException($"The function of {nameof(XcstCompiler)}.{nameof(CompilationUnitHandler)} must not return null.");
 
-            var serializer = processor.NewSerializer(output);
+            var serializer = this.processor.NewSerializer(output);
             serializer.SetOutputProperty(Serializer.METHOD, "text");
 
             return serializer;
