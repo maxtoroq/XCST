@@ -52,12 +52,17 @@ namespace Xcst.Compiler {
          }
       }
 
+      public bool
+      ProcessXInclude {
+         set =>
+            this.processor.SetProperty("http://saxon.sf.net/feature/xinclude-aware", (value) ? "on" : "off");
+      }
+
       public
       XcstCompilerFactory() {
 
          this.processor = new Processor();
          this.processor.SetProperty("http://saxon.sf.net/feature/linenumbering", "on");
-         this.processor.SetProperty("http://saxon.sf.net/feature/xinclude-aware", "on");
 
          this.processor.ErrorWriter = TextWriter.Null;
 
