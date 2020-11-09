@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:package name='Compatibility' version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:template name='no-param' visibility='public'>
+   </c:template>
+
+   <c:template name='one-param' visibility='public'>
+      <c:param name='a'/>
+   </c:template>
+
+   <c:template name='one-tunnel' visibility='public'>
+      <c:param name='a' tunnel='yes'/>
+   </c:template>
+
+</c:package>

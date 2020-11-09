@@ -682,14 +682,14 @@
 
       <if test="$overridden-meta">
          <variable name="template" select="."/>
-         <for-each select="$overridden-meta/xcst:param">
-            <variable name="param" select="$template/c:param[xcst:name-equal(@name, current()/string(@name))]"/>
+         <for-each select="$overridden-meta/xcst:param[not(@tunnel/xcst:boolean(.))]">
+            <variable name="param" select="$template/c:param[xcst:name-equal(@name, current()/string(@name))
+               and not(@tunnel/xcst:boolean(.))]"/>
             <if test="not($param)
-                  or xs:boolean(@required) ne ($param/@required/xcst:boolean(.), false())[1]
-                  or xs:boolean(@tunnel) ne ($param/@tunnel/xcst:boolean(.), false())[1]">
+                  or xs:boolean(@required) ne ($param/@required/xcst:boolean(.), false())[1]">
                <sequence select="error(
                   xs:QName('err:XTSE3070'),
-                  'For every parameter on the overridden template, there must be a parameter on the overriding template that has the same name and the same effective values for the tunnel and required attributes.',
+                  'For every non-tunnel parameter on the overridden template, there must be a non-tunnel parameter on the overriding template that has the same name and the same effective value for the ''required'' attribute.',
                   src:error-object(($param, $template)[1]))"/>
             </if>
          </for-each>
@@ -744,7 +744,7 @@
                   and not($overridden-meta/xcst:param[xcst:name-equal(string(@name), $param-name)])
                   and not($tunnel)
                   and (not(@required) or $required)">
-               <sequence select="error(xs:QName('err:XTSE3070'), 'Any parameter on the overriding template for which there is no corresponding parameter on the overridden template must specify required=''no''.', src:error-object(.))"/>
+               <sequence select="error(xs:QName('err:XTSE3070'), 'Any non-tunnel parameter on the overriding template for which there is no corresponding non-tunnel parameter on the overridden template must specify required=''no''.', src:error-object(.))"/>
             </if>
             <xcst:param name="{$param-name}" required="{$required}" tunnel="{$tunnel}">
                <variable name="type" as="element()?">

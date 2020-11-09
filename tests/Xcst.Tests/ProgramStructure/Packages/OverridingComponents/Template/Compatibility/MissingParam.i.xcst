@@ -1,11 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
-   <c:use-package name='Compatible'>
+   <c:use-package name='Compatibility'>
       <c:override>
-         <c:template name='foo'>
-            <c:param name='bar' tunnel='yes'/>
-         </c:template>
+         <c:template name='one-param'/>
       </c:override>
    </c:use-package>
 
