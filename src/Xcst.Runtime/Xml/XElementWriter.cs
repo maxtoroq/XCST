@@ -28,11 +28,17 @@ namespace Xcst.Xml {
 
    class XElementWriter : WrappingXmlWriter {
 
-      readonly XDocument document;
-      readonly ISequenceWriter<XElement> output;
+      readonly XDocument
+      document;
 
-      int depth;
-      bool elementFlushed;
+      readonly ISequenceWriter<XElement>
+      output;
+
+      int
+      depth;
+
+      bool
+      elementFlushed;
 
       public
       XElementWriter(XDocument document, ISequenceWriter<XElement> output)
@@ -42,14 +48,16 @@ namespace Xcst.Xml {
          this.output = output;
       }
 
-      public override void WriteStartElement(string prefix, string localName, string ns) {
+      public override void
+      WriteStartElement(string prefix, string localName, string ns) {
 
          base.WriteStartElement(prefix, localName, ns);
 
          this.depth++;
       }
 
-      public override void WriteEndElement() {
+      public override void
+      WriteEndElement() {
 
          base.WriteEndElement();
 
@@ -60,7 +68,8 @@ namespace Xcst.Xml {
          }
       }
 
-      public override void Close() {
+      public override void
+      Close() {
 
          Debug.Assert(!this.elementFlushed);
 

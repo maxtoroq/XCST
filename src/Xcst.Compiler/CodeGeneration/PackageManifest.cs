@@ -244,15 +244,18 @@ namespace Xcst.Compiler.CodeGeneration {
          return;
       }
 
-      public static bool IsXcstPackage(Type t) =>
+      public static bool
+      IsXcstPackage(Type t) =>
          PackageInterface(t) != null;
 
-      static Type? PackageInterface(Type t) =>
+      static Type?
+      PackageInterface(Type t) =>
          (t.GetInterface("Xcst.PackageModel.IXcstPackage") is Type pkgInterface
             && pkgInterface.Assembly.GetName().Name == "Xcst.Runtime") ? pkgInterface
          : null;
 
-      static Type ComponentAttributeType(Type pkgInterface, string attributeName) =>
+      static Type
+      ComponentAttributeType(Type pkgInterface, string attributeName) =>
          pkgInterface.Assembly.GetType("Xcst.PackageModel." + attributeName);
    }
 }
