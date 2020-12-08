@@ -25,7 +25,7 @@ namespace Xcst.Compiler.CodeGeneration {
 
    using static XcstCompiler;
 
-   class ExtensionFunctions {
+   static class ExtensionFunctions {
 
       internal static string
       LocalPath(Uri uri) {
@@ -198,7 +198,7 @@ namespace Xcst.Compiler.CodeGeneration {
    class PackageManifestFunction : ExtensionFunctionDefinition {
 
       readonly Processor
-      processor;
+      _processor;
 
       public override QName
       FunctionName { get; } = CompilerQName("package-manifest");
@@ -218,11 +218,11 @@ namespace Xcst.Compiler.CodeGeneration {
 
       public
       PackageManifestFunction(Processor processor) {
-         this.processor = processor;
+         _processor = processor;
       }
 
       public override ExtensionFunctionCall
-      MakeFunctionCall() => new FunctionCall(this.processor);
+      MakeFunctionCall() => new FunctionCall(_processor);
 
       public override XdmSequenceType
       ResultType(XdmSequenceType[] ArgumentTypes) =>
@@ -231,18 +231,18 @@ namespace Xcst.Compiler.CodeGeneration {
       class FunctionCall : ExtensionFunctionCall {
 
          Processor
-         processor;
+         _processor;
 
          public
          FunctionCall(Processor processor) {
-            this.processor = processor;
+            _processor = processor;
          }
 
          public override void
          CopyLocalData(ExtensionFunctionCall destination) {
 
             var call = (FunctionCall)destination;
-            call.processor = this.processor;
+            call._processor = _processor;
          }
 
          public override IEnumerator<XdmItem>
@@ -299,7 +299,7 @@ namespace Xcst.Compiler.CodeGeneration {
 
                output.Position = 0;
 
-               DocumentBuilder builder = this.processor.NewDocumentBuilder();
+               DocumentBuilder builder = _processor.NewDocumentBuilder();
                builder.BaseUri = new Uri(String.Empty, UriKind.Relative);
 
                XdmNode result = builder.Build(output);

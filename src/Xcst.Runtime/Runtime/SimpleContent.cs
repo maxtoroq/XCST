@@ -25,26 +25,26 @@ namespace Xcst.Runtime {
    partial class SimpleContent {
 
       static readonly char[]
-      whiteSpaceChars = { (char)0x20, (char)0x9, (char)0xD, (char)0xA };
+      _whiteSpaceChars = { (char)0x20, (char)0x9, (char)0xD, (char)0xA };
 
       static readonly ConcurrentDictionary<Type, bool>
-      customToString = new ConcurrentDictionary<Type, bool>();
+      _customToString = new ConcurrentDictionary<Type, bool>();
 
       readonly Func<IFormatProvider>
-      formatProviderFn;
+      _formatProviderFn;
 
       public static SimpleContent
       Invariant { get; } = new SimpleContent(() => CultureInfo.InvariantCulture);
 
       internal IFormatProvider
-      FormatProvider => formatProviderFn();
+      FormatProvider => _formatProviderFn();
 
       public
       SimpleContent(Func<IFormatProvider> formatProviderFn) {
 
          if (formatProviderFn is null) throw new ArgumentNullException(nameof(formatProviderFn));
 
-         this.formatProviderFn = formatProviderFn;
+         _formatProviderFn = formatProviderFn;
       }
 
       public string
@@ -123,7 +123,7 @@ namespace Xcst.Runtime {
 
       static bool
       HasCustomToString(Type type) =>
-         customToString.GetOrAdd(type, HasCustomToStringImpl);
+         _customToString.GetOrAdd(type, HasCustomToStringImpl);
 
       static bool
       HasCustomToStringImpl(Type type) {
@@ -169,7 +169,7 @@ namespace Xcst.Runtime {
             return String.Empty;
          }
 
-         return value!.Trim(whiteSpaceChars);
+         return value!.Trim(_whiteSpaceChars);
       }
    }
 }

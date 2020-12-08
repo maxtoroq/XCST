@@ -94,13 +94,13 @@ namespace Xcst.Runtime {
    public class JsonMapWriter : MapWriter {
 
       readonly XcstWriter?
-      docWriter;
+      _docWriter;
 
       readonly ISequenceWriter<JObject>?
-      mapOutput;
+      _mapOutput;
 
       readonly ISequenceWriter<JArray>?
-      arrayOutput;
+      _arrayOutput;
 
       protected JsonWriter
       BaseWriter { get; }
@@ -111,7 +111,7 @@ namespace Xcst.Runtime {
          if (baseWriter is null) throw new ArgumentNullException(nameof(baseWriter));
 
          this.BaseWriter = baseWriter;
-         this.docWriter = docWriter;
+         _docWriter = docWriter;
       }
 
       public
@@ -120,7 +120,7 @@ namespace Xcst.Runtime {
 
          Debug.Assert(output.TryCastToDocumentWriter() is null);
 
-         this.mapOutput = output;
+         _mapOutput = output;
       }
 
       public
@@ -129,7 +129,7 @@ namespace Xcst.Runtime {
 
          Debug.Assert(output.TryCastToDocumentWriter() is null);
 
-         this.arrayOutput = output;
+         _arrayOutput = output;
       }
 
       public override void
@@ -177,9 +177,9 @@ namespace Xcst.Runtime {
          this.BaseWriter.WriteStartArray();
 
          if (firstCall
-            && this.arrayOutput != null) {
+            && _arrayOutput != null) {
 
-            this.arrayOutput.WriteObject((JArray)((JTokenWriter)this.BaseWriter).Token);
+            _arrayOutput.WriteObject((JArray)((JTokenWriter)this.BaseWriter).Token);
          }
       }
 
@@ -191,9 +191,9 @@ namespace Xcst.Runtime {
          this.BaseWriter.WriteStartObject();
 
          if (firstCall
-            && this.mapOutput != null) {
+            && _mapOutput != null) {
 
-            this.mapOutput.WriteObject((JObject)((JTokenWriter)this.BaseWriter).Token);
+            _mapOutput.WriteObject((JObject)((JTokenWriter)this.BaseWriter).Token);
          }
       }
 
@@ -210,7 +210,7 @@ namespace Xcst.Runtime {
          this.BaseWriter.WriteRaw(data);
 
       public override XcstWriter?
-      TryCastToDocumentWriter() => this.docWriter;
+      TryCastToDocumentWriter() => _docWriter;
 
       public void
       CopyOf(JToken? value) {

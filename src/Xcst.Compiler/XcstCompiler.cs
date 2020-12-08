@@ -25,19 +25,19 @@ namespace Xcst.Compiler {
    public class XcstCompiler {
 
       readonly Lazy<XsltExecutable>
-      compilerExec;
+      _compilerExec;
 
       readonly Lazy<IDictionary<Uri, XcstExtensionLoader>>
-      extensions;
+      _extensions;
 
       readonly Processor
-      processor;
+      _processor;
 
       readonly Dictionary<string[], object?>
-      parameters = new Dictionary<string[], object?>();
+      _parameters = new Dictionary<string[], object?>();
 
       Type[]?
-      tbaseTypes;
+      _tbaseTypes;
 
       public string?
       TargetNamespace { get; set; }
@@ -102,14 +102,14 @@ namespace Xcst.Compiler {
          if (extensionsFn is null) throw new ArgumentNullException(nameof(extensionsFn));
          if (processor is null) throw new ArgumentNullException(nameof(processor));
 
-         this.compilerExec = new Lazy<XsltExecutable>(compilerExecFn);
-         this.extensions = new Lazy<IDictionary<Uri, XcstExtensionLoader>>(extensionsFn);
-         this.processor = processor;
+         _compilerExec = new Lazy<XsltExecutable>(compilerExecFn);
+         _extensions = new Lazy<IDictionary<Uri, XcstExtensionLoader>>(extensionsFn);
+         _processor = processor;
       }
 
       public void
       SetTargetBaseTypes(params Type[]? targetBaseTypes) {
-         this.tbaseTypes = targetBaseTypes;
+         _tbaseTypes = targetBaseTypes;
       }
 
       public void
@@ -120,7 +120,7 @@ namespace Xcst.Compiler {
          if (name is null) throw new ArgumentNullException(nameof(name));
          if (name.Length == 0) throw new ArgumentException("name cannot be empty.", nameof(name));
 
-         this.parameters.Add(new[] { ns, name }, ConvertParameter(value));
+         _parameters.Add(new[] { ns, name }, ConvertParameter(value));
       }
 
       object?
@@ -128,7 +128,7 @@ namespace Xcst.Compiler {
 
          if (value is Type t) {
 
-            DocumentBuilder docBuilder = this.processor.NewDocumentBuilder();
+            DocumentBuilder docBuilder = _processor.NewDocumentBuilder();
             value = CodeTypeReference(t, docBuilder);
 
          } else if (value is Delegate) {
@@ -176,7 +176,7 @@ namespace Xcst.Compiler {
 
          XmlResolver moduleResolver = GetModuleResolverOrDefault(this.ModuleResolver);
 
-         DocumentBuilder docBuilder = this.processor.NewDocumentBuilder();
+         DocumentBuilder docBuilder = _processor.NewDocumentBuilder();
          docBuilder.XmlResolver = moduleResolver;
 
          if (baseUri != null) {
@@ -265,13 +265,13 @@ namespace Xcst.Compiler {
       XsltTransformer
       GetCompiler(XdmNode sourceDoc) {
 
-         XsltTransformer compiler = this.compilerExec.Value.Load();
+         XsltTransformer compiler = _compilerExec.Value.Load();
          compiler.InitialMode = CompilerQName("main");
          compiler.InitialContextNode = sourceDoc;
 
          // Extension params are loaded first
 
-         foreach (var extension in this.extensions.Value) {
+         foreach (var extension in _extensions.Value) {
             foreach (var param in extension.Value.GetParameters()) {
                compiler.SetParameter(new QName(extension.Key.AbsoluteUri, param.Key), ConvertParameter(param.Value).ToXdmValue());
             }
@@ -279,7 +279,7 @@ namespace Xcst.Compiler {
 
          // User params can override extension params
 
-         foreach (var pair in this.parameters) {
+         foreach (var pair in _parameters) {
             compiler.SetParameter(new QName(pair.Key[0], pair.Key[1]), pair.Value.ToXdmValue());
          }
 
@@ -287,7 +287,7 @@ namespace Xcst.Compiler {
 
          if (this.CompilationUnitHandler != null) {
             compiler.BaseOutputUri = new Uri("urn:foo"); // Saxon fails if null
-            compiler.ResultDocumentHandler = new CompilationUnitResultHandler(this.CompilationUnitHandler, this.processor);
+            compiler.ResultDocumentHandler = new CompilationUnitResultHandler(this.CompilationUnitHandler, _processor);
             compiler.SetParameter(CompilerQName("source-to-result-document"), true.ToXdmItem());
          }
 
@@ -304,12 +304,12 @@ namespace Xcst.Compiler {
             (this.TargetVisibility == CodeVisibility.Default ? "#default" : this.TargetVisibility.ToString().ToLowerInvariant())
                .ToXdmItem());
 
-         DocumentBuilder baseTypesBuilder = this.processor.NewDocumentBuilder();
+         DocumentBuilder baseTypesBuilder = _processor.NewDocumentBuilder();
 
          compiler.SetParameter(
             CompilerQName("base-types"),
             new XdmValue(
-               this.tbaseTypes?.Select(t => CodeTypeReference(t, baseTypesBuilder))
+               _tbaseTypes?.Select(t => CodeTypeReference(t, baseTypesBuilder))
                   ?? this.TargetBaseTypes?.Select(t => CodeTypeReference(t, baseTypesBuilder))
                   ?? Enumerable.Empty<XdmNode>()
             )
@@ -529,25 +529,25 @@ namespace Xcst.Compiler {
       class CompilationUnitResultHandler : IResultDocumentHandler {
 
          readonly Func<string, TextWriter>
-         writerFn;
+         _writerFn;
 
          readonly Processor
-         processor;
+         _processor;
 
          public
          CompilationUnitResultHandler(Func<string, TextWriter> writerFn, Processor processor) {
 
-            this.writerFn = writerFn;
-            this.processor = processor;
+            _writerFn = writerFn;
+            _processor = processor;
          }
 
          public XmlDestination
          HandleResultDocument(string href, Uri? baseUri) {
 
-            TextWriter output = this.writerFn(href)
+            TextWriter output = _writerFn(href)
                ?? throw new CompileException($"The function of {nameof(XcstCompiler)}.{nameof(CompilationUnitHandler)} must not return null.");
 
-            var serializer = this.processor.NewSerializer(output);
+            var serializer = _processor.NewSerializer(output);
             serializer.SetOutputProperty(Serializer.METHOD, "text");
 
             return serializer;

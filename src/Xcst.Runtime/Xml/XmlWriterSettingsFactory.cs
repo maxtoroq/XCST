@@ -23,38 +23,38 @@ namespace Xcst.Xml {
    static class XmlWriterSettingsFactory {
 
       static readonly Action<XmlWriterSettings, XmlOutputMethod>
-      setOutputMethod;
+      _setOutputMethod;
 
       static readonly Action<XmlWriterSettings, string>
-      setDocTypePublic;
+      _setDocTypePublic;
 
       static readonly Action<XmlWriterSettings, string>
-      setDocTypeSystem;
+      _setDocTypeSystem;
 
       static readonly Action<XmlWriterSettings, string>
-      setMediaType;
+      _setMediaType;
 
       static readonly FieldInfo
-      cdataSectionsField;
+      _cdataSectionsField;
 
       static
       XmlWriterSettingsFactory() {
 
          Type settingsType = typeof(XmlWriterSettings);
 
-         setOutputMethod = (Action<XmlWriterSettings, XmlOutputMethod>)
+         _setOutputMethod = (Action<XmlWriterSettings, XmlOutputMethod>)
             Delegate.CreateDelegate(typeof(Action<XmlWriterSettings, XmlOutputMethod>), settingsType.GetProperty(nameof(XmlWriterSettings.OutputMethod), BindingFlags.Instance | BindingFlags.Public).GetSetMethod(true));
 
-         setDocTypePublic = (Action<XmlWriterSettings, string>)
+         _setDocTypePublic = (Action<XmlWriterSettings, string>)
             Delegate.CreateDelegate(typeof(Action<XmlWriterSettings, string>), settingsType.GetProperty("DocTypePublic", BindingFlags.Instance | BindingFlags.NonPublic).GetSetMethod(true));
 
-         setDocTypeSystem = (Action<XmlWriterSettings, string>)
+         _setDocTypeSystem = (Action<XmlWriterSettings, string>)
             Delegate.CreateDelegate(typeof(Action<XmlWriterSettings, string>), settingsType.GetProperty("DocTypeSystem", BindingFlags.Instance | BindingFlags.NonPublic).GetSetMethod(true));
 
-         setMediaType = (Action<XmlWriterSettings, string>)
+         _setMediaType = (Action<XmlWriterSettings, string>)
             Delegate.CreateDelegate(typeof(Action<XmlWriterSettings, string>), settingsType.GetProperty("MediaType", BindingFlags.Instance | BindingFlags.NonPublic).GetSetMethod(true));
 
-         cdataSectionsField = settingsType.GetField("cdataSections", BindingFlags.Instance | BindingFlags.NonPublic);
+         _cdataSectionsField = settingsType.GetField("cdataSections", BindingFlags.Instance | BindingFlags.NonPublic);
       }
 
       public static XmlWriterSettings
@@ -68,16 +68,16 @@ namespace Xcst.Xml {
             && parameters.Method != OutputParameters.Methods.Xml) {
 
             if (parameters.Method == OutputParameters.Methods.Html) {
-               setOutputMethod(settings, XmlOutputMethod.Html);
+               _setOutputMethod(settings, XmlOutputMethod.Html);
 
             } else if (parameters.Method == OutputParameters.Methods.Text) {
-               setOutputMethod(settings, XmlOutputMethod.Text);
+               _setOutputMethod(settings, XmlOutputMethod.Text);
             }
          }
 
          if (parameters.CdataSectionElements?.Count > 0) {
 
-            cdataSectionsField.SetValue(
+            _cdataSectionsField.SetValue(
                settings,
                parameters.CdataSectionElements
                   .Select(qn => new XmlQualifiedName(qn.Name, qn.Namespace))
@@ -86,11 +86,11 @@ namespace Xcst.Xml {
          }
 
          if (parameters.DoctypePublic != null) {
-            setDocTypePublic(settings, parameters.DoctypePublic);
+            _setDocTypePublic(settings, parameters.DoctypePublic);
          }
 
          if (parameters.DoctypeSystem != null) {
-            setDocTypeSystem(settings, parameters.DoctypeSystem);
+            _setDocTypeSystem(settings, parameters.DoctypeSystem);
          }
 
          if (parameters.EscapeUriAttributes != null) {
@@ -110,7 +110,7 @@ namespace Xcst.Xml {
          }
 
          if (parameters.MediaType != null) {
-            setMediaType(settings, parameters.MediaType);
+            _setMediaType(settings, parameters.MediaType);
          }
 
          if (parameters.OmitXmlDeclaration != null) {

@@ -88,6 +88,6 @@ namespace Xcst.Runtime {
 
       static bool
       IsWhiteSpace(char c) =>
-         Array.IndexOf(whiteSpaceChars, c) != -1;
+         Array.IndexOf(_whiteSpaceChars, c) != -1;
    }
 }

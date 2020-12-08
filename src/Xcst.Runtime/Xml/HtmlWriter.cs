@@ -20,19 +20,19 @@ namespace Xcst.Xml {
    class HtmlWriter : WrappingXmlWriter {
 
       bool
-      outputHtml5Doctype;
+      _outputHtml5Doctype;
 
       public
       HtmlWriter(XmlWriter baseWriter, bool outputHtml5Doctype)
          : base(baseWriter) {
 
-         this.outputHtml5Doctype = outputHtml5Doctype;
+         _outputHtml5Doctype = outputHtml5Doctype;
       }
 
       public override void
       WriteStartElement(string prefix, string localName, string ns) {
 
-         if (this.outputHtml5Doctype) {
+         if (_outputHtml5Doctype) {
 
             string name = !String.IsNullOrEmpty(prefix) ?
                (prefix + ":" + localName)
@@ -45,7 +45,7 @@ namespace Xcst.Xml {
                   break;
             }
 
-            this.outputHtml5Doctype = false;
+            _outputHtml5Doctype = false;
          }
 
          base.WriteStartElement(prefix, localName, ns);

@@ -78,7 +78,7 @@ namespace Xcst.Runtime {
    public class SequenceWriter<TItem> : BaseSequenceWriter<TItem> {
 
       readonly ICollection<TItem>
-      buffer;
+      _buffer;
 
       public
       SequenceWriter()
@@ -89,11 +89,11 @@ namespace Xcst.Runtime {
 
          if (buffer is null) throw new ArgumentNullException(nameof(buffer));
 
-         this.buffer = buffer;
+         _buffer = buffer;
       }
 
       public override void
-      WriteObject(TItem value) => this.buffer.Add(value);
+      WriteObject(TItem value) => _buffer.Add(value);
 
       public SequenceWriter<TItem>
       WriteSequenceConstructor(Action<ISequenceWriter<TItem>> seqCtor) {
@@ -129,10 +129,10 @@ namespace Xcst.Runtime {
       public TItem[]
       Flush() {
 
-         TItem[] seq = (this.buffer as List<TItem>)?.ToArray()
-            ?? this.buffer.ToArray();
+         TItem[] seq = (_buffer as List<TItem>)?.ToArray()
+            ?? _buffer.ToArray();
 
-         this.buffer.Clear();
+         _buffer.Clear();
 
          return seq;
       }
@@ -190,19 +190,19 @@ namespace Xcst.Runtime {
    class CastingSequenceWriter<TDerived, TBase> : ISequenceWriter<TDerived> where TDerived : TBase {
 
       readonly ISequenceWriter<TBase>
-      output;
+      _output;
 
       public
       CastingSequenceWriter(ISequenceWriter<TBase> baseWriter) {
 
          if (baseWriter is null) throw new ArgumentNullException(nameof(baseWriter));
 
-         this.output = baseWriter;
+         _output = baseWriter;
       }
 
       public void
       WriteObject(TDerived value) =>
-         this.output.WriteObject(value);
+         _output.WriteObject(value);
 
       public void
       WriteObject(IEnumerable<TDerived>? value) {
@@ -220,16 +220,16 @@ namespace Xcst.Runtime {
          WriteObject(value as IEnumerable<TDerived> ?? value?.Cast<TDerived>());
 
       public void
-      WriteString(TDerived text) => this.output.WriteString(text);
+      WriteString(TDerived text) => _output.WriteString(text);
 
       public void
-      WriteRaw(TDerived data) => this.output.WriteRaw(data);
+      WriteRaw(TDerived data) => _output.WriteRaw(data);
 
       public void
-      WriteComment(string? text) => this.output.WriteComment(text);
+      WriteComment(string? text) => _output.WriteComment(text);
 
       public void
-      CopyOf(TDerived value) => this.output.CopyOf(value);
+      CopyOf(TDerived value) => _output.CopyOf(value);
 
       public void
       CopyOf(IEnumerable<TDerived>? value) {
@@ -248,26 +248,26 @@ namespace Xcst.Runtime {
 
       public XcstWriter?
       TryCastToDocumentWriter() =>
-         this.output.TryCastToDocumentWriter();
+         _output.TryCastToDocumentWriter();
 
       public MapWriter?
-      TryCastToMapWriter() => this.output.TryCastToMapWriter();
+      TryCastToMapWriter() => _output.TryCastToMapWriter();
    }
 
    class StreamedSequenceWriter<TItem> : BaseSequenceWriter<TItem> {
 
       readonly Action<TItem>
-      outputFn;
+      _outputFn;
 
       public
       StreamedSequenceWriter(Action<TItem> outputFn) {
 
          if (outputFn is null) throw new ArgumentNullException(nameof(outputFn));
 
-         this.outputFn = outputFn;
+         _outputFn = outputFn;
       }
 
       public override void
-      WriteObject(TItem value) => this.outputFn(value);
+      WriteObject(TItem value) => _outputFn(value);
    }
 }

@@ -21,22 +21,22 @@ namespace Xcst.Compiler {
    public class CompileException : Exception {
 
       readonly string?
-      _ErrorCode;
+      _errorCode;
 
       readonly string?
-      _ModuleUri;
+      _moduleUri;
 
       readonly int
-      _LineNumber;
+      _lineNumber;
 
       public string?
-      ErrorCode => _ErrorCode;
+      ErrorCode => _errorCode;
 
       public string?
-      ModuleUri => _ModuleUri;
+      ModuleUri => _moduleUri;
 
       public int
-      LineNumber => _LineNumber;
+      LineNumber => _lineNumber;
 
       public
       CompileException(string message,
@@ -44,9 +44,9 @@ namespace Xcst.Compiler {
          string? moduleUri = null,
          int lineNumber = -1) : base(message) {
 
-         _ErrorCode = errorCode;
-         _ModuleUri = moduleUri;
-         _LineNumber = lineNumber;
+         _errorCode = errorCode;
+         _moduleUri = moduleUri;
+         _lineNumber = lineNumber;
       }
 
       protected

@@ -22,7 +22,7 @@ namespace Xcst {
    public class OutputParameters {
 
       readonly Dictionary<QualifiedName, object?>
-      parameters = new Dictionary<QualifiedName, object?>();
+      _parameters = new Dictionary<QualifiedName, object?>();
 
       public object?
       this[string name] =>
@@ -33,7 +33,7 @@ namespace Xcst {
          get {
             if (name is null) throw new ArgumentNullException(nameof(name));
 
-            if (parameters.TryGetValue(name, out var value)) {
+            if (_parameters.TryGetValue(name, out var value)) {
                return value;
             }
 
@@ -49,14 +49,14 @@ namespace Xcst {
                throw new ArgumentException("Use the strongly-typed properties to set standard parameters.", nameof(name));
             }
 
-            parameters[name] = value;
+            _parameters[name] = value;
          }
       }
 
       public bool?
       ByteOrderMark {
          get => (bool?)this[StandardParameters.ByteOrderMark];
-         set => parameters[StandardParameters.ByteOrderMark] = value;
+         set => _parameters[StandardParameters.ByteOrderMark] = value;
       }
 
       public IList<QualifiedName>?
@@ -70,67 +70,67 @@ namespace Xcst {
 
             return value;
          }
-         set => parameters[StandardParameters.CdataSectionElements] = value?.ToList();
+         set => _parameters[StandardParameters.CdataSectionElements] = value?.ToList();
       }
 
       public string?
       DoctypePublic {
          get => (string?)this[StandardParameters.DoctypePublic];
-         set => parameters[StandardParameters.DoctypePublic] = value;
+         set => _parameters[StandardParameters.DoctypePublic] = value;
       }
 
       public string?
       DoctypeSystem {
          get => (string?)this[StandardParameters.DoctypeSystem];
-         set => parameters[StandardParameters.DoctypeSystem] = value;
+         set => _parameters[StandardParameters.DoctypeSystem] = value;
       }
 
       public Encoding?
       Encoding {
          get => (Encoding?)this[StandardParameters.Encoding];
-         set => parameters[StandardParameters.Encoding] = value;
+         set => _parameters[StandardParameters.Encoding] = value;
       }
 
       public bool?
       EscapeUriAttributes {
          get => (bool?)this[StandardParameters.EscapeUriAttributes];
-         set => parameters[StandardParameters.EscapeUriAttributes] = value;
+         set => _parameters[StandardParameters.EscapeUriAttributes] = value;
       }
 
       public decimal?
       HtmlVersion {
          get => (decimal?)this[StandardParameters.HtmlVersion];
-         set => parameters[StandardParameters.HtmlVersion] = value;
+         set => _parameters[StandardParameters.HtmlVersion] = value;
       }
 
       public bool?
       IncludeContentType {
          get => (bool?)this[StandardParameters.IncludeContentType];
-         set => parameters[StandardParameters.IncludeContentType] = value;
+         set => _parameters[StandardParameters.IncludeContentType] = value;
       }
 
       public bool?
       Indent {
          get => (bool?)this[StandardParameters.Indent];
-         set => parameters[StandardParameters.Indent] = value;
+         set => _parameters[StandardParameters.Indent] = value;
       }
 
       public int?
       IndentSpaces {
          get => (int?)this[StandardParameters.IndentSpaces];
-         set => parameters[StandardParameters.IndentSpaces] = value;
+         set => _parameters[StandardParameters.IndentSpaces] = value;
       }
 
       public string?
       ItemSeparator {
          get => (string?)this[StandardParameters.ItemSeparator];
-         set => parameters[StandardParameters.ItemSeparator] = value;
+         set => _parameters[StandardParameters.ItemSeparator] = value;
       }
 
       public string?
       MediaType {
          get => (string?)this[StandardParameters.MediaType];
-         set => parameters[StandardParameters.MediaType] = value;
+         set => _parameters[StandardParameters.MediaType] = value;
       }
 
       public QualifiedName?
@@ -144,26 +144,26 @@ namespace Xcst {
                value = Methods.Parse(value.Name);
             }
 
-            parameters[StandardParameters.Method] = value;
+            _parameters[StandardParameters.Method] = value;
          }
       }
 
       public bool?
       OmitXmlDeclaration {
          get => (bool?)this[StandardParameters.OmitXmlDeclaration];
-         set => parameters[StandardParameters.OmitXmlDeclaration] = value;
+         set => _parameters[StandardParameters.OmitXmlDeclaration] = value;
       }
 
       public bool?
       SkipCharacterCheck {
          get => (bool?)this[StandardParameters.SkipCharacterCheck];
-         set => parameters[StandardParameters.SkipCharacterCheck] = value;
+         set => _parameters[StandardParameters.SkipCharacterCheck] = value;
       }
 
       public XmlStandalone?
       Standalone {
          get => (XmlStandalone?)this[StandardParameters.Standalone];
-         set => parameters[StandardParameters.Standalone] = value;
+         set => _parameters[StandardParameters.Standalone] = value;
       }
 
       public IList<QualifiedName>?
@@ -177,19 +177,19 @@ namespace Xcst {
 
             return value;
          }
-         set => parameters[StandardParameters.SuppressIndentation] = value?.ToList();
+         set => _parameters[StandardParameters.SuppressIndentation] = value?.ToList();
       }
 
       public bool?
       UndeclarePrefixes {
          get => (bool?)this[StandardParameters.UndeclarePrefixes];
-         set => parameters[StandardParameters.UndeclarePrefixes] = value;
+         set => _parameters[StandardParameters.UndeclarePrefixes] = value;
       }
 
       public string?
       Version {
          get => (string?)this[StandardParameters.Version];
-         set => parameters[StandardParameters.Version] = value;
+         set => _parameters[StandardParameters.Version] = value;
       }
 
       public
@@ -206,8 +206,8 @@ namespace Xcst {
       internal void
       Merge(OutputParameters other) {
 
-         foreach (var pair in other.parameters) {
-            this.parameters[pair.Key] = pair.Value;
+         foreach (var pair in other._parameters) {
+            _parameters[pair.Key] = pair.Value;
          }
       }
 

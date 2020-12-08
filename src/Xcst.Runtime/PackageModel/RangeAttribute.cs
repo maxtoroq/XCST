@@ -50,7 +50,7 @@ namespace Xcst.PackageModel {
       }
 
       bool
-      conversionInit = false;
+      _conversionInit = false;
 
       public
       RangeAttribute(Type type, string? minimum = null, string? maximum = null)
@@ -98,7 +98,7 @@ namespace Xcst.PackageModel {
       void
       SetupConversion() {
 
-         if (this.conversionInit) {
+         if (_conversionInit) {
             return;
          }
 
@@ -125,7 +125,7 @@ namespace Xcst.PackageModel {
 
          BaseInitialize(this, min, max, conversion);
 
-         this.conversionInit = true;
+         _conversionInit = true;
       }
    }
 }

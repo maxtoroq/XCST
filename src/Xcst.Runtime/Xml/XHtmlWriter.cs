@@ -55,7 +55,7 @@ namespace Xcst.Xml {
    class XHtmlWriter : WrappingXmlWriter {
 
       readonly Stack<XmlQualifiedName>
-      elementStack = new Stack<XmlQualifiedName>();
+      _elementStack = new Stack<XmlQualifiedName>();
 
       public
       XHtmlWriter(XmlWriter baseWriter)
@@ -64,7 +64,7 @@ namespace Xcst.Xml {
       public override void
       WriteStartElement(string prefix, string localName, string ns) {
 
-         this.elementStack.Push(new XmlQualifiedName(localName, ns));
+         _elementStack.Push(new XmlQualifiedName(localName, ns));
          base.WriteStartElement(prefix, localName, ns);
       }
 
@@ -78,7 +78,7 @@ namespace Xcst.Xml {
       WriteXHMLEndElement(bool fullEndTag) {
 
          bool writeFullEndTag = fullEndTag;
-         XmlQualifiedName elementName = elementStack.Pop();
+         XmlQualifiedName elementName = _elementStack.Pop();
 
          if (String.IsNullOrEmpty(elementName.Namespace)
             || elementName.Namespace == "http://www.w3.org/1999/xhtml") {

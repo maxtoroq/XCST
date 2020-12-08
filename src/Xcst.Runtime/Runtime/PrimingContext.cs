@@ -23,16 +23,16 @@ namespace Xcst.Runtime {
    public class PrimingContext {
 
       static readonly PrimingContext
-      EmptyContext = new PrimingContext(0);
+      _emptyContext = new PrimingContext(0);
 
       readonly Dictionary<string, object?>?
-      parameters;
+      _parameters;
 
       public static PrimingContext
       Create(int paramCount) {
 
          if (paramCount == 0) {
-            return EmptyContext;
+            return _emptyContext;
          }
 
          return new PrimingContext(paramCount);
@@ -42,7 +42,7 @@ namespace Xcst.Runtime {
       PrimingContext(int paramCount) {
 
          if (paramCount > 0) {
-            this.parameters = new Dictionary<string, object?>(paramCount);
+            _parameters = new Dictionary<string, object?>(paramCount);
          }
       }
 
@@ -51,8 +51,8 @@ namespace Xcst.Runtime {
 
          if (name is null) throw new ArgumentNullException(nameof(name));
 
-         Debug.Assert(this.parameters != null);
-         this.parameters![name] = value;
+         Debug.Assert(_parameters != null);
+         _parameters![name] = value;
 
          return this;
       }
@@ -62,9 +62,9 @@ namespace Xcst.Runtime {
 
          object? value = null;
 
-         if (this.parameters?.TryGetValue(name, out value) == true) {
+         if (_parameters?.TryGetValue(name, out value) == true) {
 
-            this.parameters.Remove(name);
+            _parameters.Remove(name);
 
             try {
 #pragma warning disable CS8603 // let caller decide nullability

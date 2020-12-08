@@ -30,7 +30,7 @@ namespace Xcst {
    public abstract class XcstWriter : ISequenceWriter<object?>, IDisposable {
 
       bool
-      disposed;
+      _disposed;
 
       public virtual Uri
       OutputUri { get; }
@@ -409,11 +409,11 @@ namespace Xcst {
       protected virtual void
       Dispose(bool disposing) {
 
-         if (this.disposed) {
+         if (_disposed) {
             return;
          }
 
-         this.disposed = true;
+         _disposed = true;
       }
    }
 }

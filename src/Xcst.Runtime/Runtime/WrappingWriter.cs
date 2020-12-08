@@ -19,15 +19,15 @@ namespace Xcst.Runtime {
    abstract class WrappingWriter : XcstWriter {
 
       readonly XcstWriter
-      output;
+      _output;
 
       public override Uri
-      OutputUri => output.OutputUri;
+      OutputUri => _output.OutputUri;
 
       public override SimpleContent
       SimpleContent {
-         get => output.SimpleContent;
-         internal set => output.SimpleContent = value;
+         get => _output.SimpleContent;
+         internal set => _output.SimpleContent = value;
       }
 
       protected
@@ -36,57 +36,57 @@ namespace Xcst.Runtime {
 
          if (baseWriter is null) throw new ArgumentNullException(nameof(baseWriter));
 
-         this.output = baseWriter;
+         _output = baseWriter;
       }
 
       public override bool
-      TryCopyOf(object? value) => this.output.TryCopyOf(value);
+      TryCopyOf(object? value) => _output.TryCopyOf(value);
 
       public override void
       WriteChars(char[] buffer, int index, int count) =>
-         this.output.WriteChars(buffer, index, count);
+         _output.WriteChars(buffer, index, count);
 
       public override void
       WriteComment(string? text) =>
-         this.output.WriteComment(text);
+         _output.WriteComment(text);
 
       public override void
       WriteEndAttribute() =>
-         this.output.WriteEndAttribute();
+         _output.WriteEndAttribute();
 
       public override void
       WriteEndElement() =>
-         this.output.WriteEndElement();
+         _output.WriteEndElement();
 
       public override void
       WriteProcessingInstruction(string name, string? text) =>
-         this.output.WriteProcessingInstruction(name, text);
+         _output.WriteProcessingInstruction(name, text);
 
       public override void
-      WriteRaw(string? data) => this.output.WriteRaw(data);
+      WriteRaw(string? data) => _output.WriteRaw(data);
 
       public override void
       WriteStartAttribute(string? prefix, string localName, string? ns, string? separator) =>
-         this.output.WriteStartAttribute(prefix, localName, ns, separator);
+         _output.WriteStartAttribute(prefix, localName, ns, separator);
 
       public override void
       WriteStartElement(string? prefix, string localName, string? ns) =>
-         this.output.WriteStartElement(prefix, localName, ns);
+         _output.WriteStartElement(prefix, localName, ns);
 
       public override void
-      WriteString(string? text) => this.output.WriteString(text);
+      WriteString(string? text) => _output.WriteString(text);
 
       protected internal override void
-      WriteItem(object? value) => this.output.WriteItem(value);
+      WriteItem(object? value) => _output.WriteItem(value);
 
       public override void
-      Flush() => this.output.Flush();
+      Flush() => _output.Flush();
 
       protected override void
       Dispose(bool disposing) {
 
          if (disposing) {
-            this.output.Dispose();
+            _output.Dispose();
          }
 
          base.Dispose(disposing);

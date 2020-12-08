@@ -21,18 +21,18 @@ namespace Xcst.Tests {
    static class TestsHelper {
 
       const bool
-      PrintCode = false;
+      _printCode = false;
 
       static readonly XcstCompilerFactory
-      CompilerFactory = new XcstCompilerFactory {
+      _compilerFactory = new XcstCompilerFactory {
          EnableExtensions = true
       };
 
       static readonly string
-      InitialName = "Q{http://maxtoroq.github.io/XCST}initial-template";
+      _initialName = "Q{http://maxtoroq.github.io/XCST}initial-template";
 
       static readonly string
-      ExpectedName = "expected";
+      _expectedName = "expected";
 
       public static void
       RunXcstTest(string packageFile, string testName, string testNamespace, bool correct, bool fail) {
@@ -47,7 +47,7 @@ namespace Xcst.Tests {
             xcstResult = codegenResult.Item1;
             packageName = codegenResult.Item2;
 
-         } catch (CompileException ex) when (correct || PrintCode) {
+         } catch (CompileException ex) when (correct || _printCode) {
 
             Console.WriteLine($"// {ex.Message}");
             Console.WriteLine($"// Module URI: {ex.ModuleUri}");
@@ -61,9 +61,9 @@ namespace Xcst.Tests {
 
          if (fail) {
 
-            if (!xcstResult.Templates.Contains(InitialName)) {
+            if (!xcstResult.Templates.Contains(_initialName)) {
                TestAssert.Fail("A failing package should define an initial template.");
-            } else if (xcstResult.Templates.Contains(ExpectedName)) {
+            } else if (xcstResult.Templates.Contains(_expectedName)) {
                TestAssert.Fail("A failing package should not define an 'expected' template.");
             }
 
@@ -85,20 +85,20 @@ namespace Xcst.Tests {
 
             if (outputOpt != ' ') {
 
-               if (!xcstResult.Templates.Contains(InitialName)) {
+               if (!xcstResult.Templates.Contains(_initialName)) {
                   TestAssert.Fail("When an output document exists the package should define an initial template.");
-               } else if (xcstResult.Templates.Contains(ExpectedName)) {
+               } else if (xcstResult.Templates.Contains(_expectedName)) {
                   TestAssert.Fail("When an output document exists the package should not define an 'expected' template.");
                }
 
-            } else if (xcstResult.Templates.Contains(ExpectedName)
-               && !xcstResult.Templates.Contains(InitialName)) {
+            } else if (xcstResult.Templates.Contains(_expectedName)
+               && !xcstResult.Templates.Contains(_initialName)) {
 
                TestAssert.Fail("A package that defines an 'expected' template without an initial template makes no sense.");
             }
          }
 
-         bool printCode = PrintCode;
+         bool printCode = _printCode;
 
          try {
 
@@ -142,9 +142,9 @@ namespace Xcst.Tests {
                         break;
                   }
 
-               } else if (xcstResult.Templates.Contains(InitialName)) {
+               } else if (xcstResult.Templates.Contains(_initialName)) {
 
-                  if (xcstResult.Templates.Contains(ExpectedName)) {
+                  if (xcstResult.Templates.Contains(_expectedName)) {
                      TestAssert.IsTrue(OutputEqualsToExpected(packageType, packageUri));
                   } else {
                      SimplyRun(packageType, packageUri);
@@ -179,7 +179,7 @@ namespace Xcst.Tests {
       public static XcstCompiler
       CreateCompiler() {
 
-         XcstCompiler compiler = CompilerFactory.CreateCompiler();
+         XcstCompiler compiler = _compilerFactory.CreateCompiler();
          compiler.UseLineDirective = true;
          compiler.PackageTypeResolver = n => Assembly.GetExecutingAssembly().GetType(n);
 
@@ -334,7 +334,7 @@ namespace Xcst.Tests {
 
          using (XmlWriter expectedWriter = expectedDoc.CreateWriter()) {
 
-            evaluator.CallTemplate(ExpectedName)
+            evaluator.CallTemplate(_expectedName)
                .OutputTo(expectedWriter)
                .Run();
          }

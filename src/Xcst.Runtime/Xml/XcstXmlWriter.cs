@@ -20,17 +20,17 @@ namespace Xcst.Xml {
    class XcstXmlWriter : XmlWriter {
 
       readonly XcstWriter
-      output;
+      _output;
 
       WriteState
-      state = WriteState.Content;
+      _state = WriteState.Content;
 
       public override WriteState
-      WriteState => state;
+      WriteState => _state;
 
       public
       XcstXmlWriter(XcstWriter writer) {
-         this.output = writer;
+         _output = writer;
       }
 
       public override void
@@ -46,8 +46,8 @@ namespace Xcst.Xml {
 
       public override void
       WriteCData(string text) {
-         this.output.WriteString(text);
-         this.state = WriteState.Content;
+         _output.WriteString(text);
+         _state = WriteState.Content;
       }
 
       public override void
@@ -57,17 +57,17 @@ namespace Xcst.Xml {
       public override void
       WriteChars(char[] buffer, int index, int count) {
 
-         this.output.WriteChars(buffer, index, count);
+         _output.WriteChars(buffer, index, count);
 
-         if (this.state != WriteState.Attribute) {
-            this.state = WriteState.Content;
+         if (_state != WriteState.Attribute) {
+            _state = WriteState.Content;
          }
       }
 
       public override void
       WriteComment(string text) {
-         this.output.WriteComment(text);
-         this.state = WriteState.Content;
+         _output.WriteComment(text);
+         _state = WriteState.Content;
       }
 
       public override void
@@ -75,19 +75,19 @@ namespace Xcst.Xml {
 
       public override void
       WriteEndAttribute() {
-         this.output.WriteEndAttribute();
-         this.state = WriteState.Element;
+         _output.WriteEndAttribute();
+         _state = WriteState.Element;
       }
 
       public override void
       WriteEndDocument() {
-         this.state = WriteState.Content;
+         _state = WriteState.Content;
       }
 
       public override void
       WriteEndElement() {
-         this.output.WriteEndElement();
-         this.state = WriteState.Content;
+         _output.WriteEndElement();
+         _state = WriteState.Content;
       }
 
       public override void
@@ -96,14 +96,14 @@ namespace Xcst.Xml {
 
       public override void
       WriteFullEndElement() {
-         this.output.WriteEndElement();
-         this.state = WriteState.Content;
+         _output.WriteEndElement();
+         _state = WriteState.Content;
       }
 
       public override void
       WriteProcessingInstruction(string name, string text) {
-         this.output.WriteProcessingInstruction(name, text);
-         this.state = WriteState.Content;
+         _output.WriteProcessingInstruction(name, text);
+         _state = WriteState.Content;
       }
 
       public override void
@@ -112,13 +112,13 @@ namespace Xcst.Xml {
 
       public override void
       WriteRaw(string data) {
-         this.output.WriteRaw(data);
+         _output.WriteRaw(data);
       }
 
       public override void
       WriteStartAttribute(string prefix, string localName, string ns) {
-         this.output.WriteStartAttribute(prefix, localName, ns);
-         this.state = WriteState.Attribute;
+         _output.WriteStartAttribute(prefix, localName, ns);
+         _state = WriteState.Attribute;
       }
 
       public override void
@@ -129,17 +129,17 @@ namespace Xcst.Xml {
 
       public override void
       WriteStartElement(string prefix, string localName, string ns) {
-         this.output.WriteStartElement(prefix, localName, ns);
-         this.state = WriteState.Element;
+         _output.WriteStartElement(prefix, localName, ns);
+         _state = WriteState.Element;
       }
 
       public override void
       WriteString(string text) {
 
-         this.output.WriteString(text);
+         _output.WriteString(text);
 
-         if (this.state != WriteState.Attribute) {
-            this.state = WriteState.Content;
+         if (_state != WriteState.Attribute) {
+            _state = WriteState.Content;
          }
       }
 
@@ -149,8 +149,8 @@ namespace Xcst.Xml {
 
       public override void
       WriteWhitespace(string ws) {
-         this.output.WriteString(ws);
-         this.state = WriteState.Content;
+         _output.WriteString(ws);
+         _state = WriteState.Content;
       }
    }
 }

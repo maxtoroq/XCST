@@ -36,13 +36,13 @@ namespace Xcst.Runtime {
    public class ExpandoMapWriter : MapWriter {
 
       readonly ISequenceWriter<ExpandoObject>?
-      mapOutput;
+      _mapOutput;
 
       readonly ISequenceWriter<object>?
-      arrayOutput;
+      _arrayOutput;
 
       readonly List<object>
-      objects = new List<object>();
+      _objects = new List<object>();
 
       public
       ExpandoMapWriter(ISequenceWriter<ExpandoObject> output) {
@@ -51,7 +51,7 @@ namespace Xcst.Runtime {
 
          Debug.Assert(output.TryCastToDocumentWriter() is null);
 
-         this.mapOutput = output;
+         _mapOutput = output;
       }
 
       public
@@ -61,7 +61,7 @@ namespace Xcst.Runtime {
 
          Debug.Assert(output.TryCastToDocumentWriter() is null);
 
-         this.arrayOutput = output;
+         _arrayOutput = output;
       }
 
       public override void
@@ -69,11 +69,11 @@ namespace Xcst.Runtime {
 
          var map = new ExpandoObject();
 
-         if (this.objects.Count == 0) {
+         if (_objects.Count == 0) {
 
-            Debug.Assert(this.mapOutput != null);
+            Debug.Assert(_mapOutput != null);
 
-            this.mapOutput!.WriteObject(map);
+            _mapOutput!.WriteObject(map);
             Push(map);
             return;
          }
@@ -104,7 +104,7 @@ namespace Xcst.Runtime {
          var arr = new ExpandoArray();
          object? parent;
 
-         if (this.objects.Count == 0
+         if (_objects.Count == 0
             || (parent = Peek<object>()) is ExpandoEntry
             || parent is ExpandoArray) {
 
@@ -140,10 +140,10 @@ namespace Xcst.Runtime {
          // Must Pop before that
          Pop();
 
-         if (this.objects.Count == 0) {
+         if (_objects.Count == 0) {
 
             // Cast to object to avoid flattening
-            this.arrayOutput!.WriteObject((object)items);
+            _arrayOutput!.WriteObject((object)items);
 
          } else {
 
@@ -237,24 +237,24 @@ namespace Xcst.Runtime {
          throw new NotImplementedException();
 
       void
-      Push(object obj) => this.objects.Add(obj);
+      Push(object obj) => _objects.Add(obj);
 
       T?
       Peek<T>(int offset = 0) where T : class {
 
-         int i = this.objects.Count - 1 - offset;
+         int i = _objects.Count - 1 - offset;
 
          Debug.Assert(i >= 0);
 
-         return this.objects[i] as T;
+         return _objects[i] as T;
       }
 
       void
       Pop() {
 
-         Debug.Assert(this.objects.Count > 0);
+         Debug.Assert(_objects.Count > 0);
 
-         this.objects.RemoveAt(this.objects.Count - 1);
+         _objects.RemoveAt(_objects.Count - 1);
       }
 
       void

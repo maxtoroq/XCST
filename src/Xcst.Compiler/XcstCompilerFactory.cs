@@ -29,51 +29,51 @@ namespace Xcst.Compiler {
    public class XcstCompilerFactory {
 
       static readonly IDictionary<Uri, XcstExtensionLoader>
-      emptyExtensions = new Dictionary<Uri, XcstExtensionLoader>(0);
+      _emptyExtensions = new Dictionary<Uri, XcstExtensionLoader>(0);
 
       readonly Processor
-      processor;
+      _processor;
 
       readonly Lazy<XsltExecutable>
-      executable;
+      _executable;
 
       readonly Dictionary<Uri, XcstExtensionLoader>
-      extensions = new Dictionary<Uri, XcstExtensionLoader>();
+      _extensions = new Dictionary<Uri, XcstExtensionLoader>();
 
       bool
-      _EnableExtensions;
+      _enableExtensions;
 
       public bool
       EnableExtensions {
-         get => _EnableExtensions;
+         get => _enableExtensions;
          set {
             EnsureExecNotCreated();
-            _EnableExtensions = value;
+            _enableExtensions = value;
          }
       }
 
       public bool
       ProcessXInclude {
          set =>
-            this.processor.SetProperty("http://saxon.sf.net/feature/xinclude-aware", (value) ? "on" : "off");
+            _processor.SetProperty("http://saxon.sf.net/feature/xinclude-aware", (value) ? "on" : "off");
       }
 
       public
       XcstCompilerFactory() {
 
-         this.processor = new Processor();
-         this.processor.SetProperty("http://saxon.sf.net/feature/linenumbering", "on");
+         _processor = new Processor();
+         _processor.SetProperty("http://saxon.sf.net/feature/linenumbering", "on");
 
-         this.processor.ErrorWriter = TextWriter.Null;
+         _processor.ErrorWriter = TextWriter.Null;
 
-         this.processor.RegisterExtensionFunction(new InvokeExternalFunctionFunction());
-         this.processor.RegisterExtensionFunction(new LineNumberFunction());
-         this.processor.RegisterExtensionFunction(new LocalPathFunction());
-         this.processor.RegisterExtensionFunction(new PackageLocationFunction());
-         this.processor.RegisterExtensionFunction(new PackageManifestFunction(this.processor));
-         this.processor.RegisterExtensionFunction(new StringIdFunction());
+         _processor.RegisterExtensionFunction(new InvokeExternalFunctionFunction());
+         _processor.RegisterExtensionFunction(new LineNumberFunction());
+         _processor.RegisterExtensionFunction(new LocalPathFunction());
+         _processor.RegisterExtensionFunction(new PackageLocationFunction());
+         _processor.RegisterExtensionFunction(new PackageManifestFunction(_processor));
+         _processor.RegisterExtensionFunction(new StringIdFunction());
 
-         this.executable = new Lazy<XsltExecutable>(CreateCompilerExec);
+         _executable = new Lazy<XsltExecutable>(CreateCompilerExec);
       }
 
       XsltExecutable
@@ -81,7 +81,7 @@ namespace Xcst.Compiler {
 
          Assembly thisAssembly = GetType().Assembly;
 
-         XsltCompiler xsltCompiler = this.processor.NewXsltCompiler();
+         XsltCompiler xsltCompiler = _processor.NewXsltCompiler();
 
          Uri baseUri = new UriBuilder {
             Scheme = CompilerResolver.UriSchemeClires,
@@ -130,14 +130,14 @@ namespace Xcst.Compiler {
 
       void
       EnsureExecNotCreated() {
-         if (this.executable.IsValueCreated) {
+         if (_executable.IsValueCreated) {
             throw new InvalidOperationException();
          }
       }
 
       public XcstCompiler
       CreateCompiler() =>
-         new XcstCompiler(() => this.executable.Value, GetExtensions, this.processor);
+         new XcstCompiler(() => _executable.Value, GetExtensions, _processor);
 
       public void
       RegisterExtension(XcstExtensionLoader extensionLoader) {
@@ -172,7 +172,7 @@ namespace Xcst.Compiler {
             throw new ArgumentException("Invalid URI.", nameof(extensionNamespace));
          }
 
-         this.extensions[extensionNamespace] = extensionLoader;
+         _extensions[extensionNamespace] = extensionLoader;
       }
 
       public void
@@ -213,7 +213,7 @@ namespace Xcst.Compiler {
          writer.WriteAttributeString("version", "2.0");
 
          if (this.EnableExtensions) {
-            foreach (Uri ns in this.extensions.Keys) {
+            foreach (Uri ns in _extensions.Keys) {
                writer.WriteStartElement("import", xsltNs);
                writer.WriteAttributeString("href", ns.AbsoluteUri);
                writer.WriteEndElement();
@@ -227,7 +227,7 @@ namespace Xcst.Compiler {
       LoadExtension(Uri ns) {
 
          if (this.EnableExtensions
-            && this.extensions.TryGetValue(ns, out var loader)) {
+            && _extensions.TryGetValue(ns, out var loader)) {
 
             return loader.LoadSource();
          }
@@ -239,10 +239,10 @@ namespace Xcst.Compiler {
       GetExtensions() {
 
          if (this.EnableExtensions) {
-            return this.extensions;
+            return _extensions;
          }
 
-         return emptyExtensions;
+         return _emptyExtensions;
       }
 
       class CompilerResolver : XmlResolver {
@@ -251,19 +251,19 @@ namespace Xcst.Compiler {
          UriSchemeClires = "clires";
 
          readonly ZipArchive
-         archive;
+         _archive;
 
          readonly Uri
-         principalModuleUri;
+         _principalModuleUri;
 
          readonly Uri
-         extensionsModuleUri;
+         _extensionsModuleUri;
 
          readonly Func<Stream>
-         loadExtensionsModuleFn;
+         _loadExtensionsModuleFn;
 
          readonly Func<Uri, Stream?>
-         loadExtensionXslt;
+         _loadExtensionXslt;
 
          public override ICredentials
          Credentials { set { } }
@@ -276,12 +276,12 @@ namespace Xcst.Compiler {
             if (loadExtensionsModuleFn is null) throw new ArgumentNullException(nameof(loadExtensionsModuleFn));
             if (loadExtensionXslt is null) throw new ArgumentNullException(nameof(loadExtensionXslt));
 
-            this.archive = archive;
-            this.principalModuleUri = principalModuleUri;
-            this.extensionsModuleUri = new Uri(principalModuleUri, "xcst-extensions.xsl");
+            _archive = archive;
+            _principalModuleUri = principalModuleUri;
+            _extensionsModuleUri = new Uri(principalModuleUri, "xcst-extensions.xsl");
 
-            this.loadExtensionsModuleFn = loadExtensionsModuleFn;
-            this.loadExtensionXslt = loadExtensionXslt;
+            _loadExtensionsModuleFn = loadExtensionsModuleFn;
+            _loadExtensionXslt = loadExtensionXslt;
          }
 
          public override object?
@@ -294,20 +294,20 @@ namespace Xcst.Compiler {
             }
 
             if (absoluteUri.Scheme != UriSchemeClires) {
-               return this.loadExtensionXslt(absoluteUri);
+               return _loadExtensionXslt(absoluteUri);
 
-            } else if (absoluteUri == this.extensionsModuleUri) {
-               return loadExtensionsModuleFn();
+            } else if (absoluteUri == _extensionsModuleUri) {
+               return _loadExtensionsModuleFn();
             }
 
-            Uri relativeUri = this.principalModuleUri.MakeRelativeUri(absoluteUri);
+            Uri relativeUri = _principalModuleUri.MakeRelativeUri(absoluteUri);
             string fileName = relativeUri.OriginalString;
 
             if (fileName.Length == 0) {
-               fileName = this.principalModuleUri.AbsoluteUri.Split('/').Last();
+               fileName = _principalModuleUri.AbsoluteUri.Split('/').Last();
             }
 
-            return this.archive
+            return _archive
                .GetEntry(fileName)
                .Open();
          }

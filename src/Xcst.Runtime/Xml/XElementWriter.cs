@@ -29,23 +29,23 @@ namespace Xcst.Xml {
    class XElementWriter : WrappingXmlWriter {
 
       readonly XDocument
-      document;
+      _document;
 
       readonly ISequenceWriter<XElement>
-      output;
+      _output;
 
       int
-      depth;
+      _depth;
 
       bool
-      elementFlushed;
+      _elementFlushed;
 
       public
       XElementWriter(XDocument document, ISequenceWriter<XElement> output)
          : base(document.CreateWriter()) {
 
-         this.document = document;
-         this.output = output;
+         _document = document;
+         _output = output;
       }
 
       public override void
@@ -53,7 +53,7 @@ namespace Xcst.Xml {
 
          base.WriteStartElement(prefix, localName, ns);
 
-         this.depth++;
+         _depth++;
       }
 
       public override void
@@ -61,9 +61,9 @@ namespace Xcst.Xml {
 
          base.WriteEndElement();
 
-         this.depth--;
+         _depth--;
 
-         if (this.depth == 0) {
+         if (_depth == 0) {
             Close();
          }
       }
@@ -71,21 +71,21 @@ namespace Xcst.Xml {
       public override void
       Close() {
 
-         Debug.Assert(!this.elementFlushed);
+         Debug.Assert(!_elementFlushed);
 
-         if (!this.elementFlushed) {
+         if (!_elementFlushed) {
 
             base.Close();
 
-            XElement el = this.document.Root;
+            XElement el = _document.Root;
 
             Assert.IsNotNull(el);
 
             el.Remove();
 
-            this.output.WriteObject(el);
+            _output.WriteObject(el);
 
-            this.elementFlushed = true;
+            _elementFlushed = true;
          }
       }
    }

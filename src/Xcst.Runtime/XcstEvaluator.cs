@@ -25,19 +25,19 @@ namespace Xcst {
    public class XcstEvaluator {
 
       static readonly QualifiedName
-      InitialTemplate = new QualifiedName("initial-template", XmlNamespaces.Xcst);
+      _initialTemplate = new QualifiedName("initial-template", XmlNamespaces.Xcst);
 
       readonly IXcstPackage
-      package;
+      _package;
 
       readonly Dictionary<string, object?>
-      parameters = new Dictionary<string, object?>();
+      _parameters = new Dictionary<string, object?>();
 
       bool
-      paramsLocked = false;
+      _paramsLocked = false;
 
       PrimingContext?
-      primingContext;
+      _primingContext;
 
       public static XcstEvaluator
       Using(object package) {
@@ -64,7 +64,7 @@ namespace Xcst {
 
          if (package is null) throw new ArgumentNullException(nameof(package));
 
-         this.package = package;
+         _package = package;
       }
 
       public XcstEvaluator
@@ -76,11 +76,11 @@ namespace Xcst {
          // of the first prime (for parameters not specified in the second prime)
          // the workaround is to simply create a new evaluator
 
-         if (this.paramsLocked) {
+         if (_paramsLocked) {
             throw new InvalidOperationException($"Cannot modify parameters, use a new {nameof(XcstEvaluator)} object.");
          }
 
-         this.parameters[name] = value;
+         _parameters[name] = value;
 
          return this;
       }
@@ -140,7 +140,7 @@ namespace Xcst {
       }
 
       public XcstTemplateEvaluator
-      CallInitialTemplate() => CallTemplate(InitialTemplate);
+      CallInitialTemplate() => CallTemplate(_initialTemplate);
 
       public XcstTemplateEvaluator
       CallTemplate(string name) {
@@ -155,27 +155,27 @@ namespace Xcst {
 
          if (name is null) throw new ArgumentNullException(nameof(name));
 
-         this.paramsLocked = true;
+         _paramsLocked = true;
 
-         return new XcstTemplateEvaluator(this.package, Prime, name);
+         return new XcstTemplateEvaluator(_package, Prime, name);
       }
 
       internal PrimingContext
       Prime() {
 
-         if (this.primingContext is null) {
+         if (_primingContext is null) {
 
-            this.primingContext = PrimingContext.Create(this.parameters.Count);
+            _primingContext = PrimingContext.Create(_parameters.Count);
 
-            foreach (var param in this.parameters) {
-               this.primingContext.WithParam(param.Key, param.Value);
+            foreach (var param in _parameters) {
+               _primingContext.WithParam(param.Key, param.Value);
             }
 
-            this.parameters.Clear();
-            this.package.Prime(this.primingContext, null);
+            _parameters.Clear();
+            _package.Prime(_primingContext, null);
          }
 
-         return this.primingContext;
+         return _primingContext;
       }
    }
 
@@ -183,13 +183,13 @@ namespace Xcst {
          where TPackage : IXcstPackage {
 
       readonly TPackage
-      package;
+      _package;
 
       internal
       XcstEvaluator(TPackage package)
          : base(package) {
 
-         this.package = package;
+         _package = package;
       }
 
       public new XcstEvaluator<TPackage>
@@ -219,9 +219,9 @@ namespace Xcst {
          if (functionCaller is null) throw new ArgumentNullException(nameof(functionCaller));
 
          void executionFn(OutputParameters? overrideParams, bool skipFlush) =>
-            functionCaller(this.package);
+            functionCaller(_package);
 
-         return new XcstOutputter(this.package, Prime, executionFn);
+         return new XcstOutputter(_package, Prime, executionFn);
       }
 
       public XcstOutputter<TResult>
@@ -229,28 +229,28 @@ namespace Xcst {
 
          if (functionCaller is null) throw new ArgumentNullException(nameof(functionCaller));
 
-         TResult executionFn() => functionCaller(this.package);
+         TResult executionFn() => functionCaller(_package);
 
-         return new XcstOutputter<TResult>(this.package, Prime, executionFn);
+         return new XcstOutputter<TResult>(_package, Prime, executionFn);
       }
    }
 
    public class XcstTemplateEvaluator {
 
       readonly IXcstPackage
-      package;
+      _package;
 
       readonly Func<PrimingContext>
-      primeFn;
+      _primeFn;
 
       readonly QualifiedName
-      name;
+      _name;
 
       readonly Dictionary<string, object?>
-      templateParameters = new Dictionary<string, object?>();
+      _templateParameters = new Dictionary<string, object?>();
 
       readonly Dictionary<string, object?>
-      tunnelParameters = new Dictionary<string, object?>();
+      _tunnelParameters = new Dictionary<string, object?>();
 
       internal
       XcstTemplateEvaluator(IXcstPackage package, Func<PrimingContext> primeFn, QualifiedName name) {
@@ -259,9 +259,9 @@ namespace Xcst {
          if (primeFn is null) throw new ArgumentNullException(nameof(primeFn));
          if (name is null) throw new ArgumentNullException(nameof(name));
 
-         this.package = package;
-         this.primeFn = primeFn;
-         this.name = name;
+         _package = package;
+         _primeFn = primeFn;
+         _name = name;
       }
 
       public XcstTemplateEvaluator
@@ -270,9 +270,9 @@ namespace Xcst {
          if (name is null) throw new ArgumentNullException(nameof(name));
 
          if (tunnel) {
-            this.tunnelParameters[name] = value;
+            _tunnelParameters[name] = value;
          } else {
-            this.templateParameters[name] = value;
+            _templateParameters[name] = value;
          }
 
          return this;
@@ -327,8 +327,8 @@ namespace Xcst {
       public XcstTemplateEvaluator
       ClearParams() {
 
-         this.templateParameters.Clear();
-         this.tunnelParameters.Clear();
+         _templateParameters.Clear();
+         _tunnelParameters.Clear();
          return this;
       }
 
@@ -401,7 +401,7 @@ namespace Xcst {
 
          if (output is null) throw new ArgumentNullException(nameof(output));
 
-         Action<TemplateContext> tmplFn = this.package.GetTemplate<TBase>(this.name, output);
+         Action<TemplateContext> tmplFn = _package.GetTemplate<TBase>(_name, output);
 
          void executionFn(OutputParameters? overrideParams, bool skipFlush, TemplateContext tmplContext) =>
             tmplFn(tmplContext);
@@ -424,13 +424,13 @@ namespace Xcst {
          // it's important to keep template parameters' variables outside the execution delegate
          // so subsequent modifications do not affect previously created outputters
 
-         var templateParams = new Dictionary<string, object?>(this.templateParameters);
-         var tunnelParams = new Dictionary<string, object?>(this.tunnelParameters);
+         var templateParams = new Dictionary<string, object?>(_templateParameters);
+         var tunnelParams = new Dictionary<string, object?>(_tunnelParameters);
 
          void executionFn2(OutputParameters? overrideParams, bool skipFlush) =>
             executionFn(overrideParams, skipFlush, CreateTemplateContext(templateParams, tunnelParams));
 
-         return new XcstOutputter(this.package, this.primeFn, executionFn2);
+         return new XcstOutputter(_package, _primeFn, executionFn2);
       }
 
       static TemplateContext
@@ -453,13 +453,13 @@ namespace Xcst {
       EvaluateToWriter(CreateWriterDelegate writerFn, OutputParameters? overrideParams, bool skipFlush, TemplateContext tmplContext) {
 
          var defaultParams = new OutputParameters();
-         this.package.ReadOutputDefinition(null, defaultParams);
+         _package.ReadOutputDefinition(null, defaultParams);
 
-         RuntimeWriter writer = writerFn(defaultParams, overrideParams, this.package.Context);
+         RuntimeWriter writer = writerFn(defaultParams, overrideParams, _package.Context);
 
          try {
 
-            Action<TemplateContext> tmplFn = this.package.GetTemplate(this.name, writer);
+            Action<TemplateContext> tmplFn = _package.GetTemplate(_name, writer);
             tmplFn(tmplContext);
 
             if (!writer.DisposeWriter
@@ -480,25 +480,25 @@ namespace Xcst {
    public class XcstOutputter {
 
       readonly IXcstPackage
-      package;
+      _package;
 
       readonly Func<PrimingContext>
-      primeFn;
+      _primeFn;
 
       readonly Action<OutputParameters?, bool>
-      executionFn;
+      _executionFn;
 
       OutputParameters?
-      parameters;
+      _parameters;
 
       Func<IFormatProvider>?
-      formatProviderFn;
+      _formatProviderFn;
 
       Uri?
-      baseUri;
+      _baseUri;
 
       Uri?
-      baseOutputUri;
+      _baseOutputUri;
 
       internal
       XcstOutputter(IXcstPackage package, Func<PrimingContext> primeFn, Action<OutputParameters?, bool> executionFn) {
@@ -507,9 +507,9 @@ namespace Xcst {
          if (primeFn is null) throw new ArgumentNullException(nameof(primeFn));
          if (executionFn is null) throw new ArgumentNullException(nameof(executionFn));
 
-         this.package = package;
-         this.primeFn = primeFn;
-         this.executionFn = executionFn;
+         _package = package;
+         _primeFn = primeFn;
+         _executionFn = executionFn;
       }
 
       public XcstOutputter
@@ -519,7 +519,7 @@ namespace Xcst {
             parameters = new OutputParameters(parameters);
          }
 
-         this.parameters = parameters;
+         _parameters = parameters;
          return this;
       }
 
@@ -530,14 +530,14 @@ namespace Xcst {
             return WithFormatProvider(() => formatProvider);
          }
 
-         this.formatProviderFn = null;
+         _formatProviderFn = null;
          return this;
       }
 
       public XcstOutputter
       WithFormatProvider(Func<IFormatProvider>? formatProviderFn) {
 
-         this.formatProviderFn = formatProviderFn;
+         _formatProviderFn = formatProviderFn;
          return this;
       }
 
@@ -550,7 +550,7 @@ namespace Xcst {
             throw new ArgumentException("An absolute URI is expected.", nameof(baseUri));
          }
 
-         this.baseUri = baseUri;
+         _baseUri = baseUri;
          return this;
       }
 
@@ -563,7 +563,7 @@ namespace Xcst {
             throw new ArgumentException("An absolute URI is expected.", nameof(baseOutputUri));
          }
 
-         this.baseOutputUri = baseOutputUri;
+         _baseOutputUri = baseOutputUri;
          return this;
       }
 
@@ -571,30 +571,30 @@ namespace Xcst {
       Run(bool skipFlush = false) {
 
          InitPackage();
-         this.executionFn(this.parameters, skipFlush);
+         _executionFn(_parameters, skipFlush);
       }
 
       internal void
       InitPackage() {
 
-         PrimingContext primingContext = this.primeFn();
+         PrimingContext primingContext = _primeFn();
 
-         var execContext = new ExecutionContext(this.package, primingContext, this.formatProviderFn, this.baseUri, this.baseOutputUri);
+         var execContext = new ExecutionContext(_package, primingContext, _formatProviderFn, _baseUri, _baseOutputUri);
 
-         this.package.Context = execContext;
+         _package.Context = execContext;
       }
    }
 
    public class XcstOutputter<TResult> : XcstOutputter {
 
       readonly Func<TResult>
-      executionFn;
+      _executionFn;
 
       internal
       XcstOutputter(IXcstPackage package, Func<PrimingContext> primeFn, Func<TResult> executionFn)
          : base(package, primeFn, (p, sf) => executionFn()) {
 
-         this.executionFn = executionFn;
+         _executionFn = executionFn;
       }
 
       public new XcstOutputter<TResult>
@@ -636,7 +636,7 @@ namespace Xcst {
       Evaluate() {
 
          InitPackage();
-         return this.executionFn();
+         return _executionFn();
       }
    }
 }

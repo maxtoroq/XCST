@@ -22,23 +22,23 @@ namespace Xcst.Runtime {
    public class TemplateContext {
 
       static readonly TemplateContext
-      EmptyContext = new TemplateContext(0, 0, null);
+      _emptyContext = new TemplateContext(0, 0, null);
 
       readonly Dictionary<string, object?>?
-      templateParameters;
+      _templateParameters;
 
       readonly Dictionary<string, object?>?
-      tunnelParameters;
+      _tunnelParameters;
 
       public static TemplateContext
       Create(int tmplCount, int tunnelCount, TemplateContext? currentContext = null) {
 
          if (tmplCount == 0
             && tunnelCount == 0
-            && (currentContext?.tunnelParameters is null
-               || currentContext.tunnelParameters.Count == 0)) {
+            && (currentContext?._tunnelParameters is null
+               || currentContext._tunnelParameters.Count == 0)) {
 
-            return EmptyContext;
+            return _emptyContext;
          }
 
          return new TemplateContext(tmplCount, tunnelCount, currentContext);
@@ -52,18 +52,18 @@ namespace Xcst.Runtime {
       TemplateContext(int tmplCount, int tunnelCount, TemplateContext? currentContext) {
 
          if (tmplCount > 0) {
-            this.templateParameters = new Dictionary<string, object?>(tmplCount);
+            _templateParameters = new Dictionary<string, object?>(tmplCount);
          }
 
-         int tunnelTotalCount = tunnelCount + (currentContext?.tunnelParameters?.Count ?? 0);
+         int tunnelTotalCount = tunnelCount + (currentContext?._tunnelParameters?.Count ?? 0);
 
          if (tunnelTotalCount > 0) {
-            this.tunnelParameters = new Dictionary<string, object?>(tunnelTotalCount);
+            _tunnelParameters = new Dictionary<string, object?>(tunnelTotalCount);
          }
 
-         if (currentContext?.tunnelParameters != null) {
+         if (currentContext?._tunnelParameters != null) {
 
-            foreach (var item in currentContext.tunnelParameters) {
+            foreach (var item in currentContext._tunnelParameters) {
                WithParam(item.Key, item.Value, tunnel: true);
             }
          }
@@ -74,13 +74,13 @@ namespace Xcst.Runtime {
 
          if (tunnel) {
 
-            Debug.Assert(this.tunnelParameters != null);
-            this.tunnelParameters![name] = value;
+            Debug.Assert(_tunnelParameters != null);
+            _tunnelParameters![name] = value;
 
          } else {
 
-            Debug.Assert(this.templateParameters != null);
-            this.templateParameters![name] = value;
+            Debug.Assert(_templateParameters != null);
+            _templateParameters![name] = value;
          }
 
          return this;
@@ -134,7 +134,7 @@ namespace Xcst.Runtime {
 
       public bool
       HasParam(string name) =>
-         this.templateParameters?.ContainsKey(name) == true;
+         _templateParameters?.ContainsKey(name) == true;
 
       public TDefault
       Param<TDefault>(
@@ -144,8 +144,8 @@ namespace Xcst.Runtime {
             bool tunnel = false) {
 
          Dictionary<string, object?>? paramsDict = (tunnel) ?
-            this.tunnelParameters
-            : this.templateParameters;
+            _tunnelParameters
+            : _templateParameters;
 
          object? value = null;
 

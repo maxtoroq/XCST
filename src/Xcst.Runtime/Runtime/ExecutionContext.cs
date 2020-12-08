@@ -23,7 +23,7 @@ namespace Xcst.Runtime {
    public class ExecutionContext {
 
       readonly Func<IFormatProvider>
-      formatProviderFn;
+      _formatProviderFn;
 
       public IXcstPackage
       TopLevelPackage { get; }
@@ -53,8 +53,8 @@ namespace Xcst.Runtime {
 
          this.TopLevelPackage = topLevelPackage;
          this.PrimingContext = primingContext;
-         this.formatProviderFn = formatProviderFn ?? (() => CultureInfo.CurrentCulture);
-         this.SimpleContent = new SimpleContent(this.formatProviderFn);
+         _formatProviderFn = formatProviderFn ?? (() => CultureInfo.CurrentCulture);
+         this.SimpleContent = new SimpleContent(_formatProviderFn);
 
          if (staticBaseUri != null) {
             Debug.Assert(staticBaseUri.IsAbsoluteUri);

@@ -21,7 +21,7 @@ namespace Xcst.Runtime {
    class XcstTextWriter : TextWriter {
 
       readonly XcstWriter
-      output;
+      _output;
 
       public override Encoding
       Encoding => throw new NotImplementedException();
@@ -30,18 +30,18 @@ namespace Xcst.Runtime {
       XcstTextWriter(XcstWriter baseWriter)
          : base(baseWriter.SimpleContent.FormatProvider) {
 
-         this.output = baseWriter;
+         _output = baseWriter;
       }
 
       public override void
       Write(char value) =>
-         this.output.WriteString(value.ToString());
+         _output.WriteString(value.ToString());
 
       public override void
-      Write(string value) => this.output.WriteString(value);
+      Write(string value) => _output.WriteString(value);
 
       public override void
       Write(char[] buffer, int index, int count) =>
-         this.output.WriteChars(buffer, index, count);
+         _output.WriteChars(buffer, index, count);
    }
 }

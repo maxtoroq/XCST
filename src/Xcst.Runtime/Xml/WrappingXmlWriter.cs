@@ -56,268 +56,268 @@ namespace Xcst.Xml {
    abstract class WrappingXmlWriter : XmlWriter {
 
       readonly XmlWriter
-      output;
+      _output;
 
       public override XmlWriterSettings
-      Settings => this.output.Settings;
+      Settings => _output.Settings;
 
       public override WriteState
-      WriteState => this.output.WriteState;
+      WriteState => _output.WriteState;
 
       public override string
-      XmlLang => this.output.XmlLang;
+      XmlLang => _output.XmlLang;
 
       public override XmlSpace
-      XmlSpace => this.output.XmlSpace;
+      XmlSpace => _output.XmlSpace;
 
       protected
       WrappingXmlWriter(XmlWriter baseWriter) {
 
          if (baseWriter is null) throw new ArgumentNullException(nameof(baseWriter));
 
-         this.output = baseWriter;
+         _output = baseWriter;
       }
 
       public override void
-      Close() => this.output.Close();
+      Close() => _output.Close();
 
       protected override void
       Dispose(bool disposing) {
 
          if (disposing) {
-            this.output.Dispose();
+            _output.Dispose();
          }
       }
 
       public override void
-      Flush() => this.output.Flush();
+      Flush() => _output.Flush();
 
       public override Task
-      FlushAsync() => this.output.FlushAsync();
+      FlushAsync() => _output.FlushAsync();
 
       public override string
-      LookupPrefix(string ns) => this.output.LookupPrefix(ns);
+      LookupPrefix(string ns) => _output.LookupPrefix(ns);
 
       public override void
       WriteAttributes(XmlReader reader, bool defattr) =>
-         this.output.WriteAttributes(reader, defattr);
+         _output.WriteAttributes(reader, defattr);
 
       public override Task
       WriteAttributesAsync(XmlReader reader, bool defattr) =>
-         this.output.WriteAttributesAsync(reader, defattr);
+         _output.WriteAttributesAsync(reader, defattr);
 
       public override void
       WriteBase64(byte[] buffer, int index, int count) =>
-         this.output.WriteBase64(buffer, index, count);
+         _output.WriteBase64(buffer, index, count);
 
       public override Task
       WriteBase64Async(byte[] buffer, int index, int count) =>
-         this.output.WriteBase64Async(buffer, index, count);
+         _output.WriteBase64Async(buffer, index, count);
 
       public override void
       WriteBinHex(byte[] buffer, int index, int count) =>
-         this.output.WriteBinHex(buffer, index, count);
+         _output.WriteBinHex(buffer, index, count);
 
       public override Task
       WriteBinHexAsync(byte[] buffer, int index, int count) =>
-         this.output.WriteBinHexAsync(buffer, index, count);
+         _output.WriteBinHexAsync(buffer, index, count);
 
       public override void
-      WriteCData(string text) => this.output.WriteCData(text);
+      WriteCData(string text) => _output.WriteCData(text);
 
       public override Task
-      WriteCDataAsync(string text) => this.output.WriteCDataAsync(text);
+      WriteCDataAsync(string text) => _output.WriteCDataAsync(text);
 
       public override void
-      WriteCharEntity(char ch) => this.output.WriteCharEntity(ch);
+      WriteCharEntity(char ch) => _output.WriteCharEntity(ch);
 
       public override Task
-      WriteCharEntityAsync(char ch) => this.output.WriteCharEntityAsync(ch);
+      WriteCharEntityAsync(char ch) => _output.WriteCharEntityAsync(ch);
 
       public override void
       WriteChars(char[] buffer, int index, int count) =>
-         this.output.WriteChars(buffer, index, count);
+         _output.WriteChars(buffer, index, count);
 
       public override Task
       WriteCharsAsync(char[] buffer, int index, int count) =>
-         this.output.WriteCharsAsync(buffer, index, count);
+         _output.WriteCharsAsync(buffer, index, count);
 
       public override void
-      WriteComment(string text) => this.output.WriteComment(text);
+      WriteComment(string text) => _output.WriteComment(text);
 
       public override Task
       WriteCommentAsync(string text) =>
-         this.output.WriteCommentAsync(text);
+         _output.WriteCommentAsync(text);
 
       public override void
       WriteDocType(string name, string? pubid, string? sysid, string? subset) =>
-         this.output.WriteDocType(name, pubid, sysid, subset);
+         _output.WriteDocType(name, pubid, sysid, subset);
 
       public override Task
       WriteDocTypeAsync(string name, string pubid, string sysid, string subset) =>
-         this.output.WriteDocTypeAsync(name, pubid, sysid, subset);
+         _output.WriteDocTypeAsync(name, pubid, sysid, subset);
 
       public override void
-      WriteEndAttribute() => this.output.WriteEndAttribute();
+      WriteEndAttribute() => _output.WriteEndAttribute();
 
       public override void
-      WriteEndDocument() => this.output.WriteEndDocument();
+      WriteEndDocument() => _output.WriteEndDocument();
 
       public override Task
-      WriteEndDocumentAsync() => this.output.WriteEndDocumentAsync();
+      WriteEndDocumentAsync() => _output.WriteEndDocumentAsync();
 
       public override void
-      WriteEndElement() => this.output.WriteEndElement();
+      WriteEndElement() => _output.WriteEndElement();
 
       public override Task
-      WriteEndElementAsync() => this.output.WriteEndElementAsync();
+      WriteEndElementAsync() => _output.WriteEndElementAsync();
 
       public override void
-      WriteEntityRef(string name) => this.output.WriteEntityRef(name);
+      WriteEntityRef(string name) => _output.WriteEntityRef(name);
 
       public override Task
-      WriteEntityRefAsync(string name) => this.output.WriteEntityRefAsync(name);
+      WriteEntityRefAsync(string name) => _output.WriteEntityRefAsync(name);
 
       public override void
-      WriteFullEndElement() => this.output.WriteFullEndElement();
+      WriteFullEndElement() => _output.WriteFullEndElement();
 
       public override Task
-      WriteFullEndElementAsync() => this.output.WriteFullEndElementAsync();
+      WriteFullEndElementAsync() => _output.WriteFullEndElementAsync();
 
       public override void
-      WriteName(string name) => this.output.WriteName(name);
+      WriteName(string name) => _output.WriteName(name);
 
       public override Task
-      WriteNameAsync(string name) => this.output.WriteNameAsync(name);
+      WriteNameAsync(string name) => _output.WriteNameAsync(name);
 
       public override void
-      WriteNmToken(string name) => this.output.WriteNmToken(name);
+      WriteNmToken(string name) => _output.WriteNmToken(name);
 
       public override Task
-      WriteNmTokenAsync(string name) => this.output.WriteNmTokenAsync(name);
+      WriteNmTokenAsync(string name) => _output.WriteNmTokenAsync(name);
 
       public override void
       WriteNode(XPathNavigator navigator, bool defattr) =>
-         this.output.WriteNode(navigator, defattr);
+         _output.WriteNode(navigator, defattr);
 
       public override Task
       WriteNodeAsync(XPathNavigator navigator, bool defattr) =>
-         this.output.WriteNodeAsync(navigator, defattr);
+         _output.WriteNodeAsync(navigator, defattr);
 
       public override void
       WriteNode(XmlReader reader, bool defattr) =>
-         this.output.WriteNode(reader, defattr);
+         _output.WriteNode(reader, defattr);
 
       public override Task
       WriteNodeAsync(XmlReader reader, bool defattr) =>
-         this.output.WriteNodeAsync(reader, defattr);
+         _output.WriteNodeAsync(reader, defattr);
 
       public override void
       WriteProcessingInstruction(string name, string text) =>
-         this.output.WriteProcessingInstruction(name, text);
+         _output.WriteProcessingInstruction(name, text);
 
       public override Task
       WriteProcessingInstructionAsync(string name, string text) =>
-         this.output.WriteProcessingInstructionAsync(name, text);
+         _output.WriteProcessingInstructionAsync(name, text);
 
       public override void
       WriteQualifiedName(string localName, string ns) =>
-         this.output.WriteQualifiedName(localName, ns);
+         _output.WriteQualifiedName(localName, ns);
 
       public override Task
       WriteQualifiedNameAsync(string localName, string ns) =>
-         this.output.WriteQualifiedNameAsync(localName, ns);
+         _output.WriteQualifiedNameAsync(localName, ns);
 
       public override void
-      WriteRaw(string data) => this.output.WriteRaw(data);
+      WriteRaw(string data) => _output.WriteRaw(data);
 
       public override Task
-      WriteRawAsync(string data) => this.output.WriteRawAsync(data);
+      WriteRawAsync(string data) => _output.WriteRawAsync(data);
 
       public override void
       WriteRaw(char[] buffer, int index, int count) =>
-         this.output.WriteRaw(buffer, index, count);
+         _output.WriteRaw(buffer, index, count);
 
       public override Task
       WriteRawAsync(char[] buffer, int index, int count) =>
-         this.output.WriteRawAsync(buffer, index, count);
+         _output.WriteRawAsync(buffer, index, count);
 
       public override void
       WriteStartAttribute(string prefix, string localName, string ns) =>
-         this.output.WriteStartAttribute(prefix, localName, ns);
+         _output.WriteStartAttribute(prefix, localName, ns);
 
       public override Task
-      WriteStartDocumentAsync() => this.output.WriteStartDocumentAsync();
+      WriteStartDocumentAsync() => _output.WriteStartDocumentAsync();
 
       public override void
-      WriteStartDocument() => this.output.WriteStartDocument();
+      WriteStartDocument() => _output.WriteStartDocument();
 
       public override void
       WriteStartDocument(bool standalone) =>
-         this.output.WriteStartDocument(standalone);
+         _output.WriteStartDocument(standalone);
 
       public override Task
       WriteStartDocumentAsync(bool standalone) =>
-         this.output.WriteStartDocumentAsync(standalone);
+         _output.WriteStartDocumentAsync(standalone);
 
       public override void
       WriteStartElement(string prefix, string localName, string ns) =>
-         this.output.WriteStartElement(prefix, localName, ns);
+         _output.WriteStartElement(prefix, localName, ns);
 
       public override Task
       WriteStartElementAsync(string prefix, string localName, string ns) =>
-         this.output.WriteStartElementAsync(prefix, localName, ns);
+         _output.WriteStartElementAsync(prefix, localName, ns);
 
       public override void
-      WriteString(string text) => this.output.WriteString(text);
+      WriteString(string text) => _output.WriteString(text);
 
       public override Task
       WriteStringAsync(string text) =>
-         this.output.WriteStringAsync(text);
+         _output.WriteStringAsync(text);
 
       public override void
       WriteSurrogateCharEntity(char lowChar, char highChar) =>
-         this.output.WriteSurrogateCharEntity(lowChar, highChar);
+         _output.WriteSurrogateCharEntity(lowChar, highChar);
 
       public override Task
       WriteSurrogateCharEntityAsync(char lowChar, char highChar) =>
-         this.output.WriteSurrogateCharEntityAsync(lowChar, highChar);
-
-      public override void WriteValue(bool value) =>
-         this.output.WriteValue(value);
+         _output.WriteSurrogateCharEntityAsync(lowChar, highChar);
 
       public override void
-      WriteValue(DateTime value) => this.output.WriteValue(value);
+      WriteValue(bool value) => _output.WriteValue(value);
 
       public override void
-      WriteValue(DateTimeOffset value) => this.output.WriteValue(value);
+      WriteValue(DateTime value) => _output.WriteValue(value);
 
       public override void
-      WriteValue(decimal value) => this.output.WriteValue(value);
+      WriteValue(DateTimeOffset value) => _output.WriteValue(value);
 
       public override void
-      WriteValue(double value) => this.output.WriteValue(value);
+      WriteValue(decimal value) => _output.WriteValue(value);
 
       public override void
-      WriteValue(int value) => this.output.WriteValue(value);
+      WriteValue(double value) => _output.WriteValue(value);
 
       public override void
-      WriteValue(long value) => this.output.WriteValue(value);
+      WriteValue(int value) => _output.WriteValue(value);
 
       public override void
-      WriteValue(object value) => this.output.WriteValue(value);
+      WriteValue(long value) => _output.WriteValue(value);
 
       public override void
-      WriteValue(float value) => this.output.WriteValue(value);
+      WriteValue(object value) => _output.WriteValue(value);
 
       public override void
-      WriteValue(string value) => this.output.WriteValue(value);
+      WriteValue(float value) => _output.WriteValue(value);
 
       public override void
-      WriteWhitespace(string ws) => this.output.WriteWhitespace(ws);
+      WriteValue(string value) => _output.WriteValue(value);
+
+      public override void
+      WriteWhitespace(string ws) => _output.WriteWhitespace(ws);
 
       public override Task
       WriteWhitespaceAsync(string ws) =>
-         this.output.WriteWhitespaceAsync(ws);
+         _output.WriteWhitespaceAsync(ws);
    }
 }

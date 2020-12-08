@@ -20,51 +20,51 @@ namespace Xcst.Xml {
    class XmlXcstWriter : XcstWriter {
 
       readonly XmlWriter
-      output;
+      _output;
 
       readonly bool
-      outputXmlDecl;
+      _outputXmlDecl;
 
       readonly XmlStandalone
-      standalone;
+      _standalone;
 
       bool
-      xmlDeclWritten;
+      _xmlDeclWritten;
 
       public
       XmlXcstWriter(XmlWriter writer, Uri outputUri, OutputParameters parameters)
          : base(outputUri) {
 
-         this.output = writer;
-         this.outputXmlDecl = !parameters.OmitXmlDeclaration.GetValueOrDefault()
+         _output = writer;
+         _outputXmlDecl = !parameters.OmitXmlDeclaration.GetValueOrDefault()
             && (parameters.Method is null
                || parameters.Method == OutputParameters.Methods.Xml
                || parameters.Method == OutputParameters.Methods.XHtml);
 
-         this.standalone = parameters.Standalone.GetValueOrDefault();
+         _standalone = parameters.Standalone.GetValueOrDefault();
       }
 
       void
       WriteXmlDeclaration() {
 
-         if (this.outputXmlDecl
-            && !this.xmlDeclWritten
-            && this.output.WriteState == WriteState.Start) {
+         if (_outputXmlDecl
+            && !_xmlDeclWritten
+            && _output.WriteState == WriteState.Start) {
 
-            if (this.standalone == XmlStandalone.Omit) {
-               this.output.WriteStartDocument();
+            if (_standalone == XmlStandalone.Omit) {
+               _output.WriteStartDocument();
             } else {
-               this.output.WriteStartDocument(this.standalone == XmlStandalone.Yes);
+               _output.WriteStartDocument(_standalone == XmlStandalone.Yes);
             }
 
-            this.xmlDeclWritten = true;
+            _xmlDeclWritten = true;
          }
       }
 
       public override void
       WriteComment(string? text) {
          WriteXmlDeclaration();
-         this.output.WriteComment(text);
+         _output.WriteComment(text);
       }
 
       public override void
@@ -73,8 +73,8 @@ namespace Xcst.Xml {
          // WriteEndAttribute is called in a finally block
          // Checking for error to not overwhelm writer when something goes wrong
 
-         if (this.output.WriteState != WriteState.Error) {
-            this.output.WriteEndAttribute();
+         if (_output.WriteState != WriteState.Error) {
+            _output.WriteEndAttribute();
          }
       }
 
@@ -84,54 +84,54 @@ namespace Xcst.Xml {
          // WriteEndElement is called in a finally block
          // Checking for error to not overwhelm writer when something goes wrong
 
-         if (this.output.WriteState != WriteState.Error) {
-            this.output.WriteEndElement();
+         if (_output.WriteState != WriteState.Error) {
+            _output.WriteEndElement();
          }
       }
 
       public override void
       WriteProcessingInstruction(string name, string? text) {
          WriteXmlDeclaration();
-         this.output.WriteProcessingInstruction(name, text);
+         _output.WriteProcessingInstruction(name, text);
       }
 
       public override void
       WriteRaw(string? data) {
          WriteXmlDeclaration();
-         this.output.WriteRaw(data);
+         _output.WriteRaw(data);
       }
 
       public override void
       WriteStartAttribute(string? prefix, string localName, string? ns, string? separator) {
-         this.output.WriteStartAttribute(prefix, localName, ns);
+         _output.WriteStartAttribute(prefix, localName, ns);
       }
 
       public override void
       WriteStartElement(string? prefix, string localName, string? ns) {
          WriteXmlDeclaration();
-         this.output.WriteStartElement(prefix, localName, ns);
+         _output.WriteStartElement(prefix, localName, ns);
       }
 
       public override void
       WriteString(string? text) {
          WriteXmlDeclaration();
-         this.output.WriteString(text);
+         _output.WriteString(text);
       }
 
       public override void
       WriteChars(char[] buffer, int index, int count) {
          WriteXmlDeclaration();
-         this.output.WriteChars(buffer, index, count);
+         _output.WriteChars(buffer, index, count);
       }
 
       public override void
-      Flush() => this.output.Flush();
+      Flush() => _output.Flush();
 
       protected override void
       Dispose(bool disposing) {
 
          if (disposing) {
-            this.output.Dispose();
+            _output.Dispose();
          }
 
          base.Dispose(disposing);

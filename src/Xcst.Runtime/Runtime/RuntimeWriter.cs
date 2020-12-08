@@ -29,28 +29,28 @@ namespace Xcst.Runtime {
    class RuntimeWriter : WrappingWriter {
 
       bool
-      inAttr;
+      _inAttr;
 
       AttrNameVal[]
-      arrAttrs = null!; // List of cached attribute names and value parts
+      _arrAttrs = null!; // List of cached attribute names and value parts
 
       int
-      numEntries;       // Number of attributes in the cache
+      _numEntries;       // Number of attributes in the cache
 
       int
-      idxLastName;      // The entry containing the name of the last attribute to be cached
+      _idxLastName;      // The entry containing the name of the last attribute to be cached
 
       int
-      hashCodeUnion;    // Set of hash bits that can quickly guarantee a name is not a duplicate
+      _hashCodeUnion;    // Set of hash bits that can quickly guarantee a name is not a duplicate
 
       string?
-      itemSeparator;
+      _itemSeparator;
 
       int
-      depth;
+      _depth;
 
       ItemType?
-      lastItem;
+      _lastItem;
 
       internal bool
       DisposeWriter { get; set; }
@@ -59,13 +59,13 @@ namespace Xcst.Runtime {
       RuntimeWriter(XcstWriter baseWriter, OutputParameters parameters)
          : base(baseWriter) {
 
-         this.itemSeparator = parameters.ItemSeparator;
+         _itemSeparator = parameters.ItemSeparator;
       }
 
       public override void
       WriteStartElement(string? prefix, string localName, string? ns) {
 
-         if (this.inAttr) {
+         if (_inAttr) {
             throw new RuntimeException("Cannot create an element within an attribute.");
          }
 
@@ -90,7 +90,7 @@ namespace Xcst.Runtime {
 
          if (localName is null) throw new ArgumentNullException(nameof(localName));
 
-         if (this.inAttr) {
+         if (_inAttr) {
             throw new RuntimeException("Cannot create an attribute within another attribute.");
          }
 
@@ -102,7 +102,7 @@ namespace Xcst.Runtime {
             ns = String.Empty;
          }
 
-         this.inAttr = true;
+         _inAttr = true;
 
          int hashCode;
          int idx = 0;
@@ -116,48 +116,48 @@ namespace Xcst.Runtime {
          hashCode = (1 << ((int)localName[0] & 31));
 
          // If the hashcode is not in the union, then name will not be found by a scan
-         if ((this.hashCodeUnion & hashCode) != 0) {
+         if ((_hashCodeUnion & hashCode) != 0) {
 
             // The name may or may not be present, so scan for it
-            Debug.Assert(this.numEntries != 0);
+            Debug.Assert(_numEntries != 0);
 
             do {
 
-               if (this.arrAttrs[idx].IsDuplicate(localName, ns, hashCode)) {
+               if (_arrAttrs[idx].IsDuplicate(localName, ns, hashCode)) {
                   break;
                }
 
                // Next attribute name
-               idx = this.arrAttrs[idx].NextNameIndex;
+               idx = _arrAttrs[idx].NextNameIndex;
 
             } while (idx != 0);
 
          } else {
 
             // Insert hashcode into union
-            this.hashCodeUnion |= hashCode;
+            _hashCodeUnion |= hashCode;
          }
 
          // Insert new attribute; link attribute names together in a list
          EnsureAttributeCache();
 
-         if (this.numEntries != 0) {
-            this.arrAttrs[this.idxLastName].NextNameIndex = this.numEntries;
+         if (_numEntries != 0) {
+            _arrAttrs[_idxLastName].NextNameIndex = _numEntries;
          }
 
-         this.idxLastName = this.numEntries++;
-         this.arrAttrs[this.idxLastName].Init(prefix, localName, ns, separator, hashCode);
+         _idxLastName = _numEntries++;
+         _arrAttrs[_idxLastName].Init(prefix, localName, ns, separator, hashCode);
       }
 
       public override void
       WriteEndAttribute() {
-         this.inAttr = false;
+         _inAttr = false;
       }
 
       public override void
       WriteComment(string? text) {
 
-         if (this.inAttr) {
+         if (_inAttr) {
             throw new RuntimeException("Cannot create a comment within an attribute.");
          }
 
@@ -172,7 +172,7 @@ namespace Xcst.Runtime {
       public override void
       WriteProcessingInstruction(string name, string? text) {
 
-         if (this.inAttr) {
+         if (_inAttr) {
             throw new RuntimeException("Cannot create a processing instruction within an attribute.");
          }
 
@@ -187,10 +187,10 @@ namespace Xcst.Runtime {
       public override void
       WriteString(string? text) {
 
-         if (this.inAttr) {
+         if (_inAttr) {
 
             EnsureAttributeCache();
-            this.arrAttrs[this.numEntries++].Init(text);
+            _arrAttrs[_numEntries++].Init(text);
 
          } else {
 
@@ -206,10 +206,10 @@ namespace Xcst.Runtime {
       public override void
       WriteChars(char[] buffer, int index, int count) {
 
-         if (this.inAttr) {
+         if (_inAttr) {
 
             EnsureAttributeCache();
-            this.arrAttrs[this.numEntries++].Init(new string(buffer, index, count));
+            _arrAttrs[_numEntries++].Init(new string(buffer, index, count));
 
          } else {
 
@@ -225,7 +225,7 @@ namespace Xcst.Runtime {
       public override void
       WriteRaw(string? data) {
 
-         if (this.inAttr) {
+         if (_inAttr) {
             throw new InvalidOperationException($"Calling {nameof(WriteRaw)} for attributes is not supported.");
          }
 
@@ -240,11 +240,11 @@ namespace Xcst.Runtime {
       protected internal override void
       WriteItem(object? value) {
 
-         if (this.inAttr) {
+         if (_inAttr) {
 
             if (value != null) {
                EnsureAttributeCache();
-               this.arrAttrs[this.numEntries++].Init(value);
+               _arrAttrs[_numEntries++].Init(value);
             }
 
          } else {
@@ -268,18 +268,18 @@ namespace Xcst.Runtime {
          // Ensure that attribute array has been created and is large enough for at least one
          // additional entry.
 
-         if (this.arrAttrs is null) {
+         if (_arrAttrs is null) {
 
             // Create caching array
-            this.arrAttrs = new AttrNameVal[32];
+            _arrAttrs = new AttrNameVal[32];
 
-         } else if (this.numEntries >= this.arrAttrs.Length) {
+         } else if (_numEntries >= _arrAttrs.Length) {
 
             // Resize caching array
-            Debug.Assert(this.numEntries == this.arrAttrs.Length);
-            AttrNameVal[] arrNew = new AttrNameVal[this.numEntries * 2];
-            Array.Copy(this.arrAttrs, arrNew, this.numEntries);
-            this.arrAttrs = arrNew;
+            Debug.Assert(_numEntries == _arrAttrs.Length);
+            AttrNameVal[] arrNew = new AttrNameVal[_numEntries * 2];
+            Array.Copy(_arrAttrs, arrNew, _numEntries);
+            _arrAttrs = arrNew;
          }
       }
 
@@ -289,23 +289,23 @@ namespace Xcst.Runtime {
          int idx = 0, idxNext;
          string? localName;
 
-         while (idx != this.numEntries) {
+         while (idx != _numEntries) {
 
             // Get index of next attribute's name (0 if this is the last attribute)
-            idxNext = this.arrAttrs[idx].NextNameIndex;
+            idxNext = _arrAttrs[idx].NextNameIndex;
 
             if (idxNext == 0) {
-               idxNext = this.numEntries;
+               idxNext = _numEntries;
             }
 
             // If localName is null, then this is a duplicate attribute that has been marked as "deleted"
-            localName = this.arrAttrs[idx].LocalName;
+            localName = _arrAttrs[idx].LocalName;
 
             if (localName != null) {
 
-               string? prefix = this.arrAttrs[idx].Prefix;
-               string? ns = this.arrAttrs[idx].Namespace;
-               string? separator = this.arrAttrs[idx].Separator;
+               string? prefix = _arrAttrs[idx].Prefix;
+               string? ns = _arrAttrs[idx].Namespace;
+               string? separator = _arrAttrs[idx].Separator;
 
                base.WriteStartAttribute(prefix, localName, ns, null);
 
@@ -315,7 +315,7 @@ namespace Xcst.Runtime {
                // Output all of this attribute's text
                while (++idx != idxNext) {
 
-                  object? obj = this.arrAttrs[idx].Object;
+                  object? obj = _arrAttrs[idx].Object;
                   string? sep = separator;
 
                   if (obj != null) {
@@ -340,7 +340,7 @@ namespace Xcst.Runtime {
                         base.WriteString(sep);
                      }
 
-                     string? text = this.arrAttrs[idx].Text;
+                     string? text = _arrAttrs[idx].Text;
                      base.WriteString(text);
 
                      lastWasText = true;
@@ -357,30 +357,30 @@ namespace Xcst.Runtime {
             }
          }
 
-         if (this.numEntries > 0) {
+         if (_numEntries > 0) {
 
-            for (int i = 0; i < this.arrAttrs.Length; i++) {
-               this.arrAttrs[i].Init(default(string), default(string), default(string), default(string), default(int));
-               this.arrAttrs[i].Init(default(string));
-               this.arrAttrs[i].Init(default(object));
+            for (int i = 0; i < _arrAttrs.Length; i++) {
+               _arrAttrs[i].Init(default(string), default(string), default(string), default(string), default(int));
+               _arrAttrs[i].Init(default(string));
+               _arrAttrs[i].Init(default(object));
             }
 
-            this.numEntries = default(int);
-            this.idxLastName = default(int);
-            this.hashCodeUnion = default(int);
+            _numEntries = default(int);
+            _idxLastName = default(int);
+            _hashCodeUnion = default(int);
          }
       }
 
       void
       ItemWriting(ItemType type) {
 
-         if (this.lastItem != null
-            && (this.lastItem.Value != ItemType.Text || type != ItemType.Text)) {
+         if (_lastItem != null
+            && (_lastItem.Value != ItemType.Text || type != ItemType.Text)) {
 
-            string? separator = (this.depth == 0 ? this.itemSeparator : null);
+            string? separator = (_depth == 0 ? _itemSeparator : null);
 
             if (separator is null
-               && this.lastItem.Value == ItemType.Object
+               && _lastItem.Value == ItemType.Object
                && type == ItemType.Object) {
 
                separator = " ";
@@ -392,8 +392,8 @@ namespace Xcst.Runtime {
          }
 
          if (type == ItemType.Element) {
-            this.depth++;
-            this.lastItem = null;
+            _depth++;
+            _lastItem = null;
          }
       }
 
@@ -401,10 +401,10 @@ namespace Xcst.Runtime {
       ItemWritten(ItemType type) {
 
          if (type == ItemType.Element) {
-            this.depth--;
+            _depth--;
          }
 
-         this.lastItem = type;
+         _lastItem = type;
       }
 
       enum ItemType {
@@ -419,51 +419,51 @@ namespace Xcst.Runtime {
       struct AttrNameVal {
 
          string?
-         localName;
+         _localName;
 
          string?
-         prefix;
+         _prefix;
 
          string?
-         namespaceName;
+         _namespaceName;
 
          string?
-         separator;
+         _separator;
 
          string?
-         text;
+         _text;
 
          object?
-         obj;
+         _obj;
 
          int
-         hashCode;
+         _hashCode;
 
          int
-         nextNameIndex;
+         _nextNameIndex;
 
          public string?
-         LocalName => this.localName;
+         LocalName => _localName;
 
          public string?
-         Prefix => this.prefix;
+         Prefix => _prefix;
 
          public string?
-         Namespace => this.namespaceName;
+         Namespace => _namespaceName;
 
          public string?
-         Separator => this.separator;
+         Separator => _separator;
 
          public string?
-         Text => this.text;
+         Text => _text;
 
          public object?
-         Object => this.obj;
+         Object => _obj;
 
          public int
          NextNameIndex {
-            get => this.nextNameIndex;
-            set => this.nextNameIndex = value;
+            get => _nextNameIndex;
+            set => _nextNameIndex = value;
          }
 
          /// <summary>
@@ -471,12 +471,12 @@ namespace Xcst.Runtime {
          /// </summary>
          public void
          Init(string? prefix, string? localName, string? ns, string? separator, int hashCode) {
-            this.localName = localName;
-            this.prefix = prefix;
-            this.namespaceName = ns;
-            this.separator = separator;
-            this.hashCode = hashCode;
-            this.nextNameIndex = 0;
+            _localName = localName;
+            _prefix = prefix;
+            _namespaceName = ns;
+            _separator = separator;
+            _hashCode = hashCode;
+            _nextNameIndex = 0;
          }
 
          /// <summary>
@@ -484,12 +484,12 @@ namespace Xcst.Runtime {
          /// </summary>
          public void
          Init(string? text) {
-            this.text = text;
+            _text = text;
          }
 
          public void
          Init(object? obj) {
-            this.obj = obj;
+            _obj = obj;
          }
 
          /// <summary>
@@ -499,19 +499,19 @@ namespace Xcst.Runtime {
          IsDuplicate(string localName, string? ns, int hashCode) {
 
             // If attribute is not marked as deleted
-            if (this.localName != null) {
+            if (_localName != null) {
 
                // And if hash codes match,
-               if (this.hashCode == hashCode) {
+               if (_hashCode == hashCode) {
 
                   // And if local names match,
-                  if (this.localName.Equals(localName)) {
+                  if (_localName.Equals(localName)) {
 
                      // And if namespaces match,
-                     if (String.Equals(this.namespaceName, ns)) {
+                     if (String.Equals(_namespaceName, ns)) {
 
                         // Then found duplicate attribute, so mark the attribute as deleted
-                        this.localName = null;
+                        _localName = null;
                         return true;
                      }
                   }

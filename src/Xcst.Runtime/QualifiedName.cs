@@ -20,19 +20,19 @@ namespace Xcst {
    partial class QualifiedName : IEquatable<QualifiedName> {
 
       readonly string
-      _Name;
+      _name;
 
       readonly string
-      _Namespace;
+      _namespace;
 
       int
-      hash;
+      _hash;
 
       public string
-      Name => _Name;
+      Name => _name;
 
       public string
-      Namespace => _Namespace;
+      Namespace => _namespace;
 
       public
       QualifiedName(string name)
@@ -44,8 +44,8 @@ namespace Xcst {
          if (name is null) throw new ArgumentNullException(nameof(name));
          if (String.IsNullOrWhiteSpace(name)) throw new ArgumentException($"{nameof(name)} cannot be empty.", nameof(name));
 
-         _Name = name;
-         _Namespace = ns ?? String.Empty;
+         _name = name;
+         _namespace = ns ?? String.Empty;
       }
 
       public override bool
@@ -66,11 +66,11 @@ namespace Xcst {
       public override int
       GetHashCode() {
 
-         if (this.hash == 0) {
-            this.hash = ToString().GetHashCode();
+         if (_hash == 0) {
+            _hash = ToString().GetHashCode();
          }
 
-         return this.hash;
+         return _hash;
       }
 
       public override string
@@ -87,7 +87,8 @@ namespace Xcst {
       ToUriQualifiedName() =>
          UriQualifiedName(this.Namespace, this.Name);
 
-      internal static string UriQualifiedName(string? ns, string name) =>
+      internal static string
+      UriQualifiedName(string? ns, string name) =>
          "Q{" + ns + "}" + name;
 
       public static QualifiedName
