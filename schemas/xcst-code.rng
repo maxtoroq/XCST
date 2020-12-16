@@ -55,6 +55,7 @@
    <define name="_literal">
       <choice>
          <ref name="bool"/>
+         <ref name="char"/>
          <ref name="decimal"/>
          <ref name="double"/>
          <ref name="float"/>
@@ -288,6 +289,14 @@
    <define name="chain-reference">
       <element name="chain-reference">
          <empty/>
+      </element>
+   </define>
+
+   <define name="char">
+      <element name="char">
+         <attribute name="value">
+            <ref name="_char"/>
+         </attribute>
       </element>
    </define>
 
@@ -1096,6 +1105,12 @@
          <value>true</value>
          <value>false</value>
       </choice>
+   </define>
+
+   <define name="_char">
+      <data type="string">
+         <param name="length">1</param>
+      </data>
    </define>
 
    <define name="_positive-integer">

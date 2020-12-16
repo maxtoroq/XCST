@@ -234,6 +234,12 @@
 
    <template match="code:chain-reference" mode="vb:statement vb:source"/>
 
+   <template match="code:char" mode="vb:source">
+      <text>"</text>
+      <value-of select="@value"/>
+      <text>"C</text>
+   </template>
+
    <template match="code:collection-initializer" mode="vb:source">
       <if test="code:*">
          <text> {</text>

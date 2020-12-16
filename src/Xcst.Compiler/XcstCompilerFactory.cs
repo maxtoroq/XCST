@@ -90,7 +90,7 @@ namespace Xcst.Compiler {
          }.Uri;
 
          Stream zipSource = thisAssembly
-            .GetManifestResourceStream(typeof(CodeGeneration.PackageManifest), "xcst-xsl.zip");
+            .GetManifestResourceStream(typeof(CodeGeneration.ExtensionFunctions), "xcst-xsl.zip");
 
          using (var archive = new ZipArchive(zipSource, ZipArchiveMode.Read)) {
 

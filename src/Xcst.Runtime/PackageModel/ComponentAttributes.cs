@@ -16,66 +16,29 @@ using System;
 
 namespace Xcst.PackageModel {
 
-   public abstract class XcstComponentAttribute : Attribute {
+   [AttributeUsage(_attrTargets)]
+   public sealed class XcstComponentAttribute : Attribute {
+
+      const AttributeTargets
+      _attrTargets = AttributeTargets.Method
+         | AttributeTargets.Property
+         | AttributeTargets.Class;
+
+      public byte
+      Kind { get; }
 
       public string?
       Name { get; set; }
-   }
 
-   [AttributeUsage(AttributeTargets.Method)]
-   public class XcstAttributeSetAttribute : XcstComponentAttribute { }
-
-   [AttributeUsage(AttributeTargets.Method)]
-   public class XcstFunctionAttribute : XcstComponentAttribute { }
-
-   [AttributeUsage(AttributeTargets.Property)]
-   public class XcstParameterAttribute : XcstComponentAttribute {
-
-      public bool
-      Required { get; set; }
-   }
-
-   [AttributeUsage(AttributeTargets.Method)]
-   public class XcstTemplateAttribute : XcstComponentAttribute {
-
-      public XcstSequenceCardinality
+      public char
       Cardinality { get; set; }
-   }
-
-   public enum XcstSequenceCardinality {
-      ZeroOrMore = 0,
-      One
-   }
-
-   [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
-   public class XcstTemplateParameterAttribute : Attribute {
-
-      public string
-      Name { get; }
-
-      public Type
-      Type { get; }
-
-      public bool
-      Nullable { get; set; }
-
-      public bool
-      Required { get; set; }
-
-      public bool
-      Tunnel { get; set; }
 
       public
-      XcstTemplateParameterAttribute(string name, Type type) {
-
-         this.Name = name;
-         this.Type = type;
+      XcstComponentAttribute(byte kind) {
+         this.Kind = kind;
       }
    }
 
-   [AttributeUsage(AttributeTargets.Class)]
-   public class XcstTypeAttribute : XcstComponentAttribute { }
-
    [AttributeUsage(AttributeTargets.Property)]
-   public class XcstVariableAttribute : XcstComponentAttribute { }
+   public sealed class RequiredAttribute : Attribute { }
 }

@@ -182,6 +182,8 @@ namespace Xcst.Tests {
          XcstCompiler compiler = _compilerFactory.CreateCompiler();
          compiler.UseLineDirective = true;
          compiler.PackageTypeResolver = n => Assembly.GetExecutingAssembly().GetType(n);
+         //compiler.PackageTypeResolver = n => null;
+         //compiler.AddPackageLibrary(Assembly.GetExecutingAssembly().Location);
 
          return compiler;
       }

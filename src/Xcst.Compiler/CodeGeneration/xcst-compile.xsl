@@ -42,6 +42,7 @@
    <param name="src:manifest-only" select="false()" as="xs:boolean"/>
 
    <param name="src:package-type-resolver" as="item()?"/>
+   <param name="src:package-library" as="item()?"/>
    <param name="src:package-location-resolver" as="item()?"/>
    <param name="src:packages-location" as="xs:string?"/>
    <param name="src:package-file-extension" as="xs:string?"/>
@@ -70,6 +71,7 @@
    <variable name="xcst:type-or-member-attributes" select="'allow-empty-string', 'display-text-member'"/>
 
    <variable name="src:contextual-variable" select="'__xcst'"/>
+   <variable name="src:component-attr-type" select="src:package-model-type('XcstComponent')"/>
 
    <output cdata-section-elements="src:compilation-unit"/>
 
@@ -383,6 +385,7 @@
          <variable name="man" select="src:package-manifest(
             $used-package-name,
             $src:package-type-resolver,
+            $src:package-library,
             src:error-object(.))"/>
          <choose>
             <when test="$man">
@@ -526,7 +529,8 @@
    <function name="src:package-manifest" as="document-node()?" override="no">
       <param name="p1" as="xs:string"/>
       <param name="p2" as="item()?"/>
-      <param name="p3" as="item()+"/>
+      <param name="p3" as="item()?"/>
+      <param name="p4" as="item()+"/>
 
       <sequence select="error()"/>
    </function>
@@ -1587,15 +1591,16 @@
          <code:attributes>
             <if test="$public">
                <code:attribute>
-                  <sequence select="src:package-model-type(concat('Xcst', (if (self::xcst:param) then 'Parameter' else 'Variable')))"/>
-                  <code:initializer>
-                     <if test="self::xcst:param[xs:boolean(@required)]">
-                        <code:member-initializer name="Required">
-                           <code:bool value="true"/>
-                        </code:member-initializer>
-                     </if>
-                  </code:initializer>
+                  <sequence select="$src:component-attr-type"/>
+                  <code:arguments>
+                     <code:int value="{if (self::xcst:param) then 5 else 4}"/>
+                  </code:arguments>
                </code:attribute>
+               <if test="self::xcst:param[xs:boolean(@required)]">
+                  <code:attribute>
+                     <sequence select="src:package-model-type('Required')"/>
+                  </code:attribute>
+               </if>
             </if>
          </code:attributes>
          <code:getter>
@@ -1632,7 +1637,12 @@
          <sequence select="code:type-reference"/>
          <code:attributes>
             <if test="$public">
-               <sequence select="src:package-model-type('XcstFunction')"/>
+               <code:attribute>
+                  <sequence select="$src:component-attr-type"/>
+                  <code:arguments>
+                     <code:int value="3"/>
+                  </code:arguments>
+               </code:attribute>
             </if>
          </code:attributes>
          <code:parameters>
@@ -2174,15 +2184,16 @@
          <code:attributes>
             <if test="$public">
                <code:attribute>
-                  <sequence select="src:package-model-type(concat('Xcst', (if (self::c:param) then 'Parameter' else 'Variable')))"/>
-                  <code:initializer>
-                     <if test="self::c:param and $meta/xs:boolean(@required)">
-                        <code:member-initializer name="Required">
-                           <code:bool value="true"/>
-                        </code:member-initializer>
-                     </if>
-                  </code:initializer>
+                  <sequence select="$src:component-attr-type"/>
+                  <code:arguments>
+                     <code:int value="{if (self::c:param) then 5 else 4}"/>
+                  </code:arguments>
                </code:attribute>
+               <if test="self::c:param and $meta/xs:boolean(@required)">
+                  <code:attribute>
+                     <sequence select="src:package-model-type('Required')"/>
+                  </code:attribute>
+               </if>
             </if>
          </code:attributes>
          <code:getter>
@@ -2274,7 +2285,10 @@
                   <variable name="qname" select="xcst:EQName($meta/@name)"/>
 
                   <code:attribute>
-                     <sequence select="src:package-model-type('XcstTemplate')"/>
+                     <sequence select="$src:component-attr-type"/>
+                     <code:arguments>
+                        <code:int value="1"/>
+                     </code:arguments>
                      <code:initializer>
                         <code:member-initializer name="Name">
                            <code:string verbatim="true">
@@ -2283,46 +2297,18 @@
                         </code:member-initializer>
                         <if test="$meta/@cardinality[. ne 'ZeroOrMore']">
                            <code:member-initializer name="Cardinality">
-                              <code:field-reference name="{$meta/@cardinality}">
-                                 <sequence select="src:package-model-type('XcstSequenceCardinality')"/>
-                              </code:field-reference>
+                              <choose>
+                                 <when test="$meta/@cardinality = 'One'">
+                                    <code:char value=" "/>
+                                 </when>
+                                 <otherwise>
+                                    <sequence select="error((), 'Unknown cardinality.')"/>
+                                 </otherwise>
+                              </choose>
                            </code:member-initializer>
                         </if>
                      </code:initializer>
                   </code:attribute>
-
-                  <for-each select="$meta/xcst:param">
-                     <variable name="non-nullable-type" select="src:non-nullable-type(code:type-reference, $language)"/>
-                     <variable name="nullable" select="not(src:type-reference-equal(code:type-reference, $non-nullable-type, $src:nullable-annotate))"/>
-                     <code:attribute>
-                        <sequence select="src:package-model-type('XcstTemplateParameter')"/>
-                        <code:arguments>
-                           <code:string literal="true">
-                              <value-of select="@name"/>
-                           </code:string>
-                           <code:typeof>
-                              <sequence select="$non-nullable-type"/>
-                           </code:typeof>
-                        </code:arguments>
-                        <code:initializer>
-                           <if test="@required/xs:boolean(.)">
-                              <code:member-initializer name="Required">
-                                 <code:bool value="true"/>
-                              </code:member-initializer>
-                           </if>
-                           <if test="@tunnel/xs:boolean(.)">
-                              <code:member-initializer name="Tunnel">
-                                 <code:bool value="true"/>
-                              </code:member-initializer>
-                           </if>
-                           <if test="$nullable">
-                              <code:member-initializer name="Nullable">
-                                 <code:bool value="true"/>
-                              </code:member-initializer>
-                           </if>
-                        </code:initializer>
-                     </code:attribute>
-                  </for-each>
                </if>
                <call-template name="src:editor-browsable-never"/>
             </code:attributes>
@@ -2404,6 +2390,13 @@
 
                   <code:property name="{@name}" visibility="public" verbatim="true">
                      <sequence select="$type-ref"/>
+                     <code:attributes>
+                        <if test="@required/xs:boolean(.)">
+                           <code:attribute>
+                              <sequence select="src:package-model-type('Required')"/>
+                           </code:attribute>
+                        </if>
+                     </code:attributes>
                      <code:getter>
                         <code:block>
                            <code:return>
@@ -2537,7 +2530,10 @@
             <code:attributes>
                <if test="$public">
                   <code:attribute>
-                     <sequence select="src:package-model-type('XcstFunction')"/>
+                     <sequence select="$src:component-attr-type"/>
+                     <code:arguments>
+                        <code:int value="3"/>
+                     </code:arguments>
                   </code:attribute>
                </if>
                <if test="$meta/@visibility eq 'hidden'">
@@ -2632,7 +2628,10 @@
                <if test="$public">
                   <variable name="qname" select="xcst:EQName($meta/@name)"/>
                   <code:attribute>
-                     <sequence select="src:package-model-type('XcstAttributeSet')"/>
+                     <sequence select="$src:component-attr-type"/>
+                     <code:arguments>
+                        <code:int value="2"/>
+                     </code:arguments>
                      <code:initializer>
                         <code:member-initializer name="Name">
                            <code:string verbatim="true">
@@ -2699,7 +2698,10 @@
             <code:attributes>
                <if test="$public">
                   <code:attribute>
-                     <sequence select="src:package-model-type('XcstType')"/>
+                     <sequence select="$src:component-attr-type"/>
+                     <code:arguments>
+                        <code:int value="6"/>
+                     </code:arguments>
                   </code:attribute>
                </if>
                <call-template name="src:type-attributes"/>

@@ -13,12 +13,14 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml;
 using Saxon.Api;
 using XPathException = net.sf.saxon.trans.XPathException;
+using Xcst.Compiler.Reflection;
 
 namespace Xcst.Compiler {
 
@@ -35,6 +37,9 @@ namespace Xcst.Compiler {
 
       readonly Dictionary<string[], object?>
       _parameters = new Dictionary<string[], object?>();
+
+      readonly ConcurrentDictionary<string, object>
+      _packageLibrary = new ConcurrentDictionary<string, object>();
 
       Type[]?
       _tbaseTypes;
@@ -137,6 +142,33 @@ namespace Xcst.Compiler {
          }
 
          return value;
+      }
+
+      public void
+      AddPackageLibrary(string assemblyLocation) {
+
+         using (Stream assemblySource = File.OpenRead(assemblyLocation)) {
+            AddPackageLibrary(assemblySource);
+         }
+      }
+
+      public void
+      AddPackageLibrary(Stream assemblySource) {
+
+         if (assemblySource is null) throw new ArgumentNullException(nameof(assemblySource));
+
+         XmlWriter writerFn(string packageName) {
+
+            Stream manifest = new MemoryStream();
+
+            if (_packageLibrary.TryAdd(packageName, manifest)) {
+               return XmlWriter.Create(manifest);
+            }
+
+            throw new InvalidOperationException($"Package '{packageName}' has already been registered.");
+         };
+
+         MetadataManifestReader.ReadAssembly(assemblySource, writerFn);
       }
 
       public CompileResult
@@ -331,6 +363,8 @@ namespace Xcst.Compiler {
             compiler.SetParameter(CompilerQName("package-type-resolver"), WrapExternalObject(this.PackageTypeResolver));
          }
 
+         compiler.SetParameter(CompilerQName("package-library"), WrapExternalObject(_packageLibrary));
+
          if (this.PackageLocationResolver != null) {
             compiler.SetParameter(CompilerQName("package-location-resolver"), WrapExternalObject(this.PackageLocationResolver));
          }
@@ -441,7 +475,7 @@ namespace Xcst.Compiler {
 
       internal static XdmNode
       CodeTypeReference(Type type, DocumentBuilder docBuilder) =>
-         CodeTypeReferenceImpl(w => WriteTypeReference(type, w), docBuilder);
+         CodeTypeReferenceImpl(w => TypeManifestReader.WriteTypeReference(type, w), docBuilder);
 
       internal static XdmNode
       CodeTypeReferenceImpl(Action<XmlWriter> writeFn, DocumentBuilder docBuilder) {
@@ -460,70 +494,6 @@ namespace Xcst.Compiler {
             return docBuilder.Build(output)
                .FirstElementOrSelf();
          }
-      }
-
-      internal static void
-      WriteTypeReference(Type type, XmlWriter writer, bool nullable = false) {
-
-         const string ns = XmlNamespaces.XcstCode;
-         const string prefix = "code";
-
-         bool isNullableValueType = Nullable.GetUnderlyingType(type) != null;
-
-         if (nullable
-            && type.IsValueType
-            && !isNullableValueType) {
-
-            WriteTypeReference(typeof(Nullable<>).MakeGenericType(type), writer);
-            return;
-         }
-
-         writer.WriteStartElement(prefix, "type-reference", ns);
-
-         if (nullable
-            && !isNullableValueType) {
-
-            writer.WriteAttributeString("nullable", XmlConvert.ToString(nullable));
-         }
-
-         if (type.IsArray) {
-
-            writer.WriteAttributeString("array-dimensions", XmlConvert.ToString(type.GetArrayRank()));
-            WriteTypeReference(type.GetElementType(), writer);
-
-         } else {
-
-            Type[] typeArguments = type.GetGenericArguments();
-
-            string name = (typeArguments.Length > 0) ?
-               type.Name.Substring(0, type.Name.IndexOf('`'))
-               : type.Name;
-
-            writer.WriteAttributeString("name", name);
-
-            if (type.IsInterface) {
-               writer.WriteAttributeString("interface", "true");
-            }
-
-            if (type.IsNested) {
-               WriteTypeReference(type.DeclaringType, writer);
-            } else {
-               writer.WriteAttributeString("namespace", type.Namespace);
-            }
-
-            if (typeArguments.Length > 0) {
-
-               writer.WriteStartElement(prefix, "type-arguments", ns);
-
-               for (int i = 0; i < typeArguments.Length; i++) {
-                  WriteTypeReference(typeArguments[i], writer);
-               }
-
-               writer.WriteEndElement();
-            }
-         }
-
-         writer.WriteEndElement();
       }
 
       class CompilationUnitResultHandler : IResultDocumentHandler {

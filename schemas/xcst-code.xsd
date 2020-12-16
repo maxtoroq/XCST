@@ -182,6 +182,11 @@
    <xs:element name="chain-reference" substitutionGroup="code:_expression">
       <xs:complexType/>
    </xs:element>
+   <xs:element name="char" substitutionGroup="code:_literal">
+      <xs:complexType>
+         <xs:attribute name="value" use="required" type="code:_char"/>
+      </xs:complexType>
+   </xs:element>
    <xs:element name="collection-initializer">
       <xs:complexType>
          <xs:choice minOccurs="0" maxOccurs="unbounded">
@@ -737,6 +742,11 @@
       <xs:restriction base="xs:token">
          <xs:enumeration value="true"/>
          <xs:enumeration value="false"/>
+      </xs:restriction>
+   </xs:simpleType>
+   <xs:simpleType name="_char">
+      <xs:restriction base="xs:string">
+         <xs:length value="1"/>
       </xs:restriction>
    </xs:simpleType>
    <xs:simpleType name="_positive-integer">

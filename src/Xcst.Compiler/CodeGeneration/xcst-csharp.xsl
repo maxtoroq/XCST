@@ -232,6 +232,12 @@
 
    <template match="code:chain-reference" mode="cs:statement cs:source"/>
 
+   <template match="code:char" mode="cs:source">
+      <text>'</text>
+      <value-of select="@value"/>
+      <text>'</text>
+   </template>
+
    <template match="code:collection-initializer" mode="cs:source">
       <if test="code:*">
          <call-template name="cs:open-brace"/>

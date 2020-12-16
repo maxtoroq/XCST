@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -20,6 +21,7 @@ using System.Reflection;
 using System.Xml;
 using Saxon.Api;
 using Xcst.Runtime;
+using TypeManifestReader = Xcst.Compiler.Reflection.TypeManifestReader;
 
 namespace Xcst.Compiler.CodeGeneration {
 
@@ -27,23 +29,143 @@ namespace Xcst.Compiler.CodeGeneration {
 
    static class ExtensionFunctions {
 
-      internal static string
-      LocalPath(Uri uri) {
+      internal static XdmNode?
+      PackageManifest(
+            string packageName,
+            Func<string, Type?>? packageTypeResolver,
+            ConcurrentDictionary<string, object>? packageLibrary,
+            string? moduleUri,
+            int lineNumber,
+            Processor processor) {
 
-         if (uri is null) throw new ArgumentNullException(nameof(uri));
+         XdmNode buildDoc(Stream source) {
 
-         if (!uri.IsAbsoluteUri) {
-            return uri.OriginalString;
+            DocumentBuilder builder = processor.NewDocumentBuilder();
+            builder.BaseUri = new Uri(String.Empty, UriKind.Relative);
+
+            return builder.Build(source);
+         };
+
+         Func<string, Type?> pkgTypeResolver = packageTypeResolver
+            ?? ResolvePackageType;
+
+         Type? packageType;
+         const string errorCode = "XTSE3000";
+
+         try {
+            packageType = pkgTypeResolver(packageName);
+
+         } catch (Exception ex) {
+
+            throw new CompileException(ex.Message,
+               errorCode: errorCode,
+               moduleUri: moduleUri,
+               lineNumber: lineNumber
+            );
          }
 
-         if (uri.IsFile) {
-            return uri.LocalPath;
+         if (packageType != null) {
+
+            if (!TypeManifestReader.IsXcstPackage(packageType)) {
+
+               throw new CompileException($"{packageType.FullName} is not a valid XCST package.",
+                  errorCode: errorCode,
+                  moduleUri: moduleUri,
+                  lineNumber: lineNumber
+               );
+            }
+
+            using (var output = new MemoryStream()) {
+
+               using (XmlWriter writer = XmlWriter.Create(output)) {
+                  TypeManifestReader.WritePackage(packageType, writer);
+               }
+
+               output.Position = 0;
+
+               return buildDoc(output);
+            }
          }
 
-         return uri.AbsoluteUri;
+         if (packageLibrary != null
+            && packageLibrary.TryGetValue(packageName, out object manifest)) {
+
+            if (manifest is Stream source) {
+
+               lock (source) {
+
+                  if (source.CanRead) {
+
+                     source.Position = 0;
+
+                     XdmNode doc = buildDoc(source);
+                     packageLibrary[packageName] = doc;
+
+                     return doc;
+
+                  } else {
+                     manifest = packageLibrary[packageName];
+                  }
+               }
+            }
+
+            return (XdmNode)manifest;
+         }
+
+         return null;
+      }
+
+      static Type?
+      ResolvePackageType(string packageName) {
+
+         Type? type = null;
+
+         foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies()) {
+
+            Type? type2 = asm.GetType(packageName);
+
+            if (type2 != null) {
+
+               if (type != null && type2 != type) {
+                  throw new ArgumentException($"Ambiguous type '{packageName}'.", nameof(packageName));
+               }
+
+               type = type2;
+            }
+         }
+
+         return type;
       }
 
       internal static Uri?
+      PackageLocation(
+            string packageName,
+            Func<string, Uri?>? packageLocationResolver,
+            Uri? usingPackageUri,
+            string? packagesLocation,
+            string? packageFileExtension) {
+
+         if (packagesLocation is null
+            && usingPackageUri?.IsFile == true) {
+
+            packagesLocation = Path.GetDirectoryName(usingPackageUri.LocalPath);
+         }
+
+         Uri? packageUri = null;
+
+         if (packageLocationResolver != null) {
+            packageUri = packageLocationResolver(packageName);
+
+         } else if (!String.IsNullOrEmpty(packagesLocation)
+            && !String.IsNullOrEmpty(packageFileExtension)) {
+
+            packageUri = FindNamedPackage(packageName, packagesLocation!, packageFileExtension!);
+         }
+
+         return packageUri;
+      }
+
+      static Uri?
       FindNamedPackage(string packageName, string packagesLocation, string fileExtension) {
 
          if (packageName is null) throw new ArgumentNullException(nameof(packageName));
@@ -92,26 +214,20 @@ namespace Xcst.Compiler.CodeGeneration {
          return null;
       }
 
-      internal static Type?
-      ResolvePackageType(string packageName) {
+      internal static string
+      LocalPath(Uri uri) {
 
-         Type? type = null;
+         if (uri is null) throw new ArgumentNullException(nameof(uri));
 
-         foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies()) {
-
-            Type? type2 = asm.GetType(packageName);
-
-            if (type2 != null) {
-
-               if (type != null && type2 != type) {
-                  throw new Exception($"Ambiguous type '{packageName}'.");
-               }
-
-               type = type2;
-            }
+         if (!uri.IsAbsoluteUri) {
+            return uri.OriginalString;
          }
 
-         return type;
+         if (uri.IsFile) {
+            return uri.LocalPath;
+         }
+
+         return uri.AbsoluteUri;
       }
 
       internal static int
@@ -207,6 +323,7 @@ namespace Xcst.Compiler.CodeGeneration {
       ArgumentTypes { get; } = {
          new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_STRING), ' '),
          new XdmSequenceType(XdmAnyItemType.Instance, '?'),
+         new XdmSequenceType(XdmAnyItemType.Instance, '?'),
          new XdmSequenceType(XdmAnyItemType.Instance, '+')
       };
 
@@ -253,59 +370,24 @@ namespace Xcst.Compiler.CodeGeneration {
                .Single()
                .ToString();
 
-            Func<string, Type?> packageTypeResolver = arguments[1].AsItems()
+            Func<string, Type?>? packageTypeResolver = arguments[1].AsItems()
                .Select(i => UnwrapExternalObject<Func<string, Type?>>(i))
-               .SingleOrDefault()
-               ?? ExtensionFunctions.ResolvePackageType;
+               .SingleOrDefault();
 
-            XdmValue errorObject = new XdmValue(arguments[2].AsItems());
+            ConcurrentDictionary<string, object>? packageLibrary = arguments[2].AsItems()
+               .Select(i => UnwrapExternalObject<ConcurrentDictionary<string, object>>(i))
+               .SingleOrDefault();
+
+            XdmValue errorObject = new XdmValue(arguments[3].AsItems());
             var errorData = ModuleUriAndLineNumberFromErrorObject(errorObject);
             string? moduleUri = errorData.Item1;
             int lineNumber = errorData.Item2.GetValueOrDefault();
 
-            Type? packageType;
-            const string errorCode = "XTSE3000";
+            XdmNode? manifest = ExtensionFunctions
+               .PackageManifest(typeName, packageTypeResolver, packageLibrary, moduleUri, lineNumber, _processor);
 
-            try {
-               packageType = packageTypeResolver(typeName);
-
-            } catch (Exception ex) {
-
-               throw new CompileException(ex.Message,
-                  errorCode: errorCode,
-                  moduleUri: moduleUri,
-                  lineNumber: lineNumber
-               );
-            }
-
-            if (packageType is null) {
-               return EmptyEnumerator<XdmItem>.INSTANCE;
-            }
-
-            if (!PackageManifest.IsXcstPackage(packageType)) {
-
-               throw new CompileException($"{packageType.FullName} is not a valid XCST package.",
-                  errorCode: errorCode,
-                  moduleUri: moduleUri,
-                  lineNumber: lineNumber
-               );
-            }
-
-            using (var output = new MemoryStream()) {
-
-               using (XmlWriter writer = XmlWriter.Create(output)) {
-                  PackageManifest.WriteManifest(packageType, writer);
-               }
-
-               output.Position = 0;
-
-               DocumentBuilder builder = _processor.NewDocumentBuilder();
-               builder.BaseUri = new Uri(String.Empty, UriKind.Relative);
-
-               XdmNode result = builder.Build(output);
-
-               return result.GetEnumerator();
-            }
+            return manifest?.GetEnumerator()
+               ?? EmptyEnumerator<XdmItem>.INSTANCE;
          }
       }
    }
@@ -360,22 +442,7 @@ namespace Xcst.Compiler.CodeGeneration {
             string? packageFileExtension = arguments[4].AsAtomicValues()
                .SingleOrDefault()?.ToString();
 
-            if (packagesLocation is null
-               && usingPackageUri?.IsFile == true) {
-
-               packagesLocation = Path.GetDirectoryName(usingPackageUri.LocalPath);
-            }
-
-            Uri? packageUri = null;
-
-            if (packageLocationResolver != null) {
-               packageUri = packageLocationResolver(packageName);
-
-            } else if (!String.IsNullOrEmpty(packagesLocation)
-               && !String.IsNullOrEmpty(packageFileExtension)) {
-
-               packageUri = ExtensionFunctions.FindNamedPackage(packageName, packagesLocation!, packageFileExtension!);
-            }
+            Uri? packageUri = ExtensionFunctions.PackageLocation(packageName, packageLocationResolver, usingPackageUri, packagesLocation, packageFileExtension);
 
             return packageUri?.ToXdmAtomicValue()
                .GetEnumerator()
