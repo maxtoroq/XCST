@@ -75,7 +75,7 @@ namespace Xcst.Compiler {
       PackageLocationResolver { get; set; }
 
       public string?
-      PackagesLocation { get; set; }
+      PackageFileDirectory { get; set; }
 
       public string?
       PackageFileExtension { get; set; }
@@ -369,8 +369,8 @@ namespace Xcst.Compiler {
             compiler.SetParameter(CompilerQName("package-location-resolver"), WrapExternalObject(this.PackageLocationResolver));
          }
 
-         if (this.PackagesLocation != null) {
-            compiler.SetParameter(CompilerQName("packages-location"), this.PackagesLocation.ToXdmItem());
+         if (this.PackageFileDirectory != null) {
+            compiler.SetParameter(CompilerQName("package-file-directory"), this.PackageFileDirectory.ToXdmItem());
          }
 
          if (this.PackageFileExtension != null) {

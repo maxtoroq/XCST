@@ -142,37 +142,36 @@ namespace Xcst.Compiler.CodeGeneration {
             string packageName,
             Func<string, Uri?>? packageLocationResolver,
             Uri? usingPackageUri,
-            string? packagesLocation,
+            string? packageFileDirectory,
             string? packageFileExtension) {
 
-         if (packagesLocation is null
+         if (packageLocationResolver != null) {
+            return packageLocationResolver(packageName);
+         }
+
+         if (packageFileDirectory is null
             && usingPackageUri?.IsFile == true) {
 
-            packagesLocation = Path.GetDirectoryName(usingPackageUri.LocalPath);
+            packageFileDirectory = Path.GetDirectoryName(usingPackageUri.LocalPath);
          }
 
-         Uri? packageUri = null;
-
-         if (packageLocationResolver != null) {
-            packageUri = packageLocationResolver(packageName);
-
-         } else if (!String.IsNullOrEmpty(packagesLocation)
+         if (!String.IsNullOrEmpty(packageFileDirectory)
             && !String.IsNullOrEmpty(packageFileExtension)) {
 
-            packageUri = FindNamedPackage(packageName, packagesLocation!, packageFileExtension!);
+            return FindNamedPackage(packageName, packageFileDirectory!, packageFileExtension!);
          }
 
-         return packageUri;
+         return null;
       }
 
       static Uri?
-      FindNamedPackage(string packageName, string packagesLocation, string fileExtension) {
+      FindNamedPackage(string packageName, string directory, string extension) {
 
          if (packageName is null) throw new ArgumentNullException(nameof(packageName));
          if (packageName.Length == 0) throw new ArgumentException(nameof(packageName));
 
-         string dir = packagesLocation;
-         string search = "*." + fileExtension;
+         string dir = directory;
+         string search = "*." + extension;
 
          if (!Directory.Exists(dir)) {
             return null;
@@ -436,13 +435,13 @@ namespace Xcst.Compiler.CodeGeneration {
                .Select(i => i.Value as Uri ?? new Uri(i.ToString(), UriKind.RelativeOrAbsolute))
                .SingleOrDefault();
 
-            string? packagesLocation = arguments[3].AsAtomicValues()
+            string? packageFileDirectory = arguments[3].AsAtomicValues()
                .SingleOrDefault()?.ToString();
 
             string? packageFileExtension = arguments[4].AsAtomicValues()
                .SingleOrDefault()?.ToString();
 
-            Uri? packageUri = ExtensionFunctions.PackageLocation(packageName, packageLocationResolver, usingPackageUri, packagesLocation, packageFileExtension);
+            Uri? packageUri = ExtensionFunctions.PackageLocation(packageName, packageLocationResolver, usingPackageUri, packageFileDirectory, packageFileExtension);
 
             return packageUri?.ToXdmAtomicValue()
                .GetEnumerator()

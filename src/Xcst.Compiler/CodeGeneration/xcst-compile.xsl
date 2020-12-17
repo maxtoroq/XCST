@@ -44,7 +44,7 @@
    <param name="src:package-type-resolver" as="item()?"/>
    <param name="src:package-library" as="item()?"/>
    <param name="src:package-location-resolver" as="item()?"/>
-   <param name="src:packages-location" as="xs:string?"/>
+   <param name="src:package-file-directory" as="xs:string?"/>
    <param name="src:package-file-extension" as="xs:string?"/>
 
    <param name="src:new-line" select="'&#xA;'" as="xs:string"/>
@@ -396,7 +396,7 @@
                   $used-package-name,
                   $src:package-location-resolver,
                   $using-package-uri,
-                  $src:packages-location,
+                  $src:package-file-directory,
                   $src:package-file-extension)"/>
                <if test="not($used-package-uri)">
                   <sequence select="error(xs:QName('err:XTSE3000'), concat('Cannot find package ''', $used-package-name, '''.'), src:error-object(.))"/>
