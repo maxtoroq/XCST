@@ -3,7 +3,7 @@
 
    <c:template name='foo'>
       <c:for-each name='c' in='"hello".ToCharArray()'>
-         <c:sort value=''/>
+         <c:sort by=''/>
       </c:for-each>
    </c:template>
 

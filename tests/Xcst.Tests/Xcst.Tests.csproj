@@ -817,7 +817,7 @@
     <None Include="Grouping\ForEachGroup\for-each-group.name.type.i.xcst" />
     <None Include="Grouping\ForEachGroup\Sort\sort.foo.i.xcst" />
     <None Include="Grouping\ForEachGroup\Sort\sort.order.type.i.xcst" />
-    <None Include="Grouping\ForEachGroup\Sort\sort.value.type.i.xcst" />
+    <None Include="Grouping\ForEachGroup\Sort\sort.by.type.i.xcst" />
     <None Include="CallableComponents\CallTemplate\TypeCompat.i.xcst" />
     <None Include="CallableComponents\CallTemplate\TypeCompatDocToValueType.c.xcst" />
     <None Include="CallableComponents\CallTemplate\TypeCompat.c.xcst" />
@@ -1293,7 +1293,7 @@
     <None Include="ProgramStructure\Packages\Package\UserDefinedDataElement.c.xcst" />
     <None Include="ProgramStructure\Packages\Package\UserDefinedDataElement.i.xcst" />
     <None Include="Repetition\ForEach\Sort\sort.order.type.i.xcst" />
-    <None Include="Repetition\ForEach\Sort\sort.value.type.i.xcst" />
+    <None Include="Repetition\ForEach\Sort\sort.by.type.i.xcst" />
     <None Include="Repetition\ForEach\Sort\sort.foo.i.xcst" />
     <None Include="Repetition\ForEach\for-each.in.req.i.xcst" />
     <None Include="Repetition\ForEach\for-each.as.type.i.xcst" />

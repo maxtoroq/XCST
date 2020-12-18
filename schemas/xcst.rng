@@ -1442,7 +1442,7 @@
          <ann:documentation>Defines how to sort sequences of items.</ann:documentation>
          <zeroOrMore>
             <choice>
-               <attribute name="value">
+               <attribute name="by">
                   <ann:documentation>A lambda expression that computes the sorting key.</ann:documentation>
                   <ref name="lambda_expression"/>
                </attribute>

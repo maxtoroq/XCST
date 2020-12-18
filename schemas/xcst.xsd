@@ -1397,7 +1397,7 @@
          <xs:documentation>Defines how to sort sequences of items.</xs:documentation>
       </xs:annotation>
       <xs:complexType>
-         <xs:attribute name="value" type="c:lambda_expression">
+         <xs:attribute name="by" type="c:lambda_expression">
             <xs:annotation>
                <xs:documentation>A lambda expression that computes the sorting key.</xs:documentation>
             </xs:annotation>

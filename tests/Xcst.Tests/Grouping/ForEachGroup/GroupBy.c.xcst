@@ -4,7 +4,7 @@
    <c:template name='c:initial-template' expand-text='yes'>
       <dl>
          <c:for-each-group name='group' in='new[] { "banana", "apricot", "apple" }' group-by='it => it.Substring(0, 1)'>
-            <c:sort value='g => g.Key'/>
+            <c:sort by='g => g.Key'/>
 
             <dt>{group.Key}</dt>
             <dd>

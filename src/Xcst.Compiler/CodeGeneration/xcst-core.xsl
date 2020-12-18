@@ -2085,7 +2085,7 @@
 
       <for-each select="c:sort">
          <call-template name="xcst:validate-attribs">
-            <with-param name="optional" select="'value', 'order'"/>
+            <with-param name="optional" select="'by', 'order'"/>
          </call-template>
          <call-template name="xcst:no-children"/>
          <call-template name="xcst:no-other-preceding"/>
@@ -2109,8 +2109,8 @@
                      <sequence select="$in"/>
                   </if>
                   <choose>
-                     <when test="@value">
-                        <code:expression value="{xcst:expression(@value)}"/>
+                     <when test="@by">
+                        <code:expression value="{xcst:expression(@by)}"/>
                      </when>
                      <otherwise>
                         <variable name="param" select="src:aux-variable(generate-id())"/>

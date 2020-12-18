@@ -13,7 +13,7 @@
          </ul>
          <ul>
             <c:for-each-group name='group' in='(IEnumerable)"hello".ToCharArray()'>
-               <c:sort value='g => g.Key'/>
+               <c:sort by='g => g.Key'/>
 
                <li>{group.Key}: {group.Count()}</li>
             </c:for-each-group>
@@ -25,7 +25,7 @@
          </ul>
          <ul>
             <c:for-each-group name='group' in='(IEnumerable)"hello".ToCharArray()' group-size='2'>
-               <c:sort value='g => g.Count'/>
+               <c:sort by='g => g.Count'/>
 
                <li>{string.Join(", ", group)}</li>
             </c:for-each-group>
