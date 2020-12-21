@@ -3,7 +3,7 @@
    <metadata>
       <description>XCST runtime and evaluation API.</description>
       <dependencies>
-         <group targetFramework="net46">
+         <group targetFramework="net461">
             <dependency id="Newtonsoft.Json"/>
          </group>
          <group targetFramework="netstandard2.0">
