@@ -113,12 +113,9 @@ namespace Xcst.Tests {
                   return;
                }
 
-            } catch (CompileException) {
+            } catch (CompileException) when (correct) {
 
-               if (correct) {
-                  printCode = true;
-               }
-
+               printCode = true;
                throw;
             }
 
@@ -151,13 +148,10 @@ namespace Xcst.Tests {
                   }
                }
 
-            } catch (RuntimeException ex) {
+            } catch (RuntimeException ex) when (!fail) {
 
-               if (!fail) {
-                  Console.WriteLine($"// {ex.Message}");
-                  printCode = true;
-               }
-
+               Console.WriteLine($"// {ex.Message}");
+               printCode = true;
                throw;
 
             } catch (TestAssertException) {

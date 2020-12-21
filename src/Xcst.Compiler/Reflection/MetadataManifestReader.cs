@@ -566,16 +566,16 @@ namespace Xcst.Compiler.Reflection {
 
          CustomAttributeValue<TypeSpec> atValue = attrib.DecodeValue(_attrTypeProvider);
 
-         byte kind = (byte)atValue.FixedArguments[0].Value;
+         byte kind = (byte)atValue.FixedArguments[0].Value!;
 
-         string name = atValue.NamedArguments
+         string? name = atValue.NamedArguments
             .Where(n => n.Name == "Name")
-            .Select(n => (string)n.Value)
+            .Select(n => (string?)n.Value)
             .FirstOrDefault();
 
          char cardinality = atValue.NamedArguments
             .Where(n => n.Name == "Cardinality")
-            .Select(n => (char)n.Value)
+            .Select(n => (char)n.Value!)
             .FirstOrDefault();
 
          return new ComponentAttributeData {
