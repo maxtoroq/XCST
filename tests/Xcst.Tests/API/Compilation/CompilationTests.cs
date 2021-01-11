@@ -18,6 +18,8 @@ namespace Xcst.Tests.API.Compilation {
       CompileResult_Lists_Public_Templates_Only() {
 
          var compiler = TestsHelper.CreateCompiler();
+         compiler.CompilationUnitHandler = n => TextWriter.Null;
+
          compiler.TargetClass = "FooPackage";
          compiler.TargetNamespace = typeof(CompilationTests).Namespace;
 

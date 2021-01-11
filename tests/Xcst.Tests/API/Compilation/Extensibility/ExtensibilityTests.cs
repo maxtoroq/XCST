@@ -25,6 +25,8 @@ namespace Xcst.Tests.API.Compilation.Extensibility {
          factory.RegisterExtension(new Uri("http://localhost/ns/ext"), new ExternalFunctionLoader());
 
          var compiler = factory.CreateCompiler();
+         compiler.CompilationUnitHandler = n => TextWriter.Null;
+
          compiler.TargetClass = "FooPackage";
          compiler.TargetNamespace = typeof(ExtensibilityTests).Namespace;
 

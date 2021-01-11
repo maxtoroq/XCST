@@ -102,9 +102,6 @@
                      <sequence select="$namespace"/>
                   </when>
                   <otherwise>
-                     <if test="$namespace">
-                        <sequence select="error(xs:QName('err:XCST9003'), 'The ''namespace'' parameter should be omitted if the package name is multipart.', src:error-object(.))"/>
-                     </if>
                      <sequence select="string-join($package-name-parts[position() ne last()], '.')"/>
                   </otherwise>
                </choose>
@@ -121,9 +118,6 @@
       <variable name="cl" as="xs:string">
          <choose>
             <when test="$package-name">
-               <if test="$class">
-                  <sequence select="error(xs:QName('err:XCST9005'), 'The ''class'' parameter should be omitted for named packages.', src:error-object(.))"/>
-               </if>
                <sequence select="$package-name-parts[last()]"/>
             </when>
             <otherwise>

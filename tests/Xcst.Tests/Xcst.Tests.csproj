@@ -136,6 +136,7 @@
     <Compile Include="API\Compilation\CompilationTests.cs" />
     <Compile Include="API\Compilation\CompilationUnitHandler.cs" />
     <Compile Include="API\Compilation\Extensibility\ExtensibilityTests.cs" />
+    <Compile Include="API\Compilation\NamedPackagesParameters.cs" />
     <Compile Include="API\Evaluation\CallFunction.cs" />
     <Compile Include="API\Evaluation\CallFinalTemplate.cs" />
     <Compile Include="API\Evaluation\CallPrivateTemplate.cs" />
