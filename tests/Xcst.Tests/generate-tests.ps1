@@ -82,15 +82,11 @@ function GenerateTestsForDirectory([IO.DirectoryInfo]$directory, [string]$relati
    foreach ($file in ls "$($directory.FullName)\*" -Include *.xcst, *.pxcst -Exclude *.?.xcst, _*.xcst) {
 
       $compiler = $compilerFactory.CreateCompiler()
+      $compiler.TargetClass = [IO.Path]::GetFileNameWithoutExtension($file.Name)
       $compiler.TargetNamespace = $ns
+      $compiler.TargetVisibility = 'Public'
       $compiler.IndentChars = $singleIndent
       $compiler.NullableAnnotate = $true
-
-      if ($file.Extension -eq ".pxcst") {
-         $compiler.NamedPackage = $true
-      } else {
-         $compiler.TargetClass = [IO.Path]::GetFileNameWithoutExtension($file.Name)
-      }
 
       $xcstResult = $compiler.Compile((New-Object Uri $file.FullName))
 

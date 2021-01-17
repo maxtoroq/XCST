@@ -51,7 +51,7 @@ namespace Xcst.Compiler {
       TargetClass { get; set; }
 
       public CodeVisibility
-      TargetVisibility { get; set; } = CodeVisibility.Public;
+      TargetVisibility { get; set; } = CodeVisibility.Default;
 
       public string[]?
       TargetBaseTypes { get; set; }

@@ -33,7 +33,7 @@
    <param name="src:namespace" as="xs:string?"/>
    <param name="src:class" as="xs:string?"/>
    <param name="src:base-types" as="element(code:type-reference)*"/>
-   <param name="src:visibility" select="'public'" as="xs:string"/>
+   <param name="src:visibility" select="'#default'" as="xs:string"/>
    <param name="src:nullable-annotate" select="false()" as="xs:boolean"/>
    <param name="src:nullable-context" as="xs:string?"/>
 
@@ -164,7 +164,8 @@
       </variable>
 
       <variable name="package-manifest" as="element()">
-         <xcst:package-manifest qualified-types="false">
+         <xcst:package-manifest qualified-types="false"
+               visibility="{(@visibility/xcst:package-visibility(.), $src:visibility)[1]}">
             <code:type-reference name="{$cl}" namespace="{$ns}"/>
             <apply-templates select="for $p in $used-packages return $p/xcst:*" mode="xcst:accepted-component">
                <with-param name="modules" select="$modules" tunnel="yes"/>
@@ -274,7 +275,8 @@
          <when test="self::c:*">
             <call-template name="xcst:validate-attribs">
                <with-param name="required" select="$required"/>
-               <with-param name="optional" select="'name'[current()/self::c:package]"/>
+               <with-param name="optional" select="
+                  if (self::c:package) then ('name', 'visibility') else ()"/>
             </call-template>
          </when>
          <otherwise>
@@ -310,6 +312,18 @@
          else $item"/>
 
       <sequence select="upper-case($strings[1]) eq upper-case($strings[2])"/>
+   </function>
+
+   <function name="xcst:package-visibility" as="xs:string">
+      <param name="node" as="node()"/>
+
+      <variable name="string" select="xcst:non-string($node)"/>
+
+      <if test="not($string = ('internal', 'public'))">
+         <sequence select="error(xs:QName('err:XTSE0020'), concat('Invalid value for ''', name($node), '''. Must be one of (internal|public).'), src:error-object($node))"/>
+      </if>
+
+      <sequence select="$string"/>
    </function>
 
    <template match="c:attribute-set | c:function | c:import | c:output | c:param | c:template | c:type | c:import-namespace | c:variable" mode="xcst:check-top-level"/>
@@ -2064,7 +2078,7 @@
       <variable name="abstract" select="$principal-module and $package-manifest/xcst:*[@visibility eq 'abstract']"/>
 
       <code:type name="{$package-manifest/code:type-reference/@name}"
-            visibility="{($src:visibility[$principal-module], '#default')[1]}"
+            visibility="{($package-manifest/@visibility[$principal-module], '#default')[1]}"
             extensibility="{('abstract'[$abstract], '#default')[1]}"
             partial="true">
 

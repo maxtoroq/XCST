@@ -531,6 +531,7 @@
     <None Include="ProgramStructure\Packages\OverridingComponents\Variable\Original.c.xcst" />
     <None Include="ProgramStructure\Packages\OverridingComponents\Variable\Original.pxcst" />
     <None Include="ProgramStructure\Packages\Package\package.foox.c.xcst" />
+    <None Include="ProgramStructure\Packages\Package\package.visibility.type.i.xcst" />
     <None Include="Repetition\ForEach\for-each.foox.c.xcst" />
     <None Include="Repetition\ForEach\Sort\sort.foox.c.xcst" />
     <None Include="Repetition\While\while.foox.c.xcst" />

@@ -249,12 +249,18 @@
    <define name="package">
       <element name="package">
          <ann:documentation>Represents an XCST package.</ann:documentation>
-         <optional>
-            <attribute name="name">
-               <ann:documentation>The fully-qualified class name for the current package.</ann:documentation>
-               <ref name="type_name"/>
-            </attribute>
-         </optional>
+         <zeroOrMore>
+            <choice>
+               <attribute name="name">
+                  <ann:documentation>The fully-qualified class name for the current package.</ann:documentation>
+                  <ref name="type_name"/>
+               </attribute>
+               <attribute name="visibility">
+                  <ann:documentation>Specifies how the current package can be used from other assemblies.</ann:documentation>
+                  <ref name="package-visibility"/>
+               </attribute>
+            </choice>
+         </zeroOrMore>
          <ref name="module-content"/>
       </element>
    </define>
@@ -1878,6 +1884,14 @@
       <data type="token">
          <param name="minLength">1</param>
       </data>
+   </define>
+
+   <define name="package-visibility">
+      <ann:documentation>One of the values "internal" or "public".</ann:documentation>
+      <choice>
+         <value>internal</value>
+         <value>public</value>
+      </choice>
    </define>
 
    <define name="transform-text">
