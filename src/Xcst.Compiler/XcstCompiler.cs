@@ -429,7 +429,7 @@ namespace Xcst.Compiler {
             .Select(x => (int?)(long)x.Value)
             .FirstOrDefault();
 
-         return Tuple.Create(moduleUri, lineNumber);
+         return Tuple.Create((string?)moduleUri, lineNumber);
       }
 
       internal static string?
