@@ -146,7 +146,7 @@ namespace Xcst.Runtime {
          string normalized = SimpleContent.NormalizeSpace(list);
 
          if (String.IsNullOrEmpty(normalized)) {
-            return new TItem[0];
+            return Array.Empty<TItem>();
          }
 
          return normalized
