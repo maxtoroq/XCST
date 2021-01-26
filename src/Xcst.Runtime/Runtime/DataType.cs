@@ -54,7 +54,7 @@ namespace Xcst.Runtime {
             | NumberStyles.AllowTrailingSign
             | NumberStyles.AllowDecimalPoint;
 
-         return System.Decimal.Parse(SimpleContent.Trim(value), style, CultureInfo.InvariantCulture);
+         return decimal.Parse(SimpleContent.Trim(value), style, CultureInfo.InvariantCulture);
       }
 
       public static int
@@ -64,7 +64,7 @@ namespace Xcst.Runtime {
 
          NumberStyles style = NumberStyles.AllowLeadingSign;
 
-         return Int32.Parse(SimpleContent.Trim(value), style, CultureInfo.InvariantCulture);
+         return int.Parse(SimpleContent.Trim(value), style, CultureInfo.InvariantCulture);
       }
 
       public static string?
@@ -120,6 +120,9 @@ namespace Xcst.Runtime {
          return XmlStandalone.No;
       }
 
+      public static string
+      String(string value) => value;
+
       public static Uri
       Uri(string uriString) {
 
@@ -145,7 +148,7 @@ namespace Xcst.Runtime {
 
          string normalized = SimpleContent.NormalizeSpace(list);
 
-         if (String.IsNullOrEmpty(normalized)) {
+         if (string.IsNullOrEmpty(normalized)) {
             return Array.Empty<TItem>();
          }
 
