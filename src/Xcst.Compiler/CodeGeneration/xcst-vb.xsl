@@ -657,6 +657,12 @@
       </if>
    </template>
 
+   <template match="code:typeof" mode="vb:source">
+      <text>NameOf(</text>
+      <apply-templates mode="#current"/>
+      <text>)</text>
+   </template>
+
    <template match="code:namespace" mode="vb:source">
       <param name="indent" tunnel="yes"/>
 

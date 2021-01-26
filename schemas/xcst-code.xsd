@@ -491,6 +491,13 @@
       <xs:attribute name="name" use="required"/>
       <xs:attribute name="verbatim" type="code:_boolean"/>
    </xs:attributeGroup>
+   <xs:element name="nameof" substitutionGroup="code:_expression">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element ref="code:_expression"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
    <xs:element name="namespace">
       <xs:complexType>
          <xs:sequence>

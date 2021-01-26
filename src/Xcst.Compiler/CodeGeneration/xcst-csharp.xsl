@@ -644,6 +644,12 @@
       </if>
    </template>
 
+   <template match="code:nameof" mode="cs:source">
+      <text>nameof(</text>
+      <apply-templates mode="#current"/>
+      <text>)</text>
+   </template>
+
    <template match="code:namespace" mode="cs:source">
       <param name="indent" tunnel="yes"/>
 

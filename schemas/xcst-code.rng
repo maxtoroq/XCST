@@ -38,6 +38,7 @@
          <ref name="less-than-or-equal"/>
          <ref name="method-call"/>
          <ref name="method-reference"/>
+         <ref name="nameof"/>
          <ref name="new-array"/>
          <ref name="new-object"/>
          <ref name="not"/>
@@ -704,6 +705,12 @@
       <optional>
          <ref name="type-arguments"/>
       </optional>
+   </define>
+
+   <define name="nameof">
+      <element name="nameof">
+         <ref name="_expression"/>
+      </element>
    </define>
 
    <define name="namespace">
