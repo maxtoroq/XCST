@@ -40,7 +40,7 @@ function NuSpec {
          "<license type='expression'>$($notice.license.name)</license>"
          "<projectUrl>$($notice.website)</projectUrl>"
          "<copyright>$($notice.copyright)</copyright>"
-         "<iconUrl>$($notice.website)nuget/icon.png</iconUrl>"
+         "<icon>icon.png</icon>"
          "<repository type='git' url='https://github.com/maxtoroq/XCST' commit='$(git rev-parse HEAD)'/>"
 
    $dependencies = $project.nuspec.package.metadata.dependencies
@@ -86,6 +86,7 @@ function NuSpec {
    "<files>"
       "<file src='$($project.temp)\NOTICE.xml'/>"
       "<file src='$solutionPath\LICENSE.txt'/>"
+      "<file src='$(Resolve-Path icon.png)'/>"
 
    if ($project.sdkStyle) {
       foreach ($tf in $project.targetFx.Split(';')) {
