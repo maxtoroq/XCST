@@ -37,6 +37,7 @@ namespace Xcst.Tests {
       public static void
       RunXcstTest(string packageFile, string testName, string testNamespace, bool correct, bool fail) {
 
+         bool printCode = _printCode;
          var packageUri = new Uri(packageFile, UriKind.Absolute);
 
          CompileResult xcstResult;
@@ -44,10 +45,10 @@ namespace Xcst.Tests {
 
          try {
             var codegenResult = GenerateCode(packageUri, testName, testNamespace);
-            xcstResult = codegenResult.Item1;
-            packageName = codegenResult.Item2;
+            xcstResult = codegenResult.result;
+            packageName = codegenResult.packageName;
 
-         } catch (CompileException ex) when (correct || _printCode) {
+         } catch (CompileException ex) when (printCode) {
 
             Console.WriteLine($"// {ex.Message}");
             Console.WriteLine($"// Module URI: {ex.ModuleUri}");
@@ -73,7 +74,7 @@ namespace Xcst.Tests {
 
          } else {
 
-            string packageDir = Path.GetDirectoryName(packageFile);
+            string packageDir = Path.GetDirectoryName(packageFile)!;
             string packageFileWithoutExt = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(packageFile));
 
             outputFileXml = Path.Combine(packageDir, packageFileWithoutExt + ".xml");
@@ -97,8 +98,6 @@ namespace Xcst.Tests {
                TestAssert.Fail("A package that defines an 'expected' template without an initial template makes no sense.");
             }
          }
-
-         bool printCode = _printCode;
 
          try {
 
@@ -142,16 +141,20 @@ namespace Xcst.Tests {
                } else if (xcstResult.Templates.Contains(_initialName)) {
 
                   if (xcstResult.Templates.Contains(_expectedName)) {
-                     TestAssert.IsTrue(OutputEqualsToExpected(packageType, packageUri));
+                     TestAssert.IsTrue(OutputEqualsToExpected(packageType, packageUri, printCode));
                   } else {
                      SimplyRun(packageType, packageUri);
                   }
                }
 
-            } catch (RuntimeException ex) when (!fail) {
+            } catch (RuntimeException ex) {
 
                Console.WriteLine($"// {ex.Message}");
-               printCode = true;
+
+               if (!fail) {
+                  printCode = true;
+               }
+
                throw;
 
             } catch (TestAssertException) {
@@ -182,7 +185,7 @@ namespace Xcst.Tests {
          return compiler;
       }
 
-      static Tuple<CompileResult, string>
+      static (CompileResult result, string packageName)
       GenerateCode(Uri packageUri, string testName, string testNamespace) {
 
          XcstCompiler compiler = CreateCompiler();
@@ -193,7 +196,7 @@ namespace Xcst.Tests {
 
          CompileResult result = compiler.Compile(packageUri);
 
-         return Tuple.Create(result, compiler.TargetNamespace + "." + compiler.TargetClass);
+         return (result, compiler.TargetNamespace + "." + compiler.TargetClass);
       }
 
       public static Type
@@ -201,7 +204,7 @@ namespace Xcst.Tests {
 
          bool isCSharp = language.Equals("C#", StringComparison.OrdinalIgnoreCase);
 
-         var csOptions = new CSharpParseOptions(CSharpVersion.CSharp6, preprocessorSymbols: new[] { "DEBUG", "TRACE" });
+         var csOptions = new CSharpParseOptions(CSharpVersion.CSharp7, preprocessorSymbols: new[] { "DEBUG", "TRACE" });
          var vbOptions = new VisualBasicParseOptions(VBVersion.VisualBasic14, preprocessorSymbols: new[] { "DEBUG", "TRACE" }.ToDictionary(s => s, s => (object)String.Empty));
 
          SyntaxTree[] syntaxTrees = compilationUnits
@@ -247,7 +250,7 @@ namespace Xcst.Tests {
 
                if (!codeResult.Success) {
 
-                  Diagnostic error = codeResult.Diagnostics
+                  Diagnostic? error = codeResult.Diagnostics
                      .Where(d => d.IsWarningAsError || d.Severity == DiagnosticSeverity.Error)
                      .FirstOrDefault();
 
@@ -265,7 +268,7 @@ namespace Xcst.Tests {
                pdbStream.Position = 0;
 
                Assembly assembly = Assembly.Load(assemblyStream.ToArray(), pdbStream.ToArray());
-               Type type = assembly.GetType(packageName);
+               Type type = assembly.GetType(packageName)!;
 
                return type;
             }
@@ -280,7 +283,7 @@ namespace Xcst.Tests {
 
          using (XmlWriter output = actualDoc.CreateWriter()) {
 
-            XcstEvaluator.Using(Activator.CreateInstance(packageType))
+            XcstEvaluator.Using(Activator.CreateInstance(packageType)!)
                .CallInitialTemplate()
                .OutputTo(output)
                .WithBaseUri(packageUri)
@@ -298,7 +301,7 @@ namespace Xcst.Tests {
 
          using (var output = new StringWriter()) {
 
-            XcstEvaluator.Using(Activator.CreateInstance(packageType))
+            XcstEvaluator.Using(Activator.CreateInstance(packageType)!)
                .CallInitialTemplate()
                .OutputTo(output)
                .WithBaseUri(packageUri)
@@ -312,12 +315,12 @@ namespace Xcst.Tests {
       }
 
       static bool
-      OutputEqualsToExpected(Type packageType, Uri packageUri) {
+      OutputEqualsToExpected(Type packageType, Uri packageUri, bool printCode) {
 
          var expectedDoc = new XDocument();
          var actualDoc = new XDocument();
 
-         XcstEvaluator evaluator = XcstEvaluator.Using(Activator.CreateInstance(packageType));
+         XcstEvaluator evaluator = XcstEvaluator.Using(Activator.CreateInstance(packageType)!);
 
          using (XmlWriter actualWriter = actualDoc.CreateWriter()) {
 
@@ -339,12 +342,14 @@ namespace Xcst.Tests {
          XDocument normalizedActual = XDocumentNormalizer.Normalize(actualDoc);
          bool equals = XNode.DeepEquals(normalizedExpected, normalizedActual);
 
-         if (!equals) {
+         if (printCode || !equals) {
+            Console.WriteLine("/*");
             Console.WriteLine("<!-- expected -->");
             Console.WriteLine(normalizedExpected.ToString());
             Console.WriteLine();
             Console.WriteLine("<!-- actual -->");
             Console.WriteLine(normalizedActual.ToString());
+            Console.WriteLine("*/");
          }
 
          return equals;
@@ -353,7 +358,7 @@ namespace Xcst.Tests {
       static void
       SimplyRun(Type packageType, Uri packageUri) {
 
-         XcstEvaluator.Using(Activator.CreateInstance(packageType))
+         XcstEvaluator.Using(Activator.CreateInstance(packageType)!)
             .CallInitialTemplate()
             .OutputTo(TextWriter.Null)
             .WithBaseUri(packageUri)

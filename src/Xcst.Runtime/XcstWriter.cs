@@ -291,6 +291,11 @@ namespace Xcst {
             return true;
          }
 
+         if (value is XAttribute xAttr) {
+            CopyOf(xAttr);
+            return true;
+         }
+
          if (value is XmlNode xmlNode) {
             CopyOf(xmlNode);
             return true;
@@ -338,6 +343,14 @@ namespace Xcst {
       public void
       CopyOf(XNode? value) =>
          value?.WriteTo(new XcstXmlWriter(this));
+
+      public void
+      CopyOf(XAttribute? value) {
+
+         if (value != null) {
+            WriteAttributeString(value.Name.LocalName, value.Name.NamespaceName, value.Value);
+         }
+      }
 
       public void
       CopyOf(XmlNode? value) =>

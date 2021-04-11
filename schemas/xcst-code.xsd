@@ -74,6 +74,7 @@
             <xs:element ref="code:_expression"/>
          </xs:sequence>
          <xs:attribute name="name"/>
+         <xs:attribute name="ref" type="code:_boolean"/>
       </xs:complexType>
    </xs:element>
    <xs:element name="arguments">
@@ -400,6 +401,14 @@
          <xs:attribute name="value" use="required"/>
       </xs:complexType>
    </xs:element>
+   <xs:element name="is" substitutionGroup="code:_expression">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element ref="code:_expression"/>
+            <xs:element ref="code:_expression"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
    <xs:element name="lambda" substitutionGroup="code:_expression">
       <xs:complexType>
          <xs:sequence>
@@ -552,6 +561,7 @@
          </xs:sequence>
          <xs:attribute name="name" use="required"/>
          <xs:attribute name="params" type="code:_boolean"/>
+         <xs:attribute name="ref" type="code:_boolean"/>
          <xs:attribute name="verbatim" type="code:_boolean"/>
       </xs:complexType>
    </xs:element>

@@ -1576,16 +1576,7 @@
          <with-param name="allowed" select="'with-param'"/>
       </call-template>
 
-      <for-each select="c:with-param">
-         <call-template name="xcst:validate-attribs">
-            <with-param name="required" select="'name'"/>
-            <with-param name="optional" select="'value', 'as', 'tunnel'"/>
-         </call-template>
-         <call-template name="xcst:value-or-sequence-constructor"/>
-         <if test="preceding-sibling::c:with-param[xcst:name-equal(@name, current()/@name)]">
-            <sequence select="error(xs:QName('err:XTSE0670'), 'Duplicate parameter name.', src:error-object(.))"/>
-         </if>
-      </for-each>
+      <call-template name="xcst:validate-with-param"/>
 
       <variable name="qname" select="xcst:EQName(@name)"/>
       <variable name="original" select="$qname eq xs:QName('c:original') and ancestor::c:override"/>
@@ -1650,8 +1641,7 @@
                   <sequence select="
                      if ($meta/@cardinality eq 'ZeroOrMore') then
                         src:item-to-sequence-type($item-type)
-                     else
-                        $item-type"/>
+                     else $item-type"/>
                </if>
             </when>
             <otherwise>
@@ -1665,25 +1655,31 @@
       <param name="meta" as="element()?"/>
       <param name="context" tunnel="yes"/>
       <param name="language" required="yes" tunnel="yes"/>
+      <param name="package-manifest" required="yes" tunnel="yes"/>
 
       <variable name="typed-params" select="boolean($meta/xcst:typed-params(.))"/>
-      <variable name="tunnel-params" select="(self::c:call-template | self::c:next-template)/@tunnel-params"/>
+      <variable name="tunnel-params" select="(
+         self::c:call-template
+         | self::c:next-template
+         | self::c:apply-templates
+         | self::c:next-match)/@tunnel-params"/>
 
       <code:chain>
-         <code:method-call name="Create{'Typed'[$typed-params]}">
+         <code:method-call>
+            <attribute name="name">
+               <choose>
+                  <when test="self::c:apply-templates">ForApplyTemplates</when>
+                  <when test="self::c:next-match">ForNextMatch</when>
+                  <otherwise>
+                     <text>Create</text>
+                     <if test="$typed-params">Typed</if>
+                  </otherwise>
+               </choose>
+            </attribute>
             <sequence select="src:template-context(())/code:type-reference"/>
             <code:arguments>
                <choose>
-                  <when test="not($typed-params)">
-                     <variable name="tmpl-params-count" select="count(c:with-param[not(@tunnel/xcst:boolean(.))])"/>
-                     <variable name="params-count" select="
-                        if ($tmpl-params-count gt 0) then
-                           $tmpl-params-count
-                        else
-                           count(self::c:evaluate-delegate/@with-params)"/>
-                     <code:int value="{$params-count}"/>
-                  </when>
-                  <otherwise>
+                  <when test="$typed-params">
                      <code:new-object>
                         <sequence select="src:params-type($meta)"/>
                         <code:initializer>
@@ -1694,6 +1690,15 @@
                            </for-each>
                         </code:initializer>
                      </code:new-object>
+                  </when>
+                  <otherwise>
+                     <variable name="tmpl-params-count" select="count(c:with-param[not(@tunnel/xcst:boolean(.))])"/>
+                     <variable name="params-count" select="
+                        if ($tmpl-params-count gt 0) then
+                           $tmpl-params-count
+                        else
+                           count(self::c:evaluate-delegate/@with-params)"/>
+                     <code:int value="{$params-count}"/>
                   </otherwise>
                </choose>
                <code:int value="{count(c:with-param[@tunnel/xcst:boolean(.)]) + count($tunnel-params)}"/>
@@ -1796,16 +1801,7 @@
          <with-param name="allowed" select="'with-param'"/>
       </call-template>
 
-      <for-each select="c:with-param">
-         <call-template name="xcst:validate-attribs">
-            <with-param name="required" select="'name'"/>
-            <with-param name="optional" select="'value', 'as', 'tunnel'"/>
-         </call-template>
-         <call-template name="xcst:value-or-sequence-constructor"/>
-         <if test="preceding-sibling::c:with-param[xcst:name-equal(@name, current()/@name)]">
-            <sequence select="error(xs:QName('err:XTSE0670'), 'Duplicate parameter name.', src:error-object(.))"/>
-         </if>
-      </for-each>
+      <call-template name="xcst:validate-with-param"/>
 
       <variable name="current-template" select="ancestor::c:template[1]"/>
 
@@ -1861,7 +1857,7 @@
 
       <call-template name="xcst:validate-attribs">
          <with-param name="required" select="'package'"/>
-         <with-param name="optional" select="'base-output-uri', 'base-uri', 'global-params', 'initial-template', 'template-params', 'tunnel-params'"/>
+         <with-param name="optional" select="'base-output-uri', 'base-uri', 'global-params', 'initial-match-selection', 'initial-mode', 'initial-template', 'template-params', 'tunnel-params'"/>
       </call-template>
 
       <call-template name="xcst:no-children"/>
@@ -1885,17 +1881,35 @@
                </code:arguments>
             </code:method-call>
          </if>
-         <code:method-call name="Call{if (not(@initial-template)) then 'Initial' else ()}Template">
-            <code:chain-reference/>
-            <code:arguments>
-               <if test="@initial-template">
-                  <call-template name="src:QName">
-                     <with-param name="qname" select="xcst:EQName(@initial-template, (), false(), true())"/>
-                     <with-param name="avt" select="@initial-template"/>
-                  </call-template>
-               </if>
-            </code:arguments>
-         </code:method-call>
+         <choose>
+            <when test="@initial-match-selection">
+               <code:method-call name="ApplyTemplates">
+                  <code:chain-reference/>
+                  <code:arguments>
+                     <code:expression value="{xcst:expression(@initial-match-selection)}"/>
+                     <if test="@initial-mode">
+                        <call-template name="src:QName">
+                           <with-param name="qname" select="xcst:EQName(@initial-mode, (), false(), true())"/>
+                           <with-param name="avt" select="@initial-mode"/>
+                        </call-template>
+                     </if>
+                  </code:arguments>
+               </code:method-call>
+            </when>
+            <otherwise>
+               <code:method-call name="Call{if (not(@initial-template)) then 'Initial' else ()}Template">
+                  <code:chain-reference/>
+                  <code:arguments>
+                     <if test="@initial-template">
+                        <call-template name="src:QName">
+                           <with-param name="qname" select="xcst:EQName(@initial-template, (), false(), true())"/>
+                           <with-param name="avt" select="@initial-template"/>
+                        </call-template>
+                     </if>
+                  </code:arguments>
+               </code:method-call>
+            </otherwise>
+         </choose>
          <if test="@template-params">
             <code:method-call name="WithParams">
                <code:chain-reference/>
@@ -1962,6 +1976,19 @@
          </choose>
       </code:method-reference>
    </function>
+
+   <template name="xcst:validate-with-param">
+      <for-each select="c:with-param">
+         <call-template name="xcst:validate-attribs">
+            <with-param name="required" select="'name'"/>
+            <with-param name="optional" select="'value', 'as', 'tunnel'"/>
+         </call-template>
+         <call-template name="xcst:value-or-sequence-constructor"/>
+         <if test="preceding-sibling::c:with-param[xcst:name-equal(@name, current()/@name)]">
+            <sequence select="error(xs:QName('err:XTSE0670'), 'Duplicate parameter name.', src:error-object(.))"/>
+         </if>
+      </for-each>
+   </template>
 
 
    <!-- ## Delegated Templates -->
@@ -2044,16 +2071,7 @@
          <with-param name="allowed" select="'with-param'"/>
       </call-template>
 
-      <for-each select="c:with-param">
-         <call-template name="xcst:validate-attribs">
-            <with-param name="required" select="'name'"/>
-            <with-param name="optional" select="'value', 'as', 'tunnel'"/>
-         </call-template>
-         <call-template name="xcst:value-or-sequence-constructor"/>
-         <if test="preceding-sibling::c:with-param[xcst:name-equal(@name, current()/@name)]">
-            <sequence select="error(xs:QName('err:XTSE0670'), 'Duplicate parameter name.', src:error-object(.))"/>
-         </if>
-      </for-each>
+      <call-template name="xcst:validate-with-param"/>
 
       <code:method-call name="Invoke">
          <call-template name="src:line-number"/>
@@ -3495,9 +3513,7 @@
          <variable name="qname-pattern" select="'([^:\{\}]+:)?[^:\{\}]+'"/>
          <choose>
             <when test="matches($string, concat('^Q\{[^\{\}]*\}', $qname-pattern, '$'))">
-               <variable name="ns" select="xcst:trim(substring(substring-before($string, '}'), 3))"/>
-               <variable name="lexical" select="substring-after($string, '}')"/>
-               <sequence select="QName($ns, $lexical)"/>
+               <sequence select="xcst:URIQualifiedName($string)"/>
             </when>
             <when test="matches($string, concat('^', $qname-pattern, '$'))">
                <choose>
@@ -3515,6 +3531,14 @@
             </otherwise>
          </choose>
       </if>
+   </function>
+
+   <function name="xcst:URIQualifiedName" as="xs:QName">
+      <param name="string" as="xs:string"/>
+
+      <variable name="ns" select="xcst:trim(substring(substring-before($string, '}'), 3))"/>
+      <variable name="lexical" select="substring-after($string, '}')"/>
+      <sequence select="QName($ns, $lexical)"/>
    </function>
 
    <!-- xs:NCName not available in XSLT 2.0, using xs:QName instead -->

@@ -29,6 +29,7 @@
    <include href="xcst-core.xsl"/>
    <include href="xcst-csharp.xsl"/>
    <include href="xcst-vb.xsl"/>
+   <include href="xcst-tmpl-rule.xsl"/>
 
    <param name="src:namespace" as="xs:string?"/>
    <param name="src:class" as="xs:string?"/>
@@ -172,6 +173,10 @@
                <with-param name="local-components" select="$local-components" tunnel="yes"/>
             </apply-templates>
             <copy-of select="$local-components"/>
+            <call-template name="xcst:modes">
+               <with-param name="modules" select="$modules" tunnel="yes"/>
+               <with-param name="implicit-package" select="$implicit-package" tunnel="yes"/>
+            </call-template>
             <call-template name="xcst:output-definitions">
                <with-param name="modules" select="$modules" tunnel="yes"/>
             </call-template>
@@ -275,7 +280,7 @@
          <when test="self::c:*">
             <call-template name="xcst:validate-attribs">
                <with-param name="required" select="$required"/>
-               <with-param name="optional" select="
+               <with-param name="optional" select="'default-mode',
                   if (self::c:package) then ('name', 'visibility') else ()"/>
             </call-template>
          </when>
@@ -659,15 +664,38 @@
    </template>
 
    <template match="c:template" mode="xcst:package-manifest">
+
+      <call-template name="xcst:validate-attribs">
+         <with-param name="optional" select="'name', 'match', 'mode', 'as', 'visibility'"/>
+      </call-template>
+
+      <if test="empty((@name, @match))">
+         <sequence select="error(xs:QName('err:XCST9100'), 'Element must have a ''name'' or ''match'' attribute.', src:error-object(.))"/>
+      </if>
+
+      <if test="count((@name, @match)) gt 1">
+         <sequence select="error(xs:QName('err:XCST9101'), 'The attributes ''name'' and ''match'' are mutually exclusive.', src:error-object(.))"/>
+      </if>
+
+      <if test="@match and @visibility">
+         <sequence select="error(xs:QName('err:XCST9102'), 'The ''visibility'' attribute should be omitted when the ''match'' attribute is used.', src:error-object(.))"/>
+      </if>
+
+      <choose>
+         <when test="@name">
+            <call-template name="xcst:named-template"/>
+         </when>
+         <otherwise>
+            <call-template name="xcst:template-rule"/>
+         </otherwise>
+      </choose>
+   </template>
+
+   <template name="xcst:named-template">
       <param name="modules" tunnel="yes"/>
       <param name="module-pos" tunnel="yes"/>
       <param name="implicit-package" tunnel="yes"/>
       <param name="language" required="yes" tunnel="yes"/>
-
-      <call-template name="xcst:validate-attribs">
-         <with-param name="required" select="'name'"/>
-         <with-param name="optional" select="'as', 'visibility'"/>
-      </call-template>
 
       <variable name="qname" select="xcst:EQName(@name)"/>
 
@@ -1147,7 +1175,7 @@
    </function>
 
    <function name="src:template-method-name" as="xs:string">
-      <param name="declaration" as="element()"/>
+      <param name="declaration" as="element()?"/>
       <param name="qname" as="xs:QName?"/>
       <param name="component-kind" as="xs:string"/>
       <param name="deterministic" as="xs:boolean"/>
@@ -1160,8 +1188,9 @@
       <variable name="id" select="
          if ($deterministic and exists($qname)) then
             replace(string(src:string-id(xcst:uri-qualified-name($qname))), '-', '_')
-         else
-            generate-id($declaration)"/>
+         else if ($declaration) then
+            generate-id($declaration)
+         else error()"/>
 
       <sequence select="src:aux-variable(string-join(($component-kind, $escaped-name, $id), '_'))"/>
    </function>
@@ -1327,7 +1356,7 @@
 
       <src:context>
          <choose>
-            <when test="$meta[self::xcst:template] and $meta/xcst:typed-params(.)">
+            <when test="$meta/xcst:typed-params(.)">
                <code:type-reference>
                   <copy-of select="$base-type/@*"/>
                   <code:type-arguments>
@@ -1346,9 +1375,9 @@
    </function>
 
    <function name="xcst:typed-params" as="xs:boolean">
-      <param name="meta" as="element(xcst:template)"/>
+      <param name="meta" as="element()"/>
 
-      <sequence select="exists($meta/xcst:param[not(@tunnel/xs:boolean(.))])"/>
+      <sequence select="exists($meta[self::xcst:template]/xcst:param[not(@tunnel/xs:boolean(.))])"/>
    </function>
 
    <function name="src:params-type" as="element()">
@@ -2114,6 +2143,7 @@
             <code:region name="Infrastructure">
                <if test="$principal-module">
                   <call-template name="src:execution-context"/>
+                  <call-template name="src:qname-fields"/>
                   <call-template name="src:constructor"/>
                </if>
                <call-template name="src:prime-method">
@@ -2121,8 +2151,12 @@
                </call-template>
                <if test="$principal-module">
                   <call-template name="src:get-template-method"/>
+                  <call-template name="src:get-mode-method">
+                     <with-param name="all-modes" select="true()"/>
+                  </call-template>
+                  <call-template name="src:get-mode-method"/>
                   <call-template name="src:read-output-definition-method"/>
-                  <apply-templates select="$package-manifest/xcst:output" mode="src:member"/>
+                  <apply-templates select="$package-manifest/(xcst:mode, xcst:output)" mode="src:member"/>
                </if>
                <apply-templates select="." mode="src:infrastructure-extra"/>
             </code:region>
@@ -2274,7 +2308,7 @@
       </code:property>
    </template>
 
-   <template match="c:template" mode="src:member">
+   <template match="c:template[@name]" mode="src:member">
       <param name="package-manifest" required="yes" tunnel="yes"/>
       <param name="language" required="yes" tunnel="yes"/>
 
@@ -3208,19 +3242,15 @@
          <code:parameter name="TBase"/>
       </variable>
 
-      <variable name="output" as="element()">
-         <src:output kind="obj">
-            <code:type-reference>
-               <copy-of select="src:helper-type('ISequenceWriter')/@*"/>
-               <code:type-arguments>
-                  <code:type-reference name="{$tbase-param/@name}"/>
-               </code:type-arguments>
-            </code:type-reference>
-            <src:reference>
-               <code:variable-reference name="{src:aux-variable('output')}"/>
-            </src:reference>
-         </src:output>
+      <variable name="aux-meta" as="element()">
+         <xcst:aux-method>
+            <xcst:item-type>
+               <code:type-reference name="{$tbase-param/@name}"/>
+            </xcst:item-type>
+         </xcst:aux-method>
       </variable>
+
+      <variable name="output" select="src:template-output($aux-meta)"/>
 
       <code:method name="GetTemplate" visibility="private">
          <code:type-reference name="Action" namespace="System">

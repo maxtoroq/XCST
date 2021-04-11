@@ -47,10 +47,8 @@ namespace Xcst.Runtime {
       public void
       WriteComment(string? text) { }
 
-      public void
-      CopyOf(TItem value) {
-         throw new NotImplementedException();
-      }
+      public abstract void
+      CopyOf(TItem value);
 
       public void
       CopyOf(IEnumerable<TItem>? value) {
@@ -67,10 +65,10 @@ namespace Xcst.Runtime {
       CopyOf<TDerived>(IEnumerable<TDerived>? value) where TDerived : TItem =>
          CopyOf(value as IEnumerable<TItem> ?? value?.Cast<TItem>());
 
-      public XcstWriter?
+      public virtual XcstWriter?
       TryCastToDocumentWriter() => null;
 
-      public MapWriter?
+      public virtual MapWriter?
       TryCastToMapWriter() => null;
    }
 
@@ -94,6 +92,10 @@ namespace Xcst.Runtime {
 
       public override void
       WriteObject(TItem value) => _buffer.Add(value);
+
+      public override void
+      CopyOf(TItem value) =>
+         WriteObject(DeepCopy.CopyDynamically(value));
 
       public SequenceWriter<TItem>
       WriteSequenceConstructor(Action<ISequenceWriter<TItem>> seqCtor) {
@@ -156,7 +158,7 @@ namespace Xcst.Runtime {
          if (output is null) throw new ArgumentNullException(nameof(output));
 
          return output as ISequenceWriter<TDerived>
-            ?? new CastingSequenceWriter<TDerived, TBase>(output);
+            ?? new DerivedSequenceWriter<TDerived, TBase>(output);
       }
 
       public static ISequenceWriter<TDerived>
@@ -172,7 +174,7 @@ namespace Xcst.Runtime {
 
          if (typeof(TBase).IsAssignableFrom(typeof(TDerived))) {
 
-            return (ISequenceWriter<TDerived>)Activator.CreateInstance(typeof(CastingSequenceWriter<,>)
+            return (ISequenceWriter<TDerived>)Activator.CreateInstance(typeof(DerivedSequenceWriter<,>)
                .MakeGenericType(typeof(TDerived), typeof(TBase)), output);
          }
 
@@ -184,73 +186,35 @@ namespace Xcst.Runtime {
 
       public static XcstDelegate<TBase>
       CastDelegate<TBase, TDerived>(XcstDelegate<TDerived> del) where TDerived : TBase =>
-         (c, o) => del(c, new CastingSequenceWriter<TDerived, TBase>(o));
+         (c, o) => del(c, new DerivedSequenceWriter<TDerived, TBase>(o));
    }
 
-   class CastingSequenceWriter<TDerived, TBase> : ISequenceWriter<TDerived> where TDerived : TBase {
+   class DerivedSequenceWriter<TDerived, TBase> : BaseSequenceWriter<TDerived> where TDerived : TBase {
 
       readonly ISequenceWriter<TBase>
       _output;
 
       public
-      CastingSequenceWriter(ISequenceWriter<TBase> baseWriter) {
+      DerivedSequenceWriter(ISequenceWriter<TBase> baseWriter) {
 
          if (baseWriter is null) throw new ArgumentNullException(nameof(baseWriter));
 
          _output = baseWriter;
       }
 
-      public void
+      public override void
       WriteObject(TDerived value) =>
          _output.WriteObject(value);
 
-      public void
-      WriteObject(IEnumerable<TDerived>? value) {
+      public override void
+      CopyOf(TDerived value) =>
+         _output.CopyOf(value);
 
-         if (value != null) {
-
-            foreach (var item in value) {
-               WriteObject(item);
-            }
-         }
-      }
-
-      public void
-      WriteObject<TDerived2>(IEnumerable<TDerived2>? value) where TDerived2 : TDerived =>
-         WriteObject(value as IEnumerable<TDerived> ?? value?.Cast<TDerived>());
-
-      public void
-      WriteString(TDerived text) => _output.WriteString(text);
-
-      public void
-      WriteRaw(TDerived data) => _output.WriteRaw(data);
-
-      public void
-      WriteComment(string? text) => _output.WriteComment(text);
-
-      public void
-      CopyOf(TDerived value) => _output.CopyOf(value);
-
-      public void
-      CopyOf(IEnumerable<TDerived>? value) {
-
-         if (value != null) {
-
-            foreach (var item in value) {
-               CopyOf(item);
-            }
-         }
-      }
-
-      public void
-      CopyOf<TDerived2>(IEnumerable<TDerived2>? value) where TDerived2 : TDerived =>
-         CopyOf(value as IEnumerable<TDerived> ?? value?.Cast<TDerived>());
-
-      public XcstWriter?
+      public override XcstWriter?
       TryCastToDocumentWriter() =>
          _output.TryCastToDocumentWriter();
 
-      public MapWriter?
+      public override MapWriter?
       TryCastToMapWriter() => _output.TryCastToMapWriter();
    }
 
@@ -269,5 +233,9 @@ namespace Xcst.Runtime {
 
       public override void
       WriteObject(TItem value) => _outputFn(value);
+
+      public override void
+      CopyOf(TItem value) =>
+         WriteObject(DeepCopy.CopyDynamically(value));
    }
 }

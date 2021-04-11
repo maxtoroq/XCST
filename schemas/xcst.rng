@@ -48,6 +48,7 @@
 
    <define name="instruction" docs:display-type="true">
       <choice>
+         <ref name="apply-templates"/>
          <ref name="array"/>
          <ref name="assert"/>
          <ref name="attribute"/>
@@ -70,6 +71,7 @@
          <ref name="map-entry"/>
          <ref name="message"/>
          <ref name="namespace"/>
+         <ref name="next-match"/>
          <ref name="next-template"/>
          <ref name="object"/>
          <ref name="processing-instruction"/>
@@ -274,6 +276,12 @@
          <ann:documentation>The expression language for this module (usually "C#" or "VisualBasic").</ann:documentation>
          <ref name="language"/>
       </attribute>
+      <optional>
+         <attribute name="default-mode">
+            <ann:documentation>The default mode of template rules for the current module.</ann:documentation>
+            <ref name="eqname"/>
+         </attribute>
+      </optional>
       <ref name="standard-attributes-except-version"/>
       <zeroOrMore>
          <ref name="import-namespace"/>
@@ -376,18 +384,44 @@
 
    <define name="template">
       <element name="template">
-         <ann:documentation>Defines a template.</ann:documentation>
-         <attribute name="name">
-            <ann:documentation>The name of the template.</ann:documentation>
-            <ref name="eqname"/>
-         </attribute>
+         <ann:documentation>Defines a named template or template rule.</ann:documentation>
+         <choice>
+            <group>
+               <attribute name="name">
+                  <ann:documentation>The name of the template.</ann:documentation>
+                  <ref name="eqname"/>
+               </attribute>
+               <ref name="visibility-attribute"/>
+            </group>
+            <group>
+               <attribute name="match">
+                  <ann:documentation>A pattern expression.</ann:documentation>
+                  <ref name="pattern"/>
+               </attribute>
+               <optional>
+                  <attribute name="mode">
+                     <ann:documentation>A space separated list of either eqname or "#default"; or "#all". Unprefixed qualified names are in the null namespace.</ann:documentation>
+                     <choice>
+                        <value>#all</value>
+                        <list>
+                           <oneOrMore>
+                              <choice>
+                                 <ref name="eqname"/>
+                                 <value>#default</value>
+                              </choice>
+                           </oneOrMore>
+                        </list>
+                     </choice>
+                  </attribute>
+               </optional>
+            </group>
+         </choice>
          <optional>
             <attribute name="as">
                <ann:documentation>The return type.</ann:documentation>
                <ref name="type_name"/>
             </attribute>
          </optional>
-         <ref name="visibility-attribute"/>
          <ref name="standard-attributes"/>
          <zeroOrMore>
             <ref name="param"/>
@@ -843,6 +877,35 @@
 
    <!-- ## Instructions -->
 
+   <define name="apply-templates">
+      <element name="apply-templates">
+         <attribute name="value">
+            <ann:documentation>The value to process.</ann:documentation>
+            <ref name="expression"/>
+         </attribute>
+         <zeroOrMore>
+            <choice>
+               <attribute name="mode">
+                  <ann:documentation>An eqname or "#current" or "#default". Unprefixed qualified names are in the null namespace.</ann:documentation>
+                  <choice>
+                     <value>#current</value>
+                     <value>#default</value>
+                     <ref name="eqname"/>
+                  </choice>
+               </attribute>
+               <attribute name="tunnel-params">
+                  <ann:documentation>An object with tunnel parameters.</ann:documentation>
+                  <ref name="expr-obj-dict"/>
+               </attribute>
+            </choice>
+         </zeroOrMore>
+         <ref name="standard-attributes"/>
+         <zeroOrMore>
+            <ref name="with-param"/>
+         </zeroOrMore>
+      </element>
+   </define>
+
    <define name="array">
       <element name="array">
          <ann:documentation>Creates an array.</ann:documentation>
@@ -1103,6 +1166,17 @@
                      <ref name="avt-expr"/>
                   </choice>
                </attribute>
+               <attribute name="initial-mode">
+                  <ann:documentation>The name of the initial mode.</ann:documentation>
+                  <choice>
+                     <ref name="eqname"/>
+                     <ref name="avt-expr"/>
+                  </choice>
+               </attribute>
+               <attribute name="initial-match-selection">
+                  <ann:documentation>The value of the initial match selection.</ann:documentation>
+                  <ref name="expression"/>
+               </attribute>
                <attribute name="template-params">
                   <ann:documentation>An object with template parameters.</ann:documentation>
                   <ref name="expr-obj-dict"/>
@@ -1294,6 +1368,22 @@
             <ref name="sequence-constructor"/>
          </choice>
          <ref name="standard-attributes"/>
+      </element>
+   </define>
+
+   <define name="next-match">
+      <element name="next-match">
+         <ann:documentation>Invokes the next template rule that matches the current input.</ann:documentation>
+         <optional>
+            <attribute name="tunnel-params">
+               <ann:documentation>An object with tunnel parameters.</ann:documentation>
+               <ref name="expr-obj-dict"/>
+            </attribute>
+         </optional>
+         <ref name="standard-attributes"/>
+         <zeroOrMore>
+            <ref name="with-param"/>
+         </zeroOrMore>
       </element>
    </define>
 
@@ -2039,6 +2129,11 @@
 
    <define name="unary_expression" docs:display-type="true">
       <ann:documentation>Unary expression.</ann:documentation>
+      <ref name="expression"/>
+   </define>
+
+   <define name="pattern" docs:display-type="true">
+      <ann:documentation>Pattern expression.</ann:documentation>
       <ref name="expression"/>
    </define>
 

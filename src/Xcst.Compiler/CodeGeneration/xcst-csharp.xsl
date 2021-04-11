@@ -79,6 +79,7 @@
    </template>
 
    <template match="code:argument" mode="cs:source">
+      <if test="@ref/xs:boolean(.)">ref </if>
       <if test="@name">
          <value-of select="@name"/>
          <text>: </text>
@@ -521,6 +522,14 @@
       <value-of select="@value"/>
    </template>
 
+   <template match="code:is" mode="cs:source">
+      <text>(</text>
+      <apply-templates select="code:*[1]" mode="#current"/>
+      <text> is </text>
+      <apply-templates select="code:*[2]" mode="#current"/>
+      <text>)</text>
+   </template>
+
    <template match="code:lambda" mode="cs:source">
       <variable name="param-count" select="count(code:parameters/code:*)"/>
       <if test="$param-count ne 1">(</if>
@@ -739,6 +748,7 @@
          <with-param name="indent" select="$indent + 2" tunnel="yes"/>
       </call-template>
       <if test="code:type-reference">
+         <if test="@ref/xs:boolean(.)">ref </if>
          <if test="@params/xs:boolean(.)">params </if>
          <apply-templates select="code:type-reference" mode="#current"/>
          <text> </text>

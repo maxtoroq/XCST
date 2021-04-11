@@ -28,6 +28,9 @@ namespace Xcst.PackageModel {
       Action<TemplateContext>
       GetTemplate<TBase>(QualifiedName name, ISequenceWriter<TBase> output);
 
+      Action<TemplateContext>
+      GetMode<TBase>(QualifiedName? mode, ISequenceWriter<TBase> output);
+
       void
       ReadOutputDefinition(QualifiedName? name, OutputParameters parameters);
    }

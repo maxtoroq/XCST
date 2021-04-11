@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:template name='c:initial-template' visibility='public'>
+      <output>
+         <c:apply-templates value='5' mode='foo'/>
+         <c:apply-templates value='7m' mode='bar'/>
+      </output>
+   </c:template>
+
+   <c:template match='int i' mode='foo bar'>
+      <c:apply-templates value='$"hello {i}"'/>
+   </c:template>
+
+   <c:template match='string s' mode='foo'>
+      <foo>
+         <c:value-of value='s'/>
+      </foo>
+   </c:template>
+
+   <c:template match='decimal d' mode='bar'>
+      <c:apply-templates value='$"hello {d}"'/>
+   </c:template>
+
+   <c:template match='string s' mode='bar'>
+      <bar>
+         <c:value-of value='s'/>
+      </bar>
+   </c:template>
+
+   <c:template match='string' mode='#default'>
+      <c:text>default</c:text>
+   </c:template>
+
+   <c:template name='expected' visibility='public'>
+      <output>
+         <foo>hello 5</foo>
+         <bar>hello 7</bar>
+      </output>
+   </c:template>
+
+</c:module>

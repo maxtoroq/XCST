@@ -54,6 +54,11 @@ namespace Xcst.Runtime {
             (defaultParams, null, package.Context);
       }
 
+      internal static XcstWriter
+      CastDocument(IXcstPackage package, ISequenceWriter<XDocument> output) =>
+         output.TryCastToDocumentWriter()
+             ?? CreateDocument(package, output);
+
       public static XcstWriter
       CastElement(IXcstPackage package, ISequenceWriter<object> output) =>
          CastElement(package, (ISequenceWriter<XElement>)output);
@@ -62,20 +67,17 @@ namespace Xcst.Runtime {
       CastElement(IXcstPackage package, ISequenceWriter<XElement> output) {
 
          if (output.TryCastToDocumentWriter() is XcstWriter docWriter) {
-
             return docWriter;
-
-         } else {
-
-            var doc = new XDocument();
-
-            var defaultParams = new OutputParameters {
-               OmitXmlDeclaration = true
-            };
-
-            return WriterFactory.CreateWriter(new XElementWriter(doc, output), WriterFactory.AbsentOutputUri)
-               (defaultParams, null, package.Context);
          }
+
+         var doc = new XDocument();
+
+         var defaultParams = new OutputParameters {
+            OmitXmlDeclaration = true
+         };
+
+         return WriterFactory.CreateWriter(new XElementWriter(doc, output), WriterFactory.AbsentOutputUri)
+            (defaultParams, null, package.Context);
       }
 
       public static XcstWriter

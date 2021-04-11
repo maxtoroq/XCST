@@ -30,11 +30,24 @@ namespace Xcst.Runtime {
       readonly Dictionary<string, object?>?
       _tunnelParameters;
 
+      readonly bool
+      _inMode;
+
+      public object?
+      Input { get; }
+
+      public QualifiedName?
+      Mode { get; }
+
+      public int
+      MatchIndex { get; private set; }
+
       public static TemplateContext
       Create(int tmplCount, int tunnelCount, TemplateContext? currentContext = null) {
 
          if (tmplCount == 0
             && tunnelCount == 0
+            && !(currentContext?._inMode).GetValueOrDefault()
             && (currentContext?._tunnelParameters is null
                || currentContext._tunnelParameters.Count == 0)) {
 
@@ -47,6 +60,77 @@ namespace Xcst.Runtime {
       public static TemplateContext<TParams>
       CreateTyped<TParams>(TParams parameters, int tunnelCount, TemplateContext? currentContext = null) =>
          new TemplateContext<TParams>(parameters, tunnelCount, currentContext);
+
+      public static TemplateContext
+      ForApplyTemplates(
+            int tmplCount,
+            int tunnelCount,
+            TemplateContext? currentContext = null) =>
+         new TemplateContext(tmplCount, tunnelCount, currentContext);
+
+      internal static TemplateContext
+      ForApplyTemplatesItem(TemplateContext baseContext, QualifiedName? mode, object? input) {
+
+         var newContext = new TemplateContext(
+            baseContext._templateParameters?.Count ?? 0,
+            baseContext._tunnelParameters?.Count ?? 0,
+            baseContext,
+            input,
+            mode,
+            0
+         );
+
+         if (baseContext._templateParameters?.Count > 0) {
+            foreach (var pair in baseContext._templateParameters) {
+               newContext._templateParameters![pair.Key] = pair.Value;
+            }
+         }
+
+         return newContext;
+      }
+
+      public static TemplateContext
+      ForNextMatch(int tmplCount, int tunnelCount, TemplateContext currentContext) {
+
+         if (currentContext is null
+            || !currentContext._inMode) {
+
+            throw DynamicError.AbsentCurrentTemplateRule();
+         }
+
+         return new TemplateContext(
+            tmplCount,
+            tunnelCount,
+            currentContext,
+            currentContext.Input,
+            currentContext.Mode,
+            currentContext.MatchIndex + 1
+         );
+      }
+
+      internal static TemplateContext
+      ForShallowCopy(TemplateContext currentContext, object? input) {
+
+         Assert.IsNotNull(currentContext);
+         Debug.Assert(currentContext._inMode);
+
+         var newContext = new TemplateContext(
+            currentContext._templateParameters?.Count ?? 0,
+            currentContext._tunnelParameters?.Count ?? 0,
+            currentContext,
+            input,
+            currentContext.Mode,
+            0
+         );
+
+         if (currentContext._templateParameters?.Count > 0) {
+            foreach (var pair in currentContext._templateParameters) {
+               newContext._templateParameters![pair.Key] = pair.Value;
+            }
+         }
+
+         return newContext;
+      }
 
       public
       TemplateContext(int tmplCount, int tunnelCount, TemplateContext? currentContext) {
@@ -67,6 +151,29 @@ namespace Xcst.Runtime {
                WithParam(item.Key, item.Value, tunnel: true);
             }
          }
+
+         if (currentContext != null) {
+            _inMode = currentContext._inMode;
+            this.Input = currentContext.Input;
+            this.Mode = currentContext.Mode;
+            this.MatchIndex = currentContext.MatchIndex;
+         }
+      }
+
+      private
+      TemplateContext(
+            int tmplCount,
+            int tunnelCount,
+            TemplateContext? currentContext,
+            object? input,
+            QualifiedName? mode,
+            int matchIndex)
+         : this(tmplCount, tunnelCount, currentContext) {
+
+         _inMode = true;
+         this.Input = input;
+         this.Mode = mode;
+         this.MatchIndex = matchIndex;
       }
 
       public TemplateContext
@@ -209,6 +316,11 @@ namespace Xcst.Runtime {
 #pragma warning disable CS8603 // let caller decide nullability
          return default(TDefault);
 #pragma warning restore CS8603
+      }
+
+      public void
+      NextMatch() {
+         this.MatchIndex++;
       }
    }
 

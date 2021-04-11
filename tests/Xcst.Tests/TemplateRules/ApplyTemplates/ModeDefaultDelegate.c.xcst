@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:template name='c:initial-template'>
+      <output>
+         <c:apply-templates value='5' mode='foo'/>
+      </output>
+   </c:template>
+
+   <c:template match='int i' mode='foo'>
+      <c:variable name='del'>
+         <c:delegate>
+            <c:apply-templates value='.5m'/>
+         </c:delegate>
+      </c:variable>
+      <c:apply-templates value='i' mode='bar'>
+         <c:with-param name='del' value='del'/>
+      </c:apply-templates>
+   </c:template>
+
+   <c:template match='int' mode='bar'>
+      <c:param name='del' as='Xcst.XcstDelegate&lt;object>'/>
+
+      <c:evaluate-delegate delegate='del'/>
+   </c:template>
+
+   <c:template match='decimal' mode='foo'>
+      <c:text>decimal foo</c:text>
+   </c:template>
+
+   <c:template match='decimal' mode='bar'>
+      <c:text>decimal bar</c:text>
+   </c:template>
+
+   <c:template name='expected'>
+      <output>decimal bar</output>
+   </c:template>
+
+</c:module>

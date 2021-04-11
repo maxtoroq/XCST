@@ -160,6 +160,14 @@ namespace Xcst {
          return new XcstTemplateEvaluator(_package, Prime, name);
       }
 
+      public XcstTemplateEvaluator
+      ApplyTemplates(object? input, QualifiedName? mode = null) {
+
+         _paramsLocked = true;
+
+         return new XcstTemplateEvaluator(_package, Prime, input, mode);
+      }
+
       internal PrimingContext
       Prime() {
 
@@ -243,8 +251,14 @@ namespace Xcst {
       readonly Func<PrimingContext>
       _primeFn;
 
-      readonly QualifiedName
+      readonly QualifiedName?
       _name;
+
+      readonly object?
+      _input;
+
+      readonly QualifiedName?
+      _mode;
 
       readonly Dictionary<string, object?>
       _templateParameters = new Dictionary<string, object?>();
@@ -262,6 +276,18 @@ namespace Xcst {
          _package = package;
          _primeFn = primeFn;
          _name = name;
+      }
+
+      internal
+      XcstTemplateEvaluator(IXcstPackage package, Func<PrimingContext> primeFn, object? input, QualifiedName? mode) {
+
+         if (package is null) throw new ArgumentNullException(nameof(package));
+         if (primeFn is null) throw new ArgumentNullException(nameof(primeFn));
+
+         _package = package;
+         _primeFn = primeFn;
+         _input = input;
+         _mode = mode;
       }
 
       public XcstTemplateEvaluator
@@ -401,10 +427,10 @@ namespace Xcst {
 
          if (output is null) throw new ArgumentNullException(nameof(output));
 
-         Action<TemplateContext> tmplFn = _package.GetTemplate<TBase>(_name, output);
+         Action<TemplateContext> tmplFn = TemplateFunction(output);
 
          void executionFn(OutputParameters? overrideParams, bool skipFlush, TemplateContext tmplContext) =>
-            tmplFn(tmplContext);
+            EvaluateTemplate(tmplFn, tmplContext);
 
          return CreateOutputter(executionFn);
       }
@@ -433,10 +459,12 @@ namespace Xcst {
          return new XcstOutputter(_package, _primeFn, executionFn2);
       }
 
-      static TemplateContext
+      TemplateContext
       CreateTemplateContext(Dictionary<string, object?> templateParams, Dictionary<string, object?> tunnelParams) {
 
-         var context = TemplateContext.Create(templateParams.Count, tunnelParams.Count);
+         var context = (_name != null) ?
+            TemplateContext.Create(templateParams.Count, tunnelParams.Count)
+            : TemplateContext.ForApplyTemplates(templateParams.Count, tunnelParams.Count);
 
          foreach (var param in templateParams) {
             context.WithParam(param.Key, param.Value);
@@ -449,6 +477,22 @@ namespace Xcst {
          return context;
       }
 
+      Action<TemplateContext>
+      TemplateFunction<TBase>(ISequenceWriter<TBase> output) =>
+         (_name != null) ?
+            _package.GetTemplate(_name, output)
+            : _package.GetMode(_mode, output);
+
+      void
+      EvaluateTemplate(Action<TemplateContext> tmplFn, TemplateContext tmplContext) {
+
+         if (_name != null) {
+            tmplFn(tmplContext);
+         } else {
+            ApplyTemplates.Apply(tmplContext, _input, _mode, tmplFn);
+         }
+      }
+
       void
       EvaluateToWriter(CreateWriterDelegate writerFn, OutputParameters? overrideParams, bool skipFlush, TemplateContext tmplContext) {
 
@@ -459,8 +503,8 @@ namespace Xcst {
 
          try {
 
-            Action<TemplateContext> tmplFn = _package.GetTemplate(_name, writer);
-            tmplFn(tmplContext);
+            Action<TemplateContext> tmplFn = TemplateFunction(writer);
+            EvaluateTemplate(tmplFn, tmplContext);
 
             if (!writer.DisposeWriter
                && !skipFlush) {

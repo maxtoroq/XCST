@@ -17,6 +17,7 @@
    </xs:group>
    <xs:group name="instruction">
       <xs:choice>
+         <xs:element ref="c:apply-templates"/>
          <xs:element ref="c:array"/>
          <xs:element ref="c:assert"/>
          <xs:element ref="c:attribute"/>
@@ -39,6 +40,7 @@
          <xs:element ref="c:map-entry"/>
          <xs:element ref="c:message"/>
          <xs:element ref="c:namespace"/>
+         <xs:element ref="c:next-match"/>
          <xs:element ref="c:next-template"/>
          <xs:element ref="c:object"/>
          <xs:element ref="c:processing-instruction"/>
@@ -176,6 +178,11 @@
             <xs:documentation>The expression language for this module (usually "C#" or "VisualBasic").</xs:documentation>
          </xs:annotation>
       </xs:attribute>
+      <xs:attribute name="default-mode" type="c:eqname">
+         <xs:annotation>
+            <xs:documentation>The default mode of template rules for the current module.</xs:documentation>
+         </xs:annotation>
+      </xs:attribute>
       <xs:attributeGroup ref="c:standard-attributes-except-version"/>
    </xs:complexType>
    <xs:element name="import-namespace">
@@ -281,24 +288,61 @@
    </xs:element>
    <xs:element name="template">
       <xs:annotation>
-         <xs:documentation>Defines a template.</xs:documentation>
+         <xs:documentation>Defines a named template or template rule.</xs:documentation>
       </xs:annotation>
       <xs:complexType mixed="true">
          <xs:sequence>
             <xs:element minOccurs="0" maxOccurs="unbounded" ref="c:param"/>
             <xs:group ref="c:sequence-constructor"/>
          </xs:sequence>
-         <xs:attribute name="name" use="required" type="c:eqname">
+         <xs:attribute name="name" type="c:eqname">
             <xs:annotation>
                <xs:documentation>The name of the template.</xs:documentation>
             </xs:annotation>
+         </xs:attribute>
+         <xs:attributeGroup ref="c:visibility-attribute"/>
+         <xs:attribute name="match" type="c:pattern">
+            <xs:annotation>
+               <xs:documentation>A pattern expression.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="mode">
+            <xs:annotation>
+               <xs:documentation>A space separated list of either eqname or "#default"; or "#all". Unprefixed qualified names are in the null namespace.</xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+               <xs:union>
+                  <xs:simpleType>
+                     <xs:restriction base="xs:token">
+                        <xs:enumeration value="#all"/>
+                     </xs:restriction>
+                  </xs:simpleType>
+                  <xs:simpleType>
+                     <xs:restriction>
+                        <xs:simpleType>
+                           <xs:list>
+                              <xs:simpleType>
+                                 <xs:union memberTypes="c:eqname">
+                                    <xs:simpleType>
+                                       <xs:restriction base="xs:token">
+                                          <xs:enumeration value="#default"/>
+                                       </xs:restriction>
+                                    </xs:simpleType>
+                                 </xs:union>
+                              </xs:simpleType>
+                           </xs:list>
+                        </xs:simpleType>
+                        <xs:minLength value="1"/>
+                     </xs:restriction>
+                  </xs:simpleType>
+               </xs:union>
+            </xs:simpleType>
          </xs:attribute>
          <xs:attribute name="as" type="c:type_name">
             <xs:annotation>
                <xs:documentation>The return type.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
-         <xs:attributeGroup ref="c:visibility-attribute"/>
          <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
@@ -790,6 +834,43 @@
       </xs:attribute>
    </xs:attributeGroup>
    <!-- ## Instructions -->
+   <xs:element name="apply-templates">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element minOccurs="0" maxOccurs="unbounded" ref="c:with-param"/>
+         </xs:sequence>
+         <xs:attribute name="value" use="required" type="c:expression">
+            <xs:annotation>
+               <xs:documentation>The value to process. Expression.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="mode">
+            <xs:annotation>
+               <xs:documentation>An eqname or "#current" or "#default". Unprefixed qualified names are in the null namespace.</xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+               <xs:union memberTypes="c:eqname">
+                  <xs:simpleType>
+                     <xs:restriction base="xs:token">
+                        <xs:enumeration value="#current"/>
+                     </xs:restriction>
+                  </xs:simpleType>
+                  <xs:simpleType>
+                     <xs:restriction base="xs:token">
+                        <xs:enumeration value="#default"/>
+                     </xs:restriction>
+                  </xs:simpleType>
+               </xs:union>
+            </xs:simpleType>
+         </xs:attribute>
+         <xs:attribute name="tunnel-params" type="c:expr-obj-dict">
+            <xs:annotation>
+               <xs:documentation>An object with tunnel parameters. Expression (System.Object | System.Collections.Generic.IDictionary&lt;System.String, System.Object&gt;).</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attributeGroup ref="c:standard-attributes"/>
+      </xs:complexType>
+   </xs:element>
    <xs:element name="array">
       <xs:annotation>
          <xs:documentation>Creates an array.</xs:documentation>
@@ -1053,6 +1134,19 @@
                <xs:union memberTypes="c:eqname c:avt-expr"/>
             </xs:simpleType>
          </xs:attribute>
+         <xs:attribute name="initial-mode">
+            <xs:annotation>
+               <xs:documentation>The name of the initial mode. Attribute value template (eqname).</xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+               <xs:union memberTypes="c:eqname c:avt-expr"/>
+            </xs:simpleType>
+         </xs:attribute>
+         <xs:attribute name="initial-match-selection" type="c:expression">
+            <xs:annotation>
+               <xs:documentation>The value of the initial match selection. Expression.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
          <xs:attribute name="template-params" type="c:expr-obj-dict">
             <xs:annotation>
                <xs:documentation>An object with template parameters. Expression (System.Object | System.Collections.Generic.IDictionary&lt;System.String, System.Object&gt;).</xs:documentation>
@@ -1248,6 +1342,22 @@
          <xs:attribute name="value" type="c:expression">
             <xs:annotation>
                <xs:documentation>The namespace URI. Expression.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attributeGroup ref="c:standard-attributes"/>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="next-match">
+      <xs:annotation>
+         <xs:documentation>Invokes the next template rule that matches the current input.</xs:documentation>
+      </xs:annotation>
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element minOccurs="0" maxOccurs="unbounded" ref="c:with-param"/>
+         </xs:sequence>
+         <xs:attribute name="tunnel-params" type="c:expr-obj-dict">
+            <xs:annotation>
+               <xs:documentation>An object with tunnel parameters. Expression (System.Object | System.Collections.Generic.IDictionary&lt;System.String, System.Object&gt;).</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>
@@ -2016,6 +2126,12 @@
    <xs:simpleType name="unary_expression">
       <xs:annotation>
          <xs:documentation>Unary expression.</xs:documentation>
+      </xs:annotation>
+      <xs:restriction base="c:expression"/>
+   </xs:simpleType>
+   <xs:simpleType name="pattern">
+      <xs:annotation>
+         <xs:documentation>Pattern expression.</xs:documentation>
       </xs:annotation>
       <xs:restriction base="c:expression"/>
    </xs:simpleType>

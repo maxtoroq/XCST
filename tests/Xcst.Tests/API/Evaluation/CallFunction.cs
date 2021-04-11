@@ -5,7 +5,8 @@ namespace Xcst.Tests.API.Evaluation {
 
    partial class EvaluationTests {
 
-      [Test, Category(TestCategory)]
+      [Test]
+      [Category(TestCategory)]
       public void
       Call_Function() {
 

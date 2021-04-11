@@ -33,6 +33,7 @@
          <ref name="greater-than"/>
          <ref name="greater-than-or-equal"/>
          <ref name="indexer-reference"/>
+         <ref name="is"/>
          <ref name="lambda"/>
          <ref name="less-than"/>
          <ref name="less-than-or-equal"/>
@@ -153,9 +154,14 @@
 
    <define name="argument">
       <element name="argument">
-         <optional>
-            <attribute name="name"/>
-         </optional>
+         <zeroOrMore>
+            <choice>
+               <attribute name="name"/>
+               <attribute name="ref">
+                  <ref name="_boolean"/>
+               </attribute>
+            </choice>
+         </zeroOrMore>
          <ref name="_expression"/>
       </element>
    </define>
@@ -587,6 +593,13 @@
       </element>
    </define>
 
+   <define name="is">
+      <element name="is">
+         <ref name="_expression"/>
+         <ref name="_expression"/>
+      </element>
+   </define>
+
    <define name="lambda">
       <element name="lambda">
          <optional>
@@ -775,6 +788,9 @@
          <zeroOrMore>
             <choice>
                <attribute name="params">
+                  <ref name="_boolean"/>
+               </attribute>
+               <attribute name="ref">
                   <ref name="_boolean"/>
                </attribute>
                <attribute name="verbatim">

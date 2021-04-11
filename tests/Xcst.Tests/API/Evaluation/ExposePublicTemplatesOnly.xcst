@@ -1,8 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
-
-   <c:template name='private' visibility='private'/>
-   <c:template name='public' visibility='public'/>
-   <c:template name='final' visibility='final'/>
-
-</c:module>

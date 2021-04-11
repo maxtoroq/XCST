@@ -83,6 +83,7 @@
    </template>
 
    <template match="code:argument" mode="vb:source">
+      <if test="@ref/xs:boolean(.)">ByRef </if>
       <if test="@name and not(../parent::code:attribute)">
          <value-of select="@name"/>
          <text>:=</text>
@@ -734,6 +735,7 @@
          <when test="@params/xs:boolean(.)">ParamArray </when>
          <when test="code:*[2]">Optional </when>
       </choose>
+      <if test="@ref/xs:boolean(.)">ByRef </if>
       <call-template name="vb:escaped-name"/>
       <if test="code:type-reference">
          <text> As </text>

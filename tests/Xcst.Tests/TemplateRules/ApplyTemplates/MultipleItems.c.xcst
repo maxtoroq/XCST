@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:template name='c:initial-template'>
+      <output>
+         <c:apply-templates value='new object[] { 5, "six", 7m }' mode='foo'/>
+      </output>
+   </c:template>
+
+   <c:template match='int i' mode='foo'>
+      <int>
+         <c:value-of value='i'/>
+      </int>
+   </c:template>
+
+   <c:template match='string s' mode='foo'>
+      <string>
+         <c:value-of value='s'/>
+      </string>
+   </c:template>
+
+   <c:template match='decimal d' mode='foo'>
+      <decimal>
+         <c:value-of value='d'/>
+      </decimal>
+   </c:template>
+
+   <c:template name='expected'>
+      <output>
+         <int>5</int>
+         <string>six</string>
+         <decimal>7</decimal>
+      </output>
+   </c:template>
+
+</c:module>

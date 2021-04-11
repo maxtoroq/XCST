@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:variable name='firstMatch' as='int'/>
+   <c:variable name='secondMatch' as='int'/>
+
+   <c:template name='c:initial-template'>
+      <output>
+         <c:apply-templates value='5' mode='foo'/>
+      </output>
+   </c:template>
+
+   <c:template match='object o' mode='foo'>
+      <c:value-of value='o + " object"'/>
+   </c:template>
+
+   <c:template match='int' mode='foo'>
+      <c:void value='Assert.AreEqual(1, ++secondMatch)'/>
+      <c:next-match/>
+   </c:template>
+
+   <c:template match='int &amp;&amp; false' mode='foo'>
+      <c:void value='Assert.AreEqual(1, ++firstMatch)'/>
+   </c:template>
+
+   <c:template name='expected'>
+      <output>5 object</output>
+   </c:template>
+
+</c:module>

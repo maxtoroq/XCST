@@ -66,6 +66,15 @@ namespace Xcst.Runtime {
       Terminate(string message) => new RuntimeException(message, Code("XTMM9000"));
 
       public static Exception
-      InferMethodIsNotMeantToBeCalled() => new RuntimeException("Infer method is not meant to be called.");
+      InferMethodIsNotMeantToBeCalled() =>
+         new RuntimeException("Infer method is not meant to be called.");
+
+      public static Exception
+      UnknownMode(QualifiedName? mode) =>
+         new RuntimeException($"The mode '{mode?.ToUriQualifiedName()}' does not exist.", Code("XCST9103"));
+
+      public static Exception
+      AbsentCurrentTemplateRule() =>
+         new RuntimeException("The current template rule is absent.", Code("XTDE0560"));
    }
 }

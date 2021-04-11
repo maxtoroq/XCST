@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:import-namespace ns='System.Xml.Linq'/>
+
+   <c:variable name='sourceDoc' as='XDocument'>
+      <c:document>
+         <c:processing-instruction name='pi'>value</c:processing-instruction>
+         <foo bar='1'>
+            <baz>text</baz>
+            <c:comment>comment</c:comment>
+         </foo>
+      </c:document>
+   </c:variable>
+
+   <c:template name='c:initial-template'>
+      <c:variable name='doc1' as='XDocument'>
+         <c:apply-templates value='this.sourceDoc' mode='foo'/>
+      </c:variable>
+      <c:variable name='doc2' as='XDocument'>
+         <c:document>
+            <c:processing-instruction name='pi'>value</c:processing-instruction>
+            <foo bar='1'>
+               <new-element>text</new-element>
+               <c:comment>comment</c:comment>
+            </foo>
+         </c:document>
+      </c:variable>
+      <c:void value='Assert.IsTrue(XNode.DeepEquals(doc2, doc1))'/>
+   </c:template>
+
+   <c:template match='XElement el &amp;&amp; el.Name == "baz"' mode='foo'>
+      <new-element>
+         <c:value-of value='el.Value'/>
+      </new-element>
+   </c:template>
+
+</c:module>

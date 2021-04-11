@@ -11,4 +11,8 @@
       <c:evaluate-package package='Activator.CreateInstance(GetType())' initial-template='foo'/>
    </c:template>
 
+   <c:template name='expected'>
+      <foo xmlns=''/>
+   </c:template>
+
 </c:module>

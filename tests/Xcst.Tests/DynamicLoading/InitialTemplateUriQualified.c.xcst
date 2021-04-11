@@ -1,14 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<c:module version='1.0' language='C#'
-   xmlns:c='http://maxtoroq.github.io/XCST'
-   xmlns:foo='urn:foo'>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
    <c:import-namespace ns='System'/>
 
-   <c:template name='foo:foo'/>
+   <c:template name='foo:foo' xmlns:foo='urn:foo'>
+      <foo/>
+   </c:template>
 
    <c:template name='c:initial-template'>
       <c:evaluate-package package='Activator.CreateInstance(GetType())' initial-template='Q{urn:foo}foo'/>
+   </c:template>
+
+   <c:template name='expected'>
+      <foo/>
    </c:template>
 
 </c:module>

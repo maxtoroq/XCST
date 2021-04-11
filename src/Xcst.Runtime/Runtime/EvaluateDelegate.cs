@@ -27,7 +27,7 @@ namespace Xcst.Runtime {
          if (output is null) throw new ArgumentNullException(nameof(output));
 
          var derivedWriter = output as ISequenceWriter<TDerived>
-            ?? new CastingSequenceWriter<TDerived, TBase>(output);
+            ?? new DerivedSequenceWriter<TDerived, TBase>(output);
 
          del.Invoke(context, derivedWriter);
       }
@@ -60,7 +60,7 @@ namespace Xcst.Runtime {
 
             if (baseType.IsAssignableFrom(derivedType)) {
 
-               derivedWriter = Activator.CreateInstance(typeof(CastingSequenceWriter<,>)
+               derivedWriter = Activator.CreateInstance(typeof(DerivedSequenceWriter<,>)
                   .MakeGenericType(derivedType, baseType), output);
 
             } else {

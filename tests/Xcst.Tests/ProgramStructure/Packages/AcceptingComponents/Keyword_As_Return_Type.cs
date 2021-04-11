@@ -85,7 +85,7 @@ namespace Xcst.Tests.ProgramStructure.Packages.AcceptingComponents {
          }
 
          public override object
-         GetEntity(Uri absoluteUri, string role, System.Type ofObjectToReturn) =>
+         GetEntity(Uri absoluteUri, string? role, System.Type? ofObjectToReturn) =>
             CreateStreamForString(GetPackageString(absoluteUri.AbsoluteUri.Substring("urn:x:".Length)));
 
          static Stream

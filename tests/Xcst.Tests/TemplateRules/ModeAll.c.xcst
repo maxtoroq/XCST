@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:template name='c:initial-template'>
+      <c:variable name='input'>hello</c:variable>
+      <output>
+         <all>
+            <c:apply-templates value='input' mode='#default'/>
+         </all>
+         <foo>
+            <c:apply-templates value='input' mode='foo'/>
+         </foo>
+      </output>
+   </c:template>
+
+   <c:template match='string s' mode='#all'>
+      <c:value-of value='s + " all"'/>
+   </c:template>
+
+   <c:template match='string s' mode='foo'>
+      <c:value-of value='s'/>
+   </c:template>
+
+   <c:template name='expected'>
+      <output>
+         <all>hello all</all>
+         <foo>hello</foo>
+      </output>
+   </c:template>
+
+</c:module>

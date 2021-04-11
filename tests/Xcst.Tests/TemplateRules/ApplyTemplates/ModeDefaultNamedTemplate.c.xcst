@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:template name='c:initial-template'>
+      <output>
+         <c:apply-templates value='5' mode='foo'/>
+      </output>
+   </c:template>
+
+   <c:template match='int i' mode='foo'>
+      <c:call-template name='int-string'>
+         <c:with-param name='i' value='i'/>
+      </c:call-template>
+   </c:template>
+
+   <c:template name='int-string'>
+      <c:param name='i' as='int'/>
+
+      <c:apply-templates value='i.ToString()'/>
+   </c:template>
+
+   <c:template match='string s' mode='foo'>
+      <c:value-of value='s + " string"'/>
+   </c:template>
+
+   <c:template match='string' mode='#default'>
+      <c:text>default</c:text>
+   </c:template>
+
+   <c:template name='expected'>
+      <output>5 string</output>
+   </c:template>
+
+</c:module>
