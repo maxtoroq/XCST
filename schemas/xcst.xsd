@@ -1121,9 +1121,9 @@
                <xs:documentation>The package instance. Expression.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
-         <xs:attribute name="global-params" type="c:expr-obj-dict">
+         <xs:attribute name="package-params" type="c:expr-obj-dict">
             <xs:annotation>
-               <xs:documentation>An object with global parameters. Expression (System.Object | System.Collections.Generic.IDictionary&lt;System.String, System.Object&gt;).</xs:documentation>
+               <xs:documentation>An object with package parameters. Expression (System.Object | System.Collections.Generic.IDictionary&lt;System.String, System.Object&gt;).</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attribute name="initial-template">

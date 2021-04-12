@@ -1155,8 +1155,8 @@
          </attribute>
          <zeroOrMore>
             <choice>
-               <attribute name="global-params">
-                  <ann:documentation>An object with global parameters.</ann:documentation>
+               <attribute name="package-params">
+                  <ann:documentation>An object with package parameters.</ann:documentation>
                   <ref name="expr-obj-dict"/>
                </attribute>
                <attribute name="initial-template">

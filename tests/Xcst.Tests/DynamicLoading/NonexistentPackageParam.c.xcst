@@ -7,7 +7,7 @@
       <c:invoke-package
          package='Activator.CreateInstance(GetType())'
          initial-template='foo'
-         global-params='new { a = "a" }'/>
+         package-params='new { a = "a" }'/>
    </c:template>
 
    <c:template name='foo'/>

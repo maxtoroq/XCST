@@ -1857,7 +1857,7 @@
 
       <call-template name="xcst:validate-attribs">
          <with-param name="required" select="'package'"/>
-         <with-param name="optional" select="'base-output-uri', 'base-uri', 'global-params', 'initial-match-selection', 'initial-mode', 'initial-template', 'template-params', 'tunnel-params'"/>
+         <with-param name="optional" select="'base-output-uri', 'base-uri', 'package-params', 'initial-match-selection', 'initial-mode', 'initial-template', 'template-params', 'tunnel-params'"/>
       </call-template>
 
       <call-template name="xcst:no-children"/>
@@ -1873,11 +1873,11 @@
                </code:cast>
             </code:arguments>
          </code:method-call>
-         <if test="@global-params">
+         <if test="@package-params">
             <code:method-call name="WithParams">
                <code:chain-reference/>
                <code:arguments>
-                  <code:expression value="{xcst:expression(@global-params)}"/>
+                  <code:expression value="{xcst:expression(@package-params)}"/>
                </code:arguments>
             </code:method-call>
          </if>
