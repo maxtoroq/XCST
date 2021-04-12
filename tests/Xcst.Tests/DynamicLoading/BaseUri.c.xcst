@@ -11,7 +11,7 @@
    <c:template name='c:initial-template'>
       <c:variable name='context' value='((IXcstPackage)this).Context'/>
       <c:variable name='outputUri' value='context.ResolveUri($"{outputDir}{outputDir}{tempFile}")'/>
-      <c:evaluate-package
+      <c:invoke-package
          package='Activator.CreateInstance(GetType())'
          initial-template='foo'
          base-uri='{outputDir}'/>
@@ -20,7 +20,7 @@
    </c:template>
 
    <c:template name='foo'>
-      <c:evaluate-package
+      <c:invoke-package
          package='Activator.CreateInstance(GetType())'
          initial-template='bar'
          base-output-uri='{outputDir}'/>

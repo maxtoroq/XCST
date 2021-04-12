@@ -8,7 +8,7 @@
    </c:template>
 
    <c:template name='c:initial-template'>
-      <c:evaluate-package package='Activator.CreateInstance(GetType())' initial-template='Q{urn:foo}foo'/>
+      <c:invoke-package package='Activator.CreateInstance(GetType())' initial-template='Q{urn:foo}foo'/>
    </c:template>
 
    <c:template name='expected'>

@@ -4,7 +4,7 @@
    <c:import-namespace ns='System'/>
 
    <c:template name='c:initial-template'>
-      <c:evaluate-package package='Activator.CreateInstance(GetType())'
+      <c:invoke-package package='Activator.CreateInstance(GetType())'
          initial-match-selection='new object()'/>
    </c:template>
 

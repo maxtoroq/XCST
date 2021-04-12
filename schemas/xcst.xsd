@@ -31,7 +31,7 @@
          <xs:element ref="c:document"/>
          <xs:element ref="c:element"/>
          <xs:element ref="c:evaluate-delegate"/>
-         <xs:element ref="c:evaluate-package"/>
+         <xs:element ref="c:invoke-package"/>
          <xs:element ref="c:fallback"/>
          <xs:element ref="c:for-each"/>
          <xs:element ref="c:for-each-group"/>
@@ -1111,9 +1111,9 @@
          <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
-   <xs:element name="evaluate-package">
+   <xs:element name="invoke-package">
       <xs:annotation>
-         <xs:documentation>Evaluates a dynamically loaded package.</xs:documentation>
+         <xs:documentation>Invokes a dynamically loaded package.</xs:documentation>
       </xs:annotation>
       <xs:complexType>
          <xs:attribute name="package" use="required" type="c:expression">

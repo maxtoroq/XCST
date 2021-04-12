@@ -8,7 +8,7 @@
    <c:variable name='tempFile'>foo.txt</c:variable>
 
    <c:template name='c:initial-template'>
-      <c:evaluate-package
+      <c:invoke-package
          package='Activator.CreateInstance(GetType())'
          initial-template='foo'/>
    </c:template>

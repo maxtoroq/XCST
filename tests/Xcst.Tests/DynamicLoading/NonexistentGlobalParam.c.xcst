@@ -4,7 +4,7 @@
    <c:import-namespace ns='System'/>
 
    <c:template name='c:initial-template'>
-      <c:evaluate-package
+      <c:invoke-package
          package='Activator.CreateInstance(GetType())'
          initial-template='foo'
          global-params='new { a = "a" }'/>

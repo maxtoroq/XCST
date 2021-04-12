@@ -7,7 +7,7 @@
    <c:variable name='tempFile'>foo.txt</c:variable>
 
    <c:template name='bar' xml:base='/bar/'>
-      <c:evaluate-package
+      <c:invoke-package
          package='Activator.CreateInstance(GetType())'
          initial-template='foo'
          base-output-uri='foo/'/>

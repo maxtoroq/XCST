@@ -62,7 +62,7 @@
          <ref name="document"/>
          <ref name="element"/>
          <ref name="evaluate-delegate"/>
-         <ref name="evaluate-package"/>
+         <ref name="invoke-package"/>
          <ref name="fallback"/>
          <ref name="for-each"/>
          <ref name="for-each-group"/>
@@ -1146,9 +1146,9 @@
       </element>
    </define>
 
-   <define name="evaluate-package">
-      <element name="evaluate-package">
-         <ann:documentation>Evaluates a dynamically loaded package.</ann:documentation>
+   <define name="invoke-package">
+      <element name="invoke-package">
+         <ann:documentation>Invokes a dynamically loaded package.</ann:documentation>
          <attribute name="package">
             <ann:documentation>The package instance.</ann:documentation>
             <ref name="expression"/>

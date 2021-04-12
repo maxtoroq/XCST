@@ -1852,7 +1852,7 @@
       </xcst:instruction>
    </template>
 
-   <template match="c:evaluate-package" mode="src:statement">
+   <template match="c:invoke-package" mode="src:statement">
       <param name="output" tunnel="yes"/>
 
       <call-template name="xcst:validate-attribs">

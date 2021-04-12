@@ -2,9 +2,9 @@
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
    <c:template name='foo'>
-      <c:evaluate-package package='null'>
+      <c:invoke-package package='null'>
          <a/>
-      </c:evaluate-package>
+      </c:invoke-package>
    </c:template>
 
 </c:module>

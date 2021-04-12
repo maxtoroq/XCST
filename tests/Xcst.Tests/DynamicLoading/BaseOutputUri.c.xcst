@@ -10,7 +10,7 @@
    <c:template name='c:initial-template'>
       <c:variable name='context' value='((IXcstPackage)this).Context'/>
       <c:variable name='outputUri' value='context.ResolveOutputUri(tempFile)'/>
-      <c:evaluate-package
+      <c:invoke-package
          package='Activator.CreateInstance(GetType())'
          initial-template='foo'
          base-output-uri='{context.BaseOutputUri.AbsoluteUri}'/>
