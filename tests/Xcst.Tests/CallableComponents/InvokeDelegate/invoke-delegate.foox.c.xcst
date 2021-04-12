@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:template name='foo'>
+      <c:variable name='bar'>
+         <c:delegate/>
+      </c:variable>
+      <c:invoke-delegate delegate='bar' foo:foo='foo' xmlns:foo='urn:foo'/>
+   </c:template>
+
+</c:module>

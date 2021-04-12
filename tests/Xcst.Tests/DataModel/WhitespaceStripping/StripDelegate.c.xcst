@@ -6,9 +6,9 @@
          <c:variable name='a'>
             <c:delegate xml:space='preserve'>&#x20;&#xD;&#xA;&#x9;<c:param name='x' as='string'/><c:value-of value='x'/>y</c:delegate>
          </c:variable>
-         <c:evaluate-delegate delegate='a'>
+         <c:invoke-delegate delegate='a'>
             <c:with-param name='x' value='"x"'/>
-         </c:evaluate-delegate>
+         </c:invoke-delegate>
       </foo>
    </c:template>
 

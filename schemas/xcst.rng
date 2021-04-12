@@ -61,7 +61,7 @@
          <ref name="delegate"/>
          <ref name="document"/>
          <ref name="element"/>
-         <ref name="evaluate-delegate"/>
+         <ref name="invoke-delegate"/>
          <ref name="invoke-package"/>
          <ref name="fallback"/>
          <ref name="for-each"/>
@@ -1123,9 +1123,9 @@
       </element>
    </define>
 
-   <define name="evaluate-delegate">
-      <element name="evaluate-delegate">
-         <ann:documentation>Evaluates a template delegate.</ann:documentation>
+   <define name="invoke-delegate">
+      <element name="invoke-delegate">
+         <ann:documentation>Invokes a template delegate.</ann:documentation>
          <attribute name="delegate">
             <ann:documentation>The template delegate instance.</ann:documentation>
             <ref name="expression">

@@ -21,7 +21,7 @@
    <c:template match='int' mode='bar'>
       <c:param name='del' as='Xcst.XcstDelegate&lt;object>'/>
 
-      <c:evaluate-delegate delegate='del'/>
+      <c:invoke-delegate delegate='del'/>
    </c:template>
 
    <c:template match='decimal' mode='foo'>

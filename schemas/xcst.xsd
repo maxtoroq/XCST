@@ -30,7 +30,7 @@
          <xs:element ref="c:delegate"/>
          <xs:element ref="c:document"/>
          <xs:element ref="c:element"/>
-         <xs:element ref="c:evaluate-delegate"/>
+         <xs:element ref="c:invoke-delegate"/>
          <xs:element ref="c:invoke-package"/>
          <xs:element ref="c:fallback"/>
          <xs:element ref="c:for-each"/>
@@ -1090,9 +1090,9 @@
          <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
-   <xs:element name="evaluate-delegate">
+   <xs:element name="invoke-delegate">
       <xs:annotation>
-         <xs:documentation>Evaluates a template delegate.</xs:documentation>
+         <xs:documentation>Invokes a template delegate.</xs:documentation>
       </xs:annotation>
       <xs:complexType>
          <xs:sequence>

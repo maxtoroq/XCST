@@ -9,9 +9,9 @@
             </c:param>
          </c:delegate>
       </c:variable>
-      <c:evaluate-delegate delegate='foo'>
+      <c:invoke-delegate delegate='foo'>
          <c:with-param name='a' value='"2"'/>
-      </c:evaluate-delegate>
+      </c:invoke-delegate>
    </c:template>
 
 </c:module>

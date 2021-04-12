@@ -1,0 +1,37 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:template name='c:initial-template'>
+
+      <c:variable name='foo'>
+         <c:delegate expand-text='yes'>
+            <c:param name='a' as='int' tunnel='yes'/>
+
+            <foo>{a}</foo>
+         </c:delegate>
+      </c:variable>
+
+      <c:variable name='bar'>
+         <c:delegate>
+            <c:invoke-delegate delegate='foo'/>
+         </c:delegate>
+      </c:variable>
+
+      <doc>
+         <c:invoke-delegate delegate='bar'>
+            <c:with-param name='a' value='2'/>
+         </c:invoke-delegate>
+         <c:invoke-delegate delegate='bar'>
+            <c:with-param name='a' value='2' tunnel='yes'/>
+         </c:invoke-delegate>
+      </doc>
+   </c:template>
+
+   <c:template name='expected'>
+      <doc>
+         <foo>0</foo>
+         <foo>2</foo>
+      </doc>
+   </c:template>
+
+</c:module>

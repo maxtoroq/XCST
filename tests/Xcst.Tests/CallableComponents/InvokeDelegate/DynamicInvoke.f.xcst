@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:import-namespace ns='System'/>
+
+   <c:template name='c:initial-template'>
+      <c:variable name='del' value='() => default(object)' as='Func&lt;object>'/>
+      <c:invoke-delegate delegate='del'/>
+   </c:template>
+
+</c:module>

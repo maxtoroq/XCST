@@ -7,7 +7,7 @@
       </c:variable>
       <c:variable name='o' value='s' as='Xcst.XcstDelegate&lt;object>'/>
       <c:variable name='r' as='object'>
-         <c:evaluate-delegate delegate='o'/>
+         <c:invoke-delegate delegate='o'/>
       </c:variable>
       <c:void value='Assert.AreEqual(typeof(string), r.GetType())'/>
       <c:void value='Assert.AreEqual("foo", r)'/>

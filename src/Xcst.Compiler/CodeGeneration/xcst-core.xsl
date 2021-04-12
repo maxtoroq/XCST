@@ -1697,7 +1697,7 @@
                         if ($tmpl-params-count gt 0) then
                            $tmpl-params-count
                         else
-                           count(self::c:evaluate-delegate/@with-params)"/>
+                           count(self::c:invoke-delegate/@with-params)"/>
                      <code:int value="{$params-count}"/>
                   </otherwise>
                </choose>
@@ -2059,7 +2059,7 @@
       </xcst:instruction>
    </template>
 
-   <template match="c:evaluate-delegate" mode="src:statement">
+   <template match="c:invoke-delegate" mode="src:statement">
       <param name="output" tunnel="yes"/>
 
       <call-template name="xcst:validate-attribs">
