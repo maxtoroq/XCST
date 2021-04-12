@@ -149,9 +149,9 @@ namespace Xcst.Tests {
 
             } catch (RuntimeException ex) {
 
-               Console.WriteLine($"// {ex.Message}");
-
-               if (!fail) {
+               if (printCode) {
+                  Console.WriteLine($"// {ex.Message}");
+               } else if (!fail) {
                   printCode = true;
                }
 
@@ -203,6 +203,9 @@ namespace Xcst.Tests {
       CompileCode(string packageName, Uri packageUri, IEnumerable<string> compilationUnits, string language, bool correct) {
 
          bool isCSharp = language.Equals("C#", StringComparison.OrdinalIgnoreCase);
+
+         // template rules require pattern matching available in C# 7
+         // all other tests should compile against C# 6
 
          var csOptions = new CSharpParseOptions(CSharpVersion.CSharp7, preprocessorSymbols: new[] { "DEBUG", "TRACE" });
          var vbOptions = new VisualBasicParseOptions(VBVersion.VisualBasic14, preprocessorSymbols: new[] { "DEBUG", "TRACE" }.ToDictionary(s => s, s => (object)String.Empty));
