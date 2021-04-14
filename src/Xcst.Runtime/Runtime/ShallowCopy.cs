@@ -31,7 +31,8 @@ namespace Xcst.Runtime {
          object? value = context.Input;
 
          if (value is null) {
-            throw new NotImplementedException();
+            ((dynamic)output).CopyOf(value);
+            return;
          }
 
          if (TryCopy(package, currentMode, value, context, output)) {
