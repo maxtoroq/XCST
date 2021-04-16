@@ -1662,7 +1662,8 @@
          self::c:call-template
          | self::c:next-template
          | self::c:apply-templates
-         | self::c:next-match)/@tunnel-params"/>
+         | self::c:next-match
+         | self::c:invoke-delegate)/@tunnel-params"/>
 
       <code:chain>
          <code:method-call>
@@ -2064,7 +2065,7 @@
 
       <call-template name="xcst:validate-attribs">
          <with-param name="required" select="'delegate'"/>
-         <with-param name="optional" select="'with-params'"/>
+         <with-param name="optional" select="'with-params', 'tunnel-params'"/>
       </call-template>
 
       <call-template name="xcst:validate-children">

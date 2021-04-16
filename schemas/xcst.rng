@@ -1133,12 +1133,18 @@
                <docs:expression-type name="System.Delegate"/>
             </ref>
          </attribute>
-         <optional>
-            <attribute name="with-params">
-               <ann:documentation>An object with parameters.</ann:documentation>
-               <ref name="expr-obj-dict"/>
-            </attribute>
-         </optional>
+         <zeroOrMore>
+            <choice>
+               <attribute name="with-params">
+                  <ann:documentation>An object with parameters.</ann:documentation>
+                  <ref name="expr-obj-dict"/>
+               </attribute>
+               <attribute name="tunnel-params">
+                  <ann:documentation>An object with tunnel parameters.</ann:documentation>
+                  <ref name="expr-obj-dict"/>
+               </attribute>
+            </choice>
+         </zeroOrMore>
          <ref name="standard-attributes"/>
          <zeroOrMore>
             <ref name="with-param"/>
@@ -1182,7 +1188,7 @@
                   <ref name="expr-obj-dict"/>
                </attribute>
                <attribute name="tunnel-params">
-                  <ann:documentation>An object with tunnel template parameters.</ann:documentation>
+                  <ann:documentation>An object with tunnel parameters.</ann:documentation>
                   <ref name="expr-obj-dict"/>
                </attribute>
                <attribute name="base-output-uri">
