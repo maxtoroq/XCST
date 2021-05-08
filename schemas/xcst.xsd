@@ -1402,7 +1402,12 @@
          <xs:documentation>Represents a fallback in a c:choose instruction in case no other choice is selected.</xs:documentation>
       </xs:annotation>
       <xs:complexType mixed="true">
-         <xs:group ref="c:sequence-constructor"/>
+         <xs:group minOccurs="0" ref="c:sequence-constructor"/>
+         <xs:attribute name="value" type="c:statement_expression">
+            <xs:annotation>
+               <xs:documentation>The value to output. Statement expression.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
@@ -1666,10 +1671,15 @@
          <xs:documentation>Represents a choice in a c:choose instruction.</xs:documentation>
       </xs:annotation>
       <xs:complexType mixed="true">
-         <xs:group ref="c:sequence-constructor"/>
+         <xs:group minOccurs="0" ref="c:sequence-constructor"/>
          <xs:attribute name="test" use="required" type="c:boolean_expression">
             <xs:annotation>
                <xs:documentation>The condition to check for the current choice to be selected.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="value" type="c:statement_expression">
+            <xs:annotation>
+               <xs:documentation>The value to output. Statement expression.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>

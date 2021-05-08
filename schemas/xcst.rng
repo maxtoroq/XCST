@@ -1423,8 +1423,14 @@
    <define name="otherwise">
       <element name="otherwise">
          <ann:documentation>Represents a fallback in a c:choose instruction in case no other choice is selected.</ann:documentation>
+         <choice>
+            <attribute name="value">
+               <ann:documentation>The value to output.</ann:documentation>
+               <ref name="statement_expression"/>
+            </attribute>
+            <ref name="sequence-constructor"/>
+         </choice>
          <ref name="standard-attributes"/>
-         <ref name="sequence-constructor"/>
       </element>
    </define>
 
@@ -1702,8 +1708,14 @@
             <ann:documentation>The condition to check for the current choice to be selected.</ann:documentation>
             <ref name="boolean_expression"/>
          </attribute>
+         <choice>
+            <attribute name="value">
+               <ann:documentation>The value to output.</ann:documentation>
+               <ref name="statement_expression"/>
+            </attribute>
+            <ref name="sequence-constructor"/>
+         </choice>
          <ref name="standard-attributes"/>
-         <ref name="sequence-constructor"/>
       </element>
    </define>
 

@@ -1029,29 +1029,39 @@
 
       <call-template name="xcst:validate-attribs">
          <with-param name="required" select="'test'"/>
+         <with-param name="optional" select="'value'"/>
       </call-template>
 
+      <call-template name="xcst:value-or-sequence-constructor"/>
       <call-template name="xcst:no-other-preceding"/>
 
       <code:if>
          <call-template name="src:line-number"/>
          <code:expression value="{xcst:expression(@test)}"/>
          <code:block>
-            <call-template name="src:sequence-constructor"/>
+            <call-template name="src:sequence-constructor">
+               <with-param name="value" select="@value"/>
+            </call-template>
          </code:block>
       </code:if>
    </template>
 
    <template match="c:choose/c:otherwise" mode="src:statement">
 
-      <call-template name="xcst:validate-attribs"/>
+      <call-template name="xcst:validate-attribs">
+         <with-param name="optional" select="'value'"/>
+      </call-template>
+
+      <call-template name="xcst:value-or-sequence-constructor"/>
 
       <call-template name="xcst:no-other-following">
          <with-param name="except" select="()"/>
       </call-template>
 
       <code:else>
-         <call-template name="src:sequence-constructor"/>
+         <call-template name="src:sequence-constructor">
+            <with-param name="value" select="@value"/>
+         </call-template>
       </code:else>
    </template>
 
