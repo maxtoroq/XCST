@@ -1080,6 +1080,71 @@
       </code:if>
    </template>
 
+   <template match="c:switch" mode="src:statement">
+
+      <call-template name="xcst:validate-attribs">
+         <with-param name="required" select="'value'"/>
+      </call-template>
+
+      <call-template name="xcst:validate-children">
+         <with-param name="allowed" select="'when', 'otherwise'"/>
+      </call-template>
+
+      <if test="not(c:when)">
+         <sequence select="error(xs:QName('err:XTSE0010'), 'At least one c:when element is required within c:switch', src:error-object(.))"/>
+      </if>
+
+      <code:switch>
+         <call-template name="src:line-number"/>
+         <code:expression value="{xcst:expression(@value)}"/>
+         <apply-templates select="c:when | c:otherwise" mode="#current"/>
+      </code:switch>
+   </template>
+
+   <template match="c:switch/c:when" mode="src:statement">
+
+      <call-template name="xcst:validate-attribs">
+         <with-param name="required" select="'test'"/>
+         <with-param name="optional" select="'value'"/>
+      </call-template>
+
+      <call-template name="xcst:value-or-sequence-constructor"/>
+      <call-template name="xcst:no-other-preceding"/>
+
+      <code:case>
+         <call-template name="src:line-number"/>
+         <code:expression value="{xcst:expression(@test)}"/>
+         <code:block>
+            <call-template name="src:sequence-constructor">
+               <with-param name="value" select="@value"/>
+            </call-template>
+            <code:break/>
+         </code:block>
+      </code:case>
+   </template>
+
+   <template match="c:switch/c:otherwise" mode="src:statement">
+
+      <call-template name="xcst:validate-attribs">
+         <with-param name="optional" select="'value'"/>
+      </call-template>
+
+      <call-template name="xcst:value-or-sequence-constructor"/>
+
+      <call-template name="xcst:no-other-following">
+         <with-param name="except" select="()"/>
+      </call-template>
+
+      <code:case-default>
+         <code:block>
+            <call-template name="src:sequence-constructor">
+               <with-param name="value" select="@value"/>
+            </call-template>
+            <code:break/>
+         </code:block>
+      </code:case-default>
+   </template>
+
    <template match="c:try" mode="src:statement">
 
       <call-template name="xcst:validate-attribs">
@@ -1220,7 +1285,7 @@
 
       <variable name="required-ancestor" select="ancestor::*[self::c:for-each or self::c:for-each-group or self::c:while][1]"/>
       <variable name="disallowed-ancestor"
-         select="ancestor::*[self::c:delegate or self::c:with-param or self::c:variable or self::c:value-of or self::c:serialize][1]"/>
+         select="ancestor::*[self::c:delegate or self::c:with-param or self::c:variable or self::c:value-of or self::c:serialize or (current()[self::c:break] and self::c:switch)][1]"/>
 
       <if test="not($required-ancestor)
             or ($disallowed-ancestor and $disallowed-ancestor >> $required-ancestor)">

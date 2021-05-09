@@ -49,6 +49,7 @@
          <xs:element ref="c:script"/>
          <xs:element ref="c:serialize"/>
          <xs:element ref="c:set"/>
+         <xs:element ref="c:switch"/>
          <xs:element ref="c:text"/>
          <xs:element ref="c:try"/>
          <xs:element ref="c:using"/>
@@ -1399,7 +1400,7 @@
    </xs:element>
    <xs:element name="otherwise">
       <xs:annotation>
-         <xs:documentation>Represents a fallback in a c:choose instruction in case no other choice is selected.</xs:documentation>
+         <xs:documentation>Represents a fallback in a c:choose or c:switch instruction in case no other choice is selected.</xs:documentation>
       </xs:annotation>
       <xs:complexType mixed="true">
          <xs:group minOccurs="0" ref="c:sequence-constructor"/>
@@ -1538,6 +1539,22 @@
          <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
+   <xs:element name="switch">
+      <xs:annotation>
+         <xs:documentation>Chooses between multiple alternatives for a given value.</xs:documentation>
+      </xs:annotation>
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element maxOccurs="unbounded" ref="c:when"/>
+            <xs:element minOccurs="0" ref="c:otherwise"/>
+         </xs:sequence>
+         <xs:attribute name="value" use="required" type="c:expression">
+            <xs:annotation>
+               <xs:documentation>The value to match. Expression.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+      </xs:complexType>
+   </xs:element>
    <xs:element name="text">
       <xs:annotation>
          <xs:documentation>Creates a text node or string.</xs:documentation>
@@ -1668,13 +1685,13 @@
    </xs:element>
    <xs:element name="when">
       <xs:annotation>
-         <xs:documentation>Represents a choice in a c:choose instruction.</xs:documentation>
+         <xs:documentation>Represents a choice in a c:choose or c:switch instruction.</xs:documentation>
       </xs:annotation>
       <xs:complexType mixed="true">
          <xs:group minOccurs="0" ref="c:sequence-constructor"/>
-         <xs:attribute name="test" use="required" type="c:boolean_expression">
+         <xs:attribute name="test" use="required" type="c:expression">
             <xs:annotation>
-               <xs:documentation>The condition to check for the current choice to be selected.</xs:documentation>
+               <xs:documentation>The condition to check for the current choice to be selected. Expression.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attribute name="value" type="c:statement_expression">

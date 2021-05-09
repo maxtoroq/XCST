@@ -80,6 +80,7 @@
          <ref name="script"/>
          <ref name="serialize"/>
          <ref name="set"/>
+         <ref name="switch"/>
          <ref name="text"/>
          <ref name="try"/>
          <ref name="using"/>
@@ -1422,7 +1423,7 @@
 
    <define name="otherwise">
       <element name="otherwise">
-         <ann:documentation>Represents a fallback in a c:choose instruction in case no other choice is selected.</ann:documentation>
+         <ann:documentation>Represents a fallback in a c:choose or c:switch instruction in case no other choice is selected.</ann:documentation>
          <choice>
             <attribute name="value">
                <ann:documentation>The value to output.</ann:documentation>
@@ -1567,6 +1568,22 @@
       </element>
    </define>
 
+   <define name="switch">
+      <element name="switch">
+         <ann:documentation>Chooses between multiple alternatives for a given value.</ann:documentation>
+         <attribute name="value">
+            <ann:documentation>The value to match.</ann:documentation>
+            <ref name="expression"/>
+         </attribute>
+         <oneOrMore>
+            <ref name="when"/>
+         </oneOrMore>
+         <optional>
+            <ref name="otherwise"/>
+         </optional>
+      </element>
+   </define>
+
    <define name="text">
       <element name="text">
          <ann:documentation>Creates a text node or string.</ann:documentation>
@@ -1703,10 +1720,10 @@
 
    <define name="when">
       <element name="when">
-         <ann:documentation>Represents a choice in a c:choose instruction.</ann:documentation>
+         <ann:documentation>Represents a choice in a c:choose or c:switch instruction.</ann:documentation>
          <attribute name="test">
             <ann:documentation>The condition to check for the current choice to be selected.</ann:documentation>
-            <ref name="boolean_expression"/>
+            <ref name="expression"/>
          </attribute>
          <choice>
             <attribute name="value">
