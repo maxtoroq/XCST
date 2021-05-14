@@ -2,7 +2,7 @@
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
    <c:template name='foo'>
-      <c:assert test='true' foo:foo='foo' xmlns:foo='urn:foo'/>
+      <c:assert test='true' foo:foo='foo' xmlns:foo='urn:foo'>hello</c:assert>
    </c:template>
 
 </c:module>

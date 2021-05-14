@@ -27,14 +27,21 @@ namespace Xcst {
       readonly QualifiedName?
       _errorCode;
 
+      readonly object?
+      _errorData;
+
       public QualifiedName
       ErrorCode => _errorCode ?? _defaultCode;
 
+      public object?
+      ErrorData => _errorData;
+
       public
-      RuntimeException(string message, QualifiedName? errorCode = null)
+      RuntimeException(string message, QualifiedName? errorCode = null, object? errorData = null)
          : base(message) {
 
          _errorCode = errorCode;
+         _errorData = errorData;
       }
 
       protected

@@ -1344,15 +1344,28 @@
             </attribute>
             <ref name="sequence-constructor"/>
          </choice>
-         <optional>
-            <attribute name="terminate">
-               <ann:documentation>Specifies whether to stop the execution of the program.</ann:documentation>
-               <choice>
-                  <ref name="boolean"/>
-                  <ref name="avt-expr"/>
-               </choice>
-            </attribute>
-         </optional>
+         <zeroOrMore>
+            <choice>
+               <attribute name="terminate">
+                  <ann:documentation>Specifies whether to stop the execution of the program.</ann:documentation>
+                  <choice>
+                     <ref name="boolean"/>
+                     <ref name="avt-expr"/>
+                  </choice>
+               </attribute>
+               <attribute name="error-code">
+                  <ann:documentation>An error code associated with the message.</ann:documentation>
+                  <choice>
+                     <ref name="eqname"/>
+                     <ref name="avt-expr"/>
+                  </choice>
+               </attribute>
+               <attribute name="error-data">
+                  <ann:documentation>An arbitrary object used to convey additional information about the error.</ann:documentation>
+                  <ref name="expression"/>
+               </attribute>
+            </choice>
+         </zeroOrMore>
          <ref name="standard-attributes"/>
       </element>
    </define>

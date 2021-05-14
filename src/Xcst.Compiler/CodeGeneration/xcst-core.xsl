@@ -2445,6 +2445,7 @@
       <variable name="text" select="xcst:text(.)"/>
 
       <code:method-call name="Assert">
+         <call-template name="src:line-number"/>
          <code:type-reference name="Debug" namespace="System.Diagnostics"/>
          <code:arguments>
             <code:expression value="{xcst:expression(@test)}"/>
@@ -2465,61 +2466,70 @@
    <template match="c:message" mode="src:statement">
 
       <call-template name="xcst:validate-attribs">
-         <with-param name="optional" select="'terminate', 'value'"/>
+         <with-param name="optional" select="'terminate', 'value', 'error-code', 'error-data'"/>
       </call-template>
 
       <call-template name="xcst:value-or-sequence-constructor"/>
 
-      <variable name="never-terminate" select="not(@terminate) or xcst:boolean(@terminate, true()) eq false()"/>
-      <variable name="always-terminate" select="boolean(@terminate/xcst:boolean(., true()))"/>
-      <variable name="use-if" select="not($never-terminate) and not($always-terminate)"/>
+      <variable name="terminate" select="@terminate/xcst:boolean(., true())"/>
+      <variable name="message-var" select="src:aux-variable(concat('message', '_', generate-id()))"/>
 
-      <code:method-call name="WriteLine">
+      <code:variable name="{$message-var}">
          <call-template name="src:line-number"/>
+         <call-template name="src:simple-content">
+            <with-param name="attribute" select="@value"/>
+         </call-template>
+      </code:variable>
+
+      <code:method-call name="WriteLine" line-hidden="true">
          <code:type-reference name="Trace" namespace="System.Diagnostics"/>
          <code:arguments>
-            <call-template name="src:simple-content">
-               <with-param name="attribute" select="@value"/>
-            </call-template>
+            <code:variable-reference name="{$message-var}"/>
          </code:arguments>
       </code:method-call>
 
       <variable name="throw" as="element()">
-         <variable name="err-obj" select="src:error-object(.)"/>
          <code:throw>
+            <call-template name="src:line-number"/>
             <code:method-call name="Terminate">
                <sequence select="src:helper-type('DynamicError')"/>
                <code:arguments>
+                  <code:variable-reference name="{$message-var}"/>
                   <code:string verbatim="true">
+                     <variable name="err-obj" select="src:error-object(.)"/>
                      <value-of select="concat('Processing terminated by c:', local-name(), ' at line ', $err-obj[2], ' in ', tokenize($err-obj[1], '/')[last()])"/>
                   </code:string>
+                  <if test="@error-code">
+                     <call-template name="src:QName">
+                        <with-param name="qname" select="xcst:EQName(@error-code, (), false(), true())"/>
+                        <with-param name="avt" select="@error-code"/>
+                     </call-template>
+                  </if>
+                  <if test="@error-data">
+                     <code:argument name="errorData">
+                        <code:expression value="{xcst:expression(@error-data)}"/>
+                     </code:argument>
+                  </if>
                </code:arguments>
             </code:method-call>
          </code:throw>
       </variable>
 
       <choose>
-         <when test="$use-if">
+         <when test="$terminate">
+            <sequence select="$throw"/>
+         </when>
+         <when test="@terminate">
             <code:if>
                <call-template name="src:line-number"/>
-               <choose>
-                  <when test="@terminate">
-                     <call-template name="src:boolean">
-                        <with-param name="bool" select="xcst:boolean(@terminate, true())"/>
-                        <with-param name="avt" select="@terminate"/>
-                     </call-template>
-                  </when>
-                  <otherwise>
-                     <code:bool value="false"/>
-                  </otherwise>
-               </choose>
+               <call-template name="src:boolean">
+                  <with-param name="bool" select="$terminate"/>
+                  <with-param name="avt" select="@terminate"/>
+               </call-template>
                <code:block>
                   <sequence select="$throw"/>
                </code:block>
             </code:if>
-         </when>
-         <when test="$always-terminate">
-            <sequence select="$throw"/>
          </when>
       </choose>
    </template>

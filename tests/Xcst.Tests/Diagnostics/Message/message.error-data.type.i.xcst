@@ -2,7 +2,7 @@
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
    <c:template name='foo'>
-      <c:message foo:foo='foo' xmlns:foo='urn:foo'>hello</c:message>
+      <c:message error-data='' terminate='yes'>hello</c:message>
    </c:template>
 
 </c:module>

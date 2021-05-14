@@ -1328,6 +1328,19 @@
                <xs:union memberTypes="c:boolean c:avt-expr"/>
             </xs:simpleType>
          </xs:attribute>
+         <xs:attribute name="error-code">
+            <xs:annotation>
+               <xs:documentation>An error code associated with the message. Attribute value template (eqname).</xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+               <xs:union memberTypes="c:eqname c:avt-expr"/>
+            </xs:simpleType>
+         </xs:attribute>
+         <xs:attribute name="error-data" type="c:expression">
+            <xs:annotation>
+               <xs:documentation>An arbitrary object used to convey additional information about the error. Expression.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>

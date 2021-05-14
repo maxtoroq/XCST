@@ -63,7 +63,16 @@ namespace Xcst.Runtime {
       }
 
       public static Exception
-      Terminate(string message) => new RuntimeException(message, Code("XTMM9000"));
+      Terminate(
+            string message,
+            string defaultMessage,
+            QualifiedName? errorCode = null,
+            object? errorData = null) =>
+         new RuntimeException(
+            (!String.IsNullOrEmpty(message) ? message : defaultMessage),
+            errorCode ?? Code("XTMM9000"),
+            errorData
+         );
 
       public static Exception
       InferMethodIsNotMeantToBeCalled() =>
