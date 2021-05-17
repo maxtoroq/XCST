@@ -130,17 +130,12 @@
          </choose>
       </variable>
 
-      <variable name="modules-and-uris" as="item()+">
+      <variable name="modules" as="element()+">
          <apply-templates select="." mode="src:load-imports">
             <with-param name="language" select="$language" tunnel="yes"/>
             <with-param name="module-docs" select="root()" tunnel="yes"/>
          </apply-templates>
       </variable>
-
-      <variable name="modules" select="$modules-and-uris[. instance of node()]" as="element()+"/>
-      <variable name="refs" select="
-         $modules-and-uris[not(. instance of node())],
-         $modules//c:script[@src]/resolve-uri(@src, base-uri())"/>
 
       <variable name="implicit-package" select="self::c:module"/>
 

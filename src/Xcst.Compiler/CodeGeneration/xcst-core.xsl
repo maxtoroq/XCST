@@ -3192,7 +3192,7 @@
       </if>
    </function>
 
-   <function name="xcst:preserve-whitespace">
+   <function name="xcst:preserve-whitespace" as="xs:boolean">
       <param name="el" as="element()"/>
 
       <sequence select="$el[self::c:text or self::c:script]
