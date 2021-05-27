@@ -1014,7 +1014,7 @@
          declaring-module-uri="{document-uri(root())}"/>
    </template>
 
-   <template name="xcst:overridden-component" as="element()*">
+   <template name="xcst:overridden-component">
       <param name="used-packages" tunnel="yes"/>
       <param name="namespace" tunnel="yes"/>
 
@@ -1022,16 +1022,13 @@
          <variable name="pkg" select="
             $used-packages[src:qualified-type-name(code:type-reference)
                eq src:resolve-package-name(current()/../.., $namespace)]" as="element()"/>
-         <variable name="meta" select="$pkg/xcst:*[xcst:homonymous(., current())]"/>
+         <variable name="meta" select="$pkg/xcst:*[xcst:homonymous(., current())]" as="element()?"/>
          <if test="not($meta)">
             <sequence select="error(xs:QName('err:XTSE3058'), 'Couldn''t find a matching component in the used package.', src:error-object(.))"/>
          </if>
          <if test="$meta[@visibility eq 'final']">
             <sequence select="error(xs:QName('err:XTSE3060'), 'Cannot override a component with final visibility.', src:error-object(.))"/>
          </if>
-         <variable name="declaration" select="."/>
-         <variable name="component" select="if (self::c:param) then 'variable' else local-name()"/>
-         <variable name="qname" select="$component = ('template', 'attribute-set')"/>
          <sequence select="$meta"/>
       </if>
    </template>
