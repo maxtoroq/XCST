@@ -594,7 +594,7 @@
 
       <if test="$param">
          <if test="@tunnel/xcst:boolean(.)">
-            <sequence select="error(xs:QName('err:XTSE0020'), 'For attribute ''tunnel'' within a global parameter, the only permitted values are: ''no'', ''false'', ''0''.', src:error-object(.))"/>
+            <sequence select="error(xs:QName('err:XTSE0020'), 'For attribute ''tunnel'' within a package parameter, the only permitted values are: ''no'', ''false'', ''0''.', src:error-object(.))"/>
          </if>
          <if test="$has-default-value and $required">
             <sequence select="error(xs:QName('err:XTSE0010'), 'The ''value'' attribute or child element/text should be omitted when required=''yes''.', src:error-object(.))"/>
