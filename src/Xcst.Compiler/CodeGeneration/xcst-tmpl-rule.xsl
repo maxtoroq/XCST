@@ -546,6 +546,7 @@
       </call-template>
 
       <call-template name="xcst:validate-with-param"/>
+      <call-template name="xcst:require-output"/>
 
       <variable name="meta" as="element()?">
          <if test="$mode-uqname ne '#current'">
@@ -636,6 +637,7 @@
       </call-template>
 
       <call-template name="xcst:validate-with-param"/>
+      <call-template name="xcst:require-output"/>
 
       <if test="not($context)">
          <sequence select="error(xs:QName('err:XCST9104'), 'There is no current template rule.', src:error-object(.))"/>

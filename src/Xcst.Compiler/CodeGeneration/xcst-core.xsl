@@ -79,6 +79,8 @@
          e.g. <c:object>
       -->
 
+      <call-template name="xcst:require-output"/>
+
       <code:method-call name="WriteObject">
          <call-template name="src:line-number"/>
          <sequence select="$output/src:reference/code:*"/>
@@ -133,6 +135,7 @@
       </call-template>
 
       <call-template name="xcst:value-or-sequence-constructor"/>
+      <call-template name="xcst:require-output"/>
 
       <variable name="output-is-doc" select="src:output-is-doc($output)"/>
       <variable name="doc-output" select="src:doc-output(., $output)"/>
@@ -258,6 +261,7 @@
       </call-template>
 
       <call-template name="xcst:value-or-sequence-constructor"/>
+      <call-template name="xcst:require-output"/>
 
       <code:method-call name="WriteComment">
          <call-template name="src:line-number"/>
@@ -277,6 +281,8 @@
          <with-param name="required" select="'value'"/>
       </call-template>
 
+      <call-template name="xcst:require-output"/>
+
       <code:method-call name="CopyOf">
          <call-template name="src:line-number"/>
          <sequence select="$output/src:reference/code:*"/>
@@ -290,6 +296,7 @@
       <param name="output" tunnel="yes"/>
 
       <call-template name="xcst:validate-attribs"/>
+      <call-template name="xcst:require-output"/>
 
       <variable name="doc-output" select="src:doc-output(., ())"/>
 
@@ -325,6 +332,8 @@
          <with-param name="required" select="'name'"/>
          <with-param name="optional" select="'namespace', 'use-attribute-sets'"/>
       </call-template>
+
+      <call-template name="xcst:require-output"/>
 
       <variable name="output-is-doc" select="src:output-is-doc($output)"/>
       <variable name="doc-output" select="src:doc-output(., $output)"/>
@@ -435,6 +444,7 @@
       </call-template>
 
       <call-template name="xcst:value-or-sequence-constructor"/>
+      <call-template name="xcst:require-output"/>
 
       <variable name="output-is-doc" select="src:output-is-doc($output)"/>
       <variable name="doc-output" select="src:doc-output(., $output)"/>
@@ -496,6 +506,7 @@
       </call-template>
 
       <call-template name="xcst:value-or-sequence-constructor"/>
+      <call-template name="xcst:require-output"/>
 
       <variable name="output-is-doc" select="src:output-is-doc($output)"/>
       <!--
@@ -535,6 +546,8 @@
 
    <template match="c:text | c:value-of" mode="src:statement">
       <param name="output" tunnel="yes"/>
+
+      <call-template name="xcst:require-output"/>
 
       <code:method-call name="{if (@disable-output-escaping/xcst:boolean(.)) then 'WriteRaw' else 'WriteString'}">
          <call-template name="src:line-number"/>
@@ -597,6 +610,8 @@
    <template match="text()" mode="src:statement">
       <param name="output" tunnel="yes"/>
 
+      <call-template name="xcst:require-output"/>
+
       <code:method-call name="WriteString">
          <call-template name="src:line-number"/>
          <sequence select="$output/src:reference/code:*"/>
@@ -630,6 +645,8 @@
       <call-template name="xcst:validate-attribs">
          <with-param name="optional" select="@*[not(namespace-uri())]/local-name()"/>
       </call-template>
+
+      <call-template name="xcst:require-output"/>
 
       <variable name="output-is-doc" select="src:output-is-doc($output)"/>
       <variable name="doc-output" select="src:doc-output(., $output)"/>
@@ -723,6 +740,7 @@
       <param name="output" tunnel="yes"/>
 
       <if test="$attr">
+         <call-template name="xcst:require-output"/>
          <variable name="names" select="
             for $s in xcst:list($attr)
             return xcst:EQName($attr, $s)"/>
@@ -786,6 +804,7 @@
       <param name="output" tunnel="yes"/>
 
       <call-template name="xcst:validate-attribs"/>
+      <call-template name="xcst:require-output"/>
 
       <variable name="output-is-map" select="src:output-is-map($output)"/>
       <variable name="map-output" select="src:map-output(., $output)"/>
@@ -837,7 +856,7 @@
 
       <call-template name="xcst:value-or-sequence-constructor"/>
 
-      <call-template name="xcst:validate-output">
+      <call-template name="xcst:require-output">
          <with-param name="kind" select="'map', 'obj'"/>
       </call-template>
 
@@ -883,6 +902,7 @@
       <param name="output" tunnel="yes"/>
 
       <call-template name="xcst:validate-attribs"/>
+      <call-template name="xcst:require-output"/>
 
       <variable name="output-is-map" select="src:output-is-map($output)"/>
       <variable name="map-output" select="src:map-output(., $output)"/>
@@ -1815,7 +1835,7 @@
    <template name="src:call-template-output">
       <param name="meta" as="element()"/>
       <param name="dynamic" select="false()" as="xs:boolean"/>
-      <param name="output" tunnel="yes"/>
+      <param name="output" tunnel="yes" required="yes"/>
 
       <variable name="output-item-type-is-object" select="
          not(src:output-is-obj($output))
@@ -1937,6 +1957,7 @@
       </call-template>
 
       <call-template name="xcst:no-children"/>
+      <call-template name="xcst:require-output"/>
 
       <code:chain>
          <code:method-call name="Using">
@@ -2148,6 +2169,7 @@
       </call-template>
 
       <call-template name="xcst:validate-with-param"/>
+      <call-template name="xcst:require-output"/>
 
       <code:method-call name="Invoke">
          <call-template name="src:line-number"/>
@@ -2668,7 +2690,6 @@
    <!-- ## Final Result Trees and Serialization -->
 
    <template match="c:result-document" mode="src:statement">
-      <param name="output" tunnel="yes"/>
 
       <call-template name="xcst:validate-attribs">
          <with-param name="optional" select="'href', 'output', 'format', $src:output-parameters/*[not(self::version)]/local-name()"/>
@@ -3155,7 +3176,7 @@
       </if>
    </template>
 
-   <template name="xcst:validate-output">
+   <template name="xcst:require-output">
       <param name="output" tunnel="yes"/>
       <param name="kind" as="xs:string*"/>
 
@@ -4036,6 +4057,7 @@
             <apply-templates select="$children" mode="src:statement"/>
          </when>
          <when test="$value">
+            <call-template name="xcst:require-output"/>
             <code:method-call name="WriteObject">
                <call-template name="src:line-number"/>
                <sequence select="$output/src:reference/code:*"/>
@@ -4045,6 +4067,7 @@
             </code:method-call>
          </when>
          <when test="$text">
+            <call-template name="xcst:require-output"/>
             <code:method-call name="WriteString">
                <call-template name="src:line-number"/>
                <sequence select="$output/src:reference/code:*"/>
