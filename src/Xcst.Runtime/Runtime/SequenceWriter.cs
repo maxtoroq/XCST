@@ -128,6 +128,29 @@ namespace Xcst.Runtime {
          return this;
       }
 
+      public SequenceWriter<TItem>
+      WriteTemplateWithParams<TParams>(
+            Action<TemplateContext<TParams>, ISequenceWriter<TItem>> template,
+            TemplateContext<TParams> context) {
+
+         template(context, this);
+
+         return this;
+      }
+
+      public SequenceWriter<TItem>
+      WriteTemplateWithParams<TDerived, TParams>(
+            Action<TemplateContext<TParams>, ISequenceWriter<TDerived>> template,
+            TemplateContext<TParams> context,
+            Func<TDerived>? forTypeInference = null) where TDerived : TItem {
+
+         ISequenceWriter<TDerived> derivedWriter = SequenceWriter.AdjustWriter<TItem, TDerived>(this);
+
+         template(context, derivedWriter);
+
+         return this;
+      }
+
       public TItem[]
       Flush() {
 

@@ -1642,7 +1642,7 @@
       <param name="template-method" select="src:template-member($meta)" as="element(code:method-reference)"/>
 
       <code:method-call name="Flush{'Single'[$meta/@cardinality eq 'One']}">
-         <code:method-call name="WriteTemplate">
+         <code:method-call name="WriteTemplate{'WithParams'[xcst:typed-params($meta)]}">
             <code:method-call name="Create">
                <sequence select="src:helper-type('SequenceWriter')"/>
                <code:arguments>

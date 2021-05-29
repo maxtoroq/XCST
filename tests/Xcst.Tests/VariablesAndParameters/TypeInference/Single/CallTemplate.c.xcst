@@ -17,6 +17,8 @@
    </c:template>
 
    <c:template name='bar'>
+      <c:param name='a'/>
+
       <c:object value='"1"'/>
    </c:template>
 
