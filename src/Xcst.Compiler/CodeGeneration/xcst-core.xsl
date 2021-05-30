@@ -3964,20 +3964,7 @@
             </variable>
             <choose>
                <when test="$seqctor-meta/@expression/xs:boolean(.) and not($as)">
-                  <variable name="value" as="element()">
-                     <apply-templates select="$children" mode="src:expression"/>
-                  </variable>
-                  <choose>
-                     <when test="$as">
-                        <code:cast>
-                           <code:type-reference name="{$as}"/>
-                           <sequence select="$value"/>
-                        </code:cast>
-                     </when>
-                     <otherwise>
-                        <sequence select="$value"/>
-                     </otherwise>
-                  </choose>
+                  <apply-templates select="$children" mode="src:expression"/>
                </when>
                <otherwise>
                   <variable name="item-type-ref" as="element()?">
@@ -4000,8 +3987,10 @@
                         </src:reference>
                      </src:output>
                   </variable>
-                  <variable name="flush-single" select="
-                     (if ($as) then xcst:cardinality($as, $language) else $seqctor-meta/@cardinality/string()) eq 'One'"/>
+                  <variable name="cardinality" select="
+                     if ($as) then xcst:cardinality($as, $language)
+                     else $seqctor-meta/@cardinality/string()"/>
+                  <variable name="flush-single" select="$cardinality eq 'One'"/>
 
                   <code:method-call name="Flush{'Single'[$flush-single]}">
                      <code:method-call name="WriteSequenceConstructor">
