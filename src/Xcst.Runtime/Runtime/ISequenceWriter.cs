@@ -59,5 +59,14 @@ namespace Xcst.Runtime {
 
       MapWriter?
       TryCastToMapWriter();
+
+      void
+      BeginTrack();
+
+      bool
+      OnEmpty();
+
+      void
+      EndTrack();
    }
 }

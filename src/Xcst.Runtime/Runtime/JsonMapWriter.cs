@@ -175,6 +175,7 @@ namespace Xcst.Runtime {
          bool firstCall = this.BaseWriter.WriteState == WriteState.Start;
 
          this.BaseWriter.WriteStartArray();
+         OnItemWritten();
 
          if (firstCall
             && _arrayOutput != null) {
@@ -189,6 +190,7 @@ namespace Xcst.Runtime {
          bool firstCall = this.BaseWriter.WriteState == WriteState.Start;
 
          this.BaseWriter.WriteStartObject();
+         OnItemWritten();
 
          if (firstCall
             && _mapOutput != null) {
@@ -198,16 +200,26 @@ namespace Xcst.Runtime {
       }
 
       public override void
-      WriteStartMapEntry(string key) =>
+      WriteStartMapEntry(string key) {
          this.BaseWriter.WritePropertyName(key);
+         OnItemWritten();
+      }
 
       public override void
-      WriteObject(object? value) =>
+      WriteObject(object? value) {
          this.BaseWriter.WriteValue(value);
+         OnItemWritten();
+      }
 
       public override void
-      WriteRaw(string? data) =>
+      WriteRaw(string? data) {
+
          this.BaseWriter.WriteRaw(data);
+
+         if (!String.IsNullOrEmpty(data)) {
+            OnItemWritten();
+         }
+      }
 
       public override XcstWriter?
       TryCastToDocumentWriter() => _docWriter;
@@ -217,6 +229,7 @@ namespace Xcst.Runtime {
 
          if (value != null) {
             value.WriteTo(this.BaseWriter);
+            OnItemWritten();
          } else {
             WriteObject(default(object));
          }

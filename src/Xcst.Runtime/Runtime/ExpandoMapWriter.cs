@@ -75,6 +75,7 @@ namespace Xcst.Runtime {
 
             _mapOutput!.WriteObject(map);
             Push(map);
+            OnItemWritten();
             return;
          }
 
@@ -83,12 +84,14 @@ namespace Xcst.Runtime {
          if (parent is ExpandoArray parentArr) {
             parentArr.Add(map);
             Push(map);
+            OnItemWritten();
             return;
          }
 
          if (parent is ExpandoEntry entry) {
             SetEntryValue(entry, map);
             Push(map);
+            OnItemWritten();
             return;
          }
 
@@ -111,6 +114,7 @@ namespace Xcst.Runtime {
             // Arrays are buffered and added to parent object on end call
 
             Push(arr);
+            OnItemWritten();
             return;
          }
 
@@ -173,6 +177,7 @@ namespace Xcst.Runtime {
             ?? throw new RuntimeException("An entry can only be written to a map.");
 
          Push(new ExpandoEntry(key));
+         OnItemWritten();
       }
 
       public override void
@@ -217,11 +222,13 @@ namespace Xcst.Runtime {
 
          if (parent is ExpandoArray arr) {
             arr.Add(value);
+            OnItemWritten();
             return;
          }
 
          if (parent is ExpandoEntry entry) {
             SetEntryValue(entry, value);
+            OnItemWritten();
             return;
          }
 

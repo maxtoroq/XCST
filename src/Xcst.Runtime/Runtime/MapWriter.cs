@@ -21,6 +21,9 @@ namespace Xcst.Runtime {
 
    public abstract partial class MapWriter : ISequenceWriter<object?> {
 
+      Stack<bool>?
+      _trackStack;
+
       // For object, create ExpandoObjectMapWriter
       // Having a default Create restricted to object avoids conflicts with other
       // implementations, like JObject
@@ -193,5 +196,42 @@ namespace Xcst.Runtime {
 
       public MapWriter?
       TryCastToMapWriter() => this;
+
+      public virtual void
+      BeginTrack() {
+
+         _trackStack ??= new Stack<bool>();
+         _trackStack.Push(false);
+      }
+
+      public virtual bool
+      OnEmpty() => !_trackStack!.Peek();
+
+      public virtual void
+      EndTrack() {
+
+         bool written = _trackStack!.Pop();
+
+         if (written
+            && _trackStack.Count > 0) {
+
+            // if current track is true it propagates to parent
+
+            _trackStack.Pop();
+            _trackStack.Push(true);
+         }
+      }
+
+      protected void
+      OnItemWritten() {
+
+         if (_trackStack != null
+            && _trackStack.Count > 0
+            && !_trackStack.Peek()) {
+
+            _trackStack.Pop();
+            _trackStack.Push(true);
+         }
+      }
    }
 }

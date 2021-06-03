@@ -63,8 +63,10 @@ namespace Xcst.Xml {
 
       public override void
       WriteComment(string? text) {
+
          WriteXmlDeclaration();
          _output.WriteComment(text);
+         OnItemWritten();
       }
 
       public override void
@@ -91,14 +93,21 @@ namespace Xcst.Xml {
 
       public override void
       WriteProcessingInstruction(string name, string? text) {
+
          WriteXmlDeclaration();
          _output.WriteProcessingInstruction(name, text);
+         OnItemWritten();
       }
 
       public override void
       WriteRaw(string? data) {
+
          WriteXmlDeclaration();
          _output.WriteRaw(data);
+
+         if (!String.IsNullOrEmpty(data)) {
+            OnItemWritten();
+         }
       }
 
       public override void
@@ -108,14 +117,21 @@ namespace Xcst.Xml {
 
       public override void
       WriteStartElement(string? prefix, string localName, string? ns) {
+
          WriteXmlDeclaration();
          _output.WriteStartElement(prefix, localName, ns);
+         OnItemWritten();
       }
 
       public override void
       WriteString(string? text) {
+
          WriteXmlDeclaration();
          _output.WriteString(text);
+
+         if (!String.IsNullOrEmpty(text)) {
+            OnItemWritten();
+         }
       }
 
       public override void

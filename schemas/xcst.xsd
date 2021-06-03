@@ -107,6 +107,7 @@
             <xs:group ref="c:instruction"/>
             <xs:group ref="c:literal-result-element"/>
          </xs:choice>
+         <xs:element minOccurs="0" ref="c:on-empty"/>
       </xs:sequence>
    </xs:group>
    <xs:attributeGroup name="visibility-attribute">
@@ -1404,6 +1405,20 @@
       </xs:annotation>
       <xs:complexType>
          <xs:attribute name="value" use="required" type="c:expression">
+            <xs:annotation>
+               <xs:documentation>The value to output. Expression.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attributeGroup ref="c:standard-attributes"/>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="on-empty">
+      <xs:annotation>
+         <xs:documentation>Evaluates only if the current sequence constructor has not appended any items so far.</xs:documentation>
+      </xs:annotation>
+      <xs:complexType mixed="true">
+         <xs:group minOccurs="0" ref="c:sequence-constructor"/>
+         <xs:attribute name="value" type="c:expression">
             <xs:annotation>
                <xs:documentation>The value to output. Expression.</xs:documentation>
             </xs:annotation>

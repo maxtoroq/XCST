@@ -20,6 +20,9 @@ namespace Xcst.Runtime {
 
    public abstract class BaseSequenceWriter<TItem> : ISequenceWriter<TItem> {
 
+      Stack<bool>?
+      _trackStack;
+
       public abstract void
       WriteObject(TItem value);
 
@@ -70,6 +73,43 @@ namespace Xcst.Runtime {
 
       public virtual MapWriter?
       TryCastToMapWriter() => null;
+
+      public virtual void
+      BeginTrack() {
+
+         _trackStack ??= new Stack<bool>();
+         _trackStack.Push(false);
+      }
+
+      public virtual bool
+      OnEmpty() => !_trackStack!.Peek();
+
+      public virtual void
+      EndTrack() {
+
+         bool written = _trackStack!.Pop();
+
+         if (written
+            && _trackStack.Count > 0) {
+
+            // if current track is true it propagates to parent
+
+            _trackStack.Pop();
+            _trackStack.Push(true);
+         }
+      }
+
+      protected void
+      OnItemWritten() {
+
+         if (_trackStack != null
+            && _trackStack.Count > 0
+            && !_trackStack.Peek()) {
+
+            _trackStack.Pop();
+            _trackStack.Push(true);
+         }
+      }
    }
 
    /// <exclude/>
@@ -91,7 +131,10 @@ namespace Xcst.Runtime {
       }
 
       public override void
-      WriteObject(TItem value) => _buffer.Add(value);
+      WriteObject(TItem value) {
+         _buffer.Add(value);
+         OnItemWritten();
+      }
 
       public override void
       CopyOf(TItem value) =>
@@ -239,6 +282,15 @@ namespace Xcst.Runtime {
 
       public override MapWriter?
       TryCastToMapWriter() => _output.TryCastToMapWriter();
+
+      public override void
+      BeginTrack() => _output.BeginTrack();
+
+      public override bool
+      OnEmpty() => _output.OnEmpty();
+
+      public override void
+      EndTrack() => _output.EndTrack();
    }
 
    class StreamedSequenceWriter<TItem> : BaseSequenceWriter<TItem> {
@@ -255,7 +307,10 @@ namespace Xcst.Runtime {
       }
 
       public override void
-      WriteObject(TItem value) => _outputFn(value);
+      WriteObject(TItem value) {
+         OnItemWritten();
+         _outputFn(value);
+      }
 
       public override void
       CopyOf(TItem value) =>

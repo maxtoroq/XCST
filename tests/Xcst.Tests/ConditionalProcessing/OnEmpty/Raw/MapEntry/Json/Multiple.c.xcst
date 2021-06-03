@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:import-namespace ns='Newtonsoft.Json.Linq'/>
+
+   <c:template name='c:initial-template'>
+      <c:call-template name='case-2'/>
+   </c:template>
+
+   <c:template name='case-2'>
+      <c:variable name='obj' as='JObject'>
+         <c:map>
+            <c:map-entry key='"a"'>
+               <c:if test='true'>
+                  <c:on-empty value='1'/>
+               </c:if>
+               <c:on-empty value='2'/>
+            </c:map-entry>
+         </c:map>
+      </c:variable>
+      <c:void value='Assert.AreEqual(1, obj.Property("a").Value)'/>
+   </c:template>
+
+</c:module>

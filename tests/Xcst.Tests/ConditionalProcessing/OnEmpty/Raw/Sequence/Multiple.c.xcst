@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:template name='c:initial-template'>
+      <c:call-template name='case-1'/>
+      <c:call-template name='case-2'/>
+      <c:call-template name='case-3'/>
+   </c:template>
+
+   <c:template name='case-1'>
+      <c:variable name='a' as='int[]'>
+         <c:object value='1'/>
+         <c:if test='true'>
+            <c:on-empty value='2'/>
+         </c:if>
+         <c:on-empty value='3'/>
+      </c:variable>
+      <c:void value='Assert.AreEqual(2, a.Length)'/>
+      <c:void value='Assert.AreEqual(1, a[0])'/>
+      <c:void value='Assert.AreEqual(2, a[1])'/>
+   </c:template>
+
+   <c:template name='case-2'>
+      <c:variable name='a' as='int[]'>
+         <c:if test='true'>
+            <c:on-empty value='2'/>
+         </c:if>
+         <c:on-empty value='3'/>
+      </c:variable>
+      <c:void value='Assert.AreEqual(1, a.Length)'/>
+      <c:void value='Assert.AreEqual(2, a[0])'/>
+   </c:template>
+
+   <c:template name='case-3'>
+      <c:variable name='a' as='int[]'>
+         <c:if test='true'>
+            <c:if test='true'>
+               <c:on-empty value='1'/>
+            </c:if>
+         </c:if>
+         <c:if test='true'>
+            <c:if test='true'>
+               <c:on-empty value='2'/>
+            </c:if>
+         </c:if>
+      </c:variable>
+      <c:void value='Assert.AreEqual(1, a[0])'/>
+      <c:void value='Assert.AreEqual(2, a[1])'/>
+   </c:template>
+
+</c:module>

@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:template name='c:initial-template'>
+      <div>
+         <foo>
+            <a/>
+            <c:if test='true'>
+               <c:on-empty>
+                  <b/>
+               </c:on-empty>
+            </c:if>
+            <c:on-empty>
+               <c/>
+            </c:on-empty>
+         </foo>
+         <foo>
+            <c:if test='true'>
+               <c:on-empty>
+                  <c:comment>a</c:comment>
+               </c:on-empty>
+            </c:if>
+            <c:on-empty>
+               <b/>
+            </c:on-empty>
+         </foo>
+         <foo>
+            <c:if test='true'>
+               <c:if test='true'>
+                  <c:on-empty>
+                     <a/>
+                  </c:on-empty>
+               </c:if>
+            </c:if>
+            <c:if test='true'>
+               <c:if test='true'>
+                  <c:on-empty>
+                     <c:processing-instruction name='b'/>
+                  </c:on-empty>
+               </c:if>
+            </c:if>
+         </foo>
+      </div>
+   </c:template>
+
+   <c:template name='expected'>
+      <div>
+         <foo>
+            <a/>
+            <b/>
+         </foo>
+         <foo>
+            <c:comment>a</c:comment>
+         </foo>
+         <foo>
+            <a/>
+            <c:processing-instruction name='b'/>
+         </foo>
+      </div>
+   </c:template>
+
+</c:module>

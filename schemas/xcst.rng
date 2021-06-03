@@ -186,6 +186,9 @@
             <text/>
          </choice>
       </zeroOrMore>
+      <optional>
+         <ref name="on-empty"/>
+      </optional>
    </define>
 
    <define name="visibility-attribute">
@@ -1430,6 +1433,20 @@
             <ann:documentation>The value to output.</ann:documentation>
             <ref name="expression"/>
          </attribute>
+         <ref name="standard-attributes"/>
+      </element>
+   </define>
+
+   <define name="on-empty">
+      <element name="on-empty">
+         <ann:documentation>Evaluates only if the current sequence constructor has not appended any items so far.</ann:documentation>
+         <choice>
+            <attribute name="value">
+               <ann:documentation>The value to output.</ann:documentation>
+               <ref name="expression"/>
+            </attribute>
+            <ref name="sequence-constructor"/>
+         </choice>
          <ref name="standard-attributes"/>
       </element>
    </define>

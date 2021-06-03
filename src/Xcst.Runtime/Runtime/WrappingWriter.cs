@@ -80,6 +80,15 @@ namespace Xcst.Runtime {
       WriteItem(object? value) => _output.WriteItem(value);
 
       public override void
+      BeginTrack() => _output.BeginTrack();
+
+      public override bool
+      OnEmpty() => _output.OnEmpty();
+
+      public override void
+      EndTrack() => _output.EndTrack();
+
+      public override void
       Flush() => _output.Flush();
 
       protected override void

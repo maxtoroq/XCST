@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:import-namespace ns='System.Collections.Generic'/>
+
+   <c:template name='c:initial-template'>
+      <c:call-template name='case-1'/>
+      <c:call-template name='case-2'/>
+      <c:call-template name='case-3'/>
+   </c:template>
+
+   <c:template name='case-1'>
+      <c:variable name='obj' as='dynamic'>
+         <c:map>
+            <c:map-entry key='"a"' value='1'/>
+            <c:if test='true'>
+               <c:on-empty>
+                  <c:map-entry key='"b"' value='2'/>
+               </c:on-empty>
+            </c:if>
+            <c:on-empty>
+               <c:map-entry key='"c"' value='3'/>
+            </c:on-empty>
+         </c:map>
+      </c:variable>
+      <c:variable name='dict' value='(IDictionary&lt;string, object>)obj'/>
+      <c:void value='Assert.AreEqual(2, dict.Count)'/>
+      <c:void value='Assert.AreEqual(1, obj.a)'/>
+      <c:void value='Assert.AreEqual(2, obj.b)'/>
+   </c:template>
+
+   <c:template name='case-2'>
+      <c:variable name='obj' as='dynamic'>
+         <c:map>
+            <c:if test='true'>
+               <c:on-empty>
+                  <c:map-entry key='"a"' value='1'/>
+               </c:on-empty>
+            </c:if>
+            <c:on-empty>
+               <c:map-entry key='"b"' value='2'/>
+            </c:on-empty>
+         </c:map>
+      </c:variable>
+      <c:variable name='dict' value='(IDictionary&lt;string, object>)obj'/>
+      <c:void value='Assert.AreEqual(1, dict.Count)'/>
+      <c:void value='Assert.AreEqual(1, obj.a)'/>
+   </c:template>
+
+   <c:template name='case-3'>
+      <c:variable name='obj' as='dynamic'>
+         <c:map>
+            <c:if test='true'>
+               <c:on-empty>
+                  <c:map-entry key='"a"' value='1'/>
+               </c:on-empty>
+            </c:if>
+            <c:if test='true'>
+               <c:on-empty>
+                  <c:map-entry key='"b"' value='2'/>
+               </c:on-empty>
+            </c:if>
+         </c:map>
+      </c:variable>
+      <c:variable name='dict' value='(IDictionary&lt;string, object>)obj'/>
+      <c:void value='Assert.AreEqual(2, dict.Count)'/>
+      <c:void value='Assert.AreEqual(1, obj.a)'/>
+      <c:void value='Assert.AreEqual(2, obj.b)'/>
+   </c:template>
+
+</c:module>

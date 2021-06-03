@@ -1354,6 +1354,28 @@
       </code:using>
    </template>
 
+   <template match="c:on-empty" mode="src:statement">
+      <param name="output" tunnel="yes"/>
+
+      <call-template name="xcst:validate-attribs">
+         <with-param name="optional" select="'value'"/>
+      </call-template>
+
+      <call-template name="xcst:value-or-sequence-constructor"/>
+      <call-template name="xcst:require-output"/>
+
+      <code:if line-hidden="true">
+         <code:method-call name="OnEmpty">
+            <sequence select="$output/src:reference/code:*"/>
+         </code:method-call>
+         <code:block>
+            <call-template name="src:sequence-constructor">
+               <with-param name="value" select="@value"/>
+            </call-template>
+         </code:block>
+      </code:if>
+   </template>
+
 
    <!-- ## Variables and Parameters -->
 
@@ -3288,7 +3310,7 @@
                <sequence select="$text-meta"/>
             </when>
             <otherwise>
-               <for-each select="$children[self::* or self::text()[not(xcst:insignificant-whitespace(.)) or xcst:preserve-whitespace(..)]]">
+               <for-each select="xcst:sequence-constructor-nodes($children)">
                   <choose>
                      <when test="self::text()">
                         <sequence select="$text-meta"/>
@@ -3346,6 +3368,12 @@
          </if>
       </xcst:sequence-constructor>
    </template>
+
+   <function name="xcst:sequence-constructor-nodes" as="node()*">
+      <param name="children" as="node()*"/>
+
+      <sequence select="$children[self::* or self::text()[not(xcst:insignificant-whitespace(.)) or xcst:preserve-whitespace(..)]]"/>
+   </function>
 
    <function name="xcst:non-string" as="xs:string">
       <param name="node" as="node()"/>
@@ -3964,7 +3992,7 @@
             </variable>
             <choose>
                <when test="$seqctor-meta/@expression/xs:boolean(.) and not($as)">
-                  <apply-templates select="$children" mode="src:expression"/>
+                  <apply-templates select="xcst:sequence-constructor-nodes($children)" mode="src:expression"/>
                </when>
                <otherwise>
                   <variable name="item-type-ref" as="element()?">
@@ -4039,11 +4067,26 @@
       <param name="text" select="xcst:text(., $children)"/>
       <param name="output" tunnel="yes"/>
 
-      <variable name="complex-content" select="boolean($children[self::*])"/>
+      <variable name="normalized-children" select="xcst:sequence-constructor-nodes($children)"/>
 
       <choose>
-         <when test="$complex-content">
-            <apply-templates select="$children" mode="src:statement"/>
+         <when test="$normalized-children[self::*]">
+            <variable name="on-empty" select="$normalized-children[self::c:on-empty]"/>
+            <if test="$on-empty">
+               <call-template name="xcst:require-output"/>
+               <if test="not($on-empty[1] is $normalized-children[last()])">
+                  <sequence select="error(xs:QName('err:XTSE0010'), 'c:on-empty must be the last instruction in the sequence constructor.', src:error-object($on-empty[1]))"/>
+               </if>
+               <code:method-call name="BeginTrack" line-hidden="true">
+                  <sequence select="$output/src:reference/code:*"/>
+               </code:method-call>
+            </if>
+            <apply-templates select="$normalized-children" mode="src:statement"/>
+            <if test="$on-empty">
+               <code:method-call name="EndTrack" line-hidden="true">
+                  <sequence select="$output/src:reference/code:*"/>
+               </code:method-call>
+            </if>
          </when>
          <when test="$value">
             <call-template name="xcst:require-output"/>

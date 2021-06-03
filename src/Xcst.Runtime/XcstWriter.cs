@@ -29,6 +29,9 @@ namespace Xcst {
 
    public abstract class XcstWriter : ISequenceWriter<object?>, IDisposable {
 
+      Stack<bool>?
+      _trackStack;
+
       bool
       _disposed;
 
@@ -408,6 +411,43 @@ namespace Xcst {
 
       public MapWriter?
       TryCastToMapWriter() => null;
+
+      public virtual void
+      BeginTrack() {
+
+         _trackStack ??= new Stack<bool>();
+         _trackStack.Push(false);
+      }
+
+      public virtual bool
+      OnEmpty() => !_trackStack!.Peek();
+
+      public virtual void
+      EndTrack() {
+
+         bool written = _trackStack!.Pop();
+
+         if (written
+            && _trackStack.Count > 0) {
+
+            // if current track is true it propagates to parent
+
+            _trackStack.Pop();
+            _trackStack.Push(true);
+         }
+      }
+
+      protected void
+      OnItemWritten() {
+
+         if (_trackStack != null
+            && _trackStack.Count > 0
+            && !_trackStack.Peek()) {
+
+            _trackStack.Pop();
+            _trackStack.Push(true);
+         }
+      }
 
       public abstract void
       Flush();
