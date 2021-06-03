@@ -10,8 +10,8 @@
             <c:copy-of value='(object)new JProperty("bar", "2")'/>
          </c:map>
       </c:variable>
-      <c:void value='Assert.AreEqual("1", ((JValue)map["foo"]).Value)'/>
-      <c:void value='Assert.AreEqual("2", ((JValue)map["bar"]).Value)'/>
+      <c:void value='Assert.AreEqual("1", map.Property("foo").Value)'/>
+      <c:void value='Assert.AreEqual("2", map.Property("bar").Value)'/>
    </c:template>
 
 </c:module>
