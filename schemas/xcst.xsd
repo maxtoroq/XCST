@@ -1417,9 +1417,9 @@
       </xs:annotation>
       <xs:complexType mixed="true">
          <xs:group minOccurs="0" ref="c:sequence-constructor"/>
-         <xs:attribute name="value" type="c:statement_expression">
+         <xs:attribute name="value" type="c:expression">
             <xs:annotation>
-               <xs:documentation>The value to output. Statement expression.</xs:documentation>
+               <xs:documentation>The value to output. Expression.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>
@@ -1707,9 +1707,9 @@
                <xs:documentation>The condition to check for the current choice to be selected. Expression.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
-         <xs:attribute name="value" type="c:statement_expression">
+         <xs:attribute name="value" type="c:expression">
             <xs:annotation>
-               <xs:documentation>The value to output. Statement expression.</xs:documentation>
+               <xs:documentation>The value to output. Expression.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>
