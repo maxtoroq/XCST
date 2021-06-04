@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<?ignore-test ?>
+<?xcst-test ignore="true" ?>
 <c:module version='1.0' language='C#'
    xmlns:c='http://maxtoroq.github.io/XCST'
    xmlns:html='http://www.w3.org/1999/xhtml'>

@@ -20,8 +20,8 @@ function WriteLine($line = "") {
    $indent + $line
 }
 
-function IgnoreTest($file) {
-   
+function TestConfig($file) {
+
    $readerSettings = New-Object Xml.XmlReaderSettings
    $readerSettings.IgnoreComments = $true
    $readerSettings.IgnoreWhitespace = $true
@@ -34,9 +34,15 @@ function IgnoreTest($file) {
          -and $reader.NodeType -ne [Xml.XmlNodeType]::Element) {
          
          if ($reader.NodeType -eq [Xml.XmlNodeType]::ProcessingInstruction `
-            -and $reader.LocalName -eq "ignore-test") {
+            -and $reader.LocalName -eq "xcst-test") {
 
-            return $true
+            $piValue = $reader.Value
+
+            if (![string]::IsNullOrEmpty($piValue)) {
+               return ([xml]"<xcst-test $piValue />").DocumentElement
+            }
+
+            break
          }
       }
 
@@ -44,7 +50,7 @@ function IgnoreTest($file) {
       $reader.Close()
    }
 
-   return $false
+   return ([xml]"<xcst-test/>").DocumentElement
 }
 
 function GenerateTests {
@@ -116,11 +122,13 @@ function GenerateTestsForDirectory([IO.DirectoryInfo]$directory, [string]$relati
          $testName = ($fileName -replace '[.-]', '_') -creplace '([a-z])([A-Z])', '$1_$2'
          $assertThrows = !$correct -or $fail
 
+         $config = TestConfig($file)
+
          WriteLine
          WriteLine "#line 1 ""$($file.FullName)"""
          WriteLine "[TestFx.Test, TestFx.Category(""$relativeNs"")]"
 
-         if (IgnoreTest($file)) {
+         if ($config.ignore -eq "true") {
             WriteLine "[TestFx.Ignore("""")]"
          }
 
@@ -131,7 +139,14 @@ function GenerateTestsForDirectory([IO.DirectoryInfo]$directory, [string]$relati
 
          if ($assertThrows) {
 
-            $testException = if (!$correct) { "Xcst.Compiler.CompileException" } else { "Xcst.RuntimeException" }
+            $testException = if ($config.exception -ne $null) {
+               $config.exception
+            } elseif (!$correct) {
+               "Xcst.Compiler.CompileException"
+            } else {
+               "Xcst.RuntimeException"
+            }
+
             WriteLine "TestFx.Assert.Throws<$testException>(() => $testCall);"
          } else {
             WriteLine ($testCall + ";")
