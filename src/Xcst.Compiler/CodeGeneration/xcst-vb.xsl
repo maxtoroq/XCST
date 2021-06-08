@@ -308,7 +308,7 @@
       <text>)</text>
    </template>
 
-   <template match="code:disable-warning" mode="vb:source">
+   <template match="code:disable-warning" mode="vb:source vb:statement">
       <value-of select="$src:new-line"/>
       <text>#Disable Warning </text>
       <value-of select="tokenize(@codes, '\s')" separator=","/>
@@ -808,7 +808,7 @@
       <text>#End Region</text>
    </template>
 
-   <template match="code:restore-warning" mode="vb:source">
+   <template match="code:restore-warning" mode="vb:source vb:statement">
       <value-of select="$src:new-line"/>
       <text>#Enable Warning </text>
       <value-of select="tokenize(@codes, '\s')" separator=","/>

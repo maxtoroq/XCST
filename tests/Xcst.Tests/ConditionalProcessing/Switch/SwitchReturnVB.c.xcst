@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='VisualBasic' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:template name='c:initial-template'>
+      <foo>
+         <c:switch value='ToString()'>
+            <c:when test='"a"'>
+               <c:return/>
+            </c:when>
+            <c:otherwise>default</c:otherwise>
+         </c:switch>
+      </foo>
+   </c:template>
+
+   <c:template name='expected'>
+      <foo>default</foo>
+   </c:template>
+
+</c:module>

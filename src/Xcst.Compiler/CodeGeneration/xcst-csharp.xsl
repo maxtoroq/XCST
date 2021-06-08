@@ -306,7 +306,7 @@
       <text>)</text>
    </template>
 
-   <template match="code:disable-warning" mode="cs:source">
+   <template match="code:disable-warning" mode="cs:source cs:statement">
       <value-of select="$src:new-line"/>
       <text>#pragma warning disable </text>
       <value-of select="tokenize(@codes, '\s')" separator=","/>
@@ -830,7 +830,7 @@
       <text>#endregion</text>
    </template>
 
-   <template match="code:restore-warning" mode="cs:source">
+   <template match="code:restore-warning" mode="cs:source cs:statement">
       <value-of select="$src:new-line"/>
       <text>#pragma warning restore </text>
       <value-of select="tokenize(@codes, '\s')" separator=","/>

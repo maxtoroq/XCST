@@ -1122,6 +1122,7 @@
    </template>
 
    <template match="c:switch/c:when" mode="src:statement">
+      <param name="language" required="yes" tunnel="yes"/>
 
       <call-template name="xcst:validate-attribs">
          <with-param name="required" select="'test'"/>
@@ -1138,7 +1139,11 @@
             <call-template name="src:sequence-constructor">
                <with-param name="value" select="@value"/>
             </call-template>
-            <code:break/>
+            <if test="xcst:language-equal($language, $xcst:csharp-lang)">
+               <code:disable-warning codes="CS0162"/>
+               <code:break/>
+               <code:restore-warning codes="CS0162"/>
+            </if>
          </code:block>
       </code:case>
    </template>
