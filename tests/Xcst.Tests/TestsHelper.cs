@@ -35,7 +35,7 @@ namespace Xcst.Tests {
       _expectedName = "expected";
 
       public static void
-      RunXcstTest(string packageFile, string testName, string testNamespace, bool correct, bool fail) {
+      RunXcstTest(string packageFile, string testName, string testNamespace, bool correct, bool fail, string? disableWarning = null) {
 
          bool printCode = _printCode;
          var packageUri = new Uri(packageFile, UriKind.Absolute);
@@ -105,7 +105,7 @@ namespace Xcst.Tests {
 
             try {
 
-               packageType = CompileCode(packageName, packageUri, xcstResult.CompilationUnits, xcstResult.Language, correct);
+               packageType = CompileCode(packageName, packageUri, xcstResult.CompilationUnits, xcstResult.Language, correct, disableWarning, printCode);
 
                if (!correct) {
                   // did not fail, caller Assert.Throws will
@@ -200,7 +200,9 @@ namespace Xcst.Tests {
       }
 
       public static Type
-      CompileCode(string packageName, Uri packageUri, IEnumerable<string> compilationUnits, string language, bool correct) {
+      CompileCode(
+            string packageName, Uri packageUri, IEnumerable<string> compilationUnits, string language,
+            bool correct, string? disableWarning = null, bool printCode = false) {
 
          bool isCSharp = language.Equals("C#", StringComparison.OrdinalIgnoreCase);
 
@@ -234,36 +236,42 @@ namespace Xcst.Tests {
             MetadataReference.CreateFromFile(Assembly.GetExecutingAssembly().Location)
          };
 
+         var specificDiagnosticOptions = (disableWarning != null) ?
+            disableWarning.Split(' ').Select(p => new KeyValuePair<string, ReportDiagnostic>(p, ReportDiagnostic.Suppress)).ToArray()
+            : Array.Empty<KeyValuePair<string, ReportDiagnostic>>();
+
          Compilation compilation = (isCSharp) ?
             (Compilation)CSharpCompilation.Create(
                Path.GetRandomFileName(),
                syntaxTrees: syntaxTrees,
                references: references,
-               options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary))
+               options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary,
+                  specificDiagnosticOptions: specificDiagnosticOptions))
             : VisualBasicCompilation.Create(
                Path.GetRandomFileName(),
                syntaxTrees: syntaxTrees,
                references: references,
-               options: new VisualBasicCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+               options: new VisualBasicCompilationOptions(OutputKind.DynamicallyLinkedLibrary,
+                  specificDiagnosticOptions: specificDiagnosticOptions));
 
          using (var assemblyStream = new MemoryStream()) {
             using (var pdbStream = new MemoryStream()) {
 
                EmitResult codeResult = compilation.Emit(assemblyStream, pdbStream);
 
-               if (!codeResult.Success) {
+               bool fail = codeResult.Diagnostics.Any(d => d.Severity == DiagnosticSeverity.Error
+                  || (d.Severity == DiagnosticSeverity.Warning && d.WarningLevel > 1));
 
-                  Diagnostic? error = codeResult.Diagnostics
-                     .Where(d => d.IsWarningAsError || d.Severity == DiagnosticSeverity.Error)
-                     .FirstOrDefault();
+               if (printCode
+                  || (fail && correct)) {
 
-                  if (error != null
-                     && correct) {
-
-                     Console.WriteLine($"// {error.Id}: {error.GetMessage()}");
-                     Console.WriteLine($"// Line number: {error.Location.GetLineSpan().StartLinePosition.Line}");
+                  foreach (Diagnostic item in codeResult.Diagnostics.Where(d => d.Severity != DiagnosticSeverity.Hidden)) {
+                     var lineSpan = item.Location.GetLineSpan();
+                     Console.WriteLine($"// ({lineSpan.StartLinePosition.Line},{lineSpan.StartLinePosition.Character}) {item.Severity} {item.Id}: {item.GetMessage()}");
                   }
+               }
 
+               if (fail) {
                   throw new CompileException($"{language} compilation failed.");
                }
 

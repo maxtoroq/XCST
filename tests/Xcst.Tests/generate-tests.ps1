@@ -135,7 +135,11 @@ function GenerateTestsForDirectory([IO.DirectoryInfo]$directory, [string]$relati
          WriteLine "public void $testName() {"
          PushIndent
 
-         $testCall = "RunXcstTest(@""$($file.FullName)"", ""$testName"", ""$ns"", correct: $($correct.ToString().ToLower()), fail: $($fail.ToString().ToLower()))"
+         $disableWarning = if ($config.HasAttribute("disable-warning")) {
+            """$($config.GetAttribute("disable-warning"))""" }
+            else { "null" }
+
+         $testCall = "RunXcstTest(@""$($file.FullName)"", ""$testName"", ""$ns"", correct: $($correct.ToString().ToLower()), fail: $($fail.ToString().ToLower()), disableWarning: $disableWarning)"
 
          if ($assertThrows) {
 

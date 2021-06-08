@@ -2,16 +2,17 @@
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
    <c:template name='foo'>
+      <c:variable name='a' value='true'/>
       <c:choose>
-         <c:when test="true"/>
+         <c:when test='a'/>
       </c:choose>
       <c:choose>
-         <c:when test="true"/>
-         <c:when test="true"/>
+         <c:when test='a'/>
+         <c:when test='a'/>
       </c:choose>
       <c:choose>
-         <c:when test="true"/>
-         <c:when test="true"/>
+         <c:when test='a'/>
+         <c:when test='a'/>
          <c:otherwise/>
       </c:choose>
    </c:template>

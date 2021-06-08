@@ -17,12 +17,12 @@
          <c:finally/>
       </c:try>
       <c:try rollback-output='no'>
-         <c:catch exception='System.Exception'/>
+         <c:catch exception='System.InvalidOperationException'/>
          <c:catch/>
       </c:try>
       <c:try rollback-output='no'>
          <a/>
-         <c:catch exception='System.Exception'/>
+         <c:catch exception='System.InvalidOperationException'/>
          <c:catch/>
       </c:try>
       <c:try rollback-output='no'>
@@ -35,13 +35,13 @@
          <c:finally/>
       </c:try>
       <c:try rollback-output='no'>
-         <c:catch exception='System.Exception'/>
+         <c:catch exception='System.InvalidOperationException'/>
          <c:catch/>
          <c:finally/>
       </c:try>
       <c:try rollback-output='no'>
          <a/>
-         <c:catch exception='System.Exception'/>
+         <c:catch exception='System.InvalidOperationException'/>
          <c:catch/>
          <c:finally/>
       </c:try>

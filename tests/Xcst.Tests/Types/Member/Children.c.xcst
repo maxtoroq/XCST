@@ -15,7 +15,7 @@
       </c:member>
       <c:member name='e'>
          <c:metadata name='System.Obsolete'/>
-         <c:metadata name='System.CLSCompliant' value='true'/>
+         <c:metadata name='System.ComponentModel.Description' value='"Some description."'/>
       </c:member>
       <c:member name='f'>
          <c:metadata name='System.Obsolete'/>
@@ -23,7 +23,7 @@
       </c:member>
       <c:member name='g'>
          <c:metadata name='System.Obsolete'/>
-         <c:metadata name='System.CLSCompliant' value='true'/>
+         <c:metadata name='System.ComponentModel.Description' value='"Some description."'/>
          <c:member name='g1'/>
          <c:member name='g2'/>
       </c:member>

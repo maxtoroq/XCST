@@ -3,7 +3,7 @@
 
    <c:template name='foo'>
       <c:try rollback-output='no'>
-         <c:catch exception='System.Exception'/>
+         <c:catch exception='System.InvalidOperationException'/>
          <c:catch/>
          <c:finally/>
       </c:try>

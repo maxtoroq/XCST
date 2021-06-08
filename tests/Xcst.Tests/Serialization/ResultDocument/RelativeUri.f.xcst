@@ -2,8 +2,6 @@
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
    <c:import-namespace ns='System'/>
-   <c:import-namespace ns='System.IO'/>
-   <c:import-namespace ns='Xcst.PackageModel'/>
 
    <c:variable name='tempFile'>foo.txt</c:variable>
 
