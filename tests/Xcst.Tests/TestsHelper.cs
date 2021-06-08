@@ -35,7 +35,9 @@ namespace Xcst.Tests {
       _expectedName = "expected";
 
       public static void
-      RunXcstTest(string packageFile, string testName, string testNamespace, bool correct, bool fail, string? disableWarning = null) {
+      RunXcstTest(
+            string packageFile, string testName, string testNamespace, bool correct, bool fail,
+            decimal languageVersion = -1m, string? disableWarning = null) {
 
          bool printCode = _printCode;
          var packageUri = new Uri(packageFile, UriKind.Absolute);
@@ -105,7 +107,16 @@ namespace Xcst.Tests {
 
             try {
 
-               packageType = CompileCode(packageName, packageUri, xcstResult.CompilationUnits, xcstResult.Language, correct, disableWarning, printCode);
+               packageType = CompileCode(
+                  packageName,
+                  packageUri,
+                  xcstResult.CompilationUnits,
+                  xcstResult.Language,
+                  correct,
+                  languageVersion,
+                  disableWarning,
+                  printCode
+               );
 
                if (!correct) {
                   // did not fail, caller Assert.Throws will
@@ -202,15 +213,17 @@ namespace Xcst.Tests {
       public static Type
       CompileCode(
             string packageName, Uri packageUri, IEnumerable<string> compilationUnits, string language,
-            bool correct, string? disableWarning = null, bool printCode = false) {
+            bool correct, decimal languageVersion = -1m, string? disableWarning = null, bool printCode = false) {
 
          bool isCSharp = language.Equals("C#", StringComparison.OrdinalIgnoreCase);
 
-         // template rules require pattern matching available in C# 7
-         // all other tests should compile against C# 6
+         var csOptions = new CSharpParseOptions(
+            CSharpVersionEnum((isCSharp) ? languageVersion : -1m),
+            preprocessorSymbols: new[] { "DEBUG", "TRACE" });
 
-         var csOptions = new CSharpParseOptions(CSharpVersion.CSharp7, preprocessorSymbols: new[] { "DEBUG", "TRACE" });
-         var vbOptions = new VisualBasicParseOptions(VBVersion.VisualBasic14, preprocessorSymbols: new[] { "DEBUG", "TRACE" }.ToDictionary(s => s, s => (object)String.Empty));
+         var vbOptions = new VisualBasicParseOptions(
+            VBVersionEnum((!isCSharp) ? languageVersion : -1m),
+            preprocessorSymbols: new[] { "DEBUG", "TRACE" }.ToDictionary(s => s, s => (object)String.Empty));
 
          SyntaxTree[] syntaxTrees = compilationUnits
             .Select(c => (isCSharp) ?
@@ -285,6 +298,30 @@ namespace Xcst.Tests {
             }
          }
       }
+
+      static CSharpVersion
+      CSharpVersionEnum(decimal languageVersion) =>
+         languageVersion switch {
+            -1m => CSharpVersion.CSharp6,
+            7m => CSharpVersion.CSharp7,
+            7.1m => CSharpVersion.CSharp7_1,
+            7.2m => CSharpVersion.CSharp7_2,
+            7.3m => CSharpVersion.CSharp7_3,
+            8m => CSharpVersion.CSharp8,
+            9m => CSharpVersion.CSharp9,
+            _ => throw new ArgumentOutOfRangeException(nameof(languageVersion))
+         };
+
+      static VBVersion
+      VBVersionEnum(decimal languageVersion) =>
+         languageVersion switch {
+            -1m => VBVersion.VisualBasic14,
+            15m => VBVersion.VisualBasic15,
+            15.3m => VBVersion.VisualBasic15_3,
+            15.5m => VBVersion.VisualBasic15_5,
+            16m => VBVersion.VisualBasic16,
+            _ => throw new ArgumentOutOfRangeException(nameof(languageVersion))
+         };
 
       static bool
       OutputEqualsToDoc(Type packageType, Uri packageUri, string fileName) {

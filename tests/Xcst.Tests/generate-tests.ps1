@@ -136,10 +136,14 @@ function GenerateTestsForDirectory([IO.DirectoryInfo]$directory, [string]$relati
          PushIndent
 
          $disableWarning = if ($config.HasAttribute("disable-warning")) {
-            """$($config.GetAttribute("disable-warning"))""" }
-            else { "null" }
+            """$($config.GetAttribute("disable-warning"))"""
+            } else { "null" }
 
-         $testCall = "RunXcstTest(@""$($file.FullName)"", ""$testName"", ""$ns"", correct: $($correct.ToString().ToLower()), fail: $($fail.ToString().ToLower()), disableWarning: $disableWarning)"
+         $languageVersion = if ($config.HasAttribute("language-version")) {
+            "$($config.GetAttribute("language-version"))m"
+            } else { "-1m" }
+
+         $testCall = "RunXcstTest(@""$($file.FullName)"", ""$testName"", ""$ns"", correct: $($correct.ToString().ToLower()), fail: $($fail.ToString().ToLower()), languageVersion: $languageVersion, disableWarning: $disableWarning)"
 
          if ($assertThrows) {
 
