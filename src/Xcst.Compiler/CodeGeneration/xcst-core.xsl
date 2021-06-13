@@ -3267,7 +3267,7 @@
 
       <choose>
          <when test="$el/@as">
-            <code:type-reference name="{$el/@as}"/>
+            <code:type-reference name="{$el/xcst:type(@as)}"/>
          </when>
          <when test="$text">
             <code:type-reference name="String" namespace="System"/>
