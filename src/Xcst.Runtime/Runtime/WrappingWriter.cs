@@ -80,10 +80,16 @@ namespace Xcst.Runtime {
       WriteItem(object? value) => _output.WriteItem(value);
 
       public override void
-      BeginTrack() => _output.BeginTrack();
+      BeginTrack(char cardinality) => _output.BeginTrack(cardinality);
+
+      internal override void
+      OnItemWritten() => _output.OnItemWritten();
 
       public override bool
       OnEmpty() => _output.OnEmpty();
+
+      public override void
+      EndOfConstructor() => _output.EndOfConstructor();
 
       public override void
       EndTrack() => _output.EndTrack();

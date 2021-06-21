@@ -20,7 +20,7 @@ namespace Xcst.Runtime {
 
    public abstract class BaseSequenceWriter<TItem> : ISequenceWriter<TItem> {
 
-      Stack<bool>?
+      Stack<SequenceConstructor.State>?
       _trackStack;
 
       public abstract void
@@ -75,41 +75,20 @@ namespace Xcst.Runtime {
       TryCastToMapWriter() => null;
 
       public virtual void
-      BeginTrack() {
-
-         _trackStack ??= new Stack<bool>();
-         _trackStack.Push(false);
-      }
-
-      public virtual bool
-      OnEmpty() => !_trackStack!.Peek();
-
-      public virtual void
-      EndTrack() {
-
-         bool written = _trackStack!.Pop();
-
-         if (written
-            && _trackStack.Count > 0) {
-
-            // if current track is true it propagates to parent
-
-            _trackStack.Pop();
-            _trackStack.Push(true);
-         }
-      }
+      BeginTrack(char cardinality) =>
+         SequenceConstructor.BeginTrack(cardinality, ref _trackStack);
 
       protected void
-      OnItemWritten() {
+      OnItemWritten() => SequenceConstructor.OnItemWritten(_trackStack);
 
-         if (_trackStack != null
-            && _trackStack.Count > 0
-            && !_trackStack.Peek()) {
+      public virtual bool
+      OnEmpty() => SequenceConstructor.OnEmpty(_trackStack);
 
-            _trackStack.Pop();
-            _trackStack.Push(true);
-         }
-      }
+      public virtual void
+      EndOfConstructor() => SequenceConstructor.EndOfConstructor(_trackStack);
+
+      public virtual void
+      EndTrack() => SequenceConstructor.EndTrack(_trackStack);
    }
 
    /// <exclude/>
@@ -284,10 +263,13 @@ namespace Xcst.Runtime {
       TryCastToMapWriter() => _output.TryCastToMapWriter();
 
       public override void
-      BeginTrack() => _output.BeginTrack();
+      BeginTrack(char cardinality) => _output.BeginTrack(cardinality);
 
       public override bool
       OnEmpty() => _output.OnEmpty();
+
+      public override void
+      EndOfConstructor() => _output.EndOfConstructor();
 
       public override void
       EndTrack() => _output.EndTrack();

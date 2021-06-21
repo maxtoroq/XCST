@@ -85,5 +85,13 @@ namespace Xcst.Runtime {
       public static Exception
       AbsentCurrentTemplateRule() =>
          new RuntimeException("The current template rule is absent.", Code("XTDE0560"));
+
+      internal static Exception
+      SequenceOverflow() =>
+         new RuntimeException("A sequence of more than one item is not allowed.", Code("XTTE0505"));
+
+      internal static Exception
+      SequenceUnderflow() =>
+         new RuntimeException("An empty sequence is not allowed.", Code("XTTE0505"));
    }
 }

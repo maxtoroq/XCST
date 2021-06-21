@@ -4,6 +4,9 @@
    <c:template name='c:initial-template'>
       <c:variable name='a' as='int'>
          <c:script/>
+         <c:object value='1'/>
+         <c:object value='2'/>
+         <c:void value='Assert.Fail()'/>
       </c:variable>
    </c:template>
 

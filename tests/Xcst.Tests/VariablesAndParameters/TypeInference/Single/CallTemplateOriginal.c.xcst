@@ -8,12 +8,15 @@
                <c:call-template name='c:original'/>
             </c:variable>
             <c:void value='Assert.AreEqual(typeof(int), CompileType(a))'/>
+            <c:object value='a'/>
          </c:template>
       </c:override>
    </c:use-package>
 
    <c:template name='c:initial-template'>
-      <c:call-template name='foo'/>
+      <div>
+         <c:call-template name='foo'/>
+      </div>
    </c:template>
 
 </c:module>

@@ -74,7 +74,7 @@ namespace Xcst.Tests.ProgramStructure.Packages.AcceptingComponents {
       <c:return value='default(string)'/>
    </c:function>
 
-   <c:template name='d' as='string' visibility='public'/>
+   <c:template name='d' as='string' visibility='public'>d</c:template>
 
 </c:package>
 ";

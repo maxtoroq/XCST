@@ -2361,6 +2361,7 @@
                   </apply-templates>
                   <call-template name="src:sequence-constructor">
                      <with-param name="children" select="node()[not(self::c:param or following-sibling::c:param)]"/>
+                     <with-param name="track-cardinality" select="$meta/@cardinality"/>
                      <with-param name="context" select="$context" tunnel="yes"/>
                      <with-param name="output" select="$output" tunnel="yes"/>
                   </call-template>

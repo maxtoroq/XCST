@@ -141,6 +141,14 @@ namespace Xcst.Xml {
       }
 
       public override void
+      EndTrack() {
+
+         if (_output.WriteState != WriteState.Error) {
+            base.EndTrack();
+         }
+      }
+
+      public override void
       Flush() => _output.Flush();
 
       protected override void

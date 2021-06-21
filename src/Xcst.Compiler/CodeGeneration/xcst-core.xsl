@@ -885,8 +885,7 @@
 
       <code:try line-hidden="true">
          <code:block>
-            <call-template name="src:sequence-constructor">
-               <with-param name="value" select="@value"/>
+            <call-template name="src:value-or-sequence-constructor">
                <with-param name="output" select="$map-output" tunnel="yes"/>
             </call-template>
          </code:block>
@@ -1059,9 +1058,7 @@
          <call-template name="src:line-number"/>
          <code:expression value="{xcst:expression(@test)}"/>
          <code:block>
-            <call-template name="src:sequence-constructor">
-               <with-param name="value" select="@value"/>
-            </call-template>
+            <call-template name="src:value-or-sequence-constructor"/>
          </code:block>
       </code:if>
    </template>
@@ -1079,9 +1076,7 @@
       </call-template>
 
       <code:else>
-         <call-template name="src:sequence-constructor">
-            <with-param name="value" select="@value"/>
-         </call-template>
+         <call-template name="src:value-or-sequence-constructor"/>
       </code:else>
    </template>
 
@@ -1136,9 +1131,7 @@
          <call-template name="src:line-number"/>
          <code:expression value="{xcst:expression(@test)}"/>
          <code:block>
-            <call-template name="src:sequence-constructor">
-               <with-param name="value" select="@value"/>
-            </call-template>
+            <call-template name="src:value-or-sequence-constructor"/>
             <if test="xcst:language-equal($language, $xcst:csharp-lang)">
                <code:disable-warning codes="CS0162"/>
                <code:break/>
@@ -1163,9 +1156,7 @@
 
       <code:case-default>
          <code:block>
-            <call-template name="src:sequence-constructor">
-               <with-param name="value" select="@value"/>
-            </call-template>
+            <call-template name="src:value-or-sequence-constructor"/>
             <if test="xcst:language-equal($language, $xcst:csharp-lang)">
                <code:disable-warning codes="CS0162"/>
                <code:break/>
@@ -1205,8 +1196,7 @@
       <code:try>
          <call-template name="src:line-number"/>
          <code:block>
-            <call-template name="src:sequence-constructor">
-               <with-param name="value" select="@value"/>
+            <call-template name="src:value-or-sequence-constructor">
                <with-param name="children" select="$children"/>
             </call-template>
          </code:block>
@@ -1239,9 +1229,7 @@
             </code:when>
          </if>
          <code:block>
-            <call-template name="src:sequence-constructor">
-               <with-param name="value" select="@value"/>
-            </call-template>
+            <call-template name="src:value-or-sequence-constructor"/>
          </code:block>
       </code:catch>
    </template>
@@ -1260,9 +1248,7 @@
 
       <code:finally>
          <call-template name="src:line-number"/>
-         <call-template name="src:sequence-constructor">
-            <with-param name="value" select="@value"/>
-         </call-template>
+         <call-template name="src:value-or-sequence-constructor"/>
       </code:finally>
    </template>
 
@@ -1297,9 +1283,10 @@
 
       <choose>
          <when test="$output">
-            <call-template name="src:sequence-constructor">
-               <with-param name="value" select="@value"/>
-            </call-template>
+            <call-template name="src:value-or-sequence-constructor"/>
+            <code:method-call name="EndOfConstructor" line-hidden="true">
+               <sequence select="$output/src:reference/code:*"/>
+            </code:method-call>
             <code:return>
                <call-template name="src:line-number"/>
             </code:return>
@@ -1389,9 +1376,7 @@
             <sequence select="$output/src:reference/code:*"/>
          </code:method-call>
          <code:block>
-            <call-template name="src:sequence-constructor">
-               <with-param name="value" select="@value"/>
-            </call-template>
+            <call-template name="src:value-or-sequence-constructor"/>
          </code:block>
       </code:if>
    </template>
@@ -2139,11 +2124,13 @@
          <with-param name="optional" select="'as'"/>
       </call-template>
 
+      <variable name="as" select="@as/xcst:type(.)"/>
+
       <variable name="meta" as="element()">
          <xcst:delegate>
-            <if test="@as">
+            <if test="$as">
                <xcst:item-type>
-                  <code:type-reference name="{xcst:item-type(xcst:type(@as), $language)}"/>
+                  <code:type-reference name="{xcst:item-type($as, $language)}"/>
                </xcst:item-type>
             </if>
          </xcst:delegate>
@@ -2185,6 +2172,7 @@
                      <with-param name="children" select="node()[not(self::c:param or following-sibling::c:param)]"/>
                      <with-param name="context" select="$new-context" tunnel="yes"/>
                      <with-param name="output" select="$new-output" tunnel="yes"/>
+                     <with-param name="track-cardinality" select="if ($as) then xcst:cardinality($as, $language) else ()"/>
                   </call-template>
                </code:block>
             </code:lambda>
@@ -4057,6 +4045,7 @@
                                  <call-template name="src:sequence-constructor">
                                     <with-param name="children" select="$children"/>
                                     <with-param name="output" select="$new-output" tunnel="yes"/>
+                                    <with-param name="track-cardinality" select="$cardinality"/>
                                  </call-template>
                               </code:block>
                            </code:lambda>
@@ -4081,43 +4070,45 @@
       </choose>
    </template>
 
-   <template name="src:sequence-constructor">
+   <template name="src:value-or-sequence-constructor">
       <param name="children" select="node()"/>
-      <param name="value" as="node()?"/>
-      <param name="text" select="xcst:text(., $children)"/>
       <param name="output" tunnel="yes"/>
 
-      <variable name="normalized-children" select="xcst:sequence-constructor-nodes($children)"/>
-
       <choose>
-         <when test="$normalized-children[self::*]">
-            <variable name="on-empty" select="$normalized-children[self::c:on-empty]"/>
-            <if test="$on-empty">
-               <call-template name="xcst:require-output"/>
-               <if test="not($on-empty[1] is $normalized-children[last()])">
-                  <sequence select="error(xs:QName('err:XTSE0010'), 'c:on-empty must be the last instruction in the sequence constructor.', src:error-object($on-empty[1]))"/>
-               </if>
-               <code:method-call name="BeginTrack" line-hidden="true">
-                  <sequence select="$output/src:reference/code:*"/>
-               </code:method-call>
-            </if>
-            <apply-templates select="$normalized-children" mode="src:statement"/>
-            <if test="$on-empty">
-               <code:method-call name="EndTrack" line-hidden="true">
-                  <sequence select="$output/src:reference/code:*"/>
-               </code:method-call>
-            </if>
-         </when>
-         <when test="$value">
+         <when test="@value">
             <call-template name="xcst:require-output"/>
             <code:method-call name="WriteObject">
                <call-template name="src:line-number"/>
                <sequence select="$output/src:reference/code:*"/>
                <code:arguments>
-                  <code:expression value="{xcst:expression($value)}"/>
+                  <code:expression value="{xcst:expression(@value)}"/>
                </code:arguments>
             </code:method-call>
          </when>
+         <otherwise>
+            <call-template name="src:sequence-constructor">
+               <with-param name="children" select="$children"/>
+            </call-template>
+         </otherwise>
+      </choose>
+   </template>
+
+   <template name="src:sequence-constructor">
+      <param name="children" select="node()"/>
+      <param name="text" select="xcst:text(., $children)"/>
+      <param name="track-cardinality" as="xs:string?"/>
+      <param name="output" tunnel="yes"/>
+
+      <variable name="normalized-children" select="xcst:sequence-constructor-nodes($children)"/>
+      <variable name="on-empty" select="$normalized-children[self::c:on-empty]"/>
+
+      <if test="$on-empty">
+         <if test="not($on-empty[1] is $normalized-children[last()])">
+            <sequence select="error(xs:QName('err:XTSE0010'), 'c:on-empty must be the last instruction in the sequence constructor.', src:error-object($on-empty[1]))"/>
+         </if>
+      </if>
+
+      <choose>
          <when test="$text">
             <call-template name="xcst:require-output"/>
             <code:method-call name="WriteString">
@@ -4130,6 +4121,45 @@
                   </call-template>
                </code:arguments>
             </code:method-call>
+         </when>
+         <when test="$normalized-children[self::*] or empty($normalized-children)">
+            <variable name="requires-some" select="boolean($track-cardinality ne 'ZeroOrMore')"/>
+            <if test="$requires-some and empty($normalized-children)">
+               <sequence select="error(xs:QName('err:XTTE0505'), 'An empty sequence is not allowed.', src:error-object(.))"/>
+            </if>
+            <variable name="track" select="$on-empty or $requires-some"/>
+            <choose>
+               <when test="$track">
+                  <call-template name="xcst:require-output"/>
+                  <variable name="cardinality-char" select="
+                     if (($track-cardinality, 'ZeroOrMore')[1] eq 'ZeroOrMore') then '*'
+                     else ' '"/>
+                  <code:method-call name="BeginTrack" line-hidden="true">
+                     <sequence select="$output/src:reference/code:*"/>
+                     <code:arguments>
+                        <code:char value="{$cardinality-char}"/>
+                     </code:arguments>
+                  </code:method-call>
+                  <code:try line-hidden="true">
+                     <code:block>
+                        <apply-templates select="$normalized-children" mode="src:statement"/>
+                        <code:disable-warning codes="CS0162"/>
+                        <code:method-call name="EndOfConstructor" line-hidden="true">
+                           <sequence select="$output/src:reference/code:*"/>
+                        </code:method-call>
+                        <code:restore-warning codes="CS0162"/>
+                     </code:block>
+                     <code:finally line-hidden="true">
+                        <code:method-call name="EndTrack" line-hidden="true">
+                           <sequence select="$output/src:reference/code:*"/>
+                        </code:method-call>
+                     </code:finally>
+                  </code:try>
+               </when>
+               <otherwise>
+                  <apply-templates select="$normalized-children" mode="src:statement"/>
+               </otherwise>
+            </choose>
          </when>
       </choose>
    </template>

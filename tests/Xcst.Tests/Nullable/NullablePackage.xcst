@@ -35,6 +35,8 @@
    <c:template name='t2' as='object'>
       <c:param name='tp1'/>
       <c:param name='tp2' value='default(object)'/>
+
+      <c:object value='new object()'/>
    </c:template>
 
    <c:template name='declarations'>

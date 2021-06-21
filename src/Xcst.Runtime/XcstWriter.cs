@@ -29,7 +29,7 @@ namespace Xcst {
 
    public abstract class XcstWriter : ISequenceWriter<object?>, IDisposable {
 
-      Stack<bool>?
+      Stack<SequenceConstructor.State>?
       _trackStack;
 
       bool
@@ -413,41 +413,20 @@ namespace Xcst {
       TryCastToMapWriter() => null;
 
       public virtual void
-      BeginTrack() {
+      BeginTrack(char cardinality) =>
+         SequenceConstructor.BeginTrack(cardinality, ref _trackStack);
 
-         _trackStack ??= new Stack<bool>();
-         _trackStack.Push(false);
-      }
+      internal virtual void
+      OnItemWritten() => SequenceConstructor.OnItemWritten(_trackStack);
 
       public virtual bool
-      OnEmpty() => !_trackStack!.Peek();
+      OnEmpty() => SequenceConstructor.OnEmpty(_trackStack);
 
       public virtual void
-      EndTrack() {
+      EndOfConstructor() => SequenceConstructor.EndOfConstructor(_trackStack);
 
-         bool written = _trackStack!.Pop();
-
-         if (written
-            && _trackStack.Count > 0) {
-
-            // if current track is true it propagates to parent
-
-            _trackStack.Pop();
-            _trackStack.Push(true);
-         }
-      }
-
-      protected void
-      OnItemWritten() {
-
-         if (_trackStack != null
-            && _trackStack.Count > 0
-            && !_trackStack.Peek()) {
-
-            _trackStack.Pop();
-            _trackStack.Push(true);
-         }
-      }
+      public virtual void
+      EndTrack() => SequenceConstructor.EndTrack(_trackStack);
 
       public abstract void
       Flush();

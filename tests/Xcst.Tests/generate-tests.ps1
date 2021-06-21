@@ -94,6 +94,7 @@ function GenerateTestsForDirectory([IO.DirectoryInfo]$directory, [string]$relati
       $compiler.IndentChars = $singleIndent
       $compiler.NullableAnnotate = $true
 
+      #Write-Host $file.FullName
       $xcstResult = $compiler.Compile((New-Object Uri $file.FullName))
 
       foreach ($src in $xcstResult.CompilationUnits) {

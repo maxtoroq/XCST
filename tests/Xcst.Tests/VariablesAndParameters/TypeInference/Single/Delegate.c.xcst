@@ -6,7 +6,7 @@
          <c:delegate/>
       </c:variable>
       <c:variable name='b'>
-         <c:delegate as='string'/>
+         <c:delegate as='string'>b</c:delegate>
       </c:variable>
       <c:void value='Assert.AreEqual(typeof(Xcst.XcstDelegate&lt;object>), CompileType(a))'/>
       <c:void value='Assert.AreEqual(typeof(Xcst.XcstDelegate&lt;string>), CompileType(b))'/>

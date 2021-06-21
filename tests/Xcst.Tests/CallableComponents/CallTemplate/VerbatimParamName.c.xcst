@@ -11,6 +11,7 @@
 
    <c:template name='foo'>
       <c:param name='@class' as='string'/>
+
       <c:value-of value='@class'/>
    </c:template>
 

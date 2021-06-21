@@ -17,6 +17,7 @@
       <c:void value='Assert.AreEqual("foo", doc.DocumentElement.LocalName)'/>
       <c:void value='Assert.AreEqual("123", doc.DocumentElement.GetAttribute("bar"))'/>
       <c:void value='Assert.AreEqual("baz", doc.DocumentElement.InnerText)'/>
+      <div/>
    </c:template>
 
 </c:module>

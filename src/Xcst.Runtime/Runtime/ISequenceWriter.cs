@@ -61,10 +61,13 @@ namespace Xcst.Runtime {
       TryCastToMapWriter();
 
       void
-      BeginTrack();
+      BeginTrack(char cardinality);
 
       bool
       OnEmpty();
+
+      void
+      EndOfConstructor();
 
       void
       EndTrack();

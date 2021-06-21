@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xcst-test exception="System.InvalidOperationException" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:template name='c:initial-template'>
+      <c:variable name='a' as='int[]'>
+         <c:call-template name='foo'/>
+         <c:void value='Assert.Fail()'/>
+      </c:variable>
+   </c:template>
+
+   <c:template name='foo' as='int'>
+      <c:void value='throw new System.InvalidOperationException()'/>
+   </c:template>
+
+</c:module>

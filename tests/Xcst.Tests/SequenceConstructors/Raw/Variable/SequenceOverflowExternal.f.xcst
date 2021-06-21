@@ -4,7 +4,14 @@
    <c:template name='c:initial-template'>
       <c:variable name='a' as='int'>
          <c:script/>
+         <c:call-template name='foo'/>
       </c:variable>
+   </c:template>
+
+   <c:template name='foo' as='int[]'>
+      <c:object value='1'/>
+      <c:object value='2'/>
+      <c:void value='Assert.Fail()'/>
    </c:template>
 
 </c:module>

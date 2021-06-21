@@ -437,6 +437,9 @@ namespace Xcst.Tests {
 
          public static void
          IsNotNull(object value) => TestAssert.IsNotNull(value);
+
+         public static void
+         Fail() => TestAssert.Fail();
       }
    }
 }
