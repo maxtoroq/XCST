@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:template name='foo'>
+      <c:variable name='a' as='System.Delegate'/>
+      <c:set ref='a'>
+         <c:delegate>
+            <c:return/>
+         </c:delegate>
+      </c:set>
+   </c:template>
+
+</c:module>

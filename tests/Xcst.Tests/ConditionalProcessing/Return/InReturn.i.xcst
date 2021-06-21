@@ -1,19 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<?xcst-test ignore="true" ?>
+<?xcst-test disable-warning="CS0162" ?>
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
-   <c:template name='c:initial-template'>
-      <doc>
-         <c:call-template name='foo'/>
-         <c:text>bar</c:text>
-      </doc>
-   </c:template>
-
    <c:template name='foo'>
-      <c:comment>
+      <c:return>
          <c:text>foo</c:text>
          <c:return/>
-      </c:comment>
+      </c:return>
    </c:template>
 
 </c:module>

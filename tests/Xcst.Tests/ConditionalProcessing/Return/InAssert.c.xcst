@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:template name='foo'>
+      <c:assert test='ReferenceEquals(this, this)'>
+         <c:delegate>
+            <c:return/>
+         </c:delegate>
+      </c:assert>
+   </c:template>
+
+</c:module>

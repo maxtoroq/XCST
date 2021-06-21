@@ -1276,7 +1276,17 @@
       <call-template name="xcst:value-or-sequence-constructor"/>
 
       <variable name="disallowed-ancestor" select="
-         ancestor::*[self::c:param or self::c:with-param or self::c:variable or self::c:value-of or self::c:serialize][1]"/>
+         ancestor::*[self::c:param
+            or self::c:with-param
+            or self::c:variable
+            or self::c:set
+            or self::c:return
+            or self::c:comment
+            or self::c:processing-instruction
+            or self::c:value-of
+            or self::c:serialize
+            or self::c:assert
+            or self::c:message][1]"/>
 
       <variable name="allowed-ancestor" select="ancestor::c:delegate[1]"/>
 
