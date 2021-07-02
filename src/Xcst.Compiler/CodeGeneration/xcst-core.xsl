@@ -1730,7 +1730,7 @@
       <variable name="current" select="."/>
 
       <for-each select="$meta/xcst:param[@required/xs:boolean(.) and not(@tunnel/xs:boolean(.))]">
-         <if test="not($current/c:with-param[xcst:name-equal(@name, current()/string(@name))])">
+         <if test="not($current/c:with-param[not(@tunnel/xcst:boolean(.)) and xcst:name-equal(@name, current()/string(@name))])">
             <sequence select="error(xs:QName('err:XTSE0690'), concat('No value supplied for required parameter ''', @name, '''.'), src:error-object($current))"/>
          </if>
       </for-each>
