@@ -59,8 +59,7 @@ namespace Xcst.Tests.ProgramStructure.Packages.AcceptingComponents {
             compilerA.TargetNamespace + "." + compilerA.TargetClass,
             usingPackageUri,
             compilationUnits,
-            resultA.Language,
-            correct: true
+            resultA.Language
          );
       }
 

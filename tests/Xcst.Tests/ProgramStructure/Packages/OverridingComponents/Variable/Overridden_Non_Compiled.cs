@@ -49,8 +49,7 @@ namespace Xcst.Tests.ProgramStructure.Packages.OverridingComponents.Variable {
             compilerA.TargetNamespace + "." + compilerA.TargetClass,
             usingPackageUri,
             compilationUnits,
-            resultA.Language,
-            correct: true
+            resultA.Language
          );
       }
 

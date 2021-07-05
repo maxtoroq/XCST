@@ -118,8 +118,9 @@ function GenerateTestsForDirectory([IO.DirectoryInfo]$directory, [string]$relati
       foreach ($file in $tests) { 
 
          $fileName = [IO.Path]::GetFileNameWithoutExtension($file.Name)
+         $error = $fileName -like '*.e'
          $fail = $fileName -like '*.f'
-         $correct = $fail -or $fileName -like '*.c'
+         $correct = $error -or $fail -or $fileName -like '*.c'
          $testName = ($fileName -replace '[.-]', '_') -creplace '([a-z])([A-Z])', '$1_$2'
          $assertThrows = !$correct -or $fail
 
@@ -144,7 +145,7 @@ function GenerateTestsForDirectory([IO.DirectoryInfo]$directory, [string]$relati
             "$($config.GetAttribute("language-version"))m"
             } else { "-1m" }
 
-         $testCall = "RunXcstTest(@""$($file.FullName)"", ""$testName"", ""$ns"", correct: $($correct.ToString().ToLower()), fail: $($fail.ToString().ToLower()), languageVersion: $languageVersion, disableWarning: $disableWarning)"
+         $testCall = "RunXcstTest(@""$($file.FullName)"", ""$testName"", ""$ns"", correct: $($correct.ToString().ToLower()), error: $($error.ToString().ToLower()), fail: $($fail.ToString().ToLower()), languageVersion: $languageVersion, disableWarning: $disableWarning)"
 
          if ($assertThrows) {
 

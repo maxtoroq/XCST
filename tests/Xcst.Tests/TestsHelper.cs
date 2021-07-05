@@ -36,7 +36,7 @@ namespace Xcst.Tests {
 
       public static void
       RunXcstTest(
-            string packageFile, string testName, string testNamespace, bool correct, bool fail,
+            string packageFile, string testName, string testNamespace, bool correct, bool error, bool fail,
             decimal languageVersion = -1m, string? disableWarning = null) {
 
          bool printCode = _printCode;
@@ -47,6 +47,12 @@ namespace Xcst.Tests {
 
          try {
             var codegenResult = GenerateCode(packageUri, testName, testNamespace);
+
+            if (!correct) {
+               // did not fail, caller Assert.Throws will
+               return;
+            }
+
             xcstResult = codegenResult.result;
             packageName = codegenResult.packageName;
 
@@ -112,7 +118,7 @@ namespace Xcst.Tests {
                   packageUri,
                   xcstResult.CompilationUnits,
                   xcstResult.Language,
-                  correct,
+                  error,
                   languageVersion,
                   disableWarning,
                   printCode
@@ -213,7 +219,7 @@ namespace Xcst.Tests {
       public static Type
       CompileCode(
             string packageName, Uri packageUri, IEnumerable<string> compilationUnits, string language,
-            bool correct, decimal languageVersion = -1m, string? disableWarning = null, bool printCode = false) {
+            bool error = false, decimal languageVersion = -1m, string? disableWarning = null, bool printCode = false) {
 
          bool isCSharp = language.Equals("C#", StringComparison.OrdinalIgnoreCase);
 
@@ -272,11 +278,11 @@ namespace Xcst.Tests {
 
                EmitResult codeResult = compilation.Emit(assemblyStream, pdbStream);
 
-               bool fail = codeResult.Diagnostics.Any(d => d.Severity == DiagnosticSeverity.Error
+               bool failed = codeResult.Diagnostics.Any(d => d.Severity == DiagnosticSeverity.Error
                   || (d.Severity == DiagnosticSeverity.Warning && d.WarningLevel > 1));
 
                if (printCode
-                  || (fail && correct)) {
+                  || (failed && !error)) {
 
                   foreach (Diagnostic item in codeResult.Diagnostics.Where(d => d.Severity != DiagnosticSeverity.Hidden)) {
                      var lineSpan = item.Location.GetLineSpan();
@@ -284,8 +290,13 @@ namespace Xcst.Tests {
                   }
                }
 
-               if (fail) {
-                  throw new CompileException($"{language} compilation failed.");
+               if (failed) {
+
+                  if (error) {
+                     TestAssert.Pass($"{language} compilation failed.");
+                  }
+
+                  throw new ArgumentException($"{language} compilation failed.");
                }
 
                assemblyStream.Position = 0;
