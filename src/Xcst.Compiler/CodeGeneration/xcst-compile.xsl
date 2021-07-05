@@ -2810,7 +2810,7 @@
             <if test="@expression">
                <code:block>
                   <code:return>
-                     <code:expression value="{@expression}"/>
+                     <code:expression value="{xcst:expression(@expression)}"/>
                   </code:return>
                </code:block>
             </if>
@@ -2827,7 +2827,7 @@
                </code:expression>
             </when>
             <when test="@value">
-               <code:expression value="{@value}"/>
+               <code:expression value="{xcst:expression(@value)}"/>
             </when>
          </choose>
       </code:property>
