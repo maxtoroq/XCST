@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xcst-test language-version="7" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:template name='c:initial-template'>
+      <foo>
+         <c:apply-templates value='5'/>
+      </foo>
+   </c:template>
+
+   <c:template match='int i' as='int'>
+      <c:object value='i'/>
+      <c:object value='i + 1'/>
+      <c:void value='Assert.Fail()'/>
+   </c:template>
+
+</c:module>

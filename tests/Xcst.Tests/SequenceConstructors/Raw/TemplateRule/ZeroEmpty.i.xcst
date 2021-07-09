@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xcst-test language-version="7" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:template match='int' as='int'>
+      <c:param name='z' tunnel='yes'/>
+
+   </c:template>
+
+</c:module>
