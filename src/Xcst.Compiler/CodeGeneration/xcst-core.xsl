@@ -2956,40 +2956,17 @@
    </template>
 
    <template match="@html-version" mode="src:output-parameter">
-      <choose>
-         <when test="parent::c:output">
-            <call-template name="src:decimal">
-               <with-param name="decimal" select="xcst:decimal(., not(parent::c:output))"/>
-               <with-param name="avt" select="."/>
-            </call-template>
-         </when>
-         <otherwise>
-            <code:method-call name="Decimal">
-               <sequence select="src:helper-type('DataType')"/>
-               <code:arguments>
-                  <call-template name="src:expand-attribute">
-                     <with-param name="attr" select="."/>
-                  </call-template>
-               </code:arguments>
-            </code:method-call>
-         </otherwise>
-      </choose>
+      <call-template name="src:decimal">
+         <with-param name="decimal" select="xcst:decimal(., not(parent::c:output))"/>
+         <with-param name="avt" select="."/>
+      </call-template>
    </template>
 
    <template match="@indent-spaces" mode="src:output-parameter">
-      <choose>
-         <when test="parent::c:output">
-            <call-template name="src:integer">
-               <with-param name="integer" select="xcst:integer(., not(parent::c:output))"/>
-               <with-param name="avt" select="."/>
-            </call-template>
-         </when>
-         <otherwise>
-            <call-template name="src:expand-attribute">
-               <with-param name="attr" select="."/>
-            </call-template>
-         </otherwise>
-      </choose>
+      <call-template name="src:integer">
+         <with-param name="integer" select="xcst:integer(., not(parent::c:output))"/>
+         <with-param name="avt" select="."/>
+      </call-template>
    </template>
 
    <template match="@item-separator" mode="src:output-parameter">
