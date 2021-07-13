@@ -1698,8 +1698,6 @@
          <with-param name="allowed" select="'with-param'"/>
       </call-template>
 
-      <call-template name="xcst:validate-with-param"/>
-
       <variable name="qname" select="xcst:EQName(@name)"/>
       <variable name="original" select="$qname eq xs:QName('c:original') and ancestor::c:override"/>
 
@@ -1727,20 +1725,9 @@
          </choose>
       </variable>
 
-      <variable name="current" select="."/>
-
-      <for-each select="$meta/xcst:param[@required/xs:boolean(.) and not(@tunnel/xs:boolean(.))]">
-         <if test="not($current/c:with-param[not(@tunnel/xcst:boolean(.)) and xcst:name-equal(@name, current()/string(@name))])">
-            <sequence select="error(xs:QName('err:XTSE0690'), concat('No value supplied for required parameter ''', @name, '''.'), src:error-object($current))"/>
-         </if>
-      </for-each>
-
-      <for-each select="c:with-param[not((@tunnel/xcst:boolean(.), false())[1])]">
-         <variable name="param-name" select="xcst:name(@name)"/>
-         <if test="not($meta/xcst:param[string(@name) eq $param-name and not(xs:boolean(@tunnel))])">
-            <sequence select="error(xs:QName('err:XTSE0680'), concat('Parameter ''', $param-name, ''' is not declared in the called template.'), src:error-object(.))"/>
-         </if>
-      </for-each>
+      <call-template name="xcst:validate-with-param">
+         <with-param name="meta" select="$meta"/>
+      </call-template>
 
       <sequence select="$meta, $original"/>
    </template>
@@ -1924,8 +1911,6 @@
          <with-param name="allowed" select="'with-param'"/>
       </call-template>
 
-      <call-template name="xcst:validate-with-param"/>
-
       <variable name="current-template" select="ancestor::c:template[1]"/>
 
       <if test="not($current-template)">
@@ -1946,20 +1931,9 @@
          <sequence select="error(xs:QName('err:XTSE3075'), 'Cannot call a next template with visibility=''abstract''.', src:error-object(.))"/>
       </if>
 
-      <variable name="current" select="."/>
-
-      <for-each select="$meta/xcst:param[@required/xs:boolean(.) and not(@tunnel/xs:boolean(.))]">
-         <if test="not($current/c:with-param[xcst:name-equal(@name, current()/string(@name))])">
-            <sequence select="error(xs:QName('err:XTSE0690'), concat('No value supplied for required parameter ''', @name, '''.'), src:error-object($current))"/>
-         </if>
-      </for-each>
-
-      <for-each select="c:with-param[not((@tunnel/xcst:boolean(.), false())[1])]">
-         <variable name="param-name" select="xcst:name(@name)"/>
-         <if test="not($meta/xcst:param[string(@name) eq $param-name and not(xs:boolean(@tunnel))])">
-            <sequence select="error(xs:QName('err:XTSE0680'), concat('Parameter ''', $param-name, ''' is not declared in the called template.'), src:error-object(.))"/>
-         </if>
-      </for-each>
+      <call-template name="xcst:validate-with-param">
+         <with-param name="meta" select="$meta"/>
+      </call-template>
 
       <sequence select="$meta"/>
    </template>
@@ -2102,6 +2076,8 @@
    </function>
 
    <template name="xcst:validate-with-param">
+      <param name="meta" as="element(xcst:template)?"/>
+
       <for-each select="c:with-param">
          <call-template name="xcst:validate-attribs">
             <with-param name="required" select="'name'"/>
@@ -2110,6 +2086,20 @@
          <call-template name="xcst:value-or-sequence-constructor"/>
          <if test="preceding-sibling::c:with-param[xcst:name-equal(@name, current()/@name)]">
             <sequence select="error(xs:QName('err:XTSE0670'), 'Duplicate parameter name.', src:error-object(.))"/>
+         </if>
+         <if test="not(@tunnel/xcst:boolean(.)) and $meta">
+            <variable name="param-name" select="xcst:name(@name)"/>
+            <if test="not($meta/xcst:param[string(@name) eq $param-name and not(xs:boolean(@tunnel))])">
+               <sequence select="error(xs:QName('err:XTSE0680'), concat('Parameter ''', $param-name, ''' is not declared in the called template.'), src:error-object(.))"/>
+            </if>
+         </if>
+      </for-each>
+
+      <variable name="current" select="."/>
+
+      <for-each select="$meta/xcst:param[@required/xs:boolean(.) and not(@tunnel/xs:boolean(.))]">
+         <if test="not($current/c:with-param[not(@tunnel/xcst:boolean(.)) and xcst:name-equal(@name, current()/string(@name))])">
+            <sequence select="error(xs:QName('err:XTSE0690'), concat('No value supplied for required parameter ''', @name, '''.'), src:error-object($current))"/>
          </if>
       </for-each>
    </template>
