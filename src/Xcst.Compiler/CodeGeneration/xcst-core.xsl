@@ -3450,7 +3450,7 @@
       <param name="node" as="node()"/>
       <param name="avt" as="xs:boolean"/>
 
-      <variable name="string" select="xcst:trim($node)"/>
+      <variable name="string" select="string($node)"/>
       <sequence select="
          if ($avt and xcst:is-value-template($node)) then
             ()
