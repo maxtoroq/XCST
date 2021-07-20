@@ -572,7 +572,7 @@
       <apply-templates select="code:attributes/code:*" mode="#current"/>
       <call-template name="cs:line-pragma"/>
       <call-template name="src:new-line-indented"/>
-      <if test="@visibility ne '#default'and not(code:implements-interface)">
+      <if test="@visibility ne '#default' and not(code:implements-interface)">
          <value-of select="@visibility"/>
          <text> </text>
       </if>
@@ -777,7 +777,7 @@
       <apply-templates select="code:attributes/code:*" mode="#current"/>
       <call-template name="cs:line-pragma"/>
       <call-template name="src:new-line-indented"/>
-      <if test="@visibility ne '#default'and not(code:implements-interface)">
+      <if test="@visibility ne '#default' and not(code:implements-interface)">
          <value-of select="@visibility"/>
          <text> </text>
       </if>
