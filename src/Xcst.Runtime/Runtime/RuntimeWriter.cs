@@ -46,9 +46,6 @@ namespace Xcst.Runtime {
       string?
       _itemSeparator;
 
-      int
-      _depth;
-
       ItemType?
       _lastItem;
 
@@ -377,7 +374,7 @@ namespace Xcst.Runtime {
          if (_lastItem != null
             && (_lastItem.Value != ItemType.Text || type != ItemType.Text)) {
 
-            string? separator = (_depth == 0 ? _itemSeparator : null);
+            string? separator = (this.Depth == 0 ? _itemSeparator : null);
 
             if (separator is null
                && _lastItem.Value == ItemType.Object
@@ -392,18 +389,13 @@ namespace Xcst.Runtime {
          }
 
          if (type == ItemType.Element) {
-            _depth++;
+            // Reset _lastItem for child nodes
             _lastItem = null;
          }
       }
 
       void
       ItemWritten(ItemType type) {
-
-         if (type == ItemType.Element) {
-            _depth--;
-         }
-
          _lastItem = type;
       }
 

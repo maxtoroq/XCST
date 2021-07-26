@@ -20,33 +20,47 @@ namespace Xcst.Runtime {
    static class SequenceConstructor {
 
       public static void
-      BeginTrack(char cardinality, ref Stack<State>? _trackStack) {
+      BeginTrack(char cardinality, int depth, ref Stack<State>? _trackStack) {
 
          _trackStack ??= new Stack<State>();
-         _trackStack.Push(new State(cardinality, false, false));
+         _trackStack.Push(new State(cardinality, depth, false, false));
       }
 
       public static void
-      OnItemWritten(Stack<State>? _trackStack) {
-
-         State state;
+      OnItemWritting(Stack<State>? _trackStack, int depth) {
 
          if (_trackStack != null
             && _trackStack.Count > 0) {
 
-            state = _trackStack.Peek();
+            State state = _trackStack.Peek();
 
-            if (!state.ItemWritten) {
-
-               Debug.Assert(!state.EndReached);
-
-               _trackStack.Pop();
-               _trackStack.Push(new State(state.Cardinality, true, false));
+            if (state.Depth != depth) {
                return;
             }
 
-            if (state.Cardinality == ' ') {
+            if (state.ItemWritten
+               && state.Cardinality == ' ') {
+
                throw DynamicError.SequenceOverflow();
+            }
+         }
+      }
+
+      public static void
+      OnItemWritten(Stack<State>? _trackStack, int depth) {
+
+         if (_trackStack != null
+            && _trackStack.Count > 0) {
+
+            State state = _trackStack.Peek();
+
+            if (state.Depth != depth) {
+               return;
+            }
+
+            if (!state.ItemWritten) {
+               _trackStack.Pop();
+               _trackStack.Push(state.WithItemWritten(true));
             }
          }
       }
@@ -67,7 +81,7 @@ namespace Xcst.Runtime {
 
          Debug.Assert(!state.EndReached);
 
-         _trackStack.Push(new State(state.Cardinality, state.ItemWritten, true));
+         _trackStack.Push(state.WithEndReached(true));
       }
 
       public static void
@@ -89,7 +103,7 @@ namespace Xcst.Runtime {
 
             Debug.Assert(!parentState.EndReached);
 
-            _trackStack.Push(new State(parentState.Cardinality, true, false));
+            _trackStack.Push(parentState.WithItemWritten(true));
          }
       }
 
@@ -98,6 +112,9 @@ namespace Xcst.Runtime {
          public char
          Cardinality { get; }
 
+         public int
+         Depth { get; }
+
          public bool
          ItemWritten { get; }
 
@@ -105,11 +122,20 @@ namespace Xcst.Runtime {
          EndReached { get; }
 
          public
-         State(char cardinality, bool itemWritten, bool endReached) {
+         State(char cardinality, int depth, bool itemWritten, bool endReached) {
             this.Cardinality = cardinality;
+            this.Depth = depth;
             this.ItemWritten = itemWritten;
             this.EndReached = endReached;
          }
+
+         public State
+         WithItemWritten(bool itemWritten) =>
+            new State(this.Cardinality, this.Depth, itemWritten, this.EndReached);
+
+         public State
+         WithEndReached(bool endReached) =>
+            new State(this.Cardinality, this.Depth, this.ItemWritten, endReached);
       }
    }
 }

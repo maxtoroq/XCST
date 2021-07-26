@@ -76,10 +76,13 @@ namespace Xcst.Runtime {
 
       public virtual void
       BeginTrack(char cardinality) =>
-         SequenceConstructor.BeginTrack(cardinality, ref _trackStack);
+         SequenceConstructor.BeginTrack(cardinality, 0, ref _trackStack);
 
       protected void
-      OnItemWritten() => SequenceConstructor.OnItemWritten(_trackStack);
+      OnItemWritting() => SequenceConstructor.OnItemWritting(_trackStack, 0);
+
+      protected void
+      OnItemWritten() => SequenceConstructor.OnItemWritten(_trackStack, 0);
 
       public virtual bool
       OnEmpty() => SequenceConstructor.OnEmpty(_trackStack);
@@ -111,6 +114,7 @@ namespace Xcst.Runtime {
 
       public override void
       WriteObject(TItem value) {
+         OnItemWritting();
          _buffer.Add(value);
          OnItemWritten();
       }
@@ -290,8 +294,9 @@ namespace Xcst.Runtime {
 
       public override void
       WriteObject(TItem value) {
-         OnItemWritten();
+         OnItemWritting();
          _outputFn(value);
+         OnItemWritten();
       }
 
       public override void

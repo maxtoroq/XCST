@@ -10,6 +10,7 @@
             <c:text>a</c:text>
             <c:text>b</c:text>
             <c>c</c>
+            <d>d</d>
             <c:object value='"1"'/>
             <c:object value='default(string)'/>
             <c:object value='"2"'/>
@@ -25,7 +26,7 @@
 
    <c:template name='expected'>
       <foo>
-         <c:processing-instruction name='bar'>0ab c 1 2 3 4 5</c:processing-instruction>
+         <c:processing-instruction name='bar'>0ab c d 1 2 3 4 5</c:processing-instruction>
          <c:processing-instruction name='baz'>4 5</c:processing-instruction>
       </foo>
    </c:template>

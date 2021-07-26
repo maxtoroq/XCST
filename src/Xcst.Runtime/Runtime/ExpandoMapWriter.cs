@@ -44,6 +44,12 @@ namespace Xcst.Runtime {
       readonly List<object>
       _objects = new List<object>();
 
+      int
+      _depth;
+
+      protected internal override int
+      Depth => _depth;
+
       public
       ExpandoMapWriter(ISequenceWriter<ExpandoObject> output) {
 
@@ -70,28 +76,27 @@ namespace Xcst.Runtime {
          var map = new ExpandoObject();
 
          if (_objects.Count == 0) {
-
-            Debug.Assert(_mapOutput != null);
-
-            _mapOutput!.WriteObject(map);
+            OnItemWritting();
             Push(map);
-            OnItemWritten();
+            _depth++;
             return;
          }
 
          var parent = Peek<object>();
 
          if (parent is ExpandoArray parentArr) {
+            OnItemWritting();
             parentArr.Add(map);
             Push(map);
-            OnItemWritten();
+            _depth++;
             return;
          }
 
          if (parent is ExpandoEntry entry) {
+            OnItemWritting();
             SetEntryValue(entry, map);
             Push(map);
-            OnItemWritten();
+            _depth++;
             return;
          }
 
@@ -99,7 +104,24 @@ namespace Xcst.Runtime {
       }
 
       public override void
-      WriteEndMap() => Pop();
+      WriteEndMap() {
+
+         var map = Peek<IExpandoMap>();
+
+         Debug.Assert(map != null);
+
+         Pop();
+         _depth--;
+         OnItemWritten();
+
+         if (_objects.Count == 0) {
+
+            Debug.Assert(_mapOutput != null);
+
+            _mapOutput!.WriteObject((ExpandoObject)map!);
+            return;
+         }
+      }
 
       public override void
       WriteStartArray() {
@@ -111,10 +133,9 @@ namespace Xcst.Runtime {
             || (parent = Peek<object>()) is ExpandoEntry
             || parent is ExpandoArray) {
 
-            // Arrays are buffered and added to parent object on end call
-
+            OnItemWritting();
             Push(arr);
-            OnItemWritten();
+            _depth++;
             return;
          }
 
@@ -143,6 +164,8 @@ namespace Xcst.Runtime {
          // SetEntryValue call below may Push
          // Must Pop before that
          Pop();
+         _depth--;
+         OnItemWritten();
 
          if (_objects.Count == 0) {
 
@@ -176,8 +199,9 @@ namespace Xcst.Runtime {
          var map = Peek<IExpandoMap>()
             ?? throw new RuntimeException("An entry can only be written to a map.");
 
+         OnItemWritting();
          Push(new ExpandoEntry(key));
-         OnItemWritten();
+         _depth++;
       }
 
       public override void
@@ -210,6 +234,8 @@ namespace Xcst.Runtime {
          }
 
          Pop();
+         _depth--;
+         OnItemWritten();
       }
 
       public override void
@@ -221,12 +247,14 @@ namespace Xcst.Runtime {
          var parent = Peek<object>();
 
          if (parent is ExpandoArray arr) {
+            OnItemWritting();
             arr.Add(value);
             OnItemWritten();
             return;
          }
 
          if (parent is ExpandoEntry entry) {
+            OnItemWritting();
             SetEntryValue(entry, value);
             OnItemWritten();
             return;

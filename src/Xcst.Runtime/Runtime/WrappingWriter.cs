@@ -30,6 +30,9 @@ namespace Xcst.Runtime {
          internal set => _output.SimpleContent = value;
       }
 
+      protected internal override int
+      Depth => _output.Depth;
+
       protected
       WrappingWriter(XcstWriter baseWriter)
          : base(baseWriter.OutputUri) {
@@ -81,6 +84,9 @@ namespace Xcst.Runtime {
 
       public override void
       BeginTrack(char cardinality) => _output.BeginTrack(cardinality);
+
+      internal override void
+      OnItemWritting() => _output.OnItemWritting();
 
       internal override void
       OnItemWritten() => _output.OnItemWritten();

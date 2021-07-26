@@ -157,6 +157,12 @@ namespace Xcst.Runtime {
 
    class NullWriter : XcstWriter {
 
+      int
+      _depth;
+
+      protected internal override int
+      Depth => _depth;
+
       public
       NullWriter(Uri outputUri)
          : base(outputUri) { }
@@ -171,10 +177,14 @@ namespace Xcst.Runtime {
       WriteComment(string? text) { }
 
       public override void
-      WriteEndAttribute() { }
+      WriteEndAttribute() {
+         _depth--;
+      }
 
       public override void
-      WriteEndElement() { }
+      WriteEndElement() {
+         _depth--;
+      }
 
       public override void
       WriteProcessingInstruction(string name, string? text) { }
@@ -183,10 +193,14 @@ namespace Xcst.Runtime {
       WriteRaw(string? data) { }
 
       public override void
-      WriteStartAttribute(string? prefix, string localName, string? ns, string? separator) { }
+      WriteStartAttribute(string? prefix, string localName, string? ns, string? separator) {
+         _depth++;
+      }
 
       public override void
-      WriteStartElement(string? prefix, string localName, string? ns) { }
+      WriteStartElement(string? prefix, string localName, string? ns) {
+         _depth++;
+      }
 
       public override void
       WriteString(string? text) { }

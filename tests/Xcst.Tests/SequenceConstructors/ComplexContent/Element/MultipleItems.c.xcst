@@ -15,6 +15,7 @@
          <c:object value='"2"'/>
          <c:text>3</c:text>
          <c:object value='new[] { "4", "5" }'/>
+         <c:object value='new[] { "", "" }'/>
       </foo>
    </c:template>
 

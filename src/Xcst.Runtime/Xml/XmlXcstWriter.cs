@@ -31,6 +31,12 @@ namespace Xcst.Xml {
       bool
       _xmlDeclWritten;
 
+      int
+      _depth;
+
+      protected internal override int
+      Depth => _depth;
+
       public
       XmlXcstWriter(XmlWriter writer, Uri outputUri, OutputParameters parameters)
          : base(outputUri) {
@@ -65,6 +71,7 @@ namespace Xcst.Xml {
       WriteComment(string? text) {
 
          WriteXmlDeclaration();
+         OnItemWritting();
          _output.WriteComment(text);
          OnItemWritten();
       }
@@ -77,6 +84,8 @@ namespace Xcst.Xml {
 
          if (_output.WriteState != WriteState.Error) {
             _output.WriteEndAttribute();
+            _depth--;
+            OnItemWritten();
          }
       }
 
@@ -88,6 +97,8 @@ namespace Xcst.Xml {
 
          if (_output.WriteState != WriteState.Error) {
             _output.WriteEndElement();
+            _depth--;
+            OnItemWritten();
          }
       }
 
@@ -95,6 +106,7 @@ namespace Xcst.Xml {
       WriteProcessingInstruction(string name, string? text) {
 
          WriteXmlDeclaration();
+         OnItemWritting();
          _output.WriteProcessingInstruction(name, text);
          OnItemWritten();
       }
@@ -102,42 +114,55 @@ namespace Xcst.Xml {
       public override void
       WriteRaw(string? data) {
 
-         WriteXmlDeclaration();
-         _output.WriteRaw(data);
-
          if (!String.IsNullOrEmpty(data)) {
+            WriteXmlDeclaration();
+            OnItemWritting();
+            _output.WriteRaw(data);
             OnItemWritten();
          }
       }
 
       public override void
       WriteStartAttribute(string? prefix, string localName, string? ns, string? separator) {
+
+         OnItemWritting();
          _output.WriteStartAttribute(prefix, localName, ns);
+         _depth++;
       }
 
       public override void
       WriteStartElement(string? prefix, string localName, string? ns) {
 
          WriteXmlDeclaration();
+
+         OnItemWritting();
          _output.WriteStartElement(prefix, localName, ns);
-         OnItemWritten();
+         _depth++;
       }
 
       public override void
       WriteString(string? text) {
 
-         WriteXmlDeclaration();
-         _output.WriteString(text);
-
          if (!String.IsNullOrEmpty(text)) {
+
+            WriteXmlDeclaration();
+            OnItemWritting();
+            _output.WriteString(text);
             OnItemWritten();
          }
       }
 
       public override void
       WriteChars(char[] buffer, int index, int count) {
-         WriteXmlDeclaration();
-         _output.WriteChars(buffer, index, count);
+
+         if (buffer != null
+            && buffer.Length > 0) {
+
+            WriteXmlDeclaration();
+            OnItemWritting();
+            _output.WriteChars(buffer, index, count);
+            OnItemWritten();
+         }
       }
 
       public override void

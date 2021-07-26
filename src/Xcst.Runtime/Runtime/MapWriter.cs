@@ -24,6 +24,9 @@ namespace Xcst.Runtime {
       Stack<SequenceConstructor.State>?
       _trackStack;
 
+      protected internal abstract
+      int Depth { get; }
+
       // For object, create ExpandoObjectMapWriter
       // Having a default Create restricted to object avoids conflicts with other
       // implementations, like JObject
@@ -199,10 +202,13 @@ namespace Xcst.Runtime {
 
       public virtual void
       BeginTrack(char cardinality) =>
-         SequenceConstructor.BeginTrack(cardinality, ref _trackStack);
+         SequenceConstructor.BeginTrack(cardinality, this.Depth, ref _trackStack);
 
       protected void
-      OnItemWritten() => SequenceConstructor.OnItemWritten(_trackStack);
+      OnItemWritting() => SequenceConstructor.OnItemWritting(_trackStack, this.Depth);
+
+      protected void
+      OnItemWritten() => SequenceConstructor.OnItemWritten(_trackStack, this.Depth);
 
       public virtual bool
       OnEmpty() => SequenceConstructor.OnEmpty(_trackStack);

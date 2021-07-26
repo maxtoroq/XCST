@@ -4,13 +4,13 @@
 
    <c:template name='c:initial-template'>
       <foo>
-         <c:attribute name='bar'>1</c:attribute>
-         <c:on-empty>foo</c:on-empty>
+         <c:call-template name='foo'/>
       </foo>
    </c:template>
 
-   <c:template name='expected'>
-      <foo bar='1'/>
+   <c:template name='foo' as='object'>
+      <c:attribute name='a'/>
+      <c:attribute name='b'/>
    </c:template>
 
 </c:module>

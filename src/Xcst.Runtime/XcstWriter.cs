@@ -43,6 +43,9 @@ namespace Xcst {
       public virtual SimpleContent
       SimpleContent { get; internal set; } = null!;
 
+      protected internal abstract
+      int Depth { get; }
+
       protected
       XcstWriter(Uri outputUri) {
 
@@ -414,10 +417,13 @@ namespace Xcst {
 
       public virtual void
       BeginTrack(char cardinality) =>
-         SequenceConstructor.BeginTrack(cardinality, ref _trackStack);
+         SequenceConstructor.BeginTrack(cardinality, this.Depth, ref _trackStack);
 
       internal virtual void
-      OnItemWritten() => SequenceConstructor.OnItemWritten(_trackStack);
+      OnItemWritten() => SequenceConstructor.OnItemWritten(_trackStack, this.Depth);
+
+      internal virtual void
+      OnItemWritting() => SequenceConstructor.OnItemWritting(_trackStack, this.Depth);
 
       public virtual bool
       OnEmpty() => SequenceConstructor.OnEmpty(_trackStack);

@@ -1,16 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<?xcst-test ignore="true" ?>
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
    <c:template name='c:initial-template'>
       <foo>
-         <c:attribute name='bar'>1</c:attribute>
-         <c:on-empty>foo</c:on-empty>
+         <c:call-template name='foo'/>
       </foo>
    </c:template>
 
-   <c:template name='expected'>
-      <foo bar='1'/>
+   <c:template name='foo' as='object'>
+      <a/>
+      <b>
+         <c:void value='Assert.Fail()'/>
+      </b>
    </c:template>
 
 </c:module>

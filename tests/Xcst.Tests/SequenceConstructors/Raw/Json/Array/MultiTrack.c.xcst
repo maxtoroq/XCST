@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:template name='c:initial-template'>
+      <c:variable name='arr' as='Newtonsoft.Json.Linq.JArray'>
+         <c:array>
+            <c:call-template name='foo'/>
+         </c:array>
+      </c:variable>
+   </c:template>
+
+   <c:template name='foo' as='object'>
+      <c:map>
+         <c:call-template name='bar'/>
+      </c:map>
+   </c:template>
+
+   <c:template name='bar'>
+      <c:map-entry key='"a"'>a</c:map-entry>
+      <c:map-entry key='"b"'>b</c:map-entry>
+   </c:template>
+
+</c:module>

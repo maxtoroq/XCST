@@ -102,8 +102,14 @@ namespace Xcst.Runtime {
       readonly ISequenceWriter<JArray>?
       _arrayOutput;
 
+      int
+      _depth;
+
       protected JsonWriter
       BaseWriter { get; }
+
+      protected internal override int
+      Depth => _depth;
 
       public
       JsonMapWriter(JsonWriter baseWriter, XcstWriter? docWriter) {
@@ -143,7 +149,16 @@ namespace Xcst.Runtime {
          // Checking for error to not overwhelm writer when something goes wrong
 
          if (this.BaseWriter.WriteState != WriteState.Error) {
+
             this.BaseWriter.WriteEndArray();
+            _depth--;
+            OnItemWritten();
+
+            if (_depth == 0
+               && _arrayOutput != null) {
+
+               _arrayOutput.WriteObject((JArray)((JTokenWriter)this.BaseWriter).Token);
+            }
          }
       }
 
@@ -154,7 +169,16 @@ namespace Xcst.Runtime {
          // Checking for error to not overwhelm writer when something goes wrong
 
          if (this.BaseWriter.WriteState != WriteState.Error) {
+
             this.BaseWriter.WriteEndObject();
+            _depth--;
+            OnItemWritten();
+
+            if (_depth == 0
+               && _mapOutput != null) {
+
+               _mapOutput.WriteObject((JObject)((JTokenWriter)this.BaseWriter).Token);
+            }
          }
       }
 
@@ -167,46 +191,35 @@ namespace Xcst.Runtime {
          if (this.BaseWriter.WriteState == WriteState.Property) {
             this.BaseWriter.WriteNull();
          }
+
+         _depth--;
+         OnItemWritten();
       }
 
       public override void
       WriteStartArray() {
-
-         bool firstCall = this.BaseWriter.WriteState == WriteState.Start;
-
+         OnItemWritting();
          this.BaseWriter.WriteStartArray();
-         OnItemWritten();
-
-         if (firstCall
-            && _arrayOutput != null) {
-
-            _arrayOutput.WriteObject((JArray)((JTokenWriter)this.BaseWriter).Token);
-         }
+         _depth++;
       }
 
       public override void
       WriteStartMap() {
-
-         bool firstCall = this.BaseWriter.WriteState == WriteState.Start;
-
+         OnItemWritting();
          this.BaseWriter.WriteStartObject();
-         OnItemWritten();
-
-         if (firstCall
-            && _mapOutput != null) {
-
-            _mapOutput.WriteObject((JObject)((JTokenWriter)this.BaseWriter).Token);
-         }
+         _depth++;
       }
 
       public override void
       WriteStartMapEntry(string key) {
+         OnItemWritting();
          this.BaseWriter.WritePropertyName(key);
-         OnItemWritten();
+         _depth++;
       }
 
       public override void
       WriteObject(object? value) {
+         OnItemWritting();
          this.BaseWriter.WriteValue(value);
          OnItemWritten();
       }
@@ -214,9 +227,9 @@ namespace Xcst.Runtime {
       public override void
       WriteRaw(string? data) {
 
-         this.BaseWriter.WriteRaw(data);
-
          if (!String.IsNullOrEmpty(data)) {
+            OnItemWritting();
+            this.BaseWriter.WriteRaw(data);
             OnItemWritten();
          }
       }
@@ -229,7 +242,6 @@ namespace Xcst.Runtime {
 
          if (value != null) {
             value.WriteTo(this.BaseWriter);
-            OnItemWritten();
          } else {
             WriteObject(default(object));
          }

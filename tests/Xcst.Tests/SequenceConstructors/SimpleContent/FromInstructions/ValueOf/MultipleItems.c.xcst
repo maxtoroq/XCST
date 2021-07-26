@@ -11,17 +11,21 @@
                <c:text>a</c:text>
                <c:text>b</c:text>
                <c>c</c>
+               <d>d</d>
+               <e></e>
                <c:object value='"1"'/>
                <c:object value='default(string)'/>
                <c:object value='"2"'/>
                <c:text>3</c:text>
                <c:object value='new[] { "4", "5" }'/>
+               <c:object value='""'/>
+               <c:object value='""'/>
             </c:value-of>
          </bar>
          <!-- array as object -->
          <baz>
             <c:value-of>
-               <c:object value='(object)new[] { "4", "5" }'/>
+               <c:object value='(object)new[] { "4", "5", "", "" }'/>
             </c:value-of>
          </baz>
          <!-- multiple items with separator -->
@@ -32,11 +36,15 @@
                <c:text>a</c:text>
                <c:text>b</c:text>
                <c>c</c>
+               <d>d</d>
+               <e></e>
                <c:object value='"1"'/>
                <c:object value='default(string)'/>
                <c:object value='"2"'/>
                <c:text>3</c:text>
                <c:object value='new[] { "4", "5" }'/>
+               <c:object value='""'/>
+               <c:object value='""'/>
             </c:value-of>
          </qux>
       </foo>
@@ -44,9 +52,9 @@
 
    <c:template name='expected'>
       <foo>
-         <bar>0abc12345</bar>
+         <bar>0abcd12345</bar>
          <baz>45</baz>
-         <qux>0ab|c|1|2|3|4|5</qux>
+         <qux>0ab|c|d||1|2|3|4|5||</qux>
       </foo>
    </c:template>
 
