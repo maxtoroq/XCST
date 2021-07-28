@@ -356,6 +356,7 @@
                <value>*</value>
             </choice>
          </attribute>
+         <ref name="standard-attributes"/>
       </element>
    </define>
 
@@ -1605,6 +1606,7 @@
             <ann:documentation>The value to match.</ann:documentation>
             <ref name="expression"/>
          </attribute>
+         <ref name="standard-attributes"/>
          <oneOrMore>
             <ref name="when"/>
          </oneOrMore>
