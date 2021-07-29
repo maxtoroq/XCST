@@ -975,7 +975,6 @@
 
       <call-template name="xcst:validate-attribs">
          <with-param name="required" select="'name', 'in'"/>
-         <with-param name="optional" select="'as'"/>
       </call-template>
 
       <variable name="name" select="xcst:name(@name)"/>
@@ -987,9 +986,6 @@
       <code:for-each>
          <call-template name="src:line-number"/>
          <code:variable name="{$name}">
-            <if test="@as">
-               <code:type-reference name="{xcst:type(@as)}"/>
-            </if>
             <choose>
                <when test="c:sort">
                   <call-template name="src:sort">

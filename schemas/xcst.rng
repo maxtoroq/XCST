@@ -1249,12 +1249,6 @@
             <ann:documentation>The source of the items.</ann:documentation>
             <ref name="expression"/>
          </attribute>
-         <optional>
-            <attribute name="as">
-               <ann:documentation>The type of the item.</ann:documentation>
-               <ref name="type_name"/>
-            </attribute>
-         </optional>
          <ref name="standard-attributes"/>
          <zeroOrMore>
             <ref name="sort"/>

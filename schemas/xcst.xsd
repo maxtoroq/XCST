@@ -1226,11 +1226,6 @@
                <xs:documentation>The source of the items. Expression.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
-         <xs:attribute name="as" type="c:type_name">
-            <xs:annotation>
-               <xs:documentation>The type of the item.</xs:documentation>
-            </xs:annotation>
-         </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
