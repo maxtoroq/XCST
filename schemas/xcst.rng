@@ -1662,18 +1662,12 @@
             <ann:documentation>The disposable object.</ann:documentation>
             <ref name="expression"/>
          </attribute>
-         <zeroOrMore>
-            <choice>
-               <attribute name="name">
-                  <ann:documentation>The name of the disposable variable.</ann:documentation>
-                  <ref name="identifier"/>
-               </attribute>
-               <attribute name="as">
-                  <ann:documentation>The type of the disposable variable.</ann:documentation>
-                  <ref name="type_name"/>
-               </attribute>
-            </choice>
-         </zeroOrMore>
+         <optional>
+            <attribute name="name">
+               <ann:documentation>The name of the disposable variable.</ann:documentation>
+               <ref name="identifier"/>
+            </attribute>
+         </optional>
          <ref name="standard-attributes"/>
          <ref name="sequence-constructor"/>
       </element>

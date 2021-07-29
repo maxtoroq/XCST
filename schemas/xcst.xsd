@@ -1637,11 +1637,6 @@
                <xs:documentation>The name of the disposable variable.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
-         <xs:attribute name="as" type="c:type_name">
-            <xs:annotation>
-               <xs:documentation>The type of the disposable variable.</xs:documentation>
-            </xs:annotation>
-         </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>

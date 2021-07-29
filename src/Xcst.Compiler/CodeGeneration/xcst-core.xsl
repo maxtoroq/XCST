@@ -1324,28 +1324,18 @@
 
       <call-template name="xcst:validate-attribs">
          <with-param name="required" select="'value'"/>
-         <with-param name="optional" select="'name', 'as'"/>
+         <with-param name="optional" select="'name'"/>
       </call-template>
 
       <variable name="value" select="xcst:expression(@value)"/>
-      <variable name="as" select="@as/xcst:type(.)"/>
 
       <code:using>
          <call-template name="src:line-number"/>
          <choose>
             <when test="@name">
                <code:variable name="{xcst:name(@name)}">
-                  <if test="@as">
-                     <code:type-reference name="{$as}"/>
-                  </if>
                   <code:expression value="{$value}"/>
                </code:variable>
-            </when>
-            <when test="@as">
-               <code:cast>
-                  <code:type-reference name="{$as}"/>
-                  <code:expression value="{$value}"/>
-               </code:cast>
             </when>
             <otherwise>
                <code:expression value="{$value}"/>
