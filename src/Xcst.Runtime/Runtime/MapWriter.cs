@@ -24,8 +24,8 @@ namespace Xcst.Runtime {
       Stack<SequenceConstructor.State>?
       _trackStack;
 
-      protected internal abstract
-      int Depth { get; }
+      protected internal abstract int
+      Depth { get; }
 
       // For object, create ExpandoObjectMapWriter
       // Having a default Create restricted to object avoids conflicts with other

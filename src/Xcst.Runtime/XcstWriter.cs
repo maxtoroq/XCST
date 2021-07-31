@@ -43,8 +43,8 @@ namespace Xcst {
       public virtual SimpleContent
       SimpleContent { get; internal set; } = null!;
 
-      protected internal abstract
-      int Depth { get; }
+      protected internal abstract int
+      Depth { get; }
 
       protected
       XcstWriter(Uri outputUri) {
