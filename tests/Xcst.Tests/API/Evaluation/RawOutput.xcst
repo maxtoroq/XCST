@@ -6,4 +6,14 @@
       <c:object value='2'/>
    </c:template>
 
+   <c:template name='objects' as='object[]'>
+      <c:object value='1'/>
+      <c:object value='2'/>
+   </c:template>
+
+   <c:template name='strings' as='string[]'>
+      <c:object value='"1"'/>
+      <c:object value='"2"'/>
+   </c:template>
+
 </c:module>

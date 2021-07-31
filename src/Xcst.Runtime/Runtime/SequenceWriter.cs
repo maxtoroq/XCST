@@ -221,10 +221,19 @@ namespace Xcst.Runtime {
             return derivedWriter;
          }
 
-         if (typeof(TBase).IsAssignableFrom(typeof(TDerived))) {
+         Type baseType = typeof(TBase);
+         Type derivedType = typeof(TDerived);
+
+         if (baseType.IsAssignableFrom(derivedType)) {
 
             return (ISequenceWriter<TDerived>)Activator.CreateInstance(typeof(DerivedSequenceWriter<,>)
-               .MakeGenericType(typeof(TDerived), typeof(TBase)), output);
+               .MakeGenericType(derivedType, baseType), output);
+         }
+
+         if (derivedType.IsAssignableFrom(baseType)) {
+
+            return (ISequenceWriter<TDerived>)Activator.CreateInstance(typeof(CastedSequenceWriter<,>)
+               .MakeGenericType(derivedType, baseType), output);
          }
 
          throw new RuntimeException($"{typeof(TDerived).FullName} is not compatible with {typeof(TBase).FullName}.");
@@ -258,6 +267,51 @@ namespace Xcst.Runtime {
       public override void
       CopyOf(TDerived value) =>
          _output.CopyOf(value);
+
+      public override XcstWriter?
+      TryCastToDocumentWriter() =>
+         _output.TryCastToDocumentWriter();
+
+      public override MapWriter?
+      TryCastToMapWriter() => _output.TryCastToMapWriter();
+
+      public override void
+      BeginTrack(char cardinality) => _output.BeginTrack(cardinality);
+
+      public override bool
+      OnEmpty() => _output.OnEmpty();
+
+      public override void
+      EndOfConstructor() => _output.EndOfConstructor();
+
+      public override void
+      EndTrack() => _output.EndTrack();
+   }
+
+   class CastedSequenceWriter<TDerived, TBase> : BaseSequenceWriter<TDerived> where TBase : TDerived {
+
+      readonly ISequenceWriter<TBase>
+      _output;
+
+      public
+      CastedSequenceWriter(ISequenceWriter<TBase> baseWriter) {
+
+         if (baseWriter is null) throw new ArgumentNullException(nameof(baseWriter));
+
+         _output = baseWriter;
+      }
+
+      public override void
+      WriteObject(TDerived value) =>
+#pragma warning disable CS8604
+         _output.WriteObject((TBase)value);
+#pragma warning restore CS8604
+
+      public override void
+      CopyOf(TDerived value) =>
+#pragma warning disable CS8604
+         _output.CopyOf((TBase)value);
+#pragma warning restore CS8604
 
       public override XcstWriter?
       TryCastToDocumentWriter() =>
