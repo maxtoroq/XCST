@@ -85,7 +85,7 @@ namespace Xcst.Xml {
          if (_output.WriteState != WriteState.Error) {
             _output.WriteEndAttribute();
             _depth--;
-            OnItemWritten();
+            //OnItemWritten();
          }
       }
 
@@ -125,7 +125,7 @@ namespace Xcst.Xml {
       public override void
       WriteStartAttribute(string? prefix, string localName, string? ns, string? separator) {
 
-         OnItemWritting();
+         //OnItemWritting();
          _output.WriteStartAttribute(prefix, localName, ns);
          _depth++;
       }
