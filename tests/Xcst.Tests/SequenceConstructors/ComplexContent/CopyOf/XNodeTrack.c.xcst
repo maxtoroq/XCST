@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:import-namespace ns='System.Xml.Linq'/>
+
+   <c:template name='c:initial-template'>
+      <c:call-template name='foo'/>
+   </c:template>
+
+   <c:template name='foo' as='XElement'>
+      <foo of='2'>
+         <c:call-template name='bar'/>
+      </foo>
+   </c:template>
+
+   <c:template name='bar' as='XElement'>
+      <c:variable name='el' as='XElement'>
+         <bar of='5'>baz</bar>
+      </c:variable>
+      <c:copy-of value='el'/>
+   </c:template>
+
+   <c:template name='expected'>
+      <foo of='2'>
+         <bar of='5'>baz</bar>
+      </foo>
+   </c:template>
+
+</c:module>

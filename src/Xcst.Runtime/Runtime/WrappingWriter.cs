@@ -40,6 +40,7 @@ namespace Xcst.Runtime {
          if (baseWriter is null) throw new ArgumentNullException(nameof(baseWriter));
 
          _output = baseWriter;
+         _output.WrappingWriter = this;
       }
 
       public override bool

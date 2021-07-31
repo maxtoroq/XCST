@@ -46,6 +46,9 @@ namespace Xcst {
       protected internal abstract int
       Depth { get; }
 
+      internal XcstWriter?
+      WrappingWriter { get; set; }
+
       protected
       XcstWriter(Uri outputUri) {
 
@@ -348,7 +351,7 @@ namespace Xcst {
 
       public void
       CopyOf(XNode? value) =>
-         value?.WriteTo(new XcstXmlWriter(this));
+         value?.WriteTo(CreateXmlWriter());
 
       public void
       CopyOf(XAttribute? value) {
@@ -360,7 +363,7 @@ namespace Xcst {
 
       public void
       CopyOf(XmlNode? value) =>
-         value?.WriteTo(new XcstXmlWriter(this));
+         value?.WriteTo(CreateXmlWriter());
 
       void
       CopyOf(IXPathNavigable? value) {
@@ -370,22 +373,27 @@ namespace Xcst {
             XPathNavigator nav = value as XPathNavigator
                ?? value.CreateNavigator();
 
-            nav.WriteSubtree(new XcstXmlWriter(this));
+            nav.WriteSubtree(CreateXmlWriter());
          }
       }
 
       void
       CopyOf(IXmlSerializable? value) =>
          // Don't output root element, gives caller more flexibility and choice
-         value?.WriteXml(new XcstXmlWriter(this));
+         value?.WriteXml(CreateXmlWriter());
 
       public void
       CopyOf(XmlReader? value) {
 
          if (value != null) {
-            new XcstXmlWriter(this).WriteNode(value, defattr: true);
+            CreateXmlWriter()
+               .WriteNode(value, defattr: true);
          }
       }
+
+      XmlWriter
+      CreateXmlWriter() =>
+         new XcstXmlWriter(this.WrappingWriter ?? this);
 
       public void
       CopyOf(Array? value) {
