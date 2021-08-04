@@ -46,9 +46,6 @@ namespace Xcst {
       protected internal abstract int
       Depth { get; }
 
-      internal XcstWriter?
-      WrappingWriter { get; set; }
-
       protected
       XcstWriter(Uri outputUri) {
 
@@ -292,7 +289,7 @@ namespace Xcst {
          WriteObject(value);
       }
 
-      public virtual bool
+      public bool
       TryCopyOf(object? value) {
 
          if (value is XNode xNode) {
@@ -393,7 +390,7 @@ namespace Xcst {
 
       XmlWriter
       CreateXmlWriter() =>
-         new XcstXmlWriter(this.WrappingWriter ?? this);
+         new XcstXmlWriter(this);
 
       public void
       CopyOf(Array? value) {
