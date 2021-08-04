@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:function name='fn' xml:space='preserve'>&#x20;&#xD;&#xA;&#x9;<c:param name='a' as='string' value='""'/></c:function>
+
+</c:module>
