@@ -776,10 +776,12 @@
                   <ann:documentation>Specifies the HTML version.</ann:documentation>
                   <ref name="decimal"/>
                </attribute>
+               <!--
                <attribute name="include-content-type">
                   <ann:documentation>Specifies whether to include a meta element in the head of HTML and XHTML documents, specifying the used character encoding.</ann:documentation>
                   <ref name="boolean"/>
                </attribute>
+               -->
                <attribute name="indent">
                   <ann:documentation>Specifies whether to indent the output.</ann:documentation>
                   <ref name="boolean"/>
@@ -804,6 +806,7 @@
                   <ann:documentation>Specifies whether to include the standalone document declaration.</ann:documentation>
                   <ref name="standalone"/>
                </attribute>
+               <!--
                <attribute name="suppress-indentation">
                   <ann:documentation>Specifies elements that should not be indented.</ann:documentation>
                   <ref name="suppress-indentation"/>
@@ -812,6 +815,7 @@
                   <ann:documentation>Specifies whether to undeclare namespaces when outputting XML 1.1.</ann:documentation>
                   <ref name="boolean"/>
                </attribute>
+               -->
                <attribute name="version">
                   <ann:documentation>The version of the output format.</ann:documentation>
                   <ref name="output-version"/>
@@ -1865,6 +1869,7 @@
                   <ref name="avt-expr"/>
                </choice>
             </attribute>
+            <!--
             <attribute name="include-content-type">
                <ann:documentation>Specifies whether to include a meta element in the head of HTML and XHTML documents, specifying the used character encoding.</ann:documentation>
                <choice>
@@ -1872,6 +1877,7 @@
                   <ref name="avt-expr"/>
                </choice>
             </attribute>
+            -->
             <attribute name="indent">
                <ann:documentation>Specifies whether to indent the output.</ann:documentation>
                <choice>
@@ -1908,6 +1914,7 @@
                   <ref name="avt-expr"/>
                </choice>
             </attribute>
+            <!--
             <attribute name="suppress-indentation">
                <ann:documentation>Specifies elements that should not be indented.</ann:documentation>
                <choice>
@@ -1922,6 +1929,7 @@
                   <ref name="avt-expr"/>
                </choice>
             </attribute>
+            -->
             <attribute name="output-version">
                <ann:documentation>The version of the output format.</ann:documentation>
                <choice>
@@ -2137,6 +2145,7 @@
       </list>
    </define>
 
+   <!--
    <define name="suppress-indentation">
       <ann:documentation>A list of space separated eqnames. Unprefixed qualified names are in the default namespace.</ann:documentation>
       <list>
@@ -2145,6 +2154,7 @@
          </zeroOrMore>
       </list>
    </define>
+   -->
 
 
    <!-- ## Expressions -->

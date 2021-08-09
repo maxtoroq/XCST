@@ -102,13 +102,13 @@ namespace Xcst {
          get => (decimal?)this[StandardParameters.HtmlVersion];
          set => _parameters[StandardParameters.HtmlVersion] = value;
       }
-
+      /*
       public bool?
       IncludeContentType {
          get => (bool?)this[StandardParameters.IncludeContentType];
          set => _parameters[StandardParameters.IncludeContentType] = value;
       }
-
+      */
       public bool?
       Indent {
          get => (bool?)this[StandardParameters.Indent];
@@ -165,7 +165,7 @@ namespace Xcst {
          get => (XmlStandalone?)this[StandardParameters.Standalone];
          set => _parameters[StandardParameters.Standalone] = value;
       }
-
+      /*
       public IList<QualifiedName>?
       SuppressIndentation {
          get {
@@ -185,7 +185,7 @@ namespace Xcst {
          get => (bool?)this[StandardParameters.UndeclarePrefixes];
          set => _parameters[StandardParameters.UndeclarePrefixes] = value;
       }
-
+      */
       public string?
       Version {
          get => (string?)this[StandardParameters.Version];
@@ -249,10 +249,10 @@ namespace Xcst {
 
          public static readonly QualifiedName
          HtmlVersion = new QualifiedName("html-version");
-
+         /*
          public static readonly QualifiedName
          IncludeContentType = new QualifiedName("include-content-type");
-
+         */
          public static readonly QualifiedName
          Indent = new QualifiedName("indent");
 
@@ -276,13 +276,13 @@ namespace Xcst {
 
          public static readonly QualifiedName
          Standalone = new QualifiedName("standalone");
-
+         /*
          public static readonly QualifiedName
          SuppressIndentation = new QualifiedName("suppress-indentation");
 
          public static readonly QualifiedName
          UndeclarePrefixes = new QualifiedName("undeclare-prefixes");
-
+         */
          public static readonly QualifiedName
          Version = new QualifiedName("version");
 
@@ -297,7 +297,9 @@ namespace Xcst {
                "encoding" => Encoding,
                "escape-uri-attributes" => EscapeUriAttributes,
                "html-version" => HtmlVersion,
+               /*
                "include-content-type" => IncludeContentType,
+               */
                "indent" => Indent,
                "indent-spaces" => IndentSpaces,
                "item-separator" => ItemSeparator,
@@ -307,8 +309,10 @@ namespace Xcst {
                "output-version" => Version,
                "skip-character-check" => SkipCharacterCheck,
                "standalone" => Standalone,
+               /*
                "suppress-indentation" => SuppressIndentation,
                "undeclare-prefixes" => UndeclarePrefixes,
+               */
                "version" => Version,
                _ => throw new ArgumentException("Invalid standard parameter.", nameof(name))
             };

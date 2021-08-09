@@ -724,11 +724,6 @@
                <xs:documentation>Specifies the HTML version.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
-         <xs:attribute name="include-content-type" type="c:boolean">
-            <xs:annotation>
-               <xs:documentation>Specifies whether to include a meta element in the head of HTML and XHTML documents, specifying the used character encoding.</xs:documentation>
-            </xs:annotation>
-         </xs:attribute>
          <xs:attribute name="indent" type="c:boolean">
             <xs:annotation>
                <xs:documentation>Specifies whether to indent the output.</xs:documentation>
@@ -757,16 +752,6 @@
          <xs:attribute name="standalone" type="c:standalone">
             <xs:annotation>
                <xs:documentation>Specifies whether to include the standalone document declaration.</xs:documentation>
-            </xs:annotation>
-         </xs:attribute>
-         <xs:attribute name="suppress-indentation" type="c:suppress-indentation">
-            <xs:annotation>
-               <xs:documentation>Specifies elements that should not be indented.</xs:documentation>
-            </xs:annotation>
-         </xs:attribute>
-         <xs:attribute name="undeclare-prefixes" type="c:boolean">
-            <xs:annotation>
-               <xs:documentation>Specifies whether to undeclare namespaces when outputting XML 1.1.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attribute name="version" type="c:output-version">
@@ -1839,14 +1824,6 @@
             <xs:union memberTypes="c:decimal c:avt-expr"/>
          </xs:simpleType>
       </xs:attribute>
-      <xs:attribute name="include-content-type">
-         <xs:annotation>
-            <xs:documentation>Specifies whether to include a meta element in the head of HTML and XHTML documents, specifying the used character encoding. Attribute value template (boolean).</xs:documentation>
-         </xs:annotation>
-         <xs:simpleType>
-            <xs:union memberTypes="c:boolean c:avt-expr"/>
-         </xs:simpleType>
-      </xs:attribute>
       <xs:attribute name="indent">
          <xs:annotation>
             <xs:documentation>Specifies whether to indent the output. Attribute value template (boolean).</xs:documentation>
@@ -1887,22 +1864,6 @@
          </xs:annotation>
          <xs:simpleType>
             <xs:union memberTypes="c:standalone c:avt-expr"/>
-         </xs:simpleType>
-      </xs:attribute>
-      <xs:attribute name="suppress-indentation">
-         <xs:annotation>
-            <xs:documentation>Specifies elements that should not be indented. Attribute value template.</xs:documentation>
-         </xs:annotation>
-         <xs:simpleType>
-            <xs:union memberTypes="c:suppress-indentation c:avt-expr"/>
-         </xs:simpleType>
-      </xs:attribute>
-      <xs:attribute name="undeclare-prefixes">
-         <xs:annotation>
-            <xs:documentation>Specifies whether to undeclare namespaces when outputting XML 1.1. Attribute value template (boolean).</xs:documentation>
-         </xs:annotation>
-         <xs:simpleType>
-            <xs:union memberTypes="c:boolean c:avt-expr"/>
          </xs:simpleType>
       </xs:attribute>
       <xs:attribute name="output-version">
@@ -2131,12 +2092,16 @@
       </xs:annotation>
       <xs:list itemType="c:eqname-default"/>
    </xs:simpleType>
-   <xs:simpleType name="suppress-indentation">
-      <xs:annotation>
-         <xs:documentation>A list of space separated eqnames. Unprefixed qualified names are in the default namespace.</xs:documentation>
-      </xs:annotation>
-      <xs:list itemType="c:eqname-default"/>
-   </xs:simpleType>
+   <!--
+      <define name="suppress-indentation">
+         <ann:documentation>A list of space separated eqnames. Unprefixed qualified names are in the default namespace.</ann:documentation>
+         <list>
+            <zeroOrMore>
+               <ref name="eqname-default"/>
+            </zeroOrMore>
+         </list>
+      </define>
+   -->
    <!-- ## Expressions -->
    <xs:simpleType name="expression">
       <xs:restriction base="xs:string">

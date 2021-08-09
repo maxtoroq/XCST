@@ -37,7 +37,9 @@
          <encoding>Encoding</encoding>
          <escape-uri-attributes>EscapeUriAttributes</escape-uri-attributes>
          <html-version>HtmlVersion</html-version>
+         <!--
          <include-content-type>IncludeContentType</include-content-type>
+         -->
          <indent>Indent</indent>
          <indent-spaces>IndentSpaces</indent-spaces>
          <item-separator>ItemSeparator</item-separator>
@@ -47,8 +49,10 @@
          <output-version>Version</output-version>
          <skip-character-check>SkipCharacterCheck</skip-character-check>
          <standalone>Standalone</standalone>
+         <!--
          <suppress-indentation>SuppressIndentation</suppress-indentation>
          <undeclare-prefixes>UndeclarePrefixes</undeclare-prefixes>
+         -->
          <version>Version</version>
       </data>
    </variable>
@@ -2895,14 +2899,14 @@
       </code:string>
    </template>
 
-   <template match="@byte-order-mark | @escape-uri-attributes | @include-content-type | @indent | @omit-xml-declaration | @skip-character-check | @undeclare-prefixes" mode="src:output-parameter">
+   <template match="@byte-order-mark | @escape-uri-attributes (:| @include-content-type:) | @indent | @omit-xml-declaration | @skip-character-check (:| @undeclare-prefixes:)" mode="src:output-parameter">
       <call-template name="src:boolean">
          <with-param name="bool" select="xcst:boolean(., not(parent::c:output))"/>
          <with-param name="avt" select="."/>
       </call-template>
    </template>
 
-   <template match="@cdata-section-elements | @suppress-indentation" mode="src:output-parameter">
+   <template match="@cdata-section-elements (:| @suppress-indentation:)" mode="src:output-parameter">
       <param name="merged-list" as="xs:QName*"/>
 
       <choose>
