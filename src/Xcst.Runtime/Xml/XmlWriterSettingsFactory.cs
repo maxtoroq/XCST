@@ -54,7 +54,13 @@ namespace Xcst.Xml {
          _setMediaType = (Action<XmlWriterSettings, string>)
             Delegate.CreateDelegate(typeof(Action<XmlWriterSettings, string>), settingsType.GetProperty("MediaType", BindingFlags.Instance | BindingFlags.NonPublic).GetSetMethod(true));
 
-         _cdataSectionsField = settingsType.GetField("cdataSections", BindingFlags.Instance | BindingFlags.NonPublic);
+         _cdataSectionsField = settingsType.GetField(
+#if NETCOREAPP
+            "_cdataSections"
+#else
+            "cdataSections"
+#endif
+            , BindingFlags.Instance | BindingFlags.NonPublic);
       }
 
       public static XmlWriterSettings
