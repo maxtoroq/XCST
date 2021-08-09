@@ -31,6 +31,26 @@ namespace Xcst.Runtime {
          }
       }
 
+      public static void
+      Apply<TBase>(
+            TemplateContext baseContext, object? input, QualifiedName? mode,
+            Action<TemplateContext> modeFn, ISequenceWriter<TBase> output, TBase separator) {
+
+         int i = -1;
+
+         foreach (var item in ValueAsEnumerable(input)) {
+
+            i++;
+
+            if (i > 0) {
+               output.WriteString(separator);
+            }
+
+            TemplateContext context = TemplateContext.ForApplyTemplatesItem(baseContext, mode, item);
+            modeFn(context);
+         }
+      }
+
       static IEnumerable
       ValueAsEnumerable(object? input) {
 

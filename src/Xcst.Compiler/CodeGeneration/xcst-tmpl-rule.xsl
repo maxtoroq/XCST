@@ -532,7 +532,7 @@
 
       <call-template name="xcst:validate-attribs">
          <with-param name="required" select="'value'"/>
-         <with-param name="optional" select="'mode', 'tunnel-params'"/>
+         <with-param name="optional" select="'mode', 'tunnel-params', 'separator'"/>
       </call-template>
 
       <variable name="mode" select="(@mode/xcst:non-string(.), '#current')[1]"/>
@@ -620,6 +620,12 @@
                   </code:method-call>
                </otherwise>
             </choose>
+            <if test="@separator">
+               <sequence select="$output/src:reference/code:*"/>
+               <call-template name="src:expand-attribute">
+                  <with-param name="attr" select="@separator"/>
+               </call-template>
+            </if>
          </code:arguments>
       </code:method-call>
    </template>

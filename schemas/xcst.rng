@@ -789,7 +789,7 @@
                   <ref name="integer"/>
                </attribute>
                <attribute name="item-separator">
-                  <ann:documentation>A string to intersperse when outputting multiple items.</ann:documentation>
+                  <ann:documentation>A string to intersperse between items.</ann:documentation>
                   <ref name="string"/>
                </attribute>
                <attribute name="media-type">
@@ -902,6 +902,10 @@
                   <ann:documentation>An object with tunnel parameters.</ann:documentation>
                   <ref name="expr-obj-dict"/>
                </attribute>
+               <attribute name="separator">
+                  <ann:documentation>A string to intersperse between the results of each processed item.</ann:documentation>
+                  <ref name="avt"/>
+               </attribute>
             </choice>
          </zeroOrMore>
          <ref name="standard-attributes"/>
@@ -966,7 +970,7 @@
                   </choice>
                </attribute>
                <attribute name="separator">
-                  <ann:documentation>A string to intersperse between values.</ann:documentation>
+                  <ann:documentation>A string to intersperse between items.</ann:documentation>
                   <ref name="avt"/>
                </attribute>
             </choice>
@@ -1249,6 +1253,12 @@
             <ann:documentation>The source of the items.</ann:documentation>
             <ref name="expression"/>
          </attribute>
+         <optional>
+            <attribute name="separator">
+               <ann:documentation>A string to intersperse between the results of each processed item.</ann:documentation>
+               <ref name="avt"/>
+            </attribute>
+         </optional>
          <ref name="standard-attributes"/>
          <zeroOrMore>
             <ref name="sort"/>
@@ -1690,7 +1700,7 @@
                   <ref name="boolean"/>
                </attribute>
                <attribute name="separator">
-                  <ann:documentation>A string to intersperse between values.</ann:documentation>
+                  <ann:documentation>A string to intersperse between items.</ann:documentation>
                   <ref name="avt"/>
                </attribute>
             </choice>
@@ -1877,7 +1887,7 @@
                </choice>
             </attribute>
             <attribute name="item-separator">
-               <ann:documentation>A string to intersperse when outputting multiple items.</ann:documentation>
+               <ann:documentation>A string to intersperse between items.</ann:documentation>
                <ref name="avt"/>
             </attribute>
             <attribute name="media-type">

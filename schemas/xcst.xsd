@@ -741,7 +741,7 @@
          </xs:attribute>
          <xs:attribute name="item-separator" type="c:string">
             <xs:annotation>
-               <xs:documentation>A string to intersperse when outputting multiple items.</xs:documentation>
+               <xs:documentation>A string to intersperse between items.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attribute name="media-type" type="c:string">
@@ -871,6 +871,11 @@
                <xs:documentation>An object with tunnel parameters. Expression (System.Object | System.Collections.Generic.IDictionary&lt;System.String, System.Object&gt;).</xs:documentation>
             </xs:annotation>
          </xs:attribute>
+         <xs:attribute name="separator" type="c:avt">
+            <xs:annotation>
+               <xs:documentation>A string to intersperse between the results of each processed item.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
@@ -931,7 +936,7 @@
          </xs:attribute>
          <xs:attribute name="separator" type="c:avt">
             <xs:annotation>
-               <xs:documentation>A string to intersperse between values.</xs:documentation>
+               <xs:documentation>A string to intersperse between items.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>
@@ -1224,6 +1229,11 @@
          <xs:attribute name="in" use="required" type="c:expression">
             <xs:annotation>
                <xs:documentation>The source of the items. Expression.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="separator" type="c:avt">
+            <xs:annotation>
+               <xs:documentation>A string to intersperse between the results of each processed item.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>
@@ -1658,7 +1668,7 @@
          </xs:attribute>
          <xs:attribute name="separator" type="c:avt">
             <xs:annotation>
-               <xs:documentation>A string to intersperse between values.</xs:documentation>
+               <xs:documentation>A string to intersperse between items.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>
@@ -1855,7 +1865,7 @@
       </xs:attribute>
       <xs:attribute name="item-separator" type="c:avt">
          <xs:annotation>
-            <xs:documentation>A string to intersperse when outputting multiple items.</xs:documentation>
+            <xs:documentation>A string to intersperse between items.</xs:documentation>
          </xs:annotation>
       </xs:attribute>
       <xs:attribute name="media-type" type="c:avt">

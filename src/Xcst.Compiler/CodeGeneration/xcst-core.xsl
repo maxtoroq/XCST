@@ -972,9 +972,12 @@
    <!-- ## Repetition -->
 
    <template match="c:for-each" mode="src:statement">
+      <param name="index-var" as="xs:string?"/>
+      <param name="output" tunnel="yes"/>
 
       <call-template name="xcst:validate-attribs">
          <with-param name="required" select="'name', 'in'"/>
+         <with-param name="optional" select="'separator'"/>
       </call-template>
 
       <variable name="name" select="xcst:name(@name)"/>
@@ -998,11 +1001,52 @@
             </choose>
          </code:variable>
          <code:block>
+            <if test="$index-var">
+               <code:assign line-hidden="true">
+                  <code:variable-reference name="{$index-var}"/>
+                  <code:add>
+                     <code:variable-reference name="{$index-var}"/>
+                     <code:int value="1"/>
+                  </code:add>
+               </code:assign>
+               <if test="@separator">
+                  <call-template name="xcst:require-output"/>
+                  <code:if>
+                     <code:greater-than>
+                        <code:variable-reference name="{$index-var}"/>
+                        <code:int value="0"/>
+                     </code:greater-than>
+                     <code:block>
+                        <code:method-call name="WriteString">
+                           <call-template name="src:line-number"/>
+                           <sequence select="$output/src:reference/code:*"/>
+                           <code:arguments>
+                              <call-template name="src:expand-attribute">
+                                 <with-param name="attr" select="@separator"/>
+                              </call-template>
+                           </code:arguments>
+                        </code:method-call>
+                     </code:block>
+                  </code:if>
+               </if>
+            </if>
             <call-template name="src:sequence-constructor">
                <with-param name="children" select="node()[not(self::c:sort or following-sibling::c:sort)]"/>
             </call-template>
          </code:block>
       </code:for-each>
+   </template>
+
+   <template match="c:for-each[@separator]" mode="src:statement">
+      <code:block line-hidden="true">
+         <variable name="index-var" select="src:aux-variable(concat('index_', generate-id()))"/>
+         <code:variable name="{$index-var}">
+            <code:int value="-1"/>
+         </code:variable>
+         <next-match>
+            <with-param name="index-var" select="$index-var"/>
+         </next-match>
+      </code:block>
    </template>
 
    <template match="c:while" mode="src:statement">
