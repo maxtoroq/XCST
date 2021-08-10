@@ -33,11 +33,62 @@ namespace Xcst.Runtime {
          return (TItem)_dynamicInstance.Copy(value);
       }
 
+      public Boolean
+      Copy(Boolean value) => value;
+
+      public Byte
+      Copy(Byte value) => value;
+
+      public DateTime
+      Copy(DateTime value) => value;
+
+      public DateTimeOffset
+      Copy(DateTimeOffset value) => value;
+
+      public Decimal
+      Copy(Decimal value) => value;
+
+      public Double
+      Copy(Double value) => value;
+
+      public Guid
+      Copy(Guid value) => value;
+
+      public Int16
+      Copy(Int16 value) => value;
+
       public Int32
       Copy(Int32 value) => value;
 
+      public Int64
+      Copy(Int64 value) => value;
+
       public JToken
       Copy(JToken value) => value.DeepClone();
+
+      public SByte
+      Copy(SByte value) => value;
+
+      public Single
+      Copy(Single value) => value;
+
+      public String
+      Copy(String value) => value;
+
+      public TimeSpan
+      Copy(TimeSpan value) => value;
+
+      public UInt16
+      Copy(UInt16 value) => value;
+
+      public UInt32
+      Copy(UInt32 value) => value;
+
+      public UInt64
+      Copy(UInt64 value) => value;
+
+      public Uri
+      Copy(Uri value) => value;
 
       public XAttribute
       Copy(XAttribute value) => new XAttribute(value);

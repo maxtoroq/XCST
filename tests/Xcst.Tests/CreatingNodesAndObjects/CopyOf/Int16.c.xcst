@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:import-namespace ns='System'/>
+
+   <c:template name='c:initial-template'>
+      <c:variable name='expected' value='(Int16)5'/>
+      <c:variable name='val' as='Int16'>
+         <c:copy-of value='expected'/>
+      </c:variable>
+      <c:void value='Assert.AreEqual(expected, val)'/>
+   </c:template>
+
+</c:module>
