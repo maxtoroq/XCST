@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:import-namespace ns='System.Xml.Linq'/>
+
+   <c:template name='c:initial-template'>
+      <c:variable name='expected' as='XNode'>
+         <bar of='5'>baz</bar>
+      </c:variable>
+      <c:variable name='val' as='XNode'>
+         <c:copy-of value='expected'/>
+      </c:variable>
+      <c:void value='Assert.IsFalse(ReferenceEquals(expected, val))'/>
+      <c:void value='Assert.IsTrue(XNode.DeepEquals(expected, val))'/>
+   </c:template>
+
+</c:module>

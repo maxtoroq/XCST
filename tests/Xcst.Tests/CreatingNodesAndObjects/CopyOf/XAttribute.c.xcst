@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:import-namespace ns='System.Xml.Linq'/>
+
+   <c:template name='c:initial-template'>
+      <c:variable name='expected' value='new XAttribute("foo", 5)'/>
+      <c:variable name='val' as='XAttribute'>
+         <c:copy-of value='expected'/>
+      </c:variable>
+      <c:void value='Assert.IsFalse(ReferenceEquals(expected, val))'/>
+      <c:void value='Assert.AreEqual(expected.Name, val.Name)'/>
+      <c:void value='Assert.AreEqual(expected.Value, val.Value)'/>
+   </c:template>
+
+</c:module>

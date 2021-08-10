@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:import-namespace ns='System.Xml.Linq'/>
+
+   <c:template name='c:initial-template'>
+      <c:variable name='expected' value='new XDeclaration("1.0", "utf-8", "no")'/>
+      <c:variable name='val' as='XDeclaration'>
+         <c:copy-of value='expected'/>
+      </c:variable>
+      <c:void value='Assert.IsFalse(ReferenceEquals(expected, val))'/>
+      <c:void value='Assert.AreEqual(expected.Version, val.Version)'/>
+      <c:void value='Assert.AreEqual(expected.Encoding, val.Encoding)'/>
+      <c:void value='Assert.AreEqual(expected.Standalone, val.Standalone)'/>
+   </c:template>
+
+</c:module>
