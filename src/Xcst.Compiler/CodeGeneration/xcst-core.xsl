@@ -4391,41 +4391,15 @@
       <param name="uri" as="xs:anyURI?"/>
       <param name="avt" as="attribute()?"/>
 
-      <choose>
-         <when test="$avt/ancestor::*[@xml:base]">
-            <variable name="base-uri" select="base-uri($avt)"/>
-            <code:method-call name="Uri">
-               <sequence select="src:helper-type('DataType')"/>
-               <code:arguments>
-                  <choose>
-                     <when test="exists($uri)">
-                        <call-template name="src:uri-string">
-                           <with-param name="uri" select="resolve-uri($uri, $base-uri)"/>
-                        </call-template>
-                     </when>
-                     <otherwise>
-                        <call-template name="src:uri-string">
-                           <with-param name="uri" select="$base-uri"/>
-                        </call-template>
-                        <call-template name="src:expand-attribute">
-                           <with-param name="attr" select="$avt"/>
-                        </call-template>
-                     </otherwise>
-                  </choose>
-               </code:arguments>
-            </code:method-call>
-         </when>
-         <otherwise>
-            <code:method-call name="ResolveUri">
-               <sequence select="$src:context-field/src:reference/code:*"/>
-               <code:arguments>
-                  <call-template name="src:expand-attribute">
-                     <with-param name="attr" select="$avt"/>
-                  </call-template>
-               </code:arguments>
-            </code:method-call>
-         </otherwise>
-      </choose>
+      <code:method-call name="ResolveUri">
+         <sequence select="$src:context-field/src:reference/code:*"/>
+         <code:arguments>
+            <call-template name="src:uri-string">
+               <with-param name="uri" select="$uri"/>
+               <with-param name="avt" select="$avt"/>
+            </call-template>
+         </code:arguments>
+      </code:method-call>
    </template>
 
    <template name="src:sort-order-descending">
