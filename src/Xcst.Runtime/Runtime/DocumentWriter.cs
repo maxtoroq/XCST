@@ -50,7 +50,7 @@ namespace Xcst.Runtime {
             OmitXmlDeclaration = true
          };
 
-         return WriterFactory.CreateWriter(doc.CreateNavigator().AppendChild(), WriterFactory.AbsentOutputUri)
+         return WriterFactory.CreateWriter(doc.CreateNavigator()!.AppendChild(), WriterFactory.AbsentOutputUri)
             (defaultParams, null, package.Context);
       }
 

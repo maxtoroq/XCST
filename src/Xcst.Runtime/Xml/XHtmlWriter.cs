@@ -62,7 +62,7 @@ namespace Xcst.Xml {
          : base(baseWriter) { }
 
       public override void
-      WriteStartElement(string prefix, string localName, string ns) {
+      WriteStartElement(string? prefix, string localName, string? ns) {
 
          _elementStack.Push(new XmlQualifiedName(localName, ns));
          base.WriteStartElement(prefix, localName, ns);

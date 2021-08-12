@@ -82,7 +82,7 @@ namespace Xcst.PackageModel {
       }
 
       public override bool
-      IsValid(object value) {
+      IsValid(object? value) {
 
          SetupConversion();
          return base.IsValid(value);

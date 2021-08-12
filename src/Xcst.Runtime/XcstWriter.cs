@@ -368,7 +368,8 @@ namespace Xcst {
          if (value != null) {
 
             XPathNavigator nav = value as XPathNavigator
-               ?? value.CreateNavigator();
+               ?? value.CreateNavigator()
+               ?? throw new RuntimeException("Could not create navigator.");
 
             nav.WriteSubtree(CreateXmlWriter());
          }

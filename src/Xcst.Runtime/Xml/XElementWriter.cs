@@ -49,7 +49,7 @@ namespace Xcst.Xml {
       }
 
       public override void
-      WriteStartElement(string prefix, string localName, string ns) {
+      WriteStartElement(string? prefix, string localName, string? ns) {
 
          base.WriteStartElement(prefix, localName, ns);
 
@@ -77,7 +77,7 @@ namespace Xcst.Xml {
 
             base.Close();
 
-            XElement el = _document.Root;
+            XElement el = _document.Root!;
 
             Assert.IsNotNull(el);
 

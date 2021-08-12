@@ -45,7 +45,7 @@ namespace Xcst.Xml {
          throw new NotImplementedException();
 
       public override void
-      WriteCData(string text) {
+      WriteCData(string? text) {
          _output.WriteString(text);
          _state = WriteState.Content;
       }
@@ -65,13 +65,13 @@ namespace Xcst.Xml {
       }
 
       public override void
-      WriteComment(string text) {
+      WriteComment(string? text) {
          _output.WriteComment(text);
          _state = WriteState.Content;
       }
 
       public override void
-      WriteDocType(string name, string pubid, string sysid, string subset) { }
+      WriteDocType(string name, string? pubid, string? sysid, string? subset) { }
 
       public override void
       WriteEndAttribute() {
@@ -101,7 +101,7 @@ namespace Xcst.Xml {
       }
 
       public override void
-      WriteProcessingInstruction(string name, string text) {
+      WriteProcessingInstruction(string name, string? text) {
          _output.WriteProcessingInstruction(name, text);
          _state = WriteState.Content;
       }
@@ -116,7 +116,7 @@ namespace Xcst.Xml {
       }
 
       public override void
-      WriteStartAttribute(string prefix, string localName, string ns) {
+      WriteStartAttribute(string? prefix, string localName, string? ns) {
          _output.WriteStartAttribute(prefix, localName, ns);
          _state = WriteState.Attribute;
       }
@@ -128,13 +128,13 @@ namespace Xcst.Xml {
       WriteStartDocument(bool standalone) { }
 
       public override void
-      WriteStartElement(string prefix, string localName, string ns) {
+      WriteStartElement(string? prefix, string localName, string? ns) {
          _output.WriteStartElement(prefix, localName, ns);
          _state = WriteState.Element;
       }
 
       public override void
-      WriteString(string text) {
+      WriteString(string? text) {
 
          _output.WriteString(text);
 
@@ -148,7 +148,7 @@ namespace Xcst.Xml {
          throw new NotImplementedException();
 
       public override void
-      WriteWhitespace(string ws) {
+      WriteWhitespace(string? ws) {
          _output.WriteString(ws);
          _state = WriteState.Content;
       }

@@ -30,7 +30,7 @@ namespace Xcst.Xml {
       }
 
       public override void
-      WriteStartElement(string prefix, string localName, string ns) {
+      WriteStartElement(string? prefix, string localName, string? ns) {
 
          if (_outputHtml5Doctype) {
 

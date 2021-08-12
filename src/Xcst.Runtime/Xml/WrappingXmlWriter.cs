@@ -58,13 +58,13 @@ namespace Xcst.Xml {
       readonly XmlWriter
       _output;
 
-      public override XmlWriterSettings
+      public override XmlWriterSettings?
       Settings => _output.Settings;
 
       public override WriteState
       WriteState => _output.WriteState;
 
-      public override string
+      public override string?
       XmlLang => _output.XmlLang;
 
       public override XmlSpace
@@ -95,7 +95,7 @@ namespace Xcst.Xml {
       public override Task
       FlushAsync() => _output.FlushAsync();
 
-      public override string
+      public override string?
       LookupPrefix(string ns) => _output.LookupPrefix(ns);
 
       public override void
@@ -123,10 +123,10 @@ namespace Xcst.Xml {
          _output.WriteBinHexAsync(buffer, index, count);
 
       public override void
-      WriteCData(string text) => _output.WriteCData(text);
+      WriteCData(string? text) => _output.WriteCData(text);
 
       public override Task
-      WriteCDataAsync(string text) => _output.WriteCDataAsync(text);
+      WriteCDataAsync(string? text) => _output.WriteCDataAsync(text);
 
       public override void
       WriteCharEntity(char ch) => _output.WriteCharEntity(ch);
@@ -143,10 +143,10 @@ namespace Xcst.Xml {
          _output.WriteCharsAsync(buffer, index, count);
 
       public override void
-      WriteComment(string text) => _output.WriteComment(text);
+      WriteComment(string? text) => _output.WriteComment(text);
 
       public override Task
-      WriteCommentAsync(string text) =>
+      WriteCommentAsync(string? text) =>
          _output.WriteCommentAsync(text);
 
       public override void
@@ -154,7 +154,7 @@ namespace Xcst.Xml {
          _output.WriteDocType(name, pubid, sysid, subset);
 
       public override Task
-      WriteDocTypeAsync(string name, string pubid, string sysid, string subset) =>
+      WriteDocTypeAsync(string name, string? pubid, string? sysid, string? subset) =>
          _output.WriteDocTypeAsync(name, pubid, sysid, subset);
 
       public override void
@@ -213,19 +213,19 @@ namespace Xcst.Xml {
          _output.WriteNodeAsync(reader, defattr);
 
       public override void
-      WriteProcessingInstruction(string name, string text) =>
+      WriteProcessingInstruction(string name, string? text) =>
          _output.WriteProcessingInstruction(name, text);
 
       public override Task
-      WriteProcessingInstructionAsync(string name, string text) =>
+      WriteProcessingInstructionAsync(string name, string? text) =>
          _output.WriteProcessingInstructionAsync(name, text);
 
       public override void
-      WriteQualifiedName(string localName, string ns) =>
+      WriteQualifiedName(string localName, string? ns) =>
          _output.WriteQualifiedName(localName, ns);
 
       public override Task
-      WriteQualifiedNameAsync(string localName, string ns) =>
+      WriteQualifiedNameAsync(string localName, string? ns) =>
          _output.WriteQualifiedNameAsync(localName, ns);
 
       public override void
@@ -243,7 +243,7 @@ namespace Xcst.Xml {
          _output.WriteRawAsync(buffer, index, count);
 
       public override void
-      WriteStartAttribute(string prefix, string localName, string ns) =>
+      WriteStartAttribute(string? prefix, string localName, string? ns) =>
          _output.WriteStartAttribute(prefix, localName, ns);
 
       public override Task
@@ -261,18 +261,18 @@ namespace Xcst.Xml {
          _output.WriteStartDocumentAsync(standalone);
 
       public override void
-      WriteStartElement(string prefix, string localName, string ns) =>
+      WriteStartElement(string? prefix, string localName, string? ns) =>
          _output.WriteStartElement(prefix, localName, ns);
 
       public override Task
-      WriteStartElementAsync(string prefix, string localName, string ns) =>
+      WriteStartElementAsync(string? prefix, string localName, string? ns) =>
          _output.WriteStartElementAsync(prefix, localName, ns);
 
       public override void
-      WriteString(string text) => _output.WriteString(text);
+      WriteString(string? text) => _output.WriteString(text);
 
       public override Task
-      WriteStringAsync(string text) =>
+      WriteStringAsync(string? text) =>
          _output.WriteStringAsync(text);
 
       public override void
@@ -311,13 +311,13 @@ namespace Xcst.Xml {
       WriteValue(float value) => _output.WriteValue(value);
 
       public override void
-      WriteValue(string value) => _output.WriteValue(value);
+      WriteValue(string? value) => _output.WriteValue(value);
 
       public override void
-      WriteWhitespace(string ws) => _output.WriteWhitespace(ws);
+      WriteWhitespace(string? ws) => _output.WriteWhitespace(ws);
 
       public override Task
-      WriteWhitespaceAsync(string ws) =>
+      WriteWhitespaceAsync(string? ws) =>
          _output.WriteWhitespaceAsync(ws);
    }
 }
