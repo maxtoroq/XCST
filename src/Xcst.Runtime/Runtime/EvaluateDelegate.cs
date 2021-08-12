@@ -61,7 +61,7 @@ namespace Xcst.Runtime {
             if (baseType.IsAssignableFrom(derivedType)) {
 
                derivedWriter = Activator.CreateInstance(typeof(DerivedSequenceWriter<,>)
-                  .MakeGenericType(derivedType, baseType), output);
+                  .MakeGenericType(derivedType, baseType), output)!;
 
             } else {
 

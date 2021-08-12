@@ -30,24 +30,24 @@ namespace Xcst.Compiler.Reflection {
 
       static Dictionary<PrimitiveTypeCode, TypeSpec>
       _primitiveTypes = new Dictionary<PrimitiveTypeCode, TypeSpec> {
-         { PrimitiveTypeCode.Void, new TypeSpec(typeof(void).FullName) },
-         { PrimitiveTypeCode.Boolean, new TypeSpec(typeof(bool).FullName) },
-         { PrimitiveTypeCode.Char, new TypeSpec(typeof(char).FullName) },
-         { PrimitiveTypeCode.SByte, new TypeSpec(typeof(sbyte).FullName) },
-         { PrimitiveTypeCode.Byte, new TypeSpec(typeof(byte).FullName) },
-         { PrimitiveTypeCode.Int16, new TypeSpec(typeof(short).FullName) },
-         { PrimitiveTypeCode.UInt16, new TypeSpec(typeof(ushort).FullName) },
-         { PrimitiveTypeCode.Int32, new TypeSpec(typeof(int).FullName) },
-         { PrimitiveTypeCode.UInt32, new TypeSpec(typeof(uint).FullName) },
-         { PrimitiveTypeCode.Int64, new TypeSpec(typeof(long).FullName) },
-         { PrimitiveTypeCode.UInt64, new TypeSpec(typeof(ulong).FullName) },
-         { PrimitiveTypeCode.Single, new TypeSpec(typeof(float).FullName) },
-         { PrimitiveTypeCode.Double, new TypeSpec(typeof(double).FullName) },
-         { PrimitiveTypeCode.String, new TypeSpec(typeof(string).FullName) },
-         { PrimitiveTypeCode.TypedReference, new TypeSpec(typeof(TypedReference).FullName) },
-         { PrimitiveTypeCode.IntPtr, new TypeSpec(typeof(IntPtr).FullName) },
-         { PrimitiveTypeCode.UIntPtr, new TypeSpec(typeof(UIntPtr).FullName) },
-         { PrimitiveTypeCode.Object, new TypeSpec(typeof(object).FullName) }
+         { PrimitiveTypeCode.Void, new TypeSpec("System.Void") },
+         { PrimitiveTypeCode.Boolean, new TypeSpec("System.Boolean") },
+         { PrimitiveTypeCode.Char, new TypeSpec("System.Char") },
+         { PrimitiveTypeCode.SByte, new TypeSpec("System.SByte") },
+         { PrimitiveTypeCode.Byte, new TypeSpec("System.Byte") },
+         { PrimitiveTypeCode.Int16, new TypeSpec("System.Int16") },
+         { PrimitiveTypeCode.UInt16, new TypeSpec("System.UInt16") },
+         { PrimitiveTypeCode.Int32, new TypeSpec("System.Int32") },
+         { PrimitiveTypeCode.UInt32, new TypeSpec("System.UInt32") },
+         { PrimitiveTypeCode.Int64, new TypeSpec("System.Int64") },
+         { PrimitiveTypeCode.UInt64, new TypeSpec("System.UInt64") },
+         { PrimitiveTypeCode.Single, new TypeSpec("System.Single") },
+         { PrimitiveTypeCode.Double, new TypeSpec("System.Double") },
+         { PrimitiveTypeCode.String, new TypeSpec("System.String") },
+         { PrimitiveTypeCode.TypedReference, new TypeSpec("System.TypedReference") },
+         { PrimitiveTypeCode.IntPtr, new TypeSpec("System.IntPtr") },
+         { PrimitiveTypeCode.UIntPtr, new TypeSpec("System.UIntPtr") },
+         { PrimitiveTypeCode.Object, new TypeSpec("System.Object") }
       };
 
       public TypeSpec
@@ -127,7 +127,7 @@ namespace Xcst.Compiler.Reflection {
       public TypeSpec
       GetPrimitiveType(PrimitiveTypeCode typeCode) {
 
-         if (_primitiveTypes.TryGetValue(typeCode, out TypeSpec type)) {
+         if (_primitiveTypes.TryGetValue(typeCode, out var type)) {
             return type;
          }
 
@@ -137,12 +137,12 @@ namespace Xcst.Compiler.Reflection {
       public PrimitiveTypeCode
       GetUnderlyingEnumType(TypeSpec type) {
 
-         Type runtimeType = Type.GetType(type.GetDisplayFullName(DisplayNameFormat.WANT_ASSEMBLY), false);
+         Type? runtimeType = Type.GetType(type.GetDisplayFullName(DisplayNameFormat.WANT_ASSEMBLY), false);
 
          if (runtimeType != null) {
 
             Type underlyingType = runtimeType.GetEnumUnderlyingType();
-            TypeSpec underlyingTypeSpec = new TypeSpec(underlyingType.FullName);
+            TypeSpec underlyingTypeSpec = new TypeSpec(underlyingType.FullName!);
 
             foreach (var pair in _primitiveTypes) {
                if (pair.Value.Name.Equals(underlyingTypeSpec.Name)) {

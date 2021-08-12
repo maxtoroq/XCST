@@ -128,7 +128,7 @@ namespace Xcst.Runtime {
       static bool
       HasCustomToStringImpl(Type type) {
 
-         Type declaringType = type.GetMethod("ToString", Type.EmptyTypes).DeclaringType;
+         Type declaringType = type.GetMethod("ToString", Type.EmptyTypes)!.DeclaringType!;
 
          return declaringType != ((type.IsValueType) ?
             typeof(ValueType) : typeof(object));
@@ -136,7 +136,7 @@ namespace Xcst.Runtime {
 
       public string
       Format(string format, params object?[]? args) =>
-         String.Format(this.FormatProvider, format, args);
+         String.Format(this.FormatProvider, format, args ?? Array.Empty<object>());
 
       public string
       FormatValueTemplate(FormattableString value) {
@@ -146,7 +146,7 @@ namespace Xcst.Runtime {
             return value.ToString(this.FormatProvider);
          }
 
-         object[] args = value.GetArguments();
+         object?[] args = value.GetArguments();
 
          for (int i = 0; i < args.Length; i++) {
 
@@ -160,7 +160,8 @@ namespace Xcst.Runtime {
 
       public string
       Convert(object? value) =>
-         System.Convert.ToString(value, this.FormatProvider);
+         System.Convert.ToString(value, this.FormatProvider)
+            ?? String.Empty;
 
       public static string
       Trim(string? value) {

@@ -49,7 +49,7 @@ namespace Xcst {
       }
 
       public override bool
-      Equals(object other) =>
+      Equals(object? other) =>
          Equals(other as QualifiedName);
 
       public virtual bool

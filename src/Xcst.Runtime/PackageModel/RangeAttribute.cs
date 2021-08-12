@@ -46,7 +46,7 @@ namespace Xcst.PackageModel {
                   BindingFlags.Instance | BindingFlags.NonPublic,
                   null,
                   new[] { typeof(IComparable), typeof(IComparable), typeof(Func<object, object>) },
-                  null));
+                  null)!);
       }
 
       bool
@@ -78,7 +78,7 @@ namespace Xcst.PackageModel {
             ?? throw new ArgumentException(
                   $"Could not find a '{minOrMax}' static field on type '{type.FullName}'. Specify an explicit value.", nameof(type));
 
-         return Convert.ToString(fld.GetValue(null), MinMaxFormatCulture);
+         return Convert.ToString(fld.GetValue(null), MinMaxFormatCulture)!;
       }
 
       public override bool

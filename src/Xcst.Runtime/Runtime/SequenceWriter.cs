@@ -227,13 +227,13 @@ namespace Xcst.Runtime {
          if (baseType.IsAssignableFrom(derivedType)) {
 
             return (ISequenceWriter<TDerived>)Activator.CreateInstance(typeof(DerivedSequenceWriter<,>)
-               .MakeGenericType(derivedType, baseType), output);
+               .MakeGenericType(derivedType, baseType), output)!;
          }
 
          if (derivedType.IsAssignableFrom(baseType)) {
 
             return (ISequenceWriter<TDerived>)Activator.CreateInstance(typeof(CastedSequenceWriter<,>)
-               .MakeGenericType(derivedType, baseType), output);
+               .MakeGenericType(derivedType, baseType), output)!;
          }
 
          throw new RuntimeException($"{typeof(TDerived).FullName} is not compatible with {typeof(TBase).FullName}.");

@@ -478,7 +478,7 @@ namespace Xcst.Compiler.Reflection {
          string str = Convert.ToString(
             blobReader.ReadConstant(constant.TypeCode),
             CultureInfo.InvariantCulture
-         );
+         )!;
 
          switch (constant.TypeCode) {
             case ConstantTypeCode.NullReference:

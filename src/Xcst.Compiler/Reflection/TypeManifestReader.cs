@@ -41,7 +41,7 @@ namespace Xcst.Compiler.Reflection {
 
          foreach (MemberInfo member in packageType.GetMembers(BindingFlags.Instance | BindingFlags.Public)) {
 
-            dynamic attr = member.GetCustomAttribute(componentAttrType, inherit: false);
+            dynamic? attr = member.GetCustomAttribute(componentAttrType, inherit: false);
 
             if (attr != null) {
                switch ((byte)attr.Kind) {
@@ -213,7 +213,7 @@ namespace Xcst.Compiler.Reflection {
          if (type.IsArray) {
 
             writer.WriteAttributeString("array-dimensions", XmlConvert.ToString(type.GetArrayRank()));
-            WriteTypeReference(type.GetElementType(), writer);
+            WriteTypeReference(type.GetElementType()!, writer);
 
          } else {
 
@@ -230,7 +230,7 @@ namespace Xcst.Compiler.Reflection {
             }
 
             if (type.IsNested) {
-               WriteTypeReference(type.DeclaringType, writer);
+               WriteTypeReference(type.DeclaringType!, writer);
             } else {
                writer.WriteAttributeString("namespace", type.Namespace);
             }
@@ -251,7 +251,7 @@ namespace Xcst.Compiler.Reflection {
       }
 
       static void
-      WriteConstant(object value, XmlWriter writer) {
+      WriteConstant(object? value, XmlWriter writer) {
 
          const string ns = XmlNamespaces.XcstCode;
          const string prefix = "code";
@@ -262,7 +262,7 @@ namespace Xcst.Compiler.Reflection {
             return;
          }
 
-         string str = Convert.ToString(value, CultureInfo.InvariantCulture);
+         string str = Convert.ToString(value, CultureInfo.InvariantCulture)!;
 
          if (value is string) {
             writer.WriteStartElement(prefix, "string", ns);
@@ -343,7 +343,7 @@ namespace Xcst.Compiler.Reflection {
 
       static string
       ComponentVisibility(PropertyInfo property) =>
-         ComponentVisibility(property.GetGetMethod());
+         ComponentVisibility(property.GetGetMethod()!);
 
       static string
       ComponentVisibility(MethodBase method) =>
@@ -363,6 +363,6 @@ namespace Xcst.Compiler.Reflection {
 
       static Type
       ComponentAttributeType(Type pkgInterface, string attributeName) =>
-         pkgInterface.Assembly.GetType("Xcst.PackageModel." + attributeName);
+         pkgInterface.Assembly.GetType("Xcst.PackageModel." + attributeName)!;
    }
 }

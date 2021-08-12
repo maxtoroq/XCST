@@ -130,8 +130,8 @@ namespace Xcst {
 
             PropertyDescriptorCollection props = TypeDescriptor.GetProperties(values);
 
-            foreach (PropertyDescriptor prop in props) {
-               object val = prop.GetValue(values);
+            foreach (PropertyDescriptor? prop in props) {
+               object val = prop!.GetValue(values);
                dict.Add(prop.Name, val);
             }
          }

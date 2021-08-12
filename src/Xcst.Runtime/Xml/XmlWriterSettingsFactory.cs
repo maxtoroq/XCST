@@ -43,16 +43,16 @@ namespace Xcst.Xml {
          Type settingsType = typeof(XmlWriterSettings);
 
          _setOutputMethod = (Action<XmlWriterSettings, XmlOutputMethod>)
-            Delegate.CreateDelegate(typeof(Action<XmlWriterSettings, XmlOutputMethod>), settingsType.GetProperty(nameof(XmlWriterSettings.OutputMethod), BindingFlags.Instance | BindingFlags.Public).GetSetMethod(true));
+            Delegate.CreateDelegate(typeof(Action<XmlWriterSettings, XmlOutputMethod>), settingsType.GetProperty(nameof(XmlWriterSettings.OutputMethod), BindingFlags.Instance | BindingFlags.Public)!.GetSetMethod(true)!);
 
          _setDocTypePublic = (Action<XmlWriterSettings, string>)
-            Delegate.CreateDelegate(typeof(Action<XmlWriterSettings, string>), settingsType.GetProperty("DocTypePublic", BindingFlags.Instance | BindingFlags.NonPublic).GetSetMethod(true));
+            Delegate.CreateDelegate(typeof(Action<XmlWriterSettings, string>), settingsType.GetProperty("DocTypePublic", BindingFlags.Instance | BindingFlags.NonPublic)!.GetSetMethod(true)!);
 
          _setDocTypeSystem = (Action<XmlWriterSettings, string>)
-            Delegate.CreateDelegate(typeof(Action<XmlWriterSettings, string>), settingsType.GetProperty("DocTypeSystem", BindingFlags.Instance | BindingFlags.NonPublic).GetSetMethod(true));
+            Delegate.CreateDelegate(typeof(Action<XmlWriterSettings, string>), settingsType.GetProperty("DocTypeSystem", BindingFlags.Instance | BindingFlags.NonPublic)!.GetSetMethod(true)!);
 
          _setMediaType = (Action<XmlWriterSettings, string>)
-            Delegate.CreateDelegate(typeof(Action<XmlWriterSettings, string>), settingsType.GetProperty("MediaType", BindingFlags.Instance | BindingFlags.NonPublic).GetSetMethod(true));
+            Delegate.CreateDelegate(typeof(Action<XmlWriterSettings, string>), settingsType.GetProperty("MediaType", BindingFlags.Instance | BindingFlags.NonPublic)!.GetSetMethod(true)!);
 
          _cdataSectionsField = settingsType.GetField(
 #if NETCOREAPP
@@ -60,7 +60,7 @@ namespace Xcst.Xml {
 #else
             "cdataSections"
 #endif
-            , BindingFlags.Instance | BindingFlags.NonPublic);
+            , BindingFlags.Instance | BindingFlags.NonPublic)!;
       }
 
       public static XmlWriterSettings
