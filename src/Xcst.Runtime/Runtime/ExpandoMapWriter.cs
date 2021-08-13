@@ -108,7 +108,7 @@ namespace Xcst.Runtime {
 
          var map = Peek<IExpandoMap>();
 
-         Debug.Assert(map != null);
+         Assert.That(map != null);
 
          Pop();
          _depth--;
@@ -116,9 +116,9 @@ namespace Xcst.Runtime {
 
          if (_objects.Count == 0) {
 
-            Debug.Assert(_mapOutput != null);
+            Assert.That(_mapOutput != null);
 
-            _mapOutput!.WriteObject((ExpandoObject)map!);
+            _mapOutput.WriteObject((ExpandoObject)map);
             return;
          }
       }
@@ -147,15 +147,15 @@ namespace Xcst.Runtime {
 
          var array = Peek<ExpandoArray>();
 
-         Debug.Assert(array != null);
+         Assert.That(array != null);
 
-         WriteEndArray(array!);
+         WriteEndArray(array);
       }
 
       void
       WriteEndArray(ExpandoArray array) {
 
-         Assert.IsNotNull(array);
+         Assert.That(array != null);
 
          object?[] items = array.ToArray();
 
@@ -184,9 +184,9 @@ namespace Xcst.Runtime {
 
                var parentArray = parent as ExpandoArray;
 
-               Debug.Assert(parentArray != null);
+               Assert.That(parentArray != null);
 
-               parentArray!.Add(items);
+               parentArray.Add(items);
             }
          }
       }
@@ -213,9 +213,9 @@ namespace Xcst.Runtime {
 
             var map = Peek<IExpandoMap>(1);
 
-            Debug.Assert(map != null);
+            Assert.That(map != null);
 
-            if (!map!.ContainsKey(entry.Key)) {
+            if (!map.ContainsKey(entry.Key)) {
                // No value written, write null
                map[entry.Key] = null;
             }
@@ -224,9 +224,9 @@ namespace Xcst.Runtime {
 
             var implicitArray = parent as ExpandoArray;
 
-            Debug.Assert(implicitArray != null);
+            Assert.That(implicitArray != null);
 
-            WriteEndArray(implicitArray!);
+            WriteEndArray(implicitArray);
 
             var entry2 = Peek<ExpandoEntry>();
 
@@ -297,9 +297,9 @@ namespace Xcst.Runtime {
 
          var map = Peek<IExpandoMap>(1);
 
-         Debug.Assert(map != null);
+         Assert.That(map != null);
 
-         if (!map!.ContainsKey(entry.Key)) {
+         if (!map.ContainsKey(entry.Key)) {
             map[entry.Key] = value;
          } else {
 

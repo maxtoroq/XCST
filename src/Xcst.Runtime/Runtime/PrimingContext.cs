@@ -51,8 +51,8 @@ namespace Xcst.Runtime {
 
          if (name is null) throw new ArgumentNullException(nameof(name));
 
-         Debug.Assert(_parameters != null);
-         _parameters![name] = value;
+         Assert.That(_parameters != null);
+         _parameters[name] = value;
 
          return this;
       }

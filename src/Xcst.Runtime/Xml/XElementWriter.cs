@@ -79,7 +79,7 @@ namespace Xcst.Xml {
 
             XElement el = _document.Root!;
 
-            Assert.IsNotNull(el);
+            Assert.That(el != null);
 
             el.Remove();
 

@@ -111,7 +111,7 @@ namespace Xcst.Runtime {
       internal static TemplateContext
       ForShallowCopy(TemplateContext currentContext, object? input) {
 
-         Assert.IsNotNull(currentContext);
+         Assert.That(currentContext != null);
          Debug.Assert(currentContext._inMode);
 
          var newContext = new TemplateContext(
@@ -181,13 +181,13 @@ namespace Xcst.Runtime {
 
          if (tunnel) {
 
-            Debug.Assert(_tunnelParameters != null);
-            _tunnelParameters![name] = value;
+            Assert.That(_tunnelParameters != null);
+            _tunnelParameters[name] = value;
 
          } else {
 
-            Debug.Assert(_templateParameters != null);
-            _templateParameters![name] = value;
+            Assert.That(_templateParameters != null);
+            _templateParameters[name] = value;
          }
 
          return this;

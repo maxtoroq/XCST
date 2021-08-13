@@ -107,10 +107,10 @@ namespace Xcst.Runtime {
          int hashCode;
          int idx = 0;
 
-         Assert.IsNotNull(localName);
+         Assert.That(localName != null);
          Debug.Assert(localName.Length != 0);
-         Assert.IsNotNull(prefix);
-         Assert.IsNotNull(ns);
+         Assert.That(prefix != null);
+         Assert.That(ns != null);
 
          // Compute hashcode based on first letter of the localName
          hashCode = (1 << ((int)localName[0] & 31));
