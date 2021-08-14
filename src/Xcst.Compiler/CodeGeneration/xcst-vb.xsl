@@ -658,7 +658,7 @@
       </if>
    </template>
 
-   <template match="code:typeof" mode="vb:source">
+   <template match="code:nameof" mode="vb:source">
       <text>NameOf(</text>
       <apply-templates mode="#current"/>
       <text>)</text>
