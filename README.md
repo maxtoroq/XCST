@@ -15,7 +15,7 @@ Version | Package | Description
 
 System Requirements
 -------------------
-The runtime is written in **C# 8** and requires **.NET 4.6**. It's also compiled against **.NET Standard 2.0**, although currently test are run on .NET 4.x only.
+The runtime is written in **C# 8** and requires **.NET 4.6**. It's also compiled against  **.NET Core 2.0** and **.NET Standard 2.0**, although currently test are run on .NET 4.x only.
 
 The compiler is written in **XSLT 2** (depends on [Saxon-HE]) and sits behind a C# 8 .NET 4.6 API. There are no plans to support other targets beyond Saxon's requirements. This means you need Windows to compile, but can run anywhere. The compiler produces code that is compatible with **C# 6** and **Visual Basic 14**.
 

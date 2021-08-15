@@ -17,7 +17,7 @@ namespace System.Diagnostics {
    }
 }
 
-#if NETFRAMEWORK || NETSTANDARD2_0
+#if NETFRAMEWORK || NETCOREAPP2_0 || NETSTANDARD2_0
 namespace System.Diagnostics.CodeAnalysis {
 
    [AttributeUsage(AttributeTargets.Parameter, Inherited = false)]
