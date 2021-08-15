@@ -1116,7 +1116,7 @@
       </choose>
       <text> </text>
       <value-of select="@name"/>
-      <if test="code:*[last()] except code:*[1][self::code-type-reference]">
+      <if test="code:*[last()] except code:*[1][self::code:type-reference]">
          <choose>
             <when test="parent::code:for-each"> in </when>
             <otherwise> = </otherwise>

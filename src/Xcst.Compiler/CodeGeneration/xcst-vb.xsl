@@ -1104,7 +1104,7 @@
          <text> As </text>
          <apply-templates select="code:type-reference" mode="#current"/>
       </if>
-      <if test="code:*[last()] except code:*[1][self::code-type-reference]">
+      <if test="code:*[last()] except code:*[1][self::code:type-reference]">
          <choose>
             <when test="parent::code:for-each"> In </when>
             <otherwise> = </otherwise>
