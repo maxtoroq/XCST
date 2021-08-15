@@ -25,6 +25,7 @@ function TestConfig($file) {
    $readerSettings = New-Object Xml.XmlReaderSettings
    $readerSettings.IgnoreComments = $true
    $readerSettings.IgnoreWhitespace = $true
+   $readerSettings.DtdProcessing = [Xml.DtdProcessing]::Parse
 
    $reader = [Xml.XmlReader]::Create($file.FullName, $readerSettings)
 

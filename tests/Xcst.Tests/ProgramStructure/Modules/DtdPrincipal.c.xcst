@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE module [
+   <!ENTITY andalso "&amp;&amp;">
+]>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:variable name='a' value='true &andalso; false'/>
+
+</c:module>
