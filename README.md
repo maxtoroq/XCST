@@ -4,7 +4,7 @@ XCST is a language optimized for the production of XML and other formats. It's a
 
 See the [project home][XCST] for more information.
 
-[![Build status](https://ci.appveyor.com/api/projects/status/93bvxpo3x4bg2po8?svg=true)](https://ci.appveyor.com/project/maxtoroq/xcst) ![Tests](https://img.shields.io/appveyor/tests/maxtoroq/XCST)
+[![Build status](https://ci.appveyor.com/api/projects/status/93bvxpo3x4bg2po8/branch/v2?svg=true)](https://ci.appveyor.com/project/maxtoroq/xcst/branch/v2) ![Tests](https://img.shields.io/appveyor/tests/maxtoroq/XCST)
 
 ### Packages Built From This Repository
 
