@@ -1,0 +1,695 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!--
+ Copyright 2021 Max Toro Q.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<module version='1.0' language='C#'
+   xmlns='http://maxtoroq.github.io/XCST'
+   xmlns:xcst='http://maxtoroq.github.io/XCST/grammar'
+   xmlns:code='http://maxtoroq.github.io/XCST/code'
+   xmlns:src='http://maxtoroq.github.io/XCST/compiled'>
+
+   <import-namespace ns='System.Linq'/>
+   <import-namespace ns='System.Xml.Linq'/>
+
+   <!-- ## Value Templates -->
+
+   <function name='xcst_tvt_enabled' as='bool'>
+      <param name='el' as='XElement'/>
+
+      <variable name='expandTextAttr' value='el
+         .AncestorsAndSelf()
+         .Select(p => (p.Name.Namespace == c) ?
+            p.Attribute("expand-text")
+            : p.Attribute(c + "expand-text"))
+         .Where(p => p != null)
+         .FirstOrDefault()'/>
+
+      <return value='(expandTextAttr != null) ?
+         xcst_boolean(expandTextAttr)!.Value
+         : false'/>
+   </function>
+
+   <function name='xcst_transform_text' as='string?'>
+      <param name='el' as='XElement'/>
+
+      <variable name='transformTextAttr' value='el
+         .AncestorsAndSelf()
+         .Select(p => (p.Name.Namespace == c) ?
+            p.Attribute("transform-text")
+            : p.Attribute(c + "transform-text"))
+         .Where(p => p != null)
+         .FirstOrDefault()'/>
+
+      <variable name='value' value='(transformTextAttr != null) ?
+         xcst_non_string(transformTextAttr)
+         : null'/>
+
+      <if test='!(value is null or "none" or "normalize-space" or "trim")'>
+         <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(el)' expand-text='yes' transform-text='trim'>
+            Invalid value for '{name(transformTextAttr!)}'. Must be one of (none|normalize-space|trim).
+         </message>
+      </if>
+
+      <return value='(value != "none") ? value : null'/>
+   </function>
+
+   <template name='src:expand-attribute' as='XElement'>
+      <param name='attr' as='XAttribute' required='yes'/>
+      <param name='lre' as='bool'/>
+
+      <variable name='text' value='@string(attr)'/>
+
+      <choose>
+         <when test='xcst_is_value_template(text)'>
+            <call-template name='src:format-value-template'>
+               <with-param name='contextNode' value='attr'/>
+               <with-param name='text' value='text'/>
+               <with-param name='lre' value='lre'/>
+            </call-template>
+         </when>
+         <otherwise>
+            <code:string verbatim='true'>
+               <attribute name='xml:space'>preserve</attribute>
+               <value-of value='text'/>
+            </code:string>
+         </otherwise>
+      </choose>
+   </template>
+
+   <template name='src:expand-text' as='XElement'>
+      <param name='el' as='XElement' required='yes'/>
+      <param name='text' as='string' required='yes'/>
+
+      <variable name='tvt' value='xcst_tvt_enabled(el)
+         &amp;&amp; xcst_is_value_template(text)'/>
+
+      <variable name='tt' value='xcst_transform_text(el)'/>
+
+      <choose>
+         <when test='tvt'>
+            <variable name='formatExpr'>
+               <call-template name='src:format-value-template'>
+                  <with-param name='text' value='text'/>
+                  <with-param name='contextNode' value='el'/>
+                  <with-param name='lre' value='true'/>
+               </call-template>
+            </variable>
+            <choose>
+               <when test='tt != null'>
+                  <code:method-call name='{(tt == "trim" ? "Trim" : "NormalizeSpace")}'>
+                     <copy-of value='src_helper_type("SimpleContent")'/>
+                     <code:arguments>
+                        <copy-of value='formatExpr'/>
+                     </code:arguments>
+                  </code:method-call>
+               </when>
+               <otherwise>
+                  <copy-of value='formatExpr'/>
+               </otherwise>
+            </choose>
+         </when>
+         <otherwise>
+            <code:string verbatim='true'>
+               <switch value='tt'>
+                  <when test='"trim"' value='trim(text)'/>
+                  <when test='"normalize-space"' value='normalize_space(text)'/>
+                  <otherwise value='text'/>
+               </switch>
+            </code:string>
+         </otherwise>
+      </choose>
+   </template>
+
+   <template name='src:format-value-template' as='XElement'>
+      <param name='text' as='string' required='yes'/>
+      <param name='contextNode' as='XObject' required='yes'/>
+      <param name='lre' value='false' as='bool'/>
+      <param name='language' as='string' tunnel='yes' required='yes'/>
+
+      <code:method-call name='FormatValueTemplate'>
+         <choose>
+            <when test='lre'>
+               <code:property-reference name='SimpleContent'>
+                  <copy-of value='select(src_context_field.Element(src + "reference"), code).First()'/>
+               </code:property-reference>
+            </when>
+            <otherwise>
+               <code:property-reference name='Invariant'>
+                  <copy-of value='src_helper_type("SimpleContent")'/>
+               </code:property-reference>
+            </otherwise>
+         </choose>
+         <code:arguments>
+            <code:string verbatim='true'
+                  interpolated='true'
+                  quotes-to-escape='{src_quotes_to_escape(text, contextNode, language)}'>
+               <value-of value='text'/>
+            </code:string>
+         </code:arguments>
+      </code:method-call>
+   </template>
+
+
+   <!-- ## Sequence Constructors -->
+
+   <template name='src:simple-content' as='XElement'>
+      <param name='el' as='XElement' required='yes'/>
+      <param name='attr' as='XAttribute?'/>
+      <param name='text' as='string?' value='xcst_text(el)'/>
+      <param name='separator' as='XAttribute?'/>
+
+      <choose>
+         <when test='text != null'>
+            <call-template name='src:expand-text'>
+               <with-param name='el' value='el'/>
+               <with-param name='text' value='text'/>
+            </call-template>
+         </when>
+         <when test='attr != null'>
+            <code:method-call name='Join'>
+               <code:property-reference name='SimpleContent'>
+                  <copy-of value='select(src_context_field, src + "reference", code)'/>
+               </code:property-reference>
+               <code:arguments>
+                  <choose>
+                     <when test='separator != null'>
+                        <call-template name='src:expand-attribute'>
+                           <with-param name='attr' value='separator'/>
+                        </call-template>
+                     </when>
+                     <otherwise>
+                        <code:string literal='true'>
+                           <attribute name='xml:space'>preserve</attribute>
+                           <text> </text>
+                        </code:string>
+                     </otherwise>
+                  </choose>
+                  <code:expression value='{xcst_expression(attr)}'/>
+               </code:arguments>
+            </code:method-call>
+         </when>
+         <when test='el.Elements().Any()'>
+            <variable name='newOutput' value='src_doc_output(el, null)'/>
+            <variable name='defaultSep' value='
+               (el.Name == c + "value-of" || el.Name == c + "attribute") ?
+                  "" : " "'/>
+            <code:method-call name='SimpleContent'>
+               <copy-of value='src_helper_type("Serialization")'/>
+               <code:arguments>
+                  <code:this-reference/>
+                  <choose>
+                     <when test='separator != null'>
+                        <call-template name='src:expand-attribute'>
+                           <with-param name='attr' value='separator'/>
+                        </call-template>
+                     </when>
+                     <otherwise>
+                        <code:string literal='true'>
+                           <attribute name='xml:space'>preserve</attribute>
+                           <value-of value='defaultSep'/>
+                        </code:string>
+                     </otherwise>
+                  </choose>
+                  <code:lambda void='true'>
+                     <code:parameters>
+                        <code:parameter name='{select(newOutput, src + "reference", code).First().Attribute("name")!.Value}'/>
+                     </code:parameters>
+                     <code:block>
+                        <call-template name='src:sequence-constructor'>
+                           <with-param name='el' value='el'/>
+                           <with-param name='output' value='newOutput' tunnel='yes'/>
+                        </call-template>
+                     </code:block>
+                  </code:lambda>
+               </code:arguments>
+            </code:method-call>
+         </when>
+         <otherwise>
+            <code:string/>
+         </otherwise>
+      </choose>
+   </template>
+
+   <template name='src:value-or-sequence-constructor'>
+      <param name='el' as='XElement' required='yes'/>
+      <param name='children' value='el.Nodes().ToArray()' as='XNode[]'/>
+      <param name='output' as='XElement' tunnel='yes'/>
+
+      <choose>
+         <when test='el.Attribute("value") is XAttribute valueAttr'>
+            <call-template name='xcst:require-output'>
+               <with-param name='el' value='el'/>
+            </call-template>
+            <code:method-call name='WriteObject'>
+               <call-template name='src:line-number'>
+                  <with-param name='el' value='el'/>
+               </call-template>
+               <copy-of value='select(output, src + "reference", code)'/>
+               <code:arguments>
+                  <code:expression value='{xcst_expression(valueAttr)}'/>
+               </code:arguments>
+            </code:method-call>
+         </when>
+         <otherwise>
+            <call-template name='src:sequence-constructor'>
+               <with-param name='el' value='el'/>
+               <with-param name='children' value='children'/>
+            </call-template>
+         </otherwise>
+      </choose>
+   </template>
+
+   <template name='src:value' as='XElement'>
+      <param name='el' as='XElement' required='yes'/>
+      <param name='attr' value='el.Attribute("value")' as='XAttribute?'/>
+      <param name='text' value='xcst_text(el)' as='string?'/>
+      <param name='language' as='string' tunnel='yes' required='yes'/>
+
+      <variable name='@as' value='
+         ((el.Name == c + "param"
+            || el.Name == c + "set"
+            || el.Name == c + "variable"
+            || el.Name == c + "with-param")
+            &amp;&amp; el.Attribute("as") is XAttribute asAttr) ? xcst_type(asAttr)
+         : null'/>
+
+      <choose>
+         <when test='attr != null
+               || text != null'>
+            <variable name='value' as='XElement'>
+               <choose>
+                  <when test='attr != null'>
+                     <code:expression value='{xcst_expression(attr)}'/>
+                  </when>
+                  <otherwise>
+                     <call-template name='src:expand-text'>
+                        <with-param name='el' value='el'/>
+                        <with-param name='text' value='text!'/>
+                     </call-template>
+                  </otherwise>
+               </choose>
+            </variable>
+            <choose>
+               <when test='@as != null'>
+                  <code:cast>
+                     <code:type-reference name='{@as}'/>
+                     <copy-of value='value'/>
+                  </code:cast>
+               </when>
+               <otherwise>
+                  <copy-of value='value'/>
+               </otherwise>
+            </choose>
+         </when>
+         <when test='el.Elements().Any()'>
+            <variable name='children' value='el.Nodes().ToArray()'/>
+            <variable name='seqctorMeta'>
+               <call-template name='xcst:sequence-constructor'>
+                  <with-param name='el' value='el'/>
+                  <with-param name='children' value='children'/>
+                  <with-param name='text' value='text'/>
+               </call-template>
+            </variable>
+            <choose>
+               <when test='seqctorMeta.Attribute("expression") is XAttribute exprAttr
+                     &amp;&amp; xs_boolean(exprAttr)
+                     &amp;&amp; @as is null'>
+                  <apply-templates value='xcst_sequence_constructor_nodes(children)' mode='src:expression'/>
+               </when>
+               <otherwise>
+                  <variable name='itemTypeRef' as='XElement?'>
+                     <choose>
+                        <when test='@as != null'>
+                           <code:type-reference name='{xcst_item_type(@as, language)}'/>
+                        </when>
+                        <otherwise>
+                           <copy-of value='select(seqctorMeta, xcst + "item-type", code + "type-reference")'/>
+                        </otherwise>
+                     </choose>
+                     <on-empty value='(XElement?)null'/>
+                  </variable>
+                  <variable name='newOutput'>
+                     <src:output kind='obj'>
+                        <if test='itemTypeRef is null'>
+                           <attribute name='item-type-is-object' value='@string(true)'/>
+                        </if>
+                        <src:reference>
+                           <code:variable-reference name='{src_aux_variable("output")}_{generate_id(el)}'/>
+                        </src:reference>
+                     </src:output>
+                  </variable>
+                  <variable name='cardinality' value='
+                     (@as != null) ? xcst_cardinality(@as, language)
+                        : (seqctorMeta.Attribute("cardinality")?.Value is string cardinalityStr) ?
+                           (TypeCardinality)System.Enum.Parse(typeof(TypeCardinality), cardinalityStr)
+                        : (TypeCardinality?)null'/>
+                  <variable name='flushSingle' value='cardinality == TypeCardinality.One'/>
+
+                  <code:method-call name='Flush{(flushSingle ? "Single" : null)}'>
+                     <code:method-call name='WriteSequenceConstructor'>
+                        <code:method-call name='Create'>
+                           <copy-of value='src_helper_type("SequenceWriter")'/>
+                           <code:type-arguments>
+                              <copy-of value='itemTypeRef'/>
+                              <on-empty>
+                                 <copy-of value='src_nullable_object_type'/>
+                              </on-empty>
+                           </code:type-arguments>
+                        </code:method-call>
+                        <code:arguments>
+                           <code:lambda void='true'>
+                              <code:parameters>
+                                 <code:parameter name='{select(newOutput, src + "reference", code).First().Attribute("name")!.Value}'/>
+                              </code:parameters>
+                              <code:block>
+                                 <call-template name='src:sequence-constructor'>
+                                    <with-param name='el' value='el'/>
+                                    <with-param name='children' value='children'/>
+                                    <with-param name='output' value='newOutput' tunnel='yes'/>
+                                    <with-param name='trackCardinality' value='cardinality'/>
+                                 </call-template>
+                              </code:block>
+                           </code:lambda>
+                        </code:arguments>
+                     </code:method-call>
+                  </code:method-call>
+               </otherwise>
+            </choose>
+         </when>
+         <otherwise>
+            <code:default>
+               <choose>
+                  <when test='@as != null'>
+                     <code:type-reference name='{@as}'/>
+                  </when>
+                  <otherwise>
+                     <copy-of value='src_object_type'/>
+                  </otherwise>
+               </choose>
+            </code:default>
+         </otherwise>
+      </choose>
+   </template>
+
+   <template name='src:sequence-constructor'>
+      <param name='el' as='XElement' required='yes'/>
+      <param name='children' value='el.Nodes().ToArray()' as='XNode[]'/>
+      <param name='text' value='xcst_text(el, children)' as='string?'/>
+      <param name='trackCardinality' as='TypeCardinality?'/>
+      <param name='output' as='XElement?' tunnel='yes'/>
+
+      <variable name='normalizedChildren' value='xcst_sequence_constructor_nodes(children)'/>
+      <variable name='onEmpty' value='normalizedChildren
+         .OfType&lt;XElement>()
+         .Where(p => p.Name == c + "on-empty")
+         .FirstOrDefault()'/>
+
+      <if test='onEmpty != null'>
+         <if test='!ReferenceEquals(onEmpty, normalizedChildren.Last())'>
+            <message terminate='yes' error-code='XTSE0010' error-data='src_error_object(onEmpty)' transform-text='trim'>
+               c:on-empty must be the last instruction in the sequence constructor.
+            </message>
+         </if>
+      </if>
+
+      <choose>
+         <when test='text != null'>
+            <call-template name='xcst:require-output'>
+               <with-param name='el' value='el'/>
+            </call-template>
+            <code:method-call name='WriteString'>
+               <call-template name='src:line-number'>
+                  <with-param name='el' value='el'/>
+               </call-template>
+               <copy-of value='select(output, src + "reference", code)'/>
+               <code:arguments>
+                  <call-template name='src:expand-text'>
+                     <with-param name='el' value='el'/>
+                     <with-param name='text' value='text'/>
+                  </call-template>
+               </code:arguments>
+            </code:method-call>
+         </when>
+         <when test='normalizedChildren.OfType&lt;XElement>().Any()
+               || empty(normalizedChildren)'>
+            <variable name='requiresSome' value='trackCardinality != null
+               &amp;&amp; trackCardinality != TypeCardinality.ZeroOrMore'/>
+            <if test='!(!requiresSome || normalizedChildren.Any())'>
+               <message terminate='yes' error-code='XTTE0505' error-data='src_error_object(el)' transform-text='trim'>
+                  An empty sequence is not allowed.
+               </message>
+            </if>
+            <variable name='track' value='onEmpty != null || requiresSome'/>
+            <choose>
+               <when test='track'>
+                  <call-template name='xcst:require-output'>
+                     <with-param name='el' value='el'/>
+                  </call-template>
+                  <variable name='cardinalityChar' value='
+                     (trackCardinality is null || trackCardinality == TypeCardinality.ZeroOrMore) ?
+                        "*": " "'/>
+                  <variable name='outputRef' value='select(output, src + "reference", code)'/>
+                  <code:method-call name='BeginTrack' line-hidden='true'>
+                     <copy-of value='outputRef'/>
+                     <code:arguments>
+                        <code:char value='{cardinalityChar}'/>
+                     </code:arguments>
+                  </code:method-call>
+                  <code:try line-hidden='true'>
+                     <code:block>
+                        <apply-templates value='normalizedChildren' mode='src:statement'/>
+                        <code:disable-warning codes='CS0162'/>
+                        <code:method-call name='EndOfConstructor' line-hidden='true'>
+                           <copy-of value='outputRef'/>
+                        </code:method-call>
+                        <code:restore-warning codes='CS0162'/>
+                     </code:block>
+                     <code:finally line-hidden='true'>
+                        <code:method-call name='EndTrack' line-hidden='true'>
+                           <copy-of value='outputRef'/>
+                        </code:method-call>
+                     </code:finally>
+                  </code:try>
+               </when>
+               <otherwise>
+                  <apply-templates value='normalizedChildren' mode='src:statement'/>
+               </otherwise>
+            </choose>
+         </when>
+      </choose>
+   </template>
+
+
+   <!-- ## Data Types-->
+
+   <template name='src:boolean'>
+      <param name='val' as='bool?' required='yes'/>
+      <param name='avt' as='XAttribute?'/>
+
+      <choose>
+         <when test='val != null'>
+            <code:bool value='{@string(val.Value)}'/>
+         </when>
+         <otherwise>
+            <code:method-call name='Boolean'>
+               <copy-of value='src_helper_type("DataType")'/>
+               <code:arguments>
+                  <call-template name='src:expand-attribute'>
+                     <with-param name='attr' value='avt!'/>
+                  </call-template>
+               </code:arguments>
+            </code:method-call>
+         </otherwise>
+      </choose>
+   </template>
+
+   <template name='src:decimal'>
+      <param name='val' as='decimal?' required='yes'/>
+      <param name='avt' as='XAttribute?'/>
+
+      <choose>
+         <when test='val != null'>
+            <code:decimal value='{@string(val.Value)}'/>
+         </when>
+         <otherwise>
+            <code:method-call name='Decimal'>
+               <copy-of value='src_helper_type("DataType")'/>
+               <code:arguments>
+                  <call-template name='src:expand-attribute'>
+                     <with-param name='attr' value='avt!'/>
+                  </call-template>
+               </code:arguments>
+            </code:method-call>
+         </otherwise>
+      </choose>
+   </template>
+
+   <template name='src:integer'>
+      <param name='val' as='int?' required='yes'/>
+      <param name='avt' as='XAttribute?'/>
+
+      <choose>
+         <when test='val != null'>
+            <code:int value='{@string(val.Value)}'/>
+         </when>
+         <otherwise>
+            <code:method-call name='Integer'>
+               <copy-of value='src_helper_type("DataType")'/>
+               <code:arguments>
+                  <call-template name='src:expand-attribute'>
+                     <with-param name='attr' value='avt!'/>
+                  </call-template>
+               </code:arguments>
+            </code:method-call>
+         </otherwise>
+      </choose>
+   </template>
+
+   <template name='src:item-separator'>
+      <param name='separator' as='string?' required='yes'/>
+      <param name='avt' as='XAttribute?'/>
+
+      <choose>
+         <when test='separator != null'>
+            <code:string verbatim='true'>
+               <attribute name='xml:space'>preserve</attribute>
+               <value-of value='separator'/>
+            </code:string>
+         </when>
+         <otherwise>
+            <code:method-call name='ItemSeparator'>
+               <copy-of value='src_helper_type("DataType")'/>
+               <code:arguments>
+                  <call-template name='src:expand-attribute'>
+                     <with-param name='attr' value='avt!'/>
+                  </call-template>
+               </code:arguments>
+            </code:method-call>
+         </otherwise>
+      </choose>
+   </template>
+
+   <template name='src:QName'>
+      <param name='qname' as='XName?' required='yes'/>
+      <param name='str' as='string?'/>
+      <param name='avt' as='XAttribute?'/>
+
+      <code:method-call name='QName'>
+         <copy-of value='src_helper_type("DataType")'/>
+         <code:arguments>
+            <choose>
+               <when test='qname != null'>
+                  <code:string verbatim='true'>
+                     <value-of value='qname.Namespace.NamespaceName'/>
+                  </code:string>
+                  <code:string literal='true'>
+                     <value-of value='qname.LocalName'/>
+                  </code:string>
+               </when>
+               <when test='str != null'>
+                  <code:string literal='true'>
+                     <value-of value='str'/>
+                  </code:string>
+               </when>
+               <otherwise>
+                  <assert test='avt != null'/>
+                  <call-template name='src:expand-attribute'>
+                     <with-param name='attr' value='avt'/>
+                  </call-template>
+               </otherwise>
+            </choose>
+         </code:arguments>
+      </code:method-call>
+   </template>
+
+   <template name='src:sort-order-descending'>
+      <param name='val' as='bool?' required='yes'/>
+      <param name='avt' as='XAttribute?'/>
+
+      <choose>
+         <when test='val != null'>
+            <code:bool value='{@string(val.Value)}'/>
+         </when>
+         <otherwise>
+            <code:method-call name='SortOrderDescending'>
+               <copy-of value='src_helper_type("DataType")'/>
+               <code:arguments>
+                  <call-template name='src:expand-attribute'>
+                     <with-param name='attr' value='avt!'/>
+                  </call-template>
+               </code:arguments>
+            </code:method-call>
+         </otherwise>
+      </choose>
+   </template>
+
+   <template name='src:string'>
+      <param name='val' as='string?' required='yes'/>
+      <param name='avt' as='XAttribute?'/>
+      <param name='literal' value='false' as='bool'/>
+
+      <choose>
+         <when test='val != null'>
+            <code:string>
+               <if test='literal'>
+                  <attribute name='literal'>true</attribute>
+               </if>
+               <value-of value='val'/>
+            </code:string>
+         </when>
+         <otherwise>
+            <call-template name='src:expand-attribute'>
+               <with-param name='attr' value='avt!'/>
+            </call-template>
+         </otherwise>
+      </choose>
+   </template>
+
+   <template name='src:uri-string'>
+      <param name='val' as='System.Uri?' required='yes'/>
+      <param name='avt' as='XAttribute?'/>
+
+      <choose>
+         <when test='val != null'>
+            <code:string verbatim='true'>
+               <value-of value='(val.IsAbsoluteUri) ?
+                  val.AbsoluteUri
+                  : val.OriginalString'/>
+            </code:string>
+         </when>
+         <otherwise>
+            <call-template name='src:expand-attribute'>
+               <with-param name='attr' value='avt!'/>
+            </call-template>
+         </otherwise>
+      </choose>
+   </template>
+
+   <template name='src:uri-resolve'>
+      <param name='val' as='System.Uri?' required='yes'/>
+      <param name='avt' as='XAttribute?'/>
+
+      <code:method-call name='ResolveUri'>
+         <copy-of value='select(src_context_field, src + "reference", code)'/>
+         <code:arguments>
+            <call-template name="src:uri-string">
+               <with-param name='val' value='val'/>
+               <with-param name='avt' value='avt'/>
+            </call-template>
+         </code:arguments>
+      </code:method-call>
+   </template>
+
+</module>

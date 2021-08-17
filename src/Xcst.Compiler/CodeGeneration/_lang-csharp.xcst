@@ -1,0 +1,1577 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!--
+ Copyright 2021 Max Toro Q.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<module version='1.0' language='C#'
+   xmlns='http://maxtoroq.github.io/XCST'
+   xmlns:code='http://maxtoroq.github.io/XCST/code'
+   xmlns:src='http://maxtoroq.github.io/XCST/compiled'
+   xmlns:cs='http://maxtoroq.github.io/XCST/csharp'>
+
+   <import-namespace ns='System.Collections.Generic'/>
+   <import-namespace ns='System.Linq'/>
+   <import-namespace ns='System.Xml.Linq'/>
+
+   <param name='cs_open_brace_on_new_line' as='bool'/>
+   <param name='cs_nullable_annotate' as='bool'/>
+   <param name='cs_nullable_context' as='string?'/>
+
+   <variable name='xcst_csharp_lang'>C#</variable>
+   <variable name='cs_statement_delimiter'>;</variable>
+
+   <variable name='cs_primitives'>
+      <data xmlns=''>
+         <bool>
+            <code:type-reference name='Boolean' namespace='System'/>
+         </bool>
+         <int>
+            <code:type-reference name='Int32' namespace='System'/>
+         </int>
+         <object>
+            <code:type-reference name='Object' namespace='System'/>
+         </object>
+         <string>
+            <code:type-reference name='String' namespace='System'/>
+         </string>
+      </data>
+   </variable>
+
+   <template name='cs:serialize'>
+      <param name='el' as='XElement' required='yes'/>
+
+      <apply-templates value='el' mode='cs:source'>
+         <with-param name='indent' value='0' tunnel='yes'/>
+      </apply-templates>
+   </template>
+
+   <template name='cs:nullable-directive'>
+      <if test='cs_nullable_context != null'>
+         <call-template name='src:new-line-indented'/>
+         <text>#nullable </text>
+         <value-of value='cs_nullable_context'/>
+      </if>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name.Namespace == code' mode='cs:source cs:statement'>
+      <message terminate='yes' error-code='CS0001' error-data='src_error_object(el)' expand-text='yes' transform-text='trim'>
+         Element code:{el.Name.LocalName} cannot be compiled to C#.
+      </message>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "add"' mode='cs:source'>
+      <text>(</text>
+      <apply-templates value='select(el, code)' separator=' + '/>
+      <text>)</text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "and-also"' mode='cs:source'>
+      <text>(</text>
+      <apply-templates value='select(el, code)' separator=' &amp;&amp; '/>
+      <text>)</text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "argument"' mode='cs:source'>
+      <if test='el.Attribute("ref") is XAttribute refAttr
+          &amp;&amp; xs_boolean(refAttr)'>ref </if>
+      <if test='el.Attribute("name") is XAttribute nameAttr'>
+         <value-of value='nameAttr.Value'/>
+         <text>: </text>
+      </if>
+      <apply-templates value='el.Nodes()'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "arguments"' mode='cs:source'>
+      <apply-templates value='select(el, code)' separator=', '/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "assign"' mode='cs:statement'>
+      <call-template name='cs:line-pragma'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <call-template name='src:new-line-indented'/>
+      <apply-templates value='select(el, code)' separator=' = ' mode='cs:source'/>
+      <value-of value='cs_statement_delimiter'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "assign"' mode='cs:source'>
+      <variable name='useParens' value='!(el.Parent?.Name == code + "lambda")'/>
+      <if test='useParens'>(</if>
+      <apply-templates value='select(el, code)' separator=' = '/>
+      <if test='useParens'>)</if>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "attribute"' mode='cs:source'>
+      <call-template name='cs:line-pragma'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <call-template name='src:new-line-indented'/>
+      <text>[</text>
+      <apply-templates value='el.Element(code + "type-reference")'/>
+      <variable name='argsAndInit' value='
+         select(el, code + "arguments", code)
+            .Concat(select(el, code + "initializer", code))
+            .ToArray()'/>
+      <if test='argsAndInit.Length > 0'>
+         <text>(</text>
+         <apply-templates value='argsAndInit' separator=', '/>
+         <text>)</text>
+      </if>
+      <text>]</text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "base-reference"' mode='cs:source'>
+      <text>base</text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "block"' mode='cs:statement'>
+      <call-template name='cs:line-pragma'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <call-template name='src:new-line-indented'/>
+      <apply-templates value='el' mode='cs:source'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "block"' mode='cs:source'>
+      <param name='indent' as='int' tunnel='yes'/>
+
+      <call-template name='cs:open-brace'/>
+      <apply-templates value='el.Nodes()' mode='cs:statement'>
+         <with-param name='indent' value='indent + 1' tunnel='yes'/>
+      </apply-templates>
+      <call-template name='cs:close-brace'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "bool"' mode='cs:source'>
+      <value-of value='el.Attribute("value")!.Value'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "break"' mode='cs:statement'>
+      <call-template name='cs:line-pragma'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <call-template name='src:new-line-indented'/>
+      <text>break</text>
+      <value-of value='cs_statement_delimiter'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "case"' mode='cs:source'>
+      <param name='indent' as='int' tunnel='yes'/>
+
+      <call-template name='cs:line-pragma'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <call-template name='src:new-line-indented'/>
+      <text>case </text>
+      <apply-templates value='select(el, code).First()'/>
+      <text>:</text>
+      <choose>
+         <when test='el.Element(code + "block") is XElement blockEl'>
+            <apply-templates value='blockEl'/>
+         </when>
+         <otherwise>
+            <apply-templates value='select(el, code).Skip(1)' mode='cs:statement'>
+               <with-param name='indent' value='indent + 1' tunnel='yes'/>
+            </apply-templates>
+         </otherwise>
+      </choose>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "case-default"' mode='cs:source'>
+      <param name='indent' as='int' tunnel='yes'/>
+
+      <call-template name='cs:line-pragma'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <call-template name='src:new-line-indented'/>
+      <text>default:</text>
+      <choose>
+         <when test='el.Element(code + "block") is XElement blockEl'>
+            <apply-templates value='blockEl'/>
+         </when>
+         <otherwise>
+            <apply-templates value='select(el, code)' mode='cs:statement'>
+               <with-param name='indent' value='indent + 1' tunnel='yes'/>
+            </apply-templates>
+         </otherwise>
+      </choose>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "cast"' mode='cs:source'>
+      <text>((</text>
+      <apply-templates value='select(el, code).First()'/>
+      <text>)(</text>
+      <apply-templates value='select(el, code).ElementAt(1)'/>
+      <text>))</text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "catch"' mode='cs:source'>
+      <call-template name='cs:line-pragma'>
+         <with-param name='el' value='el'/>
+         <with-param name='appendLine' value='true'/>
+      </call-template>
+      <text> catch</text>
+      <if test='el.Element(code + "exception") is XElement exEl'>
+         <text>(</text>
+         <apply-templates value='select(exEl, code)'/>
+         <text>)</text>
+      </if>
+      <if test='el.Element(code + "when") is XElement whenEl'>
+         <text> when (</text>
+         <apply-templates value='select(whenEl, code)'/>
+         <text>)</text>
+      </if>
+      <apply-templates value='el.Element(code + "block")'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "chain"' mode='cs:statement cs:source'>
+      <apply-templates value='el.Nodes()'/>
+   </template>
+
+   <template match='XElement el
+         &amp;&amp; el.Name == code + "chain"
+         &amp;&amp; select(el, code).ToArray() is var children
+         &amp;&amp; children.Length > 1' mode='cs:statement'>
+      <param name='indent' as='int' tunnel='yes'/>
+
+      <call-template name='src:new-line-indented'/>
+      <apply-templates value='children[0]' mode='cs:source'/>
+      <for-each name='child' in='children.Skip(1)'>
+         <call-template name='src:new-line-indented'>
+            <with-param name='indent' value='indent + 1' tunnel='yes'/>
+         </call-template>
+         <apply-templates value='child' mode='cs:source'/>
+      </for-each>
+      <value-of value='cs_statement_delimiter'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "chain-reference"' mode='cs:statement cs:source'/>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "char"' mode='cs:source'>
+      <text>'</text>
+      <value-of value='el.Attribute("value")!.Value'/>
+      <text>'</text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "collection-initializer"' mode='cs:source'>
+      <variable name='children' value='select(el, code).ToArray()'/>
+      <if test='children.Length > 0'>
+         <call-template name='cs:open-brace'/>
+         <text> </text>
+         <apply-templates value='children' separator=', '/>
+         <call-template name='cs:close-brace'/>
+      </if>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "compilation-unit"' mode='cs:source'>
+      <apply-templates value='el.Nodes()'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "constructor"' mode='cs:source'>
+      <value-of value='src_new_line'/>
+      <apply-templates value='select(el, code + "attributes", code)'/>
+      <call-template name='cs:line-pragma'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <call-template name='src:new-line-indented'/>
+      <if test='el.Attribute("visibility") is XAttribute visibilityAttr
+            &amp;&amp; visibilityAttr.Value != "#default"'>
+         <value-of value='visibilityAttr.Value'/>
+         <text> </text>
+      </if>
+      <variable name='type' value='el.Ancestors(code + "type").First()'/>
+      <call-template name='cs:verbatim'>
+         <with-param name='el' value='type'/>
+      </call-template>
+      <value-of value='type.Attribute("name")!.Value'/>
+      <text>(</text>
+      <apply-templates value='select(el, code + "parameters")'/>
+      <text>)</text>
+      <apply-templates value='select(el, code + "block")'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "continue"' mode='cs:statement'>
+      <call-template name='src:new-line-indented'/>
+      <text>continue</text>
+      <value-of value='cs_statement_delimiter'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "conversion"' mode='cs:source'>
+      <value-of value='src_new_line'/>
+      <apply-templates value='select(el, code + "attributes", code)'/>
+      <call-template name='cs:line-pragma'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <call-template name='src:new-line-indented'/>
+      <text>public static </text>
+      <choose>
+         <when test='el.Attribute("implicit") is XAttribute implicitAttr
+            &amp;&amp; xs_boolean(implicitAttr)'>implicit</when>
+         <otherwise>explicit</otherwise>
+      </choose>
+      <text> operator </text>
+      <apply-templates value='el.Element(code + "type-reference")'/>
+      <text>(</text>
+      <apply-templates value='el.Element(code + "parameters")'/>
+      <text>)</text>
+      <apply-templates value='el.Element(code + "block")'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "decimal"' mode='cs:source'>
+      <value-of value='el.Attribute("value")!.Value'/>
+      <text>m</text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "default"' mode='cs:source'>
+      <text>default(</text>
+      <apply-templates value='el.Nodes()'/>
+      <text>)</text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "disable-warning"' mode='cs:source cs:statement'>
+      <value-of value='src_new_line'/>
+      <text>#pragma warning disable </text>
+      <value-of value='tokenize(el.Attribute("codes")!.Value)' separator=','/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "double"' mode='cs:source'>
+      <value-of value='el.Attribute("value")!.Value'/>
+      <text>d</text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "else"' mode='cs:statement'>
+      <param name='indent' as='int' tunnel='yes'/>
+
+      <call-template name='cs:line-pragma'>
+         <with-param name='el' value='el'/>
+         <with-param name='appendLine' value='true'/>
+      </call-template>
+      <text> else</text>
+      <call-template name='cs:open-brace'/>
+      <apply-templates value='el.Nodes()'>
+         <with-param name='indent' value='indent + 1' tunnel='yes'/>
+      </apply-templates>
+      <call-template name='cs:close-brace'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "equal"' mode='cs:source'>
+      <text>(</text>
+      <apply-templates value='select(el, code)' separator=' == '/>
+      <text>)</text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "expression"' mode='cs:source'>
+      <choose>
+         <when test='el.Attribute("value") is XAttribute valueAttr'>
+            <value-of value='valueAttr.Value'/>
+         </when>
+         <otherwise>
+            <apply-templates value='el.Nodes()'/>
+         </otherwise>
+      </choose>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "expression"' mode='cs:statement'>
+      <choose>
+         <when test='el.Attribute("value") is XAttribute valueAttr'>
+            <call-template name='src:new-line-indented'/>
+            <value-of value='valueAttr.Value'/>
+            <value-of value='cs_statement_delimiter'/>
+         </when>
+         <otherwise>
+            <apply-templates value='el.Nodes()'/>
+         </otherwise>
+      </choose>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "field"' mode='cs:source'>
+      <if test='!(el
+            .ElementsBeforeSelf()
+            .Where(p => p.Name.Namespace == code)
+            .FirstOrDefault()?.Name == code + "field")'>
+         <value-of value='src_new_line'/>
+      </if>
+      <apply-templates value='select(el, code + "attributes", code)'/>
+      <call-template name='cs:line-pragma'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <call-template name='src:new-line-indented'/>
+      <if test='el.Attribute("visibility") is XAttribute visibilityAttr
+            &amp;&amp; visibilityAttr.Value != "#default"'>
+         <value-of value='visibilityAttr.Value'/>
+         <text> </text>
+      </if>
+      <if test='el.Attribute("extensibility") is XAttribute extensibilityAttr
+            &amp;&amp; extensibilityAttr.Value != "#default"'>
+         <value-of value='extensibilityAttr.Value'/>
+         <text> </text>
+      </if>
+      <if test='el.Attribute("readonly") is XAttribute readonlyAttr
+            &amp;&amp; xs_boolean(readonlyAttr)'>
+         <text>readonly </text>
+      </if>
+      <apply-templates value='el.Element(code + "type-reference")'/>
+      <text> </text>
+      <value-of value='el.Attribute("name")!.Value'/>
+      <if test='el.Element(code + "expression") is XElement exprEl'>
+         <text> = </text>
+         <apply-templates value='exprEl'/>
+      </if>
+      <value-of value='cs_statement_delimiter'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "field-reference"' mode='cs:source'>
+      <apply-templates value='select(el, code).First()'/>
+      <text>.</text>
+      <call-template name='cs:verbatim'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <value-of value='el.Attribute("name")!.Value'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "finally"' mode='cs:source'>
+      <param name='indent' as='int' tunnel='yes'/>
+
+      <call-template name='cs:line-pragma'>
+         <with-param name='el' value='el'/>
+         <with-param name='appendLine' value='true'/>
+      </call-template>
+      <text> finally</text>
+      <call-template name='cs:open-brace'/>
+      <apply-templates value='el.Nodes()' mode='cs:statement'>
+         <with-param name='indent' value='indent + 1' tunnel='yes'/>
+      </apply-templates>
+      <call-template name='cs:close-brace'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "float"' mode='cs:source'>
+      <value-of value='el.Attribute("value")!.Value'/>
+      <text>f</text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "for-each"' mode='cs:statement'>
+      <call-template name='cs:line-pragma'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <call-template name='src:new-line-indented'/>
+      <text>foreach (</text>
+      <apply-templates value='select(el, code).First()' mode='cs:source'/>
+      <text>)</text>
+      <apply-templates value='select(el, code).ElementAt(1)' mode='cs:source'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "getter"' mode='cs:source'>
+      <variable name='block' value='el.Element(code + "block")'/>
+      <call-template name='cs:line-pragma'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <choose>
+         <when test='block != null'>
+            <call-template name='src:new-line-indented'/>
+         </when>
+         <otherwise value='" "'/>
+      </choose>
+      <text>get</text>
+      <choose>
+         <when test='block != null'>
+            <apply-templates value='block'/>
+         </when>
+         <otherwise value='cs_statement_delimiter'/>
+      </choose>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "greater-than"' mode='cs:source'>
+      <text>(</text>
+      <apply-templates value='select(el, code)' separator=' > '/>
+      <text>)</text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "greater-than-or-equal"' mode='cs:source'>
+      <text>(</text>
+      <apply-templates value='select(el, code)' separator=' >= '/>
+      <text>)</text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "if-else"' mode='cs:statement'>
+      <apply-templates value='el.Nodes()'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "if"' mode='cs:statement'>
+      <call-template name='cs:line-pragma'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <call-template name='src:new-line-indented'/>
+      <if test='el.Parent!.Name == code + "if-else"
+            &amp;&amp; el.ElementsBeforeSelf(code + "if").Any()'>
+         <text> else </text>
+      </if>
+      <text>if (</text>
+      <apply-templates value='select(el, code).First()' mode='cs:source'/>
+      <text>)</text>
+      <apply-templates value='select(el, code).ElementAt(1)' mode='cs:source'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "import"' mode='cs:source'>
+      <call-template name='cs:line-pragma'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <call-template name='src:new-line-indented'/>
+      <text>using </text>
+      <if test='el.Attribute("static") is XAttribute staticAttr
+         &amp;&amp; xs_boolean(staticAttr)'>static </if>
+      <if test='el.Attribute("alias") is XAttribute aliasAttr'>
+         <call-template name='cs:verbatim'>
+            <with-param name='el' value='el'/>
+         </call-template>
+         <value-of value='aliasAttr.Value'/>
+         <text> = </text>
+      </if>
+      <choose>
+         <when test='el.Attribute("namespace") is XAttribute namespaceAttr'>
+            <value-of value='namespaceAttr.Value'/>
+         </when>
+         <otherwise>
+            <variable name='typeVerbatim' value='
+               (el.Attribute("type-verbatim") is XAttribute typeVerbatimAttr) ?
+                  xs_boolean(typeVerbatimAttr)
+                  : false'/>
+            <apply-templates value='el.Element(code + "type-reference")'>
+               <with-param name='verbatim' value='typeVerbatim' tunnel='yes'/>
+            </apply-templates>
+         </otherwise>
+      </choose>
+      <value-of value='cs_statement_delimiter'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "indexer-initializer"' mode='cs:source'>
+      <text>[</text>
+      <apply-templates value='el.Element(code + "arguments")'/>
+      <text>] = </text>
+      <apply-templates value='select(el, code).ElementAt(1)'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "indexer-reference"' mode='cs:source'>
+      <apply-templates value='select(el, code).First()'/>
+      <text>[</text>
+      <apply-templates value='el.Element(code + "arguments")'/>
+      <text>]</text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "initializer"' mode='cs:source'>
+      <param name='indent' as='int' tunnel='yes'/>
+
+      <if test='select(el, code).ToArray() is var children
+            &amp;&amp; children.Length > 0'>
+         <call-template name='cs:open-brace'/>
+         <text> </text>
+         <for-each name='child' in='children' separator=', '>
+            <call-template name='cs:line-pragma'>
+               <with-param name='el' value='el'/>
+            </call-template>
+            <call-template name='src:new-line-indented'>
+               <with-param name='indent' value='indent + 1' tunnel='yes'/>
+            </call-template>
+            <apply-templates value='child'>
+               <with-param name='indent' value='indent + 1' tunnel='yes'/>
+            </apply-templates>
+         </for-each>
+         <call-template name='cs:close-brace'/>
+      </if>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "int"' mode='cs:source'>
+      <value-of value='el.Attribute("value")!.Value'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "is"' mode='cs:source'>
+      <text>(</text>
+      <apply-templates value='select(el, code)' separator=' is '/>
+      <text>)</text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "lambda"' mode='cs:source'>
+      <variable name='parametersEl' value='el.Element(code + "parameters")'/>
+      <variable name='paramCount' value='
+         (parametersEl != null) ?
+            select(parametersEl, code).Count()
+            : 0'/>
+      <if test='paramCount != 1'>(</if>
+      <apply-templates value='parametersEl'/>
+      <if test='paramCount != 1'>)</if>
+      <text> => </text>
+      <apply-templates value='select(el, code).Last()'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "less-than"' mode='cs:source'>
+      <text>(</text>
+      <apply-templates value='select(el, code)' separator=' &lt; '/>
+      <text>)</text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "less-than-or-equal"' mode='cs:source'>
+      <text>(</text>
+      <apply-templates value='select(el, code)' separator=' &lt;= '/>
+      <text>)</text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "long"' mode='cs:source'>
+      <value-of value='el.Attribute("value")!.Value'/>
+      <text>L</text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "member-initializer"' mode='cs:source'>
+      <call-template name='cs:verbatim'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <value-of value='el.Attribute("name")!.Value'/>
+      <text> = </text>
+      <apply-templates value='el.Nodes()'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "method"' mode='cs:source'>
+      <value-of value='src_new_line'/>
+      <apply-templates value='select(el, code + "attributes", code)'/>
+      <call-template name='cs:line-pragma'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <variable name='implementsInterface' value='el.Element(code + "implements-interface")'/>
+      <call-template name='src:new-line-indented'/>
+      <if test='el.Attribute("visibility") is XAttribute visibilityAttr
+            &amp;&amp; visibilityAttr.Value != "#default"
+            &amp;&amp; implementsInterface is null'>
+         <value-of value='visibilityAttr.Value'/>
+         <text> </text>
+      </if>
+      <if test='el.Attribute("extensibility") is XAttribute extensibilityAttr
+            &amp;&amp; extensibilityAttr.Value != "#default"'>
+         <value-of value='extensibilityAttr.Value'/>
+         <if test='extensibilityAttr.Value == "sealed"'> override</if>
+         <text> </text>
+      </if>
+      <choose>
+         <when test='el.Element(code + "type-reference") is XElement typeRef'>
+            <variable name='returnTypeVerbatim' value='
+               (el.Attribute("return-type-verbatim") is XAttribute rtvAttr) ?
+                  xs_boolean(rtvAttr)
+                  : false'/>
+            <apply-templates value='typeRef'>
+               <with-param name='verbatim' value='returnTypeVerbatim' tunnel='yes'/>
+            </apply-templates>
+         </when>
+         <otherwise>void</otherwise>
+      </choose>
+      <text> </text>
+      <if test='implementsInterface != null'>
+         <apply-templates value='select(implementsInterface, code + "type-reference")'/>
+         <text>.</text>
+      </if>
+      <call-template name='cs:verbatim'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <value-of value='el.Attribute("name")!.Value'/>
+      <if test='el.Element(code + "type-parameters") is XElement typeParams'>
+         <text>&lt;</text>
+         <apply-templates value='select(typeParams, code)' separator=', '/>
+         <text>></text>
+      </if>
+      <text>(</text>
+      <apply-templates value='select(el, code + "parameters")'/>
+      <text>)</text>
+      <choose>
+         <when test='el.Element(code + "block") is XElement block'>
+            <apply-templates value='block'/>
+         </when>
+         <otherwise>
+            <value-of value='cs_statement_delimiter'/>
+         </otherwise>
+      </choose>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "method-call"' mode='cs:statement'>
+      <call-template name='cs:line-pragma'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <call-template name='src:new-line-indented'/>
+      <apply-templates value='el' mode='cs:source'/>
+      <value-of value='cs_statement_delimiter'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "method-call"' mode='cs:source'>
+      <choose>
+         <when test='el.Element(code + "method-reference") is XElement methodRef'>
+            <apply-templates value='methodRef'/>
+         </when>
+         <otherwise>
+            <call-template name='cs:method-reference'>
+               <with-param name='el' value='el'/>
+            </call-template>
+         </otherwise>
+      </choose>
+      <text>(</text>
+      <apply-templates value='el.Element(code + "arguments")'/>
+      <text>)</text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "method-reference"' mode='cs:source'>
+      <call-template name='cs:method-reference'>
+         <with-param name='el' value='el'/>
+      </call-template>
+   </template>
+
+   <template name='cs:method-reference'>
+      <param name='el' as='XElement' required='yes'/>
+
+      <apply-templates value='select(el, code).First()'/>
+      <text>.</text>
+      <call-template name='cs:verbatim'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <value-of value='el.Attribute("name")!.Value'/>
+      <if test='el.Element(code + "type-arguments") is XElement typeArgs'>
+         <text>&lt;</text>
+         <apply-templates value='select(typeArgs, code)' separator=', '/>
+         <text>></text>
+      </if>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "nameof"' mode='cs:source'>
+      <text>nameof(</text>
+      <apply-templates value='el.Nodes()'/>
+      <text>)</text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "namespace"' mode='cs:source'>
+      <param name='indent' as='int' tunnel='yes'/>
+
+      <value-of value='src_new_line'/>
+      <call-template name='src:new-line-indented'/>
+      <text>namespace </text>
+      <value-of value='el.Attribute("name")!.Value'/>
+      <call-template name='cs:open-brace'/>
+      <apply-templates value='select(el, code)
+            .OrderByDescending(p => p.Name == code + "import")'>
+         <with-param name='indent' value='indent + 1' tunnel='yes'/>
+      </apply-templates>
+      <call-template name='cs:close-brace'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "new-array"' mode='cs:source'>
+      <text>new</text>
+      <if test='el.Element(code + "type-reference") is XElement typeRef'>
+         <text> </text>
+         <apply-templates value='typeRef'/>
+      </if>
+      <text>[]</text>
+      <apply-templates value='el.Element(code + "collection-initializer")'/>
+   </template>
+
+   <template match='XElement el
+         &amp;&amp; el.Name == code + "new-object"
+         &amp;&amp; el.Element(code + "type-reference") is XElement typeRef' mode='cs:source'>
+
+      <variable name='args' value='select(el, code + "arguments", code).ToArray()'/>
+      <variable name='inits' value='select(el, code + "initializer", code).ToArray()'/>
+      <variable name='collectionInits' value='select(el, code + "collection-initializer", code).ToArray()'/>
+      <variable name='requireParens' value='empty(args)
+         &amp;&amp; empty(inits)
+         &amp;&amp; empty(collectionInits)'/>
+
+      <text>new </text>
+      <apply-templates value='typeRef'/>
+      <if test='args.Length > 0 || requireParens'>
+         <text>(</text>
+         <if test='args.Length > 0'>
+            <apply-templates value='args[0].Parent'/>
+         </if>
+         <text>)</text>
+      </if>
+      <choose>
+         <when test='inits.Length > 0'>
+            <apply-templates value='inits[0].Parent'/>
+         </when>
+         <when test='collectionInits.Length > 0'>
+            <apply-templates value='collectionInits[0].Parent'/>
+         </when>
+      </choose>
+   </template>
+
+   <template match='XElement el
+         &amp;&amp; el.Name == code + "new-object"
+         &amp;&amp; el.Element(code + "type-reference") is null' mode='cs:source'>
+
+      <variable name='args' value='select(el, code + "arguments", code).ToArray()'/>
+      <variable name='inits' value='select(el, code + "initializer", code).ToArray()'/>
+      <variable name='collectionInits' value='select(el, code + "collection-initializer", code).ToArray()'/>
+
+      <text>new </text>
+      <if test='args.Length > 0'>
+         <text>(</text>
+         <apply-templates value='args[0].Parent'/>
+         <text>)</text>
+      </if>
+      <choose>
+         <when test='inits.Length > 0'>
+            <apply-templates value='inits[0].Parent'/>
+         </when>
+         <when test='collectionInits.Length > 0'>
+            <apply-templates value='collectionInits[0].Parent'/>
+         </when>
+         <when test='empty(args)'>
+            <call-template name='cs:open-brace'/>
+            <text> </text>
+            <call-template name='cs:close-brace'/>
+         </when>
+      </choose>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "not"' mode='cs:source'>
+      <text>!</text>
+      <apply-templates value='el.Nodes()'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "null"' mode='cs:source'>
+      <text>null</text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "or-else"' mode='cs:source'>
+      <apply-templates value='select(el, code)' separator=' || '/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "parameter"' mode='cs:source'>
+      <param name='indent' as='int' tunnel='yes'/>
+
+      <call-template name='cs:line-pragma'>
+         <with-param name='el' value='el'/>
+         <with-param name='appendLine' value='true'/>
+         <with-param name='indent' value='indent + 2' tunnel='yes'/>
+      </call-template>
+      <if test='el.Element(code + "type-reference") is XElement typeRef'>
+         <if test='el.Attribute("ref") is XAttribute refAttr
+            &amp;&amp; xs_boolean(refAttr)'>ref </if>
+         <if test='el.Attribute("params") is XAttribute paramsAttr
+            &amp;&amp; xs_boolean(paramsAttr)'>params </if>
+         <apply-templates value='typeRef'/>
+         <text> </text>
+      </if>
+      <call-template name='cs:verbatim'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <value-of value='el.Attribute("name")!.Value'/>
+      <if test='select(el, code).Skip(1).FirstOrDefault() is XElement defaultValue'>
+         <text> = </text>
+         <apply-templates value='defaultValue'/>
+      </if>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "parameters"' mode='cs:source'>
+      <apply-templates value='select(el, code)' separator=', '/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "property"' mode='cs:source'>
+      <param name='indent' as='int' tunnel='yes'/>
+
+      <variable name='getter' value='el.Element(code + "getter")'/>
+      <variable name='setter' value='el.Element(code + "setter")'/>
+      <variable name='autoImpl' value='
+         (getter is null || getter.Element(code + "block") is null)
+            &amp;&amp; (setter is null || setter.Element(code + "block") is null)'/>
+      <variable name='implementsInterface' value='el.Element(code + "implements-interface")'/>
+
+      <value-of value='src_new_line'/>
+      <apply-templates value='select(el, code + "attributes", code)'/>
+      <call-template name='cs:line-pragma'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <call-template name='src:new-line-indented'/>
+      <if test='el.Attribute("visibility") is XAttribute visibilityAttr
+            &amp;&amp; visibilityAttr.Value != "#default"
+            &amp;&amp; implementsInterface is null'>
+         <value-of value='visibilityAttr.Value'/>
+         <text> </text>
+      </if>
+      <if test='el.Attribute("extensibility") is XAttribute extensibilityAttr
+            &amp;&amp; extensibilityAttr.Value != "#default"'>
+         <value-of value='extensibilityAttr.Value'/>
+         <if test='extensibilityAttr.Value == "sealed"'> override</if>
+         <text> </text>
+      </if>
+      <variable name='returnTypeVerbatim' value='
+         (el.Attribute("return-type-verbatim") is XAttribute rtvAttr) ?
+            xs_boolean(rtvAttr)
+            : false'/>
+      <apply-templates value='el.Element(code + "type-reference")'>
+         <with-param name='verbatim' value='returnTypeVerbatim' tunnel='yes'/>
+      </apply-templates>
+      <text> </text>
+      <if test='implementsInterface != null'>
+         <apply-templates value='implementsInterface.Element(code + "type-reference")'/>
+         <text>.</text>
+      </if>
+      <call-template name='cs:verbatim'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <value-of value='el.Attribute("name")!.Value'/>
+      <call-template name='cs:open-brace'/>
+      <apply-templates value='new[] { getter, setter }'>
+         <with-param name='indent' value='indent + 1' tunnel='yes'/>
+      </apply-templates>
+      <if test='autoImpl'>
+         <text> </text>
+      </if>
+      <call-template name='cs:close-brace'>
+         <with-param name='omitNewLine' value='autoImpl'/>
+      </call-template>
+      <if test='el.Element(code + "expression") is XElement expressionEl'>
+         <text> = </text>
+         <apply-templates value='expressionEl'/>
+         <value-of value='cs_statement_delimiter'/>
+      </if>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "property-reference"' mode='cs:source'>
+      <apply-templates value='select(el, code).First()'/>
+      <text>.</text>
+      <call-template name='cs:verbatim'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <value-of value='el.Attribute("name")!.Value'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "region"' mode='cs:source'>
+      <value-of value='src_new_line'/>
+      <call-template name='src:new-line-indented'/>
+      <text>#region </text>
+      <value-of value='el.Attribute("name")!.Value'/>
+      <apply-templates value='el.Nodes()'/>
+      <call-template name='src:new-line-indented'/>
+      <text>#endregion</text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "restore-warning"' mode='cs:source cs:statement'>
+      <value-of value='src_new_line'/>
+      <text>#pragma warning restore </text>
+      <value-of value='tokenize(el.Attribute("codes")!.Value)' separator=','/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "return"' mode='cs:statement'>
+      <call-template name='cs:line-pragma'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <call-template name='src:new-line-indented'/>
+      <text>return</text>
+      <if test='select(el, code).FirstOrDefault() is XElement child'>
+         <text> </text>
+         <apply-templates value='child' mode='cs:source'/>
+      </if>
+      <value-of value='cs_statement_delimiter'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "script"' mode='cs:statement'>
+      <call-template name='cs:line-pragma'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <value-of value='src_new_line'/>
+      <value-of value='el.Value'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "setter"' mode='cs:source'>
+      <variable name='block' value='el.Element(code + "block")'/>
+      <call-template name='cs:line-pragma'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <choose>
+         <when test='block != null'>
+            <call-template name='src:new-line-indented'/>
+         </when>
+         <otherwise value='" "'/>
+      </choose>
+      <text>set</text>
+      <choose>
+         <when test='block != null'>
+            <apply-templates value='block'/>
+         </when>
+         <otherwise value='cs_statement_delimiter'/>
+      </choose>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "setter-value"' mode='cs:source'>
+      <text>value</text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "string"' mode='cs:source'>
+
+      <variable name='literal' value='
+         (el.Attribute("literal") is XAttribute literalAttr) ?
+            xs_boolean(literalAttr)
+            : false'/>
+
+      <variable name='verbatim' value='
+         (el.Attribute("verbatim") is XAttribute verbatimAttr) ?
+            xs_boolean(verbatimAttr)
+            : false'/>
+
+      <variable name='interpolated' value='
+         (el.Attribute("interpolated") is XAttribute interpolatedAttr) ?
+            xs_boolean(interpolatedAttr)
+            : false'/>
+
+      <variable name='text' value='el.Value'/>
+
+      <if test='interpolated'>$</if>
+      <if test='verbatim'>@</if>
+
+      <variable name='escaped' as='string'>
+         <choose>
+            <when test='literal || text.Length == 0'>
+               <object value='text'/>
+            </when>
+            <when test='interpolated'>
+               <choose>
+                  <when test='el.Attribute("quotes-to-escape") is XAttribute quotesAttr'>
+                     <variable name='quotes' value='
+                        tokenize(quotesAttr.Value)
+                           .Select(p => System.Xml.XmlConvert.ToInt32(p))
+                           .ToArray()'/>
+                     <variable name='parts' as='string[]'>
+                        <choose>
+                           <when test='empty(quotes)'>
+                              <object value='text'/>
+                           </when>
+                           <otherwise>
+                              <variable name='i' value='-1'/>
+                              <for-each name='q' in='quotes'>
+                                 <void value='i++'/>
+                                 <variable name='start' value='
+                                    (i == 0) ? 0 : quotes[i - 1] + 1'/>
+                                 <variable name='length' value='q - start + 1'/>
+                                 <object value='text.Substring(start, length)'/>
+                              </for-each>
+                              <object value='
+                                 (quotes[quotes.Length - 1] == text.Length) ? ""
+                                    : text.Substring(quotes[quotes.Length - 1] + 1)'/>
+                           </otherwise>
+                        </choose>
+                     </variable>
+                     <object value='string.Join((verbatim ? "\"" : "\\"), parts)'/>
+                  </when>
+                  <otherwise>
+                     <message terminate='yes'/>
+                  </otherwise>
+               </choose>
+            </when>
+            <otherwise>
+               <object value='text.Replace("\"", (verbatim ? "\"" : "\\") + "\"")'/>
+            </otherwise>
+         </choose>
+      </variable>
+
+      <value-of value='cs_string(escaped)'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "switch"' mode='cs:statement'>
+      <param name='indent' as='int' tunnel='yes'/>
+
+      <call-template name='cs:line-pragma'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <call-template name='src:new-line-indented'/>
+      <text>switch (</text>
+      <apply-templates value='select(el, code).First()' mode='cs:source'/>
+      <text>)</text>
+      <call-template name='cs:open-brace'/>
+      <apply-templates value='select(el, code).Skip(1)' mode='cs:source'>
+         <with-param name='indent' value='indent + 1' tunnel='yes'/>
+      </apply-templates>
+      <call-template name='cs:close-brace'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "this-reference"' mode='cs:source'>
+      <text>this</text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "throw"' mode='cs:statement'>
+      <call-template name='cs:line-pragma'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <call-template name='src:new-line-indented'/>
+      <apply-templates value='el' mode='cs:source'/>
+      <value-of value='cs_statement_delimiter'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "throw"' mode='cs:source'>
+      <text>throw </text>
+      <apply-templates value='el.Nodes()'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "try"' mode='cs:statement'>
+      <call-template name='cs:line-pragma'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <call-template name='src:new-line-indented'/>
+      <text>try</text>
+      <apply-templates value='el.Element(code + "block")' mode='cs:source'/>
+      <apply-templates value='select(el, code + "catch")' mode='cs:source'/>
+      <apply-templates value='el.Element(code + "finally")' mode='cs:source'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "type"' mode='cs:source'>
+      <param name='indent' as='int' tunnel='yes'/>
+
+      <value-of value='src_new_line'/>
+      <apply-templates value='select(el, code + "attributes", code)'/>
+      <call-template name='cs:line-pragma'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <call-template name='src:new-line-indented'/>
+      <if test='el.Attribute("visibility") is XAttribute visibilityAttr
+            &amp;&amp; visibilityAttr.Value != "#default"'>
+         <value-of value='visibilityAttr.Value'/>
+         <text> </text>
+      </if>
+      <if test='el.Attribute("extensibility") is XAttribute extensibilityAttr
+            &amp;&amp; extensibilityAttr.Value != "#default"'>
+         <value-of value='extensibilityAttr.Value'/>
+         <text> </text>
+      </if>
+      <if test='el.Attribute("partial") is XAttribute partialAttr
+            &amp;&amp; xs_boolean(partialAttr)'>
+         <text>partial </text>
+      </if>
+      <choose>
+         <when test='el.Attribute("struct") is XAttribute structAttr
+            &amp;&amp; xs_boolean(structAttr)'>struct </when>
+         <otherwise>class </otherwise>
+      </choose>
+      <call-template name='cs:verbatim'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <value-of value='el.Attribute("name")!.Value'/>
+      <variable name='baseTypes' value='select(el, code + "base-types", code).ToArray()'/>
+      <if test='baseTypes.Length > 0'>
+         <text> : </text>
+         <apply-templates value='baseTypes' separator=', '/>
+      </if>
+      <call-template name='cs:open-brace'/>
+      <apply-templates value='select(el, code + "members", code)'>
+         <with-param name='indent' value='indent + 1' tunnel='yes'/>
+      </apply-templates>
+      <call-template name='cs:close-brace'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "type-reference"' mode='cs:source' expand-text='yes'>
+      <param name='omitNamespaceAlias' as='bool'/>
+      <param name='verbatim' as='bool' tunnel='yes'/>
+
+      <choose>
+         <when test='el.Attribute("array-dimensions") is XAttribute arrDimAttr'>
+            <apply-templates value='select(el, code + "type-reference")'>
+               <with-param name='omitNamespaceAlias' value='omitNamespaceAlias'/>
+            </apply-templates>
+            <variable name='arrayDim' value='xs_integer(arrDimAttr)'/>
+            <text>[</text>
+            <if test='arrayDim > 1'>{new string(',', arrayDim)}</if>
+            <text>]</text>
+         </when>
+         <otherwise>
+            <choose>
+               <when test='el.Attribute("namespace") is XAttribute nsAttr'>
+                  <if test='!omitNamespaceAlias'>global::</if>
+                  <text>{nsAttr.Value}.</text>
+               </when>
+               <when test='el.Element(code + "type-reference") is XElement typeRef'>
+                  <apply-templates value='typeRef'>
+                     <with-param name='omitNamespaceAlias' value='omitNamespaceAlias'/>
+                  </apply-templates>
+                  <text>.</text>
+               </when>
+            </choose>
+            <call-template name='cs:verbatim'>
+               <with-param name='el' value='el'/>
+               <with-param name='verbatim' value='verbatim'/>
+            </call-template>
+            <value-of value='el.Attribute("name")?.Value'/>
+            <if test='select(el, code + "type-arguments", code).ToArray() is XElement[] typeArgs
+                  &amp;&amp; typeArgs.Length > 0'>
+               <text>&lt;</text>
+               <apply-templates value='typeArgs' separator=', '>
+                  <with-param name='omitNamespaceAlias' value='omitNamespaceAlias'/>
+               </apply-templates>
+               <text>></text>
+            </if>
+         </otherwise>
+      </choose>
+      <call-template name='cs:nullable'>
+         <with-param name='el' value='el'/>
+      </call-template>
+   </template>
+
+   <template match='XElement el
+         &amp;&amp; el.Name == code + "type-reference"
+         &amp;&amp; el.Attribute("namespace")?.Value == "System"' mode='cs:source'>
+
+      <variable name='primitive' value='
+         select(cs_primitives, XNamespace.None, code + "type-reference")
+            .FirstOrDefault(p => src_type_reference_equal(p, el))'/>
+
+      <choose>
+         <when test='primitive != null'>
+            <choose>
+               <when test='src_type_reference_equal(el, src_object_type)
+                  &amp;&amp; el.Attribute("dynamic") is XAttribute dynamicAttr
+                  &amp;&amp; xs_boolean(dynamicAttr)'>dynamic</when>
+               <otherwise value='primitive.Parent!.Name.LocalName'/>
+            </choose>
+            <call-template name='cs:nullable'>
+               <with-param name='el' value='el'/>
+            </call-template>
+         </when>
+         <otherwise>
+            <next-match/>
+         </otherwise>
+      </choose>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "typeof"' mode='cs:source'>
+      <text>typeof(</text>
+      <apply-templates value='el.Nodes()'/>
+      <text>)</text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "uint"' mode='cs:source'>
+      <value-of value='el.Attribute("value")!.Value'/>
+      <text>u</text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "ulong"' mode='cs:source'>
+      <value-of value='el.Attribute("value")!.Value'/>
+      <text>ul</text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "using"' mode='cs:statement'>
+      <param name='indent' as='int' tunnel='yes'/>
+
+      <call-template name='cs:line-pragma'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <call-template name='src:new-line-indented'/>
+      <text>using (</text>
+      <apply-templates value='select(el, code).First()' mode='cs:source'>
+         <with-param name='indent' value='indent + 1' tunnel='yes'/>
+      </apply-templates>
+      <text>)</text>
+      <apply-templates value='select(el, code).ElementAt(1)' mode='cs:source'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "variable"' mode='cs:statement'>
+      <call-template name='cs:line-pragma'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <call-template name='src:new-line-indented'/>
+      <apply-templates value='el' mode='cs:source'/>
+      <value-of value='cs_statement_delimiter'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "variable"' mode='cs:source'>
+      <variable name='typeRef' value='el.Element(code + "type-reference")'/>
+      <variable name='value' value='
+         (select(el, code).LastOrDefault() is XElement valueEl
+            &amp;&amp; valueEl != typeRef) ? valueEl
+            : null'/>
+      <choose>
+         <when test='typeRef != null'>
+            <apply-templates value='typeRef'/>
+         </when>
+         <otherwise>var</otherwise>
+      </choose>
+      <text> </text>
+      <value-of value='el.Attribute("name")!.Value'/>
+      <if test='value != null'>
+         <choose>
+            <when test='el.Parent?.Name == code + "for-each"'> in </when>
+            <otherwise> = </otherwise>
+         </choose>
+         <apply-templates value='value'/>
+      </if>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "variable-reference"' mode='cs:source'>
+      <call-template name='cs:verbatim'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <value-of value='el.Attribute("name")!.Value'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "while"' mode='cs:statement'>
+      <call-template name='cs:line-pragma'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <call-template name='src:new-line-indented'/>
+      <text>while (</text>
+      <apply-templates value='select(el, code).First()' mode='cs:source'/>
+      <text>)</text>
+      <apply-templates value='select(el, code).ElementAt(1)' mode='cs:source'/>
+   </template>
+
+
+   <!-- ## Syntax -->
+
+   <function name='cs_cardinality' as='TypeCardinality'>
+      <param name='name' as='string'/>
+
+      <return value='(name.EndsWith("[]")) ?
+         TypeCardinality.ZeroOrMore
+         : TypeCardinality.One'/>
+   </function>
+
+   <function name='cs_item_type' as='string'>
+      <param name='name' as='string'/>
+
+      <return value='(name.EndsWith("[]")) ?
+         name.Substring(0, name.Length - 2)
+         : name'/>
+   </function>
+
+   <function name='cs_non_nullable_type' as='string'>
+      <param name='name' as='string'/>
+
+      <return value="name.TrimEnd('?')"/>
+   </function>
+
+   <function name='cs_quotes_to_escape' as='int[]'>
+      <param name='text' as='string'/>
+      <param name='contextNode' as='XObject'/>
+
+      <variable name='quotes' value='new List&lt;int>()'/>
+      <variable name='modes' value='new Stack&lt;ParsingMode>()'/>
+      <void value='modes.Push(ParsingMode.Text)'/>
+      <variable name='i' value='0'/>
+      <variable name='nextChar' value='() =>
+         (i + 1 &lt; text.Length) ? text[i + 1] : (char?)null' as='System.Func&lt;char?>'/>
+
+      <while test='i &lt; text.Length'>
+         <variable name='currentChar' value='text[i]'/>
+         <variable name='currentMode' value='modes.Peek()'/>
+         <switch value='currentMode'>
+            <when test='ParsingMode.Code'>
+               <switch value='currentChar'>
+                  <when test="'{'">
+                     <void value='modes.Push(ParsingMode.Code)'/>
+                  </when>
+                  <when test="'}'">
+                     <void value='modes.Pop()'/>
+                  </when>
+                  <when test="'\''">
+                     <void value='modes.Push(ParsingMode.Char)'/>
+                  </when>
+                  <when test="'&quot;'">
+                     <variable name='m' as='ParsingMode'>
+                        <switch value='text[i - 1]'>
+                           <when test="'@'">
+                              <choose>
+                                 <when test="i - 2 >= 0 &amp;&amp; text[i - 2] == '$'"
+                                    value='ParsingMode.InterpolatedVerbatimString'/>
+                                 <otherwise value='ParsingMode.VerbatimString'/>
+                              </choose>
+                           </when>
+                           <when test="'$'" value='ParsingMode.InterpolatedString'/>
+                        </switch>
+                        <on-empty value='ParsingMode.String'/>
+                     </variable>
+                     <void value='modes.Push(m)'/>
+                  </when>
+                  <when test="'/'">
+                     <if test="nextChar() == '*'">
+                        <void value='modes.Push(ParsingMode.MultilineComment)'/>
+                        <void value='i++'/>
+                     </if>
+                  </when>
+               </switch>
+            </when>
+            <when test='ParsingMode.Text
+                  or ParsingMode.InterpolatedString
+                  or ParsingMode.InterpolatedVerbatimString'>
+               <switch value='currentChar'>
+                  <when test="'{'">
+                     <choose>
+                        <when test="nextChar() == '{'">
+                           <void value='i++'/>
+                        </when>
+                        <otherwise>
+                           <void value='modes.Push(ParsingMode.Code)'/>
+                        </otherwise>
+                     </choose>
+                  </when>
+                  <when test="'&quot;'">
+                     <switch value='currentMode'>
+                        <when test='ParsingMode.Text'>
+                           <void value='quotes.Add(i)'/>
+                        </when>
+                        <when test='ParsingMode.InterpolatedString'>
+                           <void value='modes.Pop()'/>
+                        </when>
+                        <when test='ParsingMode.InterpolatedVerbatimString'>
+                           <choose>
+                              <when test="nextChar() == '&quot;'">
+                                 <void value='i++'/>
+                              </when>
+                              <otherwise>
+                                 <void value='modes.Pop()'/>
+                              </otherwise>
+                           </choose>
+                        </when>
+                     </switch>
+                  </when>
+                  <when test="'\\'">
+                     <if test='currentMode == ParsingMode.InterpolatedString'>
+                        <void value='i++'/>
+                     </if>
+                  </when>
+               </switch>
+            </when>
+            <when test='ParsingMode.String'>
+               <switch value='currentChar'>
+                  <when test="'\\'">
+                     <void value='i++'/>
+                  </when>
+                  <when test="'&quot;'">
+                     <void value='modes.Pop()'/>
+                  </when>
+               </switch>
+            </when>
+            <when test='ParsingMode.VerbatimString'>
+               <if test="currentChar == '&quot;'">
+                  <choose>
+                     <when test="nextChar() == '&quot;'">
+                        <void value='i++'/>
+                     </when>
+                     <otherwise>
+                        <void value='modes.Pop()'/>
+                     </otherwise>
+                  </choose>
+               </if>
+            </when>
+            <when test='ParsingMode.Char'>
+               <switch value='currentChar'>
+                  <when test="'\\'">
+                     <void value='i++'/>
+                  </when>
+                  <when test="'\''">
+                     <void value='modes.Pop()'/>
+                  </when>
+               </switch>
+            </when>
+            <when test='ParsingMode.MultilineComment'>
+               <if test="currentChar == '*'
+                     &amp;&amp; nextChar() == '/'">
+                  <void value='modes.Pop()'/>
+                  <void value='i++'/>
+               </if>
+            </when>
+         </switch>
+         <void value='i++'/>
+      </while>
+
+      <if test='!(modes.Count == 1)'>
+         <message terminate='yes' error-code='XTSE0350' error-data='src_error_object(contextNode)' transform-text='trim'>
+            Value template brace mismatch.
+         </message>
+      </if>
+
+      <return value='quotes.ToArray()'/>
+   </function>
+
+   <function name='cs_unescape_identifier' as='string'>
+      <param name='name' as='string'/>
+
+      <return value='(name[0] == &apos;@&apos;) ? name.Substring(1) : name'/>
+   </function>
+
+
+   <!-- ## Expressions -->
+
+   <function name='cs_string' as='string'>
+      <param name='str' as='string'/>
+
+      <return value='"\"" + str + "\""'/>
+   </function>
+
+   <template name='cs:verbatim'>
+      <param name='el' as='XElement' required='yes'/>
+      <param name='verbatim' as='bool?'/>
+
+      <if test='verbatim.GetValueOrDefault()
+          || (verbatim is null
+            &amp;&amp; el.Attribute("verbatim") is XAttribute verbatimAttr
+            &amp;&amp; xs_boolean(verbatimAttr))'>@</if>
+   </template>
+
+   <template name='cs:nullable'>
+      <param name='el' as='XElement' required='yes'/>
+
+      <if test='cs_nullable_annotate
+          &amp;&amp; el.Attribute("nullable") is XAttribute nullableAttr
+          &amp;&amp; xs_boolean(nullableAttr)'>?</if>
+   </template>
+
+   <template name='cs:open-brace'>
+      <choose>
+         <when test='cs_open_brace_on_new_line'>
+            <call-template name='src:new-line-indented'/>
+         </when>
+         <otherwise>
+            <text> </text>
+         </otherwise>
+      </choose>
+      <text>{</text>
+   </template>
+
+   <template name='cs:close-brace'>
+      <param name='omitNewLine' value='false' as='bool'/>
+
+      <if test='!omitNewLine'>
+         <call-template name='src:new-line-indented'/>
+      </if>
+      <text>}</text>
+   </template>
+
+   <template name='cs:line-pragma'>
+      <param name='el' as='XElement' required='yes'/>
+      <param name='appendLine' value='false' as='bool'/>
+
+      <if test='src_use_line_directive'>
+         <choose>
+            <when test='el.Attribute("line-number") is XAttribute lineNumberAttr
+                  &amp;&amp; el.Attribute("line-uri") is XAttribute lineUriAttr'>
+               <call-template name='src:new-line-indented'/>
+               <text>#line </text>
+               <value-of value='lineNumberAttr.Value'/>
+               <text> </text>
+               <value-of value='cs_string(new System.Uri(lineUriAttr.Value).LocalPath)'/>
+               <if test='appendLine'>
+                  <call-template name='src:new-line-indented'/>
+               </if>
+            </when>
+            <when test='el.Attribute("line-hidden") is XAttribute lineHiddenAttr
+                  &amp;&amp; xs_boolean(lineHiddenAttr)'>
+               <call-template name='src:new-line-indented'/>
+               <text>#line hidden</text>
+               <if test='appendLine'>
+                  <call-template name='src:new-line-indented'/>
+               </if>
+            </when>
+         </choose>
+      </if>
+   </template>
+
+</module>

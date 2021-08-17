@@ -1,0 +1,504 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!--
+ Copyright 2021 Max Toro Q.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<module version='1.0' language='C#'
+   xmlns='http://maxtoroq.github.io/XCST'
+   xmlns:xcst='http://maxtoroq.github.io/XCST/grammar'
+   xmlns:code='http://maxtoroq.github.io/XCST/code'
+   xmlns:src='http://maxtoroq.github.io/XCST/compiled'>
+
+   <import-namespace ns='System.Linq'/>
+   <import-namespace ns='System.Xml.Linq'/>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "choose"' mode='src:statement'>
+
+      <call-template name='xcst:validate-attribs'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <call-template name='xcst:validate-children'>
+         <with-param name='el' value='el'/>
+         <with-param name='allowed' value='new[] { "when", "otherwise" }'/>
+      </call-template>
+
+      <variable name='children' value='el
+         .Elements()
+         .Where(p => p.Name == c + "when"
+            || p.Name == c + "otherwise")
+         .ToArray()'/>
+
+      <if test='!(children.Any(p => p.Name == c + "when"))'>
+         <message terminate='yes' error-code='XTSE0010' error-data='src_error_object(el)' transform-text='trim'>
+            At least one c:when element is required within the c:choose instruction.
+         </message>
+      </if>
+
+      <code:if-else>
+         <apply-templates value='children'/>
+      </code:if-else>
+   </template>
+
+   <template match='XElement el
+         &amp;&amp; el.Name == c + "when"
+         &amp;&amp; el.Parent!.Name == c + "choose"' mode='src:statement'>
+
+      <call-template name='xcst:validate-attribs'>
+         <with-param name='el' value='el'/>
+         <with-param name='required' value='new[] { "test" }'/>
+         <with-param name='optional' value='new[] { "value" }'/>
+      </call-template>
+
+      <call-template name='xcst:value-or-sequence-constructor'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <call-template name='xcst:no-other-preceding'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <code:if>
+         <call-template name='src:line-number'>
+            <with-param name='el' value='el'/>
+         </call-template>
+         <code:expression value='{xcst_expression(el.Attribute("test")!)}'/>
+         <code:block>
+            <call-template name='src:value-or-sequence-constructor'>
+               <with-param name='el' value='el'/>
+            </call-template>
+         </code:block>
+      </code:if>
+   </template>
+
+   <template match='XElement el
+         &amp;&amp; el.Name == c + "otherwise"
+         &amp;&amp; el.Parent!.Name == c + "choose"' mode='src:statement'>
+
+      <call-template name='xcst:validate-attribs'>
+         <with-param name='el' value='el'/>
+         <with-param name='optional' value='new[] { "value" }'/>
+      </call-template>
+
+      <call-template name='xcst:value-or-sequence-constructor'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <call-template name='xcst:no-other-following'>
+         <with-param name='el' value='el'/>
+         <with-param name='except' value='System.Array.Empty&lt;XName>()'/>
+      </call-template>
+
+      <code:else>
+         <call-template name='src:value-or-sequence-constructor'>
+            <with-param name='el' value='el'/>
+         </call-template>
+      </code:else>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "if"' mode='src:statement'>
+
+      <call-template name='xcst:validate-attribs'>
+         <with-param name='el' value='el'/>
+         <with-param name='required' value='new[] { "test" }'/>
+      </call-template>
+
+      <code:if>
+         <call-template name='src:line-number'>
+            <with-param name='el' value='el'/>
+         </call-template>
+         <code:expression value='{xcst_expression(el.Attribute("test")!)}'/>
+         <code:block>
+            <call-template name='src:sequence-constructor'>
+               <with-param name='el' value='el'/>
+            </call-template>
+         </code:block>
+      </code:if>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "switch"' mode='src:statement'>
+
+      <call-template name='xcst:validate-attribs'>
+         <with-param name='el' value='el'/>
+         <with-param name='required' value='new[] { "value" }'/>
+      </call-template>
+
+      <call-template name='xcst:validate-children'>
+         <with-param name='el' value='el'/>
+         <with-param name="allowed" value='new[] { "when", "otherwise" }'/>
+      </call-template>
+
+      <variable name='children' value='el
+         .Elements()
+         .Where(p => p.Name == c + "when"
+            || p.Name == c + "otherwise")
+         .ToArray()'/>
+
+      <if test='!(children.Any(p => p.Name == c + "when"))'>
+         <message terminate='yes' error-code='XTSE0010' error-data='src_error_object(el)' transform-text='trim'>
+            At least one c:when element is required within the c:switch instruction.
+         </message>
+      </if>
+
+      <code:switch>
+         <call-template name='src:line-number'>
+            <with-param name='el' value='el'/>
+         </call-template>
+         <code:expression value='{xcst_expression(el.Attribute("value")!)}'/>
+         <apply-templates value='children'/>
+      </code:switch>
+   </template>
+
+   <template match='XElement el
+         &amp;&amp; el.Name == c + "when"
+         &amp;&amp; el.Parent!.Name == c + "switch"' mode='src:statement'>
+      <param name='language' as='string' tunnel='yes' required='yes'/>
+
+      <call-template name='xcst:validate-attribs'>
+         <with-param name='el' value='el'/>
+         <with-param name='required' value='new[] { "test" }'/>
+         <with-param name='optional' value='new[] { "value" }'/>
+      </call-template>
+
+      <call-template name='xcst:value-or-sequence-constructor'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <call-template name='xcst:no-other-preceding'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <code:case>
+         <call-template name='src:line-number'>
+            <with-param name='el' value='el'/>
+         </call-template>
+         <code:expression value='{xcst_expression(el.Attribute("test")!)}'/>
+         <code:block>
+            <call-template name='src:value-or-sequence-constructor'>
+               <with-param name='el' value='el'/>
+            </call-template>
+            <if test='xcst_language_equal(language, xcst_csharp_lang)'>
+               <code:disable-warning codes='CS0162'/>
+               <code:break/>
+               <code:restore-warning codes='CS0162'/>
+            </if>
+         </code:block>
+      </code:case>
+   </template>
+
+   <template match='XElement el
+         &amp;&amp; el.Name == c + "otherwise"
+         &amp;&amp; el.Parent!.Name == c + "switch"' mode='src:statement'>
+      <param name='language' as='string' tunnel='yes' required='yes'/>
+
+      <call-template name='xcst:validate-attribs'>
+         <with-param name='el' value='el'/>
+         <with-param name='optional' value='new[] { "value" }'/>
+      </call-template>
+
+      <call-template name='xcst:value-or-sequence-constructor'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <call-template name='xcst:no-other-following'>
+         <with-param name='el' value='el'/>
+         <with-param name='except' value='System.Array.Empty&lt;XName>()'/>
+      </call-template>
+
+      <code:case-default>
+         <code:block>
+            <call-template name='src:value-or-sequence-constructor'>
+               <with-param name='el' value='el'/>
+            </call-template>
+            <if test='xcst_language_equal(language, xcst_csharp_lang)'>
+               <code:disable-warning codes='CS0162'/>
+               <code:break/>
+               <code:restore-warning codes='CS0162'/>
+            </if>
+         </code:block>
+      </code:case-default>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "try"' mode='src:statement'>
+
+      <call-template name='xcst:validate-attribs'>
+         <with-param name='el' value='el'/>
+         <with-param name='optional' value='new[] { "rollback-output", "value" }'/>
+      </call-template>
+
+      <variable name='children' value='el
+         .Nodes()
+         .Except(el.Nodes()
+            .Where(p => (p is XElement p2
+                  &amp;&amp; (p2.Name == c + "catch" || p2.Name == c + "finally"))
+               || p.ElementsBeforeSelf(c + "catch").Any()
+               || p.ElementsBeforeSelf(c + "finally").Any()))
+         .ToArray()'/>
+
+      <call-template name='xcst:value-or-sequence-constructor'>
+         <with-param name='el' value='el'/>
+         <with-param name='children' value='children'/>
+      </call-template>
+
+      <variable name='catchAndFinally' value='el
+         .Elements()
+         .Where(p => p.Name == c + "catch"
+            || p.Name == c + "finally")
+         .ToArray()'/>
+
+      <if test='!(catchAndFinally.Length > 0)'>
+         <message terminate='yes' error-code='XTSE0010' error-data='src_error_object(el)' transform-text='trim'>
+            At least one c:catch or c:finally element is required within the c:try instruction.
+         </message>
+      </if>
+
+      <variable name='rollback' value='
+         (el.Attribute("rollback-output") is XAttribute rollbackAttr) ?
+            xcst_boolean(rollbackAttr)!.Value
+            : true'/>
+
+      <if test='rollback'>
+         <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(el)' transform-text='trim'>
+            Buffering not supported yet. Use rollback-output='no'.
+         </message>
+      </if>
+
+      <code:try>
+         <call-template name='src:line-number'>
+            <with-param name='el' value='el'/>
+         </call-template>
+         <code:block>
+            <call-template name='src:value-or-sequence-constructor'>
+               <with-param name='el' value='el'/>
+               <with-param name='children' value='children'/>
+            </call-template>
+         </code:block>
+         <apply-templates value='catchAndFinally'/>
+      </code:try>
+   </template>
+
+   <template match='XElement el
+         &amp;&amp; el.Name == c + "catch"
+         &amp;&amp; el.Parent!.Name == c + "try"' mode='src:statement'>
+
+      <call-template name='xcst:validate-attribs'>
+         <with-param name='el' value='el'/>
+         <with-param name='optional' value='new[] { "exception", "when", "value" }'/>
+      </call-template>
+
+      <call-template name='xcst:value-or-sequence-constructor'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <call-template name='xcst:no-other-following'>
+         <with-param name='el' value='el'/>
+         <with-param name="except" value='new[] { c + "catch", c + "finally" }'/>
+      </call-template>
+
+      <code:catch>
+         <call-template name='src:line-number'>
+            <with-param name='el' value='el'/>
+         </call-template>
+         <if test='el.Attribute("exception") is XAttribute exceptionAttr'>
+            <code:exception>
+               <code:expression value='{xcst_expression(exceptionAttr)}'/>
+            </code:exception>
+         </if>
+         <if test='el.Attribute("when") is XAttribute whenAttr'>
+            <code:when>
+               <code:expression value='{xcst_expression(whenAttr)}'/>
+            </code:when>
+         </if>
+         <code:block>
+            <call-template name='src:value-or-sequence-constructor'>
+               <with-param name='el' value='el'/>
+            </call-template>
+         </code:block>
+      </code:catch>
+   </template>
+
+   <template match='XElement el
+         &amp;&amp; el.Name == c + "finally"
+         &amp;&amp; el.Parent!.Name == c + "try"' mode='src:statement'>
+
+      <call-template name='xcst:validate-attribs'>
+         <with-param name='el' value='el'/>
+         <with-param name='optional' value='new[] { "value" }'/>
+      </call-template>
+
+      <call-template name='xcst:value-or-sequence-constructor'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <call-template name='xcst:no-other-following'>
+         <with-param name='el' value='el'/>
+         <with-param name='except' value='System.Array.Empty&lt;XName>()'/>
+      </call-template>
+
+      <code:finally>
+         <call-template name='src:line-number'>
+            <with-param name='el' value='el'/>
+         </call-template>
+         <call-template name='src:value-or-sequence-constructor'>
+            <with-param name='el' value='el'/>
+         </call-template>
+      </code:finally>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "return"' mode='src:statement'>
+      <param name='output' as='XElement?' tunnel='yes'/>
+
+      <call-template name='xcst:validate-attribs'>
+         <with-param name='el' value='el'/>
+         <with-param name='optional' value='new[] { "value" }'/>
+      </call-template>
+
+      <call-template name='xcst:value-or-sequence-constructor'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <variable name='disallowedAncestor' value='el
+         .Ancestors()
+         .Where(p => p.Name.Namespace == c
+            &amp;&amp; p.Name.LocalName is "param"
+               or "with-param"
+               or "variable"
+               or "set"
+               or "return"
+               or "comment"
+               or "processing-instruction"
+               or "value-of"
+               or "serialize"
+               or "assert"
+               or "message")
+         .FirstOrDefault()'/>
+
+      <variable name='allowedAncestor' value='el
+         .Ancestors(c + "delegate")
+         .FirstOrDefault()'/>
+
+      <if test='!(disallowedAncestor is null
+            || (allowedAncestor != null
+               &amp;&amp; XNode.DocumentOrderComparer.Compare(disallowedAncestor, allowedAncestor) == -1))'>
+         <message terminate='yes' error-code='XTSE0010' error-data='src_error_object(el)' transform-text='trim'>
+            Cannot return while materializing a sequence constructor.
+         </message>
+      </if>
+
+      <choose>
+         <when test='output != null'>
+            <call-template name='src:value-or-sequence-constructor'>
+               <with-param name='el' value='el'/>
+            </call-template>
+            <code:method-call name='EndOfConstructor' line-hidden='true'>
+               <copy-of value='select(output, src + "reference", code)'/>
+            </code:method-call>
+            <code:return>
+               <call-template name='src:line-number'>
+                  <with-param name='el' value='el'/>
+               </call-template>
+            </code:return>
+         </when>
+         <otherwise>
+            <code:return>
+               <call-template name='src:line-number'>
+                  <with-param name='el' value='el'/>
+               </call-template>
+               <variable name='text' value='xcst_text(el)'/>
+               <if test='xcst_has_value(el, text)'>
+                  <call-template name='src:value'>
+                     <with-param name='el' value='el'/>
+                     <with-param name='text' value='text'/>
+                  </call-template>
+               </if>
+            </code:return>
+         </otherwise>
+      </choose>
+   </template>
+
+   <template match='XElement el
+         &amp;&amp; (el.Name == c + "break" || el.Name == c + "continue")' mode='src:statement'>
+
+      <call-template name='xcst:validate-attribs'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <call-template name='xcst:no-children'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <variable name='requiredAncestor' value='el
+         .Ancestors()
+         .Where(p => p.Name.Namespace == c
+            &amp;&amp; p.Name.LocalName is "for-each"
+               or "for-each-group"
+               or "while")
+         .FirstOrDefault()'/>
+
+      <variable name='disallowedAncestor' value='el
+         .Ancestors()
+         .Where(p => p.Name.Namespace == c
+            &amp;&amp; ((p.Name.LocalName is "delegate"
+               or "with-param"
+               or "variable"
+               or "value-of"
+               or "serialize")
+               || (p.Name.LocalName is "switch"
+                  &amp;&amp; el.Name == c + "break")))
+         .FirstOrDefault()'/>
+
+      <if test='!(requiredAncestor != null
+            &amp;&amp; (disallowedAncestor is null
+               || XNode.DocumentOrderComparer.Compare(disallowedAncestor, requiredAncestor) == -1))'>
+         <message terminate='yes' error-code='XTSE0010' error-data='src_error_object(el)' expand-text='yes' transform-text='trim'>
+            c:{el.Name.LocalName} instruction can only be used within a c:for-each, c:for-each-group or c:while instruction.
+         </message>
+      </if>
+
+      <element name='code:{el.Name.LocalName}' namespace='{code}'>
+         <call-template name='src:line-number'>
+            <with-param name='el' value='el'/>
+         </call-template>
+      </element>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "on-empty"' mode='src:statement'>
+      <param name='output' as='XElement' tunnel='yes' required='yes'/>
+
+      <call-template name='xcst:validate-attribs'>
+         <with-param name='el' value='el'/>
+         <with-param name='optional' value='new[] { "value" }'/>
+      </call-template>
+
+      <call-template name='xcst:value-or-sequence-constructor'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <call-template name='xcst:require-output'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <code:if line-hidden='true'>
+         <code:method-call name='OnEmpty'>
+            <copy-of value='select(output, src + "reference", code)'/>
+         </code:method-call>
+         <code:block>
+            <call-template name='src:value-or-sequence-constructor'>
+               <with-param name='el' value='el'/>
+            </call-template>
+         </code:block>
+      </code:if>
+   </template>
+
+</module>

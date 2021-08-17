@@ -1,0 +1,131 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!--
+ Copyright 2021 Max Toro Q.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<module version='1.0' language='C#'
+   xmlns='http://maxtoroq.github.io/XCST'
+   xmlns:xcst='http://maxtoroq.github.io/XCST/grammar'
+   xmlns:code='http://maxtoroq.github.io/XCST/code'
+   xmlns:src='http://maxtoroq.github.io/XCST/compiled'>
+
+   <import-namespace ns='System.Linq'/>
+   <import-namespace ns='System.Xml.Linq'/>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "for-each"' mode='src:statement'>
+      <param name='indexVar' as='string?'/>
+      <param name='output' as='XElement?' tunnel='yes'/>
+
+      <call-template name='xcst:validate-attribs'>
+         <with-param name='el' value='el'/>
+         <with-param name='required' value='new[] { "name", "in" }'/>
+         <with-param name='optional' value='new[] { "separator" }'/>
+      </call-template>
+
+      <variable name='name' value='xcst_name(el.Attribute("name")!)'/>
+
+      <variable name='source'>
+         <code:expression value='{xcst_expression(el.Attribute("in")!)}'/>
+      </variable>
+
+      <code:for-each>
+         <call-template name='src:line-number'>
+            <with-param name='el' value='el'/>
+         </call-template>
+         <code:variable name='{name}'>
+            <call-template name='src:sort'>
+               <with-param name='el' value='el'/>
+               <with-param name='source' value='source'/>
+            </call-template>
+         </code:variable>
+         <code:block>
+            <if test='indexVar != null'>
+               <code:assign line-hidden='true'>
+                  <code:variable-reference name='{indexVar}'/>
+                  <code:add>
+                     <code:variable-reference name='{indexVar}'/>
+                     <code:int value='1'/>
+                  </code:add>
+               </code:assign>
+               <if test='el.Attribute("separator") is XAttribute separatorAttr'>
+                  <call-template name='xcst:require-output'>
+                     <with-param name='el' value='el'/>
+                  </call-template>
+                  <code:if>
+                     <code:greater-than>
+                        <code:variable-reference name='{indexVar}'/>
+                        <code:int value='0'/>
+                     </code:greater-than>
+                     <code:block>
+                        <code:method-call name='WriteString'>
+                           <call-template name='src:line-number'>
+                              <with-param name='el' value='el'/>
+                           </call-template>
+                           <copy-of value='select(output, src + "reference", code)'/>
+                           <code:arguments>
+                              <call-template name='src:expand-attribute'>
+                                 <with-param name='attr' value='separatorAttr'/>
+                              </call-template>
+                           </code:arguments>
+                        </code:method-call>
+                     </code:block>
+                  </code:if>
+               </if>
+            </if>
+            <call-template name='src:sequence-constructor'>
+               <with-param name='el' value='el'/>
+               <with-param name='children' value='el
+                  .Nodes()
+                  .Except(el.Nodes()
+                     .Where(p => (p is XElement p2 &amp;&amp; p2.Name == c + "sort")
+                        || p.ElementsAfterSelf(c + "sort").Any()))
+                  .ToArray()'/>
+            </call-template>
+         </code:block>
+      </code:for-each>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "for-each" &amp;&amp; el.Attribute("separator") != null' mode='src:statement'>
+      <code:block line-hidden='true'>
+         <variable name='indexVar' value='src_aux_variable("index_" + generate_id(el))'/>
+         <code:variable name='{indexVar}'>
+            <code:int value='-1'/>
+         </code:variable>
+         <next-match>
+            <with-param name='indexVar' value='indexVar'/>
+         </next-match>
+      </code:block>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "while"' mode='src:statement'>
+
+      <call-template name='xcst:validate-attribs'>
+         <with-param name='el' value='el'/>
+         <with-param name='required' value='new[] { "test" }'/>
+      </call-template>
+
+      <code:while>
+         <call-template name='src:line-number'>
+            <with-param name='el' value='el'/>
+         </call-template>
+         <code:expression value='{xcst_expression(el.Attribute("test")!)}'/>
+         <code:block>
+            <call-template name='src:sequence-constructor'>
+               <with-param name='el' value='el'/>
+            </call-template>
+         </code:block>
+      </code:while>
+   </template>
+
+</module>

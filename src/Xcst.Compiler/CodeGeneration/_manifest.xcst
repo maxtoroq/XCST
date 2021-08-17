@@ -1,0 +1,292 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!--
+ Copyright 2021 Max Toro Q.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<module version='1.0' language='C#' default-mode='xcst:package-manifest'
+   xmlns='http://maxtoroq.github.io/XCST'
+   xmlns:xcst='http://maxtoroq.github.io/XCST/grammar'
+   xmlns:code='http://maxtoroq.github.io/XCST/code'
+   xmlns:src='http://maxtoroq.github.io/XCST/compiled'>
+
+   <import-namespace ns='System.Collections.Generic'/>
+   <import-namespace ns='System.Linq'/>
+   <import-namespace ns='System.Xml.Linq'/>
+
+   <template match='XElement el &amp;&amp; el.Name.Namespace == c'/>
+
+   <template match='XElement el &amp;&amp; (el.Name == c + "module" || el.Name == c + "package")'>
+      <param name='modules' as='XElement[]' tunnel='yes' required='yes'/>
+
+      <variable name='modulePos' value='System.Array.IndexOf(modules, el)'/>
+
+      <apply-templates value='select(el, c)'>
+         <with-param name='modulePos' value='modulePos' tunnel='yes'/>
+      </apply-templates>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "use-package"'>
+      <apply-templates value='select(el, c + "override", c)'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "template"'>
+
+      <call-template name='xcst:validate-attribs'>
+         <with-param name='el' value='el'/>
+         <with-param name='optional' value='new[] { "name", "match", "mode", "as", "visibility" }'/>
+      </call-template>
+
+      <variable name='nameAttr' value='el.Attribute("name")'/>
+      <variable name='matchAttr' value='el.Attribute("match")'/>
+
+      <if test='!(nameAttr != null || matchAttr != null)'>
+         <message terminate='yes' error-code='XCST9100' error-data='src_error_object(el)' transform-text='trim'>
+            Element must have a 'name' or 'match' attribute.
+         </message>
+      </if>
+
+      <if test='!(nameAttr == null || matchAttr == null)'>
+         <message terminate='yes' error-code='XCST9101' error-data='src_error_object(el)' transform-text='trim'>
+            The attributes 'name' and 'match' are mutually exclusive.
+         </message>
+      </if>
+
+      <if test='!(matchAttr is null || el.Attribute("visibility") is null)'>
+         <message terminate='yes' error-code='XCST9102' error-data='src_error_object(el)' transform-text='trim'>
+            The 'visibility' attribute should be omitted when the 'match' attribute is used.
+         </message>
+      </if>
+
+      <choose>
+         <when test='nameAttr != null'>
+            <call-template name='xcst:named-template'>
+               <with-param name='el' value='el'/>
+            </call-template>
+         </when>
+         <otherwise>
+            <call-template name='xcst:template-rule'>
+               <with-param name='el' value='el'/>
+            </call-template>
+         </otherwise>
+      </choose>
+   </template>
+
+   <template name='xcst:overridden-component' as='XElement?'>
+      <param name='el' as='XElement' required='yes'/>
+      <param name='usedPackages' as='XElement[]' tunnel='yes' required='yes'/>
+      <param name='@namespace' as='string' tunnel='yes' required='yes'/>
+
+      <if test='el.Parent?.Name == c + "override"'>
+         <variable name='pkg' value='usedPackages.Single(p =>
+            src_qualified_type_name(select(p, code + "type-reference").First()) ==
+               src_resolve_package_name(el.Parent!.Parent!, @namespace))' as='XElement'/>
+         <variable name='meta' value='select(pkg, xcst).FirstOrDefault(p => xcst_homonymous(p, el))'/>
+         <if test='!(meta != null)'>
+            <message terminate='yes' error-code='XTSE3058' error-data='src_error_object(el)' transform-text='trim'>
+               Couldn't find a matching component in the used package.
+            </message>
+         </if>
+         <if test='!(meta.Attribute("visibility")!.Value != "final")'>
+            <message terminate='yes' error-code='XTSE3060' error-data='src_error_object(el)' transform-text='trim'>
+               Cannot override a component with final visibility.
+            </message>
+         </if>
+         <object value='meta'/>
+      </if>
+
+      <on-empty value='(XElement?)null'/>
+   </template>
+
+   <template name='xcst:check-duplicate-component'>
+      <param name='el' as='XElement' required='yes'/>
+      <param name='modules' as='XElement[]' tunnel='yes' required='yes'/>
+      <param name='modulePos' as='int' tunnel='yes' required='yes'/>
+
+      <if test='!el.ElementsBeforeSelf()
+            .Where(p => p.Name.Namespace == c)
+            .Concat((el.Parent!.Name == c + "override") ?
+               select(el.Parent.ElementsBeforeSelf(c + "override"), c)
+               : select(el.ElementsBeforeSelf(c + "use-package"), c + "override", c))
+            .All(p => !xcst_homonymous(p, el))'>
+         <message terminate='yes' error-code='XTSE0630' error-data='src_error_object(el)'>
+            <text>Duplicate </text>
+            <switch value='el.Name.LocalName'>
+               <when test='"param" or "variable"'>global variable</when>
+               <otherwise expand-text='yes'>c:{el.Name.LocalName}</otherwise>
+            </switch>
+            <text> declaration.</text>
+         </message>
+      </if>
+
+      <if test='!(el.Parent.Name == c + "override"
+            || select(modules.Where((p, i) => i != modulePos), c + "use-package", c + "override", c)
+               .All(p => !xcst_homonymous(p, el)))'>
+         <message terminate='yes' error-code='XTSE3055' error-data='src_error_object(el)' transform-text='trim'>
+            There is an homonymous overriding component.
+         </message>
+      </if>
+   </template>
+
+   <template name='xcst:validate-empty-abstract'>
+      <param name='el' as='XElement' required='yes'/>
+      <param name='visibility' as='string' required='yes'/>
+
+      <if test='visibility == "abstract"'>
+         <variable name='children' value='el.Nodes()
+            .Where(p => !((p is XElement pEl &amp;&amp; pEl.Name == c + "param")
+               || p.ElementsAfterSelf(c + "param").Any()))
+            .ToArray()'/>
+         <variable name='text' value='xcst_text(el, children)'/>
+         <if test='!(text is null &amp;&amp; !children.OfType&lt;XElement>().Any())'>
+            <message terminate='yes' error-code='XTSE0010' error-data='src_error_object(el)' transform-text='trim'>
+               No content is allowed when visibility='abstract'.
+            </message>
+         </if>
+      </if>
+   </template>
+
+   <template name='xcst:accepted-components'>
+      <param name='el' as='XElement' required='yes'/>
+      <param name='modules' as='XElement[]' required='yes'/>
+      <param name='usedPackages' as='XElement[]' required='yes'/>
+      <param name='localComponents' as='XElement[]' required='yes'/>
+
+      <variable name='nonHidden' value='new()' as='List&lt;XElement>'/>
+
+      <for-each name='component' in='select(usedPackages, xcst)
+            .Where(p => p.Attribute("visibility")!.Value != "private")'>
+         <variable name='id' value='generate_id(component)'/>
+         <variable name='overriding' value='localComponents
+            .FirstOrDefault(p => p.Attribute("overrides")?.Value == id)'/>
+         <variable name='visibility' value='
+            (overriding != null) ? "hidden"
+            : (component.Name == xcst + "param") ? "public"
+            : "private"'/>
+         <variable name='localDuplicate' value='(visibility != "hidden") ?
+            localComponents.FirstOrDefault(p => xcst_homonymous(p, component))
+            : null'/>
+         <variable name='packageType' value='component.Parent!.Element(code + "type-reference")!'/>
+         <if test='localDuplicate != null'>
+            <variable name='declaration' value='select(modules, c)
+               .Concat(select(modules, c + "use-package", c + "override", c))
+               .First(p => localDuplicate.Attribute("declaration-id")!.Value == generate_id(p))'/>
+            <message terminate='yes' error-data='src_error_object(declaration)' expand-text='yes' transform-text='trim'>
+               Component is in conflict with an accepted component from '{src_qualified_type_name(packageType)}'.
+            </message>
+         </if>
+         <variable name='acceptedDuplicate' value='nonHidden.FirstOrDefault(p => xcst_homonymous(p, component))'/>
+         <if test='acceptedDuplicate != null'>
+            <message terminate='yes' error-code='XTSE3050' error-data='src_error_object(el)' expand-text='yes'>
+               <text>Cannot accept two or more homonymous components with a visibility other than hidden: </text>
+               <text>'{component.Attribute("name")!.Value}' from {src_qualified_type_name(packageType)}</text>
+               <text> and '{acceptedDuplicate.Attribute("name")!.Value}' from {src_qualified_type_name(acceptedDuplicate.Parent!.Element(code + "type-reference")!)}.</text>
+            </message>
+         </if>
+         <element name='{component.Name.LocalName}' namespace='{component.Name.Namespace}'>
+            <attribute name='id' value='generate_id(component)'/>
+            <copy-of value='attributes(component)'/>
+            <attribute name='visibility' value='visibility'/>
+            <attribute name='original-visibility' value='component.Attribute("visibility")!.Value'/>
+            <attribute name='accepted' value='@string(true)'/>
+            <attribute name='package-id' value='component.Parent.Attribute("package-id")!.Value'/>
+            <attribute name='qualified-types' value='component.Parent.Attribute("qualified-types")!.Value'/>
+            <copy-of value='component.Nodes()'/>
+            <xcst:package-type>
+               <copy-of value='packageType'/>
+            </xcst:package-type>
+         </element>
+         <if test='visibility != "hidden"'>
+            <void value='nonHidden.Add(component)'/>
+         </if>
+      </for-each>
+   </template>
+
+   <function name='xcst_visibility' as='string'>
+      <param name='node' as='XObject'/>
+
+      <variable name='str' value='xcst_non_string(node)'/>
+
+      <switch value='str'>
+         <when test='"public" or "private" or "final" or "abstract"'/>
+         <otherwise>
+            <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(node)' expand-text='yes' transform-text='trim'>
+               Invalid value for '{name(node)}'. Must be one of (public|private|final|abstract).
+            </message>
+         </otherwise>
+      </switch>
+
+      <return value='str'/>
+   </function>
+
+   <function name='xcst_homonymous' as='bool'>
+      <param name='a' as='XElement'/>
+      <param name='b' as='XElement'/>
+
+      <switch value='a.Name.LocalName'>
+         <when test='"param" or "variable"'>
+            <return value='(b.Name.LocalName is "param" or "variable")
+               &amp;&amp; xcst_name_equal(a.Attribute("name"), b.Attribute("name"))'/>
+         </when>
+         <when test='"template" or "attribute-set"'>
+            <return value='b.Name.LocalName == a.Name.LocalName
+               &amp;&amp; a.Attribute("name") is XAttribute aNameAttr
+               &amp;&amp; b.Attribute("name") is XAttribute bNameAttr
+               &amp;&amp; xcst_EQName(aNameAttr) == xcst_EQName(bNameAttr)'/>
+         </when>
+         <when test='"function"'>
+            <return value='b.Name.LocalName == a.Name.LocalName
+               &amp;&amp; xcst_name_equal(a.Attribute("name"), b.Attribute("name"))
+               &amp;&amp; a.Elements()
+                  .Where(p => p.Name.LocalName == "param")
+                  .Count() == b.Elements()
+                     .Where(p => p.Name.LocalName == "param")
+                     .Count()'/>
+         </when>
+         <when test='"type"'>
+            <return value='b.Name.LocalName == a.Name.LocalName
+               &amp;&amp; xcst_name_equal(a.Attribute("name"), b.Attribute("name"))'/>
+         </when>
+         <otherwise>
+            <return value='false'/>
+         </otherwise>
+      </switch>
+   </function>
+
+   <function name='src_template_method_name' as='string'>
+      <param name='declaration' as='XElement?'/>
+      <param name='qname' as='XName?'/>
+      <param name='componentKind' as='string'/>
+      <param name='deterministic' as='bool'/>
+
+      <variable name='escapedName' value='
+         (qname != null) ?
+            replace(@string(qname, declaration), "[^A-Za-z0-9]", "_")
+            : null'/>
+
+      <variable name='id' as='string'>
+         <choose>
+            <when test='deterministic &amp;&amp; qname != null'
+               value='StringId(xcst_uri_qualified_name(qname))
+                  .Replace(&apos;-&apos;, &apos;_&apos;)'/>
+            <when test='declaration != null' value='generate_id(declaration)'/>
+            <otherwise>
+               <message terminate='yes'/>
+            </otherwise>
+         </choose>
+      </variable>
+
+      <return value='src_aux_variable(string.Join("_", componentKind, escapedName, id))'/>
+   </function>
+
+</module>

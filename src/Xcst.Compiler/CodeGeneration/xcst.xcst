@@ -1,0 +1,555 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!--
+ Copyright 2021 Max Toro Q.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<package name='Xcst.Compiler.XcstCompilerPackage' version='1.0' language='C#'
+   xmlns='http://maxtoroq.github.io/XCST'
+   xmlns:xcst='http://maxtoroq.github.io/XCST/grammar'
+   xmlns:code='http://maxtoroq.github.io/XCST/code'
+   xmlns:src='http://maxtoroq.github.io/XCST/compiled'
+   xmlns:cs='http://maxtoroq.github.io/XCST/csharp'
+   xmlns:vb='http://maxtoroq.github.io/XCST/vb'>
+
+   <import-namespace ns='System.Collections.Generic'/>
+   <import-namespace ns='System.Linq'/>
+   <import-namespace ns='System.Xml.Linq'/>
+
+   <!--
+      Some modules define fallback template rules which must have
+      lower import precedence than all other rules in that mode.
+      Therefore, the order of imports is significant.
+   -->
+   <import href='_code.xcst'/>
+   <import href='_lang.xcst'/>
+   <import href='_grammar.xcst'/>
+   <import href='_manifest.xcst'/>
+   <import href='_codegen.xcst'/>
+   <import href='_pkg-lib.xcst'/>
+   <import href='_pkg-top.xcst'/>
+   <import href='_types.xcst'/>
+   <import href='_expressions.xcst'/>
+   <import href='_instructions.xcst'/>
+   <import href='_template-rule.xcst'/>
+   <import href='_repetition.xcst'/>
+   <import href='_conditional.xcst'/>
+   <import href='_variables.xcst'/>
+   <import href='_callable.xcst'/>
+   <import href='_nodes.xcst'/>
+   <import href='_objects.xcst'/>
+   <import href='_sort-group.xcst'/>
+   <import href='_diagnostics.xcst'/>
+   <import href='_extensibility.xcst'/>
+   <import href='_serialization.xcst'/>
+   <import href='_other.xcst'/>
+
+   <param name='src_namespace' as='string?'/>
+   <param name='src_class' as='string?'/>
+   <param name='src_base_types' as='XElement[]'/>
+   <param name='src_visibility'>#default</param>
+   <param name='src_use_line_directive' as='bool'/>
+
+   <param name='src_named_package' as='bool'/>
+   <param name='src_use_package_base' as='string?'/>
+   <param name='src_manifest_only' as='bool'/>
+
+   <param name='src_module_resolver' as='System.Xml.XmlResolver' required='yes'/>
+   <param name='src_package_type_resolver' as='System.Func&lt;string, System.Type?>?'/>
+   <param name='src_package_library' as='System.Collections.Concurrent.ConcurrentDictionary&lt;string, XDocument>?'/>
+   <param name='src_package_location_resolver' as='System.Func&lt;string, System.Uri?>?'/>
+   <param name='src_package_file_directory' as='string?'/>
+   <param name='src_package_file_extension' as='string?'/>
+   <param name='src_compilation_unit_handler' as='System.Func&lt;string, System.IO.TextWriter>?'/>
+
+   <variable name='c' as='XNamespace'>http://maxtoroq.github.io/XCST</variable>
+   <variable name='xcst' as='XNamespace'>http://maxtoroq.github.io/XCST/grammar</variable>
+   <variable name='code' as='XNamespace'>http://maxtoroq.github.io/XCST/code</variable>
+   <variable name='src' as='XNamespace'>http://maxtoroq.github.io/XCST/compiled</variable>
+
+   <variable name='src_object_type'>
+      <code:type-reference name='Object' namespace='System'/>
+   </variable>
+
+   <variable name='src_nullable_object_type'>
+      <code:type-reference name='Object' namespace='System'>
+         <if test='cs_nullable_annotate'>
+            <attribute name='nullable' value='@string(true)'/>
+         </if>
+      </code:type-reference>
+   </variable>
+
+   <template match='XElement el &amp;&amp; el.Name.Namespace == c'>
+      <message terminate='yes' error-code='XTSE0010' error-data='src_error_object(el)' expand-text='yes' transform-text='trim'>
+         Unknown XCST element: {el.Name.LocalName}.
+      </message>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name.Namespace != c'>
+      <call-template name='xcst:validate-document-element-attributes'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <message terminate='yes' error-code='XTSE0010' error-data='src_error_object(el)' transform-text='trim'>
+         Simplified module not implemented yet.
+      </message>
+   </template>
+
+   <template match='XElement el &amp;&amp; (el.Name == c + "module" || el.Name == c + "package")'>
+      <param name='@namespace' value='src_namespace' as='string?'/>
+      <param name='@class' value='src_class' as='string?'/>
+      <param name='namedPackage' value='src_named_package' as='bool'/>
+      <param name='manifestOnly' value='src_manifest_only' as='bool'/>
+
+      <variable name='packageUri' value='
+         (el.Document?.BaseUri is string uriStr
+            &amp;&amp; uriStr.Length > 0) ? new System.Uri(uriStr)
+         : null'/>
+
+      <variable name='packageName' value='
+         (el.Name == c + "package" &amp;&amp; el.Attribute("name") is XAttribute name) ?
+            xcst_name(name)
+            : null'/>
+
+      <variable name='packageNameParts' value='packageName?.Split(&apos;.&apos;)'/>
+
+      <if test='!(!namedPackage || packageName != null)'>
+         <message terminate='yes' error-code='XCST9001' error-data='src_error_object(el)' transform-text='trim'>
+            A named package is expected. Use the c:package element with a 'name' attribute.
+         </message>
+      </if>
+
+      <variable name='ns' as='string'>
+         <choose>
+            <when test='packageName != null'>
+               <choose>
+                  <when test='packageNameParts!.Length > 1' value='string.Join(".", packageNameParts.Take(packageNameParts.Length - 1))'/>
+                  <when test='@namespace != null' value='@namespace'/>
+                  <otherwise>
+                     <message terminate='yes' error-code='XCST90022' error-data='src_error_object(el)' transform-text='trim'>
+                        The 'namespace' parameter is required if the package name is not multipart.
+                     </message>
+                  </otherwise>
+               </choose>
+            </when>
+            <when test='@namespace != null' value='@namespace'/>
+            <otherwise>
+               <message terminate='yes' error-code='XCST9004' error-data='src_error_object(el)' transform-text='trim'>
+                  The 'namespace' parameter is required for implicit and unnamed packages.
+               </message>
+            </otherwise>
+         </choose>
+      </variable>
+
+      <variable name='cl' as='string'>
+         <choose>
+            <when test='packageName != null' value='packageNameParts![packageNameParts.Length - 1]'/>
+            <when test='@class != null' value='@class'/>
+            <otherwise>
+               <message terminate='yes' error-code='XCST9006' error-data='src_error_object(el)' transform-text='trim'>
+                  The 'class' parameter is required for implicit and unnamed packages.
+               </message>
+            </otherwise>
+         </choose>
+      </variable>
+
+      <variable name='language' value='
+         (el.Attribute("language") is XAttribute a) ? xcst_non_string(a) : null'/>
+
+      <variable name='modules'>
+         <call-template name='src:imports-and-self'>
+            <with-param name='el' value='el'/>
+            <with-param name='moduleDocs' value='new List&lt;XDocument> { el.Document! }' tunnel='yes'/>
+            <with-param name='language' value='language' tunnel='yes'/>
+         </call-template>
+      </variable>
+
+      <variable name='usedPackages' as='XElement[]'>
+         <for-each-group name='grp' in='select(modules, c + "use-package")'
+               group-by='p => src_resolve_package_name(p, ns)'>
+            <call-template name='src:used-package-manifest'>
+               <with-param name='usePackageEls' value='grp.ToArray()'/>
+               <with-param name='usedPackageName' value='grp.Key'/>
+               <with-param name='usingPackageUri' value='packageUri'/>
+               <with-param name='language' value='language!'/>
+            </call-template>
+         </for-each-group>
+      </variable>
+
+      <variable name='implicitPackage' value='el.Name == c + "module"'/>
+
+      <variable name='localComponents' as='XElement[]'>
+         <apply-templates value='modules' mode='xcst:package-manifest'>
+            <with-param name='modules' value='modules' tunnel='yes'/>
+            <with-param name='usedPackages' value='usedPackages' tunnel='yes'/>
+            <with-param name='namespace' value='ns' tunnel='yes'/>
+            <with-param name='implicitPackage' value='implicitPackage' tunnel='yes'/>
+            <with-param name='language' value='language' tunnel='yes'/>
+         </apply-templates>
+      </variable>
+
+      <variable name='packageVisibility' value='
+         (el.Attribute("visibility") is XAttribute visibilityAttr) ?
+            xcst_package_visibility(el)
+            : src_visibility'/>
+
+      <variable name='packageManifest'>
+         <xcst:package-manifest
+               qualified-types='false'
+               visibility='{packageVisibility}'>
+            <code:type-reference name='{cl}' namespace='{ns}'/>
+            <call-template name='xcst:accepted-components'>
+               <with-param name='el' value='el'/>
+               <with-param name='modules' value='modules'/>
+               <with-param name='usedPackages' value='usedPackages'/>
+               <with-param name='localComponents' value='localComponents'/>
+            </call-template>
+            <copy-of value='localComponents'/>
+            <call-template name='xcst:modes'>
+               <with-param name='el' value='el'/>
+               <with-param name='modules' value='modules' tunnel='yes'/>
+               <with-param name='implicitPackage' value='implicitPackage' tunnel='yes'/>
+            </call-template>
+            <call-template name='xcst:output-definitions'>
+               <with-param name='modules' value='modules' tunnel='yes'/>
+            </call-template>
+         </xcst:package-manifest>
+      </variable>
+
+      <src:program language='{language}'>
+         <namespace name='{nameof(xcst)}' value='xcst'/>
+         <namespace name='{nameof(code)}' value='code'/>
+         <copy-of value='packageManifest'/>
+         <if test='!manifestOnly'>
+            <call-template name='src:compilation-units'>
+               <with-param name='modules' value='modules' tunnel='yes'/>
+               <with-param name='packageManifest' value='packageManifest' tunnel='yes'/>
+               <with-param name='usedPackages' value='usedPackages' tunnel='yes'/>
+               <with-param name='language' value='language' tunnel='yes'/>
+            </call-template>
+         </if>
+      </src:program>
+   </template>
+
+   <template name='src:imports-and-self' as='XElement[]'>
+      <param name='el' as='XElement' required='yes'/>
+      <param name='language' as='string' tunnel='yes' required='yes'/>
+
+      <void>
+         <call-template name='xcst:validate-document-element-attributes'>
+            <with-param name='el' value='el'/>
+         </call-template>
+      </void>
+
+      <apply-templates value='el.Nodes()' mode='xcst:validate-top-level'/>
+
+      <if test='!xcst_language_equal(el.Attribute("language")!, language)'>
+         <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(el)' transform-text='trim'>
+            Imported modules must use the same value for the 'language' attribute as the principal module.
+         </message>
+      </if>
+
+      <apply-templates value='el.Elements(c + "import")' mode='src:load-imports'/>
+      <object value='el'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "import"' mode='src:load-imports'>
+      <param name='moduleDocs' as='List&lt;XDocument>' tunnel='yes' required='yes'/>
+
+      <call-template name='xcst:validate-attribs'>
+         <with-param name='el' value='el'/>
+         <with-param name='required' value='new[] { "href" }'/>
+      </call-template>
+
+      <call-template name='xcst:no-children'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <variable name='href' value='resolve_uri(xcst_uri(el.Attribute("href")!)!, el.BaseUri)'/>
+
+      <variable name='imported' as='XDocument'>
+         <try value='doc(href)' rollback-output='no'>
+            <catch>
+               <message terminate='yes' error-code='XTSE0165' error-data='src_error_object(el)' transform-text='trim'>
+                  Could not retrieve imported module, or it's not a well-formed XML document.
+               </message>
+            </catch>
+         </try>
+      </variable>
+
+      <if test='!moduleDocs.All(d => d.BaseUri != imported.BaseUri)'>
+         <message terminate='yes' error-code='XTSE0210' error-data='src_error_object(el)' transform-text='trim'>
+            A module cannot directly or indirectly import itself.
+         </message>
+      </if>
+
+      <if test='!(imported.Root!.Name == c + "module")'>
+         <message terminate='yes' error-code='XTSE0165' error-data='src_error_object(el)' transform-text='trim'>
+            Expecting c:module element.
+         </message>
+      </if>
+
+      <void value='moduleDocs.Add(imported)'/>
+
+      <call-template name='src:imports-and-self'>
+         <with-param name='el' value='imported.Root'/>
+      </call-template>
+   </template>
+
+   <template name='src:used-package-manifest' as='XElement'>
+      <param name='usePackageEls' as='XElement[]' required='yes'/>
+      <param name='usedPackageName' as='string' required='yes'/>
+      <param name='usingPackageUri' as='System.Uri?' required='yes'/>
+      <param name='language' as='string' required='yes'/>
+
+      <variable name='usePackageEl' value='usePackageEls[0]'/>
+
+      <variable name='manifest' as='XElement'>
+         <variable name='man' value='PackageManifest(usedPackageName, usePackageEl)'/>
+         <choose>
+            <when test='man != null' value='man.Root!'/>
+            <otherwise>
+               <variable name='usedPackageUri' value='PackageLocation(usedPackageName, usingPackageUri)'/>
+               <if test='!(usedPackageUri != null)'>
+                  <message terminate='yes' error-code='XTSE3000' error-data='src_error_object(usePackageEl)' expand-text='yes' transform-text='trim'>
+                     Cannot find package '{usedPackageName}'.
+                  </message>
+               </if>
+               <variable name='result' as='XElement'>
+                  <apply-templates value='doc(usedPackageUri).Root'>
+                     <with-param name='namespace' value='null'/>
+                     <with-param name='class' value='null'/>
+                     <with-param name='namedPackage' value='true'/>
+                     <with-param name='manifestOnly' value='true'/>
+                  </apply-templates>
+               </variable>
+               <if test='!xcst_language_equal(result.Attribute("language")!, language)'>
+                  <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(usePackageEl)' transform-text='trim'>
+                     Used packages that are not pre-compiled must use the same value for the 'language' attribute as the top-level package.
+                  </message>
+               </if>
+               <object value='result.Element(xcst + "package-manifest")!'/>
+            </otherwise>
+         </choose>
+      </variable>
+
+      <variable name='components' value='manifest.Elements()
+         .Where(p => p.Name.Namespace == xcst)
+         .ToArray()'/>
+
+      <for-each name='accept' in='select(usePackageEls, c + "accept")'>
+         <variable name='component' value='xcst_non_string(accept.Attribute("component")!)'/>
+         <variable name='qname' value='xcst_component_qnamed(component)'/>
+         <variable name='names' value='xcst_accept_names(accept)'/>
+         <if test='!(empty(names) || xcst_accept_names_is_wildcard(names))'>
+            <for-each name='name' in='names'>
+               <variable name='matches' value='components
+                  .Where(p => p.Name.LocalName == component
+                     &amp;&amp; p.Attribute("name") is XAttribute nameAttr
+                     &amp;&amp; name.Equals((qname ? xcst_EQName(nameAttr) : (object)nameAttr.Value)))
+                  .ToArray()'/>
+               <choose>
+                  <when test='!matches.Any()'>
+                     <message terminate='yes' error-code='XTSE3030' error-data='src_error_object(accept)' expand-text='yes' transform-text='trim'>
+                        No {component} '{name}' exists in the used package.
+                     </message>
+                  </when>
+                  <when test='matches.Length == 1'>
+                     <if test='!(matches[0].Attribute("visibility")!.Value != "abstract")'>
+                        <message terminate='yes' error-code='XTSE3040' error-data='src_error_object(accept)' expand-text='yes' transform-text='trim'>
+                           Cannot match abstract component '{name}', it must be overridden.
+                        </message>
+                     </if>
+                  </when>
+               </choose>
+            </for-each>
+         </if>
+      </for-each>
+
+      <variable name='acceptAll' value='usePackageEls.Any(p => p.Element(c + "accept") is null)'/>
+
+      <variable name='mergedAccepts' as='XElement[]'>
+         <if test='!acceptAll'>
+            <variable name='implicitAccepts' as='XElement[]'>
+               <for-each-group name='grp' in='select(usePackageEls, c + "override", c)'
+                     group-by='p => (p.Name == c + "param") ? "variable" : p.Name.LocalName'>
+                  <variable name='component' value='grp.Key'/>
+                  <variable name='qname' value='xcst_component_qnamed(component)'/>
+                  <variable name='names' value='(
+                     from p in grp
+                     let nameAttr = p.Attribute("name")!
+                     select (qname ?
+                        xcst_uri_qualified_name(xcst_EQName(nameAttr)!)
+                        : xcst_unescape_identifier(xcst_name(nameAttr), language)))
+                     .ToArray()'/>
+                  <src:accept component='{component}' names='{names}'/>
+               </for-each-group>
+            </variable>
+            <for-each-group name='grp' in='select(usePackageEls, c + "accept").Concat(implicitAccepts)'
+                  group-by='p => xcst_non_string(p.Attribute("component")!)'>
+               <variable name='names' value='grp
+                  .SelectMany(p => xcst_accept_names(p))
+                  .Distinct()
+                  .ToArray()'/>
+               <src:accept component='{grp.Key}'>
+                  <attribute name='names' value='
+                     names.Any(n => n is string nStr &amp;&amp; nStr == "*") ? "*"
+                     : string.Join(" ",
+                        names.Select(n => (n is XName q) ?
+                           xcst_uri_qualified_name(q)
+                           : (string)n))'/>
+               </src:accept>
+            </for-each-group>
+         </if>
+      </variable>
+
+      <xcst:package-manifest package-id='{generate_id(manifest)}'>
+         <copy-of value='attributes(manifest)'/>
+         <copy-of value='select(manifest, code + "type-reference")'/>
+         <for-each name='comp' in='components.Where(p => p.Attribute("visibility")!.Value != "hidden")'>
+            <choose>
+               <when test='acceptAll'>
+                  <copy-of value='comp'/>
+               </when>
+               <otherwise>
+                  <variable name='kind' value='comp.Name.LocalName'/>
+                  <variable name='qname' value='xcst_component_qnamed(kind)'/>
+                  <variable name='nameAttr' value='comp.Attribute("name")!'/>
+                  <variable name='name' value='(qname ? xcst_EQName(nameAttr)! : (object)nameAttr.Value)'/>
+                  <variable name='accept' value='mergedAccepts
+                     .FirstOrDefault(p => p.Attribute("component")!.Value == kind)'/>
+                  <if test='accept != null
+                      &amp;&amp; (accept.Attribute("names")!.Value == "*"
+                        || xcst_accept_names(accept).Contains(name))'>
+                     <copy-of value='comp'/>
+                  </if>
+               </otherwise>
+            </choose>
+         </for-each>
+      </xcst:package-manifest>
+   </template>
+
+   <function name='xcst_accept_names' as='object[]'>
+      <param name='acceptEl' as='XElement'/>
+
+      <variable name='component' value='xcst_non_string(acceptEl.Attribute("component")!)'/>
+      <variable name='qname' value='xcst_component_qnamed(component)'/>
+
+      <variable name='names' as='object[]'>
+         <for-each name='n' in='tokenize(acceptEl.Attribute("names")!.Value)'>
+            <choose>
+               <when test='qname &amp;&amp; n != "*"' value='xcst_EQName(acceptEl, n)!'/>
+               <otherwise value='(object)n'/>
+            </choose>
+         </for-each>
+      </variable>
+
+      <return value='names'/>
+   </function>
+
+   <function name='xcst_accept_names_is_wildcard' as='bool'>
+      <param name='names' as='object[]'/>
+
+      <return value='
+         (names.Length == 1 &amp;&amp; names[0] is string n) ?
+            n == "*"
+         : false'/>
+   </function>
+
+   <function name='xcst_component_qnamed' as='bool'>
+      <param name='component' as='string'/>
+
+      <return value='component is "template" or "attribute-set"'/>
+   </function>
+
+   <function name='src_resolve_package_name' as='string'>
+      <param name='usePackageEl' as='XElement'/>
+      <param name='ns' as='string'/>
+
+      <variable name='name' value='xcst_name(usePackageEl.Attribute("name")!)'/>
+      <return value='
+         (name.IndexOf(&apos;.&apos;) != -1) ? name
+            : string.Concat((src_use_package_base ?? ns), ".", name)'/>
+   </function>
+
+   <function name='src_error_object' as='object'>
+      <param name='node' as='XObject'/>
+
+      <return value='ErrorData(node)'/>
+   </function>
+
+   <template name='src:compilation-units'>
+      <param name='modules' as='XElement[]' tunnel='yes' required='yes'/>
+      <param name='usedPackages' as='XElement[]' tunnel='yes' required='yes'/>
+      <param name='language' as='string' tunnel='yes' required='yes'/>
+
+      <variable name='namespaces' as='XElement[]'>
+         <apply-templates value='usedPackages' mode='src:namespace'/>
+         <apply-templates value='modules' mode='src:namespace'/>
+      </variable>
+
+      <variable name='namePrefix'>xcst</variable>
+      <variable name='nameSuffix'>generated</variable>
+
+      <choose>
+         <when test='xcst_language_equal(language, xcst_csharp_lang)'>
+            <choose>
+               <when test='src_compilation_unit_handler != null'>
+                  <variable name='href' expand-text='yes'>{namePrefix}.{nameSuffix}.cs</variable>
+                  <result-document output='src_compilation_unit_handler.Invoke(href)' method='text'>
+                     <call-template name='cs:nullable-directive'/>
+                     <for-each name='ns' in='namespaces'>
+                        <call-template name='cs:serialize'>
+                           <with-param name='el' value='ns'/>
+                        </call-template>
+                     </for-each>
+                  </result-document>
+               </when>
+               <otherwise>
+                  <src:compilation-unit>
+                     <call-template name='cs:nullable-directive'/>
+                     <for-each name='ns' in='namespaces'>
+                        <call-template name='cs:serialize'>
+                           <with-param name='el' value='ns'/>
+                        </call-template>
+                     </for-each>
+                  </src:compilation-unit>
+               </otherwise>
+            </choose>
+         </when>
+         <when test='xcst_language_equal(language, xcst_vb_lang)'>
+            <variable name='i' value='-1'/>
+            <for-each name='ns' in='namespaces'>
+               <void value='i++'/>
+               <choose>
+                  <when test='src_compilation_unit_handler != null'>
+                     <variable name='href' expand-text='yes'>{namePrefix}.{i + 1}.{nameSuffix}.vb</variable>
+                     <result-document output='src_compilation_unit_handler.Invoke(href)' method='text'>
+                        <call-template name='vb:serialize'>
+                           <with-param name='el' value='ns'/>
+                        </call-template>
+                     </result-document>
+                  </when>
+                  <otherwise>
+                     <src:compilation-unit>
+                        <call-template name='vb:serialize'>
+                           <with-param name='el' value='ns'/>
+                        </call-template>
+                     </src:compilation-unit>
+                  </otherwise>
+               </choose>
+            </for-each>
+         </when>
+      </choose>
+   </template>
+
+</package>

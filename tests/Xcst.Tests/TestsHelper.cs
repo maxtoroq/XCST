@@ -25,7 +25,7 @@ namespace Xcst.Tests {
 
       static readonly XcstCompilerFactory
       _compilerFactory = new XcstCompilerFactory {
-         EnableExtensions = true
+         //EnableExtensions = true
       };
 
       static readonly string
@@ -56,11 +56,13 @@ namespace Xcst.Tests {
             xcstResult = codegenResult.result;
             packageName = codegenResult.packageName;
 
-         } catch (CompileException ex) when (printCode) {
+         } catch (RuntimeException ex) when (printCode) {
+
+            dynamic? errorData = ex.ErrorData;
 
             Console.WriteLine($"// {ex.Message}");
-            Console.WriteLine($"// Module URI: {ex.ModuleUri}");
-            Console.WriteLine($"// Line number: {ex.LineNumber}");
+            Console.WriteLine($"// Module URI: {errorData?.ModuleUri}");
+            Console.WriteLine($"// Line number: {errorData?.LineNumber}");
 
             throw;
          }
@@ -129,7 +131,7 @@ namespace Xcst.Tests {
                   return;
                }
 
-            } catch (CompileException) when (correct) {
+            } catch (RuntimeException) when (correct) {
 
                printCode = true;
                throw;
@@ -237,20 +239,41 @@ namespace Xcst.Tests {
                : VisualBasicSyntaxTree.ParseText(c, vbOptions, path: packageUri.LocalPath, encoding: Encoding.UTF8))
             .ToArray();
 
+         // See <https://stackoverflow.com/a/47196516/39923>
+         // The location of the .NET assemblies
+         var assemblyPath = Path.GetDirectoryName(typeof(object).Assembly.Location)!;
+
          MetadataReference[] references = {
             // XCST dependencies
+            MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "mscorlib.dll")),
+            MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.dll")),
+            MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Collections.dll")),
+            MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Core.dll")),
+            MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Runtime.dll")),
+            MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Runtime.Extensions.dll")),
+            MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Xml.ReaderWriter.dll")),
+            MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Xml.XDocument.dll")),
+            MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "netstandard.dll")),
             MetadataReference.CreateFromFile(typeof(System.Object).Assembly.Location),
             MetadataReference.CreateFromFile(typeof(System.Uri).Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(System.Collections.Generic.List<>).Assembly.Location),
             MetadataReference.CreateFromFile(typeof(System.Linq.Enumerable).Assembly.Location),
             MetadataReference.CreateFromFile(typeof(System.Xml.XmlWriter).Assembly.Location),
             MetadataReference.CreateFromFile(typeof(System.Xml.Linq.XDocument).Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(System.Diagnostics.Trace).Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(System.IServiceProvider).Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(System.ComponentModel.DescriptionAttribute).Assembly.Location),
             MetadataReference.CreateFromFile(typeof(System.ComponentModel.DataAnnotations.ValidationAttribute).Assembly.Location),
             MetadataReference.CreateFromFile(typeof(Newtonsoft.Json.JsonWriter).Assembly.Location),
             MetadataReference.CreateFromFile(typeof(Xcst.PackageModel.IXcstPackage).Assembly.Location),
             // Tests dependencies
+            MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Dynamic.Runtime.dll")),
+            MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Linq.Expressions.dll")),
+            MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.ObjectModel.dll")),
             MetadataReference.CreateFromFile(typeof(Microsoft.CSharp.RuntimeBinder.RuntimeBinderException).Assembly.Location),
             MetadataReference.CreateFromFile(typeof(Microsoft.VisualBasic.Constants).Assembly.Location),
             MetadataReference.CreateFromFile(typeof(TestAssert).Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(System.IO.File).Assembly.Location),
             MetadataReference.CreateFromFile(typeof(System.Data.DataTable).Assembly.Location),
             MetadataReference.CreateFromFile(Assembly.GetExecutingAssembly().Location)
          };
@@ -265,7 +288,8 @@ namespace Xcst.Tests {
                syntaxTrees: syntaxTrees,
                references: references,
                options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary,
-                  specificDiagnosticOptions: specificDiagnosticOptions))
+                  specificDiagnosticOptions: specificDiagnosticOptions
+                     .Append(new KeyValuePair<string, ReportDiagnostic>("CS1701", ReportDiagnostic.Suppress))))
             : VisualBasicCompilation.Create(
                Path.GetRandomFileName(),
                syntaxTrees: syntaxTrees,

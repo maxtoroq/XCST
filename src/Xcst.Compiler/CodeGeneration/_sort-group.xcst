@@ -1,0 +1,329 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!--
+ Copyright 2021 Max Toro Q.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<module version='1.0' language='C#'
+   xmlns='http://maxtoroq.github.io/XCST'
+   xmlns:xcst='http://maxtoroq.github.io/XCST/grammar'
+   xmlns:code='http://maxtoroq.github.io/XCST/code'
+   xmlns:src='http://maxtoroq.github.io/XCST/compiled'>
+
+   <import-namespace ns='System.Linq'/>
+   <import-namespace ns='System.Xml.Linq'/>
+
+   <template name='src:sort'>
+      <param name='el' as='XElement' required='yes'/>
+      <param name='source' as='XElement' required='yes'/>
+
+      <variable name='sortEls' value='el
+         .Elements(c + "sort")
+         .ToArray()'/>
+
+      <choose>
+         <when test='sortEls.Length > 0'>
+            <code:chain>
+               <for-each name='sort' in='sortEls'>
+                  <call-template name='xcst:validate-attribs'>
+                     <with-param name='el' value='sort'/>
+                     <with-param name='optional' value='new[] { "by", "order" }'/>
+                  </call-template>
+                  <call-template name='xcst:no-children'>
+                     <with-param name='el' value='sort'/>
+                  </call-template>
+                  <call-template name='xcst:no-other-preceding'>
+                     <with-param name='el' value='sort'/>
+                  </call-template>
+                  <variable name='first' value='empty(sort.ElementsBeforeSelf())'/>
+                  <code:method-call name='{(first ? "SortBy" : "CreateOrderedEnumerable")}'>
+                     <call-template name='src:line-number'>
+                        <with-param name='el' value='sort'/>
+                     </call-template>
+                     <choose>
+                        <when test='first'>
+                           <copy-of value='src_helper_type("Sorting")'/>
+                        </when>
+                        <otherwise>
+                           <code:chain-reference/>
+                        </otherwise>
+                     </choose>
+                     <code:arguments>
+                        <if test='first'>
+                           <copy-of value='source'/>
+                        </if>
+                        <choose>
+                           <when test='sort.Attribute("by") is XAttribute byAttr'>
+                              <code:expression value='{xcst_expression(byAttr)}'/>
+                           </when>
+                           <otherwise>
+                              <variable name='param' value='src_aux_variable(generate_id(sort))'/>
+                              <code:lambda>
+                                 <code:parameters>
+                                    <code:parameter name='{param}'/>
+                                 </code:parameters>
+                                 <code:variable-reference name='{param}'/>
+                              </code:lambda>
+                           </otherwise>
+                        </choose>
+                        <if test='!first'>
+                           <code:null/>
+                        </if>
+                        <choose>
+                           <when test='sort.Attribute("order") is XAttribute orderAttr'>
+                              <call-template name='src:sort-order-descending'>
+                                 <with-param name='val' value='xcst_sort_order_descending(orderAttr, true)'/>
+                                 <with-param name='avt' value='orderAttr'/>
+                              </call-template>
+                           </when>
+                           <otherwise>
+                              <code:bool value='false'/>
+                           </otherwise>
+                        </choose>
+                     </code:arguments>
+                  </code:method-call>
+               </for-each>
+            </code:chain>
+         </when>
+         <otherwise>
+            <copy-of value='source'/>
+         </otherwise>
+      </choose>
+   </template>
+
+   <template match='XElement el
+         &amp;&amp; el.Name == c + "for-each-group"
+         &amp;&amp; !(el.Attribute("group-size") != null
+            &amp;&amp; empty(el.Elements(c + "sort")))' mode='src:statement'>
+
+      <call-template name='xcst:validate-for-each-group'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <variable name='groupSizeAttr' value='el.Attribute("group-size")'/>
+
+      <variable name='source'>
+         <code:method-call name='Group{(groupSizeAttr != null ? "Size" : "By")}'>
+            <copy-of value='src_helper_type("Grouping")'/>
+            <code:arguments>
+               <code:expression value='{xcst_expression(el.Attribute("in")!)}'/>
+               <choose>
+                  <when test='groupSizeAttr != null'>
+                     <call-template name='src:integer'>
+                        <with-param name='val' value='xcst_positive_integer(groupSizeAttr, true)'/>
+                        <with-param name='avt' value='groupSizeAttr'/>
+                     </call-template>
+                  </when>
+                  <when test='el.Attribute("group-by") is XAttribute groupByAttr'>
+                     <code:expression value='{xcst_expression(groupByAttr)}'/>
+                  </when>
+                  <otherwise>
+                     <variable name='param' value='src_aux_variable(generate_id(el))'/>
+                     <code:lambda>
+                        <code:parameters>
+                           <code:parameter name='{param}'/>
+                        </code:parameters>
+                        <code:variable-reference name='{param}'/>
+                     </code:lambda>
+                  </otherwise>
+               </choose>
+            </code:arguments>
+         </code:method-call>
+      </variable>
+
+      <code:for-each>
+         <call-template name='src:line-number'>
+            <with-param name='el' value='el'/>
+         </call-template>
+         <code:variable name='{xcst_name(el.Attribute("name")!)}'>
+            <call-template name='src:sort'>
+               <with-param name='el' value='el'/>
+               <with-param name='source' value='source'/>
+            </call-template>
+         </code:variable>
+         <code:block>
+            <call-template name='src:sequence-constructor'>
+               <with-param name='el' value='el'/>
+               <with-param name='children' value='xcst_for_each_group_children(el)'/>
+            </call-template>
+         </code:block>
+      </code:for-each>
+   </template>
+
+   <template match='XElement el
+         &amp;&amp; el.Name == c + "for-each-group"
+         &amp;&amp; (el.Attribute("group-size") != null
+            &amp;&amp; empty(el.Elements(c + "sort")))' mode='src:statement'>
+
+      <call-template name='xcst:validate-for-each-group'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <variable name='groupSizeAttr' value='el.Attribute("group-size")!'/>
+      <variable name='id' value='generate_id(el)'/>
+      <variable name='iter' value='src_aux_variable("iter_" + id)'/>
+      <variable name='helper' value='src_helper_type("Grouping")'/>
+
+      <code:variable name='{iter}'>
+         <call-template name='src:line-number'>
+            <with-param name='el' value='el'/>
+         </call-template>
+         <code:method-call name='GetEnumerator'>
+            <copy-of value='helper'/>
+            <code:arguments>
+               <code:expression value='{xcst_expression(el.Attribute("in")!)}'/>
+            </code:arguments>
+         </code:method-call>
+      </code:variable>
+
+      <code:try line-hidden='true'>
+         <variable name='cols' value='src_aux_variable("cols_" + id)'/>
+         <variable name='buff' value='src_aux_variable("buff_" + id)'/>
+         <variable name='eof' value='src_aux_variable("eof_" + id)'/>
+         <code:block>
+            <code:variable name='{cols}'>
+               <code:type-reference name='Int32' namespace='System'/>
+               <call-template name='src:integer'>
+                  <with-param name='val' value='xcst_positive_integer(groupSizeAttr, true)'/>
+                  <with-param name='avt' value='groupSizeAttr'/>
+               </call-template>
+            </code:variable>
+            <code:variable name='{buff}'>
+               <code:method-call name='CreateMutable'>
+                  <copy-of value='helper'/>
+                  <code:arguments>
+                     <code:variable-reference name='{iter}'/>
+                     <code:variable-reference name='{cols}'/>
+                  </code:arguments>
+               </code:method-call>
+            </code:variable>
+            <code:variable name='{eof}'>
+               <code:type-reference name='Boolean' namespace='System'/>
+               <code:bool value='false'/>
+            </code:variable>
+            <code:while>
+               <code:not>
+                  <code:variable-reference name='{eof}'/>
+               </code:not>
+               <code:block>
+                  <code:assign>
+                     <code:variable-reference name='{eof}'/>
+                     <code:not>
+                        <code:method-call name='MoveNext'>
+                           <code:variable-reference name='{iter}'/>
+                        </code:method-call>
+                     </code:not>
+                  </code:assign>
+                  <code:if>
+                     <code:not>
+                        <code:variable-reference name='{eof}'/>
+                     </code:not>
+                     <code:block>
+                        <code:method-call name='Add'>
+                           <code:variable-reference name='{buff}'/>
+                           <code:arguments>
+                              <code:property-reference name='Current'>
+                                 <code:variable-reference name='{iter}'/>
+                              </code:property-reference>
+                           </code:arguments>
+                        </code:method-call>
+                     </code:block>
+                  </code:if>
+                  <code:if>
+                     <code:or-else>
+                        <code:equal>
+                           <code:property-reference name='Count'>
+                              <code:variable-reference name='{buff}'/>
+                           </code:property-reference>
+                           <code:variable-reference name='{cols}'/>
+                        </code:equal>
+                        <code:and-also>
+                           <code:variable-reference name='{eof}'/>
+                           <code:greater-than>
+                              <code:property-reference name='Count'>
+                                 <code:variable-reference name='{buff}'/>
+                              </code:property-reference>
+                              <code:int value='0'/>
+                           </code:greater-than>
+                        </code:and-also>
+                     </code:or-else>
+                     <code:block>
+                        <code:variable name='{xcst_name(el.Attribute("name")!)}'>
+                           <call-template name='src:line-number'>
+                              <with-param name='el' value='el'/>
+                           </call-template>
+                           <code:method-call name='CreateImmutable'>
+                              <copy-of value='helper'/>
+                              <code:arguments>
+                                 <code:variable-reference name='{buff}'/>
+                              </code:arguments>
+                           </code:method-call>
+                        </code:variable>
+                        <code:try>
+                           <code:block>
+                              <call-template name='src:sequence-constructor'>
+                                 <with-param name='el' value='el'/>
+                                 <with-param name='children' value='xcst_for_each_group_children(el)'/>
+                              </call-template>
+                           </code:block>
+                           <code:finally line-hidden='true'>
+                              <code:method-call name='Clear'>
+                                 <code:variable-reference name='{buff}'/>
+                              </code:method-call>
+                           </code:finally>
+                        </code:try>
+                     </code:block>
+                  </code:if>
+               </code:block>
+            </code:while>
+         </code:block>
+         <code:finally>
+            <code:method-call name='Dispose'>
+               <copy-of value='helper'/>
+               <code:arguments>
+                  <code:variable-reference name='{iter}'/>
+               </code:arguments>
+            </code:method-call>
+         </code:finally>
+      </code:try>
+   </template>
+
+   <template name='xcst:validate-for-each-group'>
+      <param name='el' as='XElement' required='yes'/>
+
+      <call-template name="xcst:validate-attribs">
+         <with-param name='el' value='el'/>
+         <with-param name='required' value='new[] { "name", "in" }'/>
+         <with-param name='optional' value='new[] { "group-by", "group-size" }'/>
+      </call-template>
+
+      <if test='!(el.Attribute("group-by") is null
+            || el.Attribute("group-size") is null)'>
+         <message terminate='yes' error-code='XTSE1080' error-data='src_error_object(el)' transform-text='trim'>
+            The attributes 'group-by' and 'group-size' are mutually exclusive.
+         </message>
+      </if>
+   </template>
+
+   <function name='xcst_for_each_group_children' as='XNode[]'>
+      <param name='el' as='XElement'/>
+
+      <return value='el
+         .Nodes()
+         .Except(el.Nodes()
+            .Where(p => (p is XElement p2 &amp;&amp; p2.Name == c + "sort")
+               || p.ElementsAfterSelf(c + "sort").Any()))
+         .ToArray()'/>
+   </function>
+
+</module>

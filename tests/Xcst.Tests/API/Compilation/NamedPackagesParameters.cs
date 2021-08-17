@@ -21,7 +21,7 @@ namespace Xcst.Tests.API.Compilation {
 </c:package>
 ");
 
-         compiler.Compile(module, baseUri: new Uri("http://localhost"));
+         compiler.Compile(module);
       }
 
       [Test]
@@ -39,7 +39,7 @@ namespace Xcst.Tests.API.Compilation {
 </c:package>
 ");
 
-         compiler.Compile(module, baseUri: new Uri("http://localhost"));
+         compiler.Compile(module);
       }
 
       [Test]
@@ -58,7 +58,7 @@ namespace Xcst.Tests.API.Compilation {
 </c:package>
 ");
 
-         compiler.Compile(module, baseUri: new Uri("http://localhost"));
+         compiler.Compile(module);
       }
    }
 }

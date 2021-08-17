@@ -1,0 +1,767 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!--
+ Copyright 2021 Max Toro Q.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<module version='1.0' language='C#'
+   xmlns='http://maxtoroq.github.io/XCST'
+   xmlns:xcst='http://maxtoroq.github.io/XCST/grammar'
+   xmlns:code='http://maxtoroq.github.io/XCST/code'
+   xmlns:src='http://maxtoroq.github.io/XCST/compiled'>
+
+   <import-namespace ns='System.Linq'/>
+   <import-namespace ns='System.Xml.Linq'/>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "attribute"' mode='src:statement'>
+      <param name='output' as='XElement' tunnel='yes'/>
+
+      <call-template name='xcst:validate-attribs'>
+         <with-param name='el' value='el'/>
+         <with-param name='required' value='new[] { "name" }'/>
+         <with-param name='optional' value='new[] { "namespace", "separator", "value" }'/>
+      </call-template>
+
+      <call-template name='xcst:value-or-sequence-constructor'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <call-template name='xcst:require-output'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <variable name='outputIsDoc' value='src_output_is_doc(output)'/>
+      <variable name='docOutput' value='src_doc_output(el, output)'/>
+
+      <if test='!outputIsDoc'>
+         <code:variable name='{select(docOutput, src + "reference", code).First().Attribute("name")!.Value}'>
+            <call-template name='src:line-number'>
+               <with-param name='el' value='el'/>
+            </call-template>
+            <code:method-call name='CastAttribute'>
+               <copy-of value='src_helper_type("DocumentWriter")'/>
+               <code:arguments>
+                  <copy-of value='select(output, src + "reference", code)'/>
+               </code:arguments>
+            </code:method-call>
+         </code:variable>
+      </if>
+
+      <variable name='nameAttr' value='el.Attribute("name")!'/>
+      <variable name='namespaceAttr' value='el.Attribute("namespace")'/>
+      <variable name='valueAttr' value='el.Attribute("value")'/>
+      <variable name='separatorAttr' value='el.Attribute("separator")'/>
+
+      <variable name='attribString' value='valueAttr != null || empty(el.Elements())'/>
+      <variable name='includeSeparator' value='!attribString &amp;&amp; separatorAttr != null'/>
+      <variable name='nameAvt' value='xcst_is_value_template(nameAttr)'/>
+
+      <code:method-call>
+         <attribute name='name'>
+            <choose>
+               <when test='attribString'>WriteAttributeString</when>
+               <otherwise>WriteStartAttribute</otherwise>
+            </choose>
+            <if test='nameAvt'>Lexical</if>
+         </attribute>
+         <call-template name='src:line-number'>
+            <with-param name='el' value='el'/>
+         </call-template>
+         <copy-of value='select(docOutput, src + "reference", code)'/>
+         <code:arguments>
+            <choose>
+               <when test='nameAvt'>
+                  <call-template name='src:expand-attribute'>
+                     <with-param name='attr' value='nameAttr'/>
+                  </call-template>
+                  <choose>
+                     <when test='namespaceAttr != null'>
+                        <call-template name='src:uri-string'>
+                           <with-param name='val' value='xcst_uri(namespaceAttr, true)'/>
+                           <with-param name='avt' value='namespaceAttr'/>
+                        </call-template>
+                     </when>
+                     <otherwise>
+                        <code:null/>
+                     </otherwise>
+                  </choose>
+               </when>
+               <otherwise>
+                  <variable name='name' value='xcst_name(nameAttr)'/>
+                  <variable name='colon' value='name.IndexOf(&apos;:&apos;)'/>
+                  <variable name='qname' value='
+                     (namespaceAttr != null) ?
+                        (XName)((colon > -1) ?
+                           name.Substring(colon + 1)
+                           : name)
+                        : resolve_QName(name, el)'/>
+                  <variable name='prefix' value='(colon > -1) ?
+                     name.Substring(0, colon)
+                     : el.GetPrefixOfNamespace(qname.Namespace)'/>
+                  <if test='prefix != null
+                        || includeSeparator'>
+                     <choose>
+                        <when test='prefix != null'>
+                           <code:string literal='true'>
+                              <value-of value='prefix'/>
+                           </code:string>
+                        </when>
+                        <otherwise>
+                           <code:null/>
+                        </otherwise>
+                     </choose>
+                  </if>
+                  <code:string literal='true'>
+                     <value-of value='qname.LocalName'/>
+                  </code:string>
+                  <choose>
+                     <when test='namespaceAttr != null'>
+                        <call-template name='src:uri-string'>
+                           <with-param name='val' value='xcst_uri(namespaceAttr, true)'/>
+                           <with-param name='avt' value='namespaceAttr'/>
+                        </call-template>
+                     </when>
+                     <when test='prefix != null'>
+                        <code:string verbatim='true'>
+                           <value-of value='qname.Namespace'/>
+                        </code:string>
+                     </when>
+                     <when test='includeSeparator'>
+                        <code:null/>
+                     </when>
+                  </choose>
+               </otherwise>
+            </choose>
+            <choose>
+               <when test='attribString'>
+                  <call-template name='src:simple-content'>
+                     <with-param name='el' value='el'/>
+                     <with-param name='attr' value='valueAttr'/>
+                     <with-param name='separator' value='separatorAttr'/>
+                  </call-template>
+               </when>
+               <when test='includeSeparator'>
+                  <call-template name='src:expand-attribute'>
+                     <with-param name='attr' value='separatorAttr!'/>
+                  </call-template>
+               </when>
+            </choose>
+         </code:arguments>
+      </code:method-call>
+
+      <if test='!attribString'>
+         <code:try line-hidden='true'>
+            <code:block>
+               <call-template name='src:sequence-constructor'>
+                  <with-param name='el' value='el'/>
+                  <with-param name='output' value='docOutput' tunnel='yes'/>
+               </call-template>
+            </code:block>
+            <code:finally line-hidden='true'>
+               <code:method-call name='WriteEndAttribute'>
+                  <copy-of value='select(docOutput, src + "reference", code)'/>
+               </code:method-call>
+            </code:finally>
+         </code:try>
+      </if>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "comment"' mode='src:statement'>
+      <param name='output' as='XElement' tunnel='yes'/>
+
+      <call-template name='xcst:validate-attribs'>
+         <with-param name='el' value='el'/>
+         <with-param name='optional' value='new[] { "value" }'/>
+      </call-template>
+
+      <call-template name='xcst:value-or-sequence-constructor'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <call-template name='xcst:require-output'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <code:method-call name='WriteComment'>
+         <call-template name='src:line-number'>
+            <with-param name='el' value='el'/>
+         </call-template>
+         <copy-of value='select(output, src + "reference", code)'/>
+         <code:arguments>
+            <call-template name='src:simple-content'>
+               <with-param name='el' value='el'/>
+               <with-param name='attr' value='el.Attribute("value")'/>
+            </call-template>
+         </code:arguments>
+      </code:method-call>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "copy-of"' mode='src:statement'>
+      <param name='output' as='XElement' tunnel='yes'/>
+
+      <call-template name='xcst:validate-attribs'>
+         <with-param name='el' value='el'/>
+         <with-param name='required' value='new[] { "value" }'/>
+      </call-template>
+
+      <call-template name='xcst:require-output'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <code:method-call name='CopyOf'>
+         <call-template name='src:line-number'>
+            <with-param name='el' value='el'/>
+         </call-template>
+         <copy-of value='select(output, src + "reference", code)'/>
+         <code:arguments>
+            <code:expression value='{xcst_expression(el.Attribute("value")!)}'/>
+         </code:arguments>
+      </code:method-call>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "document"' mode='src:statement'>
+      <param name='output' as='XElement' tunnel='yes'/>
+
+      <call-template name='xcst:validate-attribs'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <call-template name='xcst:require-output'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <variable name='docOutput' value='src_doc_output(el, null)'/>
+
+      <code:using>
+         <call-template name='src:line-number'>
+            <with-param name='el' value='el'/>
+         </call-template>
+         <code:variable name='{select(docOutput, src + "reference", code).First().Attribute("name")!.Value}'>
+            <code:method-call name='CreateDocument'>
+               <copy-of value='src_helper_type("DocumentWriter")'/>
+               <code:arguments>
+                  <code:this-reference/>
+                  <copy-of value='select(output, src + "reference", code)'/>
+               </code:arguments>
+            </code:method-call>
+         </code:variable>
+         <code:block>
+            <call-template name='src:sequence-constructor'>
+               <with-param name='el' value='el'/>
+               <with-param name='output' value='docOutput' tunnel='yes'/>
+            </call-template>
+         </code:block>
+      </code:using>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "document"' mode='xcst:instruction'>
+      <xcst:instruction>
+         <code:type-reference name='XDocument' namespace='System.Xml.Linq'/>
+      </xcst:instruction>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "element"' mode='src:statement'>
+      <param name='output' as='XElement' tunnel='yes'/>
+
+      <call-template name='xcst:validate-attribs'>
+         <with-param name='el' value='el'/>
+         <with-param name='required' value='new[] { "name" }'/>
+         <with-param name='optional' value='new[] { "namespace", "use-attribute-sets" }'/>
+      </call-template>
+
+      <call-template name='xcst:require-output'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <variable name='outputIsDoc' value='src_output_is_doc(output)'/>
+      <variable name='docOutput' value='src_doc_output(el, output)'/>
+
+      <if test='!outputIsDoc'>
+         <code:variable name='{select(docOutput, src + "reference", code).First().Attribute("name")!.Value}'>
+            <call-template name='src:line-number'>
+               <with-param name='el' value='el'/>
+            </call-template>
+            <code:method-call name='CastElement'>
+               <copy-of value='src_helper_type("DocumentWriter")'/>
+               <code:arguments>
+                  <code:this-reference/>
+                  <copy-of value='select(output, src + "reference", code)'/>
+               </code:arguments>
+            </code:method-call>
+         </code:variable>
+      </if>
+
+      <variable name='nameAttr' value='el.Attribute("name")!'/>
+      <variable name='namespaceAttr' value='el.Attribute("namespace")'/>
+      <variable name='nameAvt' value='xcst_is_value_template(nameAttr)'/>
+
+      <code:method-call>
+         <attribute name='name'>
+            <text>WriteStartElement</text>
+            <if test='nameAvt'>Lexical</if>
+         </attribute>
+         <call-template name='src:line-number'>
+            <with-param name='el' value='el'/>
+         </call-template>
+         <copy-of value='select(docOutput, src + "reference", code)'/>
+         <code:arguments>
+            <choose>
+               <when test='nameAvt'>
+                  <call-template name='src:expand-attribute'>
+                     <with-param name='attr' value='nameAttr'/>
+                  </call-template>
+                  <choose>
+                     <when test='namespaceAttr != null'>
+                        <call-template name='src:uri-string'>
+                           <with-param name='val' value='xcst_uri(namespaceAttr, true)'/>
+                           <with-param name='avt' value='namespaceAttr'/>
+                        </call-template>
+                     </when>
+                     <otherwise>
+                        <code:null/>
+                     </otherwise>
+                  </choose>
+                  <code:string verbatim='true'>
+                     <value-of value='el.GetDefaultNamespace()'/>
+                  </code:string>
+               </when>
+               <otherwise>
+                  <variable name='name' value='xcst_name(nameAttr)'/>
+                  <variable name='colon' value='name.IndexOf(&apos;:&apos;)'/>
+                  <variable name='qname' value='
+                     (namespaceAttr != null) ?
+                        (XName)((colon > -1) ?
+                           name.Substring(colon + 1)
+                           : name)
+                        : resolve_QName(name, el)'/>
+                  <variable name='prefix' value='(colon > -1) ?
+                     name.Substring(0, colon)
+                     : el.GetPrefixOfNamespace(qname.Namespace)'/>
+                  <if test='prefix != null'>
+                     <code:string literal='true'>
+                        <value-of value='prefix'/>
+                     </code:string>
+                  </if>
+                  <code:string literal='true'>
+                     <value-of value='qname.LocalName'/>
+                  </code:string>
+                  <choose>
+                     <when test='namespaceAttr != null'>
+                        <call-template name='src:uri-string'>
+                           <with-param name='val' value='xcst_uri(namespaceAttr, true)'/>
+                           <with-param name='avt' value='namespaceAttr'/>
+                        </call-template>
+                     </when>
+                     <otherwise>
+                        <code:string verbatim='true'>
+                           <value-of value='qname.Namespace'/>
+                        </code:string>
+                     </otherwise>
+                  </choose>
+               </otherwise>
+            </choose>
+         </code:arguments>
+      </code:method-call>
+
+      <code:try line-hidden='true'>
+         <code:block>
+            <call-template name='src:use-attribute-sets'>
+               <with-param name='el' value='el'/>
+               <with-param name='attr' value='el.Attribute("use-attribute-sets")'/>
+               <with-param name='output' value='docOutput' tunnel='yes'/>
+            </call-template>
+            <call-template name='src:sequence-constructor'>
+               <with-param name='el' value='el'/>
+               <with-param name='output' value='docOutput' tunnel='yes'/>
+            </call-template>
+         </code:block>
+         <code:finally line-hidden='true'>
+            <code:method-call name='WriteEndElement'>
+               <copy-of value='select(docOutput, src + "reference", code)'/>
+            </code:method-call>
+         </code:finally>
+      </code:try>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "element"' mode='xcst:instruction'>
+      <xcst:instruction>
+         <code:type-reference name='XElement' namespace='System.Xml.Linq'/>
+      </xcst:instruction>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "namespace"' mode='src:statement'>
+      <param name='output' as='XElement' tunnel='yes'/>
+
+      <call-template name='xcst:validate-attribs'>
+         <with-param name='el' value='el'/>
+         <with-param name='required' value='new[] { "name" }'/>
+         <with-param name='optional' value='new[] { "value" }'/>
+      </call-template>
+
+      <call-template name='xcst:value-or-sequence-constructor'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <call-template name='xcst:require-output'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <variable name='outputIsDoc' value='src_output_is_doc(output)'/>
+      <variable name='docOutput' value='src_doc_output(el, output)'/>
+
+      <if test='!outputIsDoc'>
+         <code:variable name='{select(docOutput, src + "reference", code).First().Attribute("name")!.Value}'>
+            <call-template name='src:line-number'>
+               <with-param name='el' value='el'/>
+            </call-template>
+            <code:method-call name='CastNamespace'>
+               <copy-of value='src_helper_type("DocumentWriter")'/>
+               <code:arguments>
+                  <copy-of value='select(output, src + "reference", code)'/>
+               </code:arguments>
+            </code:method-call>
+         </code:variable>
+      </if>
+
+      <variable name='nameAttr' value='el.Attribute("name")!'/>
+      <variable name='valueAttr' value='el.Attribute("value")'/>
+      <variable name='attribString' value='valueAttr != null || empty(el.Elements())'/>
+
+      <code:method-call name='{(attribString ? "WriteAttributeString" : "WriteStartAttribute")}'>
+         <call-template name='src:line-number'>
+            <with-param name='el' value='el'/>
+         </call-template>
+         <copy-of value='select(docOutput, src + "reference", code)'/>
+         <code:arguments>
+            <code:string literal='true'>xmlns</code:string>
+            <call-template name='src:string'>
+               <with-param name='val' value='xcst_ncname(nameAttr, null, true)'/>
+               <with-param name='avt' value='nameAttr'/>
+               <with-param name='literal' value='true'/>
+            </call-template>
+            <code:null/>
+            <if test='attribString'>
+               <call-template name='src:simple-content'>
+                  <with-param name='el' value='el'/>
+                  <with-param name='attr' value='valueAttr'/>
+               </call-template>
+            </if>
+         </code:arguments>
+      </code:method-call>
+
+      <if test='!attribString'>
+         <code:try line-hidden='true'>
+            <code:block>
+               <call-template name='src:sequence-constructor'>
+                  <with-param name='el' value='el'/>
+                  <with-param name='output' value='docOutput' tunnel='yes'/>
+               </call-template>
+            </code:block>
+            <code:finally line-hidden='true'>
+               <code:method-call name='WriteEndAttribute'>
+                  <copy-of value='select(docOutput, src + "reference", code)'/>
+               </code:method-call>
+            </code:finally>
+         </code:try>
+      </if>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "processing-instruction"' mode='src:statement'>
+      <param name='output' as='XElement' tunnel='yes'/>
+
+      <call-template name='xcst:validate-attribs'>
+         <with-param name='el' value='el'/>
+         <with-param name='required' value='new[] { "name" }'/>
+         <with-param name='optional' value='new[] { "value" }'/>
+      </call-template>
+
+      <call-template name='xcst:value-or-sequence-constructor'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <call-template name='xcst:require-output'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <variable name='nameAttr' value='el.Attribute("name")!'/>
+
+      <!--
+         Using 'name' attribute to generate unique output name because src:simple-content
+         uses element for the same purpose
+      -->
+      <variable name='outputIsDoc' value='src_output_is_doc(output)'/>
+      <variable name='docOutput' value='src_doc_output(nameAttr, output)'/>
+
+      <if test='!outputIsDoc'>
+         <code:variable name='{select(docOutput, src + "reference", code).First().Attribute("name")!.Value}'>
+            <call-template name='src:line-number'>
+               <with-param name='el' value='el'/>
+            </call-template>
+            <code:method-call name='CastProcessingInstruction'>
+               <copy-of value='src_helper_type("DocumentWriter")'/>
+               <code:arguments>
+                  <copy-of value='select(output, src + "reference", code)'/>
+               </code:arguments>
+            </code:method-call>
+         </code:variable>
+      </if>
+
+      <code:method-call name='WriteProcessingInstruction'>
+         <call-template name='src:line-number'>
+            <with-param name='el' value='el'/>
+         </call-template>
+         <copy-of value='select(docOutput, src + "reference", code)'/>
+         <code:arguments>
+            <call-template name='src:string'>
+               <with-param name='val' value='xcst_ncname(nameAttr, null, true)'/>
+               <with-param name='avt' value='nameAttr'/>
+               <with-param name='literal' value='true'/>
+            </call-template>
+            <code:method-call name='TrimStart'>
+               <call-template name='src:simple-content'>
+                  <with-param name='el' value='el'/>
+                  <with-param name='attr' value='el.Attribute("value")'/>
+               </call-template>
+            </code:method-call>
+         </code:arguments>
+      </code:method-call>
+   </template>
+
+   <template match='XElement el
+         &amp;&amp; (el.Name == c + "text" || el.Name == c + "value-of")' mode='src:statement'>
+      <param name='output' as='XElement' tunnel='yes'/>
+
+      <call-template name='xcst:require-output'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <variable name='doe' value='
+         (el.Attribute("disable-output-escaping") is XAttribute doeAttr) ?
+            xcst_boolean(doeAttr)!.Value
+            : false'/>
+
+      <code:method-call name='{(doe ? "WriteRaw" : "WriteString")}'>
+         <call-template name='src:line-number'>
+            <with-param name='el' value='el'/>
+         </call-template>
+         <copy-of value='select(output, src + "reference", code)'/>
+         <code:arguments>
+            <apply-templates value='el' mode='src:expression'/>
+         </code:arguments>
+      </code:method-call>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "text"' mode='src:expression'>
+
+      <call-template name='xcst:validate-attribs'>
+         <with-param name='el' value='el'/>
+         <with-param name='optional' value='new[] { "disable-output-escaping" }'/>
+      </call-template>
+
+      <call-template name='xcst:text-only'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <variable name='text' value='xcst_text(el)'/>
+
+      <choose>
+         <when test='text != null'>
+            <call-template name='src:expand-text'>
+               <with-param name='el' value='el'/>
+               <with-param name='text' value='text'/>
+            </call-template>
+         </when>
+         <otherwise>
+            <code:string/>
+         </otherwise>
+      </choose>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "value-of"' mode='src:expression'>
+
+      <call-template name='xcst:validate-attribs'>
+         <with-param name='el' value='el'/>
+         <with-param name='optional' value='new[] { "disable-output-escaping", "value", "separator" }'/>
+      </call-template>
+
+      <call-template name='xcst:value-or-sequence-constructor'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <call-template name='src:simple-content'>
+         <with-param name='el' value='el'/>
+         <with-param name='attr' value='el.Attribute("value")'/>
+         <with-param name='separator' value='el.Attribute("separator")'/>
+      </call-template>
+   </template>
+
+   <template match='XElement el
+         &amp;&amp; (el.Name == c + "text" || el.Name == c + "value-of")' mode='xcst:instruction'>
+      <xcst:instruction expression='true'>
+         <code:type-reference name='String' namespace='System'/>
+      </xcst:instruction>
+   </template>
+
+   <template match='XText tx' mode="src:statement">
+      <param name='output' as='XElement' tunnel='yes'/>
+
+      <variable name='el' value='tx.Parent!'/>
+
+      <call-template name='xcst:require-output'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <code:method-call name='WriteString'>
+         <call-template name='src:line-number'>
+            <with-param name='el' value='el'/>
+         </call-template>
+         <copy-of value='select(output, src + "reference", code)'/>
+         <code:arguments>
+            <apply-templates value='tx' mode='src:expression'/>
+         </code:arguments>
+      </code:method-call>
+   </template>
+
+   <template match='XText tx' mode='src:expression'>
+      <variable name='text' value='tx.Value'/>
+      <choose>
+         <when test='tx.Parent != null'>
+            <call-template name='src:expand-text'>
+               <with-param name='el' value='tx.Parent'/>
+               <with-param name='text' value='text'/>
+            </call-template>
+         </when>
+         <otherwise>
+            <code:string verbatim='true'>
+               <attribute name='xml:space'>preserve</attribute>
+               <value-of value='text'/>
+            </code:string>
+         </otherwise>
+      </choose>
+   </template>
+
+   <template match='XText tx &amp;&amp; xcst_insignificant_whitespace(tx)' mode='src:statement src:expression'>
+      <if test='xcst_preserve_whitespace(tx.Parent!)'>
+         <next-match/>
+      </if>
+   </template>
+
+   <template name='src:literal-result-element'>
+      <param name='el' as='XElement' required='yes'/>
+      <param name='output' as='XElement' tunnel='yes'/>
+
+      <call-template name='xcst:validate-attribs'>
+         <with-param name='el' value='el'/>
+         <with-param name='optional' value='attributes(el)
+            .Where(p => p.Name.Namespace == XNamespace.None)
+            .Select(p => p.Name.LocalName)
+            .ToArray()'/>
+      </call-template>
+
+      <call-template name='xcst:require-output'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <variable name='outputIsDoc' value='src_output_is_doc(output)'/>
+      <variable name='docOutput' value='src_doc_output(el, output)'/>
+
+      <if test='!outputIsDoc'>
+         <code:variable name='{select(docOutput, src + "reference", code).First().Attribute("name")!.Value}'>
+            <call-template name='src:line-number'>
+               <with-param name='el' value='el'/>
+            </call-template>
+            <code:method-call name='CastElement'>
+               <copy-of value='src_helper_type("DocumentWriter")'/>
+               <code:arguments>
+                  <code:this-reference/>
+                  <copy-of value='select(output, src + "reference", code)'/>
+               </code:arguments>
+            </code:method-call>
+         </code:variable>
+      </if>
+
+      <variable name='prefix' value='el.GetPrefixOfNamespace(el.Name.Namespace)'/>
+
+      <code:method-call name='WriteStartElement'>
+         <call-template name='src:line-number'>
+            <with-param name='el' value='el'/>
+         </call-template>
+         <copy-of value='select(docOutput, src + "reference", code)'/>
+         <code:arguments>
+            <if test='prefix != null'>
+               <code:string literal='true'>
+                  <value-of value='prefix'/>
+               </code:string>
+            </if>
+            <code:string literal='true'>
+               <value-of value='el.Name.LocalName'/>
+            </code:string>
+            <code:string verbatim='true'>
+               <value-of value='el.Name.Namespace'/>
+            </code:string>
+         </code:arguments>
+      </code:method-call>
+
+      <code:try line-hidden='true'>
+         <code:block>
+            <call-template name='src:use-attribute-sets'>
+               <with-param name='el' value='el'/>
+               <with-param name='attr' value='el.Attribute(c + "use-attribute-sets")'/>
+               <with-param name='output' value='docOutput' tunnel='yes'/>
+            </call-template>
+            <for-each name='attr' in='attributes(el)
+                  .Where(p => p.Name.Namespace != c)'>
+               <code:method-call name='WriteAttributeString'>
+                  <copy-of value='select(docOutput, src + "reference", code)'/>
+                  <code:arguments>
+                     <variable name='attrPrefix' value='el.GetPrefixOfNamespace(attr.Name.Namespace)'/>
+                     <if test='attrPrefix != null'>
+                        <code:string literal='true'>
+                           <value-of value='attrPrefix'/>
+                        </code:string>
+                     </if>
+                     <code:string literal='true'>
+                        <value-of value='attr.Name.LocalName'/>
+                     </code:string>
+                     <if test='attrPrefix != null'>
+                        <code:string verbatim='true'>
+                           <value-of value='attr.Name.Namespace'/>
+                        </code:string>
+                     </if>
+                     <call-template name='src:expand-attribute'>
+                        <with-param name='attr' value='attr'/>
+                        <with-param name='lre' value='true'/>
+                     </call-template>
+                  </code:arguments>
+               </code:method-call>
+            </for-each>
+            <call-template name='src:sequence-constructor'>
+               <with-param name='el' value='el'/>
+               <with-param name='output' value='docOutput' tunnel='yes'/>
+            </call-template>
+         </code:block>
+         <code:finally line-hidden='true'>
+            <code:method-call name='WriteEndElement'>
+               <copy-of value='select(docOutput, src + "reference", code)'/>
+            </code:method-call>
+         </code:finally>
+      </code:try>
+   </template>
+
+   <template name='xcst:literal-result-element-instruction' as='XElement'>
+      <xcst:instruction>
+         <code:type-reference name='XElement' namespace='System.Xml.Linq'/>
+      </xcst:instruction>
+   </template>
+
+</module>

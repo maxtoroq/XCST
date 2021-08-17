@@ -1,0 +1,703 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!--
+ Copyright 2021 Max Toro Q.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<module version='1.0' language='C#'
+   xmlns='http://maxtoroq.github.io/XCST'
+   xmlns:xcst='http://maxtoroq.github.io/XCST/grammar'
+   xmlns:code='http://maxtoroq.github.io/XCST/code'>
+
+   <import-namespace ns='System.Linq'/>
+   <import-namespace ns='System.Text.RegularExpressions'/>
+   <import-namespace ns='System.Xml.Linq'/>
+
+   <template name='xcst:validate-attribs'>
+      <param name='el' as='XElement' required='yes'/>
+      <param name='required' value='System.Array.Empty&lt;string>()' as='string[]'/>
+      <param name='optional' value='System.Array.Empty&lt;string>()' as='string[]'/>
+      <param name='extension' value='false' as='bool'/>
+
+      <variable name='allowed' value='required.Concat(optional).ToArray()'/>
+      <variable name='root' value='el.Parent is null'/>
+
+      <variable name='stdNames' value='
+         ((el.Name.Namespace == c) ? new[] {
+               (el.Name.LocalName != "output" ? (XName)"version" : null),
+               (XName)"expand-text",
+               (XName)"extension-element-prefixes",
+               (XName)"transform-text",
+            }
+         : new[] {
+            c + "version",
+            c + "expand-text",
+            c + "extension-element-prefixes",
+            c + "transform-text",
+            (!extension ? c + "use-attribute-sets" : null)
+         }).Where(n => n != null)
+         .ToArray()
+      '/>
+
+      <variable name='stdAttribs' value='
+         (el.Name.Namespace == c) ?
+            attributes(el).Where(a => stdNames.Contains(a.Name))
+         : attributes(el).Where(a => a.Name.Namespace == c &amp;&amp; !(a.Name.LocalName == "language" &amp;&amp; root))'/>
+
+      <for-each name='a' in='stdAttribs'>
+         <if test='!stdNames.Contains(a.Name)'>
+            <message terminate='yes' error-code='XTSE0805' error-data='src_error_object(el)' expand-text='yes' transform-text='trim'>
+               Unknown XCST attribute '{name(a)}'
+            </message>
+         </if>
+         <if test='!(a.Name.LocalName != "version"
+               || xcst_decimal(a) >= 1m)'>
+            <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(el)' expand-text='yes' transform-text='trim'>
+               Attribute '{name(a)}' should be 1.0 or greater.
+            </message>
+         </if>
+      </for-each>
+
+      <variable name='attribs' value='attributes(el)
+         .Where(a => a.Name.Namespace == XNamespace.None
+            &amp;&amp; (el.Name.Namespace != c || !(stdNames.Contains(a.Name) &amp;&amp; !(a.Name.LocalName == "version" &amp;&amp; root))))
+         .ToArray()'/>
+
+      <for-each name='a' in='attribs'>
+         <if test='!allowed.Contains(a.Name.LocalName)'>
+            <message terminate='yes' error-code='XTSE0090' error-data='src_error_object(el)' expand-text='yes' transform-text='trim'>
+               Attribute '{a.Name.LocalName}' is not allowed on the {name(el)} element.
+            </message>
+         </if>
+      </for-each>
+
+      <variable name='missing' value='required.FirstOrDefault(r => !attribs.Any(a => a.Name.LocalName == r))'/>
+
+      <if test='!(missing is null)'>
+         <message terminate='yes' error-code='XTSE0010' error-data='src_error_object(el)' expand-text='yes' transform-text='trim'>
+            Element must have an '{missing}' attribute.
+         </message>
+      </if>
+   </template>
+
+   <template name='xcst:validate-children'>
+      <param name='el' as='XElement' required='yes'/>
+      <param name='allowed' as='string[]' required='yes'/>
+
+      <if test='!(el.Elements()
+            .All(p => p.Name.Namespace == c
+               &amp;&amp; allowed.Contains(p.Name.LocalName))
+            &amp;&amp; el.Nodes()
+               .OfType&lt;XText>()
+               .All(tx => trim(tx.Value).Length == 0))'>
+         <message terminate='yes' error-code='XTSE0010' error-data='src_error_object(el)' expand-text='yes' transform-text='trim'>
+            Only {string.Join("", allowed.Select((p, i) => string.Concat((i == 0 ? "" : allowed.Length - 1 > 1 ? " and " : ", "), "c:" + p)))} allowed within the c:{el.Name.LocalName} element.
+         </message>
+      </if>
+   </template>
+
+   <template name='xcst:no-other-preceding'>
+      <param name='el' as='XElement' required='yes'/>
+
+      <variable name='disallowedPreceding' value='el
+         .NodesBeforeSelf()
+         .FirstOrDefault(p => (p is XText txt &amp;&amp; trim(txt.Value).Length > 0)
+            || (p is XElement elem &amp;&amp; elem.Name != el.Name))'/>
+
+      <if test='!(disallowedPreceding is null)'>
+         <message terminate='yes' error-code='XTSE0010' error-data='src_error_object(el)' expand-text='yes'>
+            <text>c:{el.Name.LocalName} element cannot be preceded </text>
+            <choose>
+               <when test='disallowedPreceding is XElement'>by a different element</when>
+               <otherwise>with text</otherwise>
+            </choose>
+            <text>.</text>
+         </message>
+      </if>
+   </template>
+
+   <template name='xcst:no-other-following'>
+      <param name='el' as='XElement' required='yes'/>
+      <param name='except' value='new[] { el.Name }' as='XName[]'/>
+
+      <variable name='disallowedFollowing' value='el
+         .NodesAfterSelf()
+         .FirstOrDefault(p => (p is XText txt &amp;&amp; trim(txt.Value).Length > 0)
+            || (p is XElement elem &amp;&amp; !except.Contains(elem.Name)))'/>
+
+      <if test='!(disallowedFollowing is null)'>
+         <message terminate='yes' error-code='XTSE0010' error-data='src_error_object(el)' expand-text='yes'>
+            <text>c:{el.Name.LocalName} element cannot be followed </text>
+            <choose>
+               <when test='disallowedFollowing is XElement'>by a different element</when>
+               <otherwise>with text</otherwise>
+            </choose>
+            <text>.</text>
+         </message>
+      </if>
+   </template>
+
+   <template name='xcst:no-children'>
+      <param name='el' as='XElement' required='yes'/>
+
+      <if test='!(empty(el.Elements())
+            &amp;&amp; el.Nodes().OfType&lt;XText>()
+               .All(tx => trim(tx.Value).Length == 0 &amp;&amp; !xcst_preserve_whitespace(el)))'>
+         <message terminate='yes' error-code='XTSE0260' error-data='src_error_object(el)' transform-text='trim'>
+            Element must be empty.
+         </message>
+      </if>
+   </template>
+
+   <template name='xcst:text-only'>
+      <param name='el' as='XElement' required='yes'/>
+
+      <if test='!empty(el.Elements())'>
+         <message terminate='yes' error-code='XTSE0010' error-data='src_error_object(el)' expand-text='yes' transform-text='trim'>
+            Element c:{el.Name.LocalName} can only contain text.
+         </message>
+      </if>
+   </template>
+
+   <template name='xcst:require-output'>
+      <param name='el' as='XElement' required='yes'/>
+      <param name='kind' value='System.Array.Empty&lt;string>()' as='string[]'/>
+      <param name='output' as='XElement?' tunnel='yes'/>
+
+      <if test='!(output != null)'>
+         <message terminate='yes' error-code='XTSE0010' error-data='src_error_object(el)' transform-text='trim'>
+            Output required.
+         </message>
+      </if>
+      <if test='!(empty(kind) || kind.Contains(output.Attribute("kind")?.Value))'>
+         <message terminate='yes' error-code='XTSE0010' error-data='src_error_object(el)' transform-text='trim'>
+            Incompatible output.
+         </message>
+      </if>
+   </template>
+
+
+   <!-- ## Sequence Constructors -->
+
+   <template name='xcst:value-or-sequence-constructor'>
+      <param name='el' as='XElement' required='yes'/>
+      <param name='children' value='el.Nodes().ToArray()' as='XNode[]'/>
+
+      <if test='!(el.Attribute("value") is null
+            || (empty(children.OfType&lt;XElement>())
+               &amp;&amp; children.OfType&lt;XText>()
+                  .All(tx => trim(tx.Value).Length == 0 &amp;&amp; !xcst_preserve_whitespace(el))))'>
+         <message terminate='yes' error-code='XTSE0010' error-data='src_error_object(el)' transform-text='trim'>
+            The 'value' attribute must be omitted if the element has content.
+         </message>
+      </if>
+   </template>
+
+   <function name='xcst_has_value' as='bool'>
+      <param name='el' as='XElement'/>
+      <param name='text' as='string?'/>
+
+      <return value='el.Attribute("value") != null
+         || text != null
+         || el.Elements().Any()'/>
+   </function>
+
+   <function name='xcst_text' as='string?'>
+      <param name='el' as='XElement'/>
+      <param name='children' value='null' as='XNode[]?'/>
+
+      <if test='children is null'>
+         <set ref='children' value='el.Nodes().ToArray()'/>
+      </if>
+
+      <if test='!children.Any(p => p is XElement)
+            &amp;&amp; children.Any(p => p is XText)'>
+         <variable name='joined' value='string.Join("", children.OfType&lt;XText>().Select(p => p.Value))'/>
+         <return value='(xcst_preserve_whitespace(el) || trim(joined).Length > 0) ?
+            joined : null'/>
+      </if>
+
+      <return value='null'/>
+   </function>
+
+   <function name='xcst_preserve_whitespace' as='bool'>
+      <param name='el' as='XElement'/>
+
+      <return value='el.Name == c + "text"
+         || el.Name == c + "script"
+         || el.AncestorsAndSelf()
+            .Select(p => p.Attribute(XNamespace.Xml + "space"))
+            .Where(a => a != null)
+            .FirstOrDefault()?.Value == "preserve"'/>
+   </function>
+
+   <function name='xcst_insignificant_whitespace' as='bool'>
+      <param name='t' as='XText'/>
+
+      <return value='t.Parent is XElement parent
+         &amp;&amp; parent.Elements().Any()
+         &amp;&amp; !parent.Nodes()
+            .OfType&lt;XText>()
+            .Any(p => trim(p.Value).Length > 0)'/>
+   </function>
+
+   <template name='xcst:variable-type'>
+      <param name='el' as='XElement' required='yes'/>
+      <param name='text' value='xcst_text(el)' as='string?'/>
+      <param name='ignoreSeqctor' value='false' as='bool'/>
+
+      <!-- This is a template and not a function to allow access to tunnel parameters -->
+
+      <choose>
+         <when test='el.Attribute("as") is XAttribute asAttr'>
+            <code:type-reference name='{xcst_type(asAttr)}'/>
+         </when>
+         <when test='text != null'>
+            <code:type-reference name='String' namespace='System'/>
+         </when>
+         <when test='xcst_has_value(el, text)'>
+            <choose>
+               <when test='el.Attribute("value") != null'/>
+               <when test='!ignoreSeqctor'>
+                  <variable name='seqctorMeta'>
+                     <call-template name='xcst:sequence-constructor'>
+                        <with-param name='el' value='el'/>
+                        <with-param name='text' value='text'/>
+                     </call-template>
+                  </variable>
+                  <variable name='itemType' value='
+                     select(seqctorMeta, xcst + "item-type", code + "type-reference")
+                        .FirstOrDefault()
+                        ?? src_nullable_object_type'/>
+                  <copy-of value='
+                     (seqctorMeta.Attribute("cardinality")?.Value == TypeCardinality.ZeroOrMore.ToString()) ?
+                        src_item_to_sequence_type(itemType)
+                     : itemType'/>
+               </when>
+            </choose>
+         </when>
+         <otherwise>
+            <copy-of value='src_nullable_object_type'/>
+         </otherwise>
+      </choose>
+   </template>
+
+   <template name='xcst:sequence-constructor' as='XElement'>
+      <param name='el' as='XElement' required='yes'/>
+      <param name='text' as='string?' required='yes'/>
+      <param name='children' value='el.Nodes().ToArray()' as='XNode[]'/>
+      <param name='language' as='string' tunnel='yes' required='yes'/>
+
+      <!-- This is a template and not a function to allow access to tunnel parameters -->
+
+      <variable name='textMeta'>
+         <xcst:instruction expression='true'>
+            <code:type-reference name='String' namespace='System'/>
+         </xcst:instruction>
+      </variable>
+
+      <variable name='defaultMeta'>
+         <xcst:instruction/>
+      </variable>
+
+      <variable name='instructions' as='XElement[]'>
+         <choose>
+            <when test='text?.Length > 0' value='textMeta'/>
+            <otherwise>
+               <for-each name='n' in='xcst_sequence_constructor_nodes(children)'>
+                  <choose>
+                     <when test='n is XText' value='textMeta'/>
+                     <otherwise>
+                        <variable name='elNode' value='(XElement)n'/>
+                        <variable name='i' as='XElement?'>
+                           <choose>
+                              <when test='elNode.Name.Namespace == c'>
+                                 <apply-templates value='elNode' mode='xcst:instruction'/>
+                              </when>
+                              <when test='xcst_is_extension_instruction(elNode)'>
+                                 <apply-templates value='elNode' mode='xcst:extension-instruction'/>
+                              </when>
+                              <otherwise>
+                                 <call-template name='xcst:literal-result-element-instruction'/>
+                              </otherwise>
+                           </choose>
+                           <on-empty value='(XElement?)null'/>
+                        </variable>
+                        <object value='i ?? defaultMeta'/>
+                     </otherwise>
+                  </choose>
+               </for-each>
+            </otherwise>
+         </choose>
+      </variable>
+
+      <xcst:sequence-constructor>
+         <variable name='voids' value='instructions
+            .Where(p => p.Attribute("void") is XAttribute voidAttr &amp;&amp; xs_boolean(voidAttr))
+            .ToArray()'/>
+         <variable name='nonVoid' value='instructions
+            .Except(voids)
+            .ToArray()'/>
+         <variable name='types' value='nonVoid
+            .Select(p => p.Element(code + "type-reference"))
+            .Where(p => p != null &amp;&amp; src_qualified_type(p))
+            .Select(p => p!)
+            .ToArray()'/>
+         <variable name='itemType' as='XElement?'>
+            <variable name='itemTypes' value='types
+               .Select(p => src_sequence_to_item_type(p, language))
+               .ToArray()'/>
+            <if test='(types.Length + voids.Length) == instructions.Length
+                  &amp;&amp; itemTypes.Skip(1).All(p => src_type_reference_equal(p, itemTypes[0]))'>
+               <object value='itemTypes.FirstOrDefault()'/>
+            </if>
+            <on-empty value='(XElement?)null'/>
+         </variable>
+         <variable name='cardinality' value='
+            (itemType != null
+               &amp;&amp; nonVoid.Length == 1
+               &amp;&amp; src_type_cardinality(types[0], language) == TypeCardinality.One) ? TypeCardinality.One
+            : (itemType is null &amp;&amp; instructions.Length == 1) ? null
+            : TypeCardinality.ZeroOrMore' as='TypeCardinality?'/>
+         <if test='instructions.Length == 1
+               &amp;&amp; instructions[0].Attribute("expression") is XAttribute exprAttr
+               &amp;&amp; xs_boolean(exprAttr)'>
+            <attribute name='expression' value='@string(true)'/>
+         </if>
+         <if test='cardinality != null'>
+            <attribute name='cardinality' value='cardinality.Value'/>
+         </if>
+         <if test='itemType != null'>
+            <xcst:item-type>
+               <copy-of value='itemType'/>
+            </xcst:item-type>
+         </if>
+      </xcst:sequence-constructor>
+   </template>
+
+   <function name='xcst_sequence_constructor_nodes' as='XNode[]'>
+      <param name='children' as='XNode[]'/>
+
+      <return value='children
+         .Where(p => p is XElement
+            || (p is XText tx
+               &amp;&amp; (!xcst_insignificant_whitespace(tx)
+                  || xcst_preserve_whitespace(tx.Parent!))))
+         .ToArray()'/>
+   </function>
+
+
+   <!-- ## Data Types -->
+
+   <function name='xcst_boolean' as='bool?'>
+      <param name='node' as='XObject'/>
+      <param name='avt' value='false' as='bool'/>
+
+      <variable name='str' value='xcst_non_string(node)'/>
+
+      <choose>
+         <when test='str is "yes" or "true" or "1"'>
+            <return value='true'/>
+         </when>
+         <when test='str is "no" or "false" or "0"'>
+            <return value='false'/>
+         </when>
+         <when test='avt &amp;&amp; xcst_is_value_template(node)'>
+            <return value='default'/>
+         </when>
+         <otherwise>
+            <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(node)' expand-text='yes' transform-text='trim'>
+               Invalid boolean for '{name(node)}'.
+            </message>
+         </otherwise>
+      </choose>
+   </function>
+
+   <function name='xcst_decimal' as='decimal?'>
+      <param name='node' as='XObject'/>
+      <param name='avt' value='false' as='bool'/>
+
+      <variable name='str' value='xcst_non_string(node)'/>
+
+      <choose>
+         <when test='avt &amp;&amp; xcst_is_value_template(node)'>
+            <return value='default'/>
+         </when>
+         <when test='decimal.TryParse(str, out var val)'>
+            <return value='val'/>
+         </when>
+         <otherwise>
+            <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(node)' expand-text='yes' transform-text='trim'>
+               Invalid value for '{name(node)}'.
+            </message>
+         </otherwise>
+      </choose>
+   </function>
+
+   <function name='xcst_EQName' as='XName?'>
+      <param name='node' as='XObject?'/>
+      <param name='value' value='null' as='string?'/>
+      <param name='@default' value='false' as='bool'/>
+      <param name='avt' value='false' as='bool'/>
+
+      <if test='node != null'>
+         <variable name='str' value='value ?? xcst_non_string(node)'/>
+         <variable name='qnamePattern' value='@"([^:\{\}]+:)?[^:\{\}]+"'/>
+         <choose>
+            <when test='Regex.IsMatch(str, string.Concat(@"^Q\{[^\{\}]*\}", qnamePattern, "$"))'>
+               <return value='xcst_URIQualifiedName(str)'/>
+            </when>
+            <when test='Regex.IsMatch(str, string.Concat("^", qnamePattern, "$"))'>
+               <choose>
+                  <when test='@default || str.IndexOf(&apos;:&apos;) != -1'>
+                     <return value='resolve_QName(str, node.Parent!)'/>
+                  </when>
+                  <otherwise>
+                     <return value='str'/>
+                  </otherwise>
+               </choose>
+            </when>
+            <when test='avt &amp;&amp; xcst_is_value_template(node)'>
+               <return value='null'/>
+            </when>
+            <otherwise>
+               <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(node)' expand-text='yes' transform-text='trim'>
+                  Invalid value for '{name(node)}'.
+               </message>
+            </otherwise>
+         </choose>
+      </if>
+
+      <return value='null'/>
+   </function>
+
+   <function name='xcst_expression' as='string'>
+      <param name='node' as='XObject'/>
+
+      <if test='!(xcst_non_string(node) != null)'>
+         <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(node)' expand-text='yes' transform-text='trim'>
+            Value of '{name(node)}' must be a non-empty string.
+         </message>
+      </if>
+
+      <return value='@string(node)'/>
+   </function>
+
+   <function name='xcst_integer' as='int?'>
+      <param name='node' as='XObject'/>
+      <param name='avt' value='false' as='bool'/>
+
+      <variable name='str' value='xcst_non_string(node)'/>
+
+      <choose>
+         <when test='avt &amp;&amp; xcst_is_value_template(node)'>
+            <return value='default'/>
+         </when>
+         <when test='int.TryParse(str, out var val)'>
+            <return value='val'/>
+         </when>
+         <otherwise>
+            <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(node)' expand-text='yes' transform-text='trim'>
+               Invalid value for '{name(node)}'.
+            </message>
+         </otherwise>
+      </choose>
+   </function>
+
+   <function name='xcst_item_separator' as='string?'>
+      <param name='node' as='XObject'/>
+      <param name='avt' value='false' as='bool'/>
+
+      <variable name='str' value='@string(node)'/>
+      <return value='
+         (avt &amp;&amp; xcst_is_value_template(node)) ?
+            null
+            : str'/>
+   </function>
+
+   <function name='xcst_language_equal' as='bool'>
+      <param name='a' as='object'/>
+      <param name='b' as='object'/>
+
+      <variable name='strA' value='(a is XObject xA) ? @string(xA) : (string)a'/>
+      <variable name='strB' value='(b is XObject xB) ? @string(xB) : (string)b'/>
+
+      <return value='strA.ToUpperInvariant() == strB.ToUpperInvariant()'/>
+   </function>
+
+   <function name='xcst_name' as='string'>
+      <param name='node' as='XObject'/>
+
+      <variable name='str' value='xcst_non_string(node)'/>
+      <return value='str'/>
+   </function>
+
+   <function name='xcst_name_equal' as='bool'>
+      <!-- xcst_homonymous might pass empty values -->
+      <param name='a' as='object?'/>
+      <param name='b' as='object?'/>
+
+      <variable name='strA' value='(a is XObject xA) ? xcst_name(xA) : (string?)a'/>
+      <variable name='strB' value='(b is XObject xB) ? xcst_name(xB) : (string?)b'/>
+
+      <return value='strA != null
+         &amp;&amp; strB != null
+         &amp;&amp; strA == strB'/>
+   </function>
+
+   <function name='xcst_ncname' as='string?'>
+      <param name='node' as='XObject'/>
+      <param name='value' value='null' as='string?'/>
+      <param name='avt' value='false' as='bool'/>
+
+      <variable name='str' value='(value != null) ? value : xcst_non_string(node)'/>
+      <choose>
+         <when test='avt &amp;&amp; xcst_is_value_template(node)'>
+            <return value='null'/>
+         </when>
+         <when test='str.All(p => System.Xml.XmlConvert.IsNCNameChar(p))'>
+            <return value='str'/>
+         </when>
+         <otherwise>
+            <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(node)' expand-text='yes' transform-text='trim'>
+               Invalid value for '{name(node)}'.
+            </message>
+         </otherwise>
+      </choose>
+   </function>
+
+   <function name='xcst_non_string' as='string'>
+      <param name='node' as='XObject'/>
+
+      <variable name='str' value='trim(@string(node))'/>
+
+      <if test='!(str.Length > 0)'>
+         <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(node)' expand-text='yes' transform-text='trim'>
+            Value of '{name(node)}' must be a non-empty string.
+         </message>
+      </if>
+
+      <return value='str'/>
+   </function>
+
+   <function name='xcst_package_visibility' as='string'>
+      <param name='node' as='XObject'/>
+
+      <variable name='str' value='xcst_non_string(node)'/>
+
+      <if test='!(str is "internal" or "public")'>
+         <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(node)' expand-text='yes' transform-text='trim'>
+            Invalid value for '{name(node)}'. Must be one of (internal|public).
+         </message>
+      </if>
+
+      <return value='str'/>
+   </function>
+
+   <function name='xcst_positive_integer' as='int?'>
+      <param name='node' as='XObject'/>
+      <param name='avt' value='false' as='bool'/>
+
+      <variable name='val' value='xcst_integer(node, avt)'/>
+
+      <if test='!(val is null || val > 0)'>
+         <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(node)' expand-text='yes' transform-text='trim'>
+            Value of '{name(node)}' must be a positive integer.
+         </message>
+      </if>
+
+      <return value='val'/>
+   </function>
+
+   <function name='xcst_sort_order_descending' as='bool?'>
+      <param name='node' as='XObject'/>
+      <param name='avt' value='false' as='bool'/>
+
+      <variable name='str' value='xcst_non_string(node)'/>
+
+      <choose>
+         <when test='str == "ascending"'>
+            <return value='false'/>
+         </when>
+         <when test='str == "descending"'>
+            <return value='true'/>
+         </when>
+         <when test='avt &amp;&amp; xcst_is_value_template(node)'>
+            <return value='null'/>
+         </when>
+         <otherwise>
+            <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(node)' expand-text='yes' transform-text='trim'>
+               Invalid value for '{name(node)}'. Must be one of (ascending|descending).
+            </message>
+         </otherwise>
+      </choose>
+   </function>
+
+   <function name='xcst_URIQualifiedName' as='XName'>
+      <param name='str' as='string'/>
+
+      <variable name='ns' value='trim(substring_before(str, &apos;}&apos;).Substring(2))'/>
+      <variable name='local' value='substring_after(str, &apos;}&apos;)'/>
+
+      <return value='XName.Get(local, ns)'/>
+   </function>
+
+   <function name='xcst_uri' as='System.Uri?'>
+      <param name='node' as='XObject'/>
+      <param name='avt' value='false' as='bool'/>
+
+      <variable name='str' value='trim(@string(node))'/>
+
+      <choose>
+         <when test='avt &amp;&amp; xcst_is_value_template(node)'>
+            <return value='default'/>
+         </when>
+         <when test='System.Uri.TryCreate(str, System.UriKind.RelativeOrAbsolute, out var val)'>
+            <return value='val'/>
+         </when>
+         <otherwise>
+            <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(node)' expand-text='yes' transform-text='trim'>
+               Invalid value for '{name(node)}'.
+            </message>
+         </otherwise>
+      </choose>
+   </function>
+
+   <function name='xcst_uri_qualified_name' as='string'>
+      <param name='qname' as='XName'/>
+
+      <return expand-text='yes'>Q{{{qname.Namespace}}}{qname.LocalName}</return>
+   </function>
+
+   <function name='xcst_type' as='string'>
+      <param name='node' as='XObject'/>
+
+      <variable name='str' value='xcst_non_string(node)'/>
+      <return value='str'/>
+   </function>
+
+   <function name='xcst_is_value_template' as='bool'>
+      <param name='item' as='object'/>
+
+      <return value='(item is XObject xo ? @string(xo) : (string)item)
+         .IndexOf(&apos;{&apos;) != -1'/>
+   </function>
+
+   <function name='xcst_is_reserved_namespace' as='bool'>
+      <param name='ns' as='XNamespace'/>
+
+      <return value='ns == c
+         || ns.NamespaceName.StartsWith(c.NamespaceName + "/")'/>
+   </function>
+
+</module>

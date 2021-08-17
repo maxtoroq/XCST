@@ -1,0 +1,682 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!--
+ Copyright 2021 Max Toro Q.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<module version='1.0' language='C#'
+   xmlns='http://maxtoroq.github.io/XCST'
+   xmlns:xcst='http://maxtoroq.github.io/XCST/grammar'
+   xmlns:code='http://maxtoroq.github.io/XCST/code'
+   xmlns:src='http://maxtoroq.github.io/XCST/compiled'>
+
+   <import-namespace ns='System.Collections.Generic'/>
+   <import-namespace ns='System.Linq'/>
+   <import-namespace ns='System.Xml.Linq'/>
+
+   <variable name='src_output_parameters' value='new() {
+      { "byte-order-mark", "ByteOrderMark" },
+      { "cdata-section-elements", "CdataSectionElements" },
+      { "doctype-public", "DoctypePublic" },
+      { "doctype-system", "DoctypeSystem" },
+      { "encoding", "Encoding" },
+      { "escape-uri-attributes", "EscapeUriAttributes" },
+      { "html-version", "HtmlVersion" },
+      /*
+      { "include-content-type", "IncludeContentType" },
+      */
+      { "indent", "Indent" },
+      { "indent-spaces", "IndentSpaces" },
+      { "item-separator", "ItemSeparator" },
+      { "media-type", "MediaType" },
+      { "method", "Method" },
+      { "omit-xml-declaration", "OmitXmlDeclaration" },
+      { "output-version", "Version" },
+      { "skip-character-check", "SkipCharacterCheck" },
+      { "standalone", "Standalone" },
+      /*
+      { "suppress-indentation", "SuppressIndentation" },
+      { "undeclare-prefixes", "UndeclarePrefixes" },
+      */
+      { "version", "Version" }
+   }' as='Dictionary&lt;string, string>'/>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "output"' mode='xcst:validate-top-level'/>
+
+   <template name='xcst:output-definitions'>
+      <param name='modules' as='XElement[]' tunnel='yes' required='yes'/>
+
+      <for-each-group name='grp' in='select(modules.Reverse(), c + "output")'
+            group-by='p => (p.Attribute("name") is XAttribute nameAttr) ? xcst_EQName(nameAttr) : (object)""'>
+         <sort by='p => p.Key is XName'/>
+
+         <variable name='outputName' value='grp.Key as XName'/>
+
+         <for-each name='output' in='grp'>
+            <call-template name='xcst:validate-attribs'>
+               <with-param name='el' value='output'/>
+               <with-param name='optional' value='
+                  new[] { "name" }.Concat(
+                     src_output_parameters
+                        .Where(p => p.Key != "version" &amp;&amp; p.Key != "output-version")
+                        .Select(p => p.Key))
+                     .ToArray()'/>
+            </call-template>
+            <call-template name='xcst:no-children'>
+               <with-param name='el' value='output'/>
+            </call-template>
+            <if test='!(outputName is null
+                  || !xcst_is_reserved_namespace(outputName.Namespace))'>
+               <message terminate='yes' error-code='XTSE0080' error-data='src_error_object(output)' expand-text='yes' transform-text='trim'>
+                  Namespace prefix '{output.GetPrefixOfNamespace(outputName.Namespace)}' refers to a reserved namespace.
+               </message>
+            </if>
+            <if test='!output.ElementsBeforeSelf(output.Name)
+                  .Select(p => (p.Attribute("name") is XAttribute nameAttr) ? xcst_EQName(nameAttr) : null)
+                  .All(p => (outputName is null) ? p != null : outputName != p)'>
+               <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(output)' transform-text='trim'>
+                  Duplicate c:output declaration.
+               </message>
+            </if>
+         </for-each>
+
+         <xcst:output member-name='{src_template_method_name(grp.First(), outputName, "outputdef", false)}'
+               declaration-ids='{grp.Select(p => generate_id(p))}'>
+            <if test='outputName != null'>
+               <attribute name='name' value='xcst_uri_qualified_name(outputName)'/>
+            </if>
+         </xcst:output>
+      </for-each-group>
+   </template>
+
+   <template name='src:read-output-definition-method'>
+      <param name='packageManifest' as='XElement' tunnel='yes' required='yes'/>
+
+      <variable name='nameParam'>
+         <code:variable-reference name='{src_aux_variable("name")}'/>
+      </variable>
+
+      <variable name='parametersParam'>
+         <code:variable-reference name='{src_aux_variable("params")}'/>
+      </variable>
+
+      <code:method name='ReadOutputDefinition' visibility='private'>
+         <code:implements-interface>
+            <copy-of value='src_package_interface'/>
+         </code:implements-interface>
+         <code:parameters>
+            <code:parameter name='{nameParam.Attribute("name")!.Value}'>
+               <code:type-reference name='QualifiedName' namespace='Xcst' nullable='true'/>
+            </code:parameter>
+            <code:parameter name='{parametersParam.Attribute("name")!.Value}'>
+               <code:type-reference name='OutputParameters' namespace='Xcst'/>
+            </code:parameter>
+         </code:parameters>
+         <code:block>
+
+            <variable name='outputs' value='packageManifest
+               .Elements(xcst + "output")
+               .ToArray()'/>
+            <variable name='unnamed' value='outputs
+               .FirstOrDefault(p => p.Attribute("name") is null)'/>
+
+            <code:if-else>
+               <code:if>
+                  <code:equal>
+                     <copy-of value='nameParam'/>
+                     <code:null/>
+                  </code:equal>
+                  <code:block>
+                     <if test='unnamed != null'>
+                        <code:method-call name='{unnamed.Attribute("member-name")!.Value}'>
+                           <code:this-reference/>
+                           <code:arguments>
+                              <copy-of value='parametersParam'/>
+                           </code:arguments>
+                        </code:method-call>
+                     </if>
+                  </code:block>
+               </code:if>
+               <code:else>
+                  <variable name='unknownThrow'>
+                     <code:throw>
+                        <code:method-call name='UnknownOutputDefinition'>
+                           <copy-of value='src_helper_type("DynamicError")'/>
+                           <code:arguments>
+                              <copy-of value='nameParam'/>
+                           </code:arguments>
+                        </code:method-call>
+                     </code:throw>
+                  </variable>
+                  <code:switch>
+                     <code:property-reference name='Namespace'>
+                        <copy-of value='nameParam'/>
+                     </code:property-reference>
+                     <for-each-group name='grp' in='outputs.Where(p => p.Attribute("name") != null)'
+                           group-by='p => xcst_EQName(p.Attribute("name"))!.Namespace'>
+                        <sort by='pn => pn.Count()' order='descending'/>
+
+                        <code:case>
+                           <code:string verbatim='true'>
+                              <value-of value='grp.Key.NamespaceName'/>
+                           </code:string>
+                           <code:switch>
+                              <code:property-reference name='Name'>
+                                 <copy-of value='nameParam'/>
+                              </code:property-reference>
+                              <for-each name='output' in='grp'>
+                                 <variable name='qname' value='xcst_EQName(output.Attribute("name"))!'/>
+                                 <code:case>
+                                    <code:string literal='true'>
+                                       <value-of value='qname.LocalName'/>
+                                    </code:string>
+                                    <code:method-call name='{output.Attribute("member-name")!.Value}'>
+                                       <code:this-reference/>
+                                       <code:arguments>
+                                          <copy-of value='parametersParam'/>
+                                       </code:arguments>
+                                    </code:method-call>
+                                    <code:break/>
+                                 </code:case>
+                              </for-each>
+                              <code:case-default>
+                                 <copy-of value='unknownThrow'/>
+                              </code:case-default>
+                           </code:switch>
+                           <code:break/>
+                        </code:case>
+                     </for-each-group>
+                     <code:case-default>
+                        <copy-of value='unknownThrow'/>
+                     </code:case-default>
+                  </code:switch>
+               </code:else>
+            </code:if-else>
+         </code:block>
+      </code:method>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == xcst + "output"' mode='src:member'>
+      <param name='modules' as='XElement[]' tunnel='yes' required='yes'/>
+
+      <variable name='parametersParam'>
+         <code:variable-reference name='{src_aux_variable("params")}'/>
+      </variable>
+
+      <variable name='declarations' value='
+         tokenize(el.Attribute("declaration-ids")!.Value)
+            .Select(p => select(modules, c + "output")
+               .First(p2 => generate_id(p2) == p))
+            .ToArray()'/>
+
+      <code:method name='{el.Attribute("member-name")!.Value}' visibility='private'>
+         <code:attributes>
+            <call-template name='src:editor-browsable-never'/>
+         </code:attributes>
+         <code:parameters>
+            <code:parameter name='{parametersParam.Attribute("name")!.Value}'>
+               <code:type-reference name='OutputParameters' namespace='Xcst'/>
+            </code:parameter>
+         </code:parameters>
+         <code:block>
+            <for-each-group name='grp' in='declarations
+                  .SelectMany(p => attributes(p))
+                  .Where(p => p.Name.Namespace == XNamespace.None
+                     &amp;&amp; p.Name != "name"
+                     &amp;&amp; src_output_parameters.ContainsKey(p.Name.LocalName))' group-by='p => p.Name'>
+               <variable name='first' value='grp.First()'/>
+               <code:assign>
+                  <code:property-reference name='{src_output_parameters[first.Name.LocalName]}'>
+                     <copy-of value='parametersParam'/>
+                  </code:property-reference>
+                  <apply-templates value='first' mode='src:output-parameter'>
+                     <with-param name='mergedList' as='XName[]'>
+                        <if test='grp.Key.LocalName is "cdata-section-elements" or "suppress-indentation"'>
+                           <object value='grp
+                              .SelectMany(p => tokenize(p.Value)
+                                 .Select(p2 => xcst_EQName(p, p2, true)!))'/>
+                        </if>
+                     </with-param>
+                  </apply-templates>
+               </code:assign>
+            </for-each-group>
+         </code:block>
+      </code:method>
+   </template>
+
+   <template match='XAttribute attr
+         &amp;&amp; attr.Name.Namespace == XNamespace.None
+         &amp;&amp; attr.Name.LocalName is "byte-order-mark"
+            or "escape-uri-attributes" /*or "include-content-type"*/ or "indent" or "omit-xml-declaration"
+            or "skip-character-check" /*or "undeclare-prefixes"*/' mode='src:output-parameter'>
+      <call-template name='src:boolean'>
+         <with-param name='val' value='xcst_boolean(attr, attr.Parent!.Name != c + "output")'/>
+         <with-param name='avt' value='attr'/>
+      </call-template>
+   </template>
+
+   <template match='XAttribute attr
+         &amp;&amp; attr.Name.Namespace == XNamespace.None
+         &amp;&amp; attr.Name.LocalName is "cdata-section-elements"/* or "suppress-indentation"*/' mode='src:output-parameter'>
+      <param name='mergedList' value='System.Array.Empty&lt;XName>()' as='XName[]'/>
+
+      <variable name='isOutput' value='attr.Parent!.Name == c + "output"'/>
+
+      <choose>
+         <when test='isOutput || !xcst_is_value_template(attr)'>
+            <variable name='list' value='
+               (isOutput) ? mergedList
+                  : tokenize(attr.Value)
+                  .Select(p => xcst_EQName(attr, p, true)!)
+                  .ToArray()'/>
+            <code:new-array>
+               <code:type-reference name='QualifiedName' namespace='Xcst'/>
+               <code:collection-initializer>
+                  <for-each name='qname' in='list'>
+                     <call-template name='src:QName'>
+                        <with-param name='qname' value='qname'/>
+                     </call-template>
+                  </for-each>
+               </code:collection-initializer>
+            </code:new-array>
+         </when>
+         <otherwise>
+            <code:method-call name='List'>
+               <copy-of value='src_helper_type("DataType")'/>
+               <code:arguments>
+                  <call-template name='src:expand-attribute'>
+                     <with-param name='attr' value='attr'/>
+                  </call-template>
+                  <code:method-reference name='QName'>
+                     <copy-of value='src_helper_type("DataType")'/>
+                  </code:method-reference>
+               </code:arguments>
+            </code:method-call>
+         </otherwise>
+      </choose>
+   </template>
+
+   <template match='XAttribute attr
+         &amp;&amp; attr.Name.Namespace == XNamespace.None
+         &amp;&amp; attr.Name.LocalName is "doctype-public" or "doctype-system" or "media-type"' mode='src:output-parameter'>
+      <choose>
+         <when test='attr.Parent!.Name == c + "output"'>
+            <code:string verbatim='true'>
+               <value-of value='attr.Value'/>
+            </code:string>
+         </when>
+         <otherwise>
+            <call-template name='src:expand-attribute'>
+               <with-param name='attr' value='attr'/>
+            </call-template>
+         </otherwise>
+      </choose>
+   </template>
+
+   <template match='XAttribute attr &amp;&amp; attr.Name == "encoding"' mode='src:output-parameter'>
+      <code:method-call name='GetEncoding'>
+         <code:type-reference name='Encoding' namespace='System.Text'/>
+         <code:arguments>
+            <choose>
+               <when test='attr.Parent!.Name == c + "output"'>
+                  <code:string verbatim='true'>
+                     <value-of value='xcst_non_string(attr)'/>
+                  </code:string>
+               </when>
+               <otherwise>
+                  <call-template name='src:expand-attribute'>
+                     <with-param name='attr' value='attr'/>
+                  </call-template>
+               </otherwise>
+            </choose>
+         </code:arguments>
+      </code:method-call>
+   </template>
+
+   <template match='XAttribute attr &amp;&amp; attr.Name == "html-version"' mode='src:output-parameter'>
+      <call-template name='src:decimal'>
+         <with-param name='val' value='xcst_decimal(attr, attr.Parent!.Name != c + "output")'/>
+         <with-param name='avt' value='attr'/>
+      </call-template>
+   </template>
+
+   <template match='XAttribute attr &amp;&amp; attr.Name == "indent-spaces"' mode='src:output-parameter'>
+      <call-template name='src:integer'>
+         <with-param name='val' value='xcst_integer(attr, attr.Parent!.Name != c + "output")'/>
+         <with-param name='avt' value='attr'/>
+      </call-template>
+   </template>
+
+   <template match='XAttribute attr &amp;&amp; attr.Name == "item-separator"' mode='src:output-parameter'>
+      <variable name='separator' value='xcst_item_separator(attr, attr.Parent!.Name != c + "output")'/>
+      <choose>
+         <when test='separator == "#absent"'>
+            <code:null/>
+         </when>
+         <otherwise>
+            <call-template name='src:item-separator'>
+               <with-param name='separator' value='separator'/>
+               <with-param name='avt' value='attr'/>
+            </call-template>
+         </otherwise>
+      </choose>
+   </template>
+
+   <template match='XAttribute attr &amp;&amp; attr.Name == "method"' mode='src:output-parameter'>
+
+      <variable name='str' value='xcst_non_string(attr)'/>
+      <variable name='qname' value='xcst_EQName(attr, null, false, attr.Parent!.Name != c + "output")'/>
+
+      <if test='!(qname is null
+            || qname.Namespace != XNamespace.None
+            || qname.LocalName is "xml" or "html" or "xhtml" or "text")'>
+         <message terminate='yes' error-code='XTSE1570' error-data='src_error_object(attr.Parent!)' expand-text='yes' transform-text='trim'>
+            Invalid value for '{name(attr)}'. Must be one of (xml|html|xhtml|text).
+         </message>
+      </if>
+
+      <choose>
+         <when test='qname != null
+               &amp;&amp; qname.Namespace == XNamespace.None'>
+            <code:property-reference>
+               <attribute name='name'>
+                  <switch value='qname.LocalName'>
+                     <when test='"xml"'>Xml</when>
+                     <when test='"html"'>Html</when>
+                     <when test='"xhtml"'>XHtml</when>
+                     <when test='"text"'>Text</when>
+                     <otherwise>
+                        <message terminate='yes'/>
+                     </otherwise>
+                  </switch>
+               </attribute>
+               <code:type-reference name='Methods'>
+                  <code:type-reference name='OutputParameters' namespace='Xcst'/>
+               </code:type-reference>
+            </code:property-reference>
+         </when>
+         <otherwise>
+            <call-template name='src:QName'>
+               <with-param name='qname' value='qname'/>
+               <with-param name='avt' value='attr'/>
+            </call-template>
+         </otherwise>
+      </choose>
+   </template>
+
+   <template match='XAttribute attr &amp;&amp; attr.Name == "output-version"' mode='src:output-parameter'>
+      <call-template name='src:expand-attribute'>
+         <with-param name='attr' value='attr'/>
+      </call-template>
+   </template>
+
+   <template match='XAttribute attr &amp;&amp; attr.Name == "standalone"' mode='src:output-parameter'>
+      <choose>
+         <when test='attr.Parent!.Name == c + "output"
+               || !xcst_is_value_template(attr)'>
+            <code:field-reference>
+               <attribute name='name'>
+                  <choose>
+                     <when test='xcst_non_string(attr) == "omit"'>Omit</when>
+                     <when test='xcst_boolean(attr)!.Value'>Yes</when>
+                     <otherwise>No</otherwise>
+                  </choose>
+               </attribute>
+               <code:type-reference name='XmlStandalone' namespace='Xcst'/>
+            </code:field-reference>
+         </when>
+         <otherwise>
+            <code:method-call name='Standalone'>
+               <copy-of value='src_helper_type("DataType")'/>
+               <code:arguments>
+                  <call-template name='src:expand-attribute'>
+                     <with-param name='attr' value='attr'/>
+                  </call-template>
+               </code:arguments>
+            </code:method-call>
+         </otherwise>
+      </choose>
+   </template>
+
+   <template match='XAttribute attr
+         &amp;&amp; attr.Name == "version"
+         &amp;&amp; attr.Parent!.Name == c + "output"' mode='src:output-parameter'>
+      <code:string literal='true'>
+         <value-of value='xcst_non_string(attr)'/>
+      </code:string>
+   </template>
+
+
+   <!-- ## Instructions -->
+
+   <template match='XElement el &amp;&amp; el.Name == c + "result-document"' mode='src:statement'>
+
+      <call-template name='xcst:validate-attribs'>
+         <with-param name='el' value='el'/>
+         <with-param name='optional' value='
+            new[] { "href", "output", "format" }
+               .Concat(src_output_parameters.Keys.Where(p => p != "version"))
+               .ToArray()'/>
+      </call-template>
+
+      <variable name='hrefAttr' value='el.Attribute("href")'/>
+      <variable name='outputAttr' value='el.Attribute("output")'/>
+
+      <if test='!(hrefAttr != null || outputAttr != null)'>
+         <message terminate='yes' error-code='XTSE0010' error-data='src_error_object(el)' transform-text='trim'>
+            At least one of the attributes 'href' and 'output' must be specified.
+         </message>
+      </if>
+
+      <variable name='newOutput' value='src_doc_output(el, null)'/>
+
+      <code:using>
+         <call-template name='src:line-number'>
+            <with-param name='el' value='el'/>
+         </call-template>
+         <code:variable name='{select(newOutput, src + "reference", code).First().Attribute("name")!.Value}'>
+            <code:method-call name='ResultDocument'>
+               <copy-of value='src_helper_type("Serialization")'/>
+               <code:arguments>
+                  <code:this-reference/>
+                  <code:new-object>
+                     <code:type-reference name='OutputParameters' namespace='Xcst'/>
+                     <code:initializer>
+                        <for-each name='attr' in='attributes(el)
+                              .Where(p => p.Name.Namespace == XNamespace.None
+                                 &amp;&amp; p.Name != "version"
+                                 &amp;&amp; src_output_parameters.ContainsKey(p.Name.LocalName))
+                              .Except(new[] { el.Attribute("format"), hrefAttr, outputAttr })'>
+                           <call-template name='src:output-parameter-initializer'>
+                              <with-param name='attr' value='attr!'/>
+                           </call-template>
+                        </for-each>
+                     </code:initializer>
+                  </code:new-object>
+                  <call-template name='src:format-QName'>
+                     <with-param name='el' value='el'/>
+                  </call-template>
+                  <choose>
+                     <when test='hrefAttr != null'>
+                        <code:method-call name='ResolveOutputUri'>
+                           <copy-of value='select(src_context_field, src + "reference", code)'/>
+                           <code:arguments>
+                              <call-template name='src:uri-string'>
+                                 <with-param name='val' value='xcst_uri(hrefAttr, true)'/>
+                                 <with-param name='avt' value='hrefAttr'/>
+                              </call-template>
+                           </code:arguments>
+                        </code:method-call>
+                     </when>
+                     <otherwise>
+                        <code:null/>
+                     </otherwise>
+                  </choose>
+                  <if test='outputAttr != null'>
+                     <code:expression value='{xcst_expression(outputAttr)}'/>
+                  </if>
+               </code:arguments>
+            </code:method-call>
+         </code:variable>
+         <code:block>
+            <call-template name='src:sequence-constructor'>
+               <with-param name='el' value='el'/>
+               <with-param name='output' value='newOutput' tunnel='yes'/>
+            </call-template>
+         </code:block>
+      </code:using>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "result-document"' mode='xcst:instruction'>
+      <xcst:instruction void='true'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "serialize"' mode='src:expression'>
+
+      <call-template name='xcst:validate-attribs'>
+         <with-param name='el' value='el'/>
+         <with-param name='optional' value='
+            new[] { "format" }
+               .Concat(src_output_parameters.Keys.Where(p => p != "version"))
+               .ToArray()'/>
+      </call-template>
+
+      <variable name='newOutput' value='src_doc_output(el, null)'/>
+
+      <code:method-call name='Serialize'>
+         <copy-of value='src_helper_type("Serialization")'/>
+         <code:arguments>
+            <code:this-reference/>
+            <call-template name='src:format-QName'>
+               <with-param name='el' value='el'/>
+            </call-template>
+            <code:new-object>
+               <code:type-reference name='OutputParameters' namespace='Xcst'/>
+               <code:initializer>
+                  <for-each name='attr' in='attributes(el)
+                        .Where(p => p.Name.Namespace == XNamespace.None
+                           &amp;&amp; p.Name != "format"
+                           &amp;&amp; p.Name != "version"
+                           &amp;&amp; src_output_parameters.ContainsKey(p.Name.LocalName))'>
+                     <call-template name='src:output-parameter-initializer'>
+                        <with-param name='attr' value='attr'/>
+                     </call-template>
+                  </for-each>
+               </code:initializer>
+            </code:new-object>
+            <code:lambda void='true'>
+               <code:parameters>
+                  <code:parameter name='{select(newOutput, src + "reference", code).First().Attribute("name")!.Value}'/>
+               </code:parameters>
+               <code:block>
+                  <call-template name='src:sequence-constructor'>
+                     <with-param name='el' value='el'/>
+                     <with-param name='output' value='newOutput' tunnel='yes'/>
+                  </call-template>
+               </code:block>
+            </code:lambda>
+         </code:arguments>
+      </code:method-call>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "serialize"' mode='xcst:instruction'>
+      <xcst:instruction expression='true'>
+         <code:type-reference name='String' namespace='System'/>
+      </xcst:instruction>
+   </template>
+
+   <template name='src:format-QName'>
+      <param name='el' as='XElement' required='yes'/>
+      <param name='packageManifest' as='XElement' tunnel='yes' required='yes'/>
+
+      <choose>
+         <when test='el.Attribute("format") is XAttribute formatAttr'>
+            <variable name='format' value='xcst_EQName(formatAttr, null, false, true)'/>
+            <if test='!(format is null
+                  || packageManifest
+                     .Elements(xcst + "output")
+                     .Any(p => xcst_EQName(p.Attribute("name")) == format))'>
+               <message terminate='yes' error-code='XTDE1460' error-data='src_error_object(el)' expand-text='yes' transform-text='trim'>
+                  No output definition exists named '{@string(format, el)}'.
+               </message>
+            </if>
+            <call-template name='src:QName'>
+               <with-param name='qname' value='format'/>
+               <with-param name='avt' value='formatAttr'/>
+            </call-template>
+         </when>
+         <otherwise>
+            <code:null/>
+         </otherwise>
+      </choose>
+   </template>
+
+   <template name='src:output-parameter-initializer'>
+      <param name='attr' as='XAttribute' required='yes'/>
+
+      <assert test='src_output_parameters.ContainsKey(attr.Name.LocalName)'/>
+
+      <code:member-initializer name='{src_output_parameters[attr.Name.LocalName]}'>
+         <apply-templates value='attr' mode='src:output-parameter'/>
+      </code:member-initializer>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "void"' mode='src:statement'>
+
+      <call-template name='xcst:validate-attribs'>
+         <with-param name='el' value='el'/>
+         <with-param name='optional' value='new[] { "value" }'/>
+      </call-template>
+
+      <call-template name='xcst:value-or-sequence-constructor'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <choose>
+         <when test='el.Attribute("value") is XAttribute valueAttr'>
+            <code:expression value='{xcst_expression(valueAttr)}'>
+               <call-template name='src:line-number'>
+                  <with-param name='el' value='el'/>
+               </call-template>
+            </code:expression>
+         </when>
+         <otherwise>
+            <variable name='newOutput' value='src_doc_output(el, null)'/>
+            <code:using>
+               <call-template name='src:line-number'>
+                  <with-param name='el' value='el'/>
+               </call-template>
+               <code:variable name='{select(newOutput, src + "reference", code).First().Attribute("name")!.Value}'>
+                  <code:method-call name='Void'>
+                     <copy-of value='src_helper_type("Serialization")'/>
+                     <code:arguments>
+                        <code:this-reference/>
+                     </code:arguments>
+                  </code:method-call>
+               </code:variable>
+               <code:block>
+                  <call-template name='src:sequence-constructor'>
+                     <with-param name='el' value='el'/>
+                     <with-param name='output' value='newOutput' tunnel='yes'/>
+                  </call-template>
+               </code:block>
+            </code:using>
+         </otherwise>
+      </choose>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "void"' mode='xcst:instruction'>
+      <xcst:instruction void='true'/>
+   </template>
+
+</module>

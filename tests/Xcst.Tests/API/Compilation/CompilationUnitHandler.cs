@@ -30,7 +30,7 @@ namespace Xcst.Tests.API.Compilation {
 </c:package>
 ");
 
-         CompileResult result = compiler.Compile(module, baseUri: new Uri("http://localhost"));
+         CompileResult result = compiler.Compile(module);
 
          Assert.IsFalse(String.IsNullOrEmpty(writer.ToString()));
          Assert.IsEmpty(result.CompilationUnits);
@@ -62,7 +62,7 @@ namespace Xcst.Tests.API.Compilation {
 </c:package>
 ");
 
-         CompileResult result = compiler.Compile(module, baseUri: new Uri("http://localhost"));
+         CompileResult result = compiler.Compile(module);
 
          Assert.IsFalse(String.IsNullOrEmpty(writer.ToString()));
          Assert.IsEmpty(result.CompilationUnits);

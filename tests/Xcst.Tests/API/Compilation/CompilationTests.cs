@@ -32,7 +32,7 @@ namespace Xcst.Tests.API.Compilation {
 </c:package>
 ");
 
-         CompileResult result = compiler.Compile(module, baseUri: new Uri("http://localhost"));
+         CompileResult result = compiler.Compile(module);
 
          Assert.IsFalse(result.Templates.Contains("private"));
          Assert.IsTrue(result.Templates.Contains("public"));

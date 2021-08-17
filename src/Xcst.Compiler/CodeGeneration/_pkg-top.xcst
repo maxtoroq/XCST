@@ -1,0 +1,378 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!--
+ Copyright 2021 Max Toro Q.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<module version='1.0' language='C#'
+   xmlns='http://maxtoroq.github.io/XCST'
+   xmlns:xcst='http://maxtoroq.github.io/XCST/grammar'
+   xmlns:code='http://maxtoroq.github.io/XCST/code'
+   xmlns:src='http://maxtoroq.github.io/XCST/compiled'>
+
+   <import-namespace ns='System.Linq'/>
+   <import-namespace ns='System.Xml.Linq'/>
+
+   <variable name='src_context_field'>
+      <src:context>
+         <copy-of value='src_helper_type("ExecutionContext")'/>
+         <src:reference>
+            <code:field-reference name='{src_aux_variable("exec_context")}'>
+               <code:this-reference/>
+            </code:field-reference>
+         </src:reference>
+      </src:context>
+   </variable>
+
+   <template name='xcst:validate-document-element-attributes'>
+      <param name='el' as='XElement' required='yes'/>
+
+      <variable name='required' value='new[] { "version", "language" }'/>
+
+      <choose>
+         <when test='el.Name.Namespace == c'>
+            <call-template name='xcst:validate-attribs'>
+               <with-param name='el' value='el'/>
+               <with-param name='required' value='required'/>
+               <with-param name='optional' value='
+                  ((el.Name == c + "package") ?
+                     new[] { "name", "visibility" }
+                     : System.Array.Empty&lt;string>())
+                     .Concat(new[] { "default-mode" })
+                     .ToArray()'/>
+            </call-template>
+         </when>
+         <otherwise>
+            <call-template name='xcst:validate-attribs'>
+               <with-param name='el' value='el'/>
+               <with-param name='optional' value='attributes(el)
+                  .Where(a => a.Name.Namespace == XNamespace.None)
+                  .Select(a => a.Name.LocalName)
+                  .ToArray()'/>
+            </call-template>
+            <for-each name='req' in='required'>
+               <if test='!(el.Attribute(c + req) != null)'>
+                  <message terminate='yes' error-code='XTSE0010' error-data='src_error_object(el)' expand-text='yes' transform-text='trim'>
+                     Element must have an 'c:{req}' attribute.
+                  </message>
+               </if>
+            </for-each>
+         </otherwise>
+      </choose>
+
+      <variable name='langAttr' value='el.Attribute((el.Name.Namespace == c ? XNamespace.None : c) + "language")!'/>
+
+      <if test='!(xcst_language_equal(langAttr, xcst_csharp_lang)
+            || xcst_language_equal(langAttr, xcst_vb_lang))'>
+         <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(el)' expand-text='yes' transform-text='trim'>
+            Unsupported language. Use either '{xcst_csharp_lang}' or '{xcst_vb_lang}'.
+         </message>
+      </if>
+   </template>
+
+   <template match='XNode' mode='xcst:validate-top-level'/>
+
+   <template match='XText text &amp;&amp; trim(text.Value).Length > 0' mode='xcst:validate-top-level'>
+      <message terminate='yes' error-code='XTSE0120' error-data='src_error_object(text)' transform-text='trim'>
+         No character data is allowed between top-level elements.
+      </message>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name.Namespace == XNamespace.None' mode='xcst:validate-top-level'>
+      <message terminate='yes' error-code='XTSE0130' error-data='src_error_object(el)' transform-text='trim'>
+         Top level elements must have a non-null namespace URI.
+      </message>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name.Namespace == c' mode='xcst:validate-top-level'>
+      <message terminate='yes' error-code='XTSE0010' error-data='src_error_object(el)' expand-text='yes' transform-text='trim'>
+         Unknown XCST element: {el.Name.LocalName}.
+      </message>
+   </template>
+
+   <template match='XElement el &amp;&amp; (el.Name == c + "import" || el.Name == c + "import-namespace")' mode='xcst:validate-top-level'/>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "use-package"' mode='xcst:validate-top-level'>
+      <call-template name='xcst:validate-attribs'>
+         <with-param name='el' value='el'/>
+         <with-param name='required' value='new[] { "name" }'/>
+      </call-template>
+      <call-template name='xcst:validate-children'>
+         <with-param name='el' value='el'/>
+         <with-param name='allowed' value='new[] { "accept", "override" }'/>
+      </call-template>
+      <if test='!el.ElementsBeforeSelf(el.Name)
+            .All(p => !xcst_name_equal(p.Attribute("name"), el.Attribute("name")))'>
+         <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(el)' transform-text='trim'>
+            Duplicate c:use-package declaration.
+         </message>
+      </if>
+      <apply-templates value='el.Elements().Where(p => p.Name == c + "accept" || p.Name == c + "override")'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "accept" &amp;&amp; el.Parent?.Name == c + "use-package"' mode='xcst:validate-top-level'>
+      <call-template name='xcst:validate-attribs'>
+         <with-param name='el' value='el'/>
+         <with-param name='required' value='new[] { "component", "names" }'/>
+      </call-template>
+      <call-template name='xcst:no-children'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <variable name='componentChoice' value='new[] { "attribute-set", "function", "template", "type", "variable" }'/>
+      <variable name='component' value='xcst_non_string(el.Attribute("component")!)'/>
+      <if test='!componentChoice.Contains(component)'>
+         <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(el)' expand-text='yes' transform-text='trim'>
+            Invalid value for 'component'. Must be one of ({string.Join("|", componentChoice)}).
+         </message>
+      </if>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "override" &amp;&amp; el.Parent?.Name == c + "use-package"' mode='xcst:validate-top-level'>
+      <call-template name='xcst:validate-attribs'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <call-template name='xcst:validate-children'>
+         <with-param name='el' value='el'/>
+         <with-param name='allowed' value='new[] { "template", "function", "attribute-set", "param", "variable" }'/>
+      </call-template>
+   </template>
+
+
+   <!-- ## Code Generation -->
+
+   <template match='XElement el &amp;&amp; (el.Name == c + "module" || el.Name == c + "package")' mode='src:namespace'>
+      <param name='packageManifest' as='XElement' tunnel='yes' required='yes'/>
+
+      <variable name='classEl' as='XElement'>
+         <apply-templates value='el' mode='src:class'/>
+      </variable>
+
+      <if test='select(classEl, code + "members", code).Any()'>
+         <code:namespace name='{packageManifest.Element(code + "type-reference")!.Attribute("namespace")!.Value}'>
+            <apply-templates value='select(packageManifest, xcst + "type")
+               .Where(p => p.Attribute("accepted") is XAttribute acceptedAttr
+                  &amp;&amp; xs_boolean(acceptedAttr)
+                  &amp;&amp; p.Attribute("visibility")!.Value != "hidden")' mode='src:import-namespace'/>
+            <apply-templates value='select(el, c + "import-namespace")' mode='src:import-namespace'/>
+            <!--<apply-templates value='el' mode='src:import-namespace-extra'/>-->
+            <copy-of value='classEl'/>
+         </code:namespace>
+      </if>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "import-namespace"' mode='src:import-namespace'>
+
+      <call-template name='xcst:validate-attribs'>
+         <with-param name='el' value='el'/>
+         <with-param name='required' value='new[] { "ns" }'/>
+         <with-param name='optional' value='new[] { "alias" }'/>
+      </call-template>
+
+      <call-template name='xcst:no-children'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <call-template name='xcst:no-other-preceding'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <code:import namespace='{xcst_type(el.Attribute("ns")!)}'>
+         <call-template name='src:line-number'>
+            <with-param name='el' value='el'/>
+         </call-template>
+         <if test='el.Attribute("alias") is XAttribute aliasAttr'>
+            <attribute name='alias' value='xcst_type(aliasAttr)'/>
+         </if>
+      </code:import>
+   </template>
+
+   <template match='XElement el &amp;&amp; (el.Name == c + "module" || el.Name == c + "package")' mode='src:class'>
+      <param name='packageManifest' as='XElement' tunnel='yes' required='yes'/>
+      <param name='modules' as='XElement[]' tunnel='yes' required='yes'/>
+
+      <variable name='modulePos' value='System.Array.IndexOf(modules, el)'/>
+      <variable name='principalModule' value='modulePos == modules.Length - 1'/>
+      <variable name='abstractClass' value='principalModule
+         &amp;&amp; select(packageManifest, xcst)
+            .Any(p => p.Attribute("visibility")?.Value == "abstract")'/>
+
+      <variable name='visibility' value='
+         (principalModule) ?
+            packageManifest.Attribute("visibility")!.Value
+            : null'/>
+
+      <code:type name='{packageManifest.Element(code + "type-reference")!.Attribute("name")!.Value}'
+            visibility='{visibility ?? "#default"}'
+            extensibility='{(abstractClass ? "abstract" : "#default")}'
+            partial='true'>
+
+         <if test='principalModule'>
+            <code:base-types>
+               <if test='ReferenceEquals(this, this)'>
+                  <!--<apply-templates value='el' mode='src:base-types'/>-->
+                  <on-empty>
+                     <copy-of value='src_base_types'/>
+                  </on-empty>
+               </if>
+               <copy-of value='src_package_interface'/>
+            </code:base-types>
+            <code:attributes>
+               <!--<apply-templates value='el' mode='src:package-attribute-extra'/>-->
+            </code:attributes>
+         </if>
+
+         <code:members>
+            <variable name='globalVars' value='
+               select(new[] { el }.Concat(select(el, c + "use-package", c + "override")), c)
+                  .Where(p => (p.Name == c + "param" || p.Name == c + "variable")
+                     &amp;&amp; select(packageManifest, xcst)
+                        .First(p2 => p2.Attribute("declaration-id") is XAttribute declarationId
+                           &amp;&amp; declarationId.Value == generate_id(p))
+                        .Attribute("visibility")!.Value != "hidden")
+                  .ToArray()'/>
+
+            <variable name='otherComponents' value='
+               select(new[] { el }.Concat(select(el, c + "use-package", c + "override")), c)
+                  .Where(p => (p.Name == c + "attribute-set"
+                     || p.Name == c + "function"
+                     || p.Name == c + "template"
+                     || p.Name == c + "type"))
+                  .ToArray()'/>
+
+            <apply-templates value='globalVars' mode='src:member'/>
+            <apply-templates value='otherComponents' mode='src:member'/>
+
+            <code:region name='Infrastructure'>
+               <if test='principalModule'>
+                  <call-template name='src:execution-context'/>
+                  <call-template name='src:qname-fields'/>
+                  <call-template name='src:constructor'/>
+               </if>
+               <call-template name='src:prime-method'>
+                  <with-param name='el' value='el'/>
+                  <with-param name='principalModule' value='principalModule'/>
+               </call-template>
+               <if test='principalModule'>
+                  <call-template name='src:get-template-method'/>
+                  <call-template name='src:get-mode-method'>
+                     <with-param name='allModes' value='true'/>
+                  </call-template>
+                  <call-template name='src:get-mode-method'/>
+                  <call-template name='src:read-output-definition-method'/>
+                  <apply-templates value='packageManifest
+                     .Elements()
+                     .Where(p => p.Name == xcst + "mode" || p.Name == xcst + "output")' mode='src:member'/>
+               </if>
+               <!--<apply-templates value='el' mode='src:infrastructure-extra'/>-->
+            </code:region>
+         </code:members>
+      </code:type>
+   </template>
+
+   <template name='src:constructor'>
+      <param name='packageManifest' as='XElement' tunnel='yes' required='yes'/>
+      <param name='usedPackages' as='XElement[]' tunnel='yes' required='yes'/>
+      <param name='language' as='string' tunnel='yes' required='yes'/>
+
+      <variable name='disableCS8618' value='
+         xcst_language_equal(language, xcst_csharp_lang)
+            &amp;&amp; cs_nullable_annotate'/>
+
+      <if test='disableCS8618'>
+         <code:disable-warning codes='CS8618'/>
+      </if>
+
+      <code:constructor visibility='public' line-hidden='true'>
+         <code:block>
+            <for-each name='usedPkg' in='usedPackages'>
+               <variable name='overridden' value='src_overridden_components(usedPkg, packageManifest)'/>
+               <code:assign>
+                  <code:field-reference name='{src_lib_field_name(usedPkg)}'>
+                     <code:this-reference/>
+                  </code:field-reference>
+                  <code:new-object>
+                     <code:type-reference name='{src_lib_class_name(usedPkg)}'/>
+                     <code:initializer>
+                        <for-each name='component' in='overridden'>
+                           <variable name='meta' value='select(packageManifest, xcst)
+                              .First(p => p.Attribute("overrides") is XAttribute overridesAttr
+                                 &amp;&amp; overridesAttr.Value == component.Attribute("id")!.Value
+                                 &amp;&amp; p.Attribute("visibility")!.Value != "hidden")'/>
+                           <code:member-initializer name='{src_overriding_field_name(component)}'>
+                              <apply-templates value='component' mode='src:lib-overriding-value'>
+                                 <with-param name='meta' value='meta'/>
+                              </apply-templates>
+                           </code:member-initializer>
+                        </for-each>
+                     </code:initializer>
+                  </code:new-object>
+               </code:assign>
+            </for-each>
+         </code:block>
+      </code:constructor>
+
+      <if test='disableCS8618'>
+         <code:restore-warning codes='CS8618'/>
+      </if>
+   </template>
+
+   <template name='src:execution-context'>
+      <param name='usedPackages' as='XElement[]' tunnel='yes' required='yes'/>
+
+      <variable name='contextFieldType' value='src_context_field.Element(code + "type-reference")'/>
+      <variable name='contextFieldRef' value='select(src_context_field, src + "reference", code).First()'/>
+
+      <code:field name='{select(src_context_field, src + "reference", code + "field-reference").First().Attribute("name")!.Value}'>
+         <copy-of value='contextFieldType'/>
+      </code:field>
+
+      <code:property name='Context' visibility='private'>
+         <copy-of value='contextFieldType'/>
+         <code:implements-interface>
+            <copy-of value='src_package_interface'/>
+         </code:implements-interface>
+         <code:attributes>
+            <call-template name='src:editor-browsable-never'/>
+         </code:attributes>
+         <code:getter>
+            <code:block>
+               <code:return>
+                  <copy-of value='contextFieldRef'/>
+               </code:return>
+            </code:block>
+         </code:getter>
+         <code:setter>
+            <code:block>
+               <for-each name='pkg' in='usedPackages'>
+                  <code:assign>
+                     <code:property-reference name='Context'>
+                        <code:cast>
+                           <copy-of value='src_package_interface'/>
+                           <code:field-reference name='{src_lib_field_name(pkg)}'>
+                              <code:this-reference/>
+                           </code:field-reference>
+                        </code:cast>
+                     </code:property-reference>
+                     <code:setter-value/>
+                  </code:assign>
+               </for-each>
+               <code:assign>
+                  <copy-of value='contextFieldRef'/>
+                  <code:setter-value/>
+               </code:assign>
+            </code:block>
+         </code:setter>
+      </code:property>
+   </template>
+
+</module>

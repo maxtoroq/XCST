@@ -1,0 +1,144 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!--
+ Copyright 2021 Max Toro Q.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<module version='1.0' language='C#'
+   xmlns='http://maxtoroq.github.io/XCST'
+   xmlns:code='http://maxtoroq.github.io/XCST/code'>
+
+   <import-namespace ns='System.Linq'/>
+   <import-namespace ns='System.Xml.Linq'/>
+
+   <function name='src_item_to_sequence_type' as='XElement'>
+      <param name='type' as='XElement'/>
+
+      <assert test='type.Name == code + "type-reference"'/>
+
+      <return>
+         <code:type-reference array-dimensions='1'>
+            <copy-of value='type'/>
+         </code:type-reference>
+      </return>
+   </function>
+
+   <function name='src_qualified_type' as='bool'>
+      <param name='type' as='XElement'/>
+
+      <assert test='type.Name == code + "type-reference"'/>
+
+      <choose>
+         <when test='type.Attribute("array-dimensions") != null'>
+            <return value='src_qualified_type(type.Element(code + "type-reference")!)'/>
+         </when>
+         <otherwise>
+            <choose>
+               <when test='type.Attribute("namespace") != null'>
+                  <return value='select(type, code + "type-arguments", code + "type-reference")
+                     .All(p => src_qualified_type(p))'/>
+               </when>
+               <otherwise>
+                  <return value='type.Element(code + "type-reference") is XElement nestedType
+                     &amp;&amp; src_qualified_type(nestedType)'/>
+               </otherwise>
+            </choose>
+         </otherwise>
+      </choose>
+   </function>
+
+   <function name='src_sequence_to_item_type' as='XElement'>
+      <param name='type' as='XElement'/>
+      <param name='language' as='string'/>
+
+      <assert test='type.Name == code + "type-reference"'/>
+
+      <choose>
+         <when test='type.Attribute("array-dimensions") != null'>
+            <return value='type.Element(code + "type-reference")!'/>
+         </when>
+         <otherwise>
+            <return>
+               <code:type-reference name='{xcst_item_type(type.Attribute("name")!.Value, language)}'>
+                  <copy-of value='attributes(type)
+                     .Where(p => p.Name != "name")'/>
+                  <copy-of value='type.Elements()'/>
+               </code:type-reference>
+            </return>
+         </otherwise>
+      </choose>
+   </function>
+
+   <function name='src_type_cardinality' as='TypeCardinality'>
+      <param name='type' as='XElement'/>
+      <param name='language' as='string'/>
+
+      <assert test='type.Name == code + "type-reference"'/>
+
+      <return value='
+         (type.Attribute("array-dimensions") != null) ?
+            TypeCardinality.ZeroOrMore
+            : xcst_cardinality(type.Attribute("name")!.Value, language)'/>
+   </function>
+
+   <function name='src_type_reference_equal' as='bool'>
+      <param name='t1' as='XElement?'/>
+      <param name='t2' as='XElement?'/>
+      <param name='checkNullability' value='false' as='bool'/>
+
+      <choose>
+         <when test='t1 != null &amp;&amp; t2 != null'>
+
+            <assert test='t1.Name == code + "type-reference"'/>
+            <assert test='t2.Name == code + "type-reference"'/>
+
+            <variable name='arrayDims' value='attributes(new[] { t1, t2 }, "array-dimensions").ToArray()'/>
+            <variable name='names' value='attributes(new[] { t1, t2 }, "name").ToArray()'/>
+            <variable name='namespaces' value='attributes(new[] { t1, t2 } , "namespace").ToArray()'/>
+            <variable name='types' value='new[] { t1.Element(code + "type-reference"), t2.Element(code + "type-reference") }'/>
+            <variable name='targs1' value='select(t1, code + "type-arguments", code).ToArray()'/>
+            <variable name='targs2' value='select(t2, code + "type-arguments", code).ToArray()'/>
+
+            <choose>
+               <when test='arrayDims.Length == 2'>
+                  <return value='xs_integer(arrayDims[0]) == xs_integer(arrayDims[1])
+                     &amp;&amp; src_type_reference_equal(types[0], types[1], checkNullability)'/>
+               </when>
+               <otherwise>
+                  <variable name='nullables' value='attributes(new[] { t1, t2 }, "nullable")
+                     .Select(p => xs_boolean(p))
+                     .ToArray()'/>
+                  <return value='empty(arrayDims)
+                     &amp;&amp; names[0].Value == names[1].Value
+                     &amp;&amp; (empty(namespaces) || namespaces[0].Value == namespaces[1].Value)
+                     &amp;&amp; (!checkNullability
+                        || empty(nullables)
+                        /* if both types have @nullable, then must be equal */
+                        || (nullables.Length == 2 &amp;&amp; nullables.Distinct().Count() == 1)
+                        /* if only one type has @nullable, it must be false */
+                        || (nullables.Length == 1 &amp;&amp; !nullables[0]))
+                     &amp;&amp; src_type_reference_equal(types[0], types[1], checkNullability)
+                     &amp;&amp; (targs1.Length == targs2.Length
+                        &amp;&amp; targs1.Select((p, i) => src_type_reference_equal(p, targs2[i], checkNullability))
+                           .All(p => p))'/>
+               </otherwise>
+            </choose>
+         </when>
+         <otherwise>
+            <return value='t1 is null
+               &amp;&amp; t2 is null'/>
+         </otherwise>
+      </choose>
+   </function>
+
+</module>

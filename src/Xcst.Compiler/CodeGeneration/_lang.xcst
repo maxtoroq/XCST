@@ -1,0 +1,136 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!--
+ Copyright 2021 Max Toro Q.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<module version='1.0' language='C#'
+   xmlns='http://maxtoroq.github.io/XCST'
+   xmlns:code='http://maxtoroq.github.io/XCST/code'
+   xmlns:src='http://maxtoroq.github.io/XCST/compiled'
+   xmlns:cs='http://maxtoroq.github.io/XCST/csharp'>
+
+   <import-namespace ns='System.Linq'/>
+   <import-namespace ns='System.Xml.Linq'/>
+
+   <import href='_lang-csharp.xcst'/>
+   <import href='_lang-vb.xcst'/>
+
+   <param name='src_new_line' xml:space='preserve'>&#xA;</param>
+   <param name='src_indent' xml:space='preserve'>    </param>
+
+   <function name='xcst_cardinality' as='TypeCardinality'>
+      <param name='name' as='string'/>
+      <param name='language' as='string'/>
+
+      <choose>
+         <when test='xcst_language_equal(language, xcst_csharp_lang)'>
+            <return value='cs_cardinality(name)'/>
+         </when>
+         <when test='xcst_language_equal(language, xcst_vb_lang)'>
+            <return value='vb_cardinality(name)'/>
+         </when>
+         <otherwise>
+            <message terminate='yes'/>
+         </otherwise>
+      </choose>
+   </function>
+
+   <function name='xcst_item_type' as='string'>
+      <param name='name' as='string'/>
+      <param name='language' as='string'/>
+
+      <choose>
+         <when test='xcst_language_equal(language, xcst_csharp_lang)'>
+            <return value='cs_item_type(name)'/>
+         </when>
+         <when test='xcst_language_equal(language, xcst_vb_lang)'>
+            <return value='vb_item_type(name)'/>
+         </when>
+         <otherwise>
+            <message terminate='yes'/>
+         </otherwise>
+      </choose>
+   </function>
+
+   <function name='xcst_non_nullable_type' as='string'>
+      <param name='name' as='string'/>
+      <param name='language' as='string'/>
+
+      <choose>
+         <when test='xcst_language_equal(language, xcst_csharp_lang)'>
+            <return value='cs_non_nullable_type(name)'/>
+         </when>
+         <otherwise>
+            <return value='name'/>
+         </otherwise>
+      </choose>
+   </function>
+
+   <function name='xcst_unescape_identifier' as='string'>
+      <param name='name' as='string'/>
+      <param name='language' as='string'/>
+
+      <choose>
+         <when test='xcst_language_equal(language, xcst_csharp_lang)'>
+            <return value='cs_unescape_identifier(name)'/>
+         </when>
+         <when test='xcst_language_equal(language, xcst_vb_lang)'>
+            <return value='vb_unescape_identifier(name)'/>
+         </when>
+         <otherwise>
+            <message terminate='yes'/>
+         </otherwise>
+      </choose>
+   </function>
+
+   <function name='src_quotes_to_escape' as='int[]'>
+      <param name='text' as='string'/>
+      <param name='contextNode' as='XObject'/>
+      <param name='language' as='string'/>
+
+      <choose>
+         <when test='xcst_language_equal(language, xcst_csharp_lang)'>
+            <return value='cs_quotes_to_escape(text, contextNode)'/>
+         </when>
+         <when test='xcst_language_equal(language, xcst_vb_lang)'>
+            <return value='vb_quotes_to_escape(text, contextNode)'/>
+         </when>
+         <otherwise>
+            <message terminate='yes'/>
+         </otherwise>
+      </choose>
+   </function>
+
+   <function name='src_qualified_type_name' as='string'>
+      <param name='@ref' as='XElement'/>
+
+      <assert test='@ref.Name == code + "type-reference"'/>
+
+      <return>
+         <value-of>
+            <apply-templates value='@ref' mode='cs:source'>
+               <with-param name='omitNamespaceAlias' value='true'/>
+            </apply-templates>
+         </value-of>
+      </return>
+   </function>
+
+   <template name='src:new-line-indented'>
+      <param name='indent' value='0' as='int' tunnel='yes'/>
+
+      <value-of value='src_new_line'/>
+      <value-of value='Enumerable.Repeat(src_indent, indent)' separator=''/>
+   </template>
+
+</module>

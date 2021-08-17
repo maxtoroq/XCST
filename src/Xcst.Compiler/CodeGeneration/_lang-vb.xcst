@@ -1,0 +1,1568 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!--
+ Copyright 2021 Max Toro Q.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<module version='1.0' language='C#'
+   xmlns='http://maxtoroq.github.io/XCST'
+   xmlns:code='http://maxtoroq.github.io/XCST/code'
+   xmlns:src='http://maxtoroq.github.io/XCST/compiled'
+   xmlns:vb='http://maxtoroq.github.io/XCST/vb'>
+
+   <import-namespace ns='System.Collections.Generic'/>
+   <import-namespace ns='System.Linq'/>
+   <import-namespace ns='System.Xml.Linq'/>
+
+   <variable name='xcst_vb_lang'>VisualBasic</variable>
+
+   <variable name='vb_primitives'>
+      <data xmlns=''>
+         <Boolean>
+            <code:type-reference name='Boolean' namespace='System'/>
+         </Boolean>
+         <Integer>
+            <code:type-reference name='Int32' namespace='System'/>
+         </Integer>
+         <Object>
+            <code:type-reference name='Object' namespace='System'/>
+         </Object>
+         <String>
+            <code:type-reference name='String' namespace='System'/>
+         </String>
+      </data>
+   </variable>
+
+   <template name='vb:serialize'>
+      <param name='el' as='XElement' required='yes'/>
+
+      <assert test='el.Name == code + "namespace"'/>
+
+      <variable name='compUnit' as='XElement'>
+         <choose>
+            <when test='el.Elements(code + "import")
+                  .ToArray() is var imports
+                  &amp;&amp; imports.Length > 0'>
+               <code:compilation-unit>
+                  <copy-of value='imports'/>
+                  <code:namespace>
+                     <copy-of value='attributes(el)'/>
+                     <copy-of value='select(el, code)
+                        .Except(imports)'/>
+                  </code:namespace>
+               </code:compilation-unit>
+            </when>
+            <otherwise value='el'/>
+         </choose>
+      </variable>
+      <apply-templates value='compUnit' mode='vb:source'>
+         <with-param name='indent' value='0' tunnel='yes'/>
+      </apply-templates>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name.Namespace == code' mode='vb:source vb:statement'>
+      <message terminate='yes' error-code='VB0001' error-data='src_error_object(el)' expand-text='yes' transform-text='trim'>
+         Element code:{el.Name.LocalName} cannot be compiled to Visual Basic.
+      </message>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "add"' mode='vb:source'>
+      <text>(</text>
+      <apply-templates value='select(el, code)' separator=' + '/>
+      <text>)</text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "and-also"' mode='vb:source'>
+      <text>(</text>
+      <apply-templates value='select(el, code)' separator=' AndAlso '/>
+      <text>)</text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "argument"' mode='vb:source'>
+      <if test='el.Attribute("ref") is XAttribute refAttr
+          &amp;&amp; xs_boolean(refAttr)'>ByRef </if>
+      <if test='el.Attribute("name") is XAttribute nameAttr
+            &amp;&amp; el.Parent!.Name != code + "attribute"'>
+         <value-of value='nameAttr.Value'/>
+         <text>:=</text>
+      </if>
+      <apply-templates value='el.Nodes()'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "arguments"' mode='vb:source'>
+      <apply-templates value='select(el, code)' separator=', '/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "assign"' mode='vb:statement'>
+      <call-template name='vb:line-pragma'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <call-template name='src:new-line-indented'/>
+      <apply-templates value='select(el, code)' separator=' = ' mode='vb:source'/>
+      <call-template name='vb:line-pragma-end'>
+         <with-param name='el' value='el'/>
+      </call-template>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "assign"
+         &amp;&amp; el.Parent?.Name == code + "lambda"
+         &amp;&amp; el.Parent.Attribute("void") is XAttribute voidAttr
+         &amp;&amp; xs_boolean(voidAttr)' mode='vb:source'>
+      <apply-templates value='select(el, code)' separator=' = '/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "attribute"' mode='vb:source'>
+      <call-template name='src:new-line-indented'/>
+      <text>&lt;</text>
+      <apply-templates value='el.Element(code + "type-reference")'/>
+      <variable name='argsAndInit' value='
+         select(el, code + "arguments", code)
+            .Concat(select(el, code + "initializer", code))
+            .ToArray()'/>
+      <if test='argsAndInit.Length > 0'>
+         <text>(</text>
+         <apply-templates value='argsAndInit' separator=', '/>
+         <text>)</text>
+      </if>
+      <text>></text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "base-reference"' mode='vb:source'>
+      <text>MyBase</text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "block"' mode='vb:statement'>
+      <call-template name='src:new-line-indented'/>
+      <text>If True Then</text>
+      <apply-templates value='el' mode='vb:source'/>
+      <call-template name='src:new-line-indented'/>
+      <text>End If</text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "block"' mode='vb:source'>
+      <param name='indent' as='int' tunnel='yes'/>
+
+      <apply-templates value='el.Nodes()' mode='vb:statement'>
+         <with-param name='indent' value='indent + 1' tunnel='yes'/>
+      </apply-templates>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "bool"' mode='vb:source'>
+      <variable name='val' value='el.Attribute("value")!.Value'/>
+      <value-of value='val.Substring(0, 1).ToUpperInvariant() + val.Substring(1)'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "break"' mode='vb:statement'>
+      <call-template name='vb:line-pragma'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <call-template name='src:new-line-indented'/>
+      <variable name='loop' value='el
+         .Ancestors()
+         .Where(p => p.Name.Namespace == code)
+         .FirstOrDefault(p => p.Name == code + "while"
+            || p.Name == code + "for-each"
+            || p.Name == code + "switch")'/>
+      <choose>
+         <when test='loop?.Name == code + "for-each"'>Exit For</when>
+         <when test='loop?.Name == code + "while"'>Exit While</when>
+      </choose>
+      <call-template name='vb:line-pragma-end'>
+         <with-param name='el' value='el'/>
+      </call-template>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "case"' mode='vb:source'>
+      <param name='indent' as='int' tunnel='yes'/>
+
+      <call-template name='vb:line-pragma'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <call-template name='src:new-line-indented'/>
+      <text>Case </text>
+      <apply-templates value='select(el, code).First()'/>
+      <choose>
+         <when test='el.Element(code + "block") is XElement blockEl'>
+            <apply-templates value='blockEl'/>
+         </when>
+         <otherwise>
+            <apply-templates value='select(el, code).Skip(1)' mode='vb:statement'>
+               <with-param name='indent' value='indent + 1' tunnel='yes'/>
+            </apply-templates>
+         </otherwise>
+      </choose>
+      <call-template name='vb:line-pragma-end'>
+         <with-param name='el' value='el'/>
+      </call-template>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "case-default"' mode='vb:source'>
+      <param name='indent' as='int' tunnel='yes'/>
+
+      <call-template name='vb:line-pragma'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <call-template name='src:new-line-indented'/>
+      <text>Case Else</text>
+      <choose>
+         <when test='el.Element(code + "block") is XElement blockEl'>
+            <apply-templates value='blockEl'/>
+         </when>
+         <otherwise>
+            <apply-templates value='select(el, code)' mode='vb:statement'>
+               <with-param name='indent' value='indent + 1' tunnel='yes'/>
+            </apply-templates>
+         </otherwise>
+      </choose>
+      <call-template name='vb:line-pragma-end'>
+         <with-param name='el' value='el'/>
+      </call-template>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "cast"' mode='vb:source'>
+      <text>CType(</text>
+      <apply-templates value='select(el, code).Reverse()' separator=', '/>
+      <text>)</text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "catch"' mode='vb:source'>
+      <call-template name='vb:line-pragma'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <call-template name='src:new-line-indented'/>
+      <text>Catch</text>
+      <if test='el.Element(code + "exception") is XElement exEl'>
+         <text> </text>
+         <apply-templates value='select(exEl, code)'/>
+      </if>
+      <if test='el.Element(code + "when") is XElement whenEl'>
+         <text> When </text>
+         <apply-templates value='select(whenEl, code)'/>
+      </if>
+      <apply-templates value='el.Element(code + "block")'/>
+      <call-template name='vb:line-pragma-end'>
+         <with-param name='el' value='el'/>
+      </call-template>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "chain"' mode='vb:statement vb:source'>
+      <apply-templates value='el.Nodes()'/>
+   </template>
+
+   <template match='XElement el
+         &amp;&amp; el.Name == code + "chain"
+         &amp;&amp; select(el, code).ToArray() is var children
+         &amp;&amp; children.Length > 1' mode='vb:statement'>
+      <param name='indent' as='int' tunnel='yes'/>
+
+      <call-template name='src:new-line-indented'/>
+      <apply-templates value='children[0]' mode='vb:source'/>
+      <for-each name='child' in='children.Skip(1)'>
+         <call-template name='src:new-line-indented'>
+            <with-param name='indent' value='indent + 1' tunnel='yes'/>
+         </call-template>
+         <apply-templates value='child' mode='vb:source'/>
+      </for-each>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "chain-reference"' mode='vb:statement vb:source'/>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "char"' mode='vb:source'>
+      <text>"</text>
+      <value-of value='el.Attribute("value")!.Value'/>
+      <text>"C</text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "collection-initializer"' mode='vb:source'>
+      <variable name='children' value='select(el, code).ToArray()'/>
+      <if test='children.Length > 0'>
+         <text> {</text>
+         <apply-templates value='children' separator=', '/>
+         <text>}</text>
+      </if>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "compilation-unit"' mode='vb:source'>
+      <apply-templates value='el.Nodes()'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "constructor"' mode='vb:source'>
+      <value-of value='src_new_line'/>
+      <call-template name='vb:line-pragma'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <apply-templates value='select(el, code + "attributes", code)'/>
+      <call-template name='src:new-line-indented'/>
+      <call-template name='vb:visibility'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <text>Sub New(</text>
+      <apply-templates value='el.Element(code + "parameters")'/>
+      <text>)</text>
+      <apply-templates value='el.Element(code + "block")'/>
+      <call-template name='src:new-line-indented'/>
+      <text>End Sub</text>
+      <call-template name='vb:line-pragma-end'>
+         <with-param name='el' value='el'/>
+      </call-template>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "continue"' mode='vb:statement'>
+      <call-template name='src:new-line-indented'/>
+      <variable name='loop' value='el
+         .Ancestors()
+         .Where(p => p.Name.Namespace == code)
+         .FirstOrDefault(p => p.Name == code + "while"
+            || p.Name == code + "for-each")'/>
+      <choose>
+         <when test='loop?.Name == code + "for-each"'>Continue For</when>
+         <when test='loop?.Name == code + "while"'>Continue While</when>
+      </choose>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "conversion"' mode='vb:source'>
+      <value-of value='src_new_line'/>
+      <call-template name='vb:line-pragma'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <apply-templates value='select(el, code + "attributes", code)'/>
+      <call-template name='src:new-line-indented'/>
+      <text>Public Shared Widening Operator CType(</text>
+      <apply-templates value='el.Element(code + "parameters")'/>
+      <text>) As </text>
+      <apply-templates value='el.Element(code + "type-reference")'/>
+      <call-template name='src:new-line-indented'/>
+      <apply-templates value='el.Element(code + "block")'/>
+      <call-template name='src:new-line-indented'/>
+      <text>End Operator</text>
+      <call-template name='vb:line-pragma-end'>
+         <with-param name='el' value='el'/>
+      </call-template>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "decimal"' mode='vb:source'>
+      <value-of value='el.Attribute("value")!.Value'/>
+      <text>D</text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "default"' mode='vb:source'>
+      <text>CType(Nothing, </text>
+      <apply-templates value='el.Nodes()'/>
+      <text>)</text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "disable-warning"' mode='vb:source vb:statement'>
+      <value-of value='src_new_line'/>
+      <text>#Disable Warning </text>
+      <value-of value='tokenize(el.Attribute("codes")!.Value)' separator=','/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "double"' mode='vb:source'>
+      <value-of value='el.Attribute("value")!.Value'/>
+      <text>R</text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "else"' mode='vb:statement'>
+      <param name='indent' as='int' tunnel='yes'/>
+
+      <call-template name='vb:line-pragma'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <call-template name='src:new-line-indented'/>
+      <text>Else</text>
+      <apply-templates value='el.Nodes()'>
+         <with-param name='indent' value='indent + 1' tunnel='yes'/>
+      </apply-templates>
+      <call-template name='vb:line-pragma-end'>
+         <with-param name='el' value='el'/>
+      </call-template>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "equal"' mode='vb:source'>
+      <variable name='left' value='select(el, code).First()'/>
+      <variable name='right' value='select(el, code).ElementAt(1)'/>
+      <text>(</text>
+      <apply-templates value='left'/>
+      <choose>
+         <when test='right.Name == code + "null"'> Is </when>
+         <otherwise> = </otherwise>
+      </choose>
+      <apply-templates value='right'/>
+      <text>)</text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "expression"' mode='vb:source'>
+      <choose>
+         <when test='el.Attribute("value") is XAttribute valueAttr'>
+            <value-of value='valueAttr.Value'/>
+         </when>
+         <otherwise>
+            <apply-templates value='el.Nodes()'/>
+         </otherwise>
+      </choose>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "expression"' mode='vb:statement'>
+      <choose>
+         <when test='el.Attribute("value") is XAttribute valueAttr'>
+            <call-template name='src:new-line-indented'/>
+            <value-of value='valueAttr.Value'/>
+         </when>
+         <otherwise>
+            <apply-templates value='el.Nodes()'/>
+         </otherwise>
+      </choose>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "field"' mode='vb:source'>
+      <if test='!(el
+            .ElementsBeforeSelf()
+            .Where(p => p.Name.Namespace == code)
+            .FirstOrDefault()?.Name == code + "field")'>
+         <value-of value='src_new_line'/>
+      </if>
+      <call-template name='vb:line-pragma'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <apply-templates value='select(el, code + "attributes", code)'/>
+      <call-template name='src:new-line-indented'/>
+      <variable name='visibility' value='el.Attribute("visibility")?.Value'/>
+      <choose>
+         <when test='visibility is null || visibility == "#default"'>Dim </when>
+         <otherwise>
+            <call-template name='vb:visibility'>
+               <with-param name='el' value='el'/>
+            </call-template>
+         </otherwise>
+      </choose>
+      <call-template name='vb:member-extensibility'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <if test='el.Attribute("readonly") is XAttribute readonlyAttr
+            &amp;&amp; xs_boolean(readonlyAttr)'>
+         <text>ReadOnly </text>
+      </if>
+      <call-template name='vb:member-name'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <if test='el.Element(code + "type-reference") is XElement typeRefEl'>
+         <text> As </text>
+         <apply-templates value='typeRefEl'/>
+      </if>
+      <if test='el.Element(code + "expression") is XElement exprEl'>
+         <text> = </text>
+         <apply-templates value='exprEl'/>
+      </if>
+      <call-template name='vb:line-pragma-end'>
+         <with-param name='el' value='el'/>
+      </call-template>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "field-reference"' mode='vb:source'>
+      <apply-templates value='select(el, code).First()'/>
+      <text>.</text>
+      <value-of value='el.Attribute("name")!.Value'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "finally"' mode='vb:source'>
+      <param name='indent' as='int' tunnel='yes'/>
+
+      <call-template name='vb:line-pragma'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <call-template name='src:new-line-indented'/>
+      <text>Finally</text>
+      <apply-templates value='el.Nodes()' mode='vb:statement'>
+         <with-param name='indent' value='indent + 1' tunnel='yes'/>
+      </apply-templates>
+      <call-template name='vb:line-pragma-end'>
+         <with-param name='el' value='el'/>
+      </call-template>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "float"' mode='vb:source'>
+      <value-of value='el.Attribute("value")!.Value'/>
+      <text>F</text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "for-each"' mode='vb:statement'>
+      <call-template name='vb:line-pragma'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <call-template name='src:new-line-indented'/>
+      <text>For Each </text>
+      <apply-templates value='el.Nodes()' mode='vb:source'/>
+      <call-template name='src:new-line-indented'/>
+      <text>Next</text>
+      <call-template name='vb:line-pragma-end'>
+         <with-param name='el' value='el'/>
+      </call-template>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "getter"' mode='vb:source'>
+      <if test='el.Element(code + "block") is XElement blockEl'>
+         <call-template name='src:new-line-indented'/>
+         <text>Get</text>
+         <apply-templates value='blockEl'/>
+         <call-template name='src:new-line-indented'/>
+         <text>End Get</text>
+      </if>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "greater-than"' mode='vb:source'>
+      <text>(</text>
+      <apply-templates value='select(el, code)' separator=' > '/>
+      <text>)</text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "greater-than-or-equal"' mode='vb:source'>
+      <text>(</text>
+      <apply-templates value='select(el, code)' separator=' >= '/>
+      <text>)</text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "if"' mode='vb:statement'>
+      <call-template name='vb:line-pragma'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <call-template name='src:new-line-indented'/>
+      <if test='el.Parent?.Name == code + "if-else"
+            &amp;&amp; el.ElementsBeforeSelf(code + "if").Any()'>
+         <text>Else</text>
+      </if>
+      <text>If </text>
+      <apply-templates value='select(el, code).First()' mode='vb:source'/>
+      <text> Then</text>
+      <apply-templates value='select(el, code).ElementAt(1)' mode='vb:source'/>
+      <if test='el.Parent?.Name != code + "if-else"'>
+         <call-template name='src:new-line-indented'/>
+         <text>End If</text>
+      </if>
+      <call-template name='vb:line-pragma-end'>
+         <with-param name='el' value='el'/>
+      </call-template>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "if-else"' mode='vb:statement'>
+      <apply-templates value='el.Nodes()'/>
+      <call-template name='src:new-line-indented'/>
+      <text>End If</text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "import"' mode='vb:source'>
+      <call-template name='vb:line-pragma'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <call-template name='src:new-line-indented'/>
+      <text>Imports </text>
+      <if test='el.Attribute("alias") is XAttribute aliasAttr'>
+         <call-template name='vb:escaped-name'>
+            <with-param name='el' value='el'/>
+            <with-param name='name' value='aliasAttr.Value'/>
+         </call-template>
+         <text> = </text>
+      </if>
+      <choose>
+         <when test='el.Attribute("namespace") is XAttribute nsAttr'>
+            <value-of value='nsAttr.Value'/>
+         </when>
+         <otherwise>
+            <apply-templates value='el.Element(code + "type-reference")'>
+               <with-param name='omitNamespaceAlias' value='true'/>
+            </apply-templates>
+         </otherwise>
+      </choose>
+      <call-template name='vb:line-pragma-end'>
+         <with-param name='el' value='el'/>
+      </call-template>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "indexer-reference"' mode='vb:source'>
+      <apply-templates value='select(el, code).First()'/>
+      <text>(</text>
+      <apply-templates value='el.Element(code + "arguments")'/>
+      <text>)</text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "initializer"' mode='vb:source'>
+      <param name='indent' as='int' tunnel='yes'/>
+
+      <text> With { </text>
+      <for-each name='arg' in='select(el, code)' separator=', '>
+         <call-template name='vb:line-pragma'>
+            <with-param name='el' value='el'/>
+         </call-template>
+         <call-template name='src:new-line-indented'>
+            <with-param name='indent' value='indent + 1' tunnel='yes'/>
+         </call-template>
+         <apply-templates value='arg'>
+            <with-param name='indent' value='indent + 1' tunnel='yes'/>
+         </apply-templates>
+         <call-template name='vb:line-pragma-end'>
+            <with-param name='el' value='el'/>
+         </call-template>
+      </for-each>
+      <text>}</text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "int"' mode='vb:source'>
+      <value-of value='el.Attribute("value")!.Value'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "lambda"' mode='vb:source'>
+      <variable name='sub' value='
+         el.Attribute("void") is XAttribute voidAttr
+            &amp;&amp; xs_boolean(voidAttr)'/>
+      <choose>
+         <when test='sub'>Sub</when>
+         <otherwise>Function</otherwise>
+      </choose>
+      <text>(</text>
+      <apply-templates value='el.Element(code + "parameters")'/>
+      <text>)</text>
+      <choose>
+         <when test='el.Element(code + "block") is XElement blockEl'>
+            <call-template name='src:new-line-indented'/>
+            <apply-templates value='blockEl'/>
+            <call-template name='src:new-line-indented'/>
+            <text>End </text>
+            <choose>
+               <when test='sub'>Sub</when>
+               <otherwise>Function</otherwise>
+            </choose>
+         </when>
+         <otherwise>
+            <text> </text>
+            <apply-templates value='select(el, code).Last()'/>
+         </otherwise>
+      </choose>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "less-than"' mode='vb:source'>
+      <text>(</text>
+      <apply-templates value='select(el, code)' separator=' &lt; '/>
+      <text>)</text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "less-than-or-equal"' mode='vb:source'>
+      <text>(</text>
+      <apply-templates value='select(el, code)' separator=' &lt;= '/>
+      <text>)</text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "long"' mode='vb:source'>
+      <value-of value='el.Attribute("value")!.Value'/>
+      <text>L</text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "member-initializer"' mode='vb:source'>
+      <variable name='attribute' value='el.Parent?.Parent?.Name == code + "attribute"'/>
+      <if test='!attribute'>.</if>
+      <value-of value='el.Attribute("name")!.Value'/>
+      <choose>
+         <when test='attribute'>:=</when>
+         <otherwise> = </otherwise>
+      </choose>
+      <apply-templates value='el.Nodes()'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "method"' mode="vb:source">
+      <value-of value='src_new_line'/>
+      <call-template name='vb:line-pragma'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <apply-templates value='select(el, code + "attributes", code)'/>
+      <call-template name='src:new-line-indented'/>
+      <call-template name='vb:visibility'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <call-template name='vb:member-extensibility'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <variable name='typeRef' value='el.Element(code + "type-reference")'/>
+      <choose>
+         <when test='typeRef != null'>Function</when>
+         <otherwise>Sub</otherwise>
+      </choose>
+      <text> </text>
+      <call-template name='vb:member-name'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <if test='select(el, code + "type-parameters", code).ToArray() is var typeParams
+            &amp;&amp; typeParams.Length > 0'>
+         <text>(Of </text>
+         <apply-templates value='typeParams' separator=', '/>
+         <text>)</text>
+      </if>
+      <text>(</text>
+      <apply-templates value='el.Element(code + "parameters")'/>
+      <text>)</text>
+      <if test='typeRef != null'>
+         <text> As </text>
+         <apply-templates value='typeRef'/>
+      </if>
+      <if test='el.Element(code + "implements-interface") is XElement implInterfaceEl'>
+         <text> Implements </text>
+         <apply-templates value='select(implInterfaceEl, code + "type-reference")'/>
+         <text>.</text>
+         <value-of value='el.Attribute("name")!.Value'/>
+      </if>
+      <if test='el.Element(code + "block") is XElement blockEl'>
+         <apply-templates value='blockEl'/>
+         <call-template name='src:new-line-indented'/>
+         <choose>
+            <when test='typeRef != null'>End Function</when>
+            <otherwise>End Sub</otherwise>
+         </choose>
+      </if>
+      <call-template name='vb:line-pragma-end'>
+         <with-param name='el' value='el'/>
+      </call-template>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "method-call"' mode='vb:statement'>
+      <call-template name='vb:line-pragma'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <call-template name='src:new-line-indented'/>
+      <apply-templates value='el' mode='vb:source'/>
+      <call-template name='vb:line-pragma-end'>
+         <with-param name='el' value='el'/>
+      </call-template>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "method-call"' mode='vb:source'>
+      <choose>
+         <when test='el.Element(code + "method-reference") is XElement methodRef'>
+            <apply-templates value='methodRef'/>
+         </when>
+         <otherwise>
+            <call-template name='vb:method-reference'>
+               <with-param name='el' value='el'/>
+            </call-template>
+         </otherwise>
+      </choose>
+      <text>(</text>
+      <apply-templates value='el.Element(code + "arguments")'/>
+      <text>)</text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "method-reference"' mode='vb:source'>
+      <call-template name='vb:method-reference'>
+         <with-param name='el' value='el'/>
+      </call-template>
+   </template>
+
+   <template name='vb:method-reference'>
+      <param name='el' as='XElement' required='yes'/>
+
+      <if test='el.Name == code + "method-reference"
+         &amp;&amp; el.Parent?.Name != code + "method-call"'>AddressOf </if>
+      <apply-templates value='select(el, code).First()'/>
+      <text>.</text>
+      <value-of value='el.Attribute("name")!.Value'/>
+      <if test='select(el, code + "type-arguments", code).ToArray() is var typeArgs
+            &amp;&amp; typeArgs.Length > 0'>
+         <text>(Of </text>
+         <apply-templates value='typeArgs' separator=', '/>
+         <text>)</text>
+      </if>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "nameof"' mode='vb:source'>
+      <text>NameOf(</text>
+      <apply-templates value='el.Nodes()'/>
+      <text>)</text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "namespace"' mode='vb:source'>
+      <param name='indent' as='int' tunnel='yes'/>
+
+      <value-of value='src_new_line'/>
+      <call-template name='src:new-line-indented'/>
+      <text>Namespace </text>
+      <value-of value='el.Attribute("name")!.Value'/>
+      <apply-templates value='el.Nodes()'>
+         <with-param name='indent' value='indent + 1' tunnel='yes'/>
+      </apply-templates>
+      <call-template name='src:new-line-indented'/>
+      <text>End Namespace</text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "new-array"' mode='vb:source'>
+      <text>New</text>
+      <if test='el.Element(code + "type-reference") is XElement typeRefEl'>
+         <text> </text>
+         <apply-templates value='typeRefEl'/>
+      </if>
+      <text>()</text>
+      <apply-templates value='el.Element(code + "collection-initializer")'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "new-object"' mode='vb:source'>
+      <variable name='typeRef' value='el.Element(code + "type-reference")'/>
+      <variable name='arguments' value='el.Element(code + "arguments")'/>
+      <variable name='requireParens' value='typeRef != null
+         || (arguments != null &amp;&amp; select(arguments, code).Any())'/>
+      <text>New</text>
+      <if test='typeRef != null'>
+         <text> </text>
+         <apply-templates value='typeRef'/>
+      </if>
+      <if test='requireParens'>(</if>
+      <apply-templates value='arguments'/>
+      <if test='requireParens'>)</if>
+      <choose>
+         <when test='el.Element(code + "initializer") is XElement initializerEl
+               &amp;&amp; select(initializerEl, code).Any()'>
+            <apply-templates value='initializerEl'/>
+         </when>
+         <when test='el.Element(code + "collection-initializer") is XElement colInitializerEl
+               &amp;&amp; select(colInitializerEl, code).Any()'>
+            <text> From </text>
+            <apply-templates value='colInitializerEl'/>
+         </when>
+      </choose>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "not"' mode='vb:source'>
+      <text>Not </text>
+      <apply-templates value='el.Nodes()'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "null"' mode='vb:source'>
+      <text>Nothing</text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "or-else"' mode='vb:source'>
+      <apply-templates value='select(el, code)' separator=' OrElse '/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "parameter"' mode='vb:source'>
+      <param name='indent' as='int' tunnel='yes'/>
+
+      <call-template name='vb:line-pragma'>
+         <with-param name='el' value='el'/>
+         <with-param name='appendLine' value='true'/>
+         <with-param name='indent' value='indent + 2' tunnel='yes'/>
+      </call-template>
+      <variable name='defaultValue' value='select(el, code)
+         .Skip(1)
+         .FirstOrDefault()'/>
+      <choose>
+         <when test='el.Attribute("params") is XAttribute paramsAttr
+            &amp;&amp; xs_boolean(paramsAttr)'>ParamArray </when>
+         <when test='defaultValue != null'>Optional </when>
+      </choose>
+      <if test='el.Attribute("ref") is XAttribute refAttr
+         &amp;&amp; xs_boolean(refAttr)'>ByRef </if>
+      <call-template name='vb:escaped-name'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <if test='el.Element(code + "type-reference") is XElement typeRefEl'>
+         <text> As </text>
+         <apply-templates value='typeRefEl'/>
+      </if>
+      <if test='defaultValue != null'>
+         <text> = </text>
+         <apply-templates value='defaultValue'/>
+      </if>
+      <call-template name='vb:line-pragma-end'>
+         <with-param name='el' value='el'/>
+      </call-template>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "parameters"' mode='vb:source'>
+      <apply-templates value='select(el, code)' separator=', '/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "property"' mode='vb:source'>
+      <param name='indent' as='int' tunnel='yes'/>
+
+      <value-of value='src_new_line'/>
+      <call-template name='vb:line-pragma'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <apply-templates value='select(el, code + "attributes", code)'/>
+      <call-template name='src:new-line-indented'/>
+      <call-template name='vb:visibility'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <variable name='getter' value='el.Element(code + "getter")'/>
+      <variable name='setter' value='el.Element(code + "setter")'/>
+      <if test='getter != null
+         &amp;&amp; empty(select(getter, code))
+         &amp;&amp; setter is null'>ReadOnly </if>
+      <call-template name='vb:member-extensibility'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <if test='el.Attribute("extensibility")?.Value == "sealed"'>Overrides </if>
+      <text>Property </text>
+      <call-template name='vb:member-name'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <text> As </text>
+      <apply-templates value='el.Element(code + "type-reference")'/>
+      <if test='el.Element(code + "implements-interface") is XElement implInterfaceEl'>
+         <text> Implements </text>
+         <apply-templates value='select(implInterfaceEl, code + "type-reference")'/>
+         <text>.</text>
+         <value-of value='el.Attribute("name")!.Value'/>
+      </if>
+      <choose>
+         <when test='el.Element(code + "expression") is XElement exprEl'>
+            <text> = </text>
+            <apply-templates value='exprEl'/>
+         </when>
+         <when test='select(getter, code).Any()
+               || select(setter, code).Any()'>
+            <apply-templates value='getter'>
+               <with-param name='indent' value='indent + 1' tunnel='yes'/>
+            </apply-templates>
+            <apply-templates value='setter'>
+               <with-param name='indent' value='indent + 1' tunnel='yes'/>
+            </apply-templates>
+            <call-template name='src:new-line-indented'/>
+            <text>End Property</text>
+         </when>
+      </choose>
+      <call-template name='vb:line-pragma-end'>
+         <with-param name='el' value='el'/>
+      </call-template>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "property-reference"' mode='vb:source'>
+      <apply-templates value='select(el, code).First()'/>
+      <text>.</text>
+      <value-of value='el.Attribute("name")!.Value'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "region"' mode='vb:source'>
+      <value-of value='src_new_line'/>
+      <call-template name='src:new-line-indented'/>
+      <text>#Region </text>
+      <value-of value='vb_string(el.Attribute("name")!.Value)'/>
+      <apply-templates value='el.Nodes()'/>
+      <call-template name='src:new-line-indented'/>
+      <text>#End Region</text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "restore-warning"' mode='vb:source vb:statement'>
+      <value-of value='src_new_line'/>
+      <text>#Enable Warning </text>
+      <value-of value='tokenize(el.Attribute("codes")!.Value)' separator=','/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "return"' mode='vb:statement'>
+      <call-template name='vb:line-pragma'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <call-template name='src:new-line-indented'/>
+      <text>Return</text>
+      <if test='select(el, code).FirstOrDefault() is XElement valueEl'>
+         <text> </text>
+         <apply-templates value='valueEl' mode='vb:source'/>
+      </if>
+      <call-template name='vb:line-pragma-end'>
+         <with-param name='el' value='el'/>
+      </call-template>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "script"' mode='vb:statement'>
+      <call-template name='vb:line-pragma'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <value-of value='src_new_line'/>
+      <value-of value='el.Value'/>
+      <call-template name='vb:line-pragma-end'>
+         <with-param name='el' value='el'/>
+      </call-template>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "setter"' mode='vb:source'>
+      <call-template name='vb:line-pragma'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <call-template name='src:new-line-indented'/>
+      <text>Set</text>
+      <apply-templates value='el.Element(code + "block")'/>
+      <call-template name='src:new-line-indented'/>
+      <text>End Set</text>
+      <call-template name='vb:line-pragma-end'>
+         <with-param name='el' value='el'/>
+      </call-template>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "setter-value"' mode='vb:source'>
+      <text>Value</text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "string"' mode='vb:source'>
+
+      <variable name='literal' value='
+         (el.Attribute("literal") is XAttribute literalAttr) ?
+            xs_boolean(literalAttr)
+            : false'/>
+
+      <variable name='interpolated' value='
+         (el.Attribute("interpolated") is XAttribute interpolatedAttr) ?
+            xs_boolean(interpolatedAttr)
+            : false'/>
+
+      <variable name='text' value='el.Value'/>
+
+      <if test='interpolated'>$</if>
+
+      <variable name='escaped' as='string'>
+         <choose>
+            <when test='literal || text.Length == 0'>
+               <object value='text'/>
+            </when>
+            <when test='interpolated'>
+               <choose>
+                  <when test='el.Attribute("quotes-to-escape") is XAttribute quotesAttr'>
+                     <variable name='quotes' value='
+                        tokenize(quotesAttr.Value)
+                           .Select(p => System.Xml.XmlConvert.ToInt32(p))
+                           .ToArray()'/>
+                     <variable name='parts' as='string[]'>
+                        <choose>
+                           <when test='empty(quotes)'>
+                              <object value='text'/>
+                           </when>
+                           <otherwise>
+                              <variable name='i' value='-1'/>
+                              <for-each name='q' in='quotes'>
+                                 <void value='i++'/>
+                                 <variable name='start' value='
+                                    (i == 0) ? 0 : quotes[i - 1] + 1'/>
+                                 <variable name='length' value='q - start + 1'/>
+                                 <object value='text.Substring(start, length)'/>
+                              </for-each>
+                              <object value='
+                                 (quotes[quotes.Length - 1] == text.Length) ? ""
+                                    : text.Substring(quotes[quotes.Length - 1] + 1)'/>
+                           </otherwise>
+                        </choose>
+                     </variable>
+                     <object value='string.Join("\"", parts)'/>
+                  </when>
+                  <otherwise>
+                     <message terminate='yes'/>
+                  </otherwise>
+               </choose>
+            </when>
+            <otherwise>
+               <object value='text.Replace("\"", "\"\"")'/>
+            </otherwise>
+         </choose>
+      </variable>
+
+      <value-of value='vb_string(escaped)'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "switch"' mode='vb:statement'>
+      <param name='indent' as='int' tunnel='yes'/>
+
+      <call-template name='vb:line-pragma'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <call-template name='src:new-line-indented'/>
+      <text>Select </text>
+      <apply-templates value='select(el, code).First()' mode='vb:source'/>
+      <apply-templates value='select(el, code).Skip(1)' mode='vb:source'>
+         <with-param name='indent' value='indent + 1' tunnel='yes'/>
+      </apply-templates>
+      <call-template name='src:new-line-indented'/>
+      <text>End Select</text>
+      <call-template name='vb:line-pragma-end'>
+         <with-param name='el' value='el'/>
+      </call-template>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "this-reference"' mode='vb:source'>
+      <text>Me</text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "throw"' mode='vb:statement'>
+      <call-template name='vb:line-pragma'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <call-template name='src:new-line-indented'/>
+      <apply-templates value='el' mode="vb:source"/>
+      <call-template name='vb:line-pragma-end'>
+         <with-param name='el' value='el'/>
+      </call-template>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "throw"' mode='vb:source'>
+      <text>Throw </text>
+      <apply-templates value='el.Nodes()'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "try"' mode='vb:statement'>
+      <param name='indent' as='int' tunnel='yes'/>
+
+      <call-template name='vb:line-pragma'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <call-template name='src:new-line-indented'/>
+      <text>Try</text>
+      <apply-templates value='select(el, code + "block", code)'>
+         <with-param name='indent' value='indent + 1' tunnel='yes'/>
+      </apply-templates>
+      <call-template name='src:new-line-indented'/>
+      <apply-templates value='el.Elements(code + "catch")' mode='vb:source'/>
+      <apply-templates value='el.Element(code + "finally")' mode='vb:source'/>
+      <call-template name='src:new-line-indented'/>
+      <text>End Try</text>
+      <call-template name='vb:line-pragma-end'>
+         <with-param name='el' value='el'/>
+      </call-template>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "type"' mode='vb:source'>
+      <param name='indent' as='int' tunnel='yes'/>
+
+      <variable name='structure' value='
+         el.Attribute("struct") is XAttribute structAttr
+            &amp;&amp; xs_boolean(structAttr)'/>
+
+      <value-of value='src_new_line'/>
+      <call-template name='vb:line-pragma'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <apply-templates value='select(el, code + "attributes", code)'/>
+      <call-template name='src:new-line-indented'/>
+      <call-template name='vb:visibility'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <if test='el.Attribute("extensibility") is XAttribute extensibilityAttr
+            &amp;&amp; extensibilityAttr.Value != "#default"'>
+         <switch value='extensibilityAttr.Value'>
+            <when test='"abstract"'>MustInherit </when>
+            <when test='"sealed"'>NotInheritable </when>
+         </switch>
+      </if>
+      <if test='el.Attribute("partial") is XAttribute partialAttr
+            &amp;&amp; xs_boolean(partialAttr)'>
+         <text>Partial </text>
+      </if>
+      <choose>
+         <when test='structure'>Structure </when>
+         <otherwise>Class </otherwise>
+      </choose>
+      <value-of value='el.Attribute("name")!.Value'/>
+      <variable name='baseTypes' value='select(el, code + "base-types", code)
+         .ToArray()'/>
+      <if test='baseTypes.Length > 0'>
+         <variable name='baseType' value='
+            baseTypes.FirstOrDefault(p =>
+               p.Attribute("interface") is null
+                  || !xs_boolean(p.Attribute("interface")!))'/>
+         <variable name='interfaces' value='baseTypes
+            .Except(new[] { baseType })
+            .ToArray()'/>
+         <if test='baseType != null'>
+            <call-template name='src:new-line-indented'>
+               <with-param name='indent' value='indent + 2' tunnel='yes'/>
+            </call-template>
+            <text>Inherits </text>
+            <apply-templates value='baseType'/>
+         </if>
+         <if test='interfaces.Length > 0'>
+            <call-template name='src:new-line-indented'>
+               <with-param name='indent' value='indent + 2' tunnel='yes'/>
+            </call-template>
+            <text>Implements </text>
+            <apply-templates value='interfaces' separator=', '/>
+         </if>
+      </if>
+      <apply-templates value='select(el, code + "members", code)'>
+         <with-param name='indent' value='indent + 1' tunnel='yes'/>
+      </apply-templates>
+      <call-template name='src:new-line-indented'/>
+      <text>End </text>
+      <choose>
+         <when test='structure'>Structure</when>
+         <otherwise>Class</otherwise>
+      </choose>
+      <call-template name='vb:line-pragma-end'>
+         <with-param name='el' value='el'/>
+      </call-template>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "type-reference"' mode='vb:source' expand-text='yes'>
+      <param name='omitNamespaceAlias' as='bool'/>
+      <param name='verbatim' as='bool' tunnel='yes'/>
+
+      <choose>
+         <when test='el.Attribute("array-dimensions") is XAttribute arrDimAttr'>
+            <apply-templates value='select(el, code + "type-reference")'>
+               <with-param name='omitNamespaceAlias' value='omitNamespaceAlias'/>
+            </apply-templates>
+            <variable name='arrayDim' value='xs_integer(arrDimAttr)'/>
+            <text>(</text>
+            <if test='arrayDim > 1'>{new string(',', arrayDim)}</if>
+            <text>)</text>
+         </when>
+         <otherwise>
+            <choose>
+               <when test='el.Attribute("namespace") is XAttribute nsAttr'>
+                  <if test='!omitNamespaceAlias'>Global.</if>
+                  <text>{nsAttr.Value}.</text>
+               </when>
+               <when test='el.Element(code + "type-reference") is XElement typeRef'>
+                  <apply-templates value='typeRef'>
+                     <with-param name='omitNamespaceAlias' value='omitNamespaceAlias'/>
+                  </apply-templates>
+                  <text>.</text>
+               </when>
+            </choose>
+            <value-of value='el.Attribute("name")?.Value'/>
+            <if test='select(el, code + "type-arguments", code).ToArray() is XElement[] typeArgs
+                  &amp;&amp; typeArgs.Length > 0'>
+               <text>(Of </text>
+               <apply-templates value='typeArgs' separator=', '>
+                  <with-param name='omitNamespaceAlias' value='omitNamespaceAlias'/>
+               </apply-templates>
+               <text>)</text>
+            </if>
+         </otherwise>
+      </choose>
+   </template>
+
+   <template match='XElement el
+         &amp;&amp; el.Name == code + "type-reference"
+         &amp;&amp; el.Attribute("namespace")?.Value == "System"' mode='vb:source'>
+
+      <variable name='primitive' value='
+         select(vb_primitives, XNamespace.None, code + "type-reference")
+            .FirstOrDefault(p => src_type_reference_equal(p, el))'/>
+
+      <choose>
+         <when test='primitive != null' value='primitive.Parent!.Name.LocalName'/>
+         <otherwise>
+            <next-match/>
+         </otherwise>
+      </choose>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "typeof"' mode='vb:source'>
+      <text>GetType(</text>
+      <apply-templates value='el.Nodes()'/>
+      <text>)</text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "uint"' mode='vb:source'>
+      <value-of value='el.Attribute("value")!.Value'/>
+      <text>UI</text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "ulong"' mode='vb:source'>
+      <value-of value='el.Attribute("value")!.Value'/>
+      <text>UL</text>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "using"' mode='vb:statement'>
+      <call-template name='vb:line-pragma'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <call-template name='src:new-line-indented'/>
+      <text>Using </text>
+      <apply-templates value='el.Nodes()' mode='vb:source'/>
+      <call-template name='src:new-line-indented'/>
+      <text>End Using</text>
+      <call-template name='vb:line-pragma-end'>
+         <with-param name='el' value='el'/>
+      </call-template>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "variable"' mode='vb:statement'>
+      <call-template name='vb:line-pragma'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <call-template name='src:new-line-indented'/>
+      <text>Dim </text>
+      <apply-templates value='el' mode='vb:source'/>
+      <call-template name='vb:line-pragma-end'>
+         <with-param name='el' value='el'/>
+      </call-template>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "variable"' mode='vb:source'>
+      <variable name='typeRef' value='el.Element(code + "type-reference")'/>
+      <variable name='value' value='
+         (select(el, code).LastOrDefault() is XElement valueEl
+            &amp;&amp; valueEl != typeRef) ? valueEl
+            : null'/>
+      <value-of value='el.Attribute("name")!.Value'/>
+      <if test='typeRef != null'>
+         <text> As </text>
+         <apply-templates value='typeRef'/>
+      </if>
+      <if test='value != null'>
+         <choose>
+            <when test='el.Parent?.Name == code + "for-each"'> In </when>
+            <otherwise> = </otherwise>
+         </choose>
+         <apply-templates value='value'/>
+      </if>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "variable-reference"' mode='vb:source'>
+      <call-template name='vb:escaped-name'>
+         <with-param name='el' value='el'/>
+      </call-template>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "while"' mode='vb:statement'>
+      <call-template name='vb:line-pragma'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <call-template name='src:new-line-indented'/>
+      <text>While </text>
+      <apply-templates value='el.Nodes()' mode='vb:source'/>
+      <call-template name='src:new-line-indented'/>
+      <text>End While</text>
+      <call-template name='vb:line-pragma-end'>
+         <with-param name='el' value='el'/>
+      </call-template>
+   </template>
+
+
+   <!-- ## Syntax -->
+
+   <function name='vb_cardinality' as='TypeCardinality'>
+      <param name='name' as='string'/>
+
+      <return value='(name.EndsWith("()")) ?
+         TypeCardinality.ZeroOrMore
+         : TypeCardinality.One'/>
+   </function>
+
+   <function name='vb_item_type' as='string'>
+      <param name='name' as='string'/>
+
+      <return value='(name.EndsWith("()")) ?
+         name.Substring(0, name.Length - 2)
+         : name'/>
+   </function>
+
+   <function name='vb_quotes_to_escape' as='int[]'>
+      <param name='text' as='string'/>
+      <param name='contextNode' as='XObject'/>
+
+      <variable name='quotes' value='new List&lt;int>()'/>
+      <variable name='modes' value='new Stack&lt;ParsingMode>()'/>
+      <void value='modes.Push(ParsingMode.Text)'/>
+      <variable name='i' value='0'/>
+      <variable name='nextChar' value='() =>
+         (i + 1 &lt; text.Length) ? text[i + 1] : (char?)null' as='System.Func&lt;char?>'/>
+
+      <while test='i &lt; text.Length'>
+         <variable name='currentChar' value='text[i]'/>
+         <variable name='currentMode' value='modes.Peek()'/>
+         <switch value='currentMode'>
+            <when test='ParsingMode.Code'>
+               <switch value='currentChar'>
+                  <when test="'{'">
+                     <void value='modes.Push(ParsingMode.Code)'/>
+                  </when>
+                  <when test="'}'">
+                     <void value='modes.Pop()'/>
+                  </when>
+                  <when test="'&quot;'">
+                     <variable name='m' value="(text[i - 1] == '$') ?
+                        ParsingMode.InterpolatedString
+                        : ParsingMode.String"/>
+                     <void value='modes.Push(m)'/>
+                  </when>
+               </switch>
+            </when>
+            <when test='ParsingMode.Text
+                  or ParsingMode.InterpolatedString'>
+               <switch value='currentChar'>
+                  <when test="'{'">
+                     <choose>
+                        <when test="nextChar() == '{'">
+                           <void value='i++'/>
+                        </when>
+                        <otherwise>
+                           <void value='modes.Push(ParsingMode.Code)'/>
+                        </otherwise>
+                     </choose>
+                  </when>
+                  <when test="'&quot;'">
+                     <switch value='currentMode'>
+                        <when test='ParsingMode.Text'>
+                           <void value='quotes.Add(i)'/>
+                        </when>
+                        <when test='ParsingMode.InterpolatedString'>
+                           <choose>
+                              <when test="nextChar() == '&quot;'">
+                                 <void value='i++'/>
+                              </when>
+                              <otherwise>
+                                 <void value='modes.Pop()'/>
+                              </otherwise>
+                           </choose>
+                        </when>
+                     </switch>
+                  </when>
+               </switch>
+            </when>
+            <when test='ParsingMode.String'>
+               <if test="currentChar == '&quot;'">
+                  <choose>
+                     <when test="nextChar() == '&quot;'">
+                        <void value='i++'/>
+                     </when>
+                     <otherwise>
+                        <void value='modes.Pop()'/>
+                     </otherwise>
+                  </choose>
+               </if>
+            </when>
+         </switch>
+         <void value='i++'/>
+      </while>
+
+      <if test='!(modes.Count == 1)'>
+         <message terminate='yes' error-code='XTSE0350' error-data='src_error_object(contextNode)' transform-text='trim'>
+            Value template brace mismatch.
+         </message>
+      </if>
+
+      <return value='quotes.ToArray()'/>
+   </function>
+
+   <function name='vb_unescape_identifier' as='string'>
+      <param name='name' as='string'/>
+
+      <return value='name.Trim(&apos;[&apos;, &apos;]&apos;)'/>
+   </function>
+
+
+   <!-- ## Expressions -->
+
+   <function name='vb_string' as='string'>
+      <param name='str' as='string'/>
+
+      <return value='"\"" + str + "\""'/>
+   </function>
+
+   <template name='vb:visibility'>
+      <param name='el' as='XElement' required='yes'/>
+
+      <variable name='visibility' value='el.Attribute("visibility")?.Value'/>
+
+      <if test='visibility != null
+            &amp;&amp; visibility != "#default"'>
+         <choose>
+            <when test='visibility == "internal"'>Friend</when>
+            <otherwise value='visibility.Substring(0, 1).ToUpperInvariant() + visibility.Substring(1)'/>
+         </choose>
+         <text> </text>
+      </if>
+   </template>
+
+   <template name='vb:member-extensibility'>
+      <param name='el' as='XElement' required='yes'/>
+
+      <variable name='extensibility' value='el.Attribute("extensibility")?.Value'/>
+
+      <if test='extensibility != null
+            &amp;&amp; extensibility != "#default"'>
+         <switch value='extensibility'>
+            <when test='"abstract"'>MustOverride</when>
+            <when test='"new" or "override"'>Overrides</when>
+            <when test='"sealed"'>NotOverridable</when>
+            <when test='"static"'>Shared</when>
+            <when test='"virtual"'>Overridable</when>
+         </switch>
+         <text> </text>
+      </if>
+   </template>
+
+   <template name='vb:member-name'>
+      <param name='el' as='XElement' required='yes'/>
+
+      <choose>
+         <when test='el.Element(code + "implements-interface") is XElement implInterfaceEl'>
+            <value-of value='select(implInterfaceEl, code + "type-reference")
+               .First()
+               .Attribute("name")!.Value'/>
+            <text>_</text>
+            <value-of value='el.Attribute("name")!.Value'/>
+         </when>
+         <otherwise>
+            <call-template name='vb:escaped-name'>
+               <with-param name='el' value='el'/>
+            </call-template>
+         </otherwise>
+      </choose>
+   </template>
+
+   <template name='vb:escaped-name'>
+      <param name='el' as='XElement' required='yes'/>
+      <param name='name' value='el.Attribute("name")!.Value' as='string'/>
+
+      <variable name='escape' value='
+         el.Attribute("verbatim") is XAttribute verbatimAttr
+            &amp;&amp; xs_boolean(verbatimAttr)'/>
+      <if test='escape'>[</if>
+      <value-of value='name'/>
+      <if test='escape'>]</if>
+   </template>
+
+   <template name='vb:line-pragma'>
+      <param name='el' as='XElement' required='yes'/>
+      <param name='appendLine' as='bool'/>
+
+      <if test='vb_use_external_source(el)'>
+         <call-template name='src:new-line-indented'/>
+         <text>#ExternalSource(</text>
+         <value-of value='vb_string(new System.Uri(el.Attribute("line-uri")!.Value).LocalPath)'/>
+         <text>, </text>
+         <value-of value='el.Attribute("line-number")!.Value'/>
+         <text>)</text>
+         <if test='appendLine'>
+            <call-template name='src:new-line-indented'/>
+         </if>
+      </if>
+   </template>
+
+   <template name='vb:line-pragma-end'>
+      <param name='el' as='XElement' required='yes'/>
+
+      <if test='vb_use_external_source(el)'>
+         <call-template name='src:new-line-indented'/>
+         <text>#End ExternalSource</text>
+      </if>
+   </template>
+
+   <function name='vb_use_external_source' as='bool'>
+      <param name='el' as='XElement'/>
+
+      <!-- ExternalSource directives cannot be nested -->
+
+      <return value='src_use_line_directive
+         &amp;&amp; el.Attribute("line-number") != null
+         &amp;&amp; el.Attribute("line-uri") != null
+         &amp;&amp; el.Ancestors()
+            .Where(p => p.Name.Namespace == code)
+            .All(p => !vb_use_external_source(p))'/>
+   </function>
+
+</module>

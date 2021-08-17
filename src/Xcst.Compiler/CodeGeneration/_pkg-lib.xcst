@@ -1,0 +1,223 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!--
+ Copyright 2021 Max Toro Q.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<module version='1.0' language='C#'
+   xmlns='http://maxtoroq.github.io/XCST'
+   xmlns:xcst='http://maxtoroq.github.io/XCST/grammar'
+   xmlns:code='http://maxtoroq.github.io/XCST/code'
+   xmlns:src='http://maxtoroq.github.io/XCST/compiled'>
+
+   <import-namespace ns='System.Linq'/>
+   <import-namespace ns='System.Xml.Linq'/>
+
+   <template match='XElement el &amp;&amp; el.Name == xcst + "package-manifest"
+         &amp;&amp; el.Attribute("qualified-types") is XAttribute qtAttr
+         &amp;&amp; xs_boolean(qtAttr)' mode='src:namespace'>
+      <param name='packageManifest' as='XElement' tunnel='yes' required='yes'/>
+
+      <code:namespace name='{packageManifest.Element(code + "type-reference")!.Attribute("namespace")!.Value}'>
+         <code:type name='{packageManifest.Element(code + "type-reference")!.Attribute("name")!.Value}' partial='true'>
+            <code:members>
+               <code:field name='{src_lib_field_name(el)}' readonly='true' line-hidden='true'>
+                  <code:type-reference name='{src_lib_class_name(el)}'/>
+                  <code:attributes>
+                     <call-template name='src:editor-browsable-never'/>
+                  </code:attributes>
+               </code:field>
+               <variable name='acceptedPublic' value='select(packageManifest, xcst)
+                  .Where(p => p.Attribute("package-id")?.Value == el.Attribute("package-id")!.Value
+                     &amp;&amp; p.Attribute("accepted") is XAttribute acceptedAttr
+                     &amp;&amp; xs_boolean(acceptedAttr)
+                     &amp;&amp; p.Attribute("visibility")!.Value != "hidden"
+                     &amp;&amp; p.Name != xcst + "type")
+                  .OrderByDescending(p => p.Name == xcst + "param" || p.Name == xcst + "variable")'/>
+
+               <apply-templates value='acceptedPublic' mode='src:member'/>
+               <apply-templates value='el' mode='src:lib-class'/>
+            </code:members>
+         </code:type>
+      </code:namespace>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == xcst + "package-manifest"
+         &amp;&amp; (el.Attribute("qualified-types") is null
+            || !xs_boolean(el.Attribute("qualified-types")!))' mode='src:namespace'>
+      <param name='packageManifest' as='XElement' tunnel='yes' required='yes'/>
+
+      <variable name='acceptedPublic' value='select(packageManifest, xcst)
+         .Where(p => p.Attribute("package-id")?.Value == el.Attribute("package-id")!.Value
+            &amp;&amp; p.Attribute("accepted") is XAttribute acceptedAttr
+            &amp;&amp; xs_boolean(acceptedAttr)
+            &amp;&amp; p.Attribute("visibility")!.Value != "hidden")
+         .ToArray()'/>
+
+      <variable name='overridden' value='src_overridden_components(el, packageManifest)'/>
+      <variable name='moduleUris' value='
+         attributes(acceptedPublic.Concat(overridden), "declaring-module-uri")
+            .Select(p => p.Value)
+            .Distinct()
+            .DefaultIfEmpty("")
+            .ToArray()'/>
+
+      <variable name='uriIndex' value='-1'/>
+      <for-each name='uri' in='moduleUris'>
+         <void value='uriIndex++'/>
+         <code:namespace name='{packageManifest.Element(code + "type-reference")!.Attribute("namespace")!.Value}'>
+            <if test='uri?.Length > 0'>
+               <apply-templates value='el.Elements(xcst + "type")
+                  .Where(p => p.Attribute("accepted") is XAttribute acceptedAttr
+                     &amp;&amp; xs_boolean(acceptedAttr)
+                     &amp;&amp; p.Attribute("visibility")!.Value != "hidden")' mode='src:import-namespace'/>
+
+               <apply-templates value='acceptedPublic.Where(p => p.Name == xcst + "type")'
+                  mode='src:import-namespace'/>
+
+               <apply-templates value='doc(new System.Uri(uri)).Root!.Elements(c + "import-namespace")'
+                  mode='src:import-namespace'/>
+            </if>
+            <code:type name='{packageManifest.Element(code + "type-reference")!.Attribute("name")!.Value}' partial='true'>
+               <code:members>
+                  <if test='uriIndex == 0'>
+                     <code:field name='{src_lib_field_name(el)}' readonly='true' line-hidden='true'>
+                        <code:type-reference name='{src_lib_class_name(el)}'/>
+                        <code:attributes>
+                           <call-template name='src:editor-browsable-never'/>
+                        </code:attributes>
+                     </code:field>
+                  </if>
+                  <apply-templates value='acceptedPublic
+                     .Where(p => p.Name != xcst + "type"
+                        &amp;&amp; p.Attribute("declaring-module-uri")!.Value == uri)
+                     .OrderByDescending(p => p.Name == xcst + "param" || p.Name == xcst + "variable")' mode='src:member'/>
+                  <apply-templates value='el' mode='src:lib-class'>
+                     <with-param name='overridden' value='overridden
+                        .Where(p => p.Attribute("declaring-module-uri")!.Value == uri)
+                        .ToArray()'/>
+                  </apply-templates>
+               </code:members>
+            </code:type>
+         </code:namespace>
+      </for-each>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == xcst + "package-manifest"' mode='src:lib-class'>
+      <param name='packageManifest' as='XElement' tunnel='yes' required='yes'/>
+      <param name='overridden' value='src_overridden_components(el, packageManifest)' as='XElement[]'/>
+      <param name='language' as='string' tunnel='yes' required='yes'/>
+
+      <variable name='disableCS8618' value='
+         xcst_language_equal(language, xcst_csharp_lang)
+            &amp;&amp; cs_nullable_annotate'/>
+
+      <variable name='qualifiedTypes' value='xs_boolean(el.Attribute("qualified-types")!)'/>
+
+      <code:type name='{src_lib_class_name(el)}' visibility='private' partial='{@string(!qualifiedTypes)}'>
+         <code:base-types>
+            <copy-of value='el.Element(code + "type-reference")'/>
+         </code:base-types>
+         <code:attributes>
+            <if test='qualifiedTypes'>
+               <call-template name='src:editor-browsable-never'/>
+            </if>
+         </code:attributes>
+         <code:members>
+
+            <if test='disableCS8618'>
+               <code:disable-warning codes='CS8618'/>
+            </if>
+
+            <apply-templates value='overridden' mode='src:lib-overriding'/>
+
+            <if test='disableCS8618'>
+               <code:restore-warning codes='CS8618'/>
+            </if>
+
+            <apply-templates value='overridden' mode='src:lib-override'/>
+            <apply-templates value='overridden.Where(p => p.Attribute("original-visibility")!.Value != "abstract")'
+               mode='src:lib-original'/>
+            <apply-templates value='overridden.Where(p => p.Name == xcst + "param" || p.Name == xcst + "variable")'
+               mode='src:lib-tuple'/>
+         </code:members>
+      </code:type>
+   </template>
+
+   <template match='XNode' mode='src:lib-overriding'/>
+
+   <template match='XElement el
+         &amp;&amp; (el.Name == xcst + "attribute-set"
+            || el.Name == xcst + "function"
+            || el.Name == xcst + "param"
+            || el.Name == xcst + "template"
+            || el.Name == xcst + "variable")' mode='src:lib-overriding'>
+      <code:field name='{src_overriding_field_name(el)}' visibility='public'>
+         <apply-templates value='el' mode='src:lib-overriding-type'/>
+      </code:field>
+   </template>
+
+   <function name='src_overridden_components' as='XElement[]'>
+      <param name='usedPackage' as='XElement'/>
+      <param name='packageManifest' as='XElement'/>
+
+      <assert test='usedPackage.Name == xcst + "package-manifest"'/>
+      <assert test='packageManifest.Name == xcst + "package-manifest"'/>
+
+      <variable name='usedPackageId' value='usedPackage.Attribute("package-id")!.Value'/>
+
+      <return value='select(packageManifest, xcst)
+         .Where(p => p.Attribute("package-id")?.Value == usedPackageId
+            &amp;&amp; p.Attribute("id")!.Value is string id
+            &amp;&amp; select(packageManifest, xcst)
+               .Any(p2 => p2.Attribute("overrides")?.Value == id))
+         .ToArray()'/>
+   </function>
+
+   <function name='src_overriding_field_name' as='string'>
+      <param name='meta' as='XElement'/>
+
+      <return value='src_aux_variable("overr_" + meta.Attribute("id")!.Value)'/>
+   </function>
+
+   <function name='src_original_member_name' as='string'>
+      <param name='meta' as='XElement'/>
+
+      <return value='src_aux_variable("original_" + meta.Attribute("id")!.Value)'/>
+   </function>
+
+   <function name='src_original_member' as='XElement'>
+      <param name='meta' as='XElement'/>
+
+      <return>
+         <code:method-reference name='{src_original_member_name(meta)}'>
+            <code:field-reference name='{src_lib_field_name(meta)}'>
+               <code:this-reference/>
+            </code:field-reference>
+         </code:method-reference>
+      </return>
+   </function>
+
+   <function name='src_lib_class_name' as='string'>
+      <param name='meta' as='XElement'/>
+
+      <return value='src_aux_variable("package_" + meta.Attribute("package-id")!.Value)'/>
+   </function>
+
+   <function name='src_lib_field_name' as='string'>
+      <param name='meta' as='XElement'/>
+
+      <return value='src_aux_variable("pkg_" + meta.Attribute("package-id")!.Value)'/>
+   </function>
+
+</module>

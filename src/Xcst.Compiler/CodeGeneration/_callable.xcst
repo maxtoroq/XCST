@@ -1,0 +1,2049 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!--
+ Copyright 2021 Max Toro Q.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<module version='1.0' language='C#'
+   xmlns='http://maxtoroq.github.io/XCST'
+   xmlns:xcst='http://maxtoroq.github.io/XCST/grammar'
+   xmlns:code='http://maxtoroq.github.io/XCST/code'
+   xmlns:src='http://maxtoroq.github.io/XCST/compiled'>
+
+   <import-namespace ns='System.Linq'/>
+   <import-namespace ns='System.Xml.Linq'/>
+
+   <variable name='src_default_template_type'>
+      <code:type-reference array-dimensions='1'>
+         <copy-of value='src_nullable_object_type'/>
+      </code:type-reference>
+   </variable>
+
+   <template mode='xcst:validate-top-level' match='XElement el &amp;&amp; el.Name == c + "template" &amp;&amp; el.Attribute("name") != null'/>
+
+   <template mode='xcst:validate-top-level' match='XElement el &amp;&amp; (el.Name == c + "attribute-set" || el.Name == c + "function")'/>
+
+   <template name='xcst:named-template'>
+      <param name='el' as='XElement' required='yes'/>
+      <param name='modules' as='XElement[]' tunnel='yes' required='yes'/>
+      <param name='modulePos' as='int' tunnel='yes' required='yes'/>
+      <param name='implicitPackage' as='bool' tunnel='yes' required='yes'/>
+      <param name='language' as='string' tunnel='yes' required='yes'/>
+
+      <variable name='qname' value='xcst_EQName(el.Attribute("name")!)!'/>
+
+      <if test='!(!xcst_is_reserved_namespace(qname.Namespace)
+            || qname == c + "initial-template")'>
+         <message terminate='yes' error-code='XTSE0080' error-data='src_error_object(el)' expand-text='yes' transform-text='trim'>
+            Namespace prefix '{el.GetPrefixOfNamespace(qname.Namespace)}' refers to a reserved namespace.
+         </message>
+      </if>
+
+      <call-template name='xcst:check-duplicate-component'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <variable name='overriddenMeta'>
+         <call-template name='xcst:overridden-component'>
+            <with-param name='el' value='el'/>
+         </call-template>
+      </variable>
+
+      <if test='overriddenMeta != null'>
+         <for-each name='paramOriginal' in='overriddenMeta
+               .Elements(xcst + "param")
+               .Where(p => p.Attribute("tunnel") is null
+                  || !xcst_boolean(p.Attribute("tunnel")!)!.Value)'>
+            <variable name='param' value='el
+               .Elements(c + "param")
+               .Where(p => xcst_name_equal(p.Attribute("name"), paramOriginal.Attribute("name"))
+                  &amp;&amp; (p.Attribute("tunnel") is null
+                     || !xcst_boolean(p.Attribute("tunnel")!)!.Value))
+               .FirstOrDefault()'/>
+            <if test='!(param != null
+                  &amp;&amp; xs_boolean(paramOriginal.Attribute("required")!)
+                      == ((param.Attribute("required") is XAttribute reqAttr) ?
+                        xcst_boolean(reqAttr)! : false))'>
+               <message terminate='yes' error-code='XTSE3070' error-data='src_error_object(param ?? el)' transform-text='trim'>
+                  For every non-tunnel parameter on the overridden template, there must be a non-tunnel parameter on the overriding template that has the same name and the same effective value for the 'required' attribute.
+               </message>
+            </if>
+         </for-each>
+      </if>
+
+      <variable name='declaredVisibility' value='
+         (el.Attribute("visibility") is XAttribute visibilityAttr) ? xcst_visibility(visibilityAttr)
+         : (el.Parent!.Name != c + "override" &amp;&amp; implicitPackage) ? "public"
+         : "private"'/>
+
+      <call-template name='xcst:validate-empty-abstract'>
+         <with-param name='el' value='el'/>
+         <with-param name='visibility' value='declaredVisibility'/>
+      </call-template>
+
+      <variable name='visibility' as='string'>
+         <variable name='followingModules' value='modules.Skip(modulePos + 1).ToArray()'/>
+         <choose>
+            <when test='el.Parent!.Name == c + "override"'>
+               <variable name='usePackageEls' value='select(followingModules, c + "use-package")
+                  .Where(p => xcst_name_equal(p.Attribute("name"), el.Parent.Parent!.Attribute("name")))
+                  .ToArray()'/>
+               <variable name='hidingComponents' value='select(usePackageEls, c + "override", c)
+                  .Where(p => xcst_homonymous(p, el))'/>
+               <choose>
+                  <when test='hidingComponents.Any()'>hidden</when>
+                  <otherwise value='declaredVisibility'/>
+               </choose>
+            </when>
+            <when test='select(followingModules, c)
+               .Any(p => xcst_homonymous(p, el))'>hidden</when>
+            <otherwise value='declaredVisibility'/>
+         </choose>
+      </variable>
+
+      <variable name='publicMember' value='visibility is "public" or "final" or "abstract"'/>
+      <variable name='@as' value='
+         (el.Attribute("as") is XAttribute asAttr) ?
+            xcst_type(asAttr) : null'/>
+
+      <xcst:template name='{xcst_uri_qualified_name(qname)}'
+            visibility='{visibility}'
+            declared-visibility='{declaredVisibility}'
+            member-name='{src_template_method_name(el, qname, "tmpl", publicMember)}'
+            declaration-id='{generate_id(el)}'
+            declaring-module-uri='{el.Document!.BaseUri}'
+            cardinality='{(@as != null ? xcst_cardinality(@as, language) : TypeCardinality.ZeroOrMore)}'>
+         <if test='overriddenMeta != null'>
+            <attribute name='overrides' value='generate_id(overriddenMeta)'/>
+         </if>
+         <for-each name='param' in='el.Elements(c + "param")'>
+            <call-template name='xcst:validate-attribs'>
+               <with-param name='el' value='param'/>
+               <with-param name='required' value='new[] { "name" }'/>
+               <with-param name='optional' value='new[] { "value", "as", "required", "tunnel" }'/>
+            </call-template>
+            <call-template name='xcst:value-or-sequence-constructor'>
+               <with-param name='el' value='param'/>
+            </call-template>
+            <call-template name='xcst:no-other-preceding'>
+               <with-param name='el' value='param'/>
+            </call-template>
+            <variable name='required' value='
+               (param.Attribute("required") is XAttribute reqAttr) ?
+                  xcst_boolean(reqAttr)!.Value
+                  : false'/>
+            <variable name='tunnel' value='
+               (param.Attribute("tunnel") is XAttribute tunnelAttr) ?
+                  xcst_boolean(tunnelAttr)!.Value
+                  : false'/>
+            <variable name='text' value='xcst_text(param)'/>
+            <variable name='hasDefaultValue' value='xcst_has_value(param, text)'/>
+            <if test='!(!required || !hasDefaultValue)'>
+               <message terminate='yes' error-code='XTSE0010' error-data='src_error_object(param)' transform-text='trim'>
+                  The 'value' attribute or child element/text should be omitted when required='yes'.
+               </message>
+            </if>
+            <variable name='paramName' value='xcst_unescape_identifier(xcst_name(param.Attribute("name")!), language)'/>
+            <if test='!param.ElementsBeforeSelf(param.Name).All(p => !xcst_name_equal(p.Attribute("name")!, paramName))'>
+               <message terminate='yes' error-code='XTSE0580' error-data='src_error_object(param)' transform-text='trim'>
+                  The name of the parameter is not unique.
+               </message>
+            </if>
+            <if test='!(overriddenMeta is null
+                  || overriddenMeta.Elements(xcst + "param")
+                     .Any(p => xcst_name_equal(p.Attribute("name")!, paramName))
+                  || tunnel
+                  || (param.Attribute("required") != null
+                     &amp;&amp; !required))'>
+               <message terminate='yes' error-code='XTSE3070' error-data='src_error_object(param)' transform-text='trim'>
+                  Any non-tunnel parameter on the overriding template for which there is no corresponding non-tunnel parameter on the overridden template must specify required='no'.
+               </message>
+            </if>
+            <xcst:param name='{paramName}' required='{@string(required)}' tunnel='{@string(tunnel)}'>
+               <call-template name='xcst:variable-type'>
+                  <with-param name='el' value='param'/>
+                  <with-param name='text' value='text'/>
+               </call-template>
+               <on-empty>
+                  <copy-of value='src_nullable_object_type'/>
+               </on-empty>
+            </xcst:param>
+         </for-each>
+         <if test='@as != null'>
+            <xcst:item-type>
+               <code:type-reference name='{xcst_item_type(@as, language)}'/>
+            </xcst:item-type>
+         </if>
+      </xcst:template>
+   </template>
+
+   <template mode='xcst:package-manifest' match='XElement el &amp;&amp; el.Name == c + "attribute-set"'>
+      <param name='modules' as='XElement[]' tunnel='yes' required='yes'/>
+      <param name='modulePos' as='int' tunnel='yes' required='yes'/>
+
+      <call-template name='xcst:validate-attribs'>
+         <with-param name='el' value='el'/>
+         <with-param name='required' value='new[] { "name" }'/>
+         <with-param name='optional' value='new[] { "use-attribute-sets", "visibility" }'/>
+      </call-template>
+
+      <call-template name='xcst:validate-children'>
+         <with-param name='el' value='el'/>
+         <with-param name='allowed' value='new[] { "attribute" }'/>
+      </call-template>
+
+      <variable name='qname' value='xcst_EQName(el.Attribute("name")!)!'/>
+
+      <if test='!(!xcst_is_reserved_namespace(qname.Namespace))'>
+         <message terminate='yes' error-code='XTSE0080' error-data='src_error_object(el)' expand-text='yes' transform-text='trim'>
+            Namespace prefix '{el.GetPrefixOfNamespace(qname.Namespace)}' refers to a reserved namespace.
+         </message>
+      </if>
+
+      <call-template name='xcst:check-duplicate-component'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <variable name='overriddenMeta'>
+         <call-template name='xcst:overridden-component'>
+            <with-param name='el' value='el'/>
+         </call-template>
+      </variable>
+
+      <variable name='declaredVisibility' value='
+         (el.Attribute("visibility") is XAttribute visibilityAttr) ? xcst_visibility(visibilityAttr)
+         : "private"'/>
+
+      <call-template name='xcst:validate-empty-abstract'>
+         <with-param name='el' value='el'/>
+         <with-param name='visibility' value='declaredVisibility'/>
+      </call-template>
+
+      <variable name='visibility' as='string'>
+         <variable name='followingModules' value='modules.Skip(modulePos + 1).ToArray()'/>
+         <choose>
+            <when test='el.Parent!.Name == c + "override"'>
+               <variable name='usePackageEls' value='select(followingModules, c + "use-package")
+                  .Where(p => xcst_name_equal(p.Attribute("name"), el.Parent.Parent!.Attribute("name")))
+                  .ToArray()'/>
+               <variable name='hidingComponents' value='select(usePackageEls, c + "override", c)
+                  .Where(p => xcst_homonymous(p, el))'/>
+               <choose>
+                  <when test='hidingComponents.Any()'>hidden</when>
+                  <otherwise value='declaredVisibility'/>
+               </choose>
+            </when>
+            <when test='select(followingModules, c)
+               .Any(p => xcst_homonymous(p, el))'>hidden</when>
+            <otherwise value='declaredVisibility'/>
+         </choose>
+      </variable>
+
+      <variable name='publicMember' value='visibility is "public" or "final" or "abstract"'/>
+
+      <xcst:attribute-set name='{xcst_uri_qualified_name(qname)}'
+            visibility='{visibility}'
+            declared-visibility='{declaredVisibility}'
+            member-name='{src_template_method_name(el, qname, "attribs", publicMember)}'
+            declaration-id='{generate_id(el)}'
+            declaring-module-uri='{el.Document!.BaseUri}'>
+         <if test='overriddenMeta != null'>
+            <attribute name='overrides' value='generate_id(overriddenMeta)'/>
+         </if>
+      </xcst:attribute-set>
+   </template>
+
+   <template mode='xcst:package-manifest' match='XElement el &amp;&amp; el.Name == c + "function"'>
+      <param name='modules' as='XElement[]' tunnel='yes' required='yes'/>
+      <param name='modulePos' as='int' tunnel='yes' required='yes'/>
+      <param name='language' as='string' tunnel='yes' required='yes'/>
+
+      <call-template name='xcst:validate-attribs'>
+         <with-param name='el' value='el'/>
+         <with-param name='required' value='new[] { "name" }'/>
+         <with-param name='optional' value='new[] { "as", "visibility" }'/>
+      </call-template>
+
+      <variable name='nameExpr' value='xcst_name(el.Attribute("name")!)'/>
+      <variable name='name' value='xcst_unescape_identifier(nameExpr, language)'/>
+      <variable name='nameWasEscaped' value='nameExpr != name'/>
+
+      <call-template name='xcst:check-duplicate-component'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <variable name='overriddenMeta'>
+         <call-template name='xcst:overridden-component'>
+            <with-param name='el' value='el'/>
+         </call-template>
+      </variable>
+
+      <variable name='declaredVisibility' value='
+         (el.Attribute("visibility") is XAttribute visibilityAttr) ? xcst_visibility(visibilityAttr)
+         : "private"'/>
+
+      <call-template name='xcst:validate-empty-abstract'>
+         <with-param name='el' value='el'/>
+         <with-param name='visibility' value='declaredVisibility'/>
+      </call-template>
+
+      <variable name='visibility' as='string'>
+         <variable name='followingModules' value='modules.Skip(modulePos + 1).ToArray()'/>
+         <choose>
+            <when test='el.Parent!.Name == c + "override"'>
+               <variable name='usePackageEls' value='select(followingModules, c + "use-package")
+                  .Where(p => xcst_name_equal(p.Attribute("name"), el.Parent.Parent!.Attribute("name")))
+                  .ToArray()'/>
+               <variable name='hidingComponents' value='select(usePackageEls, c + "override", c)
+                  .Where(p => xcst_homonymous(p, el))'/>
+               <choose>
+                  <when test='hidingComponents.Any()'>hidden</when>
+                  <otherwise value='declaredVisibility'/>
+               </choose>
+            </when>
+            <when test='select(followingModules, c)
+               .Any(p => xcst_homonymous(p, el))'>hidden</when>
+            <otherwise value='declaredVisibility'/>
+         </choose>
+      </variable>
+
+      <variable name='memberName' value='
+         (visibility == "hidden") ?
+            src_aux_variable($"fn_{name}_{generate_id(el)}")
+            : name'/>
+
+      <xcst:function name='{name}'
+            visibility='{visibility}'
+            declared-visibility='{declaredVisibility}'
+            member-name='{memberName}'
+            declaration-id='{generate_id(el)}'
+            declaring-module-uri='{el.Document!.BaseUri}'>
+         <if test='name == memberName'>
+            <attribute name='member-name-was-escaped' value='@string(nameWasEscaped)'/>
+         </if>
+         <if test='overriddenMeta != null'>
+            <attribute name='overrides' value='generate_id(overriddenMeta)'/>
+         </if>
+         <if test='el.Attribute("as") is XAttribute asAttr'>
+            <code:type-reference name='{xcst_type(asAttr)}'/>
+         </if>
+         <for-each name='param' in='el.Elements(c + "param")'>
+            <call-template name='xcst:validate-attribs'>
+               <with-param name='el' value='param'/>
+               <with-param name='required' value='new[] { "name" }'/>
+               <with-param name='optional' value='new[] { "value", "as", "required", "tunnel" }'/>
+            </call-template>
+            <call-template name='xcst:value-or-sequence-constructor'>
+               <with-param name='el' value='param'/>
+            </call-template>
+            <call-template name='xcst:no-other-preceding'>
+               <with-param name='el' value='param'/>
+            </call-template>
+            <variable name='paramName' value='xcst_unescape_identifier(xcst_name(param.Attribute("name")!), language)'/>
+            <if test='!param.ElementsBeforeSelf(param.Name).All(p => !xcst_name_equal(p.Attribute("name")!, paramName))'>
+               <message terminate='yes' error-code='XTSE0580' error-data='src_error_object(param)' transform-text='trim'>
+                  The name of the parameter is not unique.
+               </message>
+            </if>
+            <if test='param.Attribute("tunnel") is XAttribute tunnelAttr
+                  &amp;&amp; xcst_boolean(tunnelAttr)!.Value'>
+               <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(param)' transform-text='trim'>
+                  For attribute ''tunnel'' within a c:function parameter, the only permitted values are: ''no'', ''false'', ''0''.
+               </message>
+            </if>
+            <variable name='text' value='xcst_text(param)'/>
+            <variable name='hasValue' value='xcst_has_value(param, text)'/>
+            <variable name='reqAttr' value='param.Attribute("required")'/>
+            <if test='reqAttr != null'>
+               <variable name='required' value='xcst_boolean(reqAttr)!.Value'/>
+               <choose>
+                  <when test='hasValue'>
+                     <if test='required'>
+                        <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(param)' transform-text='trim'>
+                           For attribute 'required' within a c:function parameter that has either a 'value' attribute or child element/text, the only permitted values are: 'no', 'false', '0'.
+                        </message>
+                     </if>
+                  </when>
+                  <when test='!required'>
+                     <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(param)' transform-text='trim'>
+                        For attribute 'required' within a c:function parameter that does not have either a 'value' attribute or child element/text, the only permitted values are: 'yes', 'true', '1'.
+                     </message>
+                  </when>
+               </choose>
+            </if>
+            <xcst:param name='{paramName}'>
+               <if test='ReferenceEquals(this, this)'>
+                  <call-template name='xcst:variable-type'>
+                     <with-param name='el' value='param'/>
+                     <with-param name='text' value='text'/>
+                  </call-template>
+                  <on-empty>
+                     <copy-of value='src_nullable_object_type'/>
+                  </on-empty>
+               </if>
+               <if test='hasValue'>
+                  <call-template name='src:value'>
+                     <with-param name='el' value='param'/>
+                     <with-param name='text' value='text'/>
+                  </call-template>
+               </if>
+            </xcst:param>
+         </for-each>
+      </xcst:function>
+   </template>
+
+
+   <!-- ## Library Package -->
+
+   <template mode='src:member' match='XElement el &amp;&amp; el.Name == xcst + "template"'/>
+
+   <template mode='src:member' match='XElement el &amp;&amp; el.Name == xcst + "attribute-set"'/>
+
+   <template mode='src:member' match='XElement el &amp;&amp; el.Name == xcst + "function"'>
+
+      <variable name='visibilityAttr' value='el.Attribute("visibility")!'/>
+      <variable name='publicMember' value='visibilityAttr.Value != "private"'/>
+      <variable name='typeRef' value='el.Element(code + "type-reference")'/>
+
+      <code:method name='{el.Attribute("member-name")!.Value}'
+            visibility='{(publicMember ? "public" : "private")}'
+            extensibility='{(visibilityAttr.Value == "public" ? "virtual" : "#default")}'
+            verbatim='true'>
+         <if test='typeRef != null
+               &amp;&amp; src_qualified_type(typeRef)'>
+            <attribute name='return-type-verbatim' value='@string(true)'/>
+         </if>
+         <copy-of value='typeRef'/>
+         <code:attributes>
+            <if test='publicMember'>
+               <code:attribute>
+                  <copy-of value='src_component_attr_type'/>
+                  <code:arguments>
+                     <code:int value='3'/>
+                  </code:arguments>
+               </code:attribute>
+            </if>
+         </code:attributes>
+         <code:parameters>
+            <for-each name='param' in='el.Elements(xcst + "param")'>
+               <code:parameter name='{param.Attribute("name")!.Value}' verbatim='true'>
+                  <copy-of value='select(param, code)'/>
+               </code:parameter>
+            </for-each>
+         </code:parameters>
+         <code:block>
+            <variable name='methodCall'>
+               <code:method-call name='{el.Attribute("member-name")!.Value}' verbatim='true'>
+                  <code:field-reference name='{src_lib_field_name(el)}'>
+                     <code:this-reference/>
+                  </code:field-reference>
+                  <code:arguments>
+                     <for-each name='param' in='el.Elements(xcst + "param")'>
+                        <code:variable-reference name='{param.Attribute("name")!.Value}' verbatim='true'/>
+                     </for-each>
+                  </code:arguments>
+               </code:method-call>
+            </variable>
+            <choose>
+               <when test='typeRef != null'>
+                  <code:return>
+                     <copy-of value='methodCall'/>
+                  </code:return>
+               </when>
+               <otherwise>
+                  <copy-of value='methodCall'/>
+               </otherwise>
+            </choose>
+         </code:block>
+      </code:method>
+   </template>
+
+   <template mode='src:lib-overriding-type' match='XElement el &amp;&amp; (el.Name == xcst + "template" || el.Name == xcst + "attribute-set")'>
+      <code:type-reference name='Action' namespace='System'>
+         <code:type-arguments>
+            <copy-of value='src_template_context(el).Element(code + "type-reference")'/>
+            <copy-of value='src_template_output(el).Element(code + "type-reference")'/>
+         </code:type-arguments>
+      </code:type-reference>
+   </template>
+
+   <template mode='src:lib-overriding-type' match='XElement el &amp;&amp; el.Name == xcst + "function"'>
+      <variable name='typeRef' value='el.Element(code + "type-reference")'/>
+      <code:type-reference namespace='System'>
+         <attribute name='name'>
+            <choose>
+               <when test='typeRef != null'>Func</when>
+               <otherwise>Action</otherwise>
+            </choose>
+         </attribute>
+         <code:type-arguments>
+            <copy-of value='select(el, xcst + "param", code + "type-reference")'/>
+            <copy-of value='typeRef'/>
+         </code:type-arguments>
+      </code:type-reference>
+   </template>
+
+   <template  mode='src:lib-override' match='XElement el &amp;&amp; (el.Name == xcst + "template" || el.Name == xcst + "attribute-set")'>
+
+      <variable name='context' value='src_template_context(el)'/>
+      <variable name='output' value='src_template_output(el)'/>
+
+      <code:method name='{el.Attribute("member-name")!.Value}' visibility='public' extensibility='override'>
+         <code:parameters>
+            <code:parameter name='{select(context, src + "reference", code).First().Attribute("name")!.Value}'>
+               <copy-of value='context.Element(code + "type-reference")'/>
+            </code:parameter>
+            <code:parameter name='{select(output, src + "reference", code).First().Attribute("name")!.Value}'>
+               <copy-of value='output.Element(code + "type-reference")'/>
+            </code:parameter>
+         </code:parameters>
+         <code:block>
+            <code:method-call name='{src_overriding_field_name(el)}'>
+               <code:this-reference/>
+               <code:arguments>
+                  <copy-of value='select(context, src + "reference", code)'/>
+                  <copy-of value='select(output, src + "reference", code)'/>
+               </code:arguments>
+            </code:method-call>
+         </code:block>
+      </code:method>
+   </template>
+
+   <template mode='src:lib-override' match='XElement el &amp;&amp; el.Name == xcst + "function"'>
+      <variable name='typeRef' value='el.Element(code + "type-reference")'/>
+      <code:method name='{el.Attribute("member-name")!.Value}' visibility='public' extensibility='override'>
+         <copy-of value='typeRef'/>
+         <code:parameters>
+            <for-each name='param' in='el.Elements(xcst + "param")'>
+               <code:parameter name='{param.Attribute("name")!.Value}'>
+                  <copy-of value='param.Element(code + "type-reference")'/>
+               </code:parameter>
+            </for-each>
+         </code:parameters>
+         <code:block>
+            <variable name='methodCall'>
+               <code:method-call name='{src_overriding_field_name(el)}'>
+                  <code:this-reference/>
+                  <code:arguments>
+                     <for-each name='param' in='el.Elements(xcst + "param")'>
+                        <code:variable-reference name='{param.Attribute("name")!.Value}'/>
+                     </for-each>
+                  </code:arguments>
+               </code:method-call>
+            </variable>
+            <choose>
+               <when test='typeRef != null'>
+                  <code:return>
+                     <copy-of value='methodCall'/>
+                  </code:return>
+               </when>
+               <otherwise>
+                  <copy-of value='methodCall'/>
+               </otherwise>
+            </choose>
+         </code:block>
+      </code:method>
+   </template>
+
+   <template mode='src:lib-original' match='XElement el &amp;&amp; (el.Name == xcst + "template" || el.Name == xcst + "attribute-set")'>
+
+      <variable name='context' value='src_template_context(el)'/>
+      <variable name='output' value='src_template_output(el)'/>
+
+      <code:method name='{src_original_member_name(el)}' visibility='internal'>
+         <code:parameters>
+            <code:parameter name='{select(context, src + "reference", code).First().Attribute("name")!.Value}'>
+               <copy-of value='context.Element(code + "type-reference")'/>
+            </code:parameter>
+            <code:parameter name='{select(output, src + "reference", code).First().Attribute("name")!.Value}'>
+               <copy-of value='output.Element(code + "type-reference")'/>
+            </code:parameter>
+         </code:parameters>
+         <code:block>
+            <code:method-call name='{el.Attribute("member-name")!.Value}'>
+               <code:base-reference/>
+               <code:arguments>
+                  <copy-of value='select(context, src + "reference", code)'/>
+                  <copy-of value='select(output, src + "reference", code)'/>
+               </code:arguments>
+            </code:method-call>
+         </code:block>
+      </code:method>
+   </template>
+
+   <template mode='src:lib-original' match='XElement el &amp;&amp; el.Name == xcst + "function"'>
+      <variable name='typeRef' value='el.Element(code + "type-reference")'/>
+      <code:method name='{src_original_member_name(el)}' visibility='internal'>
+         <code:type-reference namespace='System'>
+            <attribute name='name'>
+               <choose>
+                  <when test='typeRef != null'>Func</when>
+                  <otherwise>Action</otherwise>
+               </choose>
+            </attribute>
+            <code:type-arguments>
+               <copy-of value='select(el, xcst + "param", code + "type-reference")'/>
+               <copy-of value='typeRef'/>
+            </code:type-arguments>
+         </code:type-reference>
+         <code:block>
+            <code:return>
+               <code:method-reference name='{el.Attribute("member-name")!.Value}'>
+                  <code:base-reference/>
+               </code:method-reference>
+            </code:return>
+         </code:block>
+      </code:method>
+   </template>
+
+
+   <!-- ## Top Package -->
+
+   <template mode='src:member' match='XElement el &amp;&amp; el.Name == c + "template" &amp;&amp; el.Attribute("name") != null'>
+      <param name='packageManifest' as='XElement' tunnel='yes' required='yes'/>
+      <param name='language' as='string' tunnel='yes' required='yes'/>
+
+      <variable name='id' value='generate_id(el)'/>
+
+      <variable name='meta' value='packageManifest
+         .Elements(xcst + "template")
+         .First(p => p.Attribute("declaration-id")?.Value == id)'/>
+
+      <variable name='visibility' value='meta.Attribute("visibility")!.Value'/>
+      <variable name='cardinality' value='(TypeCardinality)System.Enum.Parse(typeof(TypeCardinality), meta.Attribute("cardinality")!.Value)'/>
+      <variable name='publicMember' value='visibility is "public" or "final" or "abstract"'/>
+
+      <if test='!(visibility == "hidden"
+            &amp;&amp; meta.Attribute("declared-visibility")!.Value == "abstract")'>
+
+         <code:method name='{meta.Attribute("member-name")!.Value}'
+               visibility='{(publicMember ? "public" : "private")}'>
+
+            <variable name='context' value='src_template_context(meta)'/>
+            <variable name='output' value='src_template_output(meta)'/>
+
+            <attribute name='extensibility'>
+               <switch value='visibility'>
+                  <when test='"public"'>virtual</when>
+                  <when test='"abstract"'>abstract</when>
+                  <otherwise>#default</otherwise>
+               </switch>
+            </attribute>
+            <code:attributes>
+               <if test='publicMember'>
+                  <variable name='qname' value='xcst_EQName(meta.Attribute("name")!)!'/>
+                  <code:attribute>
+                     <copy-of value='src_component_attr_type'/>
+                     <code:arguments>
+                        <code:int value='1'/>
+                     </code:arguments>
+                     <code:initializer>
+                        <code:member-initializer name='Name'>
+                           <code:string verbatim='true'>
+                              <value-of value='xcst_uri_qualified_name(qname)'/>
+                           </code:string>
+                        </code:member-initializer>
+                        <if test='cardinality != TypeCardinality.ZeroOrMore'>
+                           <code:member-initializer name='Cardinality'>
+                              <choose>
+                                 <when test='cardinality == TypeCardinality.One'>
+                                    <code:char value=' '/>
+                                 </when>
+                                 <otherwise>
+                                    <message terminate='yes'>Unknown cardinality.</message>
+                                 </otherwise>
+                              </choose>
+                           </code:member-initializer>
+                        </if>
+                     </code:initializer>
+                  </code:attribute>
+               </if>
+               <call-template name='src:editor-browsable-never'/>
+            </code:attributes>
+            <code:parameters>
+               <code:parameter name='{select(context, src + "reference", code).First().Attribute("name")!.Value}'>
+                  <copy-of value='context.Element(code + "type-reference")'/>
+               </code:parameter>
+               <code:parameter name='{select(output, src + "reference", code).First().Attribute("name")!.Value}'>
+                  <copy-of value='output.Element(code + "type-reference")'/>
+               </code:parameter>
+            </code:parameters>
+            <if test='visibility != "abstract"'>
+               <code:block>
+                  <apply-templates value='el.Elements(c + "param")' mode='src:statement'>
+                     <with-param name='context' value='context' tunnel='yes'/>
+                  </apply-templates>
+                  <call-template name='src:sequence-constructor'>
+                     <with-param name='el' value='el'/>
+                     <with-param name='children' value='el
+                        .Nodes()
+                        .Except(el.Nodes()
+                           .Where(p => (p is XElement p2 &amp;&amp; p2.Name == c + "param")
+                              || p.ElementsAfterSelf(c + "param").Any()))
+                        .ToArray()'/>
+                     <with-param name='trackCardinality' value='cardinality'/>
+                     <with-param name='context' value='context' tunnel='yes'/>
+                     <with-param name='output' value='output' tunnel='yes'/>
+                  </call-template>
+               </code:block>
+            </if>
+         </code:method>
+
+         <variable name='itemTypeRef' value='select(meta, xcst + "item-type", code + "type-reference")
+            .FirstOrDefault()'/>
+
+         <if test='itemTypeRef != null'>
+            <code:method name='{src_item_type_inference_member_name(meta)}'
+                  visibility='{(publicMember ? "public" : "private")}'
+                  extensibility='static'
+                  line-hidden='true'>
+               <copy-of value='itemTypeRef'/>
+               <code:attributes>
+                  <call-template name='src:editor-browsable-never'/>
+               </code:attributes>
+               <code:block>
+                  <code:throw>
+                     <code:method-call name='InferMethodIsNotMeantToBeCalled'>
+                        <copy-of value='src_helper_type("DynamicError")'/>
+                     </code:method-call>
+                  </code:throw>
+               </code:block>
+            </code:method>
+         </if>
+
+         <if test='xcst_typed_params(meta)'>
+
+            <variable name='paramsType' value='src_params_type_name(meta)'/>
+            <variable name='nonTunnelParams' value='meta
+               .Elements(xcst + "param")
+               .Where(p => !xs_boolean(p.Attribute("tunnel")!))
+               .ToArray()'/>
+
+            <code:type name='{paramsType}' struct='true' line-hidden='true'
+                  visibility='{(publicMember ? "public" : "private")}'>
+               <code:attributes>
+                  <call-template name='src:editor-browsable-never'/>
+               </code:attributes>
+               <code:members>
+                  <for-each name='param' in='nonTunnelParams'>
+                     <variable name='typeRef' value='param.Element(code + "type-reference")!'/>
+                     <variable name='name' value='param.Attribute("name")!.Value'/>
+                     <variable name='valueField' value='src_aux_variable("back_" + name)'/>
+                     <variable name='initField' value='src_params_type_init_name(name)'/>
+
+                     <code:field name='{valueField}'>
+                        <copy-of value='typeRef'/>
+                     </code:field>
+
+                     <code:field name='{initField}' visibility='public'>
+                        <code:type-reference name='Boolean' namespace='System'/>
+                     </code:field>
+
+                     <code:property name='{name}' visibility='public' verbatim='true'>
+                        <copy-of value='typeRef'/>
+                        <code:attributes>
+                           <if test='xs_boolean(param.Attribute("required")!)'>
+                              <code:attribute>
+                                 <copy-of value='src_package_model_type("Required")'/>
+                              </code:attribute>
+                           </if>
+                        </code:attributes>
+                        <code:getter>
+                           <code:block>
+                              <code:return>
+                                 <code:field-reference name='{valueField}'>
+                                    <code:this-reference/>
+                                 </code:field-reference>
+                              </code:return>
+                           </code:block>
+                        </code:getter>
+                        <code:setter>
+                           <code:block>
+                              <code:assign>
+                                 <code:field-reference name='{valueField}'>
+                                    <code:this-reference/>
+                                 </code:field-reference>
+                                 <code:setter-value/>
+                              </code:assign>
+                              <code:assign>
+                                 <code:field-reference name='{initField}'>
+                                    <code:this-reference/>
+                                 </code:field-reference>
+                                 <code:bool value='true'/>
+                              </code:assign>
+                           </code:block>
+                        </code:setter>
+                     </code:property>
+                  </for-each>
+
+                  <code:method name='Create' visibility='public' extensibility='static'>
+                     <variable name='varName' value='src_aux_variable("p")'/>
+                     <variable name='context' value='src_template_context(null)'/>
+                     <code:type-reference name='{paramsType}'/>
+                     <code:parameters>
+                        <code:parameter name='{select(context, src + "reference", code).First().Attribute("name")!.Value}'>
+                           <copy-of value='context.Element(code + "type-reference")'/>
+                        </code:parameter>
+                     </code:parameters>
+                     <code:block>
+                        <code:variable name='{varName}'>
+                           <code:new-object>
+                              <code:type-reference name='{paramsType}'/>
+                           </code:new-object>
+                        </code:variable>
+                        <for-each name='param' in='nonTunnelParams'>
+                           <variable name='name' value='param.Attribute("name")!.Value'/>
+                           <code:if>
+                              <code:method-call name='HasParam'>
+                                 <copy-of value='select(context, src + "reference", code)'/>
+                                 <code:arguments>
+                                    <code:string literal='true'>
+                                       <value-of value='name'/>
+                                    </code:string>
+                                 </code:arguments>
+                              </code:method-call>
+                              <code:block>
+                                 <code:assign>
+                                    <code:property-reference name='{name}' verbatim='true'>
+                                       <code:variable-reference name='{varName}'/>
+                                    </code:property-reference>
+                                    <code:method-call name='Param'>
+                                       <copy-of value='select(context, src + "reference", code)'/>
+                                       <code:type-arguments>
+                                          <copy-of value='param.Element(code + "type-reference")'/>
+                                       </code:type-arguments>
+                                       <code:arguments>
+                                          <code:string literal='true'>
+                                             <value-of value='name'/>
+                                          </code:string>
+                                       </code:arguments>
+                                    </code:method-call>
+                                 </code:assign>
+                              </code:block>
+                           </code:if>
+                        </for-each>
+                        <code:return>
+                           <code:variable-reference name='{varName}'/>
+                        </code:return>
+                     </code:block>
+                  </code:method>
+
+                  <if test='meta.Attribute("overrides") is XAttribute overridesAttr'>
+
+                     <variable name='originalMeta' value='packageManifest
+                        .Elements(xcst + "template")
+                        .First(p => p.Attribute("id")!.Value == overridesAttr.Value)'/>
+
+                     <variable name='varName' value='src_aux_variable("p")'/>
+
+                     <code:conversion implicit='true'>
+                        <code:type-reference name='{paramsType}'/>
+                        <code:parameters>
+                           <code:parameter name='{varName}'>
+                              <copy-of value='src_params_type(originalMeta)'/>
+                           </code:parameter>
+                        </code:parameters>
+                        <code:block>
+                           <code:return>
+                              <code:new-object>
+                                 <code:type-reference name='{paramsType}'/>
+                                 <code:initializer>
+                                    <for-each name='param' in='originalMeta
+                                          .Elements(xcst + "param")
+                                          .Where(p => !xs_boolean(p.Attribute("tunnel")!))'>
+                                       <variable name='name' value='param.Attribute("name")!.Value'/>
+                                       <code:member-initializer name='{name}' verbatim='true'>
+                                          <code:property-reference name='{name}' verbatim='true'>
+                                             <code:variable-reference name='{varName}'/>
+                                          </code:property-reference>
+                                       </code:member-initializer>
+                                    </for-each>
+                                 </code:initializer>
+                              </code:new-object>
+                           </code:return>
+                        </code:block>
+                     </code:conversion>
+                  </if>
+               </code:members>
+            </code:type>
+         </if>
+      </if>
+   </template>
+
+   <template mode='src:member' match='XElement el &amp;&amp; el.Name == c + "attribute-set"'>
+      <param name='packageManifest' as='XElement' tunnel='yes' required='yes'/>
+
+      <variable name='id' value='generate_id(el)'/>
+
+      <variable name='meta' value='packageManifest
+         .Elements(xcst + "attribute-set")
+         .First(p => p.Attribute("declaration-id")?.Value == id)'/>
+
+      <variable name='visibility' value='meta.Attribute("visibility")!.Value'/>
+      <variable name='publicMember' value='visibility is "public" or "final" or "abstract"'/>
+
+      <variable name='context' value='src_template_context(meta)'/>
+      <variable name='output' value='src_template_output(meta)'/>
+
+      <if test='!(visibility == "hidden"
+            &amp;&amp; meta.Attribute("declared-visibility")!.Value == "abstract")'>
+         <code:method name='{meta.Attribute("member-name")!.Value}'
+               visibility='{(publicMember ? "public" : "private")}'>
+            <attribute name='extensibility'>
+               <switch value='visibility'>
+                  <when test='"public"'>virtual</when>
+                  <when test='"abstract"'>abstract</when>
+                  <otherwise>#default</otherwise>
+               </switch>
+            </attribute>
+            <code:attributes>
+               <if test='publicMember'>
+                  <variable name='qname' value='xcst_EQName(meta.Attribute("name")!)!'/>
+                  <code:attribute>
+                     <copy-of value='src_component_attr_type'/>
+                     <code:arguments>
+                        <code:int value='2'/>
+                     </code:arguments>
+                     <code:initializer>
+                        <code:member-initializer name='Name'>
+                           <code:string verbatim='true'>
+                              <value-of value='xcst_uri_qualified_name(qname)'/>
+                           </code:string>
+                        </code:member-initializer>
+                     </code:initializer>
+                  </code:attribute>
+               </if>
+               <call-template name='src:editor-browsable-never'/>
+            </code:attributes>
+            <code:parameters>
+               <code:parameter name='{select(context, src + "reference", code).First().Attribute("name")!.Value}'>
+                  <copy-of value='context.Element(code + "type-reference")'/>
+               </code:parameter>
+               <code:parameter name='{select(output, src + "reference", code).First().Attribute("name")!.Value}'>
+                  <copy-of value='output.Element(code + "type-reference")'/>
+               </code:parameter>
+            </code:parameters>
+            <if test='visibility != "abstract"'>
+               <code:block>
+                  <call-template name='src:use-attribute-sets'>
+                     <with-param name='el' value='el'/>
+                     <with-param name='attr' value='el.Attribute("use-attribute-sets")'/>
+                     <with-param name='context' value='context' tunnel='yes'/>
+                     <with-param name='output' value='output' tunnel='yes'/>
+                  </call-template>
+                  <call-template name='src:sequence-constructor'>
+                     <with-param name='el' value='el'/>
+                     <with-param name='children' value='el
+                        .Elements(c + "attribute")
+                        .Cast&lt;XNode>()
+                        .ToArray()'/>
+                     <with-param name='context' value='context' tunnel='yes'/>
+                     <with-param name='output' value='output' tunnel='yes'/>
+                  </call-template>
+               </code:block>
+            </if>
+         </code:method>
+      </if>
+   </template>
+
+   <template mode='src:member' match='XElement el &amp;&amp; el.Name == c + "function"'>
+      <param name='packageManifest' as='XElement' tunnel='yes' required='yes'/>
+
+      <variable name='id' value='generate_id(el)'/>
+
+      <variable name='meta' value='packageManifest
+         .Elements(xcst + "function")
+         .First(p => p.Attribute("declaration-id")?.Value == id)'/>
+
+      <variable name='visibility' value='meta.Attribute("visibility")!.Value'/>
+      <variable name='publicMember' value='visibility is "public" or "final" or "abstract"'/>
+
+      <if test='!(visibility == "hidden"
+            &amp;&amp; meta.Attribute("declared-visibility")!.Value == "abstract")'>
+         <code:method name='{meta.Attribute("member-name")!.Value}'
+               visibility='{(publicMember ? "public" : "private")}'>
+            <attribute name='extensibility'>
+               <switch value='visibility'>
+                  <when test='"public"'>virtual</when>
+                  <when test='"abstract"'>abstract</when>
+                  <otherwise>#default</otherwise>
+               </switch>
+            </attribute>
+            <if test='meta.Attribute("member-name-was-escaped") is XAttribute escAttr
+                  &amp;&amp; xs_boolean(escAttr)'>
+               <attribute name='verbatim' value='@string(true)'/>
+            </if>
+            <call-template name='src:line-number'>
+               <with-param name='el' value='el'/>
+            </call-template>
+            <copy-of value='meta.Element(code + "type-reference")'/>
+            <code:attributes>
+               <if test='publicMember'>
+                  <code:attribute>
+                     <copy-of value='src_component_attr_type'/>
+                     <code:arguments>
+                        <code:int value='3'/>
+                     </code:arguments>
+                  </code:attribute>
+               </if>
+               <if test='visibility == "hidden"'>
+                  <call-template name='src:editor-browsable-never'/>
+               </if>
+            </code:attributes>
+            <code:parameters>
+               <variable name='paramIndex' value='-1'/>
+               <for-each name='param' in='el.Elements(c + "param")'>
+                  <void value='paramIndex++'/>
+                  <variable name='paramMeta' value='meta
+                     .Elements(xcst + "param")
+                     .ElementAt(paramIndex)'/>
+                  <code:parameter name='{xcst_name(param.Attribute("name")!)}'>
+                     <call-template name='src:line-number'>
+                        <with-param name='el' value='param'/>
+                     </call-template>
+                     <copy-of value='select(paramMeta, code)'/>
+                  </code:parameter>
+               </for-each>
+            </code:parameters>
+            <if test='visibility != "abstract"'>
+               <variable name='hiddenMeta' value='meta
+                  .ElementsBeforeSelf()
+                  .FirstOrDefault(p => p.Name.Namespace == xcst
+                     &amp;&amp; xcst_homonymous(p, meta)
+                     &amp;&amp; (p.Attribute("accepted") is null
+                        || !xs_boolean(p.Attribute("accepted")!)))'/>
+               <code:block>
+                  <if test='el.Parent!.Name == c + "override"
+                        || hiddenMeta != null'>
+                     <variable name='originalMeta' value='packageManifest
+                        .Elements(xcst + "function")
+                        .FirstOrDefault(p => p.Attribute("id") is XAttribute idAttr
+                           &amp;&amp; idAttr.Value == meta.Attribute("overrides")?.Value)'/>
+
+                     <code:variable name='{src_contextual_variable}' line-hidden='true'>
+                        <code:new-object>
+                           <code:initializer>
+                              <if test='originalMeta != null
+                                    &amp;&amp; originalMeta.Attribute("original-visibility")!.Value != "abstract"'>
+                                 <code:member-initializer name='original'>
+                                    <code:method-call>
+                                       <copy-of value='src_original_member(originalMeta)'/>
+                                    </code:method-call>
+                                 </code:member-initializer>
+                              </if>
+                              <if test='hiddenMeta != null
+                                    &amp;&amp; hiddenMeta.Attribute("declared-visibility")!.Value != "abstract"'>
+                                 <code:member-initializer name='next_function'>
+                                    <code:method-call name='{src_hidden_function_delegate_method_name(hiddenMeta)}'>
+                                       <code:this-reference/>
+                                    </code:method-call>
+                                 </code:member-initializer>
+                              </if>
+                           </code:initializer>
+                        </code:new-object>
+                     </code:variable>
+                  </if>
+                  <call-template name='src:sequence-constructor'>
+                     <with-param name='el' value='el'/>
+                     <with-param name='children' value='el
+                        .Nodes()
+                        .Except(el.Nodes()
+                           .Where(p => (p is XElement p2 &amp;&amp; p2.Name == c + "param")
+                              || p.ElementsAfterSelf(c + "param").Any()))
+                        .ToArray()'/>
+                  </call-template>
+               </code:block>
+            </if>
+         </code:method>
+
+         <variable name='hidingMeta' value='meta
+            .ElementsAfterSelf()
+            .FirstOrDefault(p => p.Name.Namespace == xcst
+               &amp;&amp;xcst_homonymous(p, meta)
+               &amp;&amp; (p.Attribute("accepted") is null
+                  || !xs_boolean(p.Attribute("accepted")!)))'/>
+
+         <if test='visibility != "abstract"
+               &amp;&amp; hidingMeta != null'>
+            <code:method name='{src_hidden_function_delegate_method_name(meta)}' line-hidden='true'>
+               <variable name='typeRef' value='meta.Element(code + "type-reference")'/>
+               <code:type-reference namespace='System'>
+                  <attribute name='name'>
+                     <choose>
+                        <when test='typeRef != null'>Func</when>
+                        <otherwise>Action</otherwise>
+                     </choose>
+                  </attribute>
+                  <code:type-arguments>
+                     <copy-of value='select(meta, xcst + "param", code + "type-reference")'/>
+                     <copy-of value='typeRef'/>
+                  </code:type-arguments>
+               </code:type-reference>
+               <code:attributes>
+                  <call-template name='src:editor-browsable-never'/>
+               </code:attributes>
+               <code:block>
+                  <code:return>
+                     <code:method-reference name='{meta.Attribute("member-name")!.Value}'>
+                        <code:this-reference/>
+                     </code:method-reference>
+                  </code:return>
+               </code:block>
+            </code:method>
+         </if>
+      </if>
+   </template>
+
+   <function name='xcst_typed_params' as='bool'>
+      <param name='meta' as='XElement'/>
+
+      <return value='meta.Name == xcst + "template"
+         &amp;&amp; meta.Elements(xcst + "param")
+            .Any(p => p.Attribute("tunnel") is null
+               || !xs_boolean(p.Attribute("tunnel")!))'/>
+   </function>
+
+   <function name='src_params_type' as='XElement'>
+      <param name='meta' as='XElement'/>
+
+      <return>
+         <code:type-reference name='{src_params_type_name(meta)}'>
+            <if test='meta.Attribute("accepted") is XAttribute acceptedAttr
+                  &amp;&amp; xs_boolean(acceptedAttr)'>
+               <copy-of value='select(meta, xcst + "package-type", code + "type-reference").First()'/>
+            </if>
+         </code:type-reference>
+      </return>
+   </function>
+
+   <function name='src_params_type_name' as='string'>
+      <param name='meta' as='XElement'/>
+
+      <return value='meta.Attribute("member-name")!.Value + "_params"'/>
+   </function>
+
+   <function name='src_params_type_init_name' as='string'>
+      <param name='name' as='object'/>
+
+      <return value='src_aux_variable("init_" + (name is XObject xo ? @string(xo) : (string)name))'/>
+   </function>
+
+   <function name='src_hidden_function_delegate_method_name' as='string'>
+      <param name='meta' as='XElement'/>
+
+      <return value='meta.Attribute("member-name")!.Value + "_del"'/>
+   </function>
+
+   <template mode='src:lib-overriding-value' match='XElement el &amp;&amp; el.Name == xcst + "template"'>
+      <param name='meta' as='XElement' required='yes'/>
+
+      <variable name='overridingTypedParams' value='xcst_typed_params(meta)'/>
+      <variable name='overriddenTypedParams' value='xcst_typed_params(el)'/>
+
+      <choose>
+         <when test='overridingTypedParams || overriddenTypedParams'>
+            <variable name='context' value='src_template_context(meta)'/>
+            <variable name='output' value='src_template_output(meta)'/>
+            <code:lambda void='true'>
+               <code:parameters>
+                  <code:parameter name='{select(context, src + "reference", code).First().Attribute("name")!.Value}'/>
+                  <code:parameter name='{select(output, src + "reference", code).First().Attribute("name")!.Value}'/>
+               </code:parameters>
+               <code:method-call name='{meta.Attribute("member-name")!.Value}'>
+                  <code:this-reference/>
+                  <code:arguments>
+                     <choose>
+                        <when test='overriddenTypedParams'>
+                           <code:method-call name='CreateTyped'>
+                              <copy-of value='src_template_context(null).Element(code + "type-reference")'/>
+                              <code:arguments>
+                                 <code:cast>
+                                    <copy-of value='src_params_type(meta)'/>
+                                    <code:property-reference name='Parameters'>
+                                       <copy-of value='select(context, src + "reference", code)'/>
+                                    </code:property-reference>
+                                 </code:cast>
+                                 <code:int value='0'/>
+                                 <copy-of value='select(context, src + "reference", code)'/>
+                              </code:arguments>
+                           </code:method-call>
+                        </when>
+                        <otherwise>
+                           <copy-of value='select(context, src + "reference", code)'/>
+                        </otherwise>
+                     </choose>
+                     <copy-of value='select(output, src + "reference", code)'/>
+                  </code:arguments>
+               </code:method-call>
+            </code:lambda>
+         </when>
+         <otherwise>
+            <code:method-reference name='{meta.Attribute("member-name")!.Value}'>
+               <code:this-reference/>
+            </code:method-reference>
+         </otherwise>
+      </choose>
+   </template>
+
+   <template mode='src:lib-overriding-value' match='XElement el &amp;&amp; (el.Name == xcst + "attribute-set" || el.Name == xcst + "function")'>
+      <param name='meta' as='XElement' required='yes'/>
+
+      <code:method-reference name='{meta.Attribute("member-name")!.Value}'>
+         <code:this-reference/>
+      </code:method-reference>
+   </template>
+
+   <template name='src:get-template-method'>
+      <param name='packageManifest' as='XElement' tunnel='yes' required='yes'/>
+
+      <variable name='nameParam'>
+         <code:variable-reference name='{src_aux_variable("name")}'/>
+      </variable>
+
+      <variable name='tbaseParam'>
+         <code:parameter name='TBase'/>
+      </variable>
+
+      <variable name='auxMeta'>
+         <xcst:aux-method>
+            <xcst:item-type>
+               <code:type-reference name='{tbaseParam.Attribute("name")!.Value}'/>
+            </xcst:item-type>
+         </xcst:aux-method>
+      </variable>
+
+      <variable name='output' value='src_template_output(auxMeta)'/>
+
+      <code:method name='GetTemplate' visibility='private'>
+         <code:type-reference name='Action' namespace='System'>
+            <code:type-arguments>
+               <copy-of value='src_template_context(null).Element(code + "type-reference")'/>
+            </code:type-arguments>
+         </code:type-reference>
+         <code:implements-interface>
+            <copy-of value='src_package_interface'/>
+         </code:implements-interface>
+         <code:type-parameters>
+            <copy-of value='tbaseParam'/>
+         </code:type-parameters>
+         <code:parameters>
+            <code:parameter name='{nameParam.Attribute("name")!.Value}'>
+               <code:type-reference name='QualifiedName' namespace='Xcst'/>
+            </code:parameter>
+            <code:parameter name='{select(output, src + "reference", code).First().Attribute("name")!.Value}'>
+               <copy-of value='output.Element(code + "type-reference")'/>
+            </code:parameter>
+         </code:parameters>
+         <code:block>
+
+            <variable name='templates' value='packageManifest
+               .Elements(xcst + "template")
+               .Where(p => p.Attribute("visibility")!.Value is string visibility
+                  &amp;&amp; (visibility is "public" or "final"))
+               .ToArray()'/>
+
+            <variable name='unknownThrow'>
+               <code:throw>
+                  <code:method-call name='UnknownTemplate'>
+                     <copy-of value='src_helper_type("DynamicError")'/>
+                     <code:arguments>
+                        <copy-of value='nameParam'/>
+                     </code:arguments>
+                  </code:method-call>
+               </code:throw>
+            </variable>
+
+            <code:switch>
+               <code:property-reference name='Namespace'>
+                  <copy-of value='nameParam'/>
+               </code:property-reference>
+               <for-each-group name='grp' in='templates' group-by='p => xcst_EQName(p.Attribute("name"))!.Namespace'>
+                  <sort by='pn => xcst_is_reserved_namespace(pn.Key)' order='descending'/>
+                  <sort by='pn => pn.Count()' order='descending'/>
+
+                  <code:case>
+                     <code:string verbatim='true'>
+                        <value-of value='grp.Key.NamespaceName'/>
+                     </code:string>
+                     <code:switch>
+                        <code:property-reference name='Name'>
+                           <copy-of value='nameParam'/>
+                        </code:property-reference>
+                        <for-each name='tmpl' in='grp'>
+                           <variable name='qname' value='xcst_EQName(tmpl.Attribute("name")!)!'/>
+                           <variable name='context' value='src_template_context(null)'/>
+                           <variable name='contextRef' value='select(context, src + "reference", code).First()'/>
+
+                           <code:case>
+                              <code:string literal='true'>
+                                 <value-of value='qname.LocalName'/>
+                              </code:string>
+                              <code:return>
+                                 <code:lambda void='true'>
+                                    <code:parameters>
+                                       <code:parameter name='{contextRef.Attribute("name")!.Value}'/>
+                                    </code:parameters>
+                                    <code:method-call name='{tmpl.Attribute("member-name")!.Value}'>
+                                       <code:this-reference/>
+                                       <code:arguments>
+                                          <choose>
+                                             <when test='xcst_typed_params(tmpl)'>
+                                                <code:method-call name='CreateTyped'>
+                                                   <copy-of value='context.Element(code + "type-reference")'/>
+                                                   <code:arguments>
+                                                      <code:method-call name='Create'>
+                                                         <copy-of value='src_params_type(tmpl)'/>
+                                                         <code:arguments>
+                                                            <copy-of value='contextRef'/>
+                                                         </code:arguments>
+                                                      </code:method-call>
+                                                      <code:int value='0'/>
+                                                      <copy-of value='contextRef'/>
+                                                   </code:arguments>
+                                                </code:method-call>
+                                             </when>
+                                             <otherwise>
+                                                <copy-of value='contextRef'/>
+                                             </otherwise>
+                                          </choose>
+                                          <call-template name='src:call-template-output'>
+                                             <with-param name='meta' value='tmpl'/>
+                                             <with-param name='dynamic' value='true'/>
+                                             <with-param name='output' value='output' tunnel='yes'/>
+                                          </call-template>
+                                       </code:arguments>
+                                    </code:method-call>
+                                 </code:lambda>
+                              </code:return>
+                           </code:case>
+                        </for-each>
+                        <code:case-default>
+                           <copy-of value='unknownThrow'/>
+                        </code:case-default>
+                     </code:switch>
+                  </code:case>
+               </for-each-group>
+               <code:case-default>
+                  <copy-of value='unknownThrow'/>
+               </code:case-default>
+            </code:switch>
+         </code:block>
+      </code:method>
+   </template>
+
+
+   <!-- ## Instructions -->
+
+   <template name='src:use-attribute-sets'>
+      <param name='el' as='XElement' required='yes'/>
+      <param name='attr' as='XAttribute?' required='yes'/>
+      <param name='packageManifest' as='XElement' tunnel='yes' required='yes'/>
+      <param name='context' as='XElement?' tunnel='yes'/>
+      <param name='output' as='XElement' tunnel='yes'/>
+
+      <if test='attr != null'>
+         <call-template name='xcst:require-output'>
+            <with-param name='el' value='el'/>
+         </call-template>
+         <variable name='names' value='tokenize(attr.Value)
+            .Select(p => xcst_EQName(attr, p)!)
+            .ToArray()'/>
+         <variable name='sets' as='XElement[]'>
+            <for-each name='name' in='names'>
+               <choose>
+                  <when test='el.Name == c + "attribute-set"
+                        &amp;&amp; el.Parent!.Name == c + "override"
+                        &amp;&amp; name == c + "original"'>
+                     <variable name='id' value='generate_id(el)'/>
+                     <variable name='currentMeta' value='packageManifest
+                        .Elements(xcst + "attribute-set")
+                        .First(p => p.Attribute("declaration-id")?.Value == id)'/>
+                     <variable name='originalMeta' value='packageManifest
+                        .Elements(xcst + "attribute-set")
+                        .First(p => p.Attribute("id")!.Value == currentMeta.Attribute("overrides")!.Value)'/>
+                     <if test='!(originalMeta.Attribute("original-visibility")!.Value != "abstract")'>
+                        <message terminate='yes' error-code='XTSE3075' error-data='src_error_object(el)' transform-text='trim'>
+                           Cannot use the component reference c:original when the overridden component has visibility='abstract'.
+                        </message>
+                     </if>
+                     <object value='src_original_member(originalMeta)'/>
+                  </when>
+                  <otherwise>
+                     <variable name='meta' value='packageManifest
+                        .Elements(xcst + "attribute-set")
+                        .FirstOrDefault(p => p.Attribute("visibility")!.Value != "hidden"
+                           &amp;&amp; xcst_EQName(p.Attribute("name")!) == name)'/>
+                     <if test='!(meta != null)'>
+                        <message terminate='yes' error-code='XTSE0710' error-data='src_error_object(el)' expand-text='yes' transform-text='trim'>
+                           No attribute set exists named '{@string(name, el)}'.
+                        </message>
+                     </if>
+                     <object value='src_template_member(meta)'/>
+                  </otherwise>
+               </choose>
+            </for-each>
+         </variable>
+         <for-each name='set' in='sets'>
+            <code:method-call>
+               <copy-of value='set'/>
+               <code:arguments>
+                  <choose>
+                     <when test='context != null'>
+                        <copy-of value='select(context, src + "reference", code)'/>
+                     </when>
+                     <otherwise>
+                        <code:null/>
+                     </otherwise>
+                  </choose>
+                  <copy-of value='select(output, src + "reference", code)'/>
+               </code:arguments>
+            </code:method-call>
+         </for-each>
+      </if>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "call-template"' mode='src:statement'>
+
+      <variable name='(meta, original)'>
+         <call-template name='xcst:validate-call-template'>
+            <with-param name='el' value='el'/>
+         </call-template>
+      </variable>
+
+      <code:method-call>
+         <call-template name='src:line-number'>
+            <with-param name='el' value='el'/>
+         </call-template>
+         <copy-of value='
+            (original) ? src_original_member(meta)
+               : src_template_member(meta)'/>
+         <code:arguments>
+            <call-template name='src:call-template-context'>
+               <with-param name='el' value='el'/>
+               <with-param name='meta' value='meta'/>
+            </call-template>
+            <call-template name='src:call-template-output'>
+               <with-param name='meta' value='meta'/>
+            </call-template>
+         </code:arguments>
+      </code:method-call>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "call-template"' mode='src:expression'>
+
+      <variable name='(meta, original)'>
+         <call-template name='xcst:validate-call-template'>
+            <with-param name='el' value='el'/>
+         </call-template>
+      </variable>
+
+      <call-template name='src:write-template-expr'>
+         <with-param name='el' value='el'/>
+         <with-param name='meta' value='meta'/>
+         <with-param name='templateMethod' value='
+            (original) ? src_original_member(meta)
+               : src_template_member(meta)'/>
+      </call-template>
+   </template>
+
+   <template name='src:write-template-expr'>
+      <param name='el' as='XElement' required='yes'/>
+      <param name='meta' as='XElement' required='yes'/>
+      <param name='templateMethod' value='src_template_member(meta)' as='XElement'/>
+
+      <code:method-call name='Flush{(meta.Attribute("cardinality")!.Value == "One" ? "Single" : null)}'>
+         <code:method-call name='WriteTemplate{(xcst_typed_params(meta) ? "WithParams" : null)}'>
+            <code:method-call name='Create'>
+               <copy-of value='src_helper_type("SequenceWriter")'/>
+               <code:arguments>
+                  <copy-of value='src_item_type_inference_member_ref(meta)'/>
+               </code:arguments>
+            </code:method-call>
+            <code:arguments>
+               <copy-of value='templateMethod'/>
+               <call-template name='src:call-template-context'>
+                  <with-param name='el' value='el'/>
+                  <with-param name='meta' value='meta'/>
+               </call-template>
+            </code:arguments>
+         </code:method-call>
+      </code:method-call>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "call-template"' mode='xcst:instruction'>
+
+      <variable name='(meta, original)'>
+         <call-template name='xcst:validate-call-template'>
+            <with-param name='el' value='el'/>
+         </call-template>
+      </variable>
+
+      <variable name='itemType' value='select(meta, xcst + "item-type", code + "type-reference")
+         .FirstOrDefault()'/>
+      <variable name='qualifiedTypes' value='attributes(new[] { meta, meta.Parent! }, "qualified-types")
+         .Select(p => xs_boolean(p))
+         .First()'/>
+
+      <xcst:instruction expression='true'>
+         <choose>
+            <when test='itemType != null'>
+               <if test='qualifiedTypes'>
+                  <copy-of value='
+                     (meta.Attribute("cardinality")!.Value == "ZeroOrMore") ?
+                        src_item_to_sequence_type(itemType)
+                        : itemType'/>
+               </if>
+            </when>
+            <otherwise>
+               <copy-of value='src_default_template_type'/>
+            </otherwise>
+         </choose>
+      </xcst:instruction>
+   </template>
+
+   <template name='xcst:validate-call-template' as='(XElement, bool)'>
+      <param name='el' as='XElement' required='yes'/>
+      <param name='packageManifest' as='XElement' tunnel='yes' required='yes'/>
+
+      <void>
+         <call-template name='xcst:validate-attribs'>
+            <with-param name='el' value='el'/>
+            <with-param name='required' value='new[] { "name" }'/>
+            <with-param name='optional' value='new[] { "tunnel-params" }'/>
+         </call-template>
+
+         <call-template name='xcst:validate-children'>
+            <with-param name='el' value='el'/>
+            <with-param name='allowed' value='new[] { "with-param" }'/>
+         </call-template>
+      </void>
+
+      <variable name='qname' value='xcst_EQName(el.Attribute("name"))!'/>
+      <variable name='original' value='
+         qname == c + "original"
+            &amp;&amp; el.Ancestors(c + "override").Any()'/>
+
+      <variable name='meta' as='XElement'>
+         <choose>
+            <when test='original'>
+               <variable name='currentTemplate' value='el.Ancestors(c + "template").First()'/>
+               <variable name='id' value='generate_id(currentTemplate)'/>
+               <variable name='currentMeta' value='packageManifest
+                  .Elements(xcst + "template")
+                  .First(p => p.Attribute("declaration-id")?.Value == id)'/>
+               <variable name='originalMeta' value='packageManifest
+                  .Elements(xcst + "template")
+                  .First(p => p.Attribute("id")!.Value == currentMeta.Attribute("overrides")!.Value)'/>
+               <if test='!(originalMeta.Attribute("original-visibility")!.Value != "abstract")'>
+                  <message terminate='yes' error-code='XTSE3075' error-data='src_error_object(el)' transform-text='trim'>
+                     Cannot use the component reference c:original when the overridden component has visibility='abstract'.
+                  </message>
+               </if>
+               <object value='originalMeta'/>
+            </when>
+            <otherwise>
+               <variable name='meta' value='packageManifest
+                  .Elements(xcst + "template")
+                  .Reverse()
+                  .FirstOrDefault(p => xcst_EQName(p.Attribute("name"))! == qname
+                     &amp;&amp; p.Attribute("visibility")!.Value != "hidden")'/>
+               <if test='!(meta != null)'>
+                  <message terminate='yes' error-code='XTSE0650' error-data='src_error_object(el)' expand-text='yes' transform-text='trim'>
+                     No template exists named '{@string(qname, el)}'.
+                  </message>
+               </if>
+               <object value='meta'/>
+            </otherwise>
+         </choose>
+      </variable>
+
+      <void>
+         <call-template name='xcst:validate-with-param'>
+            <with-param name='el' value='el'/>
+            <with-param name='meta' value='meta'/>
+         </call-template>
+      </void>
+
+      <object value='(meta, original)'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "next-template"' mode='src:statement'>
+
+      <variable name='meta'>
+         <call-template name='xcst:validate-next-template'>
+            <with-param name='el' value='el'/>
+         </call-template>
+      </variable>
+
+      <code:method-call name='{meta.Attribute("member-name")!.Value}'>
+         <call-template name='src:line-number'>
+            <with-param name='el' value='el'/>
+         </call-template>
+         <code:this-reference/>
+         <code:arguments>
+            <call-template name='src:call-template-context'>
+               <with-param name='el' value='el'/>
+               <with-param name='meta' value='meta'/>
+            </call-template>
+            <call-template name='src:call-template-output'>
+               <with-param name='meta' value='meta'/>
+            </call-template>
+         </code:arguments>
+      </code:method-call>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "next-template"' mode='src:expression'>
+      <variable name='meta'>
+         <call-template name='xcst:validate-next-template'>
+            <with-param name='el' value='el'/>
+         </call-template>
+      </variable>
+      <call-template name='src:write-template-expr'>
+         <with-param name='el' value='el'/>
+         <with-param name='meta' value='meta'/>
+      </call-template>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "next-template"' mode='xcst:instruction'>
+      <variable name='meta'>
+         <call-template name='xcst:validate-next-template'>
+            <with-param name='el' value='el'/>
+         </call-template>
+      </variable>
+      <xcst:instruction expression='true'>
+         <if test='meta.Element(xcst + "item-type") is null'>
+            <copy-of value='src_default_template_type'/>
+         </if>
+      </xcst:instruction>
+   </template>
+
+   <template name='xcst:validate-next-template' as='XElement'>
+      <param name='el' as='XElement' required='yes'/>
+      <param name='packageManifest' as='XElement' tunnel='yes' required='yes'/>
+
+      <void>
+         <call-template name='xcst:validate-attribs'>
+            <with-param name='el' value='el'/>
+            <with-param name="optional" value='new[] { "tunnel-params" }'/>
+         </call-template>
+
+         <call-template name='xcst:validate-children'>
+            <with-param name='el' value='el'/>
+            <with-param name='allowed' value='new[] { "with-param" }'/>
+         </call-template>
+      </void>
+
+      <variable name='currentTemplate' value='el.Ancestors(c + "template").First()'/>
+
+      <if test='!(currentTemplate != null)'>
+         <message terminate='yes' error-code='XTSE0010' error-data='src_error_object(el)' expand-text='yes' transform-text='trim'>
+            c:{el.Name.LocalName} instruction can only be used within a c:template declaration.
+         </message>
+      </if>
+
+      <variable name='id' value='generate_id(currentTemplate)'/>
+
+      <variable name='currentMeta' value='packageManifest
+         .Elements(xcst + "template")
+         .First(p => p.Attribute("declaration-id")?.Value == id)'/>
+
+      <variable name='meta' value='currentMeta
+         .ElementsBeforeSelf(xcst + "template")
+         .Where(p => xcst_homonymous(p, currentMeta)
+            &amp;&amp; (p.Attribute("accepted") is null
+               || !xs_boolean(p.Attribute("accepted")!)))
+         .FirstOrDefault()'/>
+
+      <if test='!(meta != null)'>
+         <message terminate='yes' error-code='XTSE0650' error-data='src_error_object(el)' transform-text='trim'>
+            There are no more templates to call.
+         </message>
+      </if>
+
+      <if test='!(meta.Attribute("declared-visibility")!.Value != "abstract")'>
+         <message terminate='yes' error-code='XTSE3075' error-data='src_error_object(el)' transform-text='trim'>
+            Cannot call a next template with visibility='abstract'.
+         </message>
+      </if>
+
+      <void>
+         <call-template name='xcst:validate-with-param'>
+            <with-param name='el' value='el'/>
+            <with-param name='meta' value='meta'/>
+         </call-template>
+      </void>
+
+      <object value='meta'/>
+   </template>
+
+   <template name='xcst:validate-with-param'>
+      <param name='el' as='XElement' required='yes'/>
+      <param name='meta' as='XElement?'/>
+
+      <assert test='meta is null || meta.Name == xcst + "template"'/>
+
+      <for-each name='withParam' in='el.Elements(c + "with-param")'>
+         <call-template name='xcst:validate-attribs'>
+            <with-param name='el' value='withParam'/>
+            <with-param name='required' value='new[] { "name" }'/>
+            <with-param name='optional' value='new[] { "value", "as", "tunnel" }'/>
+         </call-template>
+         <call-template name='xcst:value-or-sequence-constructor'>
+            <with-param name='el' value='withParam'/>
+         </call-template>
+         <if test='!withParam.ElementsBeforeSelf(withParam.Name)
+               .All(p => !xcst_name_equal(p.Attribute("name")!, withParam.Attribute("name")!))'>
+            <message terminate='yes' error-code='XTSE0670' error-data='src_error_object(withParam)' transform-text='trim'>
+               Duplicate parameter name.
+            </message>
+         </if>
+         <if test='(withParam.Attribute("tunnel") is null
+                  || !xcst_boolean(withParam.Attribute("tunnel")!)!.Value)
+               &amp;&amp; meta != null'>
+            <variable name='paramName' value='xcst_name(withParam.Attribute("name")!)'/>
+            <if test='!(meta.Elements(xcst + "param")
+                  .Any(p => p.Attribute("name")!.Value  == paramName
+                     &amp;&amp; !xs_boolean(p.Attribute("tunnel")!)))'>
+               <message terminate='yes' error-code='XTSE0680' error-data='src_error_object(withParam)' expand-text='yes' transform-text='trim'>
+                  Parameter '{paramName}' is not declared in the called template.
+               </message>
+            </if>
+         </if>
+      </for-each>
+
+      <if test='meta != null'>
+         <for-each name='param' in='meta
+               .Elements(xcst + "param")
+               .Where(p => xs_boolean(p.Attribute("required")!)
+                  &amp;&amp; !xs_boolean(p.Attribute("tunnel")!))'>
+            <variable name='paramName' value='param.Attribute("name")!.Value'/>
+            <if test='!(el.Elements(c + "with-param")
+                  .Any(p => (p.Attribute("tunnel") is null || !xcst_boolean(p.Attribute("tunnel")!)!.Value)
+                     &amp;&amp; xcst_name_equal(p.Attribute("name"), paramName)))'>
+               <message terminate='yes' error-code='XTSE0690' error-data='src_error_object(el)' expand-text='yes' transform-text='trim'>
+                  No value supplied for required parameter '{paramName}'.
+               </message>
+            </if>
+         </for-each>
+      </if>
+   </template>
+
+   <template name='src:call-template-context'>
+      <param name='el' as='XElement' required='yes'/>
+      <param name='meta' as='XElement?'/>
+      <param name='context' as='XElement?' tunnel='yes'/>
+      <param name='packageManifest' as='XElement' tunnel='yes' required='yes'/>
+      <param name='language' as='string' tunnel='yes' required='yes'/>
+
+      <variable name='typedParams' value='
+         (meta != null) ? xcst_typed_params(meta) : false'/>
+
+      <variable name='tunnelParamsAttr' value='
+         (el.Name.Namespace == c
+            &amp;&amp; el.Name.LocalName is (
+               "call-template"
+               or "next-template"
+               or "apply-templates"
+               or "next-match"
+               or "invoke-delegate")) ?
+            el.Attribute("tunnel-params")
+            : null'/>
+
+      <variable name='tunnelParams' value='el
+         .Elements(c + "with-param")
+         .Where(p => p.Attribute("tunnel") is XAttribute tunnelAttr
+            &amp;&amp; xcst_boolean(tunnelAttr)!.Value)
+         .ToArray()'/>
+
+      <variable name='templateParams' value='el
+         .Elements(c + "with-param")
+         .Except(tunnelParams)
+         .ToArray()'/>
+
+      <code:chain>
+         <code:method-call>
+            <attribute name='name'>
+               <choose>
+                  <when test='el.Name == c + "apply-templates"'>ForApplyTemplates</when>
+                  <when test='el.Name == c + "next-match"'>ForNextMatch</when>
+                  <otherwise>
+                     <text>Create</text>
+                     <if test='typedParams'>Typed</if>
+                  </otherwise>
+               </choose>
+            </attribute>
+            <copy-of value='src_template_context(null)
+               .Element(code + "type-reference")'/>
+            <code:arguments>
+               <choose>
+                  <when test='typedParams'>
+                     <code:new-object>
+                        <copy-of value='src_params_type(meta!)'/>
+                        <code:initializer>
+                           <for-each name='withParam' in='templateParams'>
+                              <code:member-initializer name='{xcst_unescape_identifier(xcst_name(withParam.Attribute("name")!), language)}' verbatim='true'>
+                                 <call-template name='src:value'>
+                                    <with-param name='el' value='withParam'/>
+                                 </call-template>
+                              </code:member-initializer>
+                           </for-each>
+                        </code:initializer>
+                     </code:new-object>
+                  </when>
+                  <otherwise>
+                     <variable name='tmplParamsCount' value='templateParams.Length'/>
+                     <variable name='paramsCount' value='
+                        (tmplParamsCount > 0) ? tmplParamsCount
+                           : (el.Name == c + "invoke-delegate"
+                              &amp;&amp; el.Attribute("with-params") != null) ? 1
+                           : 0'/>
+                     <code:int value='{@string(paramsCount)}'/>
+                  </otherwise>
+               </choose>
+               <code:int value='{@string(tunnelParams.Length + (tunnelParamsAttr != null ? 1 : 0))}'/>
+               <if test='context != null'>
+                  <copy-of value='select(context, src + "reference", code)'/>
+               </if>
+            </code:arguments>
+         </code:method-call>
+         <for-each name='withParam' in='el
+               .Elements(c + "with-param")
+               .Where(p => !typedParams || tunnelParams.Contains(p))'>
+            <code:method-call name='WithParam'>
+               <call-template name='src:line-number'>
+                  <with-param name='el' value='withParam'/>
+               </call-template>
+               <code:chain-reference/>
+               <code:arguments>
+                  <code:string literal='true'>
+                     <value-of value='xcst_unescape_identifier(xcst_name(withParam.Attribute("name")!), language)'/>
+                  </code:string>
+                  <call-template name='src:value'>
+                     <with-param name='el' value='withParam'/>
+                  </call-template>
+                  <if test='tunnelParams.Contains(withParam)'>
+                     <code:argument name='tunnel'>
+                        <code:bool value='true'/>
+                     </code:argument>
+                  </if>
+               </code:arguments>
+            </code:method-call>
+         </for-each>
+         <if test='tunnelParamsAttr != null'>
+            <code:method-call name='WithTunnelParams'>
+               <call-template name='src:line-number'>
+                  <with-param name='el' value='el'/>
+               </call-template>
+               <code:chain-reference/>
+               <code:arguments>
+                  <code:expression value='{xcst_expression(tunnelParamsAttr)}'/>
+               </code:arguments>
+            </code:method-call>
+         </if>
+      </code:chain>
+   </template>
+
+   <template name='src:call-template-output'>
+      <param name='meta' as='XElement' required='yes'/>
+      <param name='dynamic' value='false' as='bool'/>
+      <param name='output' as='XElement' tunnel='yes' required='yes'/>
+
+      <variable name='outputItemTypeIsObject' value='
+         !src_output_is_obj(output)
+            || (output.Attribute("item-type-is-object") is XAttribute attr
+               &amp;&amp; xs_boolean(attr))'/>
+
+      <choose>
+         <when test='meta.Element(xcst + "item-type") != null
+               || !outputItemTypeIsObject'>
+            <code:method-call name='AdjustWriter{(dynamic ? "Dynamically" : null)}'>
+               <copy-of value='src_helper_type("SequenceWriter")'/>
+               <code:arguments>
+                  <copy-of value='select(output, src + "reference", code)'/>
+                  <copy-of value='src_item_type_inference_member_ref(meta)'/>
+               </code:arguments>
+            </code:method-call>
+         </when>
+         <otherwise>
+            <copy-of value='select(output, src + "reference", code)'/>
+         </otherwise>
+      </choose>
+   </template>
+
+   <function name='src_template_member' as='XElement'>
+      <param name='meta' as='XElement'/>
+
+      <return>
+         <code:method-reference name='{meta.Attribute("member-name")!.Value}'>
+            <choose>
+               <when test='meta.Attribute("accepted") is XAttribute acceptedAttr
+                     &amp;&amp; xs_boolean(acceptedAttr)'>
+                  <code:field-reference name='{src_lib_field_name(meta)}'>
+                     <code:this-reference/>
+                  </code:field-reference>
+               </when>
+               <otherwise>
+                  <code:this-reference/>
+               </otherwise>
+            </choose>
+         </code:method-reference>
+      </return>
+   </function>
+
+
+   <!-- ### Delegated Templates -->
+
+   <template match='XElement el &amp;&amp; el.Name == c + "delegate"' mode='src:expression'>
+      <param name='language' as='string' tunnel='yes' required='yes'/>
+
+      <call-template name='xcst:validate-attribs'>
+         <with-param name='el' value='el'/>
+         <with-param name='optional' value='new[] { "as" }'/>
+      </call-template>
+
+      <variable name='@as' value='
+         (el.Attribute("as") is XAttribute asAttr) ?
+            xcst_type(asAttr)
+            : null'/>
+
+      <variable name='meta'>
+         <xcst:delegate>
+            <if test='@as != null'>
+               <xcst:item-type>
+                  <code:type-reference name='{xcst_item_type(@as, language)}'/>
+               </xcst:item-type>
+            </if>
+         </xcst:delegate>
+      </variable>
+
+      <variable name='itemType' value='select(meta, xcst + "item-type", code + "type-reference")
+         .FirstOrDefault()'/>
+
+      <variable name='newContext' value='src_template_context(meta, el)'/>
+      <variable name='newOutput' value='src_template_output(meta, el)'/>
+
+      <code:new-object>
+         <code:type-reference name='XcstDelegate' namespace='Xcst'>
+            <code:type-arguments>
+               <copy-of value='itemType'/>
+               <on-empty>
+                  <copy-of value='src_nullable_object_type'/>
+               </on-empty>
+            </code:type-arguments>
+         </code:type-reference>
+         <code:arguments>
+            <code:lambda void='true'>
+               <code:parameters>
+                  <code:parameter name='{select(newContext, src + "reference", code).First().Attribute("name")!.Value}'/>
+                  <code:parameter name='{select(newOutput, src + "reference", code).First().Attribute("name")!.Value}'/>
+               </code:parameters>
+               <code:block>
+                  <for-each name='param' in='el.Elements(c + "param")'>
+                     <call-template name='xcst:validate-attribs'>
+                        <with-param name='el' value='param'/>
+                        <with-param name='required' value='new[] { "name" }'/>
+                        <with-param name='optional' value='new[] { "value", "as", "required", "tunnel" }'/>
+                     </call-template>
+                     <call-template name='xcst:value-or-sequence-constructor'>
+                        <with-param name='el' value='param'/>
+                     </call-template>
+                     <call-template name='xcst:no-other-preceding'>
+                        <with-param name='el' value='param'/>
+                     </call-template>
+                     <if test='!param.ElementsBeforeSelf(param.Name).All(p => !xcst_name_equal(p.Attribute("name")!, param.Attribute("name")!))'>
+                        <message terminate='yes' error-code='XTSE0580' error-data='src_error_object(param)' transform-text='trim'>
+                           The name of the parameter is not unique.
+                        </message>
+                     </if>
+                     <apply-templates value='param' mode='src:statement'>
+                        <with-param name='context' value='newContext' tunnel='yes'/>
+                     </apply-templates>
+                  </for-each>
+                  <call-template name='src:sequence-constructor'>
+                     <with-param name='el' value='el'/>
+                     <with-param name='children' value='el
+                        .Nodes()
+                        .Except(el.Nodes()
+                           .Where(p => (p is XElement p2 &amp;&amp; p2.Name == c + "param")
+                              || p.ElementsAfterSelf(c + "param").Any()))
+                        .ToArray()'/>
+                     <with-param name='context' value='newContext' tunnel='yes'/>
+                     <with-param name='output' value='newOutput' tunnel='yes'/>
+                     <with-param name='trackCardinality' value='
+                        (@as != null) ?
+                           xcst_cardinality(@as, language)
+                           : null'/>
+                  </call-template>
+               </code:block>
+            </code:lambda>
+         </code:arguments>
+      </code:new-object>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "delegate"' mode='xcst:instruction'>
+      <xcst:instruction expression='true'>
+         <code:type-reference name='Delegate' namespace='System'/>
+      </xcst:instruction>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "invoke-delegate"' mode='src:statement'>
+      <param name='output' as='XElement' tunnel='yes'/>
+
+      <call-template name='xcst:validate-attribs'>
+         <with-param name='el' value='el'/>
+         <with-param name='required' value='new[] { "delegate" }'/>
+         <with-param name='optional' value='new[] { "with-params", "tunnel-params" }'/>
+      </call-template>
+
+      <call-template name='xcst:validate-children'>
+         <with-param name='el' value='el'/>
+         <with-param name='allowed' value='new[] { "with-param" }'/>
+      </call-template>
+
+      <call-template name='xcst:validate-with-param'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <call-template name='xcst:require-output'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <code:method-call name='Invoke'>
+         <call-template name='src:line-number'>
+            <with-param name='el' value='el'/>
+         </call-template>
+         <copy-of value='src_helper_type("EvaluateDelegate")'/>
+         <code:arguments>
+            <code:expression value='{xcst_expression(el.Attribute("delegate")!)}'/>
+            <code:chain>
+               <call-template name='src:call-template-context'>
+                  <with-param name='el' value='el'/>
+               </call-template>
+               <if test='el.Attribute("with-params") is XAttribute withParamsAttr'>
+                  <code:method-call name='WithParams'>
+                     <call-template name='src:line-number'>
+                        <with-param name='el' value='el'/>
+                     </call-template>
+                     <code:chain-reference/>
+                     <code:arguments>
+                        <code:expression value='{xcst_expression(withParamsAttr)}'/>
+                     </code:arguments>
+                  </code:method-call>
+               </if>
+            </code:chain>
+            <copy-of value='select(output, src + "reference", code)'/>
+         </code:arguments>
+      </code:method-call>
+   </template>
+
+</module>

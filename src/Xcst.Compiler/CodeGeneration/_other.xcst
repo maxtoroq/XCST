@@ -1,0 +1,177 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!--
+ Copyright 2021 Max Toro Q.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<module version='1.0' language='C#'
+   xmlns='http://maxtoroq.github.io/XCST'
+   xmlns:xcst='http://maxtoroq.github.io/XCST/grammar'
+   xmlns:code='http://maxtoroq.github.io/XCST/code'
+   xmlns:src='http://maxtoroq.github.io/XCST/compiled'>
+
+   <import-namespace ns='System.Linq'/>
+   <import-namespace ns='System.Xml.Linq'/>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "invoke-package"' mode='src:statement'>
+      <param name='output' as='XElement' tunnel='yes'/>
+
+      <call-template name='xcst:validate-attribs'>
+         <with-param name='el' value='el'/>
+         <with-param name='required' value='new[] { "package" }'/>
+         <with-param name='optional' value='new[] { "base-output-uri", "base-uri", "package-params",
+            "initial-match-selection", "initial-mode", "initial-template", "template-params", "tunnel-params" }'/>
+      </call-template>
+
+      <call-template name='xcst:no-children'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <call-template name='xcst:require-output'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <code:chain>
+         <code:method-call name='Using'>
+            <call-template name='src:line-number'>
+               <with-param name='el' value='el'/>
+            </call-template>
+            <code:type-reference name='XcstEvaluator' namespace='Xcst'/>
+            <code:arguments>
+               <code:cast>
+                  <copy-of value='src_object_type'/>
+                  <code:expression value='{xcst_expression(el.Attribute("package")!)}'/>
+               </code:cast>
+            </code:arguments>
+         </code:method-call>
+         <if test='el.Attribute("package-params") is XAttribute pkgParamsAttr'>
+            <code:method-call name='WithParams'>
+               <code:chain-reference/>
+               <code:arguments>
+                  <code:expression value='{xcst_expression(pkgParamsAttr)}'/>
+               </code:arguments>
+            </code:method-call>
+         </if>
+         <choose>
+            <when test='el.Attribute("initial-match-selection") is XAttribute matchAttr'>
+               <code:method-call name='ApplyTemplates'>
+                  <code:chain-reference/>
+                  <code:arguments>
+                     <code:expression value='{xcst_expression(matchAttr)}'/>
+                     <if test='el.Attribute("initial-mode") is XAttribute initialModeAttr'>
+                        <call-template name='src:QName'>
+                           <with-param name='qname' value='xcst_EQName(initialModeAttr, null, false, true)'/>
+                           <with-param name='avt' value='initialModeAttr'/>
+                        </call-template>
+                     </if>
+                  </code:arguments>
+               </code:method-call>
+            </when>
+            <otherwise>
+               <variable name='itAttr' value='el.Attribute("initial-template")'/>
+               <code:method-call name='Call{(itAttr is null ? "Initial" : null)}Template'>
+                  <code:chain-reference/>
+                  <code:arguments>
+                     <if test='itAttr != null'>
+                        <call-template name='src:QName'>
+                           <with-param name='qname' value='xcst_EQName(itAttr, null, false, true)'/>
+                           <with-param name='avt' value='itAttr'/>
+                        </call-template>
+                     </if>
+                  </code:arguments>
+               </code:method-call>
+            </otherwise>
+         </choose>
+         <if test='el.Attribute("template-params") is XAttribute tmplParamsAttr'>
+            <code:method-call name='WithParams'>
+               <code:chain-reference/>
+               <code:arguments>
+                  <code:expression value='{xcst_expression(tmplParamsAttr)}'/>
+               </code:arguments>
+            </code:method-call>
+         </if>
+         <if test='el.Attribute("tunnel-params") is XAttribute tunnelParamsAttr'>
+            <code:method-call name='WithTunnelParams'>
+               <code:chain-reference/>
+               <code:arguments>
+                  <code:expression value='{xcst_expression(tunnelParamsAttr)}'/>
+               </code:arguments>
+            </code:method-call>
+         </if>
+         <code:method-call name='OutputToRaw'>
+            <code:chain-reference/>
+            <code:arguments>
+               <copy-of value='select(output, src + "reference", code)'/>
+            </code:arguments>
+         </code:method-call>
+         <if test='el.Attribute("base-uri") is XAttribute baseUriAttr'>
+            <code:method-call name='WithBaseUri'>
+               <code:chain-reference/>
+               <code:arguments>
+                  <call-template name='src:uri-resolve'>
+                     <with-param name='val' value='xcst_uri(baseUriAttr, true)'/>
+                     <with-param name='avt' value='baseUriAttr'/>
+                  </call-template>
+               </code:arguments>
+            </code:method-call>
+         </if>
+         <if test='el.Attribute("base-output-uri") is XAttribute bouAttr'>
+            <code:method-call name='WithBaseOutputUri'>
+               <code:chain-reference/>
+               <code:arguments>
+                  <call-template name='src:uri-resolve'>
+                     <with-param name='val' value='xcst_uri(bouAttr, true)'/>
+                     <with-param name='avt' value='bouAttr'/>
+                  </call-template>
+               </code:arguments>
+            </code:method-call>
+         </if>
+         <code:method-call name='Run'>
+            <code:chain-reference/>
+         </code:method-call>
+      </code:chain>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "using"' mode='src:statement'>
+
+      <call-template name='xcst:validate-attribs'>
+         <with-param name='el' value='el'/>
+         <with-param name='required' value='new[] { "value" }'/>
+         <with-param name='optional' value='new[] { "name" }'/>
+      </call-template>
+
+      <variable name='value' value='xcst_expression(el.Attribute("value")!)'/>
+
+      <code:using>
+         <call-template name='src:line-number'>
+            <with-param name='el' value='el'/>
+         </call-template>
+         <choose>
+            <when test='el.Attribute("name") is XAttribute nameAttr'>
+               <code:variable name='{xcst_name(nameAttr)}'>
+                  <code:expression value='{value}'/>
+               </code:variable>
+            </when>
+            <otherwise>
+               <code:expression value='{value}'/>
+            </otherwise>
+         </choose>
+         <code:block>
+            <call-template name='src:sequence-constructor'>
+               <with-param name='el' value='el'/>
+            </call-template>
+         </code:block>
+      </code:using>
+   </template>
+
+</module>

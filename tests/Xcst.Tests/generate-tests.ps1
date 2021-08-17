@@ -56,7 +56,7 @@ function TestConfig($file) {
 
 function GenerateTests {
 
-   Add-Type -Path ..\..\src\Xcst.Compiler\bin\$Configuration\Xcst.Compiler.dll
+   Add-Type -Path (Resolve-Path ..\..\src\Xcst.Compiler\bin\$Configuration\net4*\Xcst.Compiler.dll).Path
 
    $compilerFactory = New-Object Xcst.Compiler.XcstCompilerFactory
 
@@ -153,7 +153,7 @@ function GenerateTestsForDirectory([IO.DirectoryInfo]$directory, [string]$relati
             $testException = if ($config.exception -ne $null) {
                $config.exception
             } elseif (!$correct) {
-               "Xcst.Compiler.CompileException"
+               "Xcst.RuntimeException"
             } else {
                "Xcst.RuntimeException"
             }

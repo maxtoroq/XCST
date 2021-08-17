@@ -1,4 +1,4 @@
-﻿// Copyright 2015 Max Toro Q.
+﻿// Copyright 2021 Max Toro Q.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,28 +18,21 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml;
-using Saxon.Api;
-using XPathException = net.sf.saxon.trans.XPathException;
+using System.Xml.Linq;
 using Xcst.Compiler.Reflection;
 
 namespace Xcst.Compiler {
 
    public class XcstCompiler {
 
-      readonly Lazy<XsltExecutable>
-      _compilerExec;
-
-      readonly Lazy<IDictionary<Uri, XcstExtensionLoader>>
-      _extensions;
-
-      readonly Processor
-      _processor;
+      readonly XcstCompilerPackage
+      _compiler = new();
 
       readonly Dictionary<string[], object?>
-      _parameters = new Dictionary<string[], object?>();
+      _parameters = new();
 
-      readonly ConcurrentDictionary<string, object>
-      _packageLibrary = new ConcurrentDictionary<string, object>();
+      readonly ConcurrentDictionary<string, XDocument>
+      _packageLibrary = new();
 
       Type[]?
       _tbaseTypes;
@@ -98,50 +91,11 @@ namespace Xcst.Compiler {
       public Func<string, TextWriter>?
       CompilationUnitHandler { get; set; }
 
-      internal
-      XcstCompiler(
-            Func<XsltExecutable> compilerExecFn, Func<IDictionary<Uri, XcstExtensionLoader>> extensionsFn,
-            Processor processor) {
-
-         if (compilerExecFn is null) throw new ArgumentNullException(nameof(compilerExecFn));
-         if (extensionsFn is null) throw new ArgumentNullException(nameof(extensionsFn));
-         if (processor is null) throw new ArgumentNullException(nameof(processor));
-
-         _compilerExec = new Lazy<XsltExecutable>(compilerExecFn);
-         _extensions = new Lazy<IDictionary<Uri, XcstExtensionLoader>>(extensionsFn);
-         _processor = processor;
-      }
+      internal XcstCompiler() { }
 
       public void
       SetTargetBaseTypes(params Type[]? targetBaseTypes) {
          _tbaseTypes = targetBaseTypes;
-      }
-
-      public void
-      SetParameter(string ns, string name, object? value) {
-
-         if (ns is null) throw new ArgumentNullException(nameof(ns));
-         if (ns.Length == 0) throw new ArgumentException("ns cannot be empty.", nameof(ns));
-         if (name is null) throw new ArgumentNullException(nameof(name));
-         if (name.Length == 0) throw new ArgumentException("name cannot be empty.", nameof(name));
-
-         _parameters.Add(new[] { ns, name }, ConvertParameter(value));
-      }
-
-      object?
-      ConvertParameter(object? value) {
-
-         if (value is Type t) {
-
-            DocumentBuilder docBuilder = _processor.NewDocumentBuilder();
-            value = CodeTypeReference(t, docBuilder);
-
-         } else if (value is Delegate) {
-
-            value = WrapExternalObject(value);
-         }
-
-         return value;
       }
 
       public void
@@ -159,10 +113,10 @@ namespace Xcst.Compiler {
 
          XmlWriter writerFn(string packageName) {
 
-            Stream manifest = new MemoryStream();
+            XDocument manifest = new();
 
             if (_packageLibrary.TryAdd(packageName, manifest)) {
-               return XmlWriter.Create(manifest);
+               return manifest.CreateWriter();
             }
 
             throw new InvalidOperationException($"Package '{packageName}' has already been registered.");
@@ -186,279 +140,196 @@ namespace Xcst.Compiler {
             throw new ArgumentException("file must be an absolute URI.", nameof(file));
          }
 
-         using (var source = (Stream)resolver.GetEntity(file, null, typeof(Stream))) {
-            return Compile(source, file);
+         using (var source = (Stream?)resolver.GetEntity(file, null, typeof(Stream))) {
+
+            if (source is null) {
+               throw new ArgumentException("file not found.", nameof(file));
+            }
+
+            return Compile((settings, baseUri) => XmlReader.Create(source, settings, baseUri), file, resolver);
          }
       }
 
       public CompileResult
       Compile(Stream source, Uri? baseUri = null) =>
-         Compile(docb => docb.Build(source), baseUri);
+         Compile((settings, baseUri) => XmlReader.Create(source, settings, baseUri), baseUri);
 
       public CompileResult
       Compile(TextReader source, Uri? baseUri = null) =>
-         Compile(docb => docb.Build(source), baseUri);
+         Compile((settings, baseUri) => XmlReader.Create(source, settings, baseUri), baseUri);
 
       public CompileResult
       Compile(XmlReader source) =>
-         Compile(docb => docb.Build(source));
+         Compile((settings, baseUri) => source, externalReader: true);
 
       CompileResult
-      Compile(Func<DocumentBuilder, XdmNode> buildFn, Uri? baseUri = null) {
+      Compile(Func<XmlReaderSettings, string?, XmlReader> readerFn, Uri? baseUri = null, XmlResolver? moduleResolver = null, bool externalReader = false) {
 
-         XmlResolver moduleResolver = GetModuleResolverOrDefault(this.ModuleResolver);
+         moduleResolver ??= GetModuleResolverOrDefault(moduleResolver);
 
-         DocumentBuilder docBuilder = _processor.NewDocumentBuilder();
-         docBuilder.XmlResolver = moduleResolver;
+         XmlReaderSettings settings = new() {
+            XmlResolver = moduleResolver,
+            DtdProcessing = DtdProcessing.Parse
+         };
+
+         string? baseUriStr = null;
 
          if (baseUri != null) {
-            docBuilder.BaseUri = baseUri;
+
+            if (!baseUri.IsAbsoluteUri) {
+               baseUri = moduleResolver.ResolveUri(null, baseUri.OriginalString);
+            }
+
+            baseUriStr = baseUri.AbsoluteUri;
          }
 
-         XdmNode moduleDoc;
+         LoadOptions loadOpts = LoadOptions.PreserveWhitespace
+            | LoadOptions.SetBaseUri
+            | LoadOptions.SetLineInfo;
+
+         XmlReader reader = readerFn(settings, baseUriStr);
+         XDocument moduleDoc;
 
          try {
-            moduleDoc = buildFn(docBuilder);
+            moduleDoc = XDocument.Load(reader, loadOpts);
 
-         } catch (XPathException ex) {
+         } finally {
 
-            var locator = ex.getLocator();
-
-            throw new CompileException(ex.Message,
-               errorCode: ErrorCode(ex),
-               moduleUri: locator?.getSystemId() ?? baseUri?.OriginalString,
-               lineNumber: locator?.getLineNumber() ?? -1
-            );
+            if (!externalReader) {
+               reader.Close();
+            }
          }
 
-         XsltTransformer compiler = GetCompiler(moduleDoc);
-         compiler.InputXmlResolver = moduleResolver;
+         XcstTemplateEvaluator compilerEval = GetCompilerEvaluator(moduleDoc, moduleResolver);
 
-         var destination = new XdmDestination();
+         XDocument resultDoc = new();
 
-         try {
-            compiler.Run(destination);
-
-         } catch (DynamicError ex) {
-
-            XdmValue errorObject = ex.GetErrorObject();
-            var errorData = ModuleUriAndLineNumberFromErrorObject(errorObject);
-
-            string? moduleUri = errorData.Item1 ?? ex.ModuleUri;
-            int lineNumber = errorData.Item2 ?? ex.LineNumber;
-
-            throw new CompileException(ex.Message,
-               errorCode: ErrorCode(ex),
-               moduleUri: moduleUri,
-               lineNumber: lineNumber
-            );
+         using (var resultWriter = resultDoc.CreateWriter()) {
+            compilerEval
+               .OutputTo(resultWriter)
+               .Run();
          }
 
-         XdmNode docEl = destination.XdmNode.FirstElementOrSelf();
+         XElement docEl = resultDoc.Root!;
+         XNamespace src = XmlNamespaces.XcstCompiled;
+         XNamespace xcst = XmlNamespaces.XcstGrammar;
 
-         var compiled = new {
-            language = new QName("language"),
-            href = new QName("href"),
-            compilationUnit = CompilerQName("compilation-unit"),
-            @ref = CompilerQName("ref"),
-         };
-
-         var grammar = new {
-            packageManifest = new QName(XmlNamespaces.XcstGrammar, "package-manifest"),
-            template = new QName(XmlNamespaces.XcstGrammar, "template"),
-            visibility = new QName("visibility"),
-            name = new QName("name")
-         };
-
-         var publicVisibility = new List<string> { "public", "final", "abstract" };
-
-         var result = new CompileResult {
-            Language = docEl.GetAttributeValue(compiled.language),
+         CompileResult result = new() {
+            Language = docEl.Attribute("language")!.Value,
             CompilationUnits = (this.CompilationUnitHandler == null) ?
-               docEl.EnumerateAxis(XdmAxis.Child, compiled.compilationUnit)
-                  .AsNodes()
-                  .Select(n => n.StringValue)
+               docEl.Elements(src + "compilation-unit")
+                  .Select(p => p.Value)
                   .ToArray()
                : Array.Empty<string>(),
             Templates =
-               docEl.EnumerateAxis(XdmAxis.Child, grammar.packageManifest)
-                  .AsNodes()
-                  .Single()
-                  .EnumerateAxis(XdmAxis.Child, grammar.template)
-                  .AsNodes()
-                  .Where(n => publicVisibility.Contains(n.GetAttributeValue(grammar.visibility)))
-                  .Select(n => QualifiedName.Parse(n.GetAttributeValue(grammar.name)).ToString())
+               docEl.Element(xcst + "package-manifest")!
+                  .Elements(xcst + "template")
+                  .Where(p => p.Attribute("visibility")!.Value is "public" or "final" or "abstract")
+                  .Select(p => QualifiedName.Parse(p.Attribute("name")!.Value).ToString())
                   .ToArray()
          };
 
          return result;
       }
 
-      XsltTransformer
-      GetCompiler(XdmNode sourceDoc) {
+      XcstTemplateEvaluator
+      GetCompilerEvaluator(XDocument sourceDoc, XmlResolver moduleResolver) {
 
-         XsltTransformer compiler = _compilerExec.Value.Load();
-         compiler.InitialMode = CompilerQName("main");
-         compiler.InitialContextNode = sourceDoc;
+         XcstEvaluator evaluator = XcstEvaluator.Using(_compiler);
 
          // Extension params are loaded first
 
-         foreach (var extension in _extensions.Value) {
-            foreach (var param in extension.Value.GetParameters()) {
-               compiler.SetParameter(new QName(extension.Key.AbsoluteUri, param.Key), ConvertParameter(param.Value).ToXdmValue());
-            }
-         }
+         //foreach (var extension in _extensions.Value) {
+         //   foreach (var param in extension.Value.GetParameters()) {
+         //      compiler.SetParameter(new QName(extension.Key.AbsoluteUri, param.Key), ConvertParameter(param.Value).ToXdmValue());
+         //   }
+         //}
 
          // User params can override extension params
 
-         foreach (var pair in _parameters) {
-            compiler.SetParameter(new QName(pair.Key[0], pair.Key[1]), pair.Value.ToXdmValue());
-         }
+         //foreach (var pair in _parameters) {
+         //   compiler.SetParameter(new QName(pair.Key[0], pair.Key[1]), pair.Value.ToXdmValue());
+         //}
 
          // Compiler params always win
 
          if (this.CompilationUnitHandler != null) {
-            compiler.BaseOutputUri = new Uri("urn:foo"); // Saxon fails if null
-            compiler.ResultDocumentHandler = new CompilationUnitResultHandler(this.CompilationUnitHandler, _processor);
-            compiler.SetParameter(CompilerQName("source-to-result-document"), true.ToXdmItem());
+            evaluator.WithParam("src_compilation_unit_handler", this.CompilationUnitHandler);
          }
 
          if (this.TargetNamespace != null) {
-            compiler.SetParameter(CompilerQName("namespace"), this.TargetNamespace.ToXdmItem());
+            evaluator.WithParam("src_namespace", this.TargetNamespace);
          }
 
          if (this.TargetClass != null) {
-            compiler.SetParameter(CompilerQName("class"), this.TargetClass.ToXdmItem());
+            evaluator.WithParam("src_class", this.TargetClass);
          }
 
-         compiler.SetParameter(
-            CompilerQName("visibility"),
-            (this.TargetVisibility == CodeVisibility.Default ? "#default" : this.TargetVisibility.ToString().ToLowerInvariant())
-               .ToXdmItem());
+         evaluator.WithParam("src_visibility",
+            (this.TargetVisibility == CodeVisibility.Default ?
+               "#default"
+               : this.TargetVisibility.ToString().ToLowerInvariant()));
 
-         DocumentBuilder baseTypesBuilder = _processor.NewDocumentBuilder();
-
-         compiler.SetParameter(
-            CompilerQName("base-types"),
-            new XdmValue(
-               _tbaseTypes?.Select(t => CodeTypeReference(t, baseTypesBuilder))
-                  ?? this.TargetBaseTypes?.Select(t => CodeTypeReference(t, baseTypesBuilder))
-                  ?? Enumerable.Empty<XdmNode>()
-            )
+         evaluator.WithParam(
+            "src_base_types",
+            _tbaseTypes?.Select(t => CodeTypeReference(t)).ToArray()
+               ?? this.TargetBaseTypes?.Select(t => CodeTypeReference(t)).ToArray()
+               ?? Array.Empty<XElement>()
          );
 
-         compiler.SetParameter(CompilerQName("nullable-annotate"), this.NullableAnnotate.ToXdmItem());
+         evaluator.WithParam("cs_nullable_annotate", this.NullableAnnotate);
 
          if (this.NullableContext != null) {
-            compiler.SetParameter(CompilerQName("nullable-context"), this.NullableContext.ToXdmItem());
+            evaluator.WithParam("cs_nullable_context", this.NullableContext);
          }
 
-         compiler.SetParameter(CompilerQName("named-package"), this.NamedPackage.ToXdmItem());
+         evaluator.WithParam("src_named_package", this.NamedPackage);
 
          if (this.UsePackageBase != null) {
-            compiler.SetParameter(CompilerQName("use-package-base"), this.UsePackageBase.ToXdmItem());
+            evaluator.WithParam("src_use_package_base", this.UsePackageBase);
          }
+
+         evaluator.WithParam("src_module_resolver", moduleResolver);
 
          if (this.PackageTypeResolver != null) {
-            compiler.SetParameter(CompilerQName("package-type-resolver"), WrapExternalObject(this.PackageTypeResolver));
+            evaluator.WithParam("src_package_type_resolver", this.PackageTypeResolver);
          }
 
-         compiler.SetParameter(CompilerQName("package-library"), WrapExternalObject(_packageLibrary));
+         evaluator.WithParam("src_package_library", _packageLibrary);
 
          if (this.PackageLocationResolver != null) {
-            compiler.SetParameter(CompilerQName("package-location-resolver"), WrapExternalObject(this.PackageLocationResolver));
+            evaluator.WithParam("src_package_location_resolver", this.PackageLocationResolver);
          }
 
          if (this.PackageFileDirectory != null) {
-            compiler.SetParameter(CompilerQName("package-file-directory"), this.PackageFileDirectory.ToXdmItem());
+            evaluator.WithParam("src_package_file_directory", this.PackageFileDirectory);
          }
 
          if (this.PackageFileExtension != null) {
-            compiler.SetParameter(CompilerQName("package-file-extension"), this.PackageFileExtension.ToXdmItem());
+            evaluator.WithParam("src_package_file_extension", this.PackageFileExtension);
          }
 
-         compiler.SetParameter(CompilerQName("use-line-directive"), this.UseLineDirective.ToXdmItem());
+         evaluator.WithParam("src_use_line_directive", this.UseLineDirective);
 
          if (this.NewLineChars != null) {
-            compiler.SetParameter(CompilerQName("new-line"), this.NewLineChars.ToXdmItem());
+            evaluator.WithParam("src_new_line", this.NewLineChars);
          }
 
          if (this.IndentChars != null) {
-            compiler.SetParameter(CompilerQName("indent"), this.IndentChars.ToXdmItem());
+            evaluator.WithParam("src_indent", this.IndentChars);
          }
 
-         compiler.SetParameter(CompilerQName("open-brace-on-new-line"), this.OpenBraceOnNewLine.ToXdmItem());
+         evaluator.WithParam("cs_open_brace_on_new_line", this.OpenBraceOnNewLine);
 
-         return compiler;
+         return evaluator.ApplyTemplates(sourceDoc.Root!);
       }
 
-      static XdmValue
-      WrapExternalObject(object obj) =>
-         new XdmExternalObjectValue(obj);
-
-      internal static T
-      UnwrapExternalObject<T>(XdmItem item) {
-
-         object obj = ((XdmExternalObjectValue)item).GetExternalObject();
-
-         return (T)obj;
-      }
-
-      static XmlResolver
+      XmlResolver
       GetModuleResolverOrDefault(XmlResolver? moduleResolver) =>
-         moduleResolver ?? new XmlUrlResolver();
+         moduleResolver ?? this.ModuleResolver ?? new XmlUrlResolver();
 
-      internal static QName
-      CompilerQName(string local) =>
-         new QName(XmlNamespaces.XcstCompiled, local);
-
-      internal static Tuple<string?, int?>
-      ModuleUriAndLineNumberFromErrorObject(XdmValue errorObject) {
-
-         XdmAtomicValue[] values = errorObject
-            .GetEnumerator()
-            .AsAtomicValues()
-            .ToArray();
-
-         string? moduleUri = values
-            .Select(x => x.ToString())
-            .FirstOrDefault();
-
-         int? lineNumber = values
-            .Skip(1)
-            .Select(x => (int?)(long)x.Value)
-            .FirstOrDefault();
-
-         return Tuple.Create((string?)moduleUri, lineNumber);
-      }
-
-      internal static string?
-      ErrorCode(XPathException ex) =>
-         ErrorCode(ex.getErrorCodeNamespace(), ex.getErrorCodeLocalPart());
-
-      internal static string?
-      ErrorCode(DynamicError ex) =>
-         ErrorCode(ex.ErrorCode?.Uri, ex.ErrorCode?.LocalName);
-
-      internal static string?
-      ErrorCode(string? ns, string? name) {
-
-         if (name != null) {
-
-            if (!String.IsNullOrEmpty(ns)
-               && ns != XmlNamespaces.XcstErrors) {
-
-               return QualifiedName.UriQualifiedName(ns, name);
-            }
-
-            return name;
-         }
-
-         return null;
-      }
-
-      internal static XdmNode
-      CodeTypeReference(string typeName, DocumentBuilder docBuilder) {
+      internal static XElement
+      CodeTypeReference(string typeName) {
 
          void writeFn(XmlWriter writer) {
 
@@ -470,58 +341,26 @@ namespace Xcst.Compiler {
             writer.WriteEndElement();
          }
 
-         return CodeTypeReferenceImpl(writeFn, docBuilder);
+         return CodeTypeReferenceImpl(writeFn);
       }
 
-      internal static XdmNode
-      CodeTypeReference(Type type, DocumentBuilder docBuilder) =>
-         CodeTypeReferenceImpl(w => TypeManifestReader.WriteTypeReference(type, w), docBuilder);
+      internal static XElement
+      CodeTypeReference(Type type) =>
+         CodeTypeReferenceImpl(w => TypeManifestReader.WriteTypeReference(type, w));
 
-      internal static XdmNode
-      CodeTypeReferenceImpl(Action<XmlWriter> writeFn, DocumentBuilder docBuilder) {
+      internal static XElement
+      CodeTypeReferenceImpl(Action<XmlWriter> writeFn) {
 
-         using (var output = new MemoryStream()) {
+         XDocument typeRefDoc = new();
 
-            using (XmlWriter writer = XmlWriter.Create(output)) {
-               writeFn(writer);
-            }
-
-            output.Position = 0;
-
-            docBuilder.BaseUri = docBuilder.BaseUri
-               ?? new Uri(String.Empty, UriKind.Relative);
-
-            return docBuilder.Build(output)
-               .FirstElementOrSelf();
-         }
-      }
-
-      class CompilationUnitResultHandler : IResultDocumentHandler {
-
-         readonly Func<string, TextWriter>
-         _writerFn;
-
-         readonly Processor
-         _processor;
-
-         public
-         CompilationUnitResultHandler(Func<string, TextWriter> writerFn, Processor processor) {
-
-            _writerFn = writerFn;
-            _processor = processor;
+         using (XmlWriter writer = typeRefDoc.CreateWriter()) {
+            writeFn(writer);
          }
 
-         public XmlDestination
-         HandleResultDocument(string href, Uri? baseUri) {
+         XElement typeRef = typeRefDoc.Root!;
+         typeRef.Remove();
 
-            TextWriter output = _writerFn(href)
-               ?? throw new CompileException($"The function of {nameof(XcstCompiler)}.{nameof(CompilationUnitHandler)} must not return null.");
-
-            var serializer = _processor.NewSerializer(output);
-            serializer.SetOutputProperty(Serializer.METHOD, "text");
-
-            return serializer;
-         }
+         return typeRef;
       }
    }
 

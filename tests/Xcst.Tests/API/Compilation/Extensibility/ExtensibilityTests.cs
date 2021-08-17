@@ -13,6 +13,7 @@ namespace Xcst.Tests.API.Compilation.Extensibility {
       const string
       TestCategory = nameof(API) + "." + nameof(Compilation) + "." + nameof(Extensibility);
 
+/*
       [Test]
       [Category(TestCategory)]
       public void
@@ -35,7 +36,7 @@ namespace Xcst.Tests.API.Compilation.Extensibility {
 </c:package>
 ");
 
-         compiler.Compile(module, baseUri: new Uri("http://localhost"));
+         compiler.Compile(module);
       }
 
       class ExternalFunctionLoader : XcstExtensionLoader {
@@ -71,5 +72,6 @@ namespace Xcst.Tests.API.Compilation.Extensibility {
          static Uri MakeRelativeUri(Uri current, Uri compare) =>
             current.MakeRelativeUri(compare);
       }
+*/
    }
 }

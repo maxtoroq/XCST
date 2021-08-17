@@ -1,0 +1,887 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!--
+ Copyright 2021 Max Toro Q.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<module version='1.0' language='C#'
+   xmlns='http://maxtoroq.github.io/XCST'
+   xmlns:xcst='http://maxtoroq.github.io/XCST/grammar'
+   xmlns:code='http://maxtoroq.github.io/XCST/code'
+   xmlns:src='http://maxtoroq.github.io/XCST/compiled'>
+
+   <import-namespace ns='System.Linq'/>
+   <import-namespace ns='System.Xml.Linq'/>
+
+   <variable name='xcst_validation_or_type_attributes' value='new[] { "validation-resource-type" }' as='string[]'/>
+   <variable name='xcst_validation_or_member_attributes' value='new[] {
+      "data-type-message", "required-message", "min-length-message", "max-length-message", "pattern-message",
+      "range-message", "equal-to-message" }' as='string[]'/>
+
+   <variable name='xcst_type_or_member_attributes' value='new[] { "allow-empty-string", "display-text-member" }' as='string[]'/>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "type"' mode='xcst:validate-top-level'/>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "validation"' mode='xcst:validate-top-level'>
+      <call-template name='xcst:validate-attribs'>
+         <with-param name='el' value='el'/>
+         <with-param name='optional' value='xcst_validation_or_member_attributes
+            .Concat(xcst_validation_or_type_attributes)
+            .ToArray()'/>
+      </call-template>
+      <call-template name='xcst:no-children'>
+         <with-param name='el' value='el'/>
+      </call-template>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "type"' mode='xcst:package-manifest'>
+      <param name='modules' as='XElement[]' tunnel='yes' required='yes'/>
+      <param name='modulePos' as='int' tunnel='yes' required='yes'/>
+      <param name='language' as='string' tunnel='yes' required='yes'/>
+
+      <call-template name='xcst:validate-attribs'>
+         <with-param name='el' value='el'/>
+         <with-param name='required' value='new[] { "name" }'/>
+         <with-param name='optional' value='new[] { "visibility", "resource-type" }
+            .Concat(xcst_type_or_member_attributes)
+            .Concat(xcst_validation_or_type_attributes)
+            .ToArray()'/>
+      </call-template>
+
+      <call-template name='xcst:validate-children'>
+         <with-param name='el' value='el'/>
+         <with-param name='allowed' value='new[] { "metadata", "member" }'/>
+      </call-template>
+
+      <variable name='nameExpr' value='xcst_name(el.Attribute("name")!)'/>
+      <variable name='name' value='xcst_unescape_identifier(nameExpr, language)'/>
+      <variable name='nameWasEscaped' value='nameExpr != name'/>
+
+      <if test='!el.ElementsBeforeSelf(el.Name).All(p => !xcst_homonymous(p, el))'>
+         <message terminate='yes' error-code='XTSE0220' error-data='src_error_object(el)' transform-text='trim'>
+            Duplicate c:type declaration.
+         </message>
+      </if>
+
+      <if test='!(el.Parent!.Name != c + "override")'>
+         <message terminate='yes' error-code='XTSE0010' error-data='src_error_object(el)' transform-text='trim'>
+            Cannot override a c:type component.
+         </message>
+      </if>
+
+      <variable name='declaredVisibility' value='
+         (el.Attribute("visibility") is XAttribute visibilityAttr) ? xcst_visibility(visibilityAttr)
+         : "private"'/>
+
+      <if test='!(declaredVisibility != "abstract")'>
+         <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(el)' transform-text='trim'>
+            visibility='abstract' is not a valid value for c:type declarations.
+         </message>
+      </if>
+
+      <variable name='visibility' as='string'>
+         <variable name='followingModules' value='modules.Skip(modulePos + 1).ToArray()'/>
+         <choose>
+            <when test='select(followingModules, c)
+               .Any(p => xcst_homonymous(p, el))'>hidden</when>
+            <otherwise value='declaredVisibility'/>
+         </choose>
+      </variable>
+
+      <xcst:type name='{name}'
+         visibility='{visibility}'
+         member-name='{name}'
+         member-name-was-escaped='{@string(nameWasEscaped)}'
+         declaration-id='{generate_id(el)}'
+         declaring-module-uri='{el.Document!.BaseUri}'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == xcst + "type"' mode='src:import-namespace'>
+      <code:import alias='{el.Attribute("name")!.Value}' line-hidden='true' verbatim='true' type-verbatim='true'>
+         <code:type-reference name='{el.Attribute("name")!.Value}'>
+            <copy-of value='select(el, xcst + "package-type", code + "type-reference")'/>
+         </code:type-reference>
+      </code:import>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "type"' mode='src:member'>
+      <param name='packageManifest' as='XElement' tunnel='yes' required='yes'/>
+      <param name='modules' as='XElement[]' tunnel='yes' required='yes'/>
+
+      <variable name='id' value='generate_id(el)'/>
+
+      <variable name='meta' value='packageManifest
+         .Elements(xcst + "type")
+         .First(p => p.Attribute("declaration-id")?.Value == id)'/>
+
+      <variable name='visibility' value='meta.Attribute("visibility")!.Value'/>
+      <variable name='publicMember' value='visibility is "public" or "final" or "abstract"'/>
+
+      <if test='visibility != "hidden"'>
+
+         <variable name='validationDeclarations' value='
+            modules.Reverse()
+               .SelectMany(p => p.Elements(c + "validation").Reverse())
+               .ToArray()'/>
+
+         <variable name='validationAttributes' value='
+            validationDeclarations
+               .SelectMany(p => attributes(p))
+               .GroupBy(p => p.Name)
+               .Select(p => p.First())
+               .ToArray()'/>
+
+         <code:type name='{meta.Attribute("member-name")!.Value}'
+               visibility='{(publicMember ? "public" : "private")}'
+               extensibility='{(visibility == "final" ? "sealed" : "#default")}'>
+            <if test='meta.Attribute("member-name-was-escaped") is XAttribute escAttr
+                  &amp;&amp; xs_boolean(escAttr)'>
+               <attribute name='verbatim' value='@string(true)'/>
+            </if>
+            <call-template name='src:line-number'>
+               <with-param name='el' value='el'/>
+            </call-template>
+            <code:attributes>
+               <if test='publicMember'>
+                  <code:attribute>
+                     <copy-of value='src_component_attr_type'/>
+                     <code:arguments>
+                        <code:int value='6'/>
+                     </code:arguments>
+                  </code:attribute>
+               </if>
+               <call-template name='src:type-attributes'>
+                  <with-param name='el' value='el'/>
+               </call-template>
+               <!--<call-template name='src:type-attribute-extra'/>-->
+               <apply-templates value='el.Elements(c + "metadata")' mode='src:attribute'/>
+            </code:attributes>
+            <code:members>
+               <variable name='members' value='el.Elements(c + "member").ToArray()'/>
+               <apply-templates value='members'>
+                  <with-param name='src_validation_attributes' value='validationAttributes' tunnel='yes'/>
+               </apply-templates>
+               <apply-templates value='members.Where(p => p.Elements(c + "member").Any())' mode='src:anonymous-type'>
+                  <with-param name='src_validation_attributes' value='validationAttributes' tunnel='yes'/>
+               </apply-templates>
+               <call-template name='src:type-constructor'/>
+            </code:members>
+         </code:type>
+      </if>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "member"' mode='src:member'>
+      <param name='language' as='string' tunnel='yes' required='yes'/>
+
+      <call-template name='xcst:validate-attribs'>
+         <with-param name='el' value='el'/>
+         <with-param name='required' value='new[] { "name" }'/>
+         <with-param name='optional' value='new[] { "as", "value", "expression", "auto-initialize", "display", "display-name",
+               "description", "short-name", "edit-hint", "order", "group", "format", "apply-format-in-edit-mode",
+               "disable-output-escaping", "null-display-text", "template", "data-type", "required", "max-length",
+               "min-length", "pattern", "min", "max", "equal-to" }
+            .Concat(xcst_type_or_member_attributes)
+            .Concat(xcst_validation_or_member_attributes)
+            .ToArray()'/>
+      </call-template>
+
+      <call-template name='xcst:validate-children'>
+         <with-param name='el' value='el'/>
+         <with-param name='allowed' value='new[] { "metadata", "member" }'/>
+      </call-template>
+
+      <variable name='asAttr' value='el.Attribute("as")'/>
+      <variable name='valueAttr' value='el.Attribute("value")'/>
+      <variable name='expressionAttr' value='el.Attribute("expression")'/>
+
+      <if test='!(asAttr is null || !el.Elements(c + "member").Any())'>
+         <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(el)' transform-text='trim'>
+            The 'as' attribute must be omitted when the member has child members.
+         </message>
+      </if>
+
+      <if test='!(valueAttr is null || expressionAttr is null)'>
+         <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(el)' transform-text='trim'>
+            The attributes 'value' and 'expression' are mutually exclusive.
+         </message>
+      </if>
+
+      <call-template name='xcst:no-other-following'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <variable name='autoInit' value='
+         (el.Attribute("auto-initialize") is XAttribute autoInitAttr) ?
+            xcst_boolean(autoInitAttr)!.Value
+            : false'/>
+
+      <if test='!(!autoInit || (valueAttr is null &amp;&amp; expressionAttr is null))'>
+         <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(el)' transform-text='trim'>
+            When auto-initialize='yes' the 'expression' and 'value' attributes must be omitted.
+         </message>
+      </if>
+
+      <variable name='type' as='XElement'>
+         <choose>
+            <when test='el.Elements(c + "member").Any()'>
+               <code:type-reference name='{src_anonymous_type_name(el, language)}' nullable='true'/>
+            </when>
+            <when test='asAttr != null'>
+               <code:type-reference name='{xcst_type(asAttr)}'/>
+            </when>
+            <otherwise>
+               <copy-of value='src_nullable_object_type'/>
+            </otherwise>
+         </choose>
+      </variable>
+
+      <code:property name='{xcst_name(el.Attribute("name")!)}' visibility='public'>
+         <call-template name='src:line-number'>
+            <with-param name='el' value='el'/>
+         </call-template>
+         <copy-of value='type'/>
+         <code:attributes>
+            <call-template name='src:member-attributes'>
+               <with-param name='el' value='el'/>
+            </call-template>
+            <!--<call-template name='src:member-attribute-extra'/>-->
+            <apply-templates value='el.Elements(c + "metadata")' mode='src:attribute'/>
+         </code:attributes>
+         <code:getter>
+            <if test='expressionAttr != null'>
+               <code:block>
+                  <code:return>
+                     <code:expression value='{xcst_expression(expressionAttr)}'/>
+                  </code:return>
+               </code:block>
+            </if>
+         </code:getter>
+         <if test='expressionAttr is null'>
+            <code:setter/>
+         </if>
+         <choose>
+            <when test='autoInit'>
+               <code:expression>
+                  <code:new-object>
+                     <copy-of value='type'/>
+                  </code:new-object>
+               </code:expression>
+            </when>
+            <when test='valueAttr != null'>
+               <code:expression value='{xcst_expression(valueAttr)}'/>
+            </when>
+         </choose>
+      </code:property>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "metadata"' mode='src:attribute'>
+
+      <call-template name='xcst:validate-attribs'>
+         <with-param name='el' value='el'/>
+         <with-param name='required' value='new[] { "name" }'/>
+         <with-param name='optional' value='new[] { "value" }'/>
+      </call-template>
+
+      <call-template name='xcst:no-children'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <call-template name='xcst:no-other-preceding'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <code:attribute>
+         <call-template name='src:line-number'>
+            <with-param name='el' value='el'/>
+         </call-template>
+         <code:type-reference name='{xcst_type(el.Attribute("name")!)}'/>
+         <if test='el.Attribute("value") is XAttribute valueAttr'>
+            <code:arguments>
+               <code:expression value='{xcst_expression(valueAttr)}'/>
+            </code:arguments>
+         </if>
+      </code:attribute>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "member"' mode='src:anonymous-type'>
+      <param name='language' as='string' tunnel='yes' required='yes'/>
+
+      <variable name='members' value='el.Elements(c + "member").ToArray()'/>
+      <variable name='typeName' value='src_anonymous_type_name(el, language)'/>
+
+      <assert test='members.Length > 0'/>
+
+      <code:method name='{src_aux_variable("new_" + xcst_unescape_identifier(xcst_name(el.Attribute("name")!), language))}' visibility='public'>
+         <code:type-reference name='{typeName}'/>
+         <code:block>
+            <code:return>
+               <code:new-object>
+                  <code:type-reference name='{typeName}'/>
+               </code:new-object>
+            </code:return>
+         </code:block>
+      </code:method>
+      <code:type name='{typeName}' visibility='public'>
+         <call-template name='src:line-number'>
+            <with-param name='el' value='el'/>
+         </call-template>
+         <code:attributes>
+            <call-template name='src:type-attributes'>
+               <with-param name='el' value='el'/>
+            </call-template>
+            <!--<call-template name='src:type-attribute-extra'/>-->
+         </code:attributes>
+         <code:members>
+            <apply-templates value='members' mode='src:member'/>
+            <apply-templates value='members.Where(p => p.Elements(c + "member").Any())'/>
+            <call-template name='src:type-constructor'/>
+         </code:members>
+      </code:type>
+   </template>
+
+   <function name='src_anonymous_type_name' as='string'>
+      <param name='member' as='XElement'/>
+      <param name='language' as='string'/>
+
+      <assert test='member.Name == c + "member"'/>
+
+      <variable name='propertyName' value='xcst_unescape_identifier(xcst_name(member.Attribute("name")!), language)'/>
+      <return value='src_aux_variable(string.Join("_", "type", propertyName, replace(StringId(propertyName), "-", "_")))'/>
+   </function>
+
+   <template name='src:type-constructor'>
+      <param name='language' as='string' tunnel='yes' required='yes'/>
+
+      <variable name='disableCS8618' value='
+         xcst_language_equal(language, xcst_csharp_lang)
+            &amp;&amp; cs_nullable_annotate'/>
+
+      <if test='disableCS8618'>
+         <code:disable-warning codes='CS8618'/>
+      </if>
+
+      <code:constructor visibility='public'>
+         <code:block/>
+      </code:constructor>
+
+      <if test='disableCS8618'>
+         <code:restore-warning codes='CS8618'/>
+      </if>
+   </template>
+
+   <template name='src:type-attributes'>
+      <param name='el' as='XElement' required='yes'/>
+
+      <apply-templates value='attributes(el)
+         .Where(p => p.Name == "display-text-member")' mode='src:attribute'/>
+   </template>
+
+   <template name='src:member-attributes'>
+      <param name='el' as='XElement' required='yes'/>
+
+      <apply-templates value='attributes(el)
+         .Where(p => p.Name.Namespace == XNamespace.None
+            &amp;&amp; p.Name.LocalName is "data-type"
+               or "display"
+               or "equal-to"
+               or "min-length"
+               or "max-length"
+               or "pattern"
+               or "required"
+               or "template")' mode='src:attribute'/>
+      <call-template name='src:range-attribute'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <call-template name='src:display-attribute'>
+         <with-param name='el' value='el'/>
+      </call-template>
+      <call-template name='src:display-format-attribute'>
+         <with-param name='el' value='el'/>
+      </call-template>
+   </template>
+
+
+   <!-- ## Display -->
+
+   <template name='src:display-attribute'>
+      <param name='el' as='XElement' required='yes'/>
+
+      <variable name='arguments' as='XElement[]'>
+         <apply-templates value='attributes(el)
+            .Where(p => p.Name.Namespace == XNamespace.None
+               &amp;&amp; p.Name.LocalName is "description"
+                  or "display-name"
+                  or "edit-hint"
+                  or "group"
+                  or "order"
+                  or "short-name")' mode='src:display-argument'/>
+         <if test='el.Ancestors(c + "type")
+               .First()!.Attribute("resource-type") is XAttribute rtAttr'>
+            <apply-templates value='rtAttr' mode='src:display-argument'/>
+         </if>
+      </variable>
+
+      <if test='arguments.Length > 0'>
+         <code:attribute>
+            <call-template name='src:line-number'>
+               <with-param name='el' value='el'/>
+            </call-template>
+            <code:type-reference name='Display' namespace='System.ComponentModel.DataAnnotations'/>
+            <code:initializer>
+               <copy-of value='arguments'/>
+            </code:initializer>
+         </code:attribute>
+      </if>
+   </template>
+
+   <template match='XAttribute attr &amp;&amp; attr.Name == "description"' mode='src:display-argument'>
+      <code:member-initializer name='Description'>
+         <code:string verbatim='true'>
+            <value-of value='attr.Value'/>
+         </code:string>
+      </code:member-initializer>
+   </template>
+
+   <template match='XAttribute attr &amp;&amp; attr.Name == "display-name"' mode='src:display-argument'>
+      <code:member-initializer name='Name'>
+         <code:string verbatim='true'>
+            <value-of value='attr.Value'/>
+         </code:string>
+      </code:member-initializer>
+   </template>
+
+   <template match='XAttribute attr &amp;&amp; attr.Name == "edit-hint"' mode='src:display-argument'>
+      <code:member-initializer name='Prompt'>
+         <code:string verbatim='true'>
+            <value-of value='attr.Value'/>
+         </code:string>
+      </code:member-initializer>
+   </template>
+
+   <template match='XAttribute attr &amp;&amp; attr.Name == "group"' mode='src:display-argument'>
+      <code:member-initializer name='GroupName'>
+         <code:string verbatim='true'>
+            <value-of value='attr.Value'/>
+         </code:string>
+      </code:member-initializer>
+   </template>
+
+   <template match='XAttribute attr &amp;&amp; attr.Name == "order"' mode='src:display-argument'>
+      <code:member-initializer name='Order'>
+         <code:int value='{xcst_integer(attr)}'/>
+      </code:member-initializer>
+   </template>
+
+   <template match='XAttribute attr &amp;&amp; attr.Name == "resource-type"' mode='src:display-argument'>
+      <code:member-initializer name='ResourceType'>
+         <code:typeof>
+            <code:type-reference name='{xcst_type(attr)}'/>
+         </code:typeof>
+      </code:member-initializer>
+   </template>
+
+   <template match='XAttribute attr &amp;&amp; attr.Name == "short-name"' mode='src:display-argument'>
+      <code:member-initializer name='ShortName'>
+         <code:string verbatim='true'>
+            <value-of value='attr.Value'/>
+         </code:string>
+      </code:member-initializer>
+   </template>
+
+
+   <!-- ## DisplayFormat -->
+
+   <template name='src:display-format-attribute'>
+      <param name='el' as='XElement' required='yes'/>
+
+      <variable name='arguments' as='XElement[]'>
+         <apply-templates value='attributes(el)
+            .Where(p => p.Name.Namespace == XNamespace.None
+               &amp;&amp; p.Name.LocalName is "apply-format-in-edit-mode"
+                  or "disable-output-escaping"
+                  or "format"
+                  or "null-display-text")' mode='src:display-format-argument'/>
+         <if test='el.AncestorsAndSelf()
+               .Where(p => (p.Name == c + "member" || p.Name == c + "type")
+                  &amp;&amp; p.Attribute("allow-empty-string") != null)
+               .FirstOrDefault()?.Attribute("allow-empty-string") is XAttribute aesAttr'>
+            <apply-templates value='aesAttr' mode='src:display-format-argument'/>
+         </if>
+      </variable>
+
+      <if test='arguments.Length > 0'>
+         <code:attribute>
+            <call-template name='src:line-number'>
+               <with-param name='el' value='el'/>
+            </call-template>
+            <code:type-reference name='DisplayFormat' namespace='System.ComponentModel.DataAnnotations'/>
+            <code:initializer>
+               <copy-of value='arguments'/>
+            </code:initializer>
+         </code:attribute>
+      </if>
+   </template>
+
+   <template match='XAttribute attr &amp;&amp; attr.Name == "allow-empty-string"' mode='src:display-format-argument'>
+      <code:member-initializer name='ConvertEmptyStringToNull'>
+         <code:bool value='{@string(!xcst_boolean(attr)!.Value)}'/>
+      </code:member-initializer>
+   </template>
+
+   <template match='XAttribute attr &amp;&amp; attr.Name == "apply-format-in-edit-mode"' mode='src:display-format-argument'>
+      <code:member-initializer name='ApplyFormatInEditMode'>
+         <code:bool value='{@string(xcst_boolean(attr)!.Value)}'/>
+      </code:member-initializer>
+   </template>
+
+   <template match='XAttribute attr &amp;&amp; attr.Name == "disable-output-escaping"' mode='src:display-format-argument'>
+      <code:member-initializer name='HtmlEncode'>
+         <code:bool value='{@string(!xcst_boolean(attr)!.Value)}'/>
+      </code:member-initializer>
+   </template>
+
+   <template match='XAttribute attr &amp;&amp; attr.Name == "format"' mode='src:display-format-argument'>
+      <code:member-initializer name='DataFormatString'>
+         <code:string verbatim='true'>
+            <value-of value='attr.Value'/>
+         </code:string>
+      </code:member-initializer>
+   </template>
+
+   <template match='XAttribute attr &amp;&amp; attr.Name == "null-display-text"' mode='src:display-format-argument'>
+      <code:member-initializer name='NullDisplayText'>
+         <code:string verbatim='true'>
+            <value-of value='attr.Value'/>
+         </code:string>
+      </code:member-initializer>
+   </template>
+
+
+   <!-- ## Other -->
+
+   <template match='XAttribute attr &amp;&amp; attr.Name == "data-type"' mode='src:attribute'>
+
+      <variable name='dataType' value='xcst_non_string(attr)'/>
+
+      <code:attribute>
+         <call-template name='src:line-number'>
+            <with-param name='el' value='attr.Parent!'/>
+         </call-template>
+         <switch value='dataType'>
+            <when test='"EmailAddress" or "CreditCard" or "Url"'>
+               <code:type-reference name='{dataType}' namespace='System.ComponentModel.DataAnnotations'/>
+            </when>
+            <when test='"PhoneNumber"'>
+               <code:type-reference name='Phone' namespace='System.ComponentModel.DataAnnotations'/>
+            </when>
+            <otherwise>
+               <code:type-reference name='DataType' namespace='System.ComponentModel.DataAnnotations'/>
+               <code:arguments>
+                  <code:field-reference name='{dataType}'>
+                     <code:type-reference name='DataType' namespace='System.ComponentModel.DataAnnotations'/>
+                  </code:field-reference>
+               </code:arguments>
+            </otherwise>
+         </switch>
+         <code:initializer>
+            <call-template name='src:validation-arguments'>
+               <with-param name='el' value='attr.Parent!'/>
+               <with-param name='name' value='attr.Name'/>
+            </call-template>
+         </code:initializer>
+      </code:attribute>
+   </template>
+
+   <template match='XAttribute attr &amp;&amp; attr.Name == "display"' mode='src:attribute'>
+
+      <variable name='display' value='xcst_non_string(attr)'/>
+      <variable name='scaffold' value='display is "view-only" or "edit-only" or "hidden"
+         || xcst_boolean(attr)!.Value'/>
+
+      <code:attribute>
+         <call-template name='src:line-number'>
+            <with-param name='el' value='attr.Parent!'/>
+         </call-template>
+         <code:type-reference name='ScaffoldColumn' namespace='System.ComponentModel.DataAnnotations'/>
+         <code:arguments>
+            <code:bool value='{@string(scaffold)}'/>
+         </code:arguments>
+      </code:attribute>
+   </template>
+
+   <template match='XAttribute attr &amp;&amp; attr.Name == "display-text-member"' mode='src:attribute'>
+      <code:attribute>
+         <call-template name='src:line-number'>
+            <with-param name='el' value='attr.Parent!'/>
+         </call-template>
+         <code:type-reference name='DisplayColumn' namespace='System.ComponentModel.DataAnnotations'/>
+         <code:arguments>
+            <code:string literal='true'>
+               <value-of value='xcst_name(attr)'/>
+            </code:string>
+         </code:arguments>
+      </code:attribute>
+   </template>
+
+   <template match='XAttribute attr &amp;&amp; attr.Name == "equal-to"' mode='src:attribute'>
+      <code:attribute>
+         <call-template name='src:line-number'>
+            <with-param name='el' value='attr.Parent!'/>
+         </call-template>
+         <code:type-reference name='Compare' namespace='System.ComponentModel.DataAnnotations'/>
+         <code:arguments>
+            <code:string literal='true'>
+               <value-of value='xcst_name(attr)'/>
+            </code:string>
+         </code:arguments>
+         <code:initializer>
+            <call-template name='src:validation-arguments'>
+               <with-param name='el' value='attr.Parent!'/>
+               <with-param name='name' value='attr.Name'/>
+            </call-template>
+         </code:initializer>
+      </code:attribute>
+   </template>
+
+   <template match='XAttribute attr &amp;&amp; attr.Name == "min-length"' mode='src:attribute'>
+      <code:attribute>
+         <call-template name='src:line-number'>
+            <with-param name='el' value='attr.Parent!'/>
+         </call-template>
+         <code:type-reference name='MinLength' namespace='System.ComponentModel.DataAnnotations'/>
+         <code:arguments>
+            <code:int value='{xcst_integer(attr)}'/>
+         </code:arguments>
+         <code:initializer>
+            <call-template name='src:validation-arguments'>
+               <with-param name='el' value='attr.Parent!'/>
+               <with-param name='name' value='attr.Name'/>
+            </call-template>
+         </code:initializer>
+      </code:attribute>
+   </template>
+
+   <template match='XAttribute attr &amp;&amp; attr.Name == "max-length"' mode='src:attribute'>
+      <code:attribute>
+         <call-template name='src:line-number'>
+            <with-param name='el' value='attr.Parent!'/>
+         </call-template>
+         <code:type-reference name='MaxLength' namespace='System.ComponentModel.DataAnnotations'/>
+         <code:arguments>
+            <code:int value='{xcst_integer(attr)}'/>
+         </code:arguments>
+         <code:initializer>
+            <call-template name='src:validation-arguments'>
+               <with-param name='el' value='attr.Parent!'/>
+               <with-param name='name' value='attr.Name'/>
+            </call-template>
+         </code:initializer>
+      </code:attribute>
+   </template>
+
+   <template match='XAttribute attr &amp;&amp; attr.Name == "pattern"' mode='src:attribute'>
+      <code:attribute>
+         <call-template name='src:line-number'>
+            <with-param name='el' value='attr.Parent!'/>
+         </call-template>
+         <code:type-reference name='RegularExpression' namespace='System.ComponentModel.DataAnnotations'/>
+         <code:arguments>
+            <code:string verbatim='true'>
+               <value-of value='attr.Value'/>
+            </code:string>
+         </code:arguments>
+         <code:initializer>
+            <call-template name='src:validation-arguments'>
+               <with-param name='el' value='attr.Parent!'/>
+               <with-param name='name' value='attr.Name'/>
+            </call-template>
+         </code:initializer>
+      </code:attribute>
+   </template>
+
+   <template match='XAttribute attr &amp;&amp; attr.Name == "required"' mode='src:attribute'>
+      <if test='xcst_boolean(attr)!.Value'>
+         <code:attribute>
+            <call-template name='src:line-number'>
+               <with-param name='el' value='attr.Parent!'/>
+            </call-template>
+            <code:type-reference name='Required' namespace='System.ComponentModel.DataAnnotations'/>
+            <code:initializer>
+               <if test='attr.Parent!
+                     .AncestorsAndSelf()
+                     .Where(p => (p.Name == c + "member" || p.Name == c + "type")
+                        &amp;&amp; p.Attribute("allow-empty-string") != null)
+                     .FirstOrDefault()?.Attribute("allow-empty-string") is XAttribute aesAttr'>
+                  <code:member-initializer name='AllowEmptyStrings'>
+                     <code:bool value='{@string(xcst_boolean(aesAttr)!.Value)}'/>
+                  </code:member-initializer>
+               </if>
+               <call-template name='src:validation-arguments'>
+                  <with-param name='el' value='attr.Parent!'/>
+                  <with-param name='name' value='attr.Name'/>
+               </call-template>
+            </code:initializer>
+         </code:attribute>
+      </if>
+   </template>
+
+   <template match='XAttribute attr &amp;&amp; attr.Name == "template"' mode='src:attribute'>
+      <code:attribute>
+         <call-template name='src:line-number'>
+            <with-param name='el' value='attr.Parent!'/>
+         </call-template>
+         <code:type-reference name='UIHint' namespace='System.ComponentModel.DataAnnotations'/>
+         <code:arguments>
+            <code:string verbatim='true'>
+               <value-of value='attr.Value'/>
+            </code:string>
+         </code:arguments>
+      </code:attribute>
+   </template>
+
+   <template name='src:range-attribute'>
+      <param name='el' as='XElement' required='yes'/>
+      <param name='language' as='string' tunnel='yes' required='yes'/>
+
+      <variable name='minAttr' value='el.Attribute("min")'/>
+      <variable name='maxAttr' value='el.Attribute("max")'/>
+
+      <if test='minAttr != null
+            || maxAttr != null'>
+
+         <variable name='@as' value='
+            (el.Attribute("as") is XAttribute asAttr) ?
+               xcst_type(asAttr)
+               : null'/>
+
+         <if test='!(@as != null)'>
+            <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(el)' transform-text='trim'>
+               The 'min' and 'max' attributes can only be used on members that declare their type using the 'as' attribute.
+            </message>
+         </if>
+
+         <code:attribute>
+            <call-template name='src:line-number'>
+               <with-param name='el' value='el'/>
+            </call-template>
+            <copy-of value='src_package_model_type("Range")'/>
+            <code:arguments>
+               <code:typeof>
+                  <code:type-reference name='{xcst_non_nullable_type(@as, language)}'/>
+               </code:typeof>
+               <choose>
+                  <when test='minAttr != null'>
+                     <code:string verbatim='true'>
+                        <value-of value='minAttr.Value'/>
+                     </code:string>
+                  </when>
+                  <otherwise>
+                     <code:null/>
+                  </otherwise>
+               </choose>
+               <choose>
+                  <when test='maxAttr != null'>
+                     <code:string verbatim='true'>
+                        <value-of value='maxAttr.Value'/>
+                     </code:string>
+                  </when>
+                  <otherwise>
+                     <code:null/>
+                  </otherwise>
+               </choose>
+            </code:arguments>
+            <code:initializer>
+               <call-template name='src:validation-arguments'>
+                  <with-param name='el' value='el'/>
+                  <with-param name='name' value='"range"'/>
+               </call-template>
+            </code:initializer>
+         </code:attribute>
+      </if>
+   </template>
+
+
+   <!-- ## Validation -->
+
+   <template name='src:validation-arguments' as='XElement[]'>
+      <param name='el' as='XElement' required='yes'/>
+      <param name='name' as='XName' required='yes'/>
+      <param name='src_validation_attributes' as='XAttribute[]' tunnel='yes' required='yes'/>
+
+      <!--
+         ErrorMessage and ErrorMessageResource(Name|Type) are mutually exclusive.
+
+         All c:validation declarations in the package are merged into a single definition.
+         This definition provides defaults for @*-message and @validation-resource-type.
+         If @validation-resource-type is present, then @*-message is used for ErrorMessageResourceName,
+         otherwise it's used for ErrorMessage.
+
+         c:member inherits defaults from c:validation, but if an @*-message is present then
+         it's used for ErrorMessage, unless @validation-resource-type is also present in c:type,
+         and ignoring a @validation-resource-type from c:validation.
+      -->
+
+      <variable name='messageName' value='XName.Get(name.LocalName + "-message", name.Namespace.NamespaceName)'/>
+
+      <variable name='validationMessageAttr' value='src_validation_attributes
+         .FirstOrDefault(p => p.Name == messageName)'/>
+
+      <variable name='validationResourceTypeAttr' value='
+         validationMessageAttr?.Parent!.Attribute("validation-resource-type")'/>
+
+      <variable name='memberMessageAttr' value='el
+         .AncestorsAndSelf(c + "member")
+         .Where(p => p.Attribute(messageName) != null)
+         .Select(p => p.Attribute(messageName)!)
+         .FirstOrDefault()'/>
+
+      <variable name='typeResourceTypeAttr' value='el
+         .Ancestors(c + "type")
+         .First()
+         .Attribute("validation-resource-type")'/>
+
+      <variable name='resourceTypeAttr' as='XAttribute?'>
+         <choose>
+            <when test='typeResourceTypeAttr != null' value='typeResourceTypeAttr'/>
+            <when test='validationResourceTypeAttr != null &amp;&amp; memberMessageAttr is null'
+               value='validationResourceTypeAttr'/>
+            <otherwise value='default(XAttribute?)'/>
+         </choose>
+      </variable>
+
+      <apply-templates value='memberMessageAttr ?? validationMessageAttr' mode='src:validation-argument'>
+         <with-param name='isResource' value='resourceTypeAttr != null'/>
+      </apply-templates>
+
+      <apply-templates value='resourceTypeAttr' mode='src:validation-argument'/>
+   </template>
+
+   <template match='XAttribute attr' mode='src:validation-argument'>
+      <param name='isResource' as='bool' required='yes'/>
+
+      <code:member-initializer name='{(isResource ? "ErrorMessageResourceName" : "ErrorMessage")}'>
+         <code:string verbatim='true'>
+            <value-of value='attr.Value'/>
+         </code:string>
+      </code:member-initializer>
+   </template>
+
+   <template match='XAttribute attr &amp;&amp; attr.Name == "validation-resource-type"' mode='src:validation-argument'>
+      <code:member-initializer name='ErrorMessageResourceType'>
+         <code:typeof>
+            <code:type-reference name='{xcst_type(attr)}'/>
+         </code:typeof>
+      </code:member-initializer>
+   </template>
+
+</module>

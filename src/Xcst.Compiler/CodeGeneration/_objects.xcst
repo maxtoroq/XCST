@@ -1,0 +1,245 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!--
+ Copyright 2021 Max Toro Q.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<module version='1.0' language='C#'
+   xmlns='http://maxtoroq.github.io/XCST'
+   xmlns:xcst='http://maxtoroq.github.io/XCST/grammar'
+   xmlns:code='http://maxtoroq.github.io/XCST/code'
+   xmlns:src='http://maxtoroq.github.io/XCST/compiled'>
+
+   <import-namespace ns='System.Linq'/>
+   <import-namespace ns='System.Xml.Linq'/>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "object"' mode='src:expression'>
+
+      <call-template name='xcst:validate-attribs'>
+         <with-param name='el' value='el'/>
+         <with-param name='required' value='new[] { "value" }'/>
+      </call-template>
+
+      <call-template name='xcst:no-children'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <code:expression value='{xcst_expression(el.Attribute("value")!)}'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "object"' mode='xcst:instruction'>
+      <xcst:instruction expression='true'/>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "map"' mode='src:statement'>
+      <param name='output' as='XElement' tunnel='yes'/>
+
+      <call-template name='xcst:validate-attribs'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <call-template name='xcst:require-output'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <variable name='outputIsMap' value='src_output_is_map(output)'/>
+      <variable name='mapOutput' value='src_map_output(el, output)'/>
+
+      <if test='!outputIsMap'>
+         <code:variable name='{select(mapOutput, src + "reference", code).First().Attribute("name")!.Value}'>
+            <call-template name='src:line-number'>
+               <with-param name='el' value='el'/>
+            </call-template>
+            <code:method-call name='Create'>
+               <copy-of value='src_helper_type("MapWriter")'/>
+               <code:arguments>
+                  <copy-of value='select(output, src + "reference", code)'/>
+               </code:arguments>
+            </code:method-call>
+         </code:variable>
+      </if>
+
+      <code:method-call name='WriteStartMap'>
+         <call-template name='src:line-number'>
+            <with-param name='el' value='el'/>
+         </call-template>
+         <copy-of value='select(mapOutput, src + "reference", code)'/>
+      </code:method-call>
+
+      <code:try line-hidden='true'>
+         <code:block>
+            <call-template name='src:sequence-constructor'>
+               <with-param name='el' value='el'/>
+               <with-param name='output' value='mapOutput' tunnel='yes'/>
+            </call-template>
+         </code:block>
+         <code:finally line-hidden='true'>
+            <code:method-call name='WriteEndMap'>
+               <copy-of value='select(mapOutput, src + "reference", code)'/>
+            </code:method-call>
+         </code:finally>
+      </code:try>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "map"' mode='xcst:instruction'>
+      <xcst:instruction>
+         <copy-of value='src_object_type'/>
+      </xcst:instruction>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "map-entry"' mode='src:statement'>
+      <param name='output' as='XElement' tunnel='yes'/>
+
+      <call-template name='xcst:validate-attribs'>
+         <with-param name='el' value='el'/>
+         <with-param name='required' value='new[] { "key" }'/>
+         <with-param name='optional' value='new[] { "value" }'/>
+      </call-template>
+
+      <call-template name='xcst:value-or-sequence-constructor'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <call-template name='xcst:require-output'>
+         <with-param name='el' value='el'/>
+         <with-param name='kind' value='new[] { "map", "obj" }'/>
+      </call-template>
+
+      <variable name='outputIsMap' value='src_output_is_map(output)'/>
+      <variable name='mapOutput' value='src_map_output(el, output)'/>
+
+      <if test='!outputIsMap'>
+         <code:variable name='{select(mapOutput, src + "reference", code).First().Attribute("name")!.Value}'>
+            <call-template name='src:line-number'>
+               <with-param name='el' value='el'/>
+            </call-template>
+            <code:method-call name='CastMapEntry'>
+               <copy-of value='src_helper_type("MapWriter")'/>
+               <code:arguments>
+                  <copy-of value='select(output, src + "reference", code)'/>
+               </code:arguments>
+            </code:method-call>
+         </code:variable>
+      </if>
+
+      <code:method-call name='WriteStartMapEntry'>
+         <call-template name='src:line-number'>
+            <with-param name='el' value='el'/>
+         </call-template>
+         <copy-of value='select(mapOutput, src + "reference", code)'/>
+         <code:arguments>
+            <code:expression value='{xcst_expression(el.Attribute("key")!)}'/>
+         </code:arguments>
+      </code:method-call>
+
+      <code:try line-hidden='true'>
+         <code:block>
+            <call-template name='src:value-or-sequence-constructor'>
+               <with-param name='el' value='el'/>
+               <with-param name='output' value='mapOutput' tunnel='yes'/>
+            </call-template>
+         </code:block>
+         <code:finally line-hidden='true'>
+            <code:method-call name='WriteEndMapEntry'>
+               <copy-of value='select(mapOutput, src + "reference", code)'/>
+            </code:method-call>
+         </code:finally>
+      </code:try>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "array"' mode='src:statement'>
+      <param name='output' as='XElement' tunnel='yes'/>
+
+      <call-template name='xcst:validate-attribs'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <call-template name='xcst:require-output'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <variable name='outputIsMap' value='src_output_is_map(output)'/>
+      <variable name='mapOutput' value='src_map_output(el, output)'/>
+
+      <if test='!outputIsMap'>
+         <code:variable name='{select(mapOutput, src + "reference", code).First().Attribute("name")!.Value}'>
+            <call-template name='src:line-number'>
+               <with-param name='el' value='el'/>
+            </call-template>
+            <code:method-call name='CreateArray'>
+               <copy-of value='src_helper_type("MapWriter")'/>
+               <code:arguments>
+                  <copy-of value='select(output, src + "reference", code)'/>
+               </code:arguments>
+            </code:method-call>
+         </code:variable>
+      </if>
+
+      <code:method-call name='WriteStartArray'>
+         <call-template name='src:line-number'>
+            <with-param name='el' value='el'/>
+         </call-template>
+         <copy-of value='select(mapOutput, src + "reference", code)'/>
+      </code:method-call>
+
+      <code:try line-hidden='true'>
+         <code:block>
+            <call-template name='src:sequence-constructor'>
+               <with-param name='el' value='el'/>
+               <with-param name='output' value='mapOutput' tunnel='yes'/>
+            </call-template>
+         </code:block>
+         <code:finally line-hidden='true'>
+            <code:method-call name='WriteEndArray'>
+               <call-template name='src:line-number'>
+                  <with-param name='el' value='el'/>
+               </call-template>
+               <copy-of value='select(mapOutput, src + "reference", code)'/>
+            </code:method-call>
+         </code:finally>
+      </code:try>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "array"' mode='xcst:instruction'>
+      <xcst:instruction>
+         <copy-of value='src_object_type'/>
+      </xcst:instruction>
+   </template>
+
+   <function name='src_map_output' as='XElement'>
+      <param name='el' as='XElement'/>
+      <param name='output' as='XElement'/>
+
+      <choose>
+         <when test='src_output_is_map(output)'>
+            <return value='output'/>
+         </when>
+         <otherwise>
+            <return>
+               <src:output kind='map'>
+                  <src:reference>
+                     <code:variable-reference name='{src_aux_variable("output_" + generate_id(el))}'/>
+                  </src:reference>
+               </src:output>
+            </return>
+         </otherwise>
+      </choose>
+   </function>
+
+   <function name='src_output_is_map' as='bool'>
+      <param name='output' as='XElement'/>
+
+      <return value='output.Attribute("kind")?.Value == "map"'/>
+   </function>
+
+</module>

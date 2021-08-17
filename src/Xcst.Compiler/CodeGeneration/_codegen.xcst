@@ -1,0 +1,236 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!--
+ Copyright 2021 Max Toro Q.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<module version='1.0' language='C#'
+   xmlns='http://maxtoroq.github.io/XCST'
+   xmlns:xcst='http://maxtoroq.github.io/XCST/grammar'
+   xmlns:code='http://maxtoroq.github.io/XCST/code'
+   xmlns:src='http://maxtoroq.github.io/XCST/compiled'
+   xmlns:cs='http://maxtoroq.github.io/XCST/csharp'
+   xmlns:vb='http://maxtoroq.github.io/XCST/vb'>
+
+   <import-namespace ns='System.Linq'/>
+   <import-namespace ns='System.Xml.Linq'/>
+
+   <variable name='src_package_interface' value='src_package_model_type("IXcstPackage", true)' as='XElement'/>
+   <variable name='src_component_attr_type' value='src_package_model_type("XcstComponent")' as='XElement'/>
+   <variable name='src_contextual_variable'>__xcst</variable>
+
+   <function name='src_template_context' as='XElement'>
+      <param name='meta' as='XElement?'/>
+      <param name='el' value='null' as='XElement?'/>
+
+      <variable name='baseType' value='src_helper_type("TemplateContext")'/>
+
+      <return>
+         <src:context>
+            <choose>
+               <when test='meta != null
+                     &amp;&amp; xcst_typed_params(meta)'>
+                  <code:type-reference>
+                     <copy-of value='attributes(baseType)'/>
+                     <code:type-arguments>
+                        <copy-of value='src_params_type(meta)'/>
+                     </code:type-arguments>
+                  </code:type-reference>
+               </when>
+               <otherwise>
+                  <copy-of value='baseType'/>
+               </otherwise>
+            </choose>
+            <src:reference>
+               <code:variable-reference>
+                  <attribute name='name'>
+                     <value-of value='src_aux_variable("context")'/>
+                     <if test='el != null'>
+                        <value-of value='"_" + generate_id(el)'/>
+                     </if>
+                  </attribute>
+               </code:variable-reference>
+            </src:reference>
+         </src:context>
+      </return>
+   </function>
+
+   <function name='src_template_output' as='XElement'>
+      <param name='meta' as='XElement?'/>
+      <param name='el' value='null' as='XElement?'/>
+
+      <choose>
+         <when test='meta != null
+               &amp;&amp; meta.Name == xcst + "attribute-set"'>
+            <return value='src_doc_output(null, null)'/>
+         </when>
+         <otherwise>
+            <variable name='itemTypeRef' value='select(meta, xcst + "item-type", code + "type-reference")
+               .FirstOrDefault()'/>
+            <return>
+               <src:output kind='obj'>
+                  <if test='itemTypeRef is null'>
+                     <attribute name='item-type-is-object' value='@string(true)'/>
+                  </if>
+                  <code:type-reference>
+                     <copy-of value='attributes(src_helper_type("ISequenceWriter"))'/>
+                     <code:type-arguments>
+                        <copy-of value='itemTypeRef'/>
+                        <on-empty>
+                           <copy-of value='src_nullable_object_type'/>
+                        </on-empty>
+                     </code:type-arguments>
+                  </code:type-reference>
+                  <src:reference>
+                     <code:variable-reference>
+                        <attribute name='name'>
+                           <value-of value='src_aux_variable("output")'/>
+                           <if test='el != null'>
+                              <value-of value='"_" + generate_id(el)'/>
+                           </if>
+                        </attribute>
+                     </code:variable-reference>
+                  </src:reference>
+               </src:output>
+            </return>
+         </otherwise>
+      </choose>
+   </function>
+
+   <function name='src_doc_output' as='XElement'>
+      <param name='node' as='XObject?'/>
+      <param name='output' as='XElement?'/>
+
+      <choose>
+         <when test='output != null
+               &amp;&amp; src_output_is_doc(output)'>
+            <return value='output'/>
+         </when>
+         <otherwise>
+            <return>
+               <src:output kind='doc'>
+                  <code:type-reference name='XcstWriter' namespace='Xcst'/>
+                  <src:reference>
+                     <code:variable-reference>
+                        <attribute name='name'>
+                           <value-of value='src_aux_variable("output")'/>
+                           <if test='node != null'>
+                              <value-of value='"_" + generate_id(node)'/>
+                           </if>
+                        </attribute>
+                     </code:variable-reference>
+                  </src:reference>
+               </src:output>
+            </return>
+         </otherwise>
+      </choose>
+   </function>
+
+   <function name='src_output_is_doc' as='bool'>
+      <param name='output' as='XElement'/>
+
+      <return value='output.Attribute("kind")?.Value == "doc"'/>
+   </function>
+
+   <function name='src_output_is_obj' as='bool'>
+      <param name='output' as='XElement'/>
+
+      <return value='output.Attribute("kind")?.Value == "obj"'/>
+   </function>
+
+   <function name='src_item_type_inference_member_name' as='string'>
+      <param name='meta' as='XElement'/>
+
+      <return value='meta.Attribute("member-name")!.Value + "_infer"'/>
+   </function>
+
+   <function name='src_item_type_inference_member_ref' as='XElement'>
+      <param name='meta' as='XElement'/>
+
+      <choose>
+         <when test='meta.Element(xcst + "item-type") != null'>
+            <return>
+               <code:method-reference name='{src_item_type_inference_member_name(meta)}'>
+                  <copy-of value='select(meta, xcst + "package-type", code + "type-reference")'/>
+                  <on-empty>
+                     <copy-of value='meta.Parent!.Element(code + "type-reference")'/>
+                  </on-empty>
+               </code:method-reference>
+            </return>
+         </when>
+         <otherwise>
+            <return>
+               <code:method-reference name='DefaultInfer'>
+                  <copy-of value='src_helper_type("SequenceWriter")'/>
+               </code:method-reference>
+            </return>
+         </otherwise>
+      </choose>
+   </function>
+
+   <function name='src_package_model_type' as='XElement'>
+      <param name='type' as='string'/>
+      <param name='@interface' value='false' as='bool'/>
+
+      <return>
+         <code:type-reference name='{type}' namespace='Xcst.PackageModel'>
+            <if test='@interface'>
+               <attribute name='interface' value='@string(true)'/>
+            </if>
+         </code:type-reference>
+      </return>
+   </function>
+
+   <function name='src_helper_type' as='XElement'>
+      <param name='helper' as='string'/>
+
+      <return>
+         <code:type-reference name='{helper}' namespace='Xcst.Runtime'/>
+      </return>
+   </function>
+
+   <function name='src_aux_variable' as='string'>
+      <param name='name' as='string'/>
+
+      <return value='"__xcst_" + name'/>
+   </function>
+
+   <template name='src:line-number'>
+      <param name='el' as='XElement' required='yes'/>
+      <param name='lineNumberOffset' as='int' tunnel='yes'/>
+      <param name='lineUri' as='System.Uri?' tunnel='yes'/>
+
+      <if test='src_use_line_directive'>
+         <attribute name='line-number' value='LineNumber(el) + lineNumberOffset'/>
+         <attribute name='line-uri' value='lineUri?.AbsoluteUri ?? el.Document!.BaseUri'/>
+      </if>
+   </template>
+
+   <template name='src:editor-browsable-never'>
+      <code:attribute>
+         <code:type-reference name='EditorBrowsable' namespace='System.ComponentModel'/>
+         <code:arguments>
+            <code:field-reference name='Never'>
+               <code:type-reference name='EditorBrowsableState' namespace='System.ComponentModel'/>
+            </code:field-reference>
+         </code:arguments>
+      </code:attribute>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "region"' mode='cs:source vb:source'>
+      <if test='select(el, code).Any()'>
+         <next-match/>
+      </if>
+   </template>
+
+</module>

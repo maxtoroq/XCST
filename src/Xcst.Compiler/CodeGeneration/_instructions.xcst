@@ -1,0 +1,89 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!--
+ Copyright 2021 Max Toro Q.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<module version='1.0' language='C#'
+   xmlns='http://maxtoroq.github.io/XCST'
+   xmlns:xcst='http://maxtoroq.github.io/XCST/grammar'
+   xmlns:code='http://maxtoroq.github.io/XCST/code'
+   xmlns:src='http://maxtoroq.github.io/XCST/compiled'>
+
+   <import-namespace ns='System.Xml.Linq'/>
+
+   <template match='XElement el &amp;&amp; el.Name.Namespace == c' mode='src:statement'>
+      <param name='output' as='XElement?' tunnel='yes'/>
+
+      <!--
+         If statement template does not exist but expression does append value
+         e.g. c:object
+      -->
+
+      <call-template name='xcst:require-output'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <code:method-call name='WriteObject'>
+         <call-template name='src:line-number'>
+            <with-param name='el' value='el'/>
+         </call-template>
+         <copy-of value='select(output, src + "reference", code)'/>
+         <code:arguments>
+            <apply-templates value='el' mode='src:expression'/>
+         </code:arguments>
+      </code:method-call>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name.Namespace == c' mode='src:expression'>
+      <message terminate='yes' error-code='XTSE0010' error-data='src_error_object(el)' expand-text='yes' transform-text='trim'>
+         Element c:{el.Name.LocalName} cannot be compiled into an expression.
+      </message>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name.Namespace == c' mode='xcst:instruction'/>
+
+   <template match='XElement el &amp;&amp; el.Name.Namespace != c' mode='src:statement'>
+      <call-template name='src:unknown-element'>
+         <with-param name='el' value='el'/>
+         <with-param name='currentMode' value='src + "statement"'/>
+      </call-template>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name.Namespace != c' mode='src:expression'>
+      <call-template name='src:unknown-element'>
+         <with-param name='el' value='el'/>
+         <with-param name='currentMode' value='src + "expression"'/>
+      </call-template>
+   </template>
+
+   <template name='src:unknown-element'>
+      <param name='el' as='XElement' required='yes'/>
+      <param name='currentMode' as='XName' required='yes'/>
+
+      <choose>
+         <when test='xcst_is_extension_instruction(el)'>
+            <call-template name='src:extension-instruction'>
+               <with-param name='el' value='el'/>
+               <with-param name='currentMode' value='currentMode'/>
+            </call-template>
+         </when>
+         <otherwise>
+            <call-template name='src:literal-result-element'>
+               <with-param name='el' value='el'/>
+            </call-template>
+         </otherwise>
+      </choose>
+   </template>
+
+</module>
