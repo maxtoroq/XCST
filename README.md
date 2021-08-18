@@ -15,9 +15,9 @@ Version | Package | Description
 
 System Requirements
 -------------------
-The runtime is written in **C# 8** and requires **.NET 4.6** , **.NET Core 2.0** or **.NET Standard 2.0**. Currently test are run on .NET 5.x only.
+The runtime is written in **C# 8** and requires **.NET 4.6** , **.NET Core 2.0** or **.NET Standard 2.0**.
 
-The compiler is written in XCST itself, ported from and compiled with the v1 compiler written in XSLT 2. Its API is written in C# 8 and requires .NET 4.6/.NET Core 2.0. It produces code that is compatible with **C# 6** and **Visual Basic 14**.
+The compiler is written in XCST itself, ported from and compiled with the v1 compiler written in XSLT 2. Its API is written in C# 8 and requires .NET 4.6 or .NET Core 2.0. It produces code that is compatible with **C# 6** and **Visual Basic 14**.
 
 The [release script](build/release.ps1) (which creates the NuGet packages) and other utility scripts are written in **PowerShell 5.1**.
 
