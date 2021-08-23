@@ -63,16 +63,19 @@
    </template>
 
    <template name="src:type-attribute-extra">
-      <apply-templates select="." mode="src:type-attribute-extra"/>
+      <choose>
+         <when test="self::c:type">
+            <apply-templates select="." mode="src:type-attribute-extra"/>
+         </when>
+         <otherwise>
+            <apply-templates select="." mode="src:anonymous-type-attribute-extra"/>
+         </otherwise>
+      </choose>
    </template>
 
    <template name="src:member-attribute-extra">
       <apply-templates select="." mode="src:member-attribute-extra"/>
    </template>
-
-   <template match="c:type/node()" mode="src:type-attribute-extra"/>
-
-   <template match="c:member/node()" mode="src:type-attribute-extra src:member-attribute-extra"/>
 
 
    <!-- ## Display -->

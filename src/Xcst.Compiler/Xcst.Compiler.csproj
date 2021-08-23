@@ -92,6 +92,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="CodeGeneration\xcst-compile.xsl" />
+    <Content Include="CodeGeneration\xcst-extra.xsl" />
     <Content Include="CodeGeneration\xcst-tmpl-rule.xsl" />
     <Content Include="CodeGeneration\xcst-vb.xsl" />
   </ItemGroup>

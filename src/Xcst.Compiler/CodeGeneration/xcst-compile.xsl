@@ -25,6 +25,8 @@
    xmlns:cs="http://maxtoroq.github.io/XCST/csharp"
    xmlns:vb="http://maxtoroq.github.io/XCST/visual-basic">
 
+   <import href="xcst-extra.xsl"/>
+   <import href="xcst-extensions.xsl"/>
    <include href="xcst-metadata.xsl"/>
    <include href="xcst-core.xsl"/>
    <include href="xcst-csharp.xsl"/>
@@ -2059,8 +2061,6 @@
       </if>
    </template>
 
-   <template match="c:module/node() | c:package/node()" mode="src:import-namespace-extra"/>
-
    <template match="xcst:type" mode="src:import-namespace">
       <code:import alias="{@name}" line-hidden="true" verbatim="true" type-verbatim="true">
          <code:type-reference name="{@name}">
@@ -2155,12 +2155,6 @@
          </code:members>
       </code:type>
    </template>
-
-   <template match="c:module/node() | c:package/node()" mode="src:base-types"/>
-
-   <template match="c:module/node() | c:package/node()" mode="src:package-attribute-extra"/>
-
-   <template match="c:module/node() | c:package/node()" mode="src:infrastructure-extra"/>
 
    <template match="c:param | c:variable" mode="src:member">
       <param name="package-manifest" required="yes" tunnel="yes"/>

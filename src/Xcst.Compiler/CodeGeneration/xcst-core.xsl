@@ -24,8 +24,6 @@
    xmlns:src="http://maxtoroq.github.io/XCST/compiled"
    xmlns:cs="http://maxtoroq.github.io/XCST/csharp">
 
-   <import href="xcst-extensions.xsl"/>
-
    <param name="src:use-line-directive" select="false()" as="xs:boolean"/>
 
    <variable name="src:output-parameters" as="element()">
