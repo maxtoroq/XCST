@@ -44,8 +44,7 @@ namespace Xcst.Xml {
          _output = writer;
          _outputXmlDecl = !parameters.OmitXmlDeclaration.GetValueOrDefault()
             && (parameters.Method is null
-               || parameters.Method == OutputParameters.Methods.Xml
-               || parameters.Method == OutputParameters.Methods.XHtml);
+               || parameters.Method == OutputParameters.Methods.Xml);
 
          _standalone = parameters.Standalone.GetValueOrDefault();
       }

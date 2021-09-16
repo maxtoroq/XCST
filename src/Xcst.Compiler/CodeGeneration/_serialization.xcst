@@ -379,9 +379,9 @@
 
       <if test='!(qname is null
             || qname.Namespace != XNamespace.None
-            || qname.LocalName is "xml" or "html" or "xhtml" or "text")'>
+            || qname.LocalName is "xml" or "html" or "text")'>
          <message terminate='yes' error-code='XTSE1570' error-data='src_error_object(attr.Parent!)' expand-text='yes' transform-text='trim'>
-            Invalid value for '{name(attr)}'. Must be one of (xml|html|xhtml|text).
+            Invalid value for '{name(attr)}'. Must be one of (xml|html|text).
          </message>
       </if>
 
@@ -393,7 +393,6 @@
                   <switch value='qname.LocalName'>
                      <when test='"xml"'>Xml</when>
                      <when test='"html"'>Html</when>
-                     <when test='"xhtml"'>XHtml</when>
                      <when test='"text"'>Text</when>
                      <otherwise>
                         <message terminate='yes'/>

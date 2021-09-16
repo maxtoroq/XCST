@@ -327,9 +327,6 @@ namespace Xcst {
          Html = new QualifiedName("html");
 
          public static readonly QualifiedName
-         XHtml = new QualifiedName("xhtml");
-
-         public static readonly QualifiedName
          Text = new QualifiedName("text");
 
          internal static QualifiedName
@@ -338,7 +335,6 @@ namespace Xcst {
                null => throw new ArgumentNullException(nameof(method)),
                "xml" => Xml,
                "html" => Html,
-               "xhtml" => XHtml,
                "text" => Text,
                _ => throw new ArgumentException("Invalid standard method.", nameof(method))
             };

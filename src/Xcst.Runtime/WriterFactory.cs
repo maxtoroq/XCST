@@ -101,7 +101,6 @@ namespace Xcst {
          XmlWriter writer = writerFn(parameters);
 
          XmlWriter finalWriter = WrapHtmlWriter(writer, parameters)
-            ?? WrapXHtmlWriter(writer, parameters)
             ?? writer;
 
          return new XmlXcstWriter(finalWriter, outputUri, parameters);
@@ -116,16 +115,6 @@ namespace Xcst {
             && parameters.RequestedHtmlVersion() >= 5m) {
 
             return new HtmlWriter(writer, outputHtml5Doctype: true);
-         }
-
-         return null;
-      }
-
-      static XmlWriter?
-      WrapXHtmlWriter(XmlWriter writer, OutputParameters parameters) {
-
-         if (parameters.Method == OutputParameters.Methods.XHtml) {
-            return new XHtmlWriter(writer);
          }
 
          return null;
