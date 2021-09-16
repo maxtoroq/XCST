@@ -716,7 +716,7 @@
          </xs:attribute>
          <xs:attribute name="escape-uri-attributes" type="c:boolean">
             <xs:annotation>
-               <xs:documentation>Specifies whether to escape URI attributes in HTML and XHTML documents.</xs:documentation>
+               <xs:documentation>Specifies whether to escape URI attributes in HTML documents.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attribute name="html-version" type="c:decimal">
@@ -741,7 +741,7 @@
          </xs:attribute>
          <xs:attribute name="media-type" type="c:string">
             <xs:annotation>
-               <xs:documentation>The media type (MIME content type) of the output, to include in a meta element in the head of HTML and XHTML documents.</xs:documentation>
+               <xs:documentation>The media type (MIME content type) of the output, to include in a meta element in the head of HTML documents.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attribute name="omit-xml-declaration" type="c:boolean">
@@ -1810,7 +1810,7 @@
       </xs:attribute>
       <xs:attribute name="escape-uri-attributes">
          <xs:annotation>
-            <xs:documentation>Specifies whether to escape URI attributes in HTML and XHTML documents. Attribute value template (boolean).</xs:documentation>
+            <xs:documentation>Specifies whether to escape URI attributes in HTML documents. Attribute value template (boolean).</xs:documentation>
          </xs:annotation>
          <xs:simpleType>
             <xs:union memberTypes="c:boolean c:avt-expr"/>
@@ -1847,7 +1847,7 @@
       </xs:attribute>
       <xs:attribute name="media-type" type="c:avt">
          <xs:annotation>
-            <xs:documentation>The media type (MIME content type) of the output, to include in a meta element in the head of HTML and XHTML documents.</xs:documentation>
+            <xs:documentation>The media type (MIME content type) of the output, to include in a meta element in the head of HTML documents.</xs:documentation>
          </xs:annotation>
       </xs:attribute>
       <xs:attribute name="omit-xml-declaration">
@@ -2043,7 +2043,7 @@
    </xs:simpleType>
    <xs:simpleType name="method">
       <xs:annotation>
-         <xs:documentation>One of the values "xml", "html", "xhtml", "text", or an eqname that must not be in the null namespace.</xs:documentation>
+         <xs:documentation>One of the values "xml", "html", "text", or an eqname that must not be in the null namespace.</xs:documentation>
       </xs:annotation>
       <xs:union memberTypes="c:eqname">
          <xs:simpleType>
@@ -2054,11 +2054,6 @@
          <xs:simpleType>
             <xs:restriction base="xs:token">
                <xs:enumeration value="html"/>
-            </xs:restriction>
-         </xs:simpleType>
-         <xs:simpleType>
-            <xs:restriction base="xs:token">
-               <xs:enumeration value="xhtml"/>
             </xs:restriction>
          </xs:simpleType>
          <xs:simpleType>

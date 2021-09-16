@@ -3009,8 +3009,8 @@
    <template match="@method" mode="src:output-parameter">
       <variable name="string" select="xcst:non-string(.)"/>
       <variable name="qname" select="xcst:EQName(., (), false(), not(parent::c:output))"/>
-      <if test="exists($qname) and not(namespace-uri-from-QName($qname)) and not(local-name-from-QName($qname) = ('xml', 'html', 'xhtml', 'text'))">
-         <sequence select="error(xs:QName('err:XTSE1570'), concat('Invalid value for ''', name(), '''. Must be one of (xml|html|xhtml|text).'), src:error-object(.))"/>
+      <if test="exists($qname) and not(namespace-uri-from-QName($qname)) and not(local-name-from-QName($qname) = ('xml', 'html', 'text'))">
+         <sequence select="error(xs:QName('err:XTSE1570'), concat('Invalid value for ''', name(), '''. Must be one of (xml|html|text).'), src:error-object(.))"/>
       </if>
       <choose>
          <when test="exists($qname) and not(namespace-uri-from-QName($qname))">
@@ -3023,9 +3023,6 @@
                      </when>
                      <when test="$local eq 'html'">
                         <sequence select="'Html'"/>
-                     </when>
-                     <when test="$local eq 'xhtml'">
-                        <sequence select="'XHtml'"/>
                      </when>
                      <when test="$local eq 'text'">
                         <sequence select="'Text'"/>

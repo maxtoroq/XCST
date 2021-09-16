@@ -769,7 +769,7 @@
                   <ref name="string"/>
                </attribute>
                <attribute name="escape-uri-attributes">
-                  <ann:documentation>Specifies whether to escape URI attributes in HTML and XHTML documents.</ann:documentation>
+                  <ann:documentation>Specifies whether to escape URI attributes in HTML documents.</ann:documentation>
                   <ref name="boolean"/>
                </attribute>
                <attribute name="html-version">
@@ -778,7 +778,7 @@
                </attribute>
                <!--
                <attribute name="include-content-type">
-                  <ann:documentation>Specifies whether to include a meta element in the head of HTML and XHTML documents, specifying the used character encoding.</ann:documentation>
+                  <ann:documentation>Specifies whether to include a meta element in the head of HTML documents, specifying the used character encoding.</ann:documentation>
                   <ref name="boolean"/>
                </attribute>
                -->
@@ -795,7 +795,7 @@
                   <ref name="string"/>
                </attribute>
                <attribute name="media-type">
-                  <ann:documentation>The media type (MIME content type) of the output, to include in a meta element in the head of HTML and XHTML documents.</ann:documentation>
+                  <ann:documentation>The media type (MIME content type) of the output, to include in a meta element in the head of HTML documents.</ann:documentation>
                   <ref name="string"/>
                </attribute>
                <attribute name="omit-xml-declaration">
@@ -1856,7 +1856,7 @@
                <ref name="avt"/>
             </attribute>
             <attribute name="escape-uri-attributes">
-               <ann:documentation>Specifies whether to escape URI attributes in HTML and XHTML documents.</ann:documentation>
+               <ann:documentation>Specifies whether to escape URI attributes in HTML documents.</ann:documentation>
                <choice>
                   <ref name="boolean"/>
                   <ref name="avt-expr"/>
@@ -1871,7 +1871,7 @@
             </attribute>
             <!--
             <attribute name="include-content-type">
-               <ann:documentation>Specifies whether to include a meta element in the head of HTML and XHTML documents, specifying the used character encoding.</ann:documentation>
+               <ann:documentation>Specifies whether to include a meta element in the head of HTML documents, specifying the used character encoding.</ann:documentation>
                <choice>
                   <ref name="boolean"/>
                   <ref name="avt-expr"/>
@@ -1897,7 +1897,7 @@
                <ref name="avt"/>
             </attribute>
             <attribute name="media-type">
-               <ann:documentation>The media type (MIME content type) of the output, to include in a meta element in the head of HTML and XHTML documents.</ann:documentation>
+               <ann:documentation>The media type (MIME content type) of the output, to include in a meta element in the head of HTML documents.</ann:documentation>
                <ref name="avt"/>
             </attribute>
             <attribute name="omit-xml-declaration">
@@ -2113,11 +2113,10 @@
    </define>
 
    <define name="method">
-      <ann:documentation>One of the values "xml", "html", "xhtml", "text", or an eqname that must not be in the null namespace.</ann:documentation>
+      <ann:documentation>One of the values "xml", "html", "text", or an eqname that must not be in the null namespace.</ann:documentation>
       <choice>
          <value>xml</value>
          <value>html</value>
-         <value>xhtml</value>
          <value>text</value>
          <ref name="eqname"/>
       </choice>
