@@ -791,6 +791,8 @@
       <value-of value='src_new_line'/>
       <call-template name='src:new-line-indented'/>
       <text>Namespace </text>
+      <if test='el.Attribute("global") is XAttribute globalAttr
+         &amp;&amp; xs_boolean(globalAttr)'>Global.</if>
       <value-of value='el.Attribute("name")!.Value'/>
       <apply-templates value='el.Nodes()'>
          <with-param name='indent' value='indent + 1' tunnel='yes'/>

@@ -28,7 +28,7 @@
          &amp;&amp; xs_boolean(qtAttr)' mode='src:namespace'>
       <param name='packageManifest' as='XElement' tunnel='yes' required='yes'/>
 
-      <code:namespace name='{packageManifest.Element(code + "type-reference")!.Attribute("namespace")!.Value}'>
+      <code:namespace name='{packageManifest.Element(code + "type-reference")!.Attribute("namespace")!.Value}' global='true'>
          <code:type name='{packageManifest.Element(code + "type-reference")!.Attribute("name")!.Value}' partial='true'>
             <code:members>
                <code:field name='{src_lib_field_name(el)}' readonly='true' line-hidden='true'>
@@ -75,7 +75,7 @@
       <variable name='uriIndex' value='-1'/>
       <for-each name='uri' in='moduleUris'>
          <void value='uriIndex++'/>
-         <code:namespace name='{packageManifest.Element(code + "type-reference")!.Attribute("namespace")!.Value}'>
+         <code:namespace name='{packageManifest.Element(code + "type-reference")!.Attribute("namespace")!.Value}' global='true'>
             <if test='uri?.Length > 0'>
                <apply-templates value='el.Elements(xcst + "type")
                   .Where(p => p.Attribute("accepted") is XAttribute acceptedAttr

@@ -158,7 +158,7 @@
       </variable>
 
       <if test='select(classEl, code + "members", code).Any()'>
-         <code:namespace name='{packageManifest.Element(code + "type-reference")!.Attribute("namespace")!.Value}'>
+         <code:namespace name='{packageManifest.Element(code + "type-reference")!.Attribute("namespace")!.Value}' global='true'>
             <apply-templates value='select(packageManifest, xcst + "type")
                .Where(p => p.Attribute("accepted") is XAttribute acceptedAttr
                   &amp;&amp; xs_boolean(acceptedAttr)

@@ -728,6 +728,12 @@
 
    <define name="namespace">
       <element name="namespace">
+         <attribute name="name"/>
+         <optional>
+            <attribute name="global">
+               <ref name="_boolean"/>
+            </attribute>
+         </optional>
          <zeroOrMore>
             <ref name="import"/>
          </zeroOrMore>
