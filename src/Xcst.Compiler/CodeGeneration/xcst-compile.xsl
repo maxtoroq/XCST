@@ -1532,7 +1532,7 @@
    <template match="xcst:package-manifest[xs:boolean(@qualified-types)]" mode="src:namespace">
       <param name="package-manifest" required="yes" tunnel="yes"/>
 
-      <code:namespace name="{$package-manifest/code:type-reference/@namespace}">
+      <code:namespace name="{$package-manifest/code:type-reference/@namespace}" global="true">
          <code:type name="{$package-manifest/code:type-reference/@name}" partial="true">
             <code:members>
                <code:field name="{src:used-package-field-name(.)}" readonly="true" line-hidden="true">
@@ -1570,7 +1570,7 @@
       <for-each select="if (exists($module-uris)) then $module-uris else ''">
          <variable name="module-uri" select="."/>
 
-         <code:namespace name="{$package-manifest/code:type-reference/@namespace}">
+         <code:namespace name="{$package-manifest/code:type-reference/@namespace}" global="true">
             <if test="$module-uri">
                <apply-templates select="
                   $meta/xcst:type[@accepted/xs:boolean(.) and @visibility ne 'hidden'],
@@ -2052,7 +2052,7 @@
       </variable>
 
       <if test="exists($class/code:members/code:*/(if (self::code:region) then code:* else .))">
-         <code:namespace name="{$package-manifest/code:type-reference/@namespace}">
+         <code:namespace name="{$package-manifest/code:type-reference/@namespace}" global="true">
             <apply-templates select="$package-manifest/xcst:type[@accepted/xs:boolean(.) and @visibility ne 'hidden']" mode="src:import-namespace"/>
             <apply-templates select="c:import-namespace" mode="src:import-namespace"/>
             <apply-templates select="." mode="src:import-namespace-extra"/>

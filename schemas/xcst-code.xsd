@@ -513,6 +513,8 @@
             <xs:element minOccurs="0" maxOccurs="unbounded" ref="code:import"/>
             <xs:group minOccurs="0" maxOccurs="unbounded" ref="code:_namespace-member"/>
          </xs:sequence>
+         <xs:attribute name="name" use="required"/>
+         <xs:attribute name="global" type="code:_boolean"/>
       </xs:complexType>
    </xs:element>
    <xs:element name="new-array" substitutionGroup="code:_expression">

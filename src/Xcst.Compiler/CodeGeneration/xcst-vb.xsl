@@ -670,6 +670,7 @@
       <value-of select="$src:new-line"/>
       <call-template name="src:new-line-indented"/>
       <text>Namespace </text>
+      <if test="@global/xs:boolean(.)">Global.</if>
       <value-of select="@name"/>
       <apply-templates mode="#current">
          <with-param name="indent" select="$indent + 1" tunnel="yes"/>
