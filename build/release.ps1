@@ -41,7 +41,7 @@ function NuSpec {
          "<projectUrl>$($notice.website)</projectUrl>"
          "<copyright>$($notice.copyright)</copyright>"
          "<icon>icon.png</icon>"
-         "<repository type='git' url='https://github.com/maxtoroq/XCST' commit='$(git rev-parse HEAD)'/>"
+         "<repository type='git' url='$(git remote get-url origin)' branch='$(git branch --show-current)' commit='$(git rev-parse HEAD)'/>"
 
    $dependencies = $project.nuspec.package.metadata.dependencies
 
