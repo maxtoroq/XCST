@@ -8,10 +8,10 @@ See the [project home][XCST] for more information.
 
 ### Packages Built From This Repository
 
-Version | Package | Description
-------- | ------- | -----------
-[![NuGet][Xcst.Compiler-badge]][Xcst.Compiler] | [Xcst.Compiler] | Compilation API. Use this package to translate your XCST programs into C# or Visual Basic code.
-[![NuGet][Xcst.Runtime-badge]][Xcst.Runtime] | [Xcst.Runtime] | Runtime and evaluation API.
+Package | Description
+------- | -----------
+[Xcst.Compiler] | Compilation API. Use this package to translate your XCST programs into C# or Visual Basic code.
+[Xcst.Runtime] | Runtime and evaluation API.
 
 System Requirements
 -------------------
