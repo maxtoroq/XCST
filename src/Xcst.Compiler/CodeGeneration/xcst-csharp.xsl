@@ -58,6 +58,13 @@
       </if>
    </template>
 
+   <template name="cs:nullable-restore">
+      <if test="$src:nullable-context">
+         <call-template name="src:new-line-indented"/>
+         <text>#nullable restore</text>
+      </if>
+   </template>
+
    <template match="code:*" mode="cs:source cs:statement">
       <sequence select="error(xs:QName('err:CS0001'), concat('Element code:', local-name(), ' cannot be compiled to C#.'), src:error-object(.))"/>
    </template>

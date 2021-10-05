@@ -1305,6 +1305,7 @@
                      <for-each select="$namespaces">
                         <call-template name="cs:serialize"/>
                      </for-each>
+                     <call-template name="cs:nullable-restore"/>
                   </result-document>
                </when>
                <otherwise>
@@ -1313,6 +1314,7 @@
                      <for-each select="$namespaces">
                         <call-template name="cs:serialize"/>
                      </for-each>
+                     <call-template name="cs:nullable-restore"/>
                   </src:compilation-unit>
                </otherwise>
             </choose>
