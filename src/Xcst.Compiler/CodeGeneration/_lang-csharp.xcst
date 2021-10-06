@@ -64,6 +64,13 @@
       </if>
    </template>
 
+   <template name='cs:nullable-restore'>
+      <if test='cs_nullable_context != null'>
+         <call-template name='src:new-line-indented'/>
+         <text>#nullable restore</text>
+      </if>
+   </template>
+
    <template match='XElement el &amp;&amp; el.Name.Namespace == code' mode='cs:source cs:statement'>
       <message terminate='yes' error-code='CS0001' error-data='src_error_object(el)' expand-text='yes' transform-text='trim'>
          Element code:{el.Name.LocalName} cannot be compiled to C#.

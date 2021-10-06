@@ -512,6 +512,7 @@
                            <with-param name='el' value='ns'/>
                         </call-template>
                      </for-each>
+                     <call-template name='cs:nullable-restore'/>
                   </result-document>
                </when>
                <otherwise>
@@ -522,6 +523,7 @@
                            <with-param name='el' value='ns'/>
                         </call-template>
                      </for-each>
+                     <call-template name='cs:nullable-restore'/>
                   </src:compilation-unit>
                </otherwise>
             </choose>
