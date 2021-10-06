@@ -2818,7 +2818,7 @@
             <when test="$auto-init">
                <code:expression>
                   <code:new-object>
-                     <sequence select="$type"/>
+                     <sequence select="src:non-nullable-type($type, $language)"/>
                   </code:new-object>
                </code:expression>
             </when>
