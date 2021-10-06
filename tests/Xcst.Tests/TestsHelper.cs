@@ -211,6 +211,9 @@ namespace Xcst.Tests {
          compiler.UsePackageBase = testNamespace;
          compiler.SetTargetBaseTypes(typeof(TestBase));
 
+         compiler.NullableAnnotate = true;
+         compiler.NullableContext = "enable";
+
          CompileResult result = compiler.Compile(packageUri);
 
          return (result, compiler.TargetNamespace + "." + compiler.TargetClass);
@@ -313,11 +316,11 @@ namespace Xcst.Tests {
       static CSharpVersion
       CSharpVersionEnum(decimal languageVersion) =>
          languageVersion switch {
-            -1m => CSharpVersion.CSharp6,
-            7m => CSharpVersion.CSharp7,
-            7.1m => CSharpVersion.CSharp7_1,
-            7.2m => CSharpVersion.CSharp7_2,
-            7.3m => CSharpVersion.CSharp7_3,
+            -1m => CSharpVersion.CSharp8,
+            7m => CSharpVersion.CSharp8,
+            7.1m => CSharpVersion.CSharp8,
+            7.2m => CSharpVersion.CSharp8,
+            7.3m => CSharpVersion.CSharp8,
             8m => CSharpVersion.CSharp8,
             9m => CSharpVersion.CSharp9,
             _ => throw new ArgumentOutOfRangeException(nameof(languageVersion))
@@ -444,10 +447,10 @@ namespace Xcst.Tests {
             TestAssert.AreEqual(expected, actual);
 
          public static void
-         IsNull(object value) => TestAssert.IsNull(value);
+         IsNull(object? value) => TestAssert.IsNull(value);
 
          public static void
-         IsNotNull(object value) => TestAssert.IsNotNull(value);
+         IsNotNull(object? value) => TestAssert.IsNotNull(value);
 
          public static void
          Fail() => TestAssert.Fail();

@@ -4,7 +4,7 @@
    <c:import-namespace ns='System'/>
 
    <c:template name='c:initial-template'>
-      <c:variable name='del' value='() => default(object)' as='Func&lt;object>'/>
+      <c:variable name='del' value='() => default(object)' as='Func&lt;object?>'/>
       <c:invoke-delegate delegate='del'/>
    </c:template>
 
