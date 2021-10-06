@@ -42,7 +42,5 @@ MSBuild
 [XCST]: https://maxtoroq.github.io/XCST/
 [Xcst.Compiler]: https://www.nuget.org/packages/Xcst.Compiler
 [Xcst.Runtime]: https://www.nuget.org/packages/Xcst.Runtime
-[Xcst.Compiler-badge]: https://img.shields.io/nuget/v/Xcst.Compiler.svg
-[Xcst.Runtime-badge]: https://img.shields.io/nuget/v/Xcst.Runtime.svg
 [Saxon-HE]: http://saxon.sf.net/
 [Trang]: https://github.com/relaxng/jing-trang
