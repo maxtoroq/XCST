@@ -3,10 +3,10 @@
 
    <c:param name='p1'/>
    <c:param name='p2' required='yes'/>
-   <c:param name='p3' value='default(object)'/>
+   <c:param name='p3' value='null'/>
 
    <c:variable name='v1'/>
-   <c:variable name='v2' value='default(object)'/>
+   <c:variable name='v2' value='null'/>
 
    <c:variable name='v3'>
       <!-- c:script to avoid expression -->
@@ -23,7 +23,7 @@
 
    <c:function name='f1'>
       <c:param name='fp1'/>
-      <c:param name='fp2' value='default(object)'/>
+      <c:param name='fp2' value='null'/>
 
    </c:function>
 
@@ -63,7 +63,7 @@
       <c:variable name='lv1' value='default(object)'/>
 
       <!-- avoid CS0219 -->
-      <c:if test='lv1 is null'/>
+      <c:if test='lv1 == null'/>
 
       <c:variable name='lv2'>
          <!-- c:script to avoid expression -->
@@ -75,7 +75,7 @@
       <c:set ref='lv3' value='null'/>
 
       <!-- avoid CS0219 -->
-      <c:if test='lv3 is null'/>
+      <c:if test='lv3 == null'/>
 
       <c:variable name='lv4'>
          <!-- c:script to avoid expression -->
