@@ -273,7 +273,7 @@
             <when test='autoInit'>
                <code:expression>
                   <code:new-object>
-                     <copy-of value='type'/>
+                     <copy-of value='src_non_nullable_type(type, language)'/>
                   </code:new-object>
                </code:expression>
             </when>

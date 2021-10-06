@@ -33,6 +33,45 @@
       </return>
    </function>
 
+   <function name='src_non_nullable_type' as='XElement'>
+      <param name='type' as='XElement'/>
+      <param name='language' as='string'/>
+
+      <assert test='type.Name == code + "type-reference"'/>
+
+      <choose>
+         <when test='type.Attribute("nullable") is XAttribute nullableAttr'>
+            <choose>
+               <when test='xs_boolean(nullableAttr)'>
+                  <return>
+                     <code:type-reference nullable='false'>
+                        <copy-of value='attributes(type)
+                           .Where(p => p.Name != "nullable")'/>
+                        <copy-of value='type.Elements()'/>
+                     </code:type-reference>
+                  </return>
+               </when>
+               <otherwise>
+                  <return value='type'/>
+               </otherwise>
+            </choose>
+         </when>
+         <when test='type.Attribute("name") is XAttribute nameAttr'>
+            <variable name='nonNullable' value='xcst_non_nullable_type(nameAttr.Value, language)'/>
+            <return>
+               <code:type-reference name='{nonNullable}'>
+                  <copy-of value='attributes(type)
+                     .Where(p => p.Name != "name")'/>
+                  <copy-of value='type.Elements()'/>
+               </code:type-reference>
+            </return>
+         </when>
+         <otherwise>
+            <return value='type'/>
+         </otherwise>
+      </choose>
+   </function>
+
    <function name='src_qualified_type' as='bool'>
       <param name='type' as='XElement'/>
 
