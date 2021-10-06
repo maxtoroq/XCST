@@ -7,7 +7,7 @@
       </foo>
    </c:template>
 
-   <c:template name='foo' as='object'>
+   <c:template name='foo' as='object?'>
       <c:call-template name='bar'/>
    </c:template>
 
