@@ -182,6 +182,7 @@ function GenerateTestsForDirectory([IO.DirectoryInfo]$directory, [string]$relati
 
 try {
 
+   Write-Host "Generating tests..."
    GenerateTests | Out-File Tests.generated.cs -Encoding utf8
 
 } finally {
