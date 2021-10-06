@@ -131,7 +131,7 @@ namespace Xcst.Tests {
                   return;
                }
 
-            } catch (RuntimeException) when (correct) {
+            } catch (ApplicationException) when (correct) {
 
                printCode = true;
                throw;
@@ -320,7 +320,7 @@ namespace Xcst.Tests {
                      TestAssert.Pass($"{language} compilation failed.");
                   }
 
-                  throw new ArgumentException($"{language} compilation failed.");
+                  throw new ApplicationException($"{language} compilation failed.");
                }
 
                assemblyStream.Position = 0;
