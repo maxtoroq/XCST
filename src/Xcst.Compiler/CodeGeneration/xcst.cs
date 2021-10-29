@@ -27,14 +27,11 @@ namespace Xcst.Compiler {
       internal XDocument?
       PackageManifest(string packageName, XElement usePackageEl) {
 
-         Func<string, Type?> pkgTypeResolver = src_package_type_resolver
-            ?? ResolvePackageType;
-
          Type? packageType;
          QualifiedName errorCode = new("XTSE3000", XmlNamespaces.XcstErrors);
 
          try {
-            packageType = pkgTypeResolver.Invoke(packageName);
+            packageType = src_package_type_resolver?.Invoke(packageName);
 
          } catch (Exception ex) {
 
@@ -70,28 +67,6 @@ namespace Xcst.Compiler {
          }
 
          return null;
-      }
-
-      static Type?
-      ResolvePackageType(string packageName) {
-
-         Type? type = null;
-
-         foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies()) {
-
-            Type? type2 = asm.GetType(packageName);
-
-            if (type2 != null) {
-
-               if (type != null && type2 != type) {
-                  throw new ArgumentException($"Ambiguous type '{packageName}'.", nameof(packageName));
-               }
-
-               type = type2;
-            }
-         }
-
-         return type;
       }
 
       internal Uri?
