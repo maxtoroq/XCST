@@ -46,14 +46,11 @@ namespace Xcst.Compiler.CodeGeneration {
             return builder.Build(source);
          };
 
-         Func<string, Type?> pkgTypeResolver = packageTypeResolver
-            ?? ResolvePackageType;
-
          Type? packageType;
          const string errorCode = "XTSE3000";
 
          try {
-            packageType = pkgTypeResolver(packageName);
+            packageType = packageTypeResolver?.Invoke(packageName);
 
          } catch (Exception ex) {
 
@@ -113,28 +110,6 @@ namespace Xcst.Compiler.CodeGeneration {
          }
 
          return null;
-      }
-
-      static Type?
-      ResolvePackageType(string packageName) {
-
-         Type? type = null;
-
-         foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies()) {
-
-            Type? type2 = asm.GetType(packageName);
-
-            if (type2 != null) {
-
-               if (type != null && type2 != type) {
-                  throw new ArgumentException($"Ambiguous type '{packageName}'.", nameof(packageName));
-               }
-
-               type = type2;
-            }
-         }
-
-         return type;
       }
 
       internal static Uri?
