@@ -72,6 +72,9 @@ namespace Xcst.Compiler.Reflection {
       public bool
       IsByRef => _isByref;
 
+      public bool?
+      IsReferenceType { get; set; }
+
       public ITypeName
       Name => _name;
 
@@ -101,6 +104,13 @@ namespace Xcst.Compiler.Reflection {
          _name = TypeIdentifiers.FromDisplay(name);
       }
 
+      internal
+      TypeSpec(string name, bool isReferenceType)
+         : this(name) {
+
+         this.IsReferenceType = isReferenceType;
+      }
+
       public TypeSpec
       Clone() =>
          new TypeSpec {
@@ -109,7 +119,8 @@ namespace Xcst.Compiler.Reflection {
             _nested = _nested?.ToList(),
             _modifierSpec = _modifierSpec?.ToList(),
             _genericParams = _genericParams?.ToList(),
-            _isByref = _isByref
+            _isByref = _isByref,
+            IsReferenceType = this.IsReferenceType
          };
 
       internal string

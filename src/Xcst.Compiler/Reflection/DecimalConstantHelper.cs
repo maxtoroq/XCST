@@ -22,9 +22,9 @@ using System.Reflection.Metadata;
 
 namespace Xcst.Compiler.Reflection {
 
-   static partial class MetadataManifestReader {
+   partial class MetadataManifestReader {
 
-      internal static decimal?
+      static decimal?
       TryDecodeDecimalConstantAttribute(CustomAttribute attribute) {
 
          var attrValue = attribute.DecodeValue(_attrTypeProvider);

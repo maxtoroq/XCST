@@ -475,7 +475,7 @@ namespace Xcst.Compiler {
 
       internal static XdmNode
       CodeTypeReference(Type type, DocumentBuilder docBuilder) =>
-         CodeTypeReferenceImpl(w => TypeManifestReader.WriteTypeReference(type, w), docBuilder);
+         CodeTypeReferenceImpl(w => new TypeManifestReader(w).WriteTypeReference(type), docBuilder);
 
       internal static XdmNode
       CodeTypeReferenceImpl(Action<XmlWriter> writeFn, DocumentBuilder docBuilder) {

@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Reflection;
 using System.Reflection.Metadata;
+using System.Reflection.Metadata.Ecma335;
 
 namespace Xcst.Compiler.Reflection {
 
@@ -26,7 +27,7 @@ namespace Xcst.Compiler.Reflection {
          , ICustomAttributeTypeProvider<TypeSpec> {
 
       static readonly TypeSpec
-      _systemType = new TypeSpec("System.Type");
+      _systemType = new TypeSpec("System.Type", isReferenceType: true);
 
       static Dictionary<PrimitiveTypeCode, TypeSpec>
       _primitiveTypes = new Dictionary<PrimitiveTypeCode, TypeSpec> {
@@ -43,11 +44,11 @@ namespace Xcst.Compiler.Reflection {
          { PrimitiveTypeCode.UInt64, new TypeSpec("System.UInt64") },
          { PrimitiveTypeCode.Single, new TypeSpec("System.Single") },
          { PrimitiveTypeCode.Double, new TypeSpec("System.Double") },
-         { PrimitiveTypeCode.String, new TypeSpec("System.String") },
+         { PrimitiveTypeCode.String, new TypeSpec("System.String", isReferenceType: true) },
          { PrimitiveTypeCode.TypedReference, new TypeSpec("System.TypedReference") },
          { PrimitiveTypeCode.IntPtr, new TypeSpec("System.IntPtr") },
          { PrimitiveTypeCode.UIntPtr, new TypeSpec("System.UIntPtr") },
-         { PrimitiveTypeCode.Object, new TypeSpec("System.Object") }
+         { PrimitiveTypeCode.Object, new TypeSpec("System.Object", isReferenceType: true) }
       };
 
       public TypeSpec
@@ -59,17 +60,22 @@ namespace Xcst.Compiler.Reflection {
             reader.GetString(definition.Name)
             : reader.GetString(definition.Namespace) + "." + reader.GetString(definition.Name);
 
+         bool? refType = IsReferenceType(reader, handle, rawTypeKind);
+
          if (IsNested(definition.Attributes)) {
 
             TypeDefinitionHandle declaringTypeHandle = definition.GetDeclaringType();
 
             TypeSpec parentTypeSpec = GetTypeFromDefinition(reader, declaringTypeHandle, 0);
             parentTypeSpec.AddName(name);
+            parentTypeSpec.IsReferenceType = refType;
 
             return parentTypeSpec;
          }
 
-         return new TypeSpec(name);
+         return new TypeSpec(name) {
+            IsReferenceType = refType
+         };
       }
 
       static bool
@@ -89,6 +95,8 @@ namespace Xcst.Compiler.Reflection {
             reader.GetString(reference.Name)
             : reader.GetString(reference.Namespace) + "." + reader.GetString(reference.Name);
 
+         bool? refType = IsReferenceType(reader, handle, rawTypeKind);
+
          Handle scope = reference.ResolutionScope;
 
          switch (scope.Kind) {
@@ -96,13 +104,24 @@ namespace Xcst.Compiler.Reflection {
 
                TypeSpec parentTypeSpec = GetTypeFromReference(reader, (TypeReferenceHandle)scope, 0);
                parentTypeSpec.AddName(name);
+               parentTypeSpec.IsReferenceType = refType;
 
                return parentTypeSpec;
 
             default:
-               return new TypeSpec(name);
+               return new TypeSpec(name) {
+                  IsReferenceType = refType
+               };
          }
       }
+
+      static bool?
+      IsReferenceType(MetadataReader reader, EntityHandle handle, byte rawTypeKind) =>
+         reader.ResolveSignatureTypeKind(handle, rawTypeKind) switch {
+            SignatureTypeKind.ValueType => false,
+            SignatureTypeKind.Class => true,
+            _ => null,
+         };
 
       public TypeSpec
       GetSZArrayType(TypeSpec elementType) {

@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:package version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:import-namespace ns='System.Collections.Generic'/>
+
+   <c:variable name='a' as='string' visibility='public'/>
+   <c:variable name='b' as='string?' visibility='public'/>
+   <c:variable name='c' as='string?[]' visibility='public'/>
+   <c:variable name='d' as='string[]' visibility='public'/>
+   <c:variable name='e' as='string[]?' visibility='public'/>
+   <c:variable name='f' as='IEnumerable&lt;KeyValuePair&lt;string?, object>>?' visibility='public'/>
+
+</c:package>

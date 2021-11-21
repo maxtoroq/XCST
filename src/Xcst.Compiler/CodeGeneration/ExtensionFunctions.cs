@@ -17,7 +17,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Xml;
 using Saxon.Api;
 using Xcst.Runtime;
@@ -75,7 +74,8 @@ namespace Xcst.Compiler.CodeGeneration {
             using (var output = new MemoryStream()) {
 
                using (XmlWriter writer = XmlWriter.Create(output)) {
-                  TypeManifestReader.WritePackage(packageType, writer);
+                  new TypeManifestReader(writer)
+                     .WritePackage(packageType);
                }
 
                output.Position = 0;
@@ -229,7 +229,7 @@ namespace Xcst.Compiler.CodeGeneration {
 
       public override XdmSequenceType
       ResultType(XdmSequenceType[] ArgumentTypes) =>
-         new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_INTEGER), ' ');
+         new XdmSequenceType(XdmAtomicType.INTEGER, ' ');
 
       class FunctionCall : ExtensionFunctionCall {
 
@@ -252,7 +252,7 @@ namespace Xcst.Compiler.CodeGeneration {
 
       public override XdmSequenceType[]
       ArgumentTypes { get; } = {
-         new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_ANYURI), ' ')
+         new XdmSequenceType(XdmAtomicType.ANY_URI, ' ')
       };
 
       public override int
@@ -266,7 +266,7 @@ namespace Xcst.Compiler.CodeGeneration {
 
       public override XdmSequenceType
       ResultType(XdmSequenceType[] ArgumentTypes) =>
-         new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_STRING), ' ');
+         new XdmSequenceType(XdmAtomicType.STRING, ' ');
 
       class FunctionCall : ExtensionFunctionCall {
 
@@ -295,7 +295,7 @@ namespace Xcst.Compiler.CodeGeneration {
 
       public override XdmSequenceType[]
       ArgumentTypes { get; } = {
-         new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_STRING), ' '),
+         new XdmSequenceType(XdmAtomicType.STRING, ' '),
          new XdmSequenceType(XdmAnyItemType.Instance, '?'),
          new XdmSequenceType(XdmAnyItemType.Instance, '?'),
          new XdmSequenceType(XdmAnyItemType.Instance, '+')
@@ -373,11 +373,11 @@ namespace Xcst.Compiler.CodeGeneration {
 
       public override XdmSequenceType[]
       ArgumentTypes { get; } = {
-         new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_STRING), ' '),
+         new XdmSequenceType(XdmAtomicType.STRING, ' '),
          new XdmSequenceType(XdmAnyItemType.Instance, '?'),
-         new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_ANYURI), '?'),
-         new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_STRING), '?'),
-         new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_STRING), '?')
+         new XdmSequenceType(XdmAtomicType.ANY_URI, '?'),
+         new XdmSequenceType(XdmAtomicType.STRING, '?'),
+         new XdmSequenceType(XdmAtomicType.STRING, '?')
       };
 
       public override int
@@ -391,7 +391,7 @@ namespace Xcst.Compiler.CodeGeneration {
 
       public override XdmSequenceType
       ResultType(XdmSequenceType[] ArgumentTypes) =>
-         new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_ANYURI), '?');
+         new XdmSequenceType(XdmAtomicType.ANY_URI, '?');
 
       class FunctionCall : ExtensionFunctionCall {
 
@@ -432,7 +432,7 @@ namespace Xcst.Compiler.CodeGeneration {
 
       public override XdmSequenceType[]
       ArgumentTypes { get; } = {
-         new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_STRING), ' ')
+         new XdmSequenceType(XdmAtomicType.STRING, ' ')
       };
 
       public override int
@@ -446,7 +446,7 @@ namespace Xcst.Compiler.CodeGeneration {
 
       public override XdmSequenceType
       ResultType(XdmSequenceType[] ArgumentTypes) =>
-         new XdmSequenceType(XdmAtomicType.BuiltInAtomicType(QName.XS_INTEGER), ' ');
+         new XdmSequenceType(XdmAtomicType.INTEGER, ' ');
 
       class FunctionCall : ExtensionFunctionCall {
 
