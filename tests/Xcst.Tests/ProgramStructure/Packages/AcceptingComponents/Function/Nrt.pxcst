@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:package version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:import-namespace ns='System.Collections.Generic'/>
+
+   <c:function name='a' as='string' visibility='public'>
+      <c:param name='p1' as='string'/>
+
+      <c:return value='""'/>
+   </c:function>
+
+   <c:function name='b' as='string?' visibility='public'>
+      <c:param name='p1' as='string?'/>
+      <c:param name='p2' as='int'/>
+
+      <c:return value='null'/>
+   </c:function>
+
+   <c:function name='c' as='string?[]' visibility='public'>
+      <c:param name='p1' as='string?[]'/>
+
+      <c:return value='System.Array.Empty&lt;string?>()'/>
+   </c:function>
+
+   <c:function name='d' as='string[]' visibility='public'>
+      <c:param name='p1' as='string[]'/>
+
+      <c:return value='System.Array.Empty&lt;string>()'/>
+   </c:function>
+
+   <c:function name='e' as='string[]?' visibility='public'>
+      <c:param name='p1' as='string[]?'/>
+      <c:param name='p2' as='int[]?'/>
+
+      <c:return value='null'/>
+   </c:function>
+
+   <c:function name='f' as='IEnumerable&lt;KeyValuePair&lt;string?, object>>?' visibility='public'>
+      <c:param name='p1' as='IEnumerable&lt;KeyValuePair&lt;string?, object>>?'/>
+
+      <c:return value='null'/>
+   </c:function>
+
+</c:package>

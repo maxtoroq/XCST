@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:package version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:import-namespace ns='System.Collections.Generic'/>
+
+   <c:param name='a' as='string'/>
+   <c:param name='b' as='string?'/>
+   <c:param name='c' as='string?[]'/>
+   <c:param name='d' as='string[]'/>
+   <c:param name='e' as='string[]?'/>
+   <c:param name='f' as='IEnumerable&lt;KeyValuePair&lt;string?, object>>?'/>
+
+</c:package>

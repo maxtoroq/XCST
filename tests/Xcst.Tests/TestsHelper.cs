@@ -37,7 +37,7 @@ namespace Xcst.Tests {
       public static void
       RunXcstTest(
             string packageFile, string testName, string testNamespace, bool correct, bool error, bool fail,
-            decimal languageVersion = -1m, string? disableWarning = null) {
+            decimal languageVersion = -1m, string? disableWarning = null, string? warningAsError = null) {
 
          bool printCode = _printCode;
          var packageUri = new Uri(packageFile, UriKind.Absolute);
@@ -123,6 +123,7 @@ namespace Xcst.Tests {
                   error,
                   languageVersion,
                   disableWarning,
+                  warningAsError,
                   printCode
                );
 
@@ -197,8 +198,8 @@ namespace Xcst.Tests {
 
          XcstCompiler compiler = _compilerFactory.CreateCompiler();
          compiler.UseLineDirective = true;
-         compiler.PackageTypeResolver = n => Assembly.GetExecutingAssembly().GetType(n);
-         //compiler.AddPackageLibrary(Assembly.GetExecutingAssembly().Location);
+         //compiler.PackageTypeResolver = n => Assembly.GetExecutingAssembly().GetType(n);
+         compiler.AddPackageLibrary(Assembly.GetExecutingAssembly().Location);
 
          return compiler;
       }
@@ -223,7 +224,7 @@ namespace Xcst.Tests {
       public static Type
       CompileCode(
             string packageName, Uri packageUri, IEnumerable<string> compilationUnits, string language,
-            bool error = false, decimal languageVersion = -1m, string? disableWarning = null, bool printCode = false) {
+            bool error = false, decimal languageVersion = -1m, string? disableWarning = null, string? warningAsError = null, bool printCode = false) {
 
          bool isCSharp = language.Equals("C#", StringComparison.OrdinalIgnoreCase);
 
@@ -280,9 +281,12 @@ namespace Xcst.Tests {
             MetadataReference.CreateFromFile(Assembly.GetExecutingAssembly().Location)
          };
 
-         var specificDiagnosticOptions = (disableWarning != null) ?
+         var specificDiagnosticOptions = ((disableWarning != null) ?
             disableWarning.Split(' ').Select(p => new KeyValuePair<string, ReportDiagnostic>(p, ReportDiagnostic.Suppress)).ToArray()
-            : Array.Empty<KeyValuePair<string, ReportDiagnostic>>();
+            : Array.Empty<KeyValuePair<string, ReportDiagnostic>>())
+            .Concat(((warningAsError != null) ?
+               warningAsError.Split(' ').Select(p => new KeyValuePair<string, ReportDiagnostic>(p, ReportDiagnostic.Error)).ToArray()
+               : Array.Empty<KeyValuePair<string, ReportDiagnostic>>()));
 
          Compilation compilation = (isCSharp) ?
             (Compilation)CSharpCompilation.Create(

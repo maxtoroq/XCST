@@ -142,11 +142,15 @@ function GenerateTestsForDirectory([IO.DirectoryInfo]$directory, [string]$relati
             """$($config.GetAttribute("disable-warning"))"""
             } else { "null" }
 
+         $warningAsError = if ($config.HasAttribute("warning-as-error")) {
+            """$($config.GetAttribute("warning-as-error"))"""
+            } else { "null" }
+
          $languageVersion = if ($config.HasAttribute("language-version")) {
             "$($config.GetAttribute("language-version"))m"
             } else { "-1m" }
 
-         $testCall = "RunXcstTest(@""$($file.FullName)"", ""$testName"", ""$ns"", correct: $($correct.ToString().ToLower()), error: $($error.ToString().ToLower()), fail: $($fail.ToString().ToLower()), languageVersion: $languageVersion, disableWarning: $disableWarning)"
+         $testCall = "RunXcstTest(@""$($file.FullName)"", ""$testName"", ""$ns"", correct: $($correct.ToString().ToLower()), error: $($error.ToString().ToLower()), fail: $($fail.ToString().ToLower()), languageVersion: $languageVersion, disableWarning: $disableWarning, warningAsError: $warningAsError)"
 
          if ($assertThrows) {
 

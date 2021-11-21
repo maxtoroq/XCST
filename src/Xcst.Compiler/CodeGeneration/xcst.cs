@@ -54,7 +54,8 @@ namespace Xcst.Compiler {
             XDocument doc = new();
 
             using (XmlWriter writer = doc.CreateWriter()) {
-               TypeManifestReader.WritePackage(packageType, writer);
+               new TypeManifestReader(writer)
+                  .WritePackage(packageType);
             }
 
             return doc;

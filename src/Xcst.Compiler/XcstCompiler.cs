@@ -346,7 +346,7 @@ namespace Xcst.Compiler {
 
       internal static XElement
       CodeTypeReference(Type type) =>
-         CodeTypeReferenceImpl(w => TypeManifestReader.WriteTypeReference(type, w));
+         CodeTypeReferenceImpl(w => new TypeManifestReader(w).WriteTypeReference(type));
 
       internal static XElement
       CodeTypeReferenceImpl(Action<XmlWriter> writeFn) {
