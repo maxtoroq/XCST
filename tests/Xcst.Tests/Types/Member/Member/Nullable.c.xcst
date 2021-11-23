@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:type name='SomeType'>
+      <c:member name='bar'>
+         <c:member name='baz'/>
+      </c:member>
+   </c:type>
+
+   <c:template name='foo'>
+      <c:variable name='t' value='new SomeType { bar = null }'/>
+   </c:template>
+
+</c:module>

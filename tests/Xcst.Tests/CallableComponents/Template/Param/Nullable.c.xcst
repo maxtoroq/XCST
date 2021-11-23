@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:template name='t1'>
+      <c:call-template name='t2'>
+         <c:with-param name='p1' value='null'/>
+         <c:with-param name='p2' value='null'/>
+      </c:call-template>
+   </c:template>
+
+   <c:template name='t2'>
+      <c:param name='p1'/>
+      <c:param name='p2' value='default(object)'/>
+
+   </c:template>
+
+</c:module>
