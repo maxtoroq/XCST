@@ -90,10 +90,6 @@ namespace XcstCodeGen {
          };
 
          XcstCompiler compiler = compilerFact.CreateCompiler();
-
-         // No need to look for library packages on loaded assemblies (perf. tweak)
-         compiler.PackageTypeResolver = n => null;
-
          compiler.PackageFileDirectory = startUri.LocalPath;
          compiler.PackageFileExtension = _fileExt;
          compiler.IndentChars = "   ";
