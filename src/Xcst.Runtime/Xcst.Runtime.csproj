@@ -8,7 +8,6 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\CommonAssemblyInfo.cs" Link="Properties\CommonAssemblyInfo.cs" />
     <Compile Include="..\Diagnostics.cs" Link="Diagnostics.cs" />
     <Compile Include="..\XmlNamespaces.cs" Link="XmlNamespaces.cs" />
   </ItemGroup>
