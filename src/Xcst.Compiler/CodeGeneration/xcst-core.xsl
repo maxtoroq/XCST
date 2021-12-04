@@ -3592,7 +3592,7 @@
 
       <variable name="core-ns" select="namespace-uri-from-QName(xs:QName('c:foo'))"/>
       <sequence select="$ns eq $core-ns
-         or starts-with($ns, concat($ns, '/'))"/>
+         or starts-with($ns, concat($core-ns, '/'))"/>
    </function>
 
    <function name="xcst:is-extension-instruction" as="xs:boolean">
