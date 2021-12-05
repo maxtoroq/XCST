@@ -47,7 +47,7 @@ namespace Xcst.Tests.API.Compilation.Extensibility {
       xmlns='http://www.w3.org/1999/XSL/Transform'
       xmlns:xs='http://www.w3.org/2001/XMLSchema'
       xmlns:c='http://maxtoroq.github.io/XCST'
-      xmlns:src='http://maxtoroq.github.io/XCST/compiled'
+      xmlns:src='https://maxtoroq.github.io/XCST/compiled'
       xmlns:ext='http://localhost/ns/ext'>
    
    <param name='ext:make-relative-uri' required='yes'/>

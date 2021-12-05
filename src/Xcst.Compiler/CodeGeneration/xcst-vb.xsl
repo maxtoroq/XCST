@@ -17,11 +17,11 @@
 <stylesheet version="2.0" exclude-result-prefixes="#all"
    xmlns="http://www.w3.org/1999/XSL/Transform"
    xmlns:xs="http://www.w3.org/2001/XMLSchema"
-   xmlns:xcst="http://maxtoroq.github.io/XCST/grammar"
-   xmlns:err="http://maxtoroq.github.io/XCST/errors"
-   xmlns:code="http://maxtoroq.github.io/XCST/code"
-   xmlns:src="http://maxtoroq.github.io/XCST/compiled"
-   xmlns:vb="http://maxtoroq.github.io/XCST/visual-basic">
+   xmlns:xcst="https://maxtoroq.github.io/XCST/grammar"
+   xmlns:err="https://maxtoroq.github.io/XCST/errors"
+   xmlns:code="https://maxtoroq.github.io/XCST/code"
+   xmlns:src="https://maxtoroq.github.io/XCST/compiled"
+   xmlns:vb="https://maxtoroq.github.io/XCST/visual-basic">
 
    <variable name="vb:primitives" as="element()">
       <data xmlns="">

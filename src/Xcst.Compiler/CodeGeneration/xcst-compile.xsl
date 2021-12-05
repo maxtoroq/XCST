@@ -18,12 +18,12 @@
    xmlns="http://www.w3.org/1999/XSL/Transform"
    xmlns:xs="http://www.w3.org/2001/XMLSchema"
    xmlns:c="http://maxtoroq.github.io/XCST"
-   xmlns:xcst="http://maxtoroq.github.io/XCST/grammar"
-   xmlns:err="http://maxtoroq.github.io/XCST/errors"
-   xmlns:code="http://maxtoroq.github.io/XCST/code"
-   xmlns:src="http://maxtoroq.github.io/XCST/compiled"
-   xmlns:cs="http://maxtoroq.github.io/XCST/csharp"
-   xmlns:vb="http://maxtoroq.github.io/XCST/visual-basic">
+   xmlns:xcst="https://maxtoroq.github.io/XCST/grammar"
+   xmlns:err="https://maxtoroq.github.io/XCST/errors"
+   xmlns:code="https://maxtoroq.github.io/XCST/code"
+   xmlns:src="https://maxtoroq.github.io/XCST/compiled"
+   xmlns:cs="https://maxtoroq.github.io/XCST/csharp"
+   xmlns:vb="https://maxtoroq.github.io/XCST/visual-basic">
 
    <import href="xcst-extra.xsl"/>
    <import href="xcst-extensions.xsl"/>

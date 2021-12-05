@@ -19,16 +19,19 @@ namespace Xcst {
       public const string
       Xcst = "http://maxtoroq.github.io/XCST";
 
-      public const string
-      XcstGrammar = Xcst + "/grammar";
+      const string
+      XcstImpl = "https://maxtoroq.github.io/XCST";
 
       public const string
-      XcstErrors = Xcst + "/errors";
+      XcstGrammar = XcstImpl + "/grammar";
 
       public const string
-      XcstCode = Xcst + "/code";
+      XcstErrors = XcstImpl + "/errors";
 
       public const string
-      XcstCompiled = Xcst + "/compiled";
+      XcstCode = XcstImpl + "/code";
+
+      public const string
+      XcstCompiled = XcstImpl + "/compiled";
    }
 }

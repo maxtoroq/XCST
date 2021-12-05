@@ -17,7 +17,7 @@
 <stylesheet version="2.0" exclude-result-prefixes="#all"
    xmlns="http://www.w3.org/1999/XSL/Transform"
    xmlns:c="http://maxtoroq.github.io/XCST"
-   xmlns:src="http://maxtoroq.github.io/XCST/compiled">
+   xmlns:src="https://maxtoroq.github.io/XCST/compiled">
 
    <template match="node()" mode="
       src:import-namespace-extra
