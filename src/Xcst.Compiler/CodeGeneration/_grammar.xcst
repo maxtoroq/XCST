@@ -16,8 +16,8 @@
 -->
 <module version='1.0' language='C#'
    xmlns='http://maxtoroq.github.io/XCST'
-   xmlns:xcst='http://maxtoroq.github.io/XCST/grammar'
-   xmlns:code='http://maxtoroq.github.io/XCST/code'>
+   xmlns:xcst='https://maxtoroq.github.io/XCST/grammar'
+   xmlns:code='https://maxtoroq.github.io/XCST/code'>
 
    <import-namespace ns='System.Linq'/>
    <import-namespace ns='System.Text.RegularExpressions'/>

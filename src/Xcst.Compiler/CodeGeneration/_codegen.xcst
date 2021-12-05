@@ -16,11 +16,11 @@
 -->
 <module version='1.0' language='C#'
    xmlns='http://maxtoroq.github.io/XCST'
-   xmlns:xcst='http://maxtoroq.github.io/XCST/grammar'
-   xmlns:code='http://maxtoroq.github.io/XCST/code'
-   xmlns:src='http://maxtoroq.github.io/XCST/compiled'
-   xmlns:cs='http://maxtoroq.github.io/XCST/csharp'
-   xmlns:vb='http://maxtoroq.github.io/XCST/vb'>
+   xmlns:xcst='https://maxtoroq.github.io/XCST/grammar'
+   xmlns:code='https://maxtoroq.github.io/XCST/code'
+   xmlns:src='https://maxtoroq.github.io/XCST/compiled'
+   xmlns:cs='https://maxtoroq.github.io/XCST/csharp'
+   xmlns:vb='https://maxtoroq.github.io/XCST/vb'>
 
    <import-namespace ns='System.Linq'/>
    <import-namespace ns='System.Xml.Linq'/>

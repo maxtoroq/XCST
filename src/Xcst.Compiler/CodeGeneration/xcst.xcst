@@ -16,11 +16,11 @@
 -->
 <package name='Xcst.Compiler.XcstCompilerPackage' version='1.0' language='C#'
    xmlns='http://maxtoroq.github.io/XCST'
-   xmlns:xcst='http://maxtoroq.github.io/XCST/grammar'
-   xmlns:code='http://maxtoroq.github.io/XCST/code'
-   xmlns:src='http://maxtoroq.github.io/XCST/compiled'
-   xmlns:cs='http://maxtoroq.github.io/XCST/csharp'
-   xmlns:vb='http://maxtoroq.github.io/XCST/vb'>
+   xmlns:xcst='https://maxtoroq.github.io/XCST/grammar'
+   xmlns:code='https://maxtoroq.github.io/XCST/code'
+   xmlns:src='https://maxtoroq.github.io/XCST/compiled'
+   xmlns:cs='https://maxtoroq.github.io/XCST/csharp'
+   xmlns:vb='https://maxtoroq.github.io/XCST/vb'>
 
    <import-namespace ns='System.Collections.Generic'/>
    <import-namespace ns='System.Linq'/>
@@ -72,10 +72,10 @@
    <param name='src_package_file_extension' as='string?'/>
    <param name='src_compilation_unit_handler' as='System.Func&lt;string, System.IO.TextWriter>?'/>
 
-   <variable name='c' as='XNamespace'>http://maxtoroq.github.io/XCST</variable>
-   <variable name='xcst' as='XNamespace'>http://maxtoroq.github.io/XCST/grammar</variable>
-   <variable name='code' as='XNamespace'>http://maxtoroq.github.io/XCST/code</variable>
-   <variable name='src' as='XNamespace'>http://maxtoroq.github.io/XCST/compiled</variable>
+   <variable name='c' value='XmlNamespaces.Xcst' as='XNamespace'/>
+   <variable name='xcst' value='XmlNamespaces.XcstGrammar' as='XNamespace'/>
+   <variable name='code' value='XmlNamespaces.XcstCode' as='XNamespace'/>
+   <variable name='src' value='XmlNamespaces.XcstCompiled' as='XNamespace'/>
 
    <variable name='src_object_type'>
       <code:type-reference name='Object' namespace='System'/>

@@ -16,7 +16,7 @@
 -->
 <module version='1.0' language='C#'
    xmlns='http://maxtoroq.github.io/XCST'
-   xmlns:code='http://maxtoroq.github.io/XCST/code'>
+   xmlns:code='https://maxtoroq.github.io/XCST/code'>
 
    <import-namespace ns='System.Linq'/>
    <import-namespace ns='System.Xml.Linq'/>

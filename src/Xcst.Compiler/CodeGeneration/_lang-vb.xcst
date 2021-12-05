@@ -16,9 +16,9 @@
 -->
 <module version='1.0' language='C#'
    xmlns='http://maxtoroq.github.io/XCST'
-   xmlns:code='http://maxtoroq.github.io/XCST/code'
-   xmlns:src='http://maxtoroq.github.io/XCST/compiled'
-   xmlns:vb='http://maxtoroq.github.io/XCST/vb'>
+   xmlns:code='https://maxtoroq.github.io/XCST/code'
+   xmlns:src='https://maxtoroq.github.io/XCST/compiled'
+   xmlns:vb='https://maxtoroq.github.io/XCST/vb'>
 
    <import-namespace ns='System.Collections.Generic'/>
    <import-namespace ns='System.Linq'/>
