@@ -18,6 +18,10 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Xcst.Compiler\Xcst.Compiler.csproj" />
     <ProjectReference Include="..\..\src\Xcst.Runtime\Xcst.Runtime.csproj" />
+    <ProjectReference Include="..\tests-codegen\tests-codegen.csproj">
+      <Private>False</Private>
+      <PrivateAssets>All</PrivateAssets>
+    </ProjectReference>
   </ItemGroup>
 
   <ItemGroup>
@@ -70,13 +74,5 @@
       <LastGenOutput>Resources2.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
-
-  <Target Name="PreBuild" BeforeTargets="PreBuildEvent" DependsOnTargets="ResolveReferences">
-    <Exec Command="powershell -NoProfile -ExecutionPolicy RemoteSigned -File $(ProjectDir)generate-tests.ps1 $(Configuration)" />
-    <ItemGroup>
-      <Compile Remove="Tests.generated.cs" />
-      <Compile Include="Tests.generated.cs" />
-    </ItemGroup>
-  </Target>
 
 </Project>
