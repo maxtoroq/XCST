@@ -21,11 +21,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xcst.Tests", "tests\Xcst.Te
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xcst.Compiler", "src\Xcst.Compiler\Xcst.Compiler.csproj", "{9C417EC1-7461-4D3B-B650-08CAAE110DFE}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{B69C55A6-550D-4D35-B234-01C1704BA165}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "compiler-codegen", "src\compiler-codegen\compiler-codegen.csproj", "{6398307F-BB50-43E5-873F-385C92244243}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "compiler-codegen", "build\compiler-codegen\compiler-codegen.csproj", "{6398307F-BB50-43E5-873F-385C92244243}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tests-codegen", "tests\tests-codegen\tests-codegen.csproj", "{387F129F-CC6C-45F1-A82E-D28C1FA563DB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "tests-codegen", "tests\tests-codegen\tests-codegen.csproj", "{387F129F-CC6C-45F1-A82E-D28C1FA563DB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -72,7 +70,7 @@ Global
 		{5EBE14DC-3556-4D80-82E9-7B9919E3A866} = {3D9FCA40-C58E-428A-AE3C-480DF5724451}
 		{3C69B2AB-B0B2-4991-B223-34740C0ECF4B} = {28636474-5F87-46F6-BBED-0B6ECFC0F2D9}
 		{9C417EC1-7461-4D3B-B650-08CAAE110DFE} = {3D9FCA40-C58E-428A-AE3C-480DF5724451}
-		{6398307F-BB50-43E5-873F-385C92244243} = {B69C55A6-550D-4D35-B234-01C1704BA165}
+		{6398307F-BB50-43E5-873F-385C92244243} = {3D9FCA40-C58E-428A-AE3C-480DF5724451}
 		{387F129F-CC6C-45F1-A82E-D28C1FA563DB} = {28636474-5F87-46F6-BBED-0B6ECFC0F2D9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution

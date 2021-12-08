@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\build\compiler-codegen\compiler-codegen.csproj">
+    <ProjectReference Include="..\compiler-codegen\compiler-codegen.csproj">
       <Private>False</Private>
       <PrivateAssets>All</PrivateAssets>
     </ProjectReference>
