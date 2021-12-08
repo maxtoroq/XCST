@@ -119,7 +119,7 @@ namespace tests_codegen {
             compiler.CompilationUnitHandler = href => _output;
             compiler.NullableAnnotate = true;
 
-            Console.WriteLine(pkgDep.FullName);
+            //Console.WriteLine(pkgDep.FullName);
             compiler.Compile(new Uri(pkgDep.FullName));
          }
 
@@ -230,7 +230,7 @@ namespace tests_codegen {
 
          Uri callerBaseUri = new(currentDir, UriKind.Absolute);
          Uri projectUri = new(callerBaseUri, args[0]);
-         Uri outputUri = new(projectUri, "xcst.generated.cs");
+         Uri outputUri = new(projectUri, "Tests.generated.cs");
 
          using TextWriter output = File.CreateText(outputUri.LocalPath);
 

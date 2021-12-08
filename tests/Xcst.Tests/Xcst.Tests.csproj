@@ -25,6 +25,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Tests.generated.cs" />
+    <Compile Include="Tests.generated.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Update="Types\Member\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
