@@ -77,16 +77,47 @@ namespace Xcst.Compiler {
 
          if (String.IsNullOrEmpty(prefix)) {
 
-            XNamespace def = el.GetDefaultNamespace();
+            // System.Xml.Linq.XElement.GetDefaultNamespace() returns a value
+            // even if no declaration for the default namespace exists
 
-            if (def == XNamespace.None) {
-               return String.Empty;
+            string? namespaceOfPrefixInScope = GetNamespaceOfPrefixInScope(el, "xmlns", null);
+
+            if (namespaceOfPrefixInScope is null) {
+               return null;
             }
 
-            return def.NamespaceName;
+            return XNamespace.Get(namespaceOfPrefixInScope).NamespaceName;
          }
 
          return el.GetNamespaceOfPrefix(prefix)?.NamespaceName;
+
+         static string?
+         GetNamespaceOfPrefixInScope(XElement el, string prefix, XElement? outOfScope) {
+
+            // see System.Xml.Linq.XElement.GetNamespaceOfPrefixInScope()
+
+            XElement e = el;
+
+            while (e != outOfScope) {
+
+               XAttribute? a = e.LastAttribute;
+
+               while (a != null) {
+
+                  if (a.IsNamespaceDeclaration
+                     && a.Name.LocalName == prefix) {
+
+                     return a.Value;
+                  }
+
+                  a = a.PreviousAttribute;
+               }
+
+               e = e.Parent;
+            }
+
+            return null;
+         }
       }
 
       static string
