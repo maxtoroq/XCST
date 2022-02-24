@@ -8,16 +8,14 @@ See the [project home][XCST] for more information.
 
 ### Packages Built From This Repository
 
-Package | Description
-------- | -----------
-[Xcst.Compiler] | Compilation API. Use this package to translate your XCST programs into C# or Visual Basic code.
-[Xcst.Runtime] | Runtime and evaluation API.
+Package | Description | Targets
+------- | ----------- | -------
+[Xcst.Compiler] | Compilation API. Use this package to translate your XCST programs into C# or Visual Basic code. | .NET 4.6
+[Xcst.Runtime] | Runtime and evaluation API. | .NET 4.6, .NET Core 2.0, .NET Standard 2.0
 
 System Requirements
 -------------------
-The runtime is written in **C# 8** and requires **.NET 4.6**, **.NET Core 2.0** or **.NET Standard 2.0**.
-
-The compiler is written in **XSLT 2** (depends on [Saxon-HE]) and sits behind a C# 8 .NET 4.6 API. This means you need Windows to compile, but can run anywhere. The compiler produces code that is compatible with **C# 6** and **Visual Basic 14**.
+The compiler is written in **XSLT 2** (depends on [Saxon-HE]) and sits behind a .NET 4.6 API. This means you need Windows to compile, but can run anywhere. The compiler produces code that is compatible with **C# 6** and **Visual Basic 14**, although template rules are not useful unless you use C# 7 or higher.
 
 The [release script](build/release.ps1) (which creates the NuGet packages) and other utility scripts are written in **PowerShell 5.1**.
 
