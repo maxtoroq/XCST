@@ -91,7 +91,8 @@ namespace Xcst.Compiler {
       public Func<string, TextWriter>?
       CompilationUnitHandler { get; set; }
 
-      internal XcstCompiler() { }
+      internal
+      XcstCompiler() { }
 
       public void
       SetTargetBaseTypes(params Type[]? targetBaseTypes) {
