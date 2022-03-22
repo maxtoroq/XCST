@@ -104,9 +104,9 @@ namespace Xcst.Runtime {
 
          XcstWriter elOutput = DocumentWriter.CastElement(package, output);
 
-         try {
+         elOutput.WriteStartElement(el.Name.LocalName, el.Name.NamespaceName);
 
-            elOutput.WriteStartElement(el.Name.LocalName, el.Name.NamespaceName);
+         try {
 
             foreach (var at in el.Attributes()) {
                currentMode(TemplateContext.ForShallowCopy(context, at), elOutput);
