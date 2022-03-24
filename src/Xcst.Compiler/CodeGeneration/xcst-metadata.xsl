@@ -27,7 +27,7 @@
 
       <call-template name="xcst:validate-attribs">
          <with-param name="required" select="'name'"/>
-         <with-param name="optional" select="'value'"/>
+         <with-param name="optional" select="'args'"/>
       </call-template>
 
       <call-template name="xcst:no-children"/>
@@ -36,9 +36,9 @@
       <code:attribute>
          <call-template name="src:line-number"/>
          <code:type-reference name="{xcst:type(@name)}"/>
-         <if test="@value">
+         <if test="@args">
             <code:arguments>
-               <code:expression value="{xcst:expression(@value)}"/>
+               <code:expression value="{xcst:expression(@args)}"/>
             </code:arguments>
          </if>
       </code:attribute>

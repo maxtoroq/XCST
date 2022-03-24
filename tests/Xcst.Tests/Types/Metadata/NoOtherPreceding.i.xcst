@@ -4,7 +4,7 @@
    <c:type name='foo'>
       <a/>
       <c:metadata name='System.Obsolete'/>
-      <c:metadata name='System.CLSCompliant' value='true'/>
+      <c:metadata name='System.CLSCompliant' args='true'/>
    </c:type>
 
 </c:module>

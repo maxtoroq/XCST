@@ -654,9 +654,9 @@
                <xs:documentation>The metadata name.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
-         <xs:attribute name="value" type="c:expression">
+         <xs:attribute name="args" type="c:expression">
             <xs:annotation>
-               <xs:documentation>The metadata expression. Expression.</xs:documentation>
+               <xs:documentation>The metadata arguments. Expression.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>
