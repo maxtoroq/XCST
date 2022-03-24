@@ -385,6 +385,9 @@
 
       <code:method name="{if ($all-modes) then $src:all-modes-method-name else 'GetMode'}" visibility="private">
          <code:type-reference name="Action" namespace="System">
+            <if test="not($all-modes)">
+               <attribute name="nullable" select="true()"/>
+            </if>
             <code:type-arguments>
                <sequence select="$context/code:type-reference"/>
             </code:type-arguments>
@@ -408,15 +411,24 @@
          <code:block>
             <variable name="modes" select="$package-manifest/xcst:mode[$all-modes or xs:boolean(@initial)]"/>
             <variable name="default" select="$modes[xs:boolean(@default)]"/>
-            <variable name="unknown-throw" as="element()">
-               <code:throw>
-                  <code:method-call name="UnknownMode">
-                     <sequence select="src:helper-type('DynamicError')"/>
-                     <code:arguments>
-                        <sequence select="$name-param"/>
-                     </code:arguments>
-                  </code:method-call>
-               </code:throw>
+            <variable name="unknown-statement" as="element()">
+               <choose>
+                  <when test="$all-modes">
+                     <code:throw>
+                        <code:method-call name="UnknownMode">
+                           <sequence select="src:helper-type('DynamicError')"/>
+                           <code:arguments>
+                              <sequence select="$name-param"/>
+                           </code:arguments>
+                        </code:method-call>
+                     </code:throw>
+                  </when>
+                  <otherwise>
+                     <code:return>
+                        <code:null/>
+                     </code:return>
+                  </otherwise>
+               </choose>
             </variable>
             <code:if-else>
                <code:if>
@@ -443,7 +455,7 @@
                            </code:return>
                         </when>
                         <otherwise>
-                           <sequence select="$unknown-throw"/>
+                           <sequence select="$unknown-statement"/>
                         </otherwise>
                      </choose>
                   </code:block>
@@ -488,13 +500,13 @@
                                  </code:case>
                               </for-each>
                               <code:case-default>
-                                 <sequence select="$unknown-throw"/>
+                                 <sequence select="$unknown-statement"/>
                               </code:case-default>
                            </code:switch>
                         </code:case>
                      </for-each-group>
                      <code:case-default>
-                        <sequence select="$unknown-throw"/>
+                        <sequence select="$unknown-statement"/>
                      </code:case-default>
                   </code:switch>
                </code:else>

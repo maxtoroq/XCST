@@ -25,10 +25,10 @@ namespace Xcst.PackageModel {
       void
       Prime(PrimingContext context, string[]? overriddenParams);
 
-      Action<TemplateContext>
+      Action<TemplateContext>?
       GetTemplate<TBase>(QualifiedName name, ISequenceWriter<TBase> output);
 
-      Action<TemplateContext>
+      Action<TemplateContext>?
       GetMode<TBase>(QualifiedName? mode, ISequenceWriter<TBase> output);
 
       void

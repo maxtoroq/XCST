@@ -3242,7 +3242,7 @@
       <variable name="output" select="src:template-output($aux-meta)"/>
 
       <code:method name="GetTemplate" visibility="private">
-         <code:type-reference name="Action" namespace="System">
+         <code:type-reference name="Action" namespace="System" nullable="true">
             <code:type-arguments>
                <sequence select="src:template-context(())/code:type-reference"/>
             </code:type-arguments>
@@ -3266,15 +3266,10 @@
             <variable name="templates" select="
                $package-manifest/xcst:template[@visibility = ('public', 'final')]"/>
 
-            <variable name="unknown-throw" as="element()">
-               <code:throw>
-                  <code:method-call name="UnknownTemplate">
-                     <sequence select="src:helper-type('DynamicError')"/>
-                     <code:arguments>
-                        <sequence select="$name-param"/>
-                     </code:arguments>
-                  </code:method-call>
-               </code:throw>
+            <variable name="unknown-statement" as="element()">
+               <code:return>
+                  <code:null/>
+               </code:return>
             </variable>
 
             <code:switch>
@@ -3341,13 +3336,13 @@
                            </code:case>
                         </for-each>
                         <code:case-default>
-                           <sequence select="$unknown-throw"/>
+                           <sequence select="$unknown-statement"/>
                         </code:case-default>
                      </code:switch>
                   </code:case>
                </for-each-group>
                <code:case-default>
-                  <sequence select="$unknown-throw"/>
+                  <sequence select="$unknown-statement"/>
                </code:case-default>
             </code:switch>
          </code:block>
