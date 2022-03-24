@@ -480,8 +480,8 @@ namespace Xcst {
       Action<TemplateContext>
       TemplateFunction<TBase>(ISequenceWriter<TBase> output) =>
          (_name != null) ?
-            _package.GetTemplate(_name, output)
-            : _package.GetMode(_mode, output);
+            _package.GetTemplate(_name, output) ?? throw DynamicError.UnknownTemplate(_name)
+            : _package.GetMode(_mode, output) ?? throw DynamicError.UnknownMode(_mode);
 
       void
       EvaluateTemplate(Action<TemplateContext> tmplFn, TemplateContext tmplContext) {

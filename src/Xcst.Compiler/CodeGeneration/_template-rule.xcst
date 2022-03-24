@@ -443,6 +443,9 @@
 
       <code:method name='{(allModes ? src_all_modes_method_name : "GetMode")}' visibility='private'>
          <code:type-reference name='Action' namespace='System'>
+            <if test='!allModes'>
+               <attribute name='nullable'>true</attribute>
+            </if>
             <code:type-arguments>
                <copy-of value='context.Element(code + "type-reference")'/>
             </code:type-arguments>
@@ -470,15 +473,24 @@
                .ToArray()'/>
             <variable name='@default' value='modes
                .FirstOrDefault(p => xs_boolean(p.Attribute("default")!))'/>
-            <variable name='unknownThrow'>
-               <code:throw>
-                  <code:method-call name='UnknownMode'>
-                     <copy-of value='src_helper_type("DynamicError")'/>
-                     <code:arguments>
-                        <copy-of value='nameParam'/>
-                     </code:arguments>
-                  </code:method-call>
-               </code:throw>
+            <variable name='unknownStatement'>
+               <choose>
+                  <when test='allModes'>
+                     <code:throw>
+                        <code:method-call name='UnknownMode'>
+                           <copy-of value='src_helper_type("DynamicError")'/>
+                           <code:arguments>
+                              <copy-of value='nameParam'/>
+                           </code:arguments>
+                        </code:method-call>
+                     </code:throw>
+                  </when>
+                  <otherwise>
+                     <code:return>
+                        <code:null/>
+                     </code:return>
+                  </otherwise>
+               </choose>
             </variable>
             <code:if-else>
                <code:if>
@@ -505,7 +517,7 @@
                            </code:return>
                         </when>
                         <otherwise>
-                           <copy-of value='unknownThrow'/>
+                           <copy-of value='unknownStatement'/>
                         </otherwise>
                      </choose>
                   </code:block>
@@ -551,13 +563,13 @@
                                  </code:case>
                               </for-each>
                               <code:case-default>
-                                 <copy-of value='unknownThrow'/>
+                                 <copy-of value='unknownStatement'/>
                               </code:case-default>
                            </code:switch>
                         </code:case>
                      </for-each-group>
                      <code:case-default>
-                        <copy-of value='unknownThrow'/>
+                        <copy-of value='unknownStatement'/>
                      </code:case-default>
                   </code:switch>
                </code:else>

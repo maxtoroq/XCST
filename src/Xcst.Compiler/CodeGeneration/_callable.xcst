@@ -1225,7 +1225,7 @@
       <variable name='output' value='src_template_output(auxMeta)'/>
 
       <code:method name='GetTemplate' visibility='private'>
-         <code:type-reference name='Action' namespace='System'>
+         <code:type-reference name='Action' namespace='System' nullable='true'>
             <code:type-arguments>
                <copy-of value='src_template_context(null).Element(code + "type-reference")'/>
             </code:type-arguments>
@@ -1252,15 +1252,10 @@
                   &amp;&amp; (visibility is "public" or "final"))
                .ToArray()'/>
 
-            <variable name='unknownThrow'>
-               <code:throw>
-                  <code:method-call name='UnknownTemplate'>
-                     <copy-of value='src_helper_type("DynamicError")'/>
-                     <code:arguments>
-                        <copy-of value='nameParam'/>
-                     </code:arguments>
-                  </code:method-call>
-               </code:throw>
+            <variable name='unknownStatement'>
+               <code:return>
+                  <code:null/>
+               </code:return>
             </variable>
 
             <code:switch>
@@ -1328,13 +1323,13 @@
                            </code:case>
                         </for-each>
                         <code:case-default>
-                           <copy-of value='unknownThrow'/>
+                           <copy-of value='unknownStatement'/>
                         </code:case-default>
                      </code:switch>
                   </code:case>
                </for-each-group>
                <code:case-default>
-                  <copy-of value='unknownThrow'/>
+                  <copy-of value='unknownStatement'/>
                </code:case-default>
             </code:switch>
          </code:block>
