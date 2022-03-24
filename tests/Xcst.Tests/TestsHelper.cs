@@ -56,7 +56,7 @@ namespace Xcst.Tests {
             xcstResult = codegenResult.result;
             packageName = codegenResult.packageName;
 
-         } catch (CompileException ex) when (printCode) {
+         } catch (CompileException ex) {
 
             Console.WriteLine($"// {ex.Message}");
             Console.WriteLine($"// Module URI: {ex.ModuleUri}");
@@ -167,9 +167,9 @@ namespace Xcst.Tests {
 
             } catch (RuntimeException ex) {
 
-               if (printCode) {
-                  Console.WriteLine($"// {ex.Message}");
-               } else if (!fail) {
+               Console.WriteLine($"// {ex.Message}");
+
+               if (!fail) {
                   printCode = true;
                }
 
@@ -287,8 +287,7 @@ namespace Xcst.Tests {
                bool failed = codeResult.Diagnostics.Any(d => d.Severity == DiagnosticSeverity.Error
                   || (d.Severity == DiagnosticSeverity.Warning && d.WarningLevel > 1));
 
-               if (printCode
-                  || (failed && !error)) {
+               if (printCode || failed) {
 
                   foreach (Diagnostic item in codeResult.Diagnostics.Where(d => d.Severity != DiagnosticSeverity.Hidden)) {
                      var lineSpan = item.Location.GetLineSpan();
