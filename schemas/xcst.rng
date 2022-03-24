@@ -711,8 +711,8 @@
             <ref name="type_name"/>
          </attribute>
          <optional>
-            <attribute name="value">
-               <ann:documentation>The metadata expression.</ann:documentation>
+            <attribute name="args">
+               <ann:documentation>The metadata arguments.</ann:documentation>
                <ref name="expression"/>
             </attribute>
          </optional>

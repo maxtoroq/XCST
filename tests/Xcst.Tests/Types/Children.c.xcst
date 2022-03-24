@@ -18,7 +18,7 @@
 
    <c:type name='foo5'>
       <c:metadata name='System.Obsolete'/>
-      <c:metadata name='System.ComponentModel.Description' value='"Some description."'/>
+      <c:metadata name='System.ComponentModel.Description' args='"Some description."'/>
    </c:type>
 
    <c:type name='foo6'>
@@ -28,7 +28,7 @@
 
    <c:type name='foo7'>
       <c:metadata name='System.Obsolete'/>
-      <c:metadata name='System.ComponentModel.Description' value='"Some description."'/>
+      <c:metadata name='System.ComponentModel.Description' args='"Some description."'/>
       <c:member name='a'/>
       <c:member name='b'/>
    </c:type>

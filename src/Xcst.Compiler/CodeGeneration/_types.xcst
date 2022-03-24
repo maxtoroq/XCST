@@ -289,7 +289,7 @@
       <call-template name='xcst:validate-attribs'>
          <with-param name='el' value='el'/>
          <with-param name='required' value='new[] { "name" }'/>
-         <with-param name='optional' value='new[] { "value" }'/>
+         <with-param name='optional' value='new[] { "args" }'/>
       </call-template>
 
       <call-template name='xcst:no-children'>
@@ -305,9 +305,9 @@
             <with-param name='el' value='el'/>
          </call-template>
          <code:type-reference name='{xcst_type(el.Attribute("name")!)}'/>
-         <if test='el.Attribute("value") is XAttribute valueAttr'>
+         <if test='el.Attribute("args") is XAttribute argsAttr'>
             <code:arguments>
-               <code:expression value='{xcst_expression(valueAttr)}'/>
+               <code:expression value='{xcst_expression(argsAttr)}'/>
             </code:arguments>
          </if>
       </code:attribute>
