@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:import-namespace ns='System'/>
+
+   <c:template name='c:initial-template'>
+      <c:call-template name='foo'>
+         <c:with-param name='color' value='"red"' tunnel='yes'/>
+      </c:call-template>
+   </c:template>
+
+   <c:template name='foo'>
+      <c:invoke-package
+         package='Activator.CreateInstance(GetType())'
+         initial-template='bar'/>
+   </c:template>
+
+   <c:template name='bar' expand-text='yes'>
+      <c:param name='color' as='string' tunnel='yes'/>
+
+      <bar>{color}</bar>
+   </c:template>
+
+   <c:template name='expected'>
+      <bar/>
+   </c:template>
+
+</c:module>

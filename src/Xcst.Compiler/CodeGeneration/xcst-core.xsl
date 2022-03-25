@@ -1982,11 +1982,12 @@
    </template>
 
    <template match="c:invoke-package" mode="src:statement">
+      <param name="context" tunnel="yes"/>
       <param name="output" tunnel="yes"/>
 
       <call-template name="xcst:validate-attribs">
          <with-param name="required" select="'package'"/>
-         <with-param name="optional" select="'base-output-uri', 'base-uri', 'package-params', 'initial-match-selection', 'initial-mode', 'initial-template', 'template-params', 'tunnel-params'"/>
+         <with-param name="optional" select="'base-output-uri', 'base-uri', 'package-params', 'initial-match-selection', 'initial-mode', 'initial-template', 'template-params', 'tunnel-params', 'tunnel-passthru'"/>
       </call-template>
 
       <call-template name="xcst:no-children"/>
@@ -2045,6 +2046,14 @@
                <code:chain-reference/>
                <code:arguments>
                   <code:expression value="{xcst:expression(@template-params)}"/>
+               </code:arguments>
+            </code:method-call>
+         </if>
+         <if test="@tunnel-passthru/xcst:boolean(., true()) and $context">
+            <code:method-call name="WithTunnelPassthru">
+               <code:chain-reference/>
+               <code:arguments>
+                  <sequence select="$context/src:reference/code:*"/>
                </code:arguments>
             </code:method-call>
          </if>

@@ -322,6 +322,20 @@ namespace Xcst.Runtime {
       NextMatch() {
          this.MatchIndex++;
       }
+
+      internal void
+      CopyTunnelParams(IDictionary<string, object?> buffer) {
+
+         if (_tunnelParameters is null
+            || _tunnelParameters.Count == 0) {
+
+            return;
+         }
+
+         foreach (var pair in _tunnelParameters) {
+            buffer[pair.Key] = pair.Value;
+         }
+      }
    }
 
    public class TemplateContext<TParams> : TemplateContext {
