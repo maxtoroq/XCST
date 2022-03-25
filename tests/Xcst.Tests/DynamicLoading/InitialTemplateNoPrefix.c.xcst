@@ -3,12 +3,11 @@
    xmlns:c='http://maxtoroq.github.io/XCST'
    xmlns='http://www.w3.org/1999/xhtml'>
 
-   <c:import-namespace ns='System'/>
-
    <c:import href='_InitialTemplateNoPrefix.xcst'/>
 
    <c:template name='c:initial-template'>
-      <c:invoke-package package='Activator.CreateInstance(GetType())' initial-template='foo'/>
+      <c:invoke-package package='System.Activator.CreateInstance(GetType())'
+         initial-template='foo'/>
    </c:template>
 
    <c:template name='expected'>

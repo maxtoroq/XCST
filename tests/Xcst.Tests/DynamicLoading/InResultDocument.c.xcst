@@ -8,7 +8,8 @@
    <c:template name='c:initial-template'>
       <c:variable name='outputUri' value='((IXcstPackage)this).Context.ResolveOutputUri("foo.txt")'/>
       <c:result-document href='{outputUri.AbsoluteUri}' method='text'>
-         <c:invoke-package package='Activator.CreateInstance(GetType())' initial-template='foo'/>
+         <c:invoke-package package='Activator.CreateInstance(GetType())'
+            initial-template='foo'/>
          <c:text>bar</c:text>
       </c:result-document>
       <c:void value='File.Delete(outputUri.LocalPath)'/>

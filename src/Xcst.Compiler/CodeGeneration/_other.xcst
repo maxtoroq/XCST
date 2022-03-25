@@ -24,13 +24,14 @@
    <import-namespace ns='System.Xml.Linq'/>
 
    <template match='XElement el &amp;&amp; el.Name == c + "invoke-package"' mode='src:statement'>
+      <param name='context' as='XElement?' tunnel='yes'/>
       <param name='output' as='XElement' tunnel='yes'/>
 
       <call-template name='xcst:validate-attribs'>
          <with-param name='el' value='el'/>
          <with-param name='required' value='new[] { "package" }'/>
          <with-param name='optional' value='new[] { "base-output-uri", "base-uri", "package-params",
-            "initial-match-selection", "initial-mode", "initial-template", "template-params", "tunnel-params" }'/>
+            "initial-match-selection", "initial-mode", "initial-template", "template-params", "tunnel-params", "tunnel-passthru" }'/>
       </call-template>
 
       <call-template name='xcst:no-children'>
@@ -99,6 +100,24 @@
                   <code:expression value='{xcst_expression(tmplParamsAttr)}'/>
                </code:arguments>
             </code:method-call>
+         </if>
+         <if test='el.Attribute("tunnel-passthru") is XAttribute passthruAttr
+               &amp;&amp; context != null'>
+            <variable name='passthru' value='xcst_boolean(passthruAttr, true)'/>
+            <if test='passthru is null || passthru == true'>
+               <code:method-call name='WithTunnelPassthru'>
+                  <code:chain-reference/>
+                  <code:arguments>
+                     <copy-of value='select(context, src + "reference", code)'/>
+                     <if test='passthru is null'>
+                        <call-template name='src:boolean'>
+                           <with-param name='val' value='passthru'/>
+                           <with-param name='avt' value='passthruAttr'/>
+                        </call-template>
+                     </if>
+                  </code:arguments>
+               </code:method-call>
+            </if>
          </if>
          <if test='el.Attribute("tunnel-params") is XAttribute tunnelParamsAttr'>
             <code:method-call name='WithTunnelParams'>

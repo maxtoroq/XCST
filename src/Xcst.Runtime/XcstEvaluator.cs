@@ -350,6 +350,22 @@ namespace Xcst {
          return this;
       }
 
+      /// <exclude/>
+      [EditorBrowsable(EditorBrowsableState.Never)]
+      public XcstTemplateEvaluator
+      WithTunnelPassthru(TemplateContext context, bool passthru = true) {
+
+         if (context is null) {
+            return this;
+         }
+
+         if (passthru) {
+            context.CopyTunnelParams(_tunnelParameters);
+         }
+
+         return this;
+      }
+
       public XcstTemplateEvaluator
       ClearParams() {
 

@@ -1155,6 +1155,14 @@
                <xs:documentation>An object with tunnel parameters. Expression (System.Object | System.Collections.Generic.IDictionary&lt;System.String, System.Object&gt;).</xs:documentation>
             </xs:annotation>
          </xs:attribute>
+         <xs:attribute name="tunnel-passthru">
+            <xs:annotation>
+               <xs:documentation>Specifies whether to pass the current tunnel parameters. Attribute value template (boolean).</xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+               <xs:union memberTypes="c:boolean c:avt-expr"/>
+            </xs:simpleType>
+         </xs:attribute>
          <xs:attribute name="base-output-uri">
             <xs:annotation>
                <xs:documentation>The base output URI, used to resolve relative URIs of secondary result documents. Attribute value template (uri).</xs:documentation>
