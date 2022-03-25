@@ -2049,13 +2049,22 @@
                </code:arguments>
             </code:method-call>
          </if>
-         <if test="@tunnel-passthru/xcst:boolean(., true()) and $context">
-            <code:method-call name="WithTunnelPassthru">
-               <code:chain-reference/>
-               <code:arguments>
-                  <sequence select="$context/src:reference/code:*"/>
-               </code:arguments>
-            </code:method-call>
+         <if test="@tunnel-passthru and $context">
+            <variable name="passthru" select="xcst:boolean(@tunnel-passthru, true())"/>
+            <if test="empty($passthru) or $passthru = true()">
+               <code:method-call name="WithTunnelPassthru">
+                  <code:chain-reference/>
+                  <code:arguments>
+                     <sequence select="$context/src:reference/code:*"/>
+                     <if test="empty($passthru)">
+                        <call-template name="src:boolean">
+                           <with-param name="bool" select="$passthru"/>
+                           <with-param name="avt" select="@tunnel-passthru"/>
+                        </call-template>
+                     </if>
+                  </code:arguments>
+               </code:method-call>
+            </if>
          </if>
          <if test="@tunnel-params">
             <code:method-call name="WithTunnelParams">

@@ -3,7 +3,7 @@
 
    <c:template name='foo'>
       <c:invoke-package package='System.Activator.CreateInstance(GetType())'
-         base-uri=''/>
+         tunnel-passthru=''/>
    </c:template>
 
 </c:module>

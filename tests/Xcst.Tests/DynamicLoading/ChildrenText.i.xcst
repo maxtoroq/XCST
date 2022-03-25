@@ -2,7 +2,7 @@
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
    <c:template name='foo'>
-      <c:invoke-package package='null'>foo</c:invoke-package>
+      <c:invoke-package package='System.Activator.CreateInstance(GetType())'>foo</c:invoke-package>
    </c:template>
 
 </c:module>

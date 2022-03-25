@@ -1,10 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <c:module version='1.0' language='C#' default-mode='foo' xmlns:c='http://maxtoroq.github.io/XCST'>
 
-   <c:import-namespace ns='System'/>
-
    <c:template name='c:initial-template'>
-      <c:invoke-package package='Activator.CreateInstance(GetType())'
+      <c:invoke-package package='System.Activator.CreateInstance(GetType())'
          initial-match-selection='new object()'/>
    </c:template>
 

@@ -11,7 +11,7 @@
       <c:invoke-package
          package='System.Activator.CreateInstance(GetType())'
          initial-template='bar'
-         tunnel-passthru='yes'/>
+         tunnel-passthru='{"yes"}'/>
    </c:template>
 
    <c:template name='bar' expand-text='yes'>

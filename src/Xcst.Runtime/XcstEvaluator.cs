@@ -353,13 +353,15 @@ namespace Xcst {
       /// <exclude/>
       [EditorBrowsable(EditorBrowsableState.Never)]
       public XcstTemplateEvaluator
-      WithTunnelPassthru(TemplateContext context) {
+      WithTunnelPassthru(TemplateContext context, bool passthru = true) {
 
          if (context is null) {
             return this;
          }
 
-         context.CopyTunnelParams(_tunnelParameters);
+         if (passthru) {
+            context.CopyTunnelParams(_tunnelParameters);
+         }
 
          return this;
       }
