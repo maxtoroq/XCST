@@ -17,7 +17,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
     <PackageReference Include="System.Reflection.Metadata" Version="1.6.0" />
-    <PackageReference Include="Xcst.Runtime" Version="0.152.0" />
+    <PackageReference Include="Xcst.Runtime" Version="0.153.0" />
   </ItemGroup>
 
   <ItemGroup>
