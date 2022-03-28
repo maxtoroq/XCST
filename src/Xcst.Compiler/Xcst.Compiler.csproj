@@ -8,10 +8,16 @@
     <NoWarn>NETSDK1138</NoWarn>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <XcstInput>**\*.xcst</XcstInput>
+    <XcstOutput>xcst.generated.cs</XcstOutput>
+    <XcstCodegenProj>$(ProjectDir)..\compiler-codegen\compiler-codegen.csproj</XcstCodegenProj>
+    <XcstCodegenExe>$(ProjectDir)..\compiler-codegen\bin\$(Configuration)\compiler-codegen.exe</XcstCodegenExe>
+    <DefaultItemExcludes>$(DefaultItemExcludes);$(XcstOutput)</DefaultItemExcludes>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Include="..\XmlNamespaces.cs" Link="XmlNamespaces.cs" />
-    <Compile Remove="xcst.generated.cs" />
-    <Compile Include="xcst.generated.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -21,10 +27,19 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\compiler-codegen\compiler-codegen.csproj">
-      <Private>False</Private>
-      <PrivateAssets>All</PrivateAssets>
-    </ProjectReference>
+    <XcstInput Include="$(XcstInput)" />
+    <UpToDateCheckInput Include="@(XcstInput)" />
+    <UpToDateCheckBuilt Include="$(XcstOutput)" />
+    <Compile Include="$(XcstOutput)" />
   </ItemGroup>
+
+  <Target Name="XcstCodeGen"
+          BeforeTargets="DispatchToInnerBuilds"
+          Inputs="@(XcstInput);$(MSBuildThisFileFullPath);$(XcstCodegenExe)"
+          Outputs="$(XcstOutput)">
+    <MSBuild Projects="$(XcstCodegenProj)" />
+    <Message Text="xcst-codegen [$(MSBuildProjectName)]" Importance="high" />
+    <Exec Command="$(XcstCodegenExe) $(MSBuildThisFileFullPath)" />
+  </Target>
 
 </Project>

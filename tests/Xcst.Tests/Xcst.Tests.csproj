@@ -7,6 +7,14 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <XcstInput>**\*.xcst;**\*.pxcst</XcstInput>
+    <XcstOutput>Tests.generated.cs</XcstOutput>
+    <XcstCodegenProj>$(ProjectDir)..\tests-codegen\tests-codegen.csproj</XcstCodegenProj>
+    <XcstCodegenExe>$(ProjectDir)..\tests-codegen\bin\$(Configuration)\net5.0\tests-codegen.exe</XcstCodegenExe>
+    <DefaultItemExcludes>$(DefaultItemExcludes);$(XcstOutput)</DefaultItemExcludes>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Appveyor.TestLogger" Version="2.0.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.8.0" />
@@ -19,15 +27,13 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Xcst.Compiler\Xcst.Compiler.csproj" />
     <ProjectReference Include="..\..\src\Xcst.Runtime\Xcst.Runtime.csproj" />
-    <ProjectReference Include="..\tests-codegen\tests-codegen.csproj">
-      <Private>False</Private>
-      <PrivateAssets>All</PrivateAssets>
-    </ProjectReference>
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Remove="Tests.generated.cs" />
-    <Compile Include="Tests.generated.cs" />
+    <XcstInput Include="$(XcstInput)" />
+    <UpToDateCheckInput Include="@(XcstInput)" />
+    <UpToDateCheckBuilt Include="$(XcstOutput)" />
+    <Compile Include="$(XcstOutput)" />
   </ItemGroup>
 
   <ItemGroup>
@@ -80,5 +86,15 @@
       <LastGenOutput>Resources2.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
+
+  <Target Name="XcstCodeGen"
+          BeforeTargets="PreBuildEvent"
+          DependsOnTargets="ResolveReferences"
+          Inputs="@(XcstInput);$(MSBuildThisFileFullPath);$(XcstCodegenExe)"
+          Outputs="$(XcstOutput)">
+    <MSBuild Projects="$(XcstCodegenProj)" />
+    <Message Text="xcst-codegen [$(MSBuildProjectName)]" Importance="high" />
+    <Exec Command="$(XcstCodegenExe) $(MSBuildThisFileFullPath)" />
+  </Target>
 
 </Project>

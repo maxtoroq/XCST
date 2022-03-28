@@ -58,7 +58,4 @@
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Target Name="AfterBuild">
-    <Exec Command="$(ProjectDir)bin\$(ConfigurationName)\compiler-codegen.exe $(ProjectDir)..\..\src\Xcst.Compiler\Xcst.Compiler.csproj" />
-  </Target>
 </Project>

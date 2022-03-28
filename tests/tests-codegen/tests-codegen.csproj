@@ -10,8 +10,4 @@
     <ProjectReference Include="..\..\src\Xcst.Compiler\Xcst.Compiler.csproj" />
   </ItemGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="$(OutDir)tests-codegen.exe $(ProjectDir)..\Xcst.Tests\Xcst.Tests.csproj" />
-  </Target>
-
 </Project>
