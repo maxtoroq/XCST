@@ -152,7 +152,7 @@ namespace XcstCodeGen {
 
          var callerBaseUri = new Uri(currentDir, UriKind.Absolute);
          var projectUri = new Uri(callerBaseUri, args[0]);
-         var outputUri = new Uri(projectUri, "xcst.generated.cs");
+         var outputUri = new Uri(projectUri, args[1]);
 
          using (var output = File.CreateText(outputUri.LocalPath)) {
 

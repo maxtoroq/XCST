@@ -230,7 +230,7 @@ namespace tests_codegen {
 
          Uri callerBaseUri = new(currentDir, UriKind.Absolute);
          Uri projectUri = new(callerBaseUri, args[0]);
-         Uri outputUri = new(projectUri, "Tests.generated.cs");
+         Uri outputUri = new(projectUri, args[1]);
 
          using TextWriter output = File.CreateText(outputUri.LocalPath);
 
