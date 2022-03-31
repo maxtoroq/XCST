@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xcst-test extension="http://localhost/ns/ext SequenceConstructor" ?>
+<c:module version='1.0' language='C#'
+   xmlns:c='http://maxtoroq.github.io/XCST'
+   xmlns:ext='http://localhost/ns/ext'
+   extension-element-prefixes='ext'>
+
+   <c:template name='c:initial-template'>
+      <div>
+         <ext:instruction>
+            <section>
+               <ext:instruction/>
+            </section>
+         </ext:instruction>
+      </div>
+   </c:template>
+
+   <c:template name='expected'>
+      <div>
+         <ext-result>
+            <section>
+               <ext-result/>
+            </section>
+         </ext-result>
+      </div>
+   </c:template>
+
+</c:module>

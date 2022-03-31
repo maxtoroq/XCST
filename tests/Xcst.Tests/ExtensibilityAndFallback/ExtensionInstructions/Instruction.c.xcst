@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xcst-test extension="http://localhost/ns/ext Instruction" ?>
+<c:module version='1.0' language='C#'
+   xmlns:c='http://maxtoroq.github.io/XCST'
+   xmlns:ext='http://localhost/ns/ext'
+   extension-element-prefixes='ext'>
+
+   <c:template name='c:initial-template'>
+      <div>
+         <ext:instruction/>
+         <ext:instruction/>
+      </div>
+   </c:template>
+
+   <c:template name='expected'>
+      <div>
+         <ext-result/>
+         <ext-result/>
+      </div>
+   </c:template>
+
+</c:module>

@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xcst-test extension="http://localhost/ns/ext TypeInferenceDefault" ?>
+<c:module version='1.0' language='C#'
+   xmlns:c='http://maxtoroq.github.io/XCST'
+   xmlns:ext='http://localhost/ns/ext'
+   extension-element-prefixes='ext'>
+
+   <c:template name='c:initial-template'>
+      <c:variable name='a'>
+         <ext:instruction/>
+      </c:variable>
+      <c:void value='Assert.AreEqual(typeof(object[]), CompileType(a))'/>
+   </c:template>
+
+</c:module>

@@ -325,7 +325,9 @@
                                  <apply-templates value='elNode' mode='xcst:instruction'/>
                               </when>
                               <when test='xcst_is_extension_instruction(elNode)'>
-                                 <apply-templates value='elNode' mode='xcst:extension-instruction'/>
+                                 <call-template name='xcst:extension-instruction'>
+                                    <with-param name='el' value='elNode'/>
+                                 </call-template>
                               </when>
                               <otherwise>
                                  <call-template name='xcst:literal-result-element-instruction'/>

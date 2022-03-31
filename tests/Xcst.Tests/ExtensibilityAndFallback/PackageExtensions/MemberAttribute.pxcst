@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#'
+   xmlns:c='http://maxtoroq.github.io/XCST'
+   xmlns:code='https://maxtoroq.github.io/XCST/code'
+   xmlns:src='https://maxtoroq.github.io/XCST/compiled'>
+
+   <c:import-namespace ns='System.Xml.Linq'/>
+
+   <c:variable name='ext' as='XNamespace'>http://localhost/ns/ext</c:variable>
+
+   <c:template name='src:member-attribute-extra'>
+      <c:param name='el' as='XElement' required='yes'/>
+
+      <c:if test='el.Attribute(ext + "serialize")?.Value == "no"'>
+         <code:attribute>
+            <code:type-reference name='JsonIgnoreAttribute' namespace='Newtonsoft.Json'/>
+         </code:attribute>
+      </c:if>
+   </c:template>
+
+</c:module>

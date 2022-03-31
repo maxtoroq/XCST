@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xcst-test extension="http://localhost/ns/ext TypeAttribute" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:type name='Foo'/>
+
+   <c:template name='c:initial-template'>
+      <c:void value='Assert.AreEqual(1, typeof(Foo)
+         .GetCustomAttributes(typeof(TypeAttribute.ExtAttribute), inherit: false)
+         .Length)'/>
+   </c:template>
+
+</c:module>

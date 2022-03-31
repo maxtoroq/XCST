@@ -12,11 +12,37 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+using System.Collections.Generic;
+using Xcst.PackageModel;
+
 namespace Xcst.Compiler {
 
    public class XcstCompilerFactory {
 
+      readonly Dictionary<Uri, IXcstPackage>
+      _extensions = new();
+
+      public bool
+      EnableExtensions { get; set; }
+
       public XcstCompiler
-      CreateCompiler() => new XcstCompiler();
+      CreateCompiler() =>
+         new XcstCompiler((this.EnableExtensions) ?
+            new Dictionary<Uri, IXcstPackage>(_extensions)
+            : null);
+
+      public void
+      RegisterExtension(Uri extensionNamespace, IXcstPackage extensionPackage) {
+
+         if (extensionNamespace is null) throw new ArgumentNullException(nameof(extensionNamespace));
+         if (extensionPackage is null) throw new ArgumentNullException(nameof(extensionPackage));
+
+         if (!extensionNamespace.IsAbsoluteUri) {
+            throw new ArgumentException($"{nameof(extensionNamespace)} must be an absolute URI.", nameof(extensionNamespace));
+         }
+
+         _extensions[extensionNamespace] = extensionPackage;
+      }
    }
 }

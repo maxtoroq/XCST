@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#'
+   xmlns:c='http://maxtoroq.github.io/XCST'
+   xmlns:code='https://maxtoroq.github.io/XCST/code'
+   xmlns:src='https://maxtoroq.github.io/XCST/compiled'>
+
+   <c:import-namespace ns='System'/>
+   <c:import-namespace ns='System.Linq'/>
+   <c:import-namespace ns='System.Xml.Linq'/>
+
+   <c:variable name='ext' as='XNamespace'>http://localhost/ns/ext</c:variable>
+   <c:variable name='code' as='XNamespace'>https://maxtoroq.github.io/XCST/code</c:variable>
+   <c:variable name='src' as='XNamespace'>https://maxtoroq.github.io/XCST/compiled</c:variable>
+
+   <c:param name='src_doc_output' as='Func&lt;XObject?, XElement?, XElement>' required='yes'/>
+   <c:param name='src_output_is_doc' as='Func&lt;XElement, bool>' required='yes'/>
+   <c:param name='src_helper_type' as='Func&lt;string, XElement>' required='yes'/>
+   <c:param name='src_line_number' as='Xcst.XcstDelegate&lt;object>' required='yes'/>
+
+   <c:template match='XElement el &amp;&amp; el.Name == ext + "instruction"' mode='src:statement'>
+      <c:param name='output' as='XElement' tunnel='yes'/>
+
+      <c:variable name='outputIsDoc' value='src_output_is_doc(output)'/>
+      <c:variable name='docOutput' value='src_doc_output(el, output)'/>
+      <c:variable name='docRef' value='docOutput.Element(src + "reference")!
+         .Elements()
+         .First(p => p.Name.Namespace == code)'/>
+
+      <c:if test='!outputIsDoc'>
+         <code:variable name='{docRef.Attribute("name")!.Value}'>
+            <c:invoke-delegate delegate='this.src_line_number'>
+               <c:with-param name='el' value='el'/>
+            </c:invoke-delegate>
+            <code:method-call name='CastElement'>
+               <c:copy-of value='src_helper_type("DocumentWriter")'/>
+               <code:arguments>
+                  <c:copy-of value='output.Element(src + "reference")!
+                     .Elements()
+                     .First(p => p.Name.Namespace == code)'/>
+               </code:arguments>
+            </code:method-call>
+         </code:variable>
+      </c:if>
+
+      <code:method-call name='WriteStartElement'>
+         <c:invoke-delegate delegate='this.src_line_number'>
+            <c:with-param name='el' value='el'/>
+         </c:invoke-delegate>
+         <c:copy-of value='docRef'/>
+         <code:arguments>
+            <code:string literal='true'>ext-result</code:string>
+         </code:arguments>
+      </code:method-call>
+
+      <code:method-call name='WriteEndElement' line-hidden='true'>
+         <c:copy-of value='docRef'/>
+      </code:method-call>
+   </c:template>
+
+</c:module>

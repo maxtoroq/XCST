@@ -15,6 +15,7 @@ using CSharpVersion = Microsoft.CodeAnalysis.CSharp.LanguageVersion;
 using VBVersion = Microsoft.CodeAnalysis.VisualBasic.LanguageVersion;
 using TestAssert = NUnit.Framework.Assert;
 using TestAssertException = NUnit.Framework.AssertionException;
+using Xcst.PackageModel;
 
 namespace Xcst.Tests {
 
@@ -22,11 +23,6 @@ namespace Xcst.Tests {
 
       const bool
       _printCode = false;
-
-      static readonly XcstCompilerFactory
-      _compilerFactory = new XcstCompilerFactory {
-         //EnableExtensions = true
-      };
 
       static readonly string
       _initialName = "Q{http://maxtoroq.github.io/XCST}initial-template";
@@ -37,7 +33,8 @@ namespace Xcst.Tests {
       public static void
       RunXcstTest(
             string packageFile, string testName, string testNamespace, bool correct, bool error, bool fail,
-            decimal languageVersion = -1m, string? disableWarning = null, string? warningAsError = null) {
+            decimal languageVersion = -1m, string? disableWarning = null, string? warningAsError = null,
+            (Uri, Type)? extension = default) {
 
          bool printCode = _printCode;
          var packageUri = new Uri(packageFile, UriKind.Absolute);
@@ -46,7 +43,7 @@ namespace Xcst.Tests {
          string packageName;
 
          try {
-            var codegenResult = GenerateCode(packageUri, testName, testNamespace);
+            var codegenResult = GenerateCode(packageUri, testName, testNamespace, extension);
 
             if (!correct) {
                // did not fail, caller Assert.Throws will
@@ -194,9 +191,19 @@ namespace Xcst.Tests {
       }
 
       public static XcstCompiler
-      CreateCompiler() {
+      CreateCompiler((Uri extNs, Type extPkgType)? extension = default) {
 
-         XcstCompiler compiler = _compilerFactory.CreateCompiler();
+         var factory = new XcstCompilerFactory();
+
+         if (extension != null) {
+            factory.EnableExtensions = true;
+            factory.RegisterExtension(
+               extension.Value.extNs,
+               (IXcstPackage)Activator.CreateInstance(extension.Value.extPkgType)!
+            );
+         }
+
+         XcstCompiler compiler = factory.CreateCompiler();
          compiler.UseLineDirective = true;
          //compiler.PackageTypeResolver = n => Assembly.GetExecutingAssembly().GetType(n);
          compiler.AddPackageLibrary(Assembly.GetExecutingAssembly().Location);
@@ -205,9 +212,9 @@ namespace Xcst.Tests {
       }
 
       static (CompileResult result, string packageName)
-      GenerateCode(Uri packageUri, string testName, string testNamespace) {
+      GenerateCode(Uri packageUri, string testName, string testNamespace, (Uri, Type)? extension) {
 
-         XcstCompiler compiler = CreateCompiler();
+         XcstCompiler compiler = CreateCompiler(extension);
          compiler.TargetNamespace = testNamespace;
          compiler.TargetClass = testName;
          compiler.UsePackageBase = testNamespace;

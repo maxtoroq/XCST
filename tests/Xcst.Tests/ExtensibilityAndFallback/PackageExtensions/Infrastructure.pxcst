@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#'
+   xmlns:c='http://maxtoroq.github.io/XCST'
+   xmlns:code='https://maxtoroq.github.io/XCST/code'
+   xmlns:src='https://maxtoroq.github.io/XCST/compiled'>
+
+   <c:import-namespace ns='System.Xml.Linq'/>
+
+   <c:template name='src:infrastructure-extra'>
+      <c:param name='el' as='XElement' required='yes'/>
+
+      <code:method name='ExtraMethod'>
+         <code:type-reference name='Int32' namespace='System'/>
+         <code:block>
+            <code:return>
+               <code:int value='5'/>
+            </code:return>
+         </code:block>
+      </code:method>
+   </c:template>
+
+</c:module>

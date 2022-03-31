@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#'
+   xmlns:c='http://maxtoroq.github.io/XCST'
+   xmlns:xcst='https://maxtoroq.github.io/XCST/grammar'
+   xmlns:code='https://maxtoroq.github.io/XCST/code'
+   xmlns:src='https://maxtoroq.github.io/XCST/compiled'>
+
+   <c:import-namespace ns='System'/>
+   <c:import-namespace ns='System.Linq'/>
+   <c:import-namespace ns='System.Xml.Linq'/>
+
+   <c:variable name='ext' as='XNamespace'>http://localhost/ns/ext</c:variable>
+   <c:variable name='code' as='XNamespace'>https://maxtoroq.github.io/XCST/code</c:variable>
+   <c:variable name='src' as='XNamespace'>https://maxtoroq.github.io/XCST/compiled</c:variable>
+
+   <c:param name='src_line_number' as='Xcst.XcstDelegate&lt;object>' required='yes'/>
+
+   <c:template match='XElement el &amp;&amp; el.Name == ext + "instruction"' mode='src:statement'>
+      <c:param name='output' as='XElement' tunnel='yes'/>
+      
+      <code:method-call name='WriteObject'>
+         <c:invoke-delegate delegate='this.src_line_number'>
+            <c:with-param name='el' value='el'/>
+         </c:invoke-delegate>
+         <c:copy-of value='output.Element(src + "reference")!
+            .Elements()
+            .First(p => p.Name.Namespace == code)'/>
+         <code:arguments>
+            <code:new-object>
+               <code:type-reference name='Object' namespace='System'/>
+            </code:new-object>
+         </code:arguments>
+      </code:method-call>
+   </c:template>
+
+</c:module>

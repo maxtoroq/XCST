@@ -163,7 +163,9 @@
                <call-template name='src:type-attributes'>
                   <with-param name='el' value='el'/>
                </call-template>
-               <!--<call-template name='src:type-attribute-extra'/>-->
+               <call-template name='src:type-attribute-extra'>
+                  <with-param name='el' value='el'/>
+               </call-template>
                <apply-templates value='el.Elements(c + "metadata")' mode='src:attribute'/>
             </code:attributes>
             <code:members>
@@ -254,7 +256,9 @@
             <call-template name='src:member-attributes'>
                <with-param name='el' value='el'/>
             </call-template>
-            <!--<call-template name='src:member-attribute-extra'/>-->
+            <call-template name='src:member-attribute-extra'>
+               <with-param name='el' value='el'/>
+            </call-template>
             <apply-templates value='el.Elements(c + "metadata")' mode='src:attribute'/>
          </code:attributes>
          <code:getter>
@@ -339,7 +343,9 @@
             <call-template name='src:type-attributes'>
                <with-param name='el' value='el'/>
             </call-template>
-            <!--<call-template name='src:type-attribute-extra'/>-->
+            <call-template name='src:type-attribute-extra'>
+               <with-param name='el' value='el'/>
+            </call-template>
          </code:attributes>
          <code:members>
             <apply-templates value='members' mode='src:member'/>

@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#'
+   xmlns:c='http://maxtoroq.github.io/XCST'
+   xmlns:code='https://maxtoroq.github.io/XCST/code'
+   xmlns:src='https://maxtoroq.github.io/XCST/compiled'>
+
+   <c:import-namespace ns='System.Xml.Linq'/>
+
+   <c:param name='src_base_types' as='XElement[]'/>
+
+   <c:template name='src:base-types'>
+      <c:param name='el' as='XElement' required='yes'/>
+
+      <c:copy-of value='src_base_types'/>
+      <code:type-reference name='IExtBase'>
+         <code:type-reference name='BaseTypes'/>
+      </code:type-reference>
+   </c:template>
+
+</c:module>

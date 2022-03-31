@@ -1,11 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<?xcst-test ignore="true" ?>
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
-   <c:template name='foo' xmlns:ext='urn:ext' extension-element-prefixes='ext'>
-      <ext:magic>
+   <c:template name='foo' xmlns:ext='http://localhost/ns/ext' extension-element-prefixes='ext'>
+      <ext:instruction>
          <c:fallback foo='foo'/>
-      </ext:magic>
+      </ext:instruction>
    </c:template>
 
 </c:module>

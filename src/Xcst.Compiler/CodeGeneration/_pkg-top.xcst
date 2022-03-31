@@ -164,7 +164,9 @@
                   &amp;&amp; xs_boolean(acceptedAttr)
                   &amp;&amp; p.Attribute("visibility")!.Value != "hidden")' mode='src:import-namespace'/>
             <apply-templates value='select(el, c + "import-namespace")' mode='src:import-namespace'/>
-            <!--<apply-templates value='el' mode='src:import-namespace-extra'/>-->
+            <call-template name='src:import-namespace-extra'>
+               <with-param name='el' value='el'/>
+            </call-template>
             <copy-of value='classEl'/>
          </code:namespace>
       </if>
@@ -219,7 +221,9 @@
          <if test='principalModule'>
             <code:base-types>
                <if test='ReferenceEquals(this, this)'>
-                  <!--<apply-templates value='el' mode='src:base-types'/>-->
+                  <call-template name='src:base-types'>
+                     <with-param name='el' value='el'/>
+                  </call-template>
                   <on-empty>
                      <copy-of value='src_base_types'/>
                   </on-empty>
@@ -227,7 +231,9 @@
                <copy-of value='src_package_interface'/>
             </code:base-types>
             <code:attributes>
-               <!--<apply-templates value='el' mode='src:package-attribute-extra'/>-->
+               <call-template name='src:package-attribute-extra'>
+                  <with-param name='el' value='el'/>
+               </call-template>
             </code:attributes>
          </if>
 
@@ -273,7 +279,9 @@
                      .Elements()
                      .Where(p => p.Name == xcst + "mode" || p.Name == xcst + "output")' mode='src:member'/>
                </if>
-               <!--<apply-templates value='el' mode='src:infrastructure-extra'/>-->
+               <call-template name='src:infrastructure-extra'>
+                  <with-param name='el' value='el'/>
+               </call-template>
             </code:region>
          </code:members>
       </code:type>

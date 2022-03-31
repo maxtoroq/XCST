@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xcst-test ignore="true" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:template name='foo' xmlns='' extension-element-prefixes='#default'>
+      <foo/>
+   </c:template>
+
+</c:module>

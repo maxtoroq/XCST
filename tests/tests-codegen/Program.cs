@@ -178,6 +178,15 @@ namespace tests_codegen {
                   langVerAttr.Value + "m"
                   : "-1m";
 
+               string extension;
+
+               if (config.Attribute("extension")?.Value is string extValue) {
+                  string[] pair = extValue.Split(' ');
+                  extension = $"(new Uri(\"{pair[0]}\", UriKind.Absolute), typeof({pair[1]}))";
+               } else {
+                  extension = "null";
+               }
+
                string testCall = "RunXcstTest("
                   + $"@\"{file.FullName}\""
                   + $", \"{testName}\""
@@ -188,6 +197,7 @@ namespace tests_codegen {
                   + $", languageVersion: {languageVersion}"
                   + $", disableWarning: {disableWarning}"
                   + $", warningAsError: {warningAsError}"
+                  + $", extension: {extension}"
                   + ")";
 
                if (assertThrows) {

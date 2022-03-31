@@ -20,8 +20,41 @@
    xmlns:code='https://maxtoroq.github.io/XCST/code'
    xmlns:src='https://maxtoroq.github.io/XCST/compiled'>
 
+   <import-namespace ns='System.Collections.Generic'/>
    <import-namespace ns='System.Linq'/>
    <import-namespace ns='System.Xml.Linq'/>
+   <import-namespace ns='Xcst.PackageModel'/>
+
+   <param name='src_extensions' as='Dictionary&lt;System.Uri, IXcstPackage>?'/>
+
+   <variable name='src_ext_pkg_params' value='new {
+      src_base_types,
+      src_doc_output = (System.Func&lt;XObject?, XElement?, XElement>)src_doc_output,
+      src_output_is_doc = (System.Func&lt;XElement, bool>)src_output_is_doc,
+      src_helper_type = (System.Func&lt;string, XElement>)src_helper_type,
+      src_line_number,
+      src_sequence_constructor
+   }'/>
+
+   <variable name='src_line_number'>
+      <delegate>
+         <param name='el' as='XElement' required='yes'/>
+
+         <call-template name='src:line-number'>
+            <with-param name='el' value='el'/>
+         </call-template>
+      </delegate>
+   </variable>
+
+   <variable name='src_sequence_constructor'>
+      <delegate>
+         <param name='el' as='XElement' required='yes'/>
+
+         <call-template name='src:sequence-constructor'>
+            <with-param name='el' value='el'/>
+         </call-template>
+      </delegate>
+   </variable>
 
    <function name='xcst_is_extension_instruction' as='bool'>
       <param name='el' as='XElement'/>
@@ -55,9 +88,139 @@
       <param name='el' as='XElement' required='yes'/>
       <param name='currentMode' as='XName' required='yes'/>
 
+      <variable name='extPkg' value='ExtensionPackage(el)'/>
+      <choose>
+         <when test='extPkg != null'>
+            <invoke-package package='extPkg'
+               package-params='src_ext_pkg_params'
+               initial-match-selection='el'
+               initial-mode='{xcst_uri_qualified_name(currentMode)}'
+               tunnel-passthru='yes'/>
+         </when>
+         <when test='el.Elements(c + "fallback").ToArray() is var fbEls
+               &amp;&amp; fbEls.Length > 0'>
+            <for-each name='fb' in='fbEls'>
+               <call-template name='xcst:validate-attribs'>
+                  <with-param name='el' value='fb'/>
+               </call-template>
+               <call-template name='src:sequence-constructor'>
+                  <with-param name='el' value='fb'/>
+               </call-template>
+            </for-each>
+         </when>
+         <otherwise>
+            <message terminate='yes' error-code='XTDE1450' error-data='src_error_object(el)' transform-text='trim'>
+               Unknown extension instruction.
+            </message>
+         </otherwise>
+      </choose>
    </template>
 
-   <template match='XElement' mode='xcst:extension-instruction'/>
+   <template name='xcst:extension-instruction' as='XElement?'>
+      <param name='el' as='XElement' required='yes'/>
+
+      <variable name='extPkg' value='ExtensionPackage(el)'/>
+      <if test='extPkg != null
+            &amp;&amp; HasMode&lt;XElement?>(extPkg, xcst + "extension-instruction")'>
+         <invoke-package package='extPkg'
+            package-params='src_ext_pkg_params'
+            initial-match-selection='el'
+            initial-mode='xcst:extension-instruction'
+            tunnel-passthru='yes'/>
+      </if>
+      <on-empty value='(XElement?)null'/>
+   </template>
+
+
+   <!-- ## Package Extensions -->
+
+   <template name='src:import-namespace-extra'>
+      <param name='el' as='XElement' required='yes'/>
+
+      <if test='src_extensions != null'>
+         <for-each name='pair' in='src_extensions.Where(p => HasTemplate&lt;XElement?>(p.Value, src + "import-namespace-extra"))'>
+            <invoke-package package='pair.Value'
+               package-params='src_ext_pkg_params'
+               initial-template='src:import-namespace-extra'
+               template-params='new { el }'
+               tunnel-passthru='yes'/>
+         </for-each>
+      </if>
+   </template>
+
+   <template name='src:package-attribute-extra'>
+      <param name='el' as='XElement' required='yes'/>
+
+      <if test='src_extensions != null'>
+         <for-each name='pair' in='src_extensions.Where(p => HasTemplate&lt;XElement?>(p.Value, src + "package-attribute-extra"))'>
+            <invoke-package package='pair.Value'
+               package-params='src_ext_pkg_params'
+               initial-template='src:package-attribute-extra'
+               template-params='new { el }'
+               tunnel-passthru='yes'/>
+         </for-each>
+      </if>
+   </template>
+
+   <template name='src:base-types'>
+      <param name='el' as='XElement' required='yes'/>
+
+      <if test='src_extensions != null'>
+         <for-each name='pair' in='src_extensions.Where(p => HasTemplate&lt;XElement?>(p.Value, src + "base-types"))'>
+            <invoke-package package='pair.Value'
+               package-params='src_ext_pkg_params'
+               initial-template='src:base-types'
+               template-params='new { el }'
+               tunnel-passthru='yes'/>
+            <break/>
+         </for-each>
+      </if>
+   </template>
+
+   <template name='src:infrastructure-extra'>
+      <param name='el' as='XElement' required='yes'/>
+
+      <if test='src_extensions != null'>
+         <for-each name='pair' in='src_extensions.Where(p => HasTemplate&lt;XElement?>(p.Value, src + "infrastructure-extra"))'>
+            <invoke-package package='pair.Value'
+               package-params='src_ext_pkg_params'
+               initial-template='src:infrastructure-extra'
+               template-params='new { el }'
+               tunnel-passthru='yes'/>
+         </for-each>
+      </if>
+   </template>
+
+   <template name='src:type-attribute-extra'>
+      <param name='el' as='XElement' required='yes'/>
+
+      <if test='src_extensions != null'>
+         <for-each name='pair' in='src_extensions.Where(p => HasTemplate&lt;XElement?>(p.Value, src + "type-attribute-extra"))'>
+            <invoke-package package='pair.Value'
+               package-params='src_ext_pkg_params'
+               initial-template='src:type-attribute-extra'
+               template-params='new { el }'
+               tunnel-passthru='yes'/>
+         </for-each>
+      </if>
+   </template>
+
+   <template name='src:member-attribute-extra'>
+      <param name='el' as='XElement' required='yes'/>
+
+      <if test='src_extensions != null'>
+         <for-each name='pair' in='src_extensions.Where(p => HasTemplate&lt;XElement?>(p.Value, src + "member-attribute-extra"))'>
+            <invoke-package package='pair.Value'
+               package-params='src_ext_pkg_params'
+               initial-template='src:member-attribute-extra'
+               template-params='new { el }'
+               tunnel-passthru='yes'/>
+         </for-each>
+      </if>
+   </template>
+
+
+   <!-- ## Instructions -->
 
    <template match='XElement el &amp;&amp; el.Name == c + "fallback"' mode='src:statement src:expression'>
       <call-template name='xcst:validate-attribs'>

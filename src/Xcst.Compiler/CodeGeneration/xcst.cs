@@ -14,9 +14,10 @@
 
 using System;
 using System.IO;
-using System.Reflection;
 using System.Xml;
 using System.Xml.Linq;
+using Xcst.PackageModel;
+using SequenceWriter = Xcst.Runtime.SequenceWriter;
 
 namespace Xcst.Compiler {
 
@@ -167,6 +168,27 @@ namespace Xcst.Compiler {
       static string
       StringId(string value) =>
          XmlConvert.ToString(value.GetHashCode());
+
+      IXcstPackage?
+      ExtensionPackage(XElement el) {
+
+         if (this.src_extensions != null
+            && Uri.TryCreate(el.Name.NamespaceName, UriKind.Absolute, out var nsUri)
+            && this.src_extensions.TryGetValue(nsUri, out var extPkg)) {
+
+            return extPkg;
+         }
+
+         return null;
+      }
+
+      static bool
+      HasTemplate<TItem>(IXcstPackage pkg, XName mode) =>
+         pkg.GetTemplate(new QualifiedName(mode.LocalName, mode.NamespaceName), SequenceWriter.Create<TItem>()) != null;
+
+      static bool
+      HasMode<TItem>(IXcstPackage pkg, XName mode) =>
+         pkg.GetMode(new QualifiedName(mode.LocalName, mode.NamespaceName), SequenceWriter.Create<TItem>()) != null;
    }
 
    enum TypeCardinality {

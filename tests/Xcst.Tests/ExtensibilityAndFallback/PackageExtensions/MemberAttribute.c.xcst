@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xcst-test extension="http://localhost/ns/ext MemberAttribute" ?>
+<c:module version='1.0' language='C#'
+   xmlns:c='http://maxtoroq.github.io/XCST'
+   xmlns:ext='http://localhost/ns/ext'>
+
+   <c:import-namespace ns='Newtonsoft.Json'/>
+
+   <c:type name='Foo'>
+      <c:member name='id' as='int'/>
+      <c:member name='secret' as='string' ext:serialize='no'/>
+   </c:type>
+
+   <c:template name='c:initial-template'>
+      <div>
+         <c:value-of value='JsonConvert.SerializeObject(new Foo { id = 1, secret = "boo" }, Formatting.None)'/>
+      </div>
+   </c:template>
+
+   <c:template name='expected'>
+      <div>{"id":1}</div>
+   </c:template>
+
+</c:module>
