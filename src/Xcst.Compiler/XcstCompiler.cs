@@ -29,9 +29,6 @@ namespace Xcst.Compiler {
       readonly XcstCompilerPackage
       _compiler = new();
 
-      readonly Dictionary<string[], object?>
-      _parameters = new();
-
       readonly ConcurrentDictionary<string, XDocument>
       _packageLibrary = new();
 
@@ -243,22 +240,6 @@ namespace Xcst.Compiler {
       GetCompilerEvaluator(XDocument sourceDoc, XmlResolver moduleResolver) {
 
          XcstEvaluator evaluator = XcstEvaluator.Using(_compiler);
-
-         // Extension params are loaded first
-
-         //foreach (var extension in _extensions.Value) {
-         //   foreach (var param in extension.Value.GetParameters()) {
-         //      compiler.SetParameter(new QName(extension.Key.AbsoluteUri, param.Key), ConvertParameter(param.Value).ToXdmValue());
-         //   }
-         //}
-
-         // User params can override extension params
-
-         //foreach (var pair in _parameters) {
-         //   compiler.SetParameter(new QName(pair.Key[0], pair.Key[1]), pair.Value.ToXdmValue());
-         //}
-
-         // Compiler params always win
 
          if (this.CompilationUnitHandler != null) {
             evaluator.WithParam(nameof(_compiler.src_compilation_unit_handler), this.CompilationUnitHandler);
