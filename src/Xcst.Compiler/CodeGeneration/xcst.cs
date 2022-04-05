@@ -90,7 +90,7 @@ namespace Xcst.Compiler {
          if (!String.IsNullOrEmpty(fileDirectory)
             && !String.IsNullOrEmpty(fileExtension)) {
 
-            return FindNamedPackage(packageName, fileDirectory, fileExtension);
+            return FindNamedPackage(packageName, fileDirectory!, fileExtension!);
          }
 
          return null;
