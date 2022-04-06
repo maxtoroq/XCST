@@ -199,7 +199,7 @@
 
       <variable name='packageVisibility' value='
          (el.Attribute("visibility") is XAttribute visibilityAttr) ?
-            xcst_package_visibility(el)
+            xcst_package_visibility(visibilityAttr)
             : src_visibility'/>
 
       <variable name='packageManifest'>
