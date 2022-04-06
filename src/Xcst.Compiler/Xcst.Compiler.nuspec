@@ -4,6 +4,7 @@
       <description>XCST compilation API. Use this package to translate your XCST programs into C# or Visual Basic code.</description>
       <dependencies>
          <dependency id="System.Reflection.Metadata"/>
+         <dependency id="Xcst.Runtime"/>
       </dependencies>
       <frameworkAssemblies>
          <frameworkAssembly assemblyName="System"/>
