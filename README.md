@@ -24,15 +24,11 @@ The [XCST schema](schemas/xcst.rng) is written in **Relax NG** and converted to 
 
 Building
 --------
-Run the following commands in PowerShell to build everything (source and tests).
+Run the following commands to build everything (source and tests).
 
-```powershell
-# clone
-git clone https://github.com/maxtoroq/XCST.git
-cd XCST
-
+```
 # restore packages
-.\build\restore-packages.ps1
+MSBuild -t:restore -p:RestorePackagesConfig=true
 
 # build solution
 MSBuild
@@ -41,5 +37,4 @@ MSBuild
 [XCST]: https://maxtoroq.github.io/XCST/
 [Xcst.Compiler]: https://www.nuget.org/packages/Xcst.Compiler
 [Xcst.Runtime]: https://www.nuget.org/packages/Xcst.Runtime
-[Saxon-HE]: http://saxon.sf.net/
 [Trang]: https://github.com/relaxng/jing-trang
