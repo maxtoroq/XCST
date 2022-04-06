@@ -2,7 +2,7 @@
    [Parameter(Mandatory=$true, Position=0)]
    [string]$ProjectName,
    [Parameter(Mandatory=$true, Position=1)]
-   [ValidateSet('major','minor','patch')]
+   [ValidateSet('major','minor','patch', 'pre')]
    [string]$Increment
 )
 
@@ -20,7 +20,7 @@ function NuSpec {
    "<package xmlns='http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd'>"
       "<metadata>"
          "<id>$($project.name)</id>"
-         "<version>$pkgVersion</version>"
+         "<version>$pkgVer</version>"
          "<description>$($project.nuspec.package.metadata.description)</description>"
          "<authors>$($notice.authors)</authors>"
          "<license type='expression'>$($notice.license.name)</license>"
@@ -37,13 +37,9 @@ function NuSpec {
 
       foreach ($dep in $depsCopy.SelectNodes("//*[local-name() = 'dependency']")) {
 
-         $local = $dep.GetAttribute("local-dependency", "http://maxtoroq.github.io/XCST/nuspec")
          $version = $null
 
-         if ($local -eq 'yes') {
-            $version = $localDepRangeVersion
-
-         } elseif ($packagesDoc -ne $null) {
+         if ($packagesDoc -ne $null) {
 
             $pkgRef = $packagesDoc.packages.package | where { $_.id -eq $dep.id }
             $version = $pkgRef.allowedVersions
@@ -116,7 +112,7 @@ function NuPack {
 
    &$nuget pack $nuspecPath -OutputDirectory $outputPath | Out-Host
 
-   return Join-Path $outputPath "$($project.name).$($pkgVersion.ToString(3)).nupkg"
+   return Join-Path $outputPath "$($project.name).$pkgVer.nupkg"
 }
 
 function ProjectData([string]$projName) {
@@ -145,21 +141,30 @@ function ProjectData([string]$projName) {
 function Release {
 
    if ($Increment -ne "patch" -and $ProjectName -ne "*") {
-      throw "Major and minor increments should release all packages."
+      throw "Major, minor and pre increments should release all packages."
    }
 
    $lastTag = .\last-tag.ps1
-   $lastRelease = New-Object Version $lastTag.Substring(1)
+   $lastVer = $lastTag -replace "^v|-.+$", ""
+   $lastVersion = New-Object Version $lastVer
 
    $pkgVersion = if ($Increment -eq "major") {
-      New-Object Version ($lastRelease.Major + 1), 0, 0
+      New-Object Version ($lastVersion.Major + 1), 0, 0
    } elseif ($Increment -eq "minor") {
-      New-Object Version ($lastRelease.Major), ($lastRelease.Minor + 1), 0
+      New-Object Version ($lastVersion.Major), ($lastVersion.Minor + 1), 0
+   } elseif ($Increment -eq "patch")  {
+      New-Object Version ($lastVersion.Major), ($lastVersion.Minor), ($lastVersion.Build + 1)
    } else {
-      New-Object Version ($lastRelease.Major), ($lastRelease.Minor), ($lastRelease.Patch)
+      New-Object Version ($lastVersion.Major), ($lastVersion.Minor), ($lastVersion.Build), ($lastVersion.Revision + 1)
    }
 
-   if ($pkgVersion -lt $lastRelease) {
+   $pkgVer = $pkgVersion.ToString($(if ($Increment -eq "pre") { 4 } else { 3 }))
+
+   if ($Increment -eq "pre") {
+      $pkgVer = $pkgVer + "-pre"
+   }
+
+   if ($pkgVersion -lt $lastVersion) {
       throw "The package version ($pkgVersion) cannot be less than the last tag ($lastTag)."
    }
 
@@ -168,15 +173,6 @@ function Release {
    } else {
       New-Object Version ($pkgVersion.Major), ($pkgVersion.Minor), 0
    }
-
-   $localDepMinVersion = if ($Increment -eq "patch") {
-      New-Object Version ($pkgVersion.Major), ($pkgVersion.Minor), 0
-   } else {
-      $pkgVersion
-   }
-
-   $localDepMaxVersion = New-Object Version $localDepMinVersion.Major, ($localDepMinVersion.Minor + 1), 0
-   $localDepRangeVersion = "[$localDepMinVersion,$localDepMaxVersion)"
 
    if (-not (Test-Path temp -PathType Container)) {
       md temp | Out-Null
@@ -200,7 +196,7 @@ using System.Reflection;
 
 [assembly: AssemblyVersion("$assemblyVersion")]
 [assembly: AssemblyFileVersion("$pkgVersion")]
-[assembly: AssemblyInformationalVersion("$pkgVersion")]
+[assembly: AssemblyInformationalVersion("$pkgVer")]
 [assembly: AssemblyTitle("$($project.assemblyName)")]
 [assembly: AssemblyDescription("$($project.nuspec.package.metadata.description)")]
 [assembly: AssemblyProduct("$($notice.work)")]
@@ -253,10 +249,10 @@ using System.Reflection;
       $newPackages.Add((NuPack))
 
       if (-not $createdTag -and
-            $pkgVersion -gt $lastRelease -and
+            $pkgVersion -gt $lastVersion -and
             (Prompt-Choices -Message "Create tag?" -Default 1) -eq 0) {
 
-         $newTag = "v$pkgVersion"
+         $newTag = "v$pkgVer"
          git tag -a $newTag -m $newTag
          Write-Warning "Created tag: $newTag"
          $createdTag = $true
