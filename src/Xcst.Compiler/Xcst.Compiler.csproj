@@ -11,7 +11,6 @@
   <PropertyGroup>
     <XcstInput>**\*.xcst</XcstInput>
     <XcstOutput>xcst.$(TargetFramework).generated.cs</XcstOutput>
-    <XcstCodegenProj>$(ProjectDir)..\compiler-codegen\compiler-codegen.csproj</XcstCodegenProj>
     <XcstCodegenExe>$(ProjectDir)..\compiler-codegen\bin\$(Configuration)\compiler-codegen.exe</XcstCodegenExe>
     <DefaultItemExcludes>$(DefaultItemExcludes);*.generated.cs</DefaultItemExcludes>
   </PropertyGroup>

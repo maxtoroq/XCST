@@ -10,7 +10,6 @@
   <PropertyGroup>
     <XcstInput>**\*.xcst;**\*.pxcst</XcstInput>
     <XcstOutput>Tests.generated.cs</XcstOutput>
-    <XcstCodegenProj>$(ProjectDir)..\tests-codegen\tests-codegen.csproj</XcstCodegenProj>
     <XcstCodegenExe>$(ProjectDir)..\tests-codegen\bin\$(Configuration)\net5.0\tests-codegen.exe</XcstCodegenExe>
     <DefaultItemExcludes>$(DefaultItemExcludes);$(XcstOutput)</DefaultItemExcludes>
   </PropertyGroup>
