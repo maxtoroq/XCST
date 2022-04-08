@@ -32,16 +32,19 @@
       src_doc_output = (System.Func&lt;XObject?, XElement?, XElement>)src_doc_output,
       src_output_is_doc = (System.Func&lt;XElement, bool>)src_output_is_doc,
       src_helper_type = (System.Func&lt;string, XElement>)src_helper_type,
+      src_expand_attribute,
+      src_sequence_constructor,
+      src_top_level_package_reference,
       src_line_number,
-      src_sequence_constructor
+      xcst_is_value_template = (System.Func&lt;object, bool>)xcst_is_value_template,
    }'/>
 
-   <variable name='src_line_number'>
+   <variable name='src_expand_attribute'>
       <delegate>
-         <param name='el' as='XElement' required='yes'/>
+         <param name='attr' as='XAttribute' required='yes'/>
 
-         <call-template name='src:line-number'>
-            <with-param name='el' value='el'/>
+         <call-template name='src:expand-attribute'>
+            <with-param name='attr' value='attr'/>
          </call-template>
       </delegate>
    </variable>
@@ -51,6 +54,22 @@
          <param name='el' as='XElement' required='yes'/>
 
          <call-template name='src:sequence-constructor'>
+            <with-param name='el' value='el'/>
+         </call-template>
+      </delegate>
+   </variable>
+
+   <variable name='src_top_level_package_reference'>
+      <code:property-reference name='TopLevelPackage'>
+         <copy-of value='select(src_context_field, src + "reference", code)'/>
+      </code:property-reference>
+   </variable>
+
+   <variable name='src_line_number'>
+      <delegate>
+         <param name='el' as='XElement' required='yes'/>
+
+         <call-template name='src:line-number'>
             <with-param name='el' value='el'/>
          </call-template>
       </delegate>
