@@ -37,6 +37,7 @@
       src_top_level_package_reference,
       src_line_number,
       xcst_is_value_template = (System.Func&lt;object, bool>)xcst_is_value_template,
+      xcst_require_output
    }'/>
 
    <variable name='src_expand_attribute'>
@@ -71,6 +72,18 @@
 
          <call-template name='src:line-number'>
             <with-param name='el' value='el'/>
+         </call-template>
+      </delegate>
+   </variable>
+
+   <variable name='xcst_require_output'>
+      <delegate>
+         <param name='el' as='XElement' required='yes'/>
+         <param name='kind' value='System.Array.Empty&lt;string>()' as='string[]'/>
+
+         <call-template name='xcst:require-output'>
+            <with-param name='el' value='el'/>
+            <with-param name='kind' value='kind'/>
          </call-template>
       </delegate>
    </variable>
