@@ -34,6 +34,7 @@
       src_helper_type = (System.Func&lt;string, XElement>)src_helper_type,
       src_expand_attribute,
       src_sequence_constructor,
+      src_simple_content,
       src_top_level_package_reference,
       src_line_number,
       xcst_is_value_template = (System.Func&lt;object, bool>)xcst_is_value_template,
@@ -56,6 +57,18 @@
 
          <call-template name='src:sequence-constructor'>
             <with-param name='el' value='el'/>
+         </call-template>
+      </delegate>
+   </variable>
+
+   <variable name='src_simple_content'>
+      <delegate>
+         <param name='el' as='XElement' required='yes'/>
+         <param name='attr' as='XAttribute?'/>
+
+         <call-template name='src:simple-content'>
+            <with-param name='el' value='el'/>
+            <with-param name='attr' value='attr'/>
          </call-template>
       </delegate>
    </variable>
