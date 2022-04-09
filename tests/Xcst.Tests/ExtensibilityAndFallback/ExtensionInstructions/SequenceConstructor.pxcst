@@ -29,12 +29,11 @@
 
       <c:if test='!outputIsDoc'>
          <code:variable name='{docRef.Attribute("name")!.Value}'>
-            <c:invoke-delegate delegate='this.src_line_number'>
-               <c:with-param name='el' value='el'/>
-            </c:invoke-delegate>
+            <c:invoke-delegate delegate='src_line_number' with-params='new { el }'/>
             <code:method-call name='CastElement'>
                <c:copy-of value='src_helper_type("DocumentWriter")'/>
                <code:arguments>
+                  <code:this-reference/>
                   <c:copy-of value='output.Element(src + "reference")!
                      .Elements()
                      .First(p => p.Name.Namespace == code)'/>
@@ -44,9 +43,7 @@
       </c:if>
 
       <code:method-call name='WriteStartElement'>
-         <c:invoke-delegate delegate='this.src_line_number'>
-            <c:with-param name='el' value='el'/>
-         </c:invoke-delegate>
+         <c:invoke-delegate delegate='src_line_number' with-params='new { el }'/>
          <c:copy-of value='docRef'/>
          <code:arguments>
             <code:string literal='true'>ext-result</code:string>
@@ -55,7 +52,7 @@
 
       <code:try line-hidden='true'>
          <code:block>
-            <c:invoke-delegate delegate='this.src_sequence_constructor'>
+            <c:invoke-delegate delegate='src_sequence_constructor'>
                <c:with-param name='el' value='el'/>
                <c:with-param name='output' value='docOutput' tunnel='yes'/>
             </c:invoke-delegate>
