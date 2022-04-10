@@ -68,7 +68,7 @@
                <with-param name='optional' value='
                   new[] { "name" }.Concat(
                      src_output_parameters
-                        .Where(p => p.Key != "version" &amp;&amp; p.Key != "output-version")
+                        .Where(p => p.Key != "output-version")
                         .Select(p => p.Key))
                      .ToArray()'/>
             </call-template>

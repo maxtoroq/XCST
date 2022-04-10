@@ -60,17 +60,20 @@
                Unknown XCST attribute '{name(a)}'
             </message>
          </if>
-         <if test='!(a.Name.LocalName != "version"
-               || xcst_decimal(a) >= 1m)'>
-            <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(el)' expand-text='yes' transform-text='trim'>
-               Attribute '{name(a)}' should be 1.0 or greater.
-            </message>
+         <if test='a.Name.LocalName == "version"'>
+            <if test='!(xcst_decimal(a) >= 1m)'>
+               <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(el)' expand-text='yes' transform-text='trim'>
+                  Attribute '{name(a)}' should be 1.0 or greater.
+               </message>
+            </if>
          </if>
       </for-each>
 
       <variable name='attribs' value='attributes(el)
          .Where(a => a.Name.Namespace == XNamespace.None
-            &amp;&amp; (el.Name.Namespace != c || !(stdNames.Contains(a.Name) &amp;&amp; !(a.Name.LocalName == "version" &amp;&amp; root))))
+            &amp;&amp; !(el.Name.Namespace == c
+               &amp;&amp; stdNames.Contains(a.Name)
+               &amp;&amp; !(a.Name.LocalName == "version" &amp;&amp; root)))
          .ToArray()'/>
 
       <for-each name='a' in='attribs'>
