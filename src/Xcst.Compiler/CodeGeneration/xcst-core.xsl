@@ -2762,7 +2762,7 @@
    <template match="c:result-document" mode="src:statement">
 
       <call-template name="xcst:validate-attribs">
-         <with-param name="optional" select="'href', 'output', 'format', $src:output-parameters/*[not(self::version)]/local-name()"/>
+         <with-param name="optional" select="'href', 'output', 'format', $src:output-parameters/*[local-name() ne 'version']/local-name()"/>
       </call-template>
 
       <if test="not(@href) and not(@output)">
@@ -2824,7 +2824,7 @@
    <template match="c:serialize" mode="src:expression">
 
       <call-template name="xcst:validate-attribs">
-         <with-param name="optional" select="'format', $src:output-parameters/*[not(self::version)]/local-name()"/>
+         <with-param name="optional" select="'format', $src:output-parameters/*[local-name() ne 'version']/local-name()"/>
       </call-template>
 
       <variable name="new-output" select="src:doc-output(., ())"/>

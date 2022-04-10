@@ -1092,7 +1092,7 @@
 
          <for-each select="current-group()">
             <call-template name="xcst:validate-attribs">
-               <with-param name="optional" select="'name', $src:output-parameters/*[not(self::version) and not(self::output-version)]/local-name()"/>
+               <with-param name="optional" select="'name', $src:output-parameters/*[local-name() ne 'output-version']/local-name()"/>
             </call-template>
             <call-template name="xcst:no-children"/>
             <if test="preceding-sibling::c:output[(empty($output-name) and empty(@name)) or (xcst:EQName(@name) eq $output-name)]">
