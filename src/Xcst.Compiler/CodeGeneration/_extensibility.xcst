@@ -28,6 +28,8 @@
    <param name='src_extensions' as='Dictionary&lt;System.Uri, IXcstPackage>?'/>
 
    <variable name='src_ext_pkg_params' value='new {
+      xcst_is_value_template = (System.Func&lt;object, bool>)xcst_is_value_template,
+      xcst_require_output,
       src_base_types,
       src_doc_output = (System.Func&lt;XObject?, XElement?, XElement>)src_doc_output,
       src_output_is_doc = (System.Func&lt;XElement, bool>)src_output_is_doc,
@@ -36,11 +38,22 @@
       src_expand_attribute,
       src_sequence_constructor,
       src_simple_content,
+      src_validation_arguments,
       src_top_level_package_reference,
-      src_line_number,
-      xcst_is_value_template = (System.Func&lt;object, bool>)xcst_is_value_template,
-      xcst_require_output
+      src_line_number
    }'/>
+
+   <variable name='xcst_require_output'>
+      <delegate>
+         <param name='el' as='XElement' required='yes'/>
+         <param name='kind' value='System.Array.Empty&lt;string>()' as='string[]'/>
+
+         <call-template name='xcst:require-output'>
+            <with-param name='el' value='el'/>
+            <with-param name='kind' value='kind'/>
+         </call-template>
+      </delegate>
+   </variable>
 
    <variable name='src_expand_attribute'>
       <delegate>
@@ -74,6 +87,18 @@
       </delegate>
    </variable>
 
+   <variable name='src_validation_arguments'>
+      <delegate>
+         <param name='el' as='XElement' required='yes'/>
+         <param name='name' as='XName' required='yes'/>
+
+         <call-template name='src:validation-arguments'>
+            <with-param name='el' value='el'/>
+            <with-param name='name' value='name'/>
+         </call-template>
+      </delegate>
+   </variable>
+
    <variable name='src_top_level_package_reference'>
       <code:property-reference name='TopLevelPackage'>
          <copy-of value='select(src_context_field, src + "reference", code)'/>
@@ -90,17 +115,6 @@
       </delegate>
    </variable>
 
-   <variable name='xcst_require_output'>
-      <delegate>
-         <param name='el' as='XElement' required='yes'/>
-         <param name='kind' value='System.Array.Empty&lt;string>()' as='string[]'/>
-
-         <call-template name='xcst:require-output'>
-            <with-param name='el' value='el'/>
-            <with-param name='kind' value='kind'/>
-         </call-template>
-      </delegate>
-   </variable>
 
    <function name='xcst_is_extension_instruction' as='bool'>
       <param name='el' as='XElement'/>
