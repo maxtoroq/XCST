@@ -31,6 +31,7 @@
       src_base_types,
       src_doc_output = (System.Func&lt;XObject?, XElement?, XElement>)src_doc_output,
       src_output_is_doc = (System.Func&lt;XElement, bool>)src_output_is_doc,
+      src_template_output = (System.Func&lt;XElement?, XElement?, XElement>)src_template_output,
       src_helper_type = (System.Func&lt;string, XElement>)src_helper_type,
       src_expand_attribute,
       src_sequence_constructor,
