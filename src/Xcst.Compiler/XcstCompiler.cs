@@ -26,9 +26,6 @@ namespace Xcst.Compiler {
 
    public class XcstCompiler {
 
-      readonly XcstCompilerPackage
-      _compiler = new();
-
       readonly ConcurrentDictionary<string, XDocument>
       _packageLibrary = new();
 
@@ -239,76 +236,77 @@ namespace Xcst.Compiler {
       XcstTemplateEvaluator
       GetCompilerEvaluator(XDocument sourceDoc, XmlResolver moduleResolver) {
 
-         XcstEvaluator evaluator = XcstEvaluator.Using(_compiler);
+         var compiler = new XcstCompilerPackage();
+         XcstEvaluator evaluator = XcstEvaluator.Using(compiler);
 
          if (this.CompilationUnitHandler != null) {
-            evaluator.WithParam(nameof(_compiler.src_compilation_unit_handler), this.CompilationUnitHandler);
+            evaluator.WithParam(nameof(compiler.src_compilation_unit_handler), this.CompilationUnitHandler);
          }
 
          if (this.TargetNamespace != null) {
-            evaluator.WithParam(nameof(_compiler.src_namespace), this.TargetNamespace);
+            evaluator.WithParam(nameof(compiler.src_namespace), this.TargetNamespace);
          }
 
          if (this.TargetClass != null) {
-            evaluator.WithParam(nameof(_compiler.src_class), this.TargetClass);
+            evaluator.WithParam(nameof(compiler.src_class), this.TargetClass);
          }
 
-         evaluator.WithParam(nameof(_compiler.src_visibility),
+         evaluator.WithParam(nameof(compiler.src_visibility),
             (this.TargetVisibility == CodeVisibility.Default ?
                "#default"
                : this.TargetVisibility.ToString().ToLowerInvariant()));
 
          evaluator.WithParam(
-            nameof(_compiler.src_base_types),
+            nameof(compiler.src_base_types),
             _tbaseTypes?.Select(t => CodeTypeReference(t)).ToArray()
                ?? this.TargetBaseTypes?.Select(t => CodeTypeReference(t)).ToArray()
                ?? Array.Empty<XElement>()
          );
 
-         evaluator.WithParam(nameof(_compiler.cs_nullable_annotate), this.NullableAnnotate);
+         evaluator.WithParam(nameof(compiler.cs_nullable_annotate), this.NullableAnnotate);
 
          if (this.NullableContext != null) {
-            evaluator.WithParam(nameof(_compiler.cs_nullable_context), this.NullableContext);
+            evaluator.WithParam(nameof(compiler.cs_nullable_context), this.NullableContext);
          }
 
-         evaluator.WithParam(nameof(_compiler.src_named_package), this.NamedPackage);
+         evaluator.WithParam(nameof(compiler.src_named_package), this.NamedPackage);
 
          if (this.UsePackageBase != null) {
-            evaluator.WithParam(nameof(_compiler.src_use_package_base), this.UsePackageBase);
+            evaluator.WithParam(nameof(compiler.src_use_package_base), this.UsePackageBase);
          }
 
-         evaluator.WithParam(nameof(_compiler.src_module_resolver), moduleResolver);
+         evaluator.WithParam(nameof(compiler.src_module_resolver), moduleResolver);
 
          if (this.PackageTypeResolver != null) {
-            evaluator.WithParam(nameof(_compiler.src_package_type_resolver), this.PackageTypeResolver);
+            evaluator.WithParam(nameof(compiler.src_package_type_resolver), this.PackageTypeResolver);
          }
 
-         evaluator.WithParam(nameof(_compiler.src_package_library), _packageLibrary);
+         evaluator.WithParam(nameof(compiler.src_package_library), _packageLibrary);
 
          if (this.PackageLocationResolver != null) {
-            evaluator.WithParam(nameof(_compiler.src_package_location_resolver), this.PackageLocationResolver);
+            evaluator.WithParam(nameof(compiler.src_package_location_resolver), this.PackageLocationResolver);
          }
 
          if (this.PackageFileDirectory != null) {
-            evaluator.WithParam(nameof(_compiler.src_package_file_directory), this.PackageFileDirectory);
+            evaluator.WithParam(nameof(compiler.src_package_file_directory), this.PackageFileDirectory);
          }
 
          if (this.PackageFileExtension != null) {
-            evaluator.WithParam(nameof(_compiler.src_package_file_extension), this.PackageFileExtension);
+            evaluator.WithParam(nameof(compiler.src_package_file_extension), this.PackageFileExtension);
          }
 
-         evaluator.WithParam(nameof(_compiler.src_use_line_directive), this.UseLineDirective);
+         evaluator.WithParam(nameof(compiler.src_use_line_directive), this.UseLineDirective);
 
          if (this.NewLineChars != null) {
-            evaluator.WithParam(nameof(_compiler.src_new_line), this.NewLineChars);
+            evaluator.WithParam(nameof(compiler.src_new_line), this.NewLineChars);
          }
 
          if (this.IndentChars != null) {
-            evaluator.WithParam(nameof(_compiler.src_indent), this.IndentChars);
+            evaluator.WithParam(nameof(compiler.src_indent), this.IndentChars);
          }
 
-         evaluator.WithParam(nameof(_compiler.cs_open_brace_on_new_line), this.OpenBraceOnNewLine);
-         evaluator.WithParam(nameof(_compiler.src_extensions) , _extensions);
+         evaluator.WithParam(nameof(compiler.cs_open_brace_on_new_line), this.OpenBraceOnNewLine);
+         evaluator.WithParam(nameof(compiler.src_extensions) , _extensions);
 
          return evaluator.ApplyTemplates(sourceDoc.Root!);
       }
