@@ -24,7 +24,7 @@ namespace Xcst.Runtime {
       _dynamicInstance = new DeepCopy();
 
       public static TItem
-      CopyDynamically<TItem>(TItem value) {
+      CopyDynamically<TItem>(dynamic? value) {
 
          if (value is null) {
             return default!;

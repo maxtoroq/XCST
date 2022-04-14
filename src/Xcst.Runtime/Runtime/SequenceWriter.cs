@@ -121,7 +121,7 @@ namespace Xcst.Runtime {
 
       public override void
       CopyOf(TItem value) =>
-         WriteObject(DeepCopy.CopyDynamically(value));
+         WriteObject(DeepCopy.CopyDynamically<TItem>(value));
 
       public SequenceWriter<TItem>
       WriteSequenceConstructor(Action<ISequenceWriter<TItem>> seqCtor) {
@@ -355,6 +355,6 @@ namespace Xcst.Runtime {
 
       public override void
       CopyOf(TItem value) =>
-         WriteObject(DeepCopy.CopyDynamically(value));
+         WriteObject(DeepCopy.CopyDynamically<TItem>(value));
    }
 }
