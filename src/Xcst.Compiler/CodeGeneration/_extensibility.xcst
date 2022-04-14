@@ -239,13 +239,14 @@
 
    <template name='src:infrastructure-extra'>
       <param name='el' as='XElement' required='yes'/>
+      <param name='principalModule' as='bool' required='yes'/>
 
       <if test='src_extensions != null'>
          <for-each name='pair' in='src_extensions.Where(p => HasTemplate&lt;XElement?>(p.Value, src + "infrastructure-extra"))'>
             <invoke-package package='pair.Value'
                package-params='src_ext_pkg_params'
                initial-template='src:infrastructure-extra'
-               template-params='new { el }'
+               template-params='new { el, principalModule }'
                tunnel-passthru='yes'/>
          </for-each>
       </if>

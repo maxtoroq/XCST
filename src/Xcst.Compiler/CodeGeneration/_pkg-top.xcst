@@ -281,6 +281,7 @@
                </if>
                <call-template name='src:infrastructure-extra'>
                   <with-param name='el' value='el'/>
+                  <with-param name='principalModule' value='principalModule'/>
                </call-template>
             </code:region>
          </code:members>
