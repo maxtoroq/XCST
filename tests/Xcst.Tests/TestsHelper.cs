@@ -25,7 +25,7 @@ namespace Xcst.Tests {
       _printCode = false;
 
       static readonly string
-      _initialName = "Q{http://maxtoroq.github.io/XCST}initial-template";
+      _initialName = "Q{" + XmlNamespaces.Xcst + "}initial-template";
 
       static readonly string
       _expectedName = "expected";

@@ -37,6 +37,7 @@
     <UpToDateCheckInput Include="@(XcstInput)" />
     <UpToDateCheckBuilt Include="$(XcstOutput)" />
     <Compile Include="$(XcstOutput)" />
+    <Compile Include="..\..\src\XmlNamespaces.cs" Link="XmlNamespaces.cs" />
   </ItemGroup>
 
   <ItemGroup>
