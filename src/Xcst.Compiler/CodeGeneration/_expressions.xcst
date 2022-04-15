@@ -350,11 +350,16 @@
                         </src:reference>
                      </src:output>
                   </variable>
-                  <variable name='cardinality' value='
-                     (@as != null) ? xcst_cardinality(@as, language)
-                        : (seqctorMeta.Attribute("cardinality")?.Value is string cardinalityStr) ?
-                           (TypeCardinality)System.Enum.Parse(typeof(TypeCardinality), cardinalityStr)
+                  <variable name='seqctorCardinality' value='
+                     (seqctorMeta.Attribute("cardinality")?.Value is string cardinalityStr) ?
+                        (TypeCardinality)System.Enum.Parse(typeof(TypeCardinality), cardinalityStr)
                         : (TypeCardinality?)null'/>
+                  <variable name='cardinality' value='(@as != null) ?
+                     xcst_cardinality(@as, language)
+                     : seqctorCardinality'/>
+                  <variable name='track' value='(@as != null) ?
+                     cardinality != seqctorCardinality
+                     : false'/>
                   <variable name='flushSingle' value='cardinality == TypeCardinality.One'/>
 
                   <code:method-call name='Flush{(flushSingle ? "Single" : null)}'>
@@ -378,7 +383,7 @@
                                     <with-param name='el' value='el'/>
                                     <with-param name='children' value='children'/>
                                     <with-param name='output' value='newOutput' tunnel='yes'/>
-                                    <with-param name='trackCardinality' value='cardinality'/>
+                                    <with-param name='trackCardinality' value='(track) ? cardinality : null'/>
                                  </call-template>
                               </code:block>
                            </code:lambda>
