@@ -230,7 +230,7 @@
             <invoke-package package='pair.Value'
                package-params='src_ext_pkg_params'
                initial-template='src:base-types'
-               template-params='new { el }'
+               template-params='new { el, src_base_types }'
                tunnel-passthru='yes'/>
             <break/>
          </for-each>
