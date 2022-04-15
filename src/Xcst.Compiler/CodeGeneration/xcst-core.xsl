@@ -4041,6 +4041,10 @@
                      if ($as) then xcst:cardinality($as, $language)
                      else $seqctor-meta/@cardinality/string()"/>
                   <variable name="flush-single" select="$cardinality eq 'One'"/>
+                  <variable name="track" select="
+                     if ($as) then
+                        $cardinality ne string($seqctor-meta/@cardinality)
+                     else false()"/>
 
                   <code:method-call name="Flush{'Single'[$flush-single]}">
                      <code:method-call name="WriteSequenceConstructor">
@@ -4059,7 +4063,7 @@
                                  <call-template name="src:sequence-constructor">
                                     <with-param name="children" select="$children"/>
                                     <with-param name="output" select="$new-output" tunnel="yes"/>
-                                    <with-param name="track-cardinality" select="$cardinality"/>
+                                    <with-param name="track-cardinality" select="$cardinality[$track]"/>
                                  </call-template>
                               </code:block>
                            </code:lambda>
