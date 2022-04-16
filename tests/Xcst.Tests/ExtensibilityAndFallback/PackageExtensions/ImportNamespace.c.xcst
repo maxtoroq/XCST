@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<?xcst-test extension="http://localhost/ns/ext ImportNamespace" ?>
+<?xcst-test extension="ImportNamespace" ?>
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
    <c:template name='c:initial-template'>

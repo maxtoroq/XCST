@@ -20,7 +20,7 @@ namespace Xcst.Compiler {
 
    public class XcstCompilerFactory {
 
-      readonly Dictionary<Uri, IXcstPackage>
+      readonly Dictionary<string, IXcstPackage>
       _extensions = new();
 
       public bool
@@ -29,20 +29,24 @@ namespace Xcst.Compiler {
       public XcstCompiler
       CreateCompiler() =>
          new XcstCompiler((this.EnableExtensions) ?
-            new Dictionary<Uri, IXcstPackage>(_extensions)
+            new Dictionary<string, IXcstPackage>(_extensions)
             : null);
 
       public void
-      RegisterExtension(Uri extensionNamespace, IXcstPackage extensionPackage) {
+      RegisterExtension(IXcstPackage extensionPackage) {
 
-         if (extensionNamespace is null) throw new ArgumentNullException(nameof(extensionNamespace));
          if (extensionPackage is null) throw new ArgumentNullException(nameof(extensionPackage));
 
-         if (!extensionNamespace.IsAbsoluteUri) {
-            throw new ArgumentException($"{nameof(extensionNamespace)} must be an absolute URI.", nameof(extensionNamespace));
-         }
+         const string nsProp = "ExtensionNamespace";
 
-         _extensions[extensionNamespace] = extensionPackage;
+         var ns = extensionPackage
+            .GetType()
+            .GetProperty(nsProp)?
+            .GetValue(extensionPackage) as string
+            ?? throw new ArgumentException(
+               $"The extension package must define an '{nsProp}' public property that returns the extension namespace as a string.", nameof(extensionPackage));
+
+         _extensions[ns] = extensionPackage;
       }
    }
 }

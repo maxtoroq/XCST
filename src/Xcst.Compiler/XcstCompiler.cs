@@ -29,7 +29,7 @@ namespace Xcst.Compiler {
       readonly ConcurrentDictionary<string, XDocument>
       _packageLibrary = new();
 
-      readonly Dictionary<Uri, IXcstPackage>?
+      readonly Dictionary<string, IXcstPackage>?
       _extensions;
 
       Type[]?
@@ -90,7 +90,7 @@ namespace Xcst.Compiler {
       CompilationUnitHandler { get; set; }
 
       internal
-      XcstCompiler(Dictionary<Uri, IXcstPackage>? extensions) {
+      XcstCompiler(Dictionary<string, IXcstPackage>? extensions) {
          _extensions = extensions;
       }
 

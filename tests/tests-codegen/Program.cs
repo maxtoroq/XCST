@@ -178,14 +178,9 @@ namespace tests_codegen {
                   langVerAttr.Value + "m"
                   : "-1m";
 
-               string extension;
-
-               if (config.Attribute("extension")?.Value is string extValue) {
-                  string[] pair = extValue.Split(' ');
-                  extension = $"(new Uri(\"{pair[0]}\", UriKind.Absolute), typeof({pair[1]}))";
-               } else {
-                  extension = "null";
-               }
+               string extension = (config.Attribute("extension") is XAttribute extensionAttr) ?
+                  $"typeof({extensionAttr.Value})"
+                  : "null";
 
                string testCall = "RunXcstTest("
                   + $"@\"{file.FullName}\""

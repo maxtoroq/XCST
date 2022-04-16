@@ -34,7 +34,7 @@ namespace Xcst.Tests {
       RunXcstTest(
             string packageFile, string testName, string testNamespace, bool correct, bool error, bool fail,
             decimal languageVersion = -1m, string? disableWarning = null, string? warningAsError = null,
-            (Uri, Type)? extension = default) {
+            Type? extension = default) {
 
          bool printCode = _printCode;
          var packageUri = new Uri(packageFile, UriKind.Absolute);
@@ -191,16 +191,13 @@ namespace Xcst.Tests {
       }
 
       public static XcstCompiler
-      CreateCompiler((Uri extNs, Type extPkgType)? extension = default) {
+      CreateCompiler(Type? extension = default) {
 
          var factory = new XcstCompilerFactory();
 
          if (extension != null) {
             factory.EnableExtensions = true;
-            factory.RegisterExtension(
-               extension.Value.extNs,
-               (IXcstPackage)Activator.CreateInstance(extension.Value.extPkgType)!
-            );
+            factory.RegisterExtension((IXcstPackage)Activator.CreateInstance(extension)!);
          }
 
          XcstCompiler compiler = factory.CreateCompiler();
@@ -212,7 +209,7 @@ namespace Xcst.Tests {
       }
 
       static (CompileResult result, string packageName)
-      GenerateCode(Uri packageUri, string testName, string testNamespace, (Uri, Type)? extension) {
+      GenerateCode(Uri packageUri, string testName, string testNamespace, Type? extension) {
 
          XcstCompiler compiler = CreateCompiler(extension);
          compiler.TargetNamespace = testNamespace;

@@ -7,6 +7,7 @@
    <c:import-namespace ns='System.Xml.Linq'/>
 
    <c:param name='src_base_types' as='XElement[]'/>
+   <c:variable name='ExtensionNamespace' visibility='public'>http://localhost/ns/ext</c:variable>
 
    <c:template name='src:base-types'>
       <c:param name='el' as='XElement' required='yes'/>

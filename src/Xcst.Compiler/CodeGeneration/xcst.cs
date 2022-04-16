@@ -173,8 +173,7 @@ namespace Xcst.Compiler {
       ExtensionPackage(XElement el) {
 
          if (this.src_extensions != null
-            && Uri.TryCreate(el.Name.NamespaceName, UriKind.Absolute, out var nsUri)
-            && this.src_extensions.TryGetValue(nsUri, out var extPkg)) {
+            && this.src_extensions.TryGetValue(el.Name.NamespaceName, out var extPkg)) {
 
             return extPkg;
          }

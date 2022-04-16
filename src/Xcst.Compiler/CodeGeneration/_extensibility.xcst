@@ -25,7 +25,7 @@
    <import-namespace ns='System.Xml.Linq'/>
    <import-namespace ns='Xcst.PackageModel'/>
 
-   <param name='src_extensions' as='Dictionary&lt;System.Uri, IXcstPackage>?'/>
+   <param name='src_extensions' as='Dictionary&lt;string, IXcstPackage>?'/>
 
    <variable name='src_ext_pkg_params' value='new {
       xcst_is_value_template = (System.Func&lt;object, bool>)xcst_is_value_template,

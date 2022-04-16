@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<?xcst-test extension="http://localhost/ns/ext SequenceConstructor" ?>
+<?xcst-test extension="SequenceConstructor" ?>
 <c:module version='1.0' language='C#'
    xmlns:c='http://maxtoroq.github.io/XCST'
    xmlns:ext='http://localhost/ns/ext'

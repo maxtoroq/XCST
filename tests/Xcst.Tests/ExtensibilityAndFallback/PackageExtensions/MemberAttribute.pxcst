@@ -6,7 +6,8 @@
 
    <c:import-namespace ns='System.Xml.Linq'/>
 
-   <c:variable name='ext' as='XNamespace'>http://localhost/ns/ext</c:variable>
+   <c:variable name='ExtensionNamespace' visibility='public'>http://localhost/ns/ext</c:variable>
+   <c:variable name='ext' value='ExtensionNamespace' as='XNamespace'/>
 
    <c:template name='src:member-attribute-extra'>
       <c:param name='el' as='XElement' required='yes'/>

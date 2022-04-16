@@ -5,7 +5,8 @@
 
    <c:import-namespace ns='System.Xml.Linq'/>
 
-   <c:variable name='ext' as='XNamespace'>http://localhost/ns/ext</c:variable>
+   <c:variable name='ExtensionNamespace' visibility='public'>http://localhost/ns/ext</c:variable>
+   <c:variable name='ext' value='ExtensionNamespace' as='XNamespace'/>
 
    <c:template match='XElement el &amp;&amp; el.Name == ext + "instruction"' mode='src:statement'/>
 
