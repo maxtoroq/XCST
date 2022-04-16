@@ -221,8 +221,7 @@
    </template>
 
    <template match="*[not(self::c:*)]" mode="src:main">
-      <call-template name="xcst:check-document-element-attributes"/>
-      <sequence select="error(xs:QName('err:XTSE0010'), 'Simplified module not implemented yet.', src:error-object(.))"/>
+      <sequence select="error(xs:QName('err:XTSE0010'), 'c:module or c:package element expected.', src:error-object(.))"/>
    </template>
 
    <template match="c:module | c:package" mode="src:load-imports">
@@ -271,32 +270,13 @@
 
    <template name="xcst:check-document-element-attributes">
 
-      <variable name="required" select="'version', 'language'"/>
+      <call-template name="xcst:validate-attribs">
+         <with-param name="required" select="'version', 'language'"/>
+         <with-param name="optional" select="'default-mode',
+            if (self::c:package) then ('name', 'visibility') else ()"/>
+      </call-template>
 
-      <choose>
-         <when test="self::c:*">
-            <call-template name="xcst:validate-attribs">
-               <with-param name="required" select="$required"/>
-               <with-param name="optional" select="'default-mode',
-                  if (self::c:package) then ('name', 'visibility') else ()"/>
-            </call-template>
-         </when>
-         <otherwise>
-            <call-template name="xcst:validate-attribs">
-               <with-param name="optional" select="@*[not(namespace-uri())]/local-name()"/>
-            </call-template>
-            <variable name="current" select="."/>
-            <variable name="attribs" select="@c:*"/>
-            <for-each select="$required">
-               <if test="not(some $a in $attribs satisfies . eq local-name($a))">
-                  <sequence select="error(xs:QName('err:XTSE0010'), concat('Element must have an ''c:', .,''' attribute.'), src:error-object($current))"/>
-               </if>
-            </for-each>
-         </otherwise>
-      </choose>
-
-      <variable name="attr-name" select="if (self::c:*) then QName('', 'language') else xs:QName('c:language')"/>
-      <variable name="language-attr" select="@*[node-name(.) eq $attr-name]"/>
+      <variable name="language-attr" select="@language"/>
 
       <if test="not(xcst:language-equal($language-attr, $xcst:csharp-lang)
             or xcst:language-equal($language-attr, $xcst:vb-lang))">
