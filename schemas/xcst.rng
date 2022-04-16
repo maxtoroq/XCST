@@ -27,7 +27,6 @@
       <choice>
          <ref name="module"/>
          <ref name="package"/>
-         <ref name="simplified-module"/>
       </choice>
    </start>
 
@@ -225,24 +224,6 @@
             </element>
          </choice>
       </zeroOrMore>
-   </define>
-
-   <define name="simplified-module">
-      <element>
-         <anyName>
-            <except>
-               <nsName/>
-            </except>
-         </anyName>
-         <attribute name="c:version">
-            <ref name="version"/>
-         </attribute>
-         <attribute name="c:language">
-            <ref name="language"/>
-         </attribute>
-         <ref name="literal-result-element-attributes-except-version"/>
-         <ref name="sequence-constructor"/>
-      </element>
    </define>
 
    <define name="module">

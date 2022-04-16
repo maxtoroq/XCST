@@ -96,11 +96,8 @@
    </template>
 
    <template match='XElement el &amp;&amp; el.Name.Namespace != c'>
-      <call-template name='xcst:validate-document-element-attributes'>
-         <with-param name='el' value='el'/>
-      </call-template>
       <message terminate='yes' error-code='XTSE0010' error-data='src_error_object(el)' transform-text='trim'>
-         Simplified module not implemented yet.
+         c:module or c:package element expected.
       </message>
    </template>
 

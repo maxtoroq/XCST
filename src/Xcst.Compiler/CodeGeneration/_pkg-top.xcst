@@ -37,40 +37,18 @@
    <template name='xcst:validate-document-element-attributes'>
       <param name='el' as='XElement' required='yes'/>
 
-      <variable name='required' value='new[] { "version", "language" }'/>
+      <call-template name='xcst:validate-attribs'>
+         <with-param name='el' value='el'/>
+         <with-param name='required' value='new[] { "version", "language" }'/>
+         <with-param name='optional' value='
+            ((el.Name == c + "package") ?
+               new[] { "name", "visibility" }
+               : System.Array.Empty&lt;string>())
+               .Concat(new[] { "default-mode" })
+               .ToArray()'/>
+      </call-template>
 
-      <choose>
-         <when test='el.Name.Namespace == c'>
-            <call-template name='xcst:validate-attribs'>
-               <with-param name='el' value='el'/>
-               <with-param name='required' value='required'/>
-               <with-param name='optional' value='
-                  ((el.Name == c + "package") ?
-                     new[] { "name", "visibility" }
-                     : System.Array.Empty&lt;string>())
-                     .Concat(new[] { "default-mode" })
-                     .ToArray()'/>
-            </call-template>
-         </when>
-         <otherwise>
-            <call-template name='xcst:validate-attribs'>
-               <with-param name='el' value='el'/>
-               <with-param name='optional' value='attributes(el)
-                  .Where(a => a.Name.Namespace == XNamespace.None)
-                  .Select(a => a.Name.LocalName)
-                  .ToArray()'/>
-            </call-template>
-            <for-each name='req' in='required'>
-               <if test='!(el.Attribute(c + req) != null)'>
-                  <message terminate='yes' error-code='XTSE0010' error-data='src_error_object(el)' expand-text='yes' transform-text='trim'>
-                     Element must have an 'c:{req}' attribute.
-                  </message>
-               </if>
-            </for-each>
-         </otherwise>
-      </choose>
-
-      <variable name='langAttr' value='el.Attribute((el.Name.Namespace == c ? XNamespace.None : c) + "language")!'/>
+      <variable name='langAttr' value='el.Attribute("language")!'/>
 
       <if test='!(xcst_language_equal(langAttr, xcst_csharp_lang)
             || xcst_language_equal(langAttr, xcst_vb_lang))'>
