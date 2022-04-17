@@ -2,7 +2,7 @@
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
    <c:template name='c:initial-template'>
-      <foo c:version='2.0' foo='foo'/>
+      <foo c:expand-text='no' foo='foo'/>
    </c:template>
 
    <c:template name='expected'>

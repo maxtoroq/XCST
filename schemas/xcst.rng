@@ -91,16 +91,6 @@
    </define>
 
    <define name="standard-attributes">
-      <ref name="standard-attributes-except-version"/>
-      <optional>
-         <attribute name="version">
-            <ann:documentation>The XCST version for the current and descendant elements (usually "1.0").</ann:documentation>
-            <ref name="version"/>
-         </attribute>
-      </optional>
-   </define>
-
-   <define name="standard-attributes-except-version">
       <zeroOrMore>
          <choice>
             <attribute name="expand-text">
@@ -140,17 +130,12 @@
                <nsName/>
             </except>
          </anyName>
-         <ref name="literal-result-element-attributes-except-version"/>
-         <optional>
-            <attribute name="c:version">
-               <ref name="version"/>
-            </attribute>
-         </optional>
+         <ref name="literal-result-element-attributes"/>
          <ref name="sequence-constructor"/>
       </element>
    </define>
 
-   <define name="literal-result-element-attributes-except-version">
+   <define name="literal-result-element-attributes">
       <zeroOrMore>
          <choice>
             <attribute>
@@ -267,7 +252,7 @@
             <ref name="eqname"/>
          </attribute>
       </optional>
-      <ref name="standard-attributes-except-version"/>
+      <ref name="standard-attributes"/>
       <zeroOrMore>
          <ref name="import-namespace"/>
       </zeroOrMore>
@@ -805,7 +790,7 @@
                   <ann:documentation>Specifies whether to skip character checking that ensures the output does not contain any illegal characters.</ann:documentation>
                   <ref name="boolean"/>
                </attribute>
-               <ref name="standard-attributes-except-version"/>
+               <ref name="standard-attributes"/>
             </choice>
          </zeroOrMore>
       </element>

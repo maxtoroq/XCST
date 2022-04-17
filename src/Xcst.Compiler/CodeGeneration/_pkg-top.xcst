@@ -48,6 +48,12 @@
                .ToArray()'/>
       </call-template>
 
+      <if test='!(xcst_decimal(el.Attribute("version")!) >= 1m)'>
+         <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(el)' transform-text='trim'>
+            Attribute 'version' should be 1.0 or greater.
+         </message>
+      </if>
+
       <variable name='langAttr' value='el.Attribute("language")!'/>
 
       <if test='!(xcst_language_equal(langAttr, xcst_csharp_lang)
