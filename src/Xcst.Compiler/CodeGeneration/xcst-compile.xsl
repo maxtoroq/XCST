@@ -276,6 +276,10 @@
             if (self::c:package) then ('name', 'visibility') else ()"/>
       </call-template>
 
+      <if test="not(xcst:decimal(@version) ge 1.0)">
+         <sequence select="error(xs:QName('err:XTSE0020'), 'Attribute ''version'' should be 1.0 or greater.', src:error-object(.))"/>
+      </if>
+
       <variable name="language-attr" select="@language"/>
 
       <if test="not(xcst:language-equal($language-attr, $xcst:csharp-lang)

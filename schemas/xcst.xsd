@@ -60,14 +60,6 @@
       </xs:choice>
    </xs:group>
    <xs:attributeGroup name="standard-attributes">
-      <xs:attributeGroup ref="c:standard-attributes-except-version"/>
-      <xs:attribute name="version" type="c:version">
-         <xs:annotation>
-            <xs:documentation>The XCST version for the current and descendant elements (usually "1.0").</xs:documentation>
-         </xs:annotation>
-      </xs:attribute>
-   </xs:attributeGroup>
-   <xs:attributeGroup name="standard-attributes-except-version">
       <xs:attribute name="expand-text" type="c:boolean">
          <xs:annotation>
             <xs:documentation>Enables or disables text value templates for descendant text nodes.</xs:documentation>
@@ -94,7 +86,7 @@
          <xs:any namespace="##local" processContents="lax"/>
       </xs:choice>
    </xs:group>
-   <xs:attributeGroup name="literal-result-element-attributes-except-version">
+   <xs:attributeGroup name="literal-result-element-attributes">
       <xs:attribute name="expand-text" form="qualified" type="c:boolean"/>
       <xs:attribute name="extension-element-prefixes" form="qualified" type="c:extension-element-prefixes"/>
       <xs:attribute name="transform-text" form="qualified" type="c:transform-text"/>
@@ -179,7 +171,7 @@
             <xs:documentation>The default mode of template rules for the current module.</xs:documentation>
          </xs:annotation>
       </xs:attribute>
-      <xs:attributeGroup ref="c:standard-attributes-except-version"/>
+      <xs:attributeGroup ref="c:standard-attributes"/>
    </xs:complexType>
    <xs:element name="import-namespace">
       <xs:annotation>
@@ -758,7 +750,7 @@
                <xs:documentation>Specifies whether to skip character checking that ensures the output does not contain any illegal characters.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
-         <xs:attributeGroup ref="c:standard-attributes-except-version"/>
+         <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
    <xs:element name="validation">

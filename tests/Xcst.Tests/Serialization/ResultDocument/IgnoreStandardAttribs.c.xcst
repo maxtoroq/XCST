@@ -8,8 +8,7 @@
          expand-text='no'
          extension-element-prefixes='a'
          output-version='5.0'
-         transform-text='none'
-         version='1.0'/>
+         transform-text='none'/>
    </c:template>
 
 </c:module>
