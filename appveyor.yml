@@ -1,5 +1,5 @@
 before_build:
-  - ps: .\build\restore-packages.ps1
+  - cmd: MSBuild -t:restore -p:RestorePackagesConfig=true
 
 version: '{build}'
 image: Visual Studio 2019
