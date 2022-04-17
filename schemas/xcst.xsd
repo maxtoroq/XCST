@@ -705,11 +705,6 @@
                <xs:documentation>Specifies whether to escape URI attributes in HTML documents.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
-         <xs:attribute name="html-version" type="c:decimal">
-            <xs:annotation>
-               <xs:documentation>Specifies the HTML version.</xs:documentation>
-            </xs:annotation>
-         </xs:attribute>
          <xs:attribute name="indent" type="c:boolean">
             <xs:annotation>
                <xs:documentation>Specifies whether to indent the output.</xs:documentation>
@@ -1808,14 +1803,6 @@
          </xs:annotation>
          <xs:simpleType>
             <xs:union memberTypes="c:boolean c:avt-expr"/>
-         </xs:simpleType>
-      </xs:attribute>
-      <xs:attribute name="html-version">
-         <xs:annotation>
-            <xs:documentation>Specifies the HTML version. Attribute value template (decimal).</xs:documentation>
-         </xs:annotation>
-         <xs:simpleType>
-            <xs:union memberTypes="c:decimal c:avt-expr"/>
          </xs:simpleType>
       </xs:attribute>
       <xs:attribute name="indent">

@@ -2,7 +2,7 @@
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
    <c:template name='foo'>
-      <c:serialize html-version='{5}'>
+      <c:serialize output-version='{5}'>
          <foo>foo</foo>
       </c:serialize>
    </c:template>

@@ -10,8 +10,8 @@
    <c:template name='c:initial-template'>
       <c:set ref='Thread.CurrentThread.CurrentCulture' value='new CultureInfo("es")'/>
       <c:variable name='htmlVersion' value='4.01m'/>
-      <c:serialize method='html' html-version='{htmlVersion}'/>
-      <c:result-document method='html' html-version='{htmlVersion}' output='TextWriter.Null'/>
+      <c:serialize method='html' output-version='{htmlVersion}'/>
+      <c:result-document method='html' output-version='{htmlVersion}' output='TextWriter.Null'/>
    </c:template>
 
 </c:module>

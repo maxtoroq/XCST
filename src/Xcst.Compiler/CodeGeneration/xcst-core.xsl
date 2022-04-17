@@ -34,8 +34,8 @@
          <doctype-system>DoctypeSystem</doctype-system>
          <encoding>Encoding</encoding>
          <escape-uri-attributes>EscapeUriAttributes</escape-uri-attributes>
-         <html-version>HtmlVersion</html-version>
          <!--
+         <html-version>HtmlVersion</html-version>
          <include-content-type>IncludeContentType</include-content-type>
          -->
          <indent>Indent</indent>
@@ -2995,12 +2995,14 @@
       </code:method-call>
    </template>
 
+   <!--
    <template match="@html-version" mode="src:output-parameter">
       <call-template name="src:decimal">
          <with-param name="decimal" select="xcst:decimal(., not(parent::c:output))"/>
          <with-param name="avt" select="."/>
       </call-template>
    </template>
+   -->
 
    <template match="@indent-spaces" mode="src:output-parameter">
       <call-template name="src:integer">

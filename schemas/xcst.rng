@@ -738,11 +738,11 @@
                   <ann:documentation>Specifies whether to escape URI attributes in HTML documents.</ann:documentation>
                   <ref name="boolean"/>
                </attribute>
+               <!--
                <attribute name="html-version">
                   <ann:documentation>Specifies the HTML version.</ann:documentation>
                   <ref name="decimal"/>
                </attribute>
-               <!--
                <attribute name="include-content-type">
                   <ann:documentation>Specifies whether to include a meta element in the head of HTML documents, specifying the used character encoding.</ann:documentation>
                   <ref name="boolean"/>
@@ -1835,6 +1835,7 @@
                   <ref name="avt-expr"/>
                </choice>
             </attribute>
+            <!--
             <attribute name="html-version">
                <ann:documentation>Specifies the HTML version.</ann:documentation>
                <choice>
@@ -1842,7 +1843,6 @@
                   <ref name="avt-expr"/>
                </choice>
             </attribute>
-            <!--
             <attribute name="include-content-type">
                <ann:documentation>Specifies whether to include a meta element in the head of HTML documents, specifying the used character encoding.</ann:documentation>
                <choice>
