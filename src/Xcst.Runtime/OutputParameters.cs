@@ -96,13 +96,13 @@ namespace Xcst {
          get => (bool?)this[StandardParameters.EscapeUriAttributes];
          set => _parameters[StandardParameters.EscapeUriAttributes] = value;
       }
-
+      /*
       public decimal?
       HtmlVersion {
          get => (decimal?)this[StandardParameters.HtmlVersion];
          set => _parameters[StandardParameters.HtmlVersion] = value;
       }
-      /*
+
       public bool?
       IncludeContentType {
          get => (bool?)this[StandardParameters.IncludeContentType];
@@ -214,7 +214,7 @@ namespace Xcst {
       internal decimal?
       RequestedHtmlVersion() {
 
-         decimal? value = this.HtmlVersion;
+         decimal? value = null/*this.HtmlVersion*/;
          decimal versionValue;
 
          if (value != null
@@ -246,10 +246,10 @@ namespace Xcst {
 
          public static readonly QualifiedName
          EscapeUriAttributes = new QualifiedName("escape-uri-attributes");
-
+         /*
          public static readonly QualifiedName
          HtmlVersion = new QualifiedName("html-version");
-         /*
+
          public static readonly QualifiedName
          IncludeContentType = new QualifiedName("include-content-type");
          */
@@ -296,8 +296,8 @@ namespace Xcst {
                "doctype-system" => DoctypeSystem,
                "encoding" => Encoding,
                "escape-uri-attributes" => EscapeUriAttributes,
-               "html-version" => HtmlVersion,
                /*
+               "html-version" => HtmlVersion,
                "include-content-type" => IncludeContentType,
                */
                "indent" => Indent,

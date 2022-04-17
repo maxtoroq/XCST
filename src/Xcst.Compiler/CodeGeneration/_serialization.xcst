@@ -31,8 +31,8 @@
       { "doctype-system", "DoctypeSystem" },
       { "encoding", "Encoding" },
       { "escape-uri-attributes", "EscapeUriAttributes" },
-      { "html-version", "HtmlVersion" },
       /*
+      { "html-version", "HtmlVersion" },
       { "include-content-type", "IncludeContentType" },
       */
       { "indent", "Indent" },
@@ -343,12 +343,14 @@
       </code:method-call>
    </template>
 
+   <!--
    <template match='XAttribute attr &amp;&amp; attr.Name == "html-version"' mode='src:output-parameter'>
       <call-template name='src:decimal'>
          <with-param name='val' value='xcst_decimal(attr, attr.Parent!.Name != c + "output")'/>
          <with-param name='avt' value='attr'/>
       </call-template>
    </template>
+   -->
 
    <template match='XAttribute attr &amp;&amp; attr.Name == "indent-spaces"' mode='src:output-parameter'>
       <call-template name='src:integer'>
