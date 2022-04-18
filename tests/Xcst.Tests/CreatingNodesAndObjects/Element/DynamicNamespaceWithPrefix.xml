@@ -1,0 +1,1 @@
+﻿<root><foo xmlns:x="urn:foo"><x:some-element/></foo><bar xmlns:x="urn:bar"><x:some-element/></bar></root>

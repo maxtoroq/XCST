@@ -331,9 +331,6 @@
                         <code:null/>
                      </otherwise>
                   </choose>
-                  <code:string verbatim='true'>
-                     <value-of value='el.GetDefaultNamespace()'/>
-                  </code:string>
                </when>
                <otherwise>
                   <variable name='name' value='xcst_name(nameAttr)'/>
@@ -362,11 +359,11 @@
                            <with-param name='avt' value='namespaceAttr'/>
                         </call-template>
                      </when>
-                     <otherwise>
+                     <when test='prefix != null'>
                         <code:string verbatim='true'>
                            <value-of value='qname.Namespace'/>
                         </code:string>
-                     </otherwise>
+                     </when>
                   </choose>
                </otherwise>
             </choose>
