@@ -379,9 +379,6 @@
                         <code:null/>
                      </otherwise>
                   </choose>
-                  <code:string verbatim="true">
-                     <value-of select="namespace-uri-from-QName(resolve-QName('foo', .))"/>
-                  </code:string>
                </when>
                <otherwise>
                   <variable name="n" select="xcst:name(@name)"/>
@@ -402,11 +399,11 @@
                            <with-param name="avt" select="@namespace"/>
                         </call-template>
                      </when>
-                     <otherwise>
+                     <when test="$prefix">
                         <code:string verbatim="true">
                            <value-of select="namespace-uri-from-QName($name)"/>
                         </code:string>
-                     </otherwise>
+                     </when>
                   </choose>
                </otherwise>
             </choose>

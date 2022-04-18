@@ -74,7 +74,7 @@ namespace Xcst {
       /// <exclude/>
       [EditorBrowsable(EditorBrowsableState.Never)]
       public void
-      WriteStartElementLexical(string lexical, string? ns, string defaultNs) {
+      WriteStartElementLexical(string lexical, string? ns) {
 
          int prefixIndex = lexical.IndexOf(':');
          bool hasPrefix = prefixIndex > 0;
@@ -82,17 +82,7 @@ namespace Xcst {
          string? prefix = (hasPrefix) ? lexical.Substring(0, prefixIndex) : null;
          string localName = (hasPrefix) ? lexical.Substring(prefixIndex + 1) : lexical;
 
-         if (hasPrefix) {
-
-            if (String.IsNullOrEmpty(ns)) {
-               throw new NotSupportedException();
-            }
-
-            WriteStartElement(prefix, localName, ns);
-
-         } else {
-            WriteStartElement(null, localName, ns ?? defaultNs);
-         }
+         WriteStartElement(prefix, localName, ns);
       }
 
       public void

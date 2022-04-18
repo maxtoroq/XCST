@@ -1078,7 +1078,7 @@
          <attribute name="name">
             <ann:documentation>The name of the element.</ann:documentation>
             <choice>
-               <ref name="qname-default"/>
+               <ref name="qname"/>
                <ref name="avt-expr"/>
             </choice>
          </attribute>

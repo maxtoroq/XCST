@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:template name='c:initial-template'>
+      <root>
+         <c:element name='foo' namespace='urn:foo'>
+            <c:call-template name='some-element'/>
+         </c:element>
+         <c:element name='bar' namespace='urn:bar'>
+            <c:call-template name='some-element'/>
+         </c:element>
+      </root>
+   </c:template>
+
+   <c:template name='some-element'>
+      <c:element name='some-element'/>
+   </c:template>
+
+</c:module>

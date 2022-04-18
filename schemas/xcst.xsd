@@ -1045,7 +1045,7 @@
                <xs:documentation>The name of the element. Attribute value template (qname).</xs:documentation>
             </xs:annotation>
             <xs:simpleType>
-               <xs:union memberTypes="c:qname-default c:avt-expr"/>
+               <xs:union memberTypes="c:qname c:avt-expr"/>
             </xs:simpleType>
          </xs:attribute>
          <xs:attribute name="namespace">
