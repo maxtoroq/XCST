@@ -29,7 +29,7 @@ namespace Xcst.Compiler {
       PackageManifest(string packageName, XElement usePackageEl) {
 
          Type? packageType;
-         QualifiedName errorCode = new("XTSE3000", XmlNamespaces.XcstErrors);
+         var errorCode = new QualifiedName("XTSE3000", XmlNamespaces.XcstErrors);
 
          try {
             packageType = src_package_type_resolver?.Invoke(packageName);
@@ -52,12 +52,12 @@ namespace Xcst.Compiler {
                );
             }
 
-            XDocument doc = new();
+            var doc = new XDocument();
 
-            using (XmlWriter writer = doc.CreateWriter()) {
-               new TypeManifestReader(writer)
-                  .WritePackage(packageType);
-            }
+            using var writer = doc.CreateWriter();
+
+            new TypeManifestReader(writer)
+               .WritePackage(packageType);
 
             return doc;
          }
@@ -78,8 +78,8 @@ namespace Xcst.Compiler {
             return src_package_location_resolver.Invoke(packageName);
          }
 
-         string? fileDirectory = src_package_file_directory;
-         string? fileExtension = src_package_file_extension;
+         var fileDirectory = src_package_file_directory;
+         var fileExtension = src_package_file_extension;
 
          if (fileDirectory is null
             && usingPackageUri?.IsFile == true) {
@@ -102,8 +102,8 @@ namespace Xcst.Compiler {
          if (packageName is null) throw new ArgumentNullException(nameof(packageName));
          if (packageName.Length == 0) throw new ArgumentException(nameof(packageName));
 
-         string dir = directory;
-         string search = "*." + extension;
+         var dir = directory;
+         var search = "*." + extension;
 
          if (!Directory.Exists(dir)) {
             return null;
@@ -115,7 +115,7 @@ namespace Xcst.Compiler {
                continue;
             }
 
-            XmlReaderSettings readerSettings = new() {
+            var readerSettings = new XmlReaderSettings {
                IgnoreComments = true,
                IgnoreProcessingInstructions = true,
                IgnoreWhitespace = true,
@@ -123,21 +123,20 @@ namespace Xcst.Compiler {
                DtdProcessing = DtdProcessing.Ignore
             };
 
-            using (var reader = XmlReader.Create(path, readerSettings)) {
+            using var reader = XmlReader.Create(path, readerSettings);
 
-               while (reader.Read()) {
+            while (reader.Read()) {
 
-                  if (reader.NodeType == XmlNodeType.Element) {
+               if (reader.NodeType == XmlNodeType.Element) {
 
-                     if (reader.LocalName == "package"
-                        && reader.NamespaceURI == XmlNamespaces.Xcst
-                        && trim(reader.GetAttribute("name")) == packageName) {
+                  if (reader.LocalName == "package"
+                     && reader.NamespaceURI == XmlNamespaces.Xcst
+                     && trim(reader.GetAttribute("name")) == packageName) {
 
-                        return new Uri(path, UriKind.Absolute);
-                     }
-
-                     break;
+                     return new Uri(path, UriKind.Absolute);
                   }
+
+                  break;
                }
             }
          }

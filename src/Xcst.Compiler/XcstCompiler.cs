@@ -102,9 +102,8 @@ namespace Xcst.Compiler {
       public void
       AddPackageLibrary(string assemblyLocation) {
 
-         using (Stream assemblySource = File.OpenRead(assemblyLocation)) {
-            AddPackageLibrary(assemblySource);
-         }
+         using var assemblySource = File.OpenRead(assemblyLocation);
+         AddPackageLibrary(assemblySource);
       }
 
       public void
@@ -112,18 +111,19 @@ namespace Xcst.Compiler {
 
          if (assemblySource is null) throw new ArgumentNullException(nameof(assemblySource));
 
-         XmlWriter writerFn(string packageName) {
+         MetadataManifestReader.ReadAssembly(assemblySource, CreatePackageLibraryManifestWriter);
+      }
 
-            XDocument manifest = new();
+      XmlWriter
+      CreatePackageLibraryManifestWriter(string packageName) {
 
-            if (_packageLibrary.TryAdd(packageName, manifest)) {
-               return manifest.CreateWriter();
-            }
+         var manifest = new XDocument();
 
-            throw new InvalidOperationException($"Package '{packageName}' has already been registered.");
-         };
+         if (_packageLibrary.TryAdd(packageName, manifest)) {
+            return manifest.CreateWriter();
+         }
 
-         MetadataManifestReader.ReadAssembly(assemblySource, writerFn);
+         throw new InvalidOperationException($"Package '{packageName}' has already been registered.");
       }
 
       public CompileResult
@@ -131,7 +131,7 @@ namespace Xcst.Compiler {
 
          if (file is null) throw new ArgumentNullException(nameof(file));
 
-         XmlResolver resolver = GetModuleResolverOrDefault(this.ModuleResolver);
+         var resolver = GetModuleResolverOrDefault(this.ModuleResolver);
 
          if (!file.IsAbsoluteUri) {
             file = resolver.ResolveUri(null, file.OriginalString);
@@ -141,14 +141,14 @@ namespace Xcst.Compiler {
             throw new ArgumentException("file must be an absolute URI.", nameof(file));
          }
 
-         using (var source = (Stream?)resolver.GetEntity(file, null, typeof(Stream))) {
+         using var source = resolver.GetEntity(file, null, typeof(Stream)) as Stream
+            ?? throw new ArgumentException("file not found.", nameof(file));
 
-            if (source is null) {
-               throw new ArgumentException("file not found.", nameof(file));
-            }
-
-            return Compile((settings, baseUri) => XmlReader.Create(source, settings, baseUri), file, resolver);
-         }
+         return Compile(
+            (settings, baseUri) => XmlReader.Create(source, settings, baseUri),
+            file,
+            resolver
+         );
       }
 
       public CompileResult
@@ -168,7 +168,7 @@ namespace Xcst.Compiler {
 
          moduleResolver ??= GetModuleResolverOrDefault(moduleResolver);
 
-         XmlReaderSettings settings = new() {
+         var settings = new XmlReaderSettings {
             XmlResolver = moduleResolver,
             DtdProcessing = DtdProcessing.Parse
          };
@@ -184,11 +184,11 @@ namespace Xcst.Compiler {
             baseUriStr = baseUri.AbsoluteUri;
          }
 
-         LoadOptions loadOpts = LoadOptions.PreserveWhitespace
+         var loadOpts = LoadOptions.PreserveWhitespace
             | LoadOptions.SetBaseUri
             | LoadOptions.SetLineInfo;
 
-         XmlReader reader = readerFn(settings, baseUriStr);
+         var reader = readerFn(settings, baseUriStr);
          XDocument moduleDoc;
 
          try {
@@ -201,9 +201,8 @@ namespace Xcst.Compiler {
             }
          }
 
-         XcstTemplateEvaluator compilerEval = GetCompilerEvaluator(moduleDoc, moduleResolver);
-
-         XDocument resultDoc = new();
+         var compilerEval = GetCompilerEvaluator(moduleDoc, moduleResolver);
+         var resultDoc = new XDocument();
 
          using (var resultWriter = resultDoc.CreateWriter()) {
             compilerEval
@@ -211,11 +210,12 @@ namespace Xcst.Compiler {
                .Run();
          }
 
-         XElement docEl = resultDoc.Root!;
+         var docEl = resultDoc.Root!;
+
          XNamespace src = XmlNamespaces.XcstCompiled;
          XNamespace xcst = XmlNamespaces.XcstGrammar;
 
-         CompileResult result = new() {
+         var result = new CompileResult {
             Language = docEl.Attribute("language")!.Value,
             CompilationUnits = (this.CompilationUnitHandler == null) ?
                docEl.Elements(src + "compilation-unit")
@@ -237,7 +237,7 @@ namespace Xcst.Compiler {
       GetCompilerEvaluator(XDocument sourceDoc, XmlResolver moduleResolver) {
 
          var compiler = new XcstCompilerPackage();
-         XcstEvaluator evaluator = XcstEvaluator.Using(compiler);
+         var evaluator = XcstEvaluator.Using(compiler);
 
          if (this.CompilationUnitHandler != null) {
             evaluator.WithParam(nameof(compiler.src_compilation_unit_handler), this.CompilationUnitHandler);
@@ -306,7 +306,7 @@ namespace Xcst.Compiler {
          }
 
          evaluator.WithParam(nameof(compiler.cs_open_brace_on_new_line), this.OpenBraceOnNewLine);
-         evaluator.WithParam(nameof(compiler.src_extensions) , _extensions);
+         evaluator.WithParam(nameof(compiler.src_extensions), _extensions);
 
          return evaluator.ApplyTemplates(sourceDoc.Root!);
       }
@@ -338,13 +338,13 @@ namespace Xcst.Compiler {
       internal static XElement
       CodeTypeReferenceImpl(Action<XmlWriter> writeFn) {
 
-         XDocument typeRefDoc = new();
+         var typeRefDoc = new XDocument();
 
-         using (XmlWriter writer = typeRefDoc.CreateWriter()) {
+         using (var writer = typeRefDoc.CreateWriter()) {
             writeFn(writer);
          }
 
-         XElement typeRef = typeRefDoc.Root!;
+         var typeRef = typeRefDoc.Root!;
          typeRef.Remove();
 
          return typeRef;

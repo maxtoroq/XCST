@@ -9,6 +9,7 @@
     <RootNamespace>compiler_codegen</RootNamespace>
     <AssemblyName>compiler-codegen</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <LangVersion>9</LangVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>

@@ -27,10 +27,10 @@ namespace Xcst.Compiler.Reflection {
          , ICustomAttributeTypeProvider<TypeSpec> {
 
       static readonly TypeSpec
-      _systemType = new TypeSpec("System.Type", isReferenceType: true);
+      _systemType = new("System.Type", isReferenceType: true);
 
       static Dictionary<PrimitiveTypeCode, TypeSpec>
-      _primitiveTypes = new Dictionary<PrimitiveTypeCode, TypeSpec> {
+      _primitiveTypes = new() {
          { PrimitiveTypeCode.Void, new TypeSpec("System.Void") },
          { PrimitiveTypeCode.Boolean, new TypeSpec("System.Boolean") },
          { PrimitiveTypeCode.Char, new TypeSpec("System.Char") },
@@ -54,19 +54,19 @@ namespace Xcst.Compiler.Reflection {
       public TypeSpec
       GetTypeFromDefinition(MetadataReader reader, TypeDefinitionHandle handle, byte rawTypeKind) {
 
-         TypeDefinition definition = reader.GetTypeDefinition(handle);
+         var definition = reader.GetTypeDefinition(handle);
 
-         string name = (definition.Namespace.IsNil) ?
+         var name = (definition.Namespace.IsNil) ?
             reader.GetString(definition.Name)
             : reader.GetString(definition.Namespace) + "." + reader.GetString(definition.Name);
 
-         bool? refType = IsReferenceType(reader, handle, rawTypeKind);
+         var refType = IsReferenceType(reader, handle, rawTypeKind);
 
          if (IsNested(definition.Attributes)) {
 
-            TypeDefinitionHandle declaringTypeHandle = definition.GetDeclaringType();
+            var declaringTypeHandle = definition.GetDeclaringType();
 
-            TypeSpec parentTypeSpec = GetTypeFromDefinition(reader, declaringTypeHandle, 0);
+            var parentTypeSpec = GetTypeFromDefinition(reader, declaringTypeHandle, 0);
             parentTypeSpec.AddName(name);
             parentTypeSpec.IsReferenceType = refType;
 
@@ -89,20 +89,19 @@ namespace Xcst.Compiler.Reflection {
       public TypeSpec
       GetTypeFromReference(MetadataReader reader, TypeReferenceHandle handle, byte rawTypeKind) {
 
-         TypeReference reference = reader.GetTypeReference(handle);
+         var reference = reader.GetTypeReference(handle);
 
-         string name = (reference.Namespace.IsNil) ?
+         var name = (reference.Namespace.IsNil) ?
             reader.GetString(reference.Name)
             : reader.GetString(reference.Namespace) + "." + reader.GetString(reference.Name);
 
-         bool? refType = IsReferenceType(reader, handle, rawTypeKind);
-
-         Handle scope = reference.ResolutionScope;
+         var refType = IsReferenceType(reader, handle, rawTypeKind);
+         var scope = reference.ResolutionScope;
 
          switch (scope.Kind) {
             case HandleKind.TypeReference:
 
-               TypeSpec parentTypeSpec = GetTypeFromReference(reader, (TypeReferenceHandle)scope, 0);
+               var parentTypeSpec = GetTypeFromReference(reader, (TypeReferenceHandle)scope, 0);
                parentTypeSpec.AddName(name);
                parentTypeSpec.IsReferenceType = refType;
 
@@ -126,7 +125,7 @@ namespace Xcst.Compiler.Reflection {
       public TypeSpec
       GetSZArrayType(TypeSpec elementType) {
 
-         TypeSpec arrayTypeSpec = elementType.Clone();
+         var arrayTypeSpec = elementType.Clone();
          arrayTypeSpec.AddModifier(new ArraySpec(1, false));
 
          return arrayTypeSpec;
@@ -156,12 +155,12 @@ namespace Xcst.Compiler.Reflection {
       public PrimitiveTypeCode
       GetUnderlyingEnumType(TypeSpec type) {
 
-         Type? runtimeType = Type.GetType(type.GetDisplayFullName(DisplayNameFormat.WANT_ASSEMBLY), false);
+         var runtimeType = Type.GetType(type.GetDisplayFullName(DisplayNameFormat.WANT_ASSEMBLY), throwOnError: false);
 
          if (runtimeType != null) {
 
-            Type underlyingType = runtimeType.GetEnumUnderlyingType();
-            TypeSpec underlyingTypeSpec = new TypeSpec(underlyingType.FullName!);
+            var underlyingType = runtimeType.GetEnumUnderlyingType();
+            var underlyingTypeSpec = new TypeSpec(underlyingType.FullName!);
 
             foreach (var pair in _primitiveTypes) {
                if (pair.Value.Name.Equals(underlyingTypeSpec.Name)) {
@@ -195,7 +194,7 @@ namespace Xcst.Compiler.Reflection {
       public TypeSpec
       GetGenericInstantiation(TypeSpec genericType, ImmutableArray<TypeSpec> typeArguments) {
 
-         TypeSpec closedGeneric = genericType.Clone();
+         var closedGeneric = genericType.Clone();
          closedGeneric.AddGenericParams(typeArguments);
 
          return closedGeneric;

@@ -45,11 +45,11 @@ namespace Xcst.Compiler.Reflection {
 
          WriteTypeReference(packageType);
 
-         Type pkgInterface = PackageInterface(packageType)!;
-         Type componentAttrType = ComponentAttributeType(pkgInterface, "XcstComponentAttribute");
-         Type requiredAttrType = ComponentAttributeType(pkgInterface, "RequiredAttribute");
+         var pkgInterface = PackageInterface(packageType)!;
+         var componentAttrType = ComponentAttributeType(pkgInterface, "XcstComponentAttribute");
+         var requiredAttrType = ComponentAttributeType(pkgInterface, "RequiredAttribute");
 
-         foreach (MemberInfo member in packageType.GetMembers(BindingFlags.Instance | BindingFlags.Public)) {
+         foreach (var member in packageType.GetMembers(BindingFlags.Instance | BindingFlags.Public)) {
 
             dynamic? attr = member.GetCustomAttribute(componentAttrType, inherit: false);
 
@@ -88,7 +88,7 @@ namespace Xcst.Compiler.Reflection {
       void
       WriteTemplate(dynamic attr, MethodInfo method, Type requiredAttrType) {
 
-         string cardinality = (char)attr.Cardinality switch {
+         var cardinality = (char)attr.Cardinality switch {
             ' ' => "One",
             _ => "ZeroOrMore"
          };
@@ -99,16 +99,16 @@ namespace Xcst.Compiler.Reflection {
          _writer.WriteAttributeString("member-name", method.Name);
          _writer.WriteAttributeString("cardinality", cardinality);
 
-         ParameterInfo[] methodParams = method.GetParameters();
-         Type contextType = methodParams[0].ParameterType;
+         var methodParams = method.GetParameters();
+         var contextType = methodParams[0].ParameterType;
 
-         Type? paramsType = (contextType.IsGenericType) ?
+         var paramsType = (contextType.IsGenericType) ?
             contextType.GetGenericArguments()[0]
             : null;
 
-         foreach (PropertyInfo property in paramsType?.GetProperties() ?? Array.Empty<PropertyInfo>()) {
+         foreach (var property in paramsType?.GetProperties() ?? Array.Empty<PropertyInfo>()) {
 
-            bool required = property.GetCustomAttribute(requiredAttrType) != null;
+            var required = property.GetCustomAttribute(requiredAttrType) != null;
 
             _writer.WriteStartElement(_prefix, "param", _ns);
             _writer.WriteAttributeString("name", property.Name);
@@ -120,7 +120,7 @@ namespace Xcst.Compiler.Reflection {
             _writer.WriteEndElement();
          }
 
-         Type outputType = methodParams[1].ParameterType;
+         var outputType = methodParams[1].ParameterType;
          Type itemType;
 
          if (outputType.IsGenericType
@@ -156,7 +156,7 @@ namespace Xcst.Compiler.Reflection {
             WriteTypeReference(method.ReturnType, method, NullableAttribute(method.ReturnParameter));
          }
 
-         foreach (ParameterInfo param in method.GetParameters()) {
+         foreach (var param in method.GetParameters()) {
 
             _writer.WriteStartElement(_prefix, "param", _ns);
             _writer.WriteAttributeString("name", param.Name);
@@ -176,7 +176,7 @@ namespace Xcst.Compiler.Reflection {
       void
       WriteParameter(PropertyInfo property, Type requiredAttrType) {
 
-         bool required = property.GetCustomAttribute(requiredAttrType) != null;
+         var required = property.GetCustomAttribute(requiredAttrType) != null;
 
          _writer.WriteStartElement(_prefix, "param", _ns);
          _writer.WriteAttributeString("name", property.Name);
@@ -229,9 +229,9 @@ namespace Xcst.Compiler.Reflection {
 
          } else {
 
-            Type[] typeArguments = type.GetGenericArguments();
+            var typeArguments = type.GetGenericArguments();
 
-            string name = (typeArguments.Length > 0) ?
+            var name = (typeArguments.Length > 0) ?
                type.Name.Substring(0, type.Name.IndexOf('`'))
                : type.Name;
 
@@ -285,7 +285,7 @@ namespace Xcst.Compiler.Reflection {
       static byte[]?
       NullableAttribute(IList<CustomAttributeData> attrData) {
 
-         CustomAttributeData? nullableAttr = attrData?
+         var nullableAttr = attrData?
             .FirstOrDefault(p => p.AttributeType.FullName == "System.Runtime.CompilerServices.NullableAttribute");
 
          if (nullableAttr != null
@@ -312,7 +312,7 @@ namespace Xcst.Compiler.Reflection {
             return null;
          }
 
-         CustomAttributeData? attr = member.GetCustomAttributesData()
+         var attr = member.GetCustomAttributesData()
             .FirstOrDefault(p => p.AttributeType.FullName == "System.Runtime.CompilerServices.NullableContextAttribute");
 
          if (attr != null
@@ -341,7 +341,7 @@ namespace Xcst.Compiler.Reflection {
             return;
          }
 
-         string str = Convert.ToString(value, CultureInfo.InvariantCulture)!;
+         var str = Convert.ToString(value, CultureInfo.InvariantCulture)!;
 
          if (value is string) {
             _writer.WriteStartElement(prefix, "string", ns);

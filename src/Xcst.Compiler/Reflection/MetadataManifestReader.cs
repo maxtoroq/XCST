@@ -42,51 +42,50 @@ namespace Xcst.Compiler.Reflection {
       static readonly ISignatureTypeProvider<TypeSpec, object?>
       _signatureTypeProvider = new TypeSpecSignatureTypeProvider();
 
-      MetadataReader
+      readonly MetadataReader
       _reader;
 
-      XmlWriter
+      readonly XmlWriter
       _writer;
 
       public static void
       ReadAssembly(Stream assemblySource, Func<string, XmlWriter> writerFn) {
 
-         using (var peReader = new PEReader(assemblySource)) {
+         using var peReader = new PEReader(assemblySource);
 
-            MetadataReader reader = peReader.GetMetadataReader();
+         var reader = peReader.GetMetadataReader();
 
-            foreach (var typeDef in reader.TypeDefinitions.Select(reader.GetTypeDefinition)) {
+         foreach (var typeDef in reader.TypeDefinitions.Select(reader.GetTypeDefinition)) {
 
-               if (!typeDef.Attributes.HasFlag(TypeAttributes.Public)) {
-                  continue;
+            if (!typeDef.Attributes.HasFlag(TypeAttributes.Public)) {
+               continue;
+            }
+
+            if (typeDef.Attributes.HasFlag(TypeAttributes.ClassSemanticsMask)) {
+               // is interface
+               continue;
+            }
+
+            var isPkg =
+               (from ih in typeDef.GetInterfaceImplementations()
+                let i = reader.GetInterfaceImplementation(ih)
+                where i.Interface.Kind == HandleKind.TypeReference
+                let t = reader.GetTypeReference(((TypeReferenceHandle)i.Interface))
+                select t).Any(t => reader.GetString(t.Name) == "IXcstPackage"
+                   && reader.GetString(t.Namespace) == _packageModelNs);
+
+            if (isPkg) {
+
+               var pkgName = reader.GetString(typeDef.Name);
+
+               if (!typeDef.Namespace.IsNil) {
+                  pkgName = reader.GetString(typeDef.Namespace) + "." + pkgName;
                }
 
-               if (typeDef.Attributes.HasFlag(TypeAttributes.ClassSemanticsMask)) {
-                  // is interface
-                  continue;
-               }
+               using var writer = writerFn(pkgName);
 
-               bool isPkg =
-                  (from ih in typeDef.GetInterfaceImplementations()
-                   let i = reader.GetInterfaceImplementation(ih)
-                   where i.Interface.Kind == HandleKind.TypeReference
-                   let t = reader.GetTypeReference(((TypeReferenceHandle)i.Interface))
-                   select t).Any(t => reader.GetString(t.Name) == "IXcstPackage"
-                      && reader.GetString(t.Namespace) == _packageModelNs);
-
-               if (isPkg) {
-
-                  string pkgName = reader.GetString(typeDef.Name);
-
-                  if (!typeDef.Namespace.IsNil) {
-                     pkgName = reader.GetString(typeDef.Namespace) + "." + pkgName;
-                  }
-
-                  using (XmlWriter writer = writerFn(pkgName)) {
-                     new MetadataManifestReader(reader, writer)
-                        .WritePackage(typeDef);
-                  }
-               }
+               new MetadataManifestReader(reader, writer)
+                  .WritePackage(typeDef);
             }
          }
       }
@@ -106,7 +105,7 @@ namespace Xcst.Compiler.Reflection {
 
          WriteTypeReference(typeDef);
 
-         byte? nullableContext = NullableContextAttribute(typeDef.GetCustomAttributes());
+         var nullableContext = NullableContextAttribute(typeDef.GetCustomAttributes());
 
          foreach (var methodDef in typeDef.GetMethods().Select(_reader.GetMethodDefinition)) {
 
@@ -137,7 +136,7 @@ namespace Xcst.Compiler.Reflection {
                switch (componentData.Kind) {
                   case 4:
                   case 5:
-                     MethodDefinition getterDef = _reader.GetMethodDefinition(propDef.GetAccessors().Getter);
+                     var getterDef = _reader.GetMethodDefinition(propDef.GetAccessors().Getter);
                      WriteVariable(propDef, getterDef, componentData, nullableContext);
                      break;
                }
@@ -169,18 +168,17 @@ namespace Xcst.Compiler.Reflection {
          _writer.WriteAttributeString("member-name", _reader.GetString(methodDef.Name));
          _writer.WriteAttributeString("cardinality", SequenceCardinality(componentData.Cardinality));
 
-         MethodSignature<TypeSpec> signature = methodDef.DecodeSignature(_signatureTypeProvider, null);
+         var signature = methodDef.DecodeSignature(_signatureTypeProvider, null);
+         var contextType = signature.ParameterTypes[0];
+         var packageType = _reader.GetTypeDefinition(methodDef.GetDeclaringType());
 
-         TypeSpec contextType = signature.ParameterTypes[0];
-         TypeDefinition packageType = _reader.GetTypeDefinition(methodDef.GetDeclaringType());
-
-         TypeSpec? paramsType = (contextType.HasGenericParameters) ?
+         var paramsType = (contextType.HasGenericParameters) ?
             contextType.GenericParameters[0]
             : null;
 
          if (paramsType != null) {
 
-            TypeDefinition paramsTypeDef =
+            var paramsTypeDef =
                (from t in _reader.TypeDefinitions.Select(_reader.GetTypeDefinition)
                 where t.IsNested
                    && _reader.GetString(t.Name) == paramsType.Nested.Last().DisplayName
@@ -194,7 +192,7 @@ namespace Xcst.Compiler.Reflection {
             }
          }
 
-         TypeSpec outputType = signature.ParameterTypes[1];
+         var outputType = signature.ParameterTypes[1];
          TypeSpec itemType;
 
          if (outputType.HasGenericParameters
@@ -211,9 +209,9 @@ namespace Xcst.Compiler.Reflection {
       void
       WriteTemplateParameter(PropertyDefinition propDef) {
 
-         string name = _reader.GetString(propDef.Name);
+         var name = _reader.GetString(propDef.Name);
 
-         bool required = propDef.GetCustomAttributes()
+         var required = propDef.GetCustomAttributes()
             .Select(_reader.GetCustomAttribute)
             .Any(c => CustomAttributeName(c) == $"{_packageModelNs}.RequiredAttribute");
 
@@ -222,7 +220,7 @@ namespace Xcst.Compiler.Reflection {
          _writer.WriteAttributeString("required", XmlConvert.ToString(required));
          _writer.WriteAttributeString("tunnel", "false");
 
-         MethodSignature<TypeSpec> propSign = propDef.DecodeSignature(_signatureTypeProvider, null);
+         var propSign = propDef.DecodeSignature(_signatureTypeProvider, null);
 
          WriteTypeReference(propSign.ReturnType);
          _writer.WriteEndElement();
@@ -241,7 +239,7 @@ namespace Xcst.Compiler.Reflection {
       void
       WriteFunction(MethodDefinition methodDef, byte? nullableContext) {
 
-         string memberName = _reader.GetString(methodDef.Name);
+         var memberName = _reader.GetString(methodDef.Name);
 
          _writer.WriteStartElement(_prefix, "function", _ns);
 
@@ -251,11 +249,11 @@ namespace Xcst.Compiler.Reflection {
 
          nullableContext = NullableContextAttribute(methodDef.GetCustomAttributes()) ?? nullableContext;
 
-         MethodSignature<TypeSpec> signature = methodDef.DecodeSignature(_signatureTypeProvider, null);
+         var signature = methodDef.DecodeSignature(_signatureTypeProvider, null);
 
          Parameter? returnParam = null;
 
-         Parameter[] parameters = methodDef.GetParameters()
+         var parameters = methodDef.GetParameters()
             .Select(_reader.GetParameter)
             // "empty" parameter has return value metadata
             .Where(p => String.IsNullOrEmpty(_reader.GetString(p.Name)) ?
@@ -276,7 +274,7 @@ namespace Xcst.Compiler.Reflection {
 
          for (int i = 0; i < parameters.Length; i++) {
 
-            Parameter param = parameters[i];
+            var param = parameters[i];
             WriteFunctionParameter(param, i, signature, nullableContext);
          }
 
@@ -286,23 +284,23 @@ namespace Xcst.Compiler.Reflection {
       void
       WriteFunctionParameter(Parameter param, int i, MethodSignature<TypeSpec> signature, byte? nullableContext) {
 
-         TypeSpec paramType = signature.ParameterTypes[i];
+         var paramType = signature.ParameterTypes[i];
 
          _writer.WriteStartElement(_prefix, "param", _ns);
          _writer.WriteAttributeString("name", _reader.GetString(param.Name));
 
-         CustomAttributeHandleCollection attribsH = param.GetCustomAttributes();
+         var attribsH = param.GetCustomAttributes();
 
          WriteTypeReference(paramType, nullableContext, NullableAttribute(attribsH));
 
          if (param.Attributes.HasFlag(ParameterAttributes.HasDefault)) {
 
-            Constant defaultVal = _reader.GetConstant(param.GetDefaultValue());
+            var defaultVal = _reader.GetConstant(param.GetDefaultValue());
             WriteConstant(defaultVal);
 
          } else if (param.Attributes.HasFlag(ParameterAttributes.Optional)) {
 
-            decimal? defaultVal = attribsH
+            var defaultVal = attribsH
                .Select(_reader.GetCustomAttribute)
                .Where(p => CustomAttributeName(p) == "System.Runtime.CompilerServices.DecimalConstantAttribute")
                .Select(p => TryDecodeDecimalConstantAttribute(p))
@@ -322,15 +320,15 @@ namespace Xcst.Compiler.Reflection {
       void
       WriteVariable(PropertyDefinition propDef, MethodDefinition getterDef, ComponentAttributeData componentData, byte? nullableContext) {
 
-         bool isParam = componentData.Kind == 5;
-         string memberName = _reader.GetString(propDef.Name);
+         var isParam = componentData.Kind == 5;
+         var memberName = _reader.GetString(propDef.Name);
 
          _writer.WriteStartElement(_prefix, (isParam) ? "param" : "variable", _ns);
          _writer.WriteAttributeString("name", memberName);
 
          if (isParam) {
 
-            bool required = propDef.GetCustomAttributes()
+            var required = propDef.GetCustomAttributes()
                .Select(_reader.GetCustomAttribute)
                .Any(c => CustomAttributeName(c) == $"{_packageModelNs}.RequiredAttribute");
 
@@ -340,7 +338,7 @@ namespace Xcst.Compiler.Reflection {
          _writer.WriteAttributeString("visibility", ComponentVisibility(getterDef));
          _writer.WriteAttributeString("member-name", memberName);
 
-         MethodSignature<TypeSpec> signature = propDef.DecodeSignature(_signatureTypeProvider, null);
+         var signature = propDef.DecodeSignature(_signatureTypeProvider, null);
 
          WriteTypeReference(
             signature.ReturnType,
@@ -373,7 +371,7 @@ namespace Xcst.Compiler.Reflection {
 
          _writer.WriteStartElement(prefix, "type-reference", ns);
 
-         string name = _reader.GetString(typeDef.Name);
+         var name = _reader.GetString(typeDef.Name);
 
          _writer.WriteAttributeString("name", name);
 
@@ -413,7 +411,7 @@ namespace Xcst.Compiler.Reflection {
 
          if (type.IsNested) {
 
-            bool nestedWritten = false;
+            var nestedWritten = false;
 
             foreach (var nest in type.Nested.Reverse()) {
 
@@ -443,17 +441,17 @@ namespace Xcst.Compiler.Reflection {
             }
          }
 
-         string fullName = type.Name.DisplayName;
+         var fullName = type.Name.DisplayName;
 
          if (type.HasGenericParameters) {
             fullName = fullName.Substring(0, fullName.IndexOf('`'));
          }
 
-         string nspace = (fullName.Contains(".")) ?
+         var nspace = (fullName.Contains(".")) ?
             fullName.Substring(0, fullName.LastIndexOf('.'))
             : "";
 
-         string name = (nspace.Length > 0) ?
+         var name = (nspace.Length > 0) ?
             fullName.Substring(fullName.LastIndexOf('.') + 1)
             : fullName;
 
@@ -484,7 +482,7 @@ namespace Xcst.Compiler.Reflection {
 
          if (type.IsNested) {
 
-            foreach (var nest in type.Nested) {
+            foreach (var _ in type.Nested) {
                _writer.WriteEndElement(); // </type-reference>
             }
          }
@@ -493,7 +491,7 @@ namespace Xcst.Compiler.Reflection {
 
             foreach (var mod in type.Modifiers) {
 
-               if (mod is ArraySpec array) {
+               if (mod is ArraySpec) {
                   _writer.WriteEndElement(); // </type-reference>
                }
             }
@@ -511,13 +509,13 @@ namespace Xcst.Compiler.Reflection {
       byte[]?
       NullableAttribute(CustomAttributeHandleCollection attrData) {
 
-         CustomAttribute? nullableAttr = attrData
+         var nullableAttr = attrData
             .Select(c => (CustomAttribute?)_reader.GetCustomAttribute(c))
             .FirstOrDefault(c => CustomAttributeName(c!.Value) == "System.Runtime.CompilerServices.NullableAttribute");
 
          if (nullableAttr != null) {
 
-            CustomAttributeValue<TypeSpec> value = nullableAttr.Value.DecodeValue(_attrTypeProvider);
+            var value = nullableAttr.Value.DecodeValue(_attrTypeProvider);
 
             if (value.FixedArguments.Length == 1) {
 
@@ -539,13 +537,13 @@ namespace Xcst.Compiler.Reflection {
       byte?
       NullableContextAttribute(CustomAttributeHandleCollection attrData) {
 
-         CustomAttribute? nullableAttr = attrData
+         var nullableAttr = attrData
             .Select(c => (CustomAttribute?)_reader.GetCustomAttribute(c))
             .FirstOrDefault(c => CustomAttributeName(c!.Value) == "System.Runtime.CompilerServices.NullableContextAttribute");
 
          if (nullableAttr != null) {
 
-            CustomAttributeValue<TypeSpec> value = nullableAttr.Value.DecodeValue(_attrTypeProvider);
+            var value = nullableAttr.Value.DecodeValue(_attrTypeProvider);
 
             if (value.FixedArguments.Length == 1
                && value.FixedArguments[0].Value is byte flag) {
@@ -565,7 +563,7 @@ namespace Xcst.Compiler.Reflection {
 
          BlobReader blobReader = _reader.GetBlobReader(constant.Value);
 
-         string str = Convert.ToString(
+         var str = Convert.ToString(
             blobReader.ReadConstant(constant.TypeCode),
             CultureInfo.InvariantCulture
          )!;
@@ -642,7 +640,7 @@ namespace Xcst.Compiler.Reflection {
       ComponentAttributeData?
       FindComponentAttribute(CustomAttributeHandleCollection attributeHandles) {
 
-         string componentAttrName = $"{_packageModelNs}.XcstComponentAttribute";
+         var componentAttrName = $"{_packageModelNs}.XcstComponentAttribute";
 
          return attributeHandles
             .Select(_reader.GetCustomAttribute)
@@ -654,16 +652,15 @@ namespace Xcst.Compiler.Reflection {
       static ComponentAttributeData
       ParseComponentAttribute(CustomAttribute attrib) {
 
-         CustomAttributeValue<TypeSpec> atValue = attrib.DecodeValue(_attrTypeProvider);
+         var atValue = attrib.DecodeValue(_attrTypeProvider);
+         var kind = (byte)atValue.FixedArguments[0].Value!;
 
-         byte kind = (byte)atValue.FixedArguments[0].Value!;
-
-         string? name = atValue.NamedArguments
+         var name = atValue.NamedArguments
             .Where(n => n.Name == "Name")
             .Select(n => (string?)n.Value)
             .FirstOrDefault();
 
-         char cardinality = atValue.NamedArguments
+         var cardinality = atValue.NamedArguments
             .Where(n => n.Name == "Cardinality")
             .Select(n => (char)n.Value!)
             .FirstOrDefault();
@@ -694,16 +691,16 @@ namespace Xcst.Compiler.Reflection {
 
          if (attrib.Constructor.Kind == HandleKind.MemberReference) {
 
-            MemberReference ctor = _reader.GetMemberReference((MemberReferenceHandle)attrib.Constructor);
-            TypeReference typeRef = _reader.GetTypeReference((TypeReferenceHandle)ctor.Parent);
+            var ctor = _reader.GetMemberReference((MemberReferenceHandle)attrib.Constructor);
+            var typeRef = _reader.GetTypeReference((TypeReferenceHandle)ctor.Parent);
 
             nsHandl = typeRef.Namespace;
             nameHandl = typeRef.Name;
 
          } else if (attrib.Constructor.Kind == HandleKind.MethodDefinition) {
 
-            MethodDefinition ctor = _reader.GetMethodDefinition((MethodDefinitionHandle)attrib.Constructor);
-            TypeDefinition typeDef = _reader.GetTypeDefinition(ctor.GetDeclaringType());
+            var ctor = _reader.GetMethodDefinition((MethodDefinitionHandle)attrib.Constructor);
+            var typeDef = _reader.GetTypeDefinition(ctor.GetDeclaringType());
 
             nsHandl = typeDef.Namespace;
             nameHandl = typeDef.Name;
@@ -712,7 +709,7 @@ namespace Xcst.Compiler.Reflection {
             throw new NotImplementedException();
          }
 
-         string fullName = _reader.GetString(nameHandl);
+         var fullName = _reader.GetString(nameHandl);
 
          if (!nsHandl.IsNil) {
             fullName = _reader.GetString(nsHandl) + "." + fullName;

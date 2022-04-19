@@ -91,8 +91,8 @@ namespace Xcst.Compiler.Reflection {
          ?? Array.Empty<TypeSpec>();
 
       internal string
-      DisplayFullName => _displayFullname
-         ?? (_displayFullname = GetDisplayFullName(DisplayNameFormat.Default));
+      DisplayFullName =>
+         _displayFullname ??= GetDisplayFullName(DisplayNameFormat.Default);
 
 #pragma warning disable CS8618
       private
@@ -126,8 +126,8 @@ namespace Xcst.Compiler.Reflection {
       internal string
       GetDisplayFullName(DisplayNameFormat flags) {
 
-         bool wantAssembly = (flags & DisplayNameFormat.WANT_ASSEMBLY) != 0;
-         bool wantModifiers = (flags & DisplayNameFormat.NO_MODIFIERS) == 0;
+         var wantAssembly = (flags & DisplayNameFormat.WANT_ASSEMBLY) != 0;
+         var wantModifiers = (flags & DisplayNameFormat.NO_MODIFIERS) == 0;
 
          var sb = new StringBuilder(_name.DisplayName);
 
@@ -205,9 +205,8 @@ namespace Xcst.Compiler.Reflection {
 
          if (typeName is null) throw new ArgumentNullException(nameof(typeName));
 
-         int pos = 0;
-
-         TypeSpec res = Parse(typeName, ref pos, false, true);
+         var pos = 0;
+         var res = Parse(typeName, ref pos, false, true);
 
          if (pos < typeName.Length) {
             throw new ArgumentException("Count not parse the whole type name", nameof(typeName));
@@ -231,9 +230,9 @@ namespace Xcst.Compiler.Reflection {
          //  - If allowAqn is True, assembly qualification is optional.
          //    If allowAqn is False, assembly qualification is prohibited.
 
-         int pos = p;
+         var pos = p;
          int nameStart;
-         bool inModifiers = false;
+         var inModifiers = false;
          var data = new TypeSpec();
 
          SkipSpace(typeName, ref pos);
@@ -310,7 +309,7 @@ namespace Xcst.Compiler.Reflection {
                      }
 
                      // take subsequent '*'s too
-                     int pointer_level = 1;
+                     var pointer_level = 1;
 
                      while (pos + 1 < typeName.Length && typeName[pos + 1] == '*') {
                         ++pos;
@@ -324,7 +323,7 @@ namespace Xcst.Compiler.Reflection {
 
                      if (isRecurse && allowAqn) {
 
-                        int end = pos;
+                        var end = pos;
 
                         while (end < typeName.Length && typeName[end] != ']') {
                            ++end;
@@ -380,7 +379,7 @@ namespace Xcst.Compiler.Reflection {
 
                            SkipSpace(typeName, ref pos);
 
-                           bool aqn = typeName[pos] == '[';
+                           var aqn = typeName[pos] == '[';
 
                            if (aqn) {
                               ++pos; //skip '[' to the start of the type
@@ -422,8 +421,8 @@ namespace Xcst.Compiler.Reflection {
 
                      } else { //array spec
 
-                        int dimensions = 1;
-                        bool bound = false;
+                        var dimensions = 1;
+                        var bound = false;
 
                         while (pos < typeName.Length && typeName[pos] != ']') {
 
@@ -513,7 +512,7 @@ namespace Xcst.Compiler.Reflection {
 
          for (int i = 0; i < displayName.Length; ++i) {
 
-            char c = displayName[i];
+            var c = displayName[i];
 
             if (c == '\\') {
                if (++i < displayName.Length) {
@@ -530,7 +529,7 @@ namespace Xcst.Compiler.Reflection {
       internal static bool
       NeedsEscaping(string internalName) {
 
-         foreach (char c in internalName) {
+         foreach (var c in internalName) {
             switch (c) {
                case ',':
                case '+':
@@ -553,7 +552,6 @@ namespace Xcst.Compiler.Reflection {
       AddName(string typeName) {
 
          if (_name is null) {
-
             _name = ParsedTypeIdentifier(typeName);
 
          } else {

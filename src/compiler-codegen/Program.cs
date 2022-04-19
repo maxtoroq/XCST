@@ -44,13 +44,12 @@ namespace XcstCodeGen {
       static string
       FileNamespace(Uri fileUri, Uri startUri, string rootNamespace) {
 
-         string ns = rootNamespace;
-
-         string relativePath = startUri.MakeRelativeUri(fileUri).OriginalString;
+         var ns = rootNamespace;
+         var relativePath = startUri.MakeRelativeUri(fileUri).OriginalString;
 
          if (relativePath.Contains("/")) {
 
-            string relativeDir = startUri.MakeRelativeUri(new Uri(Path.GetDirectoryName(fileUri.LocalPath), UriKind.Absolute))
+            var relativeDir = startUri.MakeRelativeUri(new Uri(Path.GetDirectoryName(fileUri.LocalPath), UriKind.Absolute))
                .OriginalString;
 
             ns = String.Join(".", new[] { ns }.Concat(
@@ -72,8 +71,8 @@ namespace XcstCodeGen {
       static void
       VisualStudioErrorLog(CompileException ex) {
 
-         string uriString = ex.ModuleUri;
-         string path = (Uri.TryCreate(uriString, UriKind.Absolute, out Uri uri) && uri.IsFile) ?
+         var uriString = ex.ModuleUri;
+         var path = (Uri.TryCreate(uriString, UriKind.Absolute, out Uri uri) && uri.IsFile) ?
             uri.LocalPath
             : uriString;
 
@@ -85,20 +84,18 @@ namespace XcstCodeGen {
 
          var startUri = new Uri(_projectUri, ".");
 
-         var compilerFact = new XcstCompilerFactory {
-            EnableExtensions = true
-         };
+         var compilerFact = new XcstCompilerFactory();
+         var compiler = compilerFact.CreateCompiler();
 
-         XcstCompiler compiler = compilerFact.CreateCompiler();
          compiler.PackageFileDirectory = startUri.LocalPath;
          compiler.PackageFileExtension = _fileExt;
          compiler.IndentChars = "   ";
          compiler.CompilationUnitHandler = href => output;
 
-         XDocument projectDoc = XDocument.Load(_projectUri.LocalPath);
+         var projectDoc = XDocument.Load(_projectUri.LocalPath);
 
-         string rootNamespace = RootNamespace(projectDoc, _projectUri.LocalPath);
-         string nullable = Nullable(projectDoc);
+         var rootNamespace = RootNamespace(projectDoc, _projectUri.LocalPath);
+         var nullable = Nullable(projectDoc);
 
          if (nullable != null) {
             compiler.NullableAnnotate = true;
@@ -117,8 +114,8 @@ namespace XcstCodeGen {
          foreach (string file in Directory.EnumerateFiles(startUri.LocalPath, "*." + _fileExt, SearchOption.AllDirectories)) {
 
             var fileUri = new Uri(file, UriKind.Absolute);
-            string fileName = Path.GetFileName(file);
-            string fileBaseName = Path.GetFileNameWithoutExtension(file);
+            var fileName = Path.GetFileName(file);
+            var fileBaseName = Path.GetFileNameWithoutExtension(file);
 
             // Ignore files starting with underscore
             if (fileName[0] == '_') {
@@ -129,10 +126,8 @@ namespace XcstCodeGen {
             compiler.TargetClass = CleanIdentifier(fileBaseName);
             compiler.TargetBaseTypes = null;
 
-            CompileResult xcstResult;
-
             try {
-               xcstResult = compiler.Compile(fileUri);
+               compiler.Compile(fileUri);
 
             } catch (CompileException ex) {
                VisualStudioErrorLog(ex);
@@ -144,7 +139,7 @@ namespace XcstCodeGen {
       public static void
       Main(string[] args) {
 
-         string currentDir = Environment.CurrentDirectory;
+         var currentDir = Environment.CurrentDirectory;
 
          if (currentDir.Last() != Path.DirectorySeparatorChar) {
             currentDir += Path.DirectorySeparatorChar;
@@ -154,15 +149,14 @@ namespace XcstCodeGen {
          var projectUri = new Uri(callerBaseUri, args[0]);
          var outputUri = new Uri(projectUri, args[1]);
 
-         using (var output = File.CreateText(outputUri.LocalPath)) {
+         using var output = File.CreateText(outputUri.LocalPath);
 
-            // Because XML parsers normalize CRLF to LF,
-            // we want to be consistent with the additional content we create
-            output.NewLine = "\n";
+         // Because XML parsers normalize CRLF to LF,
+         // we want to be consistent with the additional content we create
+         output.NewLine = "\n";
 
-            new Program(projectUri)
-               .Run(output);
-         }
+         new Program(projectUri)
+            .Run(output);
       }
    }
 }

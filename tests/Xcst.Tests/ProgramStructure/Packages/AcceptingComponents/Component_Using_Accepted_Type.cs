@@ -3,7 +3,6 @@ using System.IO;
 using System.Linq;
 using System.Xml;
 using NUnit.Framework;
-using Xcst.Compiler;
 
 namespace Xcst.Tests.ProgramStructure.Packages.AcceptingComponents {
 
@@ -27,7 +26,7 @@ namespace Xcst.Tests.ProgramStructure.Packages.AcceptingComponents {
 
          var usingPackageUri = new Uri(@"c:\foo.xcst");
 
-         CompileResult resultA = compilerA.Compile(
+         var resultA = compilerA.Compile(
             new StringReader(ModuleResolver.GetPackageString("")),
             baseUri: usingPackageUri
          );
@@ -36,7 +35,7 @@ namespace Xcst.Tests.ProgramStructure.Packages.AcceptingComponents {
          compilerB.PackageLocationResolver = compilerA.PackageLocationResolver;
          compilerB.ModuleResolver = compilerA.ModuleResolver;
 
-         CompileResult resultB = compilerB.Compile(
+         var resultB = compilerB.Compile(
             new StringReader(ModuleResolver.GetPackageString("localhost.PackageB")),
             baseUri: compilerB.PackageLocationResolver("localhost.PackageB")
          );
@@ -45,12 +44,12 @@ namespace Xcst.Tests.ProgramStructure.Packages.AcceptingComponents {
          compilerC.PackageLocationResolver = compilerA.PackageLocationResolver;
          compilerC.ModuleResolver = compilerA.ModuleResolver;
 
-         CompileResult resultC = compilerC.Compile(
+         var resultC = compilerC.Compile(
             new StringReader(ModuleResolver.GetPackageString("localhost.PackageC")),
             baseUri: compilerC.PackageLocationResolver("localhost.PackageC")
          );
 
-         string[] compilationUnits = resultC.CompilationUnits
+         var compilationUnits = resultC.CompilationUnits
             .Concat(resultB.CompilationUnits)
             .Concat(resultA.CompilationUnits)
             .ToArray();

@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
-using Xcst.Compiler;
 
 namespace Xcst.Tests.API.Compilation {
 
@@ -32,7 +31,7 @@ namespace Xcst.Tests.API.Compilation {
 </c:package>
 ");
 
-         CompileResult result = compiler.Compile(module);
+         var result = compiler.Compile(module);
 
          Assert.IsFalse(result.Templates.Contains("private"));
          Assert.IsTrue(result.Templates.Contains("public"));

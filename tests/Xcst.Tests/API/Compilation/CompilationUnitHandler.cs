@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using NUnit.Framework;
-using Xcst.Compiler;
 
 namespace Xcst.Tests.API.Compilation {
 
@@ -30,7 +29,7 @@ namespace Xcst.Tests.API.Compilation {
 </c:package>
 ");
 
-         CompileResult result = compiler.Compile(module);
+         var result = compiler.Compile(module);
 
          Assert.IsFalse(String.IsNullOrEmpty(writer.ToString()));
          Assert.IsEmpty(result.CompilationUnits);
@@ -62,7 +61,7 @@ namespace Xcst.Tests.API.Compilation {
 </c:package>
 ");
 
-         CompileResult result = compiler.Compile(module);
+         var result = compiler.Compile(module);
 
          Assert.IsFalse(String.IsNullOrEmpty(writer.ToString()));
          Assert.IsEmpty(result.CompilationUnits);

@@ -44,18 +44,18 @@ namespace Xcst.Compiler {
             uri = ((IXcstPackage)this).Context.ResolveUri(uri.OriginalString);
          }
 
-         XmlReaderSettings readerSettings = new() {
+         var readerSettings = new XmlReaderSettings {
             XmlResolver = src_module_resolver,
             DtdProcessing = DtdProcessing.Parse
          };
 
-         LoadOptions opts = LoadOptions.PreserveWhitespace
+         var opts = LoadOptions.PreserveWhitespace
             | LoadOptions.SetLineInfo
             | LoadOptions.SetBaseUri;
 
-         using (var reader = XmlReader.Create(uri.AbsoluteUri, readerSettings)) {
-            return XDocument.Load(reader, opts);
-         }
+         using var reader = XmlReader.Create(uri.AbsoluteUri, readerSettings);
+
+         return XDocument.Load(reader, opts);
       }
 
       static bool
@@ -80,7 +80,7 @@ namespace Xcst.Compiler {
             // System.Xml.Linq.XElement.GetDefaultNamespace() returns a value
             // even if no declaration for the default namespace exists
 
-            string? namespaceOfPrefixInScope = GetNamespaceOfPrefixInScope(el, "xmlns", null);
+            var namespaceOfPrefixInScope = GetNamespaceOfPrefixInScope(el, "xmlns", null);
 
             if (namespaceOfPrefixInScope is null) {
                return null;
@@ -96,11 +96,11 @@ namespace Xcst.Compiler {
 
             // see System.Xml.Linq.XElement.GetNamespaceOfPrefixInScope()
 
-            XElement e = el;
+            var e = el;
 
             while (e != outOfScope) {
 
-               XAttribute? a = e.LastAttribute;
+               var a = e.LastAttribute;
 
                while (a != null) {
 
@@ -131,13 +131,13 @@ namespace Xcst.Compiler {
       static XName
       resolve_QName(string qname, XElement el) {
 
-         int colonIndex = qname.IndexOf(':');
+         var colonIndex = qname.IndexOf(':');
 
          if (colonIndex != -1) {
 
-            string local = qname.Substring(colonIndex + 1);
-            string prefix = qname.Substring(0, colonIndex);
-            string ns = el.GetNamespaceOfPrefix(prefix)?.NamespaceName
+            var local = qname.Substring(colonIndex + 1);
+            var prefix = qname.Substring(0, colonIndex);
+            var ns = el.GetNamespaceOfPrefix(prefix)?.NamespaceName
                ?? throw new RuntimeException(
                   $"There's no namespace binding for prefix '{prefix}'.",
                   errorCode: new QualifiedName("FONS0004", XmlNamespaces.XcstErrors),
@@ -203,7 +203,7 @@ namespace Xcst.Compiler {
             return qname.LocalName;
          }
 
-         string? prefix = context.GetPrefixOfNamespace(qname.Namespace);
+         var prefix = context.GetPrefixOfNamespace(qname.Namespace);
 
          if (prefix != null) {
             return prefix + ":" + qname.LocalName;
@@ -223,14 +223,14 @@ namespace Xcst.Compiler {
       static string
       substring_after(string str, char c) {
 
-         int i = str.IndexOf(c);
+         var i = str.IndexOf(c);
          return str.Substring(i + 1);
       }
 
       static string
       substring_before(string str, char c) {
 
-         int i = str.IndexOf(c);
+         var i = str.IndexOf(c);
          return str.Substring(0, i);
       }
 
@@ -246,15 +246,13 @@ namespace Xcst.Compiler {
       string?
       unparsed_text(Uri uri) {
 
-         var entity = (Stream?)src_module_resolver.GetEntity(uri, null, typeof(Stream));
-
-         if (entity is null) {
-            return null;
+         if (src_module_resolver.GetEntity(uri, null, typeof(Stream)) is Stream entity) {
+            using (entity) {
+               return new StreamReader(entity).ReadToEnd();
+            }
          }
 
-         using (entity) {
-            return new StreamReader(entity).ReadToEnd();
-         }
+         return null;
       }
 
       static bool

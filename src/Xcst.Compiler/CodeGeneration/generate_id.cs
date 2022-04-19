@@ -51,13 +51,13 @@ namespace Xcst.Compiler {
          int
          doc_index(XObject node) {
 
-            XDocument? doc = node.Parent?.Document;
+            var doc = node.Parent?.Document;
 
             if (doc is null) {
                return 0;
             }
 
-            int i = _documents.IndexOf(doc);
+            var i = _documents.IndexOf(doc);
 
             if (i != -1) {
                return i + 1;
@@ -73,14 +73,14 @@ namespace Xcst.Compiler {
 
             // logic from XPathNavigator.UniqueId
 
-            StringBuilder sb = new();
+            var sb = new StringBuilder();
             sb.Append(node_type_letter(node));
 
             XObject? current = node;
 
             while (true) {
 
-               uint num = index_in_parent(current);
+               var num = index_in_parent(current);
 
                if ((current = current?.Parent) is null) {
                   break;
@@ -118,7 +118,7 @@ namespace Xcst.Compiler {
 
             // logic from XPathNavigator.IndexInParent
 
-            uint num = 0u;
+            var num = 0u;
 
             if (node is XAttribute attr) {
 
@@ -130,7 +130,7 @@ namespace Xcst.Compiler {
 
             } else {
 
-               XNode n = (XNode)node;
+               var n = (XNode)node;
                XNode? nextNode = n;
 
                while ((nextNode = nextNode.NextNode) != null) {

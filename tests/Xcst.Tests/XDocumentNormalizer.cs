@@ -12,8 +12,8 @@ namespace Xcst.Tests {
       public static bool
       DeepEqualsWithNormalization(XDocument doc1, XDocument doc2) {
 
-         XDocument d1 = Normalize(doc1);
-         XDocument d2 = Normalize(doc2);
+         var d1 = Normalize(doc1);
+         var d2 = Normalize(doc2);
 
          return XNode.DeepEquals(d1, d2);
       }

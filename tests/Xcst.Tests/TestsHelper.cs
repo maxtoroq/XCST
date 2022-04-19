@@ -4,11 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Xml;
 using System.Xml.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.Emit;
 using Microsoft.CodeAnalysis.VisualBasic;
 using Xcst.Compiler;
 using CSharpVersion = Microsoft.CodeAnalysis.CSharp.LanguageVersion;
@@ -36,7 +34,7 @@ namespace Xcst.Tests {
             decimal languageVersion = -1m, string? disableWarning = null, string? warningAsError = null,
             Type? extension = default) {
 
-         bool printCode = _printCode;
+         var printCode = _printCode;
          var packageUri = new Uri(packageFile, UriKind.Absolute);
 
          CompileResult xcstResult;
@@ -81,8 +79,8 @@ namespace Xcst.Tests {
 
          } else {
 
-            string packageDir = Path.GetDirectoryName(packageFile)!;
-            string packageFileWithoutExt = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(packageFile));
+            var packageDir = Path.GetDirectoryName(packageFile)!;
+            var packageFileWithoutExt = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(packageFile));
 
             outputFileXml = Path.Combine(packageDir, packageFileWithoutExt + ".xml");
             outputFileTxt = Path.Combine(packageDir, packageFileWithoutExt + ".txt");
@@ -183,7 +181,7 @@ namespace Xcst.Tests {
          } finally {
 
             if (printCode) {
-               foreach (string unit in xcstResult.CompilationUnits) {
+               foreach (var unit in xcstResult.CompilationUnits) {
                   Console.WriteLine(unit);
                }
             }
@@ -200,7 +198,7 @@ namespace Xcst.Tests {
             factory.RegisterExtension((IXcstPackage)Activator.CreateInstance(extension)!);
          }
 
-         XcstCompiler compiler = factory.CreateCompiler();
+         var compiler = factory.CreateCompiler();
          compiler.UseLineDirective = true;
          //compiler.PackageTypeResolver = n => Assembly.GetExecutingAssembly().GetType(n);
          compiler.AddPackageLibrary(Assembly.GetExecutingAssembly().Location);
@@ -211,7 +209,7 @@ namespace Xcst.Tests {
       static (CompileResult result, string packageName)
       GenerateCode(Uri packageUri, string testName, string testNamespace, Type? extension) {
 
-         XcstCompiler compiler = CreateCompiler(extension);
+         var compiler = CreateCompiler(extension);
          compiler.TargetNamespace = testNamespace;
          compiler.TargetClass = testName;
          compiler.UsePackageBase = testNamespace;
@@ -220,7 +218,7 @@ namespace Xcst.Tests {
          compiler.NullableAnnotate = true;
          compiler.NullableContext = "enable";
 
-         CompileResult result = compiler.Compile(packageUri);
+         var result = compiler.Compile(packageUri);
 
          return (result, compiler.TargetNamespace + "." + compiler.TargetClass);
       }
@@ -230,7 +228,7 @@ namespace Xcst.Tests {
             string packageName, Uri packageUri, IEnumerable<string> compilationUnits, string language,
             bool error = false, decimal languageVersion = -1m, string? disableWarning = null, string? warningAsError = null, bool printCode = false) {
 
-         bool isCSharp = language.Equals("C#", StringComparison.OrdinalIgnoreCase);
+         var isCSharp = language.Equals("C#", StringComparison.OrdinalIgnoreCase);
 
          var csOptions = new CSharpParseOptions(
             CSharpVersionEnum((isCSharp) ? languageVersion : -1m),
@@ -240,7 +238,7 @@ namespace Xcst.Tests {
             VBVersionEnum((!isCSharp) ? languageVersion : -1m),
             preprocessorSymbols: new[] { "DEBUG", "TRACE" }.ToDictionary(s => s, s => (object)String.Empty));
 
-         SyntaxTree[] syntaxTrees = compilationUnits
+         var syntaxTrees = compilationUnits
             .Select(c => (isCSharp) ?
                CSharpSyntaxTree.ParseText(c, csOptions, path: packageUri.LocalPath, encoding: Encoding.UTF8)
                : VisualBasicSyntaxTree.ParseText(c, vbOptions, path: packageUri.LocalPath, encoding: Encoding.UTF8))
@@ -292,7 +290,7 @@ namespace Xcst.Tests {
                warningAsError.Split(' ').Select(p => new KeyValuePair<string, ReportDiagnostic>(p, ReportDiagnostic.Error)).ToArray()
                : Array.Empty<KeyValuePair<string, ReportDiagnostic>>()));
 
-         Compilation compilation = (isCSharp) ?
+         var compilation = (isCSharp) ?
             (Compilation)CSharpCompilation.Create(
                Path.GetRandomFileName(),
                syntaxTrees: syntaxTrees,
@@ -307,40 +305,38 @@ namespace Xcst.Tests {
                options: new VisualBasicCompilationOptions(OutputKind.DynamicallyLinkedLibrary,
                   specificDiagnosticOptions: specificDiagnosticOptions));
 
-         using (var assemblyStream = new MemoryStream()) {
-            using (var pdbStream = new MemoryStream()) {
+         using var assemblyStream = new MemoryStream();
+         using var pdbStream = new MemoryStream();
 
-               EmitResult codeResult = compilation.Emit(assemblyStream, pdbStream);
+         var codeResult = compilation.Emit(assemblyStream, pdbStream);
 
-               bool failed = codeResult.Diagnostics.Any(d => d.Severity == DiagnosticSeverity.Error
-                  || (d.Severity == DiagnosticSeverity.Warning && d.WarningLevel > 1));
+         var failed = codeResult.Diagnostics.Any(d => d.Severity == DiagnosticSeverity.Error
+            || (d.Severity == DiagnosticSeverity.Warning && d.WarningLevel > 1));
 
-               if (printCode || failed) {
+         if (printCode || failed) {
 
-                  foreach (Diagnostic item in codeResult.Diagnostics.Where(d => d.Severity != DiagnosticSeverity.Hidden)) {
-                     var lineSpan = item.Location.GetLineSpan();
-                     Console.WriteLine($"// ({lineSpan.StartLinePosition.Line},{lineSpan.StartLinePosition.Character}) {item.Severity} {item.Id}: {item.GetMessage()}");
-                  }
-               }
-
-               if (failed) {
-
-                  if (error) {
-                     TestAssert.Pass($"{language} compilation failed.");
-                  }
-
-                  throw new ApplicationException($"{language} compilation failed.");
-               }
-
-               assemblyStream.Position = 0;
-               pdbStream.Position = 0;
-
-               Assembly assembly = Assembly.Load(assemblyStream.ToArray(), pdbStream.ToArray());
-               Type type = assembly.GetType(packageName)!;
-
-               return type;
+            foreach (var item in codeResult.Diagnostics.Where(d => d.Severity != DiagnosticSeverity.Hidden)) {
+               var lineSpan = item.Location.GetLineSpan();
+               Console.WriteLine($"// ({lineSpan.StartLinePosition.Line},{lineSpan.StartLinePosition.Character}) {item.Severity} {item.Id}: {item.GetMessage()}");
             }
          }
+
+         if (failed) {
+
+            if (error) {
+               TestAssert.Pass($"{language} compilation failed.");
+            }
+
+            throw new ApplicationException($"{language} compilation failed.");
+         }
+
+         assemblyStream.Position = 0;
+         pdbStream.Position = 0;
+
+         var assembly = Assembly.Load(assemblyStream.ToArray(), pdbStream.ToArray());
+         var type = assembly.GetType(packageName)!;
+
+         return type;
       }
 
       static CSharpVersion
@@ -373,7 +369,7 @@ namespace Xcst.Tests {
          var expectedDoc = XDocument.Load(fileName, LoadOptions.PreserveWhitespace);
          var actualDoc = new XDocument();
 
-         using (XmlWriter output = actualDoc.CreateWriter()) {
+         using (var output = actualDoc.CreateWriter()) {
 
             XcstEvaluator.Using(Activator.CreateInstance(packageType)!)
                .CallInitialTemplate()
@@ -412,9 +408,9 @@ namespace Xcst.Tests {
          var expectedDoc = new XDocument();
          var actualDoc = new XDocument();
 
-         XcstEvaluator evaluator = XcstEvaluator.Using(Activator.CreateInstance(packageType)!);
+         var evaluator = XcstEvaluator.Using(Activator.CreateInstance(packageType)!);
 
-         using (XmlWriter actualWriter = actualDoc.CreateWriter()) {
+         using (var actualWriter = actualDoc.CreateWriter()) {
 
             evaluator.CallInitialTemplate()
                .OutputTo(actualWriter)
@@ -423,16 +419,16 @@ namespace Xcst.Tests {
                .Run();
          }
 
-         using (XmlWriter expectedWriter = expectedDoc.CreateWriter()) {
+         using (var expectedWriter = expectedDoc.CreateWriter()) {
 
             evaluator.CallTemplate(_expectedName)
                .OutputTo(expectedWriter)
                .Run();
          }
 
-         XDocument normalizedExpected = XDocumentNormalizer.Normalize(expectedDoc);
-         XDocument normalizedActual = XDocumentNormalizer.Normalize(actualDoc);
-         bool equals = XNode.DeepEquals(normalizedExpected, normalizedActual);
+         var normalizedExpected = XDocumentNormalizer.Normalize(expectedDoc);
+         var normalizedActual = XDocumentNormalizer.Normalize(actualDoc);
+         var equals = XNode.DeepEquals(normalizedExpected, normalizedActual);
 
          if (printCode || !equals) {
             Console.WriteLine("/*");
@@ -456,34 +452,6 @@ namespace Xcst.Tests {
             .WithBaseUri(packageUri)
             .WithBaseOutputUri(packageUri)
             .Run();
-      }
-   }
-
-   public abstract class TestBase {
-
-      protected Type
-      CompileType<T>(T obj) => typeof(T);
-
-      public static class Assert {
-
-         public static void
-         IsTrue(bool condition) => TestAssert.IsTrue(condition);
-
-         public static void
-         IsFalse(bool condition) => TestAssert.IsFalse(condition);
-
-         public static void
-         AreEqual<T>(T expected, T actual) =>
-            TestAssert.AreEqual(expected, actual);
-
-         public static void
-         IsNull(object? value) => TestAssert.IsNull(value);
-
-         public static void
-         IsNotNull(object? value) => TestAssert.IsNotNull(value);
-
-         public static void
-         Fail() => TestAssert.Fail();
       }
    }
 }

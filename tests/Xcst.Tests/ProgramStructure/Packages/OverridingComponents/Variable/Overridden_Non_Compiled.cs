@@ -27,7 +27,7 @@ namespace Xcst.Tests.ProgramStructure.Packages.OverridingComponents.Variable {
 
          var usingPackageUri = new Uri(@"c:\foo.xcst");
 
-         CompileResult resultA = compilerA.Compile(
+         var resultA = compilerA.Compile(
             new StringReader(ModuleResolver.GetPackageString("")),
             baseUri: usingPackageUri
          );
@@ -36,12 +36,12 @@ namespace Xcst.Tests.ProgramStructure.Packages.OverridingComponents.Variable {
          compilerB.PackageLocationResolver = compilerA.PackageLocationResolver;
          compilerB.ModuleResolver = compilerA.ModuleResolver;
 
-         CompileResult resultB = compilerB.Compile(
+         var resultB = compilerB.Compile(
             new StringReader(ModuleResolver.GetPackageString("localhost.PackageB")),
             baseUri: compilerB.PackageLocationResolver("localhost.PackageB")
          );
 
-         string[] compilationUnits = resultB.CompilationUnits
+         var compilationUnits = resultB.CompilationUnits
             .Concat(resultA.CompilationUnits)
             .ToArray();
 

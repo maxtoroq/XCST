@@ -15,7 +15,7 @@ namespace Xcst.Tests.API.Evaluation {
             a = value
          };
 
-         int result = XcstEvaluator.Using(pkg)
+         var result = XcstEvaluator.Using(pkg)
             .WithParam(nameof(pkg.a), 7)
             .CallFunction(p => p.foo())
             .Evaluate();
@@ -34,13 +34,13 @@ namespace Xcst.Tests.API.Evaluation {
             a = value
          };
 
-         int result = XcstEvaluator.Using(pkg)
+         var result = XcstEvaluator.Using(pkg)
             .CallFunction(p => p.foo())
             .Evaluate();
 
          Assert.AreEqual(value, result);
 
-         int result2 = XcstEvaluator.Using(pkg)
+         var result2 = XcstEvaluator.Using(pkg)
             .WithParam(nameof(pkg.a), 7)
             .CallFunction(p => p.foo())
             .Evaluate();
@@ -60,7 +60,7 @@ namespace Xcst.Tests.API.Evaluation {
             a = value
          };
 
-         int result = XcstEvaluator.Using(pkg)
+         var result = XcstEvaluator.Using(pkg)
             .WithParam(nameof(pkg.a), withParam)
             .CallFunction(p => p.foo())
             .Evaluate();

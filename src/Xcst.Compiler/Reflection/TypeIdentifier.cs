@@ -172,8 +172,7 @@ namespace Xcst.Compiler.Reflection {
          _displayName; //cached
 
          public override string
-         DisplayName => _displayName
-            ?? (_displayName = GetDisplayName());
+         DisplayName => _displayName ??= GetDisplayName();
 
          public string
          InternalName => _internalName;
