@@ -244,7 +244,7 @@
                         <if test='grp.Key.LocalName is "cdata-section-elements" or "suppress-indentation"'>
                            <object value='grp
                               .SelectMany(p => tokenize(p.Value)
-                                 .Select(p2 => xcst_EQName(p, p2, true)!))'/>
+                                 .Select(p2 => xcst_EQName(p, p2)!))'/>
                         </if>
                      </with-param>
                   </apply-templates>
@@ -277,7 +277,7 @@
             <variable name='list' value='
                (isOutput) ? mergedList
                   : tokenize(attr.Value)
-                  .Select(p => xcst_EQName(attr, p, true)!)
+                  .Select(p => xcst_EQName(attr, p)!)
                   .ToArray()'/>
             <code:new-array>
                <code:type-reference name='QualifiedName' namespace='Xcst'/>

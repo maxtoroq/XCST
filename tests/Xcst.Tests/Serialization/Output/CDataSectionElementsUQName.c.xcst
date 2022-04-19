@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:output cdata-section-elements='Q{http://www.w3.org/1999/xhtml}script Q{http://www.w3.org/1999/xhtml}style' omit-xml-declaration='yes'/>
+
+   <c:template name='c:initial-template'>
+      <html xmlns='http://www.w3.org/1999/xhtml'>
+         <script>foo &amp; bar</script>
+         <style>foo &amp; bar</style>
+      </html>
+   </c:template>
+
+</c:module>

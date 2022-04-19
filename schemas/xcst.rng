@@ -1958,23 +1958,10 @@
       </data>
    </define>
 
-   <define name="qname-default" docs:display-type="true" docs:display-name="qname">
-      <ann:documentation>A qualified name. Unprefixed names are in the default namespace.</ann:documentation>
-      <data type="QName"/>
-   </define>
-
    <define name="eqname" docs:display-type="true">
       <ann:documentation>An expanded qualified name. Unprefixed qualified names are in the null namespace.</ann:documentation>
       <choice>
          <ref name="qname"/>
-         <ref name="uqname"/>
-      </choice>
-   </define>
-
-   <define name="eqname-default" docs:display-type="true" docs:display-name="eqname">
-      <ann:documentation>An expanded qualified name. Unprefixed qualified names are in the default namespace.</ann:documentation>
-      <choice>
-         <ref name="qname-default"/>
          <ref name="uqname"/>
       </choice>
    </define>
@@ -2112,7 +2099,7 @@
       <ann:documentation>A list of space separated eqnames. Unprefixed qualified names are in the default namespace.</ann:documentation>
       <list>
          <zeroOrMore>
-            <ref name="eqname-default"/>
+            <ref name="eqname"/>
          </zeroOrMore>
       </list>
    </define>
@@ -2122,7 +2109,7 @@
       <ann:documentation>A list of space separated eqnames. Unprefixed qualified names are in the default namespace.</ann:documentation>
       <list>
          <zeroOrMore>
-            <ref name="eqname-default"/>
+            <ref name="eqname"/>
          </zeroOrMore>
       </list>
    </define>
