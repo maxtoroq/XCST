@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xcst-test ignore="true"?>
+<c:module version='1.0' language='C#'
+   xmlns:c='http://maxtoroq.github.io/XCST'
+   xmlns:xhtml='http://www.w3.org/1999/xhtml'>
+
+   <c:import-namespace ns='System.IO' />
+
+   <c:template name='c:initial-template'>
+      <c:variable name='output' value='new StringWriter()'/>
+      <c:result-document output='output' cdata-section-elements='{"xhtml:script"} {"xhtml:style"}' omit-xml-declaration='yes'
+            xmlns='http://www.w3.org/1999/xhtml'>
+         <script>foo &amp; bar</script>
+         <style>foo &amp; bar</style>
+      </c:result-document>
+      <xhtml:html>
+         <c:value-of value='output.ToString()'/>
+      </xhtml:html>
+   </c:template>
+
+</c:module>

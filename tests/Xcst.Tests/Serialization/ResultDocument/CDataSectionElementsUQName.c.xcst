@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:import-namespace ns='System.IO' />
+
+   <c:template name='c:initial-template'>
+      <c:variable name='output' value='new StringWriter()'/>
+      <c:result-document output='output' cdata-section-elements='Q{{http://www.w3.org/1999/xhtml}}script Q{{http://www.w3.org/1999/xhtml}}style' omit-xml-declaration='yes'
+            xmlns='http://www.w3.org/1999/xhtml'>
+         <script>foo &amp; bar</script>
+         <style>foo &amp; bar</style>
+      </c:result-document>
+      <html xmlns='http://www.w3.org/1999/xhtml'>
+         <c:value-of value='output.ToString()'/>
+      </html>
+   </c:template>
+
+   <c:template name='expected'>
+      <html xmlns='http://www.w3.org/1999/xhtml'>&lt;script xmlns="http://www.w3.org/1999/xhtml">&lt;![CDATA[foo &amp; bar]]&gt;&lt;/script>&lt;style xmlns="http://www.w3.org/1999/xhtml">&lt;![CDATA[foo &amp; bar]]&gt;&lt;/style></html>
+   </c:template>
+
+</c:module>

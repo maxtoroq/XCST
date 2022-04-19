@@ -3468,7 +3468,7 @@
                            <sequence select="distinct-values(
                               for $p in current-group()
                               return for $s in xcst:list($p)
-                              return xcst:EQName($p, $s, true()))"/>
+                              return xcst:EQName($p, $s))"/>
                         </if>
                      </with-param>
                   </apply-templates>

@@ -1898,23 +1898,11 @@
          <xs:pattern value="([^:\{\}]+:)?[^:\{\}]+"/>
       </xs:restriction>
    </xs:simpleType>
-   <xs:simpleType name="qname-default">
-      <xs:annotation>
-         <xs:documentation>A qualified name. Unprefixed names are in the default namespace.</xs:documentation>
-      </xs:annotation>
-      <xs:restriction base="xs:QName"/>
-   </xs:simpleType>
    <xs:simpleType name="eqname">
       <xs:annotation>
          <xs:documentation>An expanded qualified name. Unprefixed qualified names are in the null namespace.</xs:documentation>
       </xs:annotation>
       <xs:union memberTypes="c:qname c:uqname"/>
-   </xs:simpleType>
-   <xs:simpleType name="eqname-default">
-      <xs:annotation>
-         <xs:documentation>An expanded qualified name. Unprefixed qualified names are in the default namespace.</xs:documentation>
-      </xs:annotation>
-      <xs:union memberTypes="c:qname-default c:uqname"/>
    </xs:simpleType>
    <xs:simpleType name="uqname">
       <xs:restriction base="xs:Name">
@@ -2066,14 +2054,14 @@
       <xs:annotation>
          <xs:documentation>A list of space separated eqnames. Unprefixed qualified names are in the default namespace.</xs:documentation>
       </xs:annotation>
-      <xs:list itemType="c:eqname-default"/>
+      <xs:list itemType="c:eqname"/>
    </xs:simpleType>
    <!--
       <define name="suppress-indentation">
          <ann:documentation>A list of space separated eqnames. Unprefixed qualified names are in the default namespace.</ann:documentation>
          <list>
             <zeroOrMore>
-               <ref name="eqname-default"/>
+               <ref name="eqname"/>
             </zeroOrMore>
          </list>
       </define>

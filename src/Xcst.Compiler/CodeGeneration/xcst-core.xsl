@@ -2929,7 +2929,7 @@
                   $merged-list
                else
                   for $s in xcst:list(.)
-                  return xcst:EQName(., $s, true())"/>
+                  return xcst:EQName(., $s)"/>
             <code:new-array>
                <code:type-reference name="QualifiedName" namespace="Xcst"/>
                <code:collection-initializer>
