@@ -47,13 +47,11 @@
       </if>
 
       <code:if-else>
-         <apply-templates value='children'/>
+         <apply-templates value='children' mode='src:c.choose'/>
       </code:if-else>
    </template>
 
-   <template match='XElement el
-         &amp;&amp; el.Name == c + "when"
-         &amp;&amp; el.Parent!.Name == c + "choose"' mode='src:statement'>
+   <template match='XElement el &amp;&amp; el.Name == c + "when"' mode='src:c.choose'>
 
       <call-template name='xcst:validate-attribs'>
          <with-param name='el' value='el'/>
@@ -82,9 +80,7 @@
       </code:if>
    </template>
 
-   <template match='XElement el
-         &amp;&amp; el.Name == c + "otherwise"
-         &amp;&amp; el.Parent!.Name == c + "choose"' mode='src:statement'>
+   <template match='XElement el &amp;&amp; el.Name == c + "otherwise"' mode='src:c.choose'>
 
       <call-template name='xcst:validate-attribs'>
          <with-param name='el' value='el'/>
@@ -156,13 +152,11 @@
             <with-param name='el' value='el'/>
          </call-template>
          <code:expression value='{xcst_expression(el.Attribute("value")!)}'/>
-         <apply-templates value='children'/>
+         <apply-templates value='children' mode='src:c.switch'/>
       </code:switch>
    </template>
 
-   <template match='XElement el
-         &amp;&amp; el.Name == c + "when"
-         &amp;&amp; el.Parent!.Name == c + "switch"' mode='src:statement'>
+   <template match='XElement el &amp;&amp; el.Name == c + "when"' mode='src:c.switch'>
       <param name='language' as='string' tunnel='yes' required='yes'/>
 
       <call-template name='xcst:validate-attribs'>
@@ -197,9 +191,7 @@
       </code:case>
    </template>
 
-   <template match='XElement el
-         &amp;&amp; el.Name == c + "otherwise"
-         &amp;&amp; el.Parent!.Name == c + "switch"' mode='src:statement'>
+   <template match='XElement el &amp;&amp; el.Name == c + "otherwise"' mode='src:c.switch'>
       <param name='language' as='string' tunnel='yes' required='yes'/>
 
       <call-template name='xcst:validate-attribs'>
@@ -284,13 +276,11 @@
                <with-param name='children' value='children'/>
             </call-template>
          </code:block>
-         <apply-templates value='catchAndFinally'/>
+         <apply-templates value='catchAndFinally' mode='src:c.try'/>
       </code:try>
    </template>
 
-   <template match='XElement el
-         &amp;&amp; el.Name == c + "catch"
-         &amp;&amp; el.Parent!.Name == c + "try"' mode='src:statement'>
+   <template match='XElement el &amp;&amp; el.Name == c + "catch"' mode='src:c.try'>
 
       <call-template name='xcst:validate-attribs'>
          <with-param name='el' value='el'/>
@@ -328,9 +318,7 @@
       </code:catch>
    </template>
 
-   <template match='XElement el
-         &amp;&amp; el.Name == c + "finally"
-         &amp;&amp; el.Parent!.Name == c + "try"' mode='src:statement'>
+   <template match='XElement el &amp;&amp; el.Name == c + "finally"' mode='src:c.try'>
 
       <call-template name='xcst:validate-attribs'>
          <with-param name='el' value='el'/>
