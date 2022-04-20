@@ -35,7 +35,7 @@
       <variable name="as" select="@as/xcst:type(.)"/>
 
       <xcst:template-rule
-            member-name="{src:template-method-name(., (), 'tmplrule', false())}"
+            member-name="{src:template-method-name(., (), 'rule', false())}"
             declaration-id="{generate-id()}"
             declaring-module-uri="{document-uri(root())}"
             cardinality="{if ($as) then xcst:cardinality($as, $language) else 'ZeroOrMore'}">
