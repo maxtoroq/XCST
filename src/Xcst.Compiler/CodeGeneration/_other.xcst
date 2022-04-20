@@ -213,36 +213,4 @@
       <xcst:instruction void='true'/>
    </template>
 
-   <template match='XElement el &amp;&amp; el.Name == c + "using"' mode='src:statement'>
-
-      <call-template name='xcst:validate-attribs'>
-         <with-param name='el' value='el'/>
-         <with-param name='required' value='new[] { "value" }'/>
-         <with-param name='optional' value='new[] { "name" }'/>
-      </call-template>
-
-      <variable name='value' value='xcst_expression(el.Attribute("value")!)'/>
-
-      <code:using>
-         <call-template name='src:line-number'>
-            <with-param name='el' value='el'/>
-         </call-template>
-         <choose>
-            <when test='el.Attribute("name") is XAttribute nameAttr'>
-               <code:variable name='{xcst_name(nameAttr)}'>
-                  <code:expression value='{value}'/>
-               </code:variable>
-            </when>
-            <otherwise>
-               <code:expression value='{value}'/>
-            </otherwise>
-         </choose>
-         <code:block>
-            <call-template name='src:sequence-constructor'>
-               <with-param name='el' value='el'/>
-            </call-template>
-         </code:block>
-      </code:using>
-   </template>
-
 </module>

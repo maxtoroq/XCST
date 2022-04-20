@@ -9,11 +9,15 @@
 
    <c:template name='foo' as='object'>
       <c:variable name='doc' value='new XmlDocument()'/>
-      <c:using name='output' value='doc.CreateNavigator().AppendChild()'>
+      <c:variable name='output' value='doc.CreateNavigator().AppendChild()'/>
+      <c:try rollback-output='no'>
          <c:result-document output='output'>
             <foo bar='123'>baz</foo>
          </c:result-document>
-      </c:using>
+         <c:finally>
+            <c:void value='output.Dispose()'/>
+         </c:finally>
+      </c:try>
       <c:void value='Assert.AreEqual("foo", doc.DocumentElement.LocalName)'/>
       <c:void value='Assert.AreEqual("123", doc.DocumentElement.GetAttribute("bar"))'/>
       <c:void value='Assert.AreEqual("baz", doc.DocumentElement.InnerText)'/>

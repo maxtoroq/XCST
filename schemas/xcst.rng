@@ -82,7 +82,6 @@
          <ref name="switch"/>
          <ref name="text"/>
          <ref name="try"/>
-         <ref name="using"/>
          <ref name="value-of"/>
          <ref name="variable"/>
          <ref name="void"/>
@@ -1639,24 +1638,6 @@
             </group>
             <ref name="finally"/>
          </choice>
-      </element>
-   </define>
-
-   <define name="using">
-      <element name="using">
-         <ann:documentation>Facilitates the unconditional disposing of an object.</ann:documentation>
-         <attribute name="value">
-            <ann:documentation>The disposable object.</ann:documentation>
-            <ref name="expression"/>
-         </attribute>
-         <optional>
-            <attribute name="name">
-               <ann:documentation>The name of the disposable variable.</ann:documentation>
-               <ref name="identifier"/>
-            </attribute>
-         </optional>
-         <ref name="standard-attributes"/>
-         <ref name="sequence-constructor"/>
       </element>
    </define>
 
