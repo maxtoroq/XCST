@@ -52,7 +52,6 @@
          <xs:element ref="c:switch"/>
          <xs:element ref="c:text"/>
          <xs:element ref="c:try"/>
-         <xs:element ref="c:using"/>
          <xs:element ref="c:value-of"/>
          <xs:element ref="c:variable"/>
          <xs:element ref="c:void"/>
@@ -1600,25 +1599,6 @@
          <xs:attribute name="rollback-output" type="c:boolean">
             <xs:annotation>
                <xs:documentation>Specifies whether to discard the output when an exception occurs.</xs:documentation>
-            </xs:annotation>
-         </xs:attribute>
-         <xs:attributeGroup ref="c:standard-attributes"/>
-      </xs:complexType>
-   </xs:element>
-   <xs:element name="using">
-      <xs:annotation>
-         <xs:documentation>Facilitates the unconditional disposing of an object.</xs:documentation>
-      </xs:annotation>
-      <xs:complexType mixed="true">
-         <xs:group ref="c:sequence-constructor"/>
-         <xs:attribute name="value" use="required" type="c:expression">
-            <xs:annotation>
-               <xs:documentation>The disposable object. Expression.</xs:documentation>
-            </xs:annotation>
-         </xs:attribute>
-         <xs:attribute name="name" type="c:identifier">
-            <xs:annotation>
-               <xs:documentation>The name of the disposable variable.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>

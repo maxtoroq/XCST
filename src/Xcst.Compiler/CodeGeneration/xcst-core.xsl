@@ -1363,33 +1363,6 @@
       </element>
    </template>
 
-   <template match="c:using" mode="src:statement">
-
-      <call-template name="xcst:validate-attribs">
-         <with-param name="required" select="'value'"/>
-         <with-param name="optional" select="'name'"/>
-      </call-template>
-
-      <variable name="value" select="xcst:expression(@value)"/>
-
-      <code:using>
-         <call-template name="src:line-number"/>
-         <choose>
-            <when test="@name">
-               <code:variable name="{xcst:name(@name)}">
-                  <code:expression value="{$value}"/>
-               </code:variable>
-            </when>
-            <otherwise>
-               <code:expression value="{$value}"/>
-            </otherwise>
-         </choose>
-         <code:block>
-            <call-template name="src:sequence-constructor"/>
-         </code:block>
-      </code:using>
-   </template>
-
    <template match="c:on-empty" mode="src:statement">
       <param name="output" tunnel="yes"/>
 
