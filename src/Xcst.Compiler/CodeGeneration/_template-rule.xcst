@@ -42,7 +42,7 @@
             xcst_type(asAttr) : null'/>
 
       <xcst:template-rule
-            member-name='{src_template_method_name(el, null, "tmplrule", false)}'
+            member-name='{src_template_method_name(el, null, "rule", false)}'
             declaration-id='{generate_id(el)}'
             declaring-module-uri='{el.Document!.BaseUri}'
             cardinality='{(@as != null ? xcst_cardinality(@as, language) : TypeCardinality.ZeroOrMore)}'>
