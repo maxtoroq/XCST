@@ -66,7 +66,7 @@ function NuSpec {
       "</metadata>"
 
    "<files>"
-      "<file src='$($project.temp)\NOTICE.xml'/>"
+      "<file src='$tempNotice'/>"
       "<file src='$solutionPath\LICENSE.txt'/>"
       "<file src='$(Resolve-Path icon.png)'/>"
 
@@ -92,21 +92,40 @@ function NuSpec {
    "</package>"
 }
 
+function PackageNotice {
+
+   Add-Type -AssemblyName System.Xml.Linq
+   $noticeDoc = [Xml.Linq.XDocument]::Load("$solutionPath\NOTICE.xml")
+
+   foreach($fw in $noticeDoc.Root.Elements("foreign-work").Where({$_.Attribute("type").Value -eq "source"})) {
+      if ($fw.Elements("used-by-source").Where({
+         [string]::Join('/', $_.Attribute("path").Value.Split('/', [StringSplitOptions]::RemoveEmptyEntries)) -eq ("src/" + $project.name)}, 'First').Count -eq 0) {
+
+         # Only include notices for dependencies used by the project
+         $fw.Remove()
+      }
+   }
+
+   $noticeDoc.Root.Descendants("foreign-work").Where({$_.Attribute("type").Value -eq "object"}) | %{$_.Remove()}
+   $ubs = [Collections.Generic.List[object]]$noticeDoc.Root.Descendants("used-by-source")
+   $ubs | %{$_.Remove()}
+
+   $tempNotice = $project.temp + "\NOTICE.xml"
+   $noticeDoc.Save($tempNotice)
+
+   return $tempNotice
+}
+
 function NuPack {
 
    if (-not (Test-Path nupkg -PathType Container)) {
       md nupkg | Out-Null
    }
 
-   $noticePath = "$($project.temp)\NOTICE.xml"
    $nuspecPath = "$($project.temp)\$($project.name).nuspec"
    $outputPath = Resolve-Path nupkg
-   $saxonPath = (Resolve-Path $solutionPath\packages\Saxon-HE.*)[0]
 
-   &"$saxonPath\tools\Transform" -s:$solutionPath\NOTICE.xml -xsl:pkg-notice.xsl -o:$noticePath projectName=$($project.name)
-
-   [xml]$noticeDoc = Get-Content $noticePath
-   $notice = $noticeDoc.notice
+   $tempNotice = PackageNotice
 
    NuSpec | Out-File $nuspecPath -Encoding utf8
 
