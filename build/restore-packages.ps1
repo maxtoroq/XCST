@@ -5,8 +5,7 @@ $solutionPath = Resolve-Path ..
 
 try {
 
-   $nuget = .\ensure-nuget.ps1
-   &$nuget restore $solutionPath\XCST.sln
+   MSBuild $solutionPath\XCST.sln -t:restore -p:RestorePackagesConfig=true
 
 } finally {
    Pop-Location
