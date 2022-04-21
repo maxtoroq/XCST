@@ -74,8 +74,7 @@ namespace Xcst {
       /// <exclude/>
       [EditorBrowsable(EditorBrowsableState.Never)]
       public void
-      WriteStartElementLexical(string lexical, string? ns, string defaultNs = "") {
-#warning remove defaultNs on next compiler upgrade
+      WriteStartElementLexical(string lexical, string? ns) {
 
          int prefixIndex = lexical.IndexOf(':');
          bool hasPrefix = prefixIndex > 0;

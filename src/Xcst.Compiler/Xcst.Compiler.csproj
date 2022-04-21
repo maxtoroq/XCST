@@ -22,7 +22,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
     <PackageReference Include="System.Reflection.Metadata" Version="1.6.0" />
-    <PackageReference Include="Xcst.Runtime" Version="0.153.0" />
+    <PackageReference Include="Xcst.Runtime" Version="0.154.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -39,11 +39,7 @@
     <Compile Include="$(XcstOutput)" />
   </ItemGroup>
 
-  <Target Name="XcstCodeGen"
-          BeforeTargets="PreBuildEvent"
-          DependsOnTargets="ResolveReferences"
-          Inputs="@(XcstInput);$(MSBuildThisFileFullPath);$(XcstCodegenExe)"
-          Outputs="$(XcstOutput)">
+  <Target Name="XcstCodeGen" BeforeTargets="PreBuildEvent" DependsOnTargets="ResolveReferences" Inputs="@(XcstInput);$(MSBuildThisFileFullPath);$(XcstCodegenExe)" Outputs="$(XcstOutput)">
     <Message Text="xcst-codegen [$(MSBuildProjectName)]" Importance="high" />
     <Exec Command="$(XcstCodegenExe) $(MSBuildThisFileFullPath) $(XcstOutput)" />
   </Target>
