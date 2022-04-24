@@ -7,12 +7,12 @@ See the [project home][XCST] for more information.
 [![Build status](https://ci.appveyor.com/api/projects/status/93bvxpo3x4bg2po8/branch/v2?svg=true)](https://ci.appveyor.com/project/maxtoroq/xcst/branch/v2) ![Tests](https://img.shields.io/appveyor/tests/maxtoroq/XCST/v2)
 
 ### Packages Built From This Repository
-*Note: This branch doesn't have releases yet, see `v1` instead.*
+> NOTE: This branch is not stable yet, consider `v1` instead.
 
 Package | Description | Targets
 ------- | ----------- | -------
-Xcst.Compiler | Compilation API. Use this package to translate your XCST programs into C# or Visual Basic code. | .NET 4.6, .NET Core 2.0
-Xcst.Runtime | Runtime and evaluation API. | .NET 4.6, .NET Core 2.0, .NET Standard 2.0
+[Xcst.Compiler] | Compilation API. Use this package to translate your XCST programs into C# or Visual Basic code. | .NET 4.6, .NET Core 2.0
+[Xcst.Runtime] | Runtime and evaluation API. | .NET 4.6, .NET Core 2.0, .NET Standard 2.0
 
 System Requirements
 -------------------
