@@ -4,8 +4,12 @@
     <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
     <LangVersion>9</LangVersion>
     <Nullable>enable</Nullable>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <NoWarn>NETSDK1138</NoWarn>
+    <VersionPrefix>2</VersionPrefix>
+    <Description>XCST compilation API. Use this package to translate your XCST programs into C# or Visual Basic code.</Description>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -16,13 +20,19 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\XmlNamespaces.cs" Link="XmlNamespaces.cs" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="System.Reflection.Metadata" Version="1.6.0" />
+    <PackageReference Include="Xcst.Runtime" Version="0.154.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
-    <PackageReference Include="System.Reflection.Metadata" Version="1.6.0" />
-    <PackageReference Include="Xcst.Runtime" Version="0.154.0" />
+    <Compile Include="..\XmlNamespaces.cs" Link="XmlNamespaces.cs" />
+    <Content Include="..\..\schemas\xcst.rng" Visible="false" PackagePath="schemas" />
+    <Content Include="..\..\schemas\xcst.xsd" Visible="false" PackagePath="schemas" />
   </ItemGroup>
 
   <ItemGroup>
