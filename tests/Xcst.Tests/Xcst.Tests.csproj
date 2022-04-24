@@ -33,10 +33,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <XcstInput Include="$(XcstInput)" />
-    <UpToDateCheckInput Include="@(XcstInput)" />
-    <UpToDateCheckBuilt Include="$(XcstOutput)" />
-    <Compile Include="$(XcstOutput)" />
     <Compile Include="..\..\src\XmlNamespaces.cs" Link="XmlNamespaces.cs" />
   </ItemGroup>
 
@@ -89,6 +85,13 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources2.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <XcstInput Include="$(XcstInput)" />
+    <UpToDateCheckInput Include="@(XcstInput)" />
+    <UpToDateCheckBuilt Include="$(XcstOutput)" />
+    <Compile Include="$(XcstOutput)" />
   </ItemGroup>
 
   <Target Name="XcstCodeGen" BeforeTargets="PreBuildEvent" DependsOnTargets="ResolveReferences" Inputs="@(XcstInput);$(MSBuildThisFileFullPath);$(XcstCodegenExe)" Outputs="$(XcstOutput)">
