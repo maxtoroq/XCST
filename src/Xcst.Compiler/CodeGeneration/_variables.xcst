@@ -333,17 +333,14 @@
       <variable name='required' value='(param) ? xs_boolean(meta.Attribute("required")!) : false'/>
       <variable name='publicMember' value='visibility is "public" or "final" or "abstract"'/>
 
-      <variable name='useBackingField' value='
-         (param &amp;&amp; !required)
-            || (visibility != "abstract" &amp;&amp; xs_boolean(meta.Attribute("has-default-value")!))'/>
+      <variable name='useBackingField' value='visibility != "abstract"'/>
 
       <variable name='backingFieldName' value='
          (useBackingField) ? src_backing_field(meta)
             : null'/>
 
       <variable name='initFieldName' value='
-         (useBackingField) ?
-            src_aux_variable("init_" + meta.Attribute("name")!.Value)
+         (useBackingField) ? src_init_field(meta)
             : null'/>
 
       <variable name='initField'>
@@ -410,52 +407,54 @@
          <code:getter>
             <if test='useBackingField'>
                <code:block>
-                  <code:if>
-                     <code:not>
-                        <copy-of value='initField'/>
-                     </code:not>
-                     <code:block>
-                        <if test='el.Parent!.Name == c + "override"'>
-                           <variable name='originalMeta' value='select(packageManifest, xcst)
-                              .First(p => p.Attribute("id")!.Value == meta.Attribute("overrides")!.Value)'/>
-                           <variable name='originalRef' value='
-                              (originalMeta.Attribute("original-visibility")!.Value != "abstract"
-                                 &amp;&amp; (originalMeta.Name == xcst + "variable"
-                                    || !xs_boolean(originalMeta.Attribute("required")!))) ?
-                                 src_original_member(originalMeta)
-                                 : null'/>
-                           <code:variable name='{src_contextual_variable}'>
-                              <code:new-object>
-                                 <code:initializer>
-                                    <if test='originalRef != null'>
-                                       <code:member-initializer name='original'>
-                                          <code:method-call>
-                                             <copy-of value='originalRef'/>
-                                          </code:method-call>
-                                       </code:member-initializer>
-                                    </if>
-                                 </code:initializer>
-                              </code:new-object>
-                           </code:variable>
-                        </if>
-                        <apply-templates value='el' mode='src:statement'>
-                           <with-param name='context' tunnel='yes'>
-                              <src:context>
-                                 <copy-of value='src_helper_type("PrimingContext")'/>
-                                 <src:reference>
-                                    <code:property-reference name='PrimingContext'>
-                                       <copy-of value='select(src_context_field, src + "reference", code)'/>
-                                    </code:property-reference>
-                                 </src:reference>
-                              </src:context>
-                           </with-param>
-                        </apply-templates>
-                        <code:assign>
+                  <if test='!(param &amp;&amp; required)'>
+                     <code:if>
+                        <code:not>
                            <copy-of value='initField'/>
-                           <code:bool value='true'/>
-                        </code:assign>
-                     </code:block>
-                  </code:if>
+                        </code:not>
+                        <code:block>
+                           <if test='el.Parent!.Name == c + "override"'>
+                              <variable name='originalMeta' value='select(packageManifest, xcst)
+                                 .First(p => p.Attribute("id")!.Value == meta.Attribute("overrides")!.Value)'/>
+                              <variable name='originalRef' value='
+                                 (originalMeta.Attribute("original-visibility")!.Value != "abstract"
+                                    &amp;&amp; (originalMeta.Name == xcst + "variable"
+                                       || !xs_boolean(originalMeta.Attribute("required")!))) ?
+                                    src_original_member(originalMeta)
+                                    : null'/>
+                              <code:variable name='{src_contextual_variable}'>
+                                 <code:new-object>
+                                    <code:initializer>
+                                       <if test='originalRef != null'>
+                                          <code:member-initializer name='original'>
+                                             <code:method-call>
+                                                <copy-of value='originalRef'/>
+                                             </code:method-call>
+                                          </code:member-initializer>
+                                       </if>
+                                    </code:initializer>
+                                 </code:new-object>
+                              </code:variable>
+                           </if>
+                           <apply-templates value='el' mode='src:statement'>
+                              <with-param name='context' tunnel='yes'>
+                                 <src:context>
+                                    <copy-of value='src_helper_type("PrimingContext")'/>
+                                    <src:reference>
+                                       <code:property-reference name='PrimingContext'>
+                                          <copy-of value='select(src_context_field, src + "reference", code)'/>
+                                       </code:property-reference>
+                                    </src:reference>
+                                 </src:context>
+                              </with-param>
+                           </apply-templates>
+                           <code:assign>
+                              <copy-of value='initField'/>
+                              <code:bool value='true'/>
+                           </code:assign>
+                        </code:block>
+                     </code:if>
+                  </if>
                   <code:return>
                      <copy-of value='backingField'/>
                   </code:return>
@@ -512,6 +511,12 @@
       <param name='meta' as='XElement'/>
 
       <return value='src_aux_variable("back_" + meta.Attribute("name")!.Value)'/>
+   </function>
+
+   <function name='src_init_field' as='string'>
+      <param name='meta' as='XElement'/>
+
+      <return value='src_aux_variable("init_" + meta.Attribute("name")!.Value)'/>
    </function>
 
    <template name='src:prime-method'>
@@ -618,24 +623,31 @@
                   <variable name='meta' value='select(packageManifest, xcst)
                      .First(p => p.Attribute("declaration-id")?.Value == id)'/>
                   <code:if>
-                     <code:or-else>
-                        <code:equal>
-                           <copy-of value='overriddenParams'/>
-                           <code:null/>
-                        </code:equal>
-                        <code:equal>
-                           <code:method-call name='IndexOf'>
-                              <code:type-reference name='Array' namespace='System'/>
-                              <code:arguments>
-                                 <copy-of value='overriddenParams'/>
-                                 <code:string literal='true'>
-                                    <value-of value='meta.Attribute("name")!.Value'/>
-                                 </code:string>
-                              </code:arguments>
-                           </code:method-call>
-                           <code:int value='-1'/>
-                        </code:equal>
-                     </code:or-else>
+                     <code:and-also>
+                        <code:or-else>
+                           <code:equal>
+                              <copy-of value='overriddenParams'/>
+                              <code:null/>
+                           </code:equal>
+                           <code:equal>
+                              <code:method-call name='IndexOf'>
+                                 <code:type-reference name='Array' namespace='System'/>
+                                 <code:arguments>
+                                    <copy-of value='overriddenParams'/>
+                                    <code:string literal='true'>
+                                       <value-of value='meta.Attribute("name")!.Value'/>
+                                    </code:string>
+                                 </code:arguments>
+                              </code:method-call>
+                              <code:int value='-1'/>
+                           </code:equal>
+                        </code:or-else>
+                        <code:not>
+                           <code:field-reference name='{src_init_field(meta)}'>
+                              <code:this-reference/>
+                           </code:field-reference>
+                        </code:not>
+                     </code:and-also>
                      <code:block>
                         <apply-templates value='param' mode='src:statement'>
                            <with-param name='context' value='context' tunnel='yes'/>
