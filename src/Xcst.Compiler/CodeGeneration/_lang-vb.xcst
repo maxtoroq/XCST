@@ -847,7 +847,9 @@
    </template>
 
    <template match='XElement el &amp;&amp; el.Name == code + "or-else"' mode='vb:source'>
+      <text>(</text>
       <apply-templates value='select(el, code)' separator=' OrElse '/>
+      <text>)</text>
    </template>
 
    <template match='XElement el &amp;&amp; el.Name == code + "parameter"' mode='vb:source'>
