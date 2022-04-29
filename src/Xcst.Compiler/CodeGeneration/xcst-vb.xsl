@@ -720,9 +720,11 @@
    </template>
 
    <template match="code:or-else" mode="vb:source">
+      <text>(</text>
       <apply-templates select="code:*[1]" mode="#current"/>
       <text> OrElse </text>
       <apply-templates select="code:*[2]" mode="#current"/>
+      <text>)</text>
    </template>
 
    <template match="code:parameter" mode="vb:source">

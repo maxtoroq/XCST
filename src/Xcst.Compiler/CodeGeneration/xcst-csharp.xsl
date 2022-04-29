@@ -742,9 +742,11 @@
    </template>
 
    <template match="code:or-else" mode="cs:source">
+      <text>(</text>
       <apply-templates select="code:*[1]" mode="#current"/>
       <text> || </text>
       <apply-templates select="code:*[2]" mode="#current"/>
+      <text>)</text>
    </template>
 
    <template match="code:parameter" mode="cs:source">
