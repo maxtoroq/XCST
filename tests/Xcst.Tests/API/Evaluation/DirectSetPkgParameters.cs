@@ -65,7 +65,7 @@ namespace Xcst.Tests.API.Evaluation {
             .CallFunction(p => p.foo())
             .Evaluate();
 
-         Assert.AreEqual(withParam, result);
+         Assert.AreEqual(value, result);
       }
    }
 }

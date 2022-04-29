@@ -2146,17 +2146,16 @@
       <param name="package-manifest" required="yes" tunnel="yes"/>
 
       <variable name="meta" select="$package-manifest/xcst:*[@declaration-id eq current()/generate-id()]"/>
+      <variable name="required" select="self::c:param and $meta/xs:boolean(@required)"/>
       <variable name="public" select="$meta/@visibility = ('public', 'final', 'abstract')"/>
 
-      <variable name="use-backing-field" select="
-         (self::c:param and $meta/not(xs:boolean(@required)))
-         or ($meta/@visibility ne 'abstract' and $meta/xs:boolean(@has-default-value))"/>
+      <variable name="use-backing-field" select="$meta/@visibility ne 'abstract'"/>
 
       <variable name="backing-field-name" select="
          if ($use-backing-field) then src:backing-field($meta) else ()"/>
 
       <variable name="init-field-name" select="
-         if ($use-backing-field) then src:aux-variable(concat('init_', $meta/@name)) else ()"/>
+         if ($use-backing-field) then src:init-field($meta) else ()"/>
 
       <variable name="init-field" as="element()">
          <code:field-reference name="{$init-field-name}">
@@ -2203,7 +2202,7 @@
                      <code:int value="{if (self::c:param) then 5 else 4}"/>
                   </code:arguments>
                </code:attribute>
-               <if test="self::c:param and $meta/xs:boolean(@required)">
+               <if test="$required">
                   <code:attribute>
                      <sequence select="src:package-model-type('Required')"/>
                   </code:attribute>
@@ -2213,50 +2212,52 @@
          <code:getter>
             <if test="$use-backing-field">
                <code:block>
-                  <code:if>
-                     <code:not>
-                        <sequence select="$init-field"/>
-                     </code:not>
-                     <code:block>
-                        <if test="parent::c:override">
-                           <variable name="original-meta" select="$package-manifest/xcst:*[@id eq $meta/@overrides]"/>
-                           <variable name="original-ref" select="
-                              if ($original-meta/@original-visibility ne 'abstract'
-                                 and ($original-meta[self::xcst:variable] or not(xs:boolean($original-meta/@required)))) then
-                                    src:original-member($original-meta)
-                              else ()"/>
-                           <code:variable name="{$src:contextual-variable}">
-                              <code:new-object>
-                                 <code:initializer>
-                                    <if test="$original-ref">
-                                       <code:member-initializer name="original">
-                                          <code:method-call>
-                                             <sequence select="$original-ref"/>
-                                          </code:method-call>
-                                       </code:member-initializer>
-                                    </if>
-                                 </code:initializer>
-                              </code:new-object>
-                           </code:variable>
-                        </if>
-                        <apply-templates select="." mode="src:statement">
-                           <with-param name="context" as="element()" tunnel="yes">
-                              <src:context>
-                                 <sequence select="src:helper-type('PrimingContext')"/>
-                                 <src:reference>
-                                    <code:property-reference name="PrimingContext">
-                                       <sequence select="$src:context-field/src:reference/code:*"/>
-                                    </code:property-reference>
-                                 </src:reference>
-                              </src:context>
-                           </with-param>
-                        </apply-templates>
-                        <code:assign>
+                  <if test="not($required)">
+                     <code:if>
+                        <code:not>
                            <sequence select="$init-field"/>
-                           <code:bool value="true"/>
-                        </code:assign>
-                     </code:block>
-                  </code:if>
+                        </code:not>
+                        <code:block>
+                           <if test="parent::c:override">
+                              <variable name="original-meta" select="$package-manifest/xcst:*[@id eq $meta/@overrides]"/>
+                              <variable name="original-ref" select="
+                                 if ($original-meta/@original-visibility ne 'abstract'
+                                    and ($original-meta[self::xcst:variable] or not(xs:boolean($original-meta/@required)))) then
+                                       src:original-member($original-meta)
+                                 else ()"/>
+                              <code:variable name="{$src:contextual-variable}">
+                                 <code:new-object>
+                                    <code:initializer>
+                                       <if test="$original-ref">
+                                          <code:member-initializer name="original">
+                                             <code:method-call>
+                                                <sequence select="$original-ref"/>
+                                             </code:method-call>
+                                          </code:member-initializer>
+                                       </if>
+                                    </code:initializer>
+                                 </code:new-object>
+                              </code:variable>
+                           </if>
+                           <apply-templates select="." mode="src:statement">
+                              <with-param name="context" as="element()" tunnel="yes">
+                                 <src:context>
+                                    <sequence select="src:helper-type('PrimingContext')"/>
+                                    <src:reference>
+                                       <code:property-reference name="PrimingContext">
+                                          <sequence select="$src:context-field/src:reference/code:*"/>
+                                       </code:property-reference>
+                                    </src:reference>
+                                 </src:context>
+                              </with-param>
+                           </apply-templates>
+                           <code:assign>
+                              <sequence select="$init-field"/>
+                              <code:bool value="true"/>
+                           </code:assign>
+                        </code:block>
+                     </code:if>
+                  </if>
                   <code:return>
                      <sequence select="$backing-field"/>
                   </code:return>
@@ -2875,6 +2876,12 @@
       <sequence select="src:aux-variable(concat('back_', $meta/@name))"/>
    </function>
 
+   <function name="src:init-field" as="xs:string">
+      <param name="meta" as="element()"/>
+
+      <sequence select="src:aux-variable(concat('init_', $meta/@name))"/>
+   </function>
+
    <function name="src:hidden-function-delegate-method-name" as="xs:string">
       <param name="meta" as="element()"/>
 
@@ -3156,24 +3163,31 @@
                <for-each select="$priming-params">
                   <variable name="meta" select="$package-manifest/xcst:*[@declaration-id eq current()/generate-id()]"/>
                   <code:if>
-                     <code:or-else>
-                        <code:equal>
-                           <sequence select="$overridden-params"/>
-                           <code:null/>
-                        </code:equal>
-                        <code:equal>
-                           <code:method-call name="IndexOf">
-                              <code:type-reference name="Array" namespace="System"/>
-                              <code:arguments>
-                                 <sequence select="$overridden-params"/>
-                                 <code:string literal="true">
-                                    <value-of select="$meta/@name"/>
-                                 </code:string>
-                              </code:arguments>
-                           </code:method-call>
-                           <code:int value="-1"/>
-                        </code:equal>
-                     </code:or-else>
+                     <code:and-also>
+                        <code:or-else>
+                           <code:equal>
+                              <sequence select="$overridden-params"/>
+                              <code:null/>
+                           </code:equal>
+                           <code:equal>
+                              <code:method-call name="IndexOf">
+                                 <code:type-reference name="Array" namespace="System"/>
+                                 <code:arguments>
+                                    <sequence select="$overridden-params"/>
+                                    <code:string literal="true">
+                                       <value-of select="$meta/@name"/>
+                                    </code:string>
+                                 </code:arguments>
+                              </code:method-call>
+                              <code:int value="-1"/>
+                           </code:equal>
+                        </code:or-else>
+                        <code:not>
+                           <code:field-reference name='{src:init-field($meta)}'>
+                              <code:this-reference/>
+                           </code:field-reference>
+                        </code:not>
+                     </code:and-also>
                      <code:block>
                         <apply-templates select="." mode="src:statement">
                            <with-param name="context" select="$context" tunnel="yes"/>
