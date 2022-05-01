@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:package name='OverriddenX2' version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:use-package name='OverriddenX2Lib'>
+      <c:override>
+         <c:template name='text' visibility='public'>bar</c:template>
+         <c:template name='foo' visibility='public'>
+            <c:call-template name='c:original'/>
+         </c:template>
+      </c:override>
+   </c:use-package>
+
+</c:package>

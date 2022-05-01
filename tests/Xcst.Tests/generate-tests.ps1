@@ -89,6 +89,7 @@ function GenerateTestsForDirectory([IO.DirectoryInfo]$directory, [string]$relati
    foreach ($file in ls "$($directory.FullName)\*" -Include *.xcst, *.pxcst -Exclude *.?.xcst, _*.xcst) {
 
       $compiler = $compilerFactory.CreateCompiler()
+      $compiler.PackageFileExtension = "pxcst"
       $compiler.TargetClass = [IO.Path]::GetFileNameWithoutExtension($file.Name)
       $compiler.TargetNamespace = $ns
       $compiler.TargetVisibility = 'Public'
