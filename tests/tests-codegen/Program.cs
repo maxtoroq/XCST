@@ -112,6 +112,7 @@ namespace tests_codegen {
          foreach (var pkgDep in pkgDeps) {
 
             var compiler = _compilerFactory.CreateCompiler();
+            compiler.PackageFileExtension = "pxcst";
             compiler.TargetClass = Path.GetFileNameWithoutExtension(pkgDep.Name);
             compiler.TargetNamespace = ns;
             compiler.TargetVisibility = CodeVisibility.Public;
