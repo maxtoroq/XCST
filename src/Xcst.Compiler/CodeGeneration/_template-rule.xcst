@@ -271,9 +271,12 @@
                   <with-param name='dynamic' value='true'/>
                </call-template>
             </code:variable>
-            <apply-templates value='el.Elements(c + "param")' mode='src:statement'>
-               <with-param name='context' value='context' tunnel='yes'/>
-            </apply-templates>
+            <for-each name='param' in='el.Elements(c + "param")'>
+               <call-template name='src:param-var'>
+                  <with-param name='el' value='param'/>
+                  <with-param name='context' value='context' tunnel='yes'/>
+               </call-template>
+            </for-each>
             <call-template name='src:sequence-constructor'>
                <with-param name='el' value='el'/>
                <with-param name='children' value='el

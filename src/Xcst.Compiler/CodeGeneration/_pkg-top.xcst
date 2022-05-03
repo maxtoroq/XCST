@@ -247,12 +247,7 @@
                   <call-template name='src:execution-context'/>
                   <call-template name='src:qname-fields'/>
                   <call-template name='src:constructor'/>
-               </if>
-               <call-template name='src:prime-method'>
-                  <with-param name='el' value='el'/>
-                  <with-param name='principalModule' value='principalModule'/>
-               </call-template>
-               <if test='principalModule'>
+                  <call-template name='src:prime-method'/>
                   <call-template name='src:get-template-method'/>
                   <call-template name='src:get-mode-method'>
                      <with-param name='allModes' value='true'/>
@@ -301,11 +296,9 @@
                               .First(p => p.Attribute("overrides") is XAttribute overridesAttr
                                  &amp;&amp; overridesAttr.Value == component.Attribute("id")!.Value
                                  &amp;&amp; p.Attribute("visibility")!.Value != "hidden")'/>
-                           <code:member-initializer name='{src_overriding_field_name(component)}'>
-                              <apply-templates value='component' mode='src:lib-overriding-value'>
-                                 <with-param name='meta' value='meta'/>
-                              </apply-templates>
-                           </code:member-initializer>
+                           <apply-templates value='component' mode='src:lib-overriding-init'>
+                              <with-param name='meta' value='meta'/>
+                           </apply-templates>
                         </for-each>
                      </code:initializer>
                   </code:new-object>

@@ -22,6 +22,7 @@ namespace Xcst.PackageModel {
       ExecutionContext
       Context { get; set; }
 
+#warning Remove overriddenParams on next compiler upgrade
       void
       Prime(PrimingContext context, string[]? overriddenParams);
 

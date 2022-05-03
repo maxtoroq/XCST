@@ -154,17 +154,23 @@
       </code:type>
    </template>
 
-   <template match='XNode' mode='src:lib-overriding'/>
+   <template match='XNode' mode='src:lib-overriding src:lib-override src:lib-tuple'/>
 
-   <template match='XElement el
-         &amp;&amp; (el.Name == xcst + "attribute-set"
-            || el.Name == xcst + "function"
-            || el.Name == xcst + "param"
-            || el.Name == xcst + "template"
-            || el.Name == xcst + "variable")' mode='src:lib-overriding'>
+   <template match='XElement el &amp;&amp; el.Name.Namespace == xcst
+         &amp;&amp; el.Name.LocalName is "attribute-set" or "function" or "param" or "template" or "variable"' mode='src:lib-overriding'>
       <code:field name='{src_overriding_field_name(el)}' visibility='public'>
          <apply-templates value='el' mode='src:lib-overriding-type'/>
       </code:field>
+   </template>
+
+   <template match='XElement el' mode='src:lib-overriding-init'>
+      <param name='meta' as='XElement' required='yes'/>
+
+      <code:member-initializer name='{src_overriding_field_name(el)}'>
+         <apply-templates value='el' mode='src:lib-overriding-value'>
+            <with-param name='meta' value='meta'/>
+         </apply-templates>
+      </code:member-initializer>
    </template>
 
    <function name='src_overridden_components' as='XElement[]'>
