@@ -23,7 +23,7 @@ namespace Xcst.PackageModel {
       Context { get; set; }
 
       void
-      Prime(PrimingContext context, string[]? overriddenParams);
+      Prime(PrimingContext context);
 
       Action<TemplateContext>?
       GetTemplate<TBase>(QualifiedName name, ISequenceWriter<TBase> output);

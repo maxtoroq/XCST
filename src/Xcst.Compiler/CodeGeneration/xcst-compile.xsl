@@ -1588,6 +1588,7 @@
    <template match="xcst:param | xcst:variable" mode="src:member">
 
       <variable name="public" select="@visibility ne 'private'"/>
+      <variable name="required" select="self::xcst:param and xs:boolean(@required)"/>
 
       <variable name="used-pkg-field" as="element()">
          <code:field-reference name="{@member-name}" verbatim="true">
@@ -1596,6 +1597,23 @@
             </code:field-reference>
          </code:field-reference>
       </variable>
+
+      <variable name="use-init-field" select="$required"/>
+
+      <variable name="init-field" as="element()">
+         <code:field-reference name="{src:init-field(.)}">
+            <code:this-reference/>
+         </code:field-reference>
+      </variable>
+
+      <if test="$use-init-field">
+         <code:field name="{$init-field/@name}" line-hidden="true">
+            <code:type-reference name="Boolean" namespace="System"/>
+            <code:attributes>
+               <call-template name="src:editor-browsable-never"/>
+            </code:attributes>
+         </code:field>
+      </if>
 
       <code:property name="{@member-name}"
             visibility="{('public'[$public], 'private')[1]}"
@@ -1613,7 +1631,7 @@
                      <code:int value="{if (self::xcst:param) then 5 else 4}"/>
                   </code:arguments>
                </code:attribute>
-               <if test="self::xcst:param[xs:boolean(@required)]">
+               <if test="$required">
                   <code:attribute>
                      <sequence select="src:package-model-type('Required')"/>
                   </code:attribute>
@@ -1633,6 +1651,12 @@
                   <sequence select="$used-pkg-field"/>
                   <code:setter-value/>
                </code:assign>
+               <if test="$use-init-field">
+                  <code:assign>
+                     <sequence select="$init-field"/>
+                     <code:bool value="true"/>
+                  </code:assign>
+               </if>
             </code:block>
          </code:setter>
       </code:property>
@@ -2123,11 +2147,7 @@
                   <call-template name="src:execution-context"/>
                   <call-template name="src:qname-fields"/>
                   <call-template name="src:constructor"/>
-               </if>
-               <call-template name="src:prime-method">
-                  <with-param name="principal-module" select="$principal-module"/>
-               </call-template>
-               <if test="$principal-module">
+                  <call-template name="src:prime-method"/>
                   <call-template name="src:get-template-method"/>
                   <call-template name="src:get-mode-method">
                      <with-param name="all-modes" select="true()"/>
@@ -2149,7 +2169,10 @@
       <variable name="required" select="self::c:param and $meta/xs:boolean(@required)"/>
       <variable name="public" select="$meta/@visibility = ('public', 'final', 'abstract')"/>
 
+      <variable name="assign" select="
+         if (self::c:param) then not($required) else xs:boolean($meta/@has-default-value)"/>
       <variable name="use-backing-field" select="$meta/@visibility ne 'abstract'"/>
+      <variable name="use-init-field" select="$required or $assign"/>
 
       <variable name="backing-field-name" select="
          if ($use-backing-field) then src:backing-field($meta) else ()"/>
@@ -2170,14 +2193,15 @@
       </variable>
 
       <if test="$use-backing-field">
-
          <code:field name="{$backing-field-name}" line-hidden="true">
             <sequence select="$meta/code:type-reference"/>
             <code:attributes>
                <call-template name="src:editor-browsable-never"/>
             </code:attributes>
          </code:field>
+      </if>
 
+      <if test="$use-init-field">
          <code:field name="{$init-field-name}" line-hidden="true">
             <code:type-reference name="Boolean" namespace="System"/>
             <code:attributes>
@@ -2209,10 +2233,15 @@
                </if>
             </if>
          </code:attributes>
-         <code:getter>
-            <if test="$use-backing-field">
+         <choose>
+            <when test="$meta/@visibility eq 'abstract'">
+               <code:getter/>
+               <code:setter/>
+            </when>
+            <otherwise>
+               <code:getter>
                <code:block>
-                  <if test="not($required)">
+                  <if test="$assign">
                      <code:if>
                         <code:not>
                            <sequence select="$init-field"/>
@@ -2262,22 +2291,23 @@
                      <sequence select="$backing-field"/>
                   </code:return>
                </code:block>
-            </if>
-         </code:getter>
-         <code:setter>
-            <if test="$use-backing-field">
+               </code:getter>
+               <code:setter>
                <code:block>
                   <code:assign>
                      <sequence select="$backing-field"/>
                      <code:setter-value/>
                   </code:assign>
+                  <if test="$use-init-field">
                   <code:assign>
                      <sequence select="$init-field"/>
                      <code:bool value="true"/>
                   </code:assign>
+                  </if>
                </code:block>
-            </if>
-         </code:setter>
+               </code:setter>
+            </otherwise>
+         </choose>
       </code:property>
    </template>
 
@@ -3070,10 +3100,7 @@
    </template>
 
    <template name="src:prime-method">
-      <param name="principal-module" as="xs:boolean"/>
-      <param name="modules" tunnel="yes"/>
       <param name="package-manifest" required="yes" tunnel="yes"/>
-      <param name="used-packages" tunnel="yes"/>
 
       <variable name="context" as="element()">
          <src:context>
@@ -3084,139 +3111,53 @@
          </src:context>
       </variable>
 
-      <variable name="overridden-params" as="element()">
-         <code:variable-reference name="overriddenParams"/>
-      </variable>
-
-      <variable name="priming-params" select="
-         src:priming-parameters(., $package-manifest)" as="element(c:param)*"/>
-
-      <if test="$principal-module or exists($priming-params)">
-         <code:method visibility="private">
-            <choose>
-               <when test="$principal-module">
-                  <attribute name="name" select="'Prime'"/>
-                  <code:implements-interface>
-                     <sequence select="$src:package-interface"/>
-                  </code:implements-interface>
-               </when>
-               <otherwise>
-                  <attribute name="name" select="src:prime-method-name(.)"/>
-                  <code:attributes>
-                     <call-template name="src:editor-browsable-never"/>
-                  </code:attributes>
-               </otherwise>
-            </choose>
+         <code:method name="Prime" visibility="private">
+            <code:implements-interface>
+               <sequence select="$src:package-interface"/>
+            </code:implements-interface>
             <code:parameters>
                <code:parameter name="{$context/src:reference/code:*/@name}">
                   <sequence select="$context/code:type-reference"/>
                </code:parameter>
-               <code:parameter name="{$overridden-params/@name}">
-                  <code:type-reference array-dimensions="1" nullable="true">
-                     <code:type-reference name="String" namespace="System"/>
-                  </code:type-reference>
-               </code:parameter>
             </code:parameters>
             <code:block>
-               <if test="$principal-module">
-                  <for-each select="$used-packages">
-                     <variable name="overridden" select="
-                        src:overridden-components(., $package-manifest)[self::xcst:param and xs:boolean(@required)]"/>
-
-                     <code:method-call name="Prime">
-                        <code:cast>
-                           <sequence select="$src:package-interface"/>
-                           <code:field-reference name="{src:used-package-field-name(.)}">
-                              <code:this-reference/>
-                           </code:field-reference>
-                        </code:cast>
-                        <code:arguments>
-                           <sequence select="$context/src:reference/code:*"/>
-                           <choose>
-                              <when test="$overridden">
-                                 <code:new-array>
-                                    <code:collection-initializer>
-                                       <for-each select="$overridden">
-                                          <code:string literal="true">
-                                             <value-of select="@name"/>
-                                          </code:string>
-                                       </for-each>
-                                    </code:collection-initializer>
-                                 </code:new-array>
-                              </when>
-                              <otherwise>
-                                 <code:null/>
-                              </otherwise>
-                           </choose>
-                        </code:arguments>
-                     </code:method-call>
-                  </for-each>
-                  <for-each select="$modules[position() ne last()][exists(src:priming-parameters(., $package-manifest))]">
-                     <code:method-call name="{src:prime-method-name(.)}">
-                        <code:this-reference/>
-                        <code:arguments>
-                           <sequence select="$context/src:reference/code:*, $overridden-params"/>
-                        </code:arguments>
-                     </code:method-call>
-                  </for-each>
-               </if>
-               <for-each select="$priming-params">
-                  <variable name="meta" select="$package-manifest/xcst:*[@declaration-id eq current()/generate-id()]"/>
+               <for-each select="$package-manifest/xcst:param[@visibility ne 'hidden' and xs:boolean(@required)]">
                   <code:if>
-                     <code:and-also>
-                        <code:or-else>
-                           <code:equal>
-                              <sequence select="$overridden-params"/>
-                              <code:null/>
-                           </code:equal>
-                           <code:equal>
-                              <code:method-call name="IndexOf">
-                                 <code:type-reference name="Array" namespace="System"/>
-                                 <code:arguments>
-                                    <sequence select="$overridden-params"/>
-                                    <code:string literal="true">
-                                       <value-of select="$meta/@name"/>
-                                    </code:string>
-                                 </code:arguments>
-                              </code:method-call>
-                              <code:int value="-1"/>
-                           </code:equal>
-                        </code:or-else>
                         <code:not>
-                           <code:field-reference name='{src:init-field($meta)}'>
+                           <code:field-reference name="{src:init-field(.)}">
                               <code:this-reference/>
                            </code:field-reference>
                         </code:not>
-                     </code:and-also>
                      <code:block>
-                        <apply-templates select="." mode="src:statement">
-                           <with-param name="context" select="$context" tunnel="yes"/>
-                        </apply-templates>
+                        <code:assign>
+                           <call-template name="src:line-number"/>
+                           <code:property-reference name="{@member-name}">
+                              <if test="@member-name-was-escaped/xs:boolean(.)">
+                                 <attribute name="verbatim" select="true()"/>
+                              </if>
+                              <code:this-reference/>
+                           </code:property-reference>
+                           <code:method-call name="Param">
+                              <sequence select="$context/src:reference/code:*"/>
+                              <code:type-arguments>
+                                 <sequence select="code:type-reference"/>
+                              </code:type-arguments>
+                              <code:arguments>
+                                 <code:string literal="true">
+                                    <value-of select="@name"/>
+                                 </code:string>
+                                 <code:argument name="required">
+                                    <code:bool value="true"/>
+                                 </code:argument>
+                              </code:arguments>
+                           </code:method-call>
+                        </code:assign>
                      </code:block>
                   </code:if>
                </for-each>
             </code:block>
          </code:method>
-      </if>
    </template>
-
-   <function name="src:prime-method-name" as="xs:string">
-      <param name="module" as="element()"/>
-
-      <sequence select="concat(src:aux-variable('prime'), '_', generate-id($module))"/>
-   </function>
-
-   <function name="src:priming-parameters" as="element(c:param)*">
-      <param name="module" as="element()"/>
-      <param name="package-manifest" as="element(xcst:package-manifest)"/>
-
-      <for-each select="($module, $module/c:use-package/c:override)/c:param">
-         <variable name="meta" select="$package-manifest/xcst:*[@declaration-id eq current()/generate-id()]"/>
-         <if test="$meta/@visibility ne 'hidden' and $meta/xs:boolean(@required)">
-            <sequence select="."/>
-         </if>
-      </for-each>
-   </function>
 
    <template name="src:get-template-method">
       <param name="package-manifest" required="yes" tunnel="yes"/>

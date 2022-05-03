@@ -1529,18 +1529,9 @@
          <when test="$global">
             <code:assign>
                <call-template name="src:line-number"/>
-               <choose>
-                  <when test="$meta/xs:boolean(@required)">
-                     <code:property-reference name="{$name}">
-                        <code:this-reference/>
-                     </code:property-reference>
-                  </when>
-                  <otherwise>
                      <code:field-reference name="{src:backing-field($meta)}">
                         <code:this-reference/>
                      </code:field-reference>
-                  </otherwise>
-               </choose>
                <sequence select="$expression"/>
             </code:assign>
          </when>
