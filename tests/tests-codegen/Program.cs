@@ -13,9 +13,6 @@ namespace tests_codegen {
       readonly Uri
       _projectUri;
 
-      readonly XcstCompilerFactory
-      _compilerFactory = new();
-
       readonly TextWriter
       _output;
 
@@ -111,14 +108,15 @@ namespace tests_codegen {
 
          foreach (var pkgDep in pkgDeps) {
 
-            var compiler = _compilerFactory.CreateCompiler();
-            compiler.PackageFileExtension = "pxcst";
-            compiler.TargetClass = Path.GetFileNameWithoutExtension(pkgDep.Name);
-            compiler.TargetNamespace = ns;
-            compiler.TargetVisibility = CodeVisibility.Public;
-            compiler.IndentChars = "   ";
-            compiler.CompilationUnitHandler = href => _output;
-            compiler.NullableAnnotate = true;
+            var compiler = new XcstCompiler {
+               PackageFileExtension = "pxcst",
+               TargetClass = Path.GetFileNameWithoutExtension(pkgDep.Name),
+               TargetNamespace = ns,
+               TargetVisibility = CodeVisibility.Public,
+               IndentChars = "   ",
+               CompilationUnitHandler = href => _output,
+               NullableAnnotate = true
+            };
 
             //Console.WriteLine(pkgDep.FullName);
             compiler.Compile(new Uri(pkgDep.FullName));

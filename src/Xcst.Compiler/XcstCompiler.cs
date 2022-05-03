@@ -28,8 +28,8 @@ namespace Xcst.Compiler {
       readonly Dictionary<string, XDocument>
       _packageLibrary = new();
 
-      readonly Dictionary<string, IXcstPackage>?
-      _extensions;
+      readonly Dictionary<string, IXcstPackage>
+      _extensions = new();
 
       Type[]?
       _tbaseTypes;
@@ -88,9 +88,21 @@ namespace Xcst.Compiler {
       public Func<string, TextWriter>?
       CompilationUnitHandler { get; set; }
 
-      internal
-      XcstCompiler(Dictionary<string, IXcstPackage>? extensions) {
-         _extensions = extensions;
+      public void
+      RegisterExtension(IXcstPackage extensionPackage) {
+
+         if (extensionPackage is null) throw new ArgumentNullException(nameof(extensionPackage));
+
+         const string nsProp = "ExtensionNamespace";
+
+         var ns = extensionPackage
+            .GetType()
+            .GetProperty(nsProp)?
+            .GetValue(extensionPackage) as string
+            ?? throw new ArgumentException(
+               $"The extension package must define an '{nsProp}' public property that returns the extension namespace as a string.", nameof(extensionPackage));
+
+         _extensions[ns] = extensionPackage;
       }
 
       public void

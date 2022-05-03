@@ -191,14 +191,12 @@ namespace Xcst.Tests {
       public static XcstCompiler
       CreateCompiler(Type? extension = default) {
 
-         var factory = new XcstCompilerFactory();
+         var compiler = new XcstCompiler();
 
          if (extension != null) {
-            factory.EnableExtensions = true;
-            factory.RegisterExtension((IXcstPackage)Activator.CreateInstance(extension)!);
+            compiler.RegisterExtension((IXcstPackage)Activator.CreateInstance(extension)!);
          }
 
-         var compiler = factory.CreateCompiler();
          compiler.UseLineDirective = true;
          //compiler.PackageTypeResolver = n => Assembly.GetExecutingAssembly().GetType(n);
          compiler.AddPackageLibrary(Assembly.GetExecutingAssembly().Location);
