@@ -377,13 +377,13 @@ namespace Xcst.Compiler {
 
 #pragma warning disable CS8618
       public string
-      Language { get; internal set; }
+      Language { get; init; }
 
       public IReadOnlyList<string>
-      CompilationUnits { get; internal set; }
+      CompilationUnits { get; init; }
 
       public IReadOnlyList<string>
-      Templates { get; internal set; }
+      Templates { get; init; }
 #pragma warning restore CS8618
    }
 }
