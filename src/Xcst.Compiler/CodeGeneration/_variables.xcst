@@ -431,91 +431,91 @@
             </when>
             <otherwise>
                <code:getter>
-               <code:block>
-                  <if test='assign'>
-                     <code:if>
-                        <code:not>
-                           <copy-of value='initField'/>
-                        </code:not>
-                        <code:block>
-                           <if test='meta.Attribute("overrides") is XAttribute overridesAttr'>
-                              <variable name='originalMeta' value='select(packageManifest, xcst)
-                                 .First(p => p.Attribute("id")!.Value == overridesAttr.Value)'/>
-                              <variable name='originalRef' value='
-                                 (originalMeta.Attribute("original-visibility")!.Value != "abstract"
-                                    &amp;&amp; (originalMeta.Name == xcst + "variable"
-                                       || !xs_boolean(originalMeta.Attribute("required")!))) ?
-                                    src_original_member(originalMeta)
-                                    : null'/>
-                              <code:variable name='{src_contextual_variable}'>
-                                 <code:new-object>
-                                    <code:initializer>
-                                       <if test='originalRef != null'>
-                                          <code:member-initializer name='original'>
-                                             <code:method-call>
-                                                <copy-of value='originalRef'/>
-                                             </code:method-call>
-                                          </code:member-initializer>
-                                       </if>
-                                    </code:initializer>
-                                 </code:new-object>
-                              </code:variable>
-                           </if>
-                           <code:assign>
-                              <call-template name='src:line-number'>
-                                 <with-param name='el' value='el'/>
-                              </call-template>
-                              <copy-of value='backingField'/>
-                              <choose>
-                                 <when test='param'>
-                                    <call-template name='src:param-expression'>
-                                       <with-param name='el' value='el'/>
-                                       <with-param name='global' value='true'/>
-                                       <with-param name='type' value='meta.Element(code + "type-reference")!'/>
-                                       <with-param name='context' tunnel='yes'>
-                                          <src:context>
-                                             <copy-of value='src_helper_type("PrimingContext")'/>
-                                             <src:reference>
-                                                <code:property-reference name='PrimingContext'>
-                                                   <copy-of value='select(src_context_field, src + "reference", code)'/>
-                                                </code:property-reference>
-                                             </src:reference>
-                                          </src:context>
-                                       </with-param>
-                                    </call-template>
-                                 </when>
-                                 <otherwise>
-                                    <call-template name='src:value'>
-                                       <with-param name='el' value='el'/>
-                                    </call-template>
-                                 </otherwise>
-                              </choose>
-                           </code:assign>
-                           <code:assign>
+                  <code:block>
+                     <if test='assign'>
+                        <code:if>
+                           <code:not>
                               <copy-of value='initField'/>
-                              <code:bool value='true'/>
-                           </code:assign>
-                        </code:block>
-                     </code:if>
-                  </if>
-                  <code:return>
-                     <copy-of value='backingField'/>
-                  </code:return>
-               </code:block>
+                           </code:not>
+                           <code:block>
+                              <if test='meta.Attribute("overrides") is XAttribute overridesAttr'>
+                                 <variable name='originalMeta' value='select(packageManifest, xcst)
+                                    .First(p => p.Attribute("id")!.Value == overridesAttr.Value)'/>
+                                 <variable name='originalRef' value='
+                                    (originalMeta.Attribute("original-visibility")!.Value != "abstract"
+                                       &amp;&amp; (originalMeta.Name == xcst + "variable"
+                                          || !xs_boolean(originalMeta.Attribute("required")!))) ?
+                                       src_original_member(originalMeta)
+                                       : null'/>
+                                 <code:variable name='{src_contextual_variable}'>
+                                    <code:new-object>
+                                       <code:initializer>
+                                          <if test='originalRef != null'>
+                                             <code:member-initializer name='original'>
+                                                <code:method-call>
+                                                   <copy-of value='originalRef'/>
+                                                </code:method-call>
+                                             </code:member-initializer>
+                                          </if>
+                                       </code:initializer>
+                                    </code:new-object>
+                                 </code:variable>
+                              </if>
+                              <code:assign>
+                                 <call-template name='src:line-number'>
+                                    <with-param name='el' value='el'/>
+                                 </call-template>
+                                 <copy-of value='backingField'/>
+                                 <choose>
+                                    <when test='param'>
+                                       <call-template name='src:param-expression'>
+                                          <with-param name='el' value='el'/>
+                                          <with-param name='global' value='true'/>
+                                          <with-param name='type' value='meta.Element(code + "type-reference")!'/>
+                                          <with-param name='context' tunnel='yes'>
+                                             <src:context>
+                                                <copy-of value='src_helper_type("PrimingContext")'/>
+                                                <src:reference>
+                                                   <code:property-reference name='PrimingContext'>
+                                                      <copy-of value='select(src_context_field, src + "reference", code)'/>
+                                                   </code:property-reference>
+                                                </src:reference>
+                                             </src:context>
+                                          </with-param>
+                                       </call-template>
+                                    </when>
+                                    <otherwise>
+                                       <call-template name='src:value'>
+                                          <with-param name='el' value='el'/>
+                                       </call-template>
+                                    </otherwise>
+                                 </choose>
+                              </code:assign>
+                              <code:assign>
+                                 <copy-of value='initField'/>
+                                 <code:bool value='true'/>
+                              </code:assign>
+                           </code:block>
+                        </code:if>
+                     </if>
+                     <code:return>
+                        <copy-of value='backingField'/>
+                     </code:return>
+                  </code:block>
                </code:getter>
                <code:setter>
-               <code:block>
-                  <code:assign>
-                     <copy-of value='backingField'/>
-                     <code:setter-value/>
-                  </code:assign>
-                  <if test='useInitField'>
-                  <code:assign>
-                     <copy-of value='initField'/>
-                     <code:bool value='true'/>
-                  </code:assign>
-                  </if>
-               </code:block>
+                  <code:block>
+                     <code:assign>
+                        <copy-of value='backingField'/>
+                        <code:setter-value/>
+                     </code:assign>
+                     <if test='useInitField'>
+                        <code:assign>
+                           <copy-of value='initField'/>
+                           <code:bool value='true'/>
+                        </code:assign>
+                     </if>
+                  </code:block>
                </code:setter>
             </otherwise>
          </choose>
@@ -579,60 +579,60 @@
          <code:variable-reference name='overriddenParams'/>
       </variable>
 
-         <code:method name='Prime' visibility='private'>
-            <code:implements-interface>
-               <copy-of value='src_package_interface'/>
-            </code:implements-interface>
-            <code:parameters>
-               <code:parameter name='{select(context, src + "reference", code).First().Attribute("name")!.Value}'>
-                  <copy-of value='context.Element(code + "type-reference")'/>
-               </code:parameter>
-               <code:parameter name='{overriddenParams.Attribute("name")!.Value}'>
-                  <code:type-reference array-dimensions='1' nullable='true'>
-                     <code:type-reference name='String' namespace='System'/>
-                  </code:type-reference>
-               </code:parameter>
-            </code:parameters>
-            <code:block>
-               <for-each name='param' in='select(packageManifest, xcst + "param")
-                     .Where(p => p.Attribute("visibility")!.Value != "hidden"
-                        &amp;&amp; xs_boolean(p.Attribute("required")!))'>
-                  <variable name='verbatim' value='param.Attribute("member-name-was-escaped") is XAttribute escAttr
-                     &amp;&amp; xs_boolean(escAttr)'/>
-                  <code:if>
-                        <code:not>
-                           <code:field-reference name='{src_init_field(param)}'>
-                              <code:this-reference/>
-                           </code:field-reference>
-                        </code:not>
-                     <code:block>
-                        <code:assign>
-                           <code:property-reference name='{param.Attribute("member-name")!.Value}'>
-                              <if test='verbatim'>
-                                 <attribute name='verbatim' value='@string(verbatim)'/>
-                              </if>
-                              <code:this-reference/>
-                           </code:property-reference>
-                           <code:method-call name='Param'>
-                              <copy-of value='select(context, src + "reference", code)'/>
-                              <code:type-arguments>
-                                 <copy-of value='param.Element(code + "type-reference")'/>
-                              </code:type-arguments>
-                              <code:arguments>
-                                 <code:string literal='true'>
-                                    <value-of value='param.Attribute("name")!.Value'/>
-                                 </code:string>
-                                 <code:argument name='required'>
-                                    <code:bool value='true'/>
-                                 </code:argument>
-                              </code:arguments>
-                           </code:method-call>
-                        </code:assign>
-                     </code:block>
-                  </code:if>
-               </for-each>
-            </code:block>
-         </code:method>
+      <code:method name='Prime' visibility='private'>
+         <code:implements-interface>
+            <copy-of value='src_package_interface'/>
+         </code:implements-interface>
+         <code:parameters>
+            <code:parameter name='{select(context, src + "reference", code).First().Attribute("name")!.Value}'>
+               <copy-of value='context.Element(code + "type-reference")'/>
+            </code:parameter>
+            <code:parameter name='{overriddenParams.Attribute("name")!.Value}'>
+               <code:type-reference array-dimensions='1' nullable='true'>
+                  <code:type-reference name='String' namespace='System'/>
+               </code:type-reference>
+            </code:parameter>
+         </code:parameters>
+         <code:block>
+            <for-each name='param' in='select(packageManifest, xcst + "param")
+                  .Where(p => p.Attribute("visibility")!.Value != "hidden"
+                     &amp;&amp; xs_boolean(p.Attribute("required")!))'>
+               <variable name='verbatim' value='param.Attribute("member-name-was-escaped") is XAttribute escAttr
+                  &amp;&amp; xs_boolean(escAttr)'/>
+               <code:if>
+                  <code:not>
+                     <code:field-reference name='{src_init_field(param)}'>
+                        <code:this-reference/>
+                     </code:field-reference>
+                  </code:not>
+                  <code:block>
+                     <code:assign>
+                        <code:property-reference name='{param.Attribute("member-name")!.Value}'>
+                           <if test='verbatim'>
+                              <attribute name='verbatim' value='@string(verbatim)'/>
+                           </if>
+                           <code:this-reference/>
+                        </code:property-reference>
+                        <code:method-call name='Param'>
+                           <copy-of value='select(context, src + "reference", code)'/>
+                           <code:type-arguments>
+                              <copy-of value='param.Element(code + "type-reference")'/>
+                           </code:type-arguments>
+                           <code:arguments>
+                              <code:string literal='true'>
+                                 <value-of value='param.Attribute("name")!.Value'/>
+                              </code:string>
+                              <code:argument name='required'>
+                                 <code:bool value='true'/>
+                              </code:argument>
+                           </code:arguments>
+                        </code:method-call>
+                     </code:assign>
+                  </code:block>
+               </code:if>
+            </for-each>
+         </code:block>
+      </code:method>
    </template>
 
 
@@ -708,84 +708,84 @@
          <on-empty value='(XElement?)null'/>
       </variable>
 
-         <choose>
-            <when test='templateMeta != null
-                  &amp;&amp; xcst_typed_params(templateMeta)
-                  &amp;&amp; !tunnel'>
-               <variable name='typedRef'>
-                  <code:property-reference name='Parameters'>
-                     <copy-of value='select(context, src + "reference", code)'/>
-                  </code:property-reference>
-               </variable>
-               <choose>
-                  <when test='!required &amp;&amp; !hasDefaultValue'>
-                     <code:property-reference name='{name}'>
-                        <copy-of value='typedRef'/>
-                     </code:property-reference>
-                  </when>
-                  <otherwise>
-                     <code:method-call name='TypedParam'>
-                        <copy-of value='select(src_template_context(null), code + "type-reference")'/>
-                        <if test='required || !hasDefaultValue'>
-                           <code:type-arguments>
-                              <copy-of value='type'/>
-                              <copy-of value='type'/>
-                           </code:type-arguments>
-                        </if>
-                        <code:arguments>
-                           <copy-of value='nameStr'/>
-                           <code:property-reference name='{src_params_type_init_name(xcst_unescape_identifier(name, language))}'>
-                              <copy-of value='typedRef'/>
-                           </code:property-reference>
-                           <code:property-reference name='{name}'>
-                              <copy-of value='typedRef'/>
-                           </code:property-reference>
-                           <if test='hasDefaultValue'>
-                              <code:lambda>
-                                 <copy-of value='defaultValue'/>
-                              </code:lambda>
-                           </if>
-                           <if test='required'>
-                              <code:argument name='required'>
-                                 <code:bool value='true'/>
-                              </code:argument>
-                           </if>
-                        </code:arguments>
-                     </code:method-call>
-                  </otherwise>
-               </choose>
-            </when>
-            <otherwise>
-               <code:method-call name='Param'>
+      <choose>
+         <when test='templateMeta != null
+               &amp;&amp; xcst_typed_params(templateMeta)
+               &amp;&amp; !tunnel'>
+            <variable name='typedRef'>
+               <code:property-reference name='Parameters'>
                   <copy-of value='select(context, src + "reference", code)'/>
-                  <if test='required
-                        || !hasDefaultValue
-                        || global'>
-                     <code:type-arguments>
-                        <copy-of value='type'/>
-                     </code:type-arguments>
+               </code:property-reference>
+            </variable>
+            <choose>
+               <when test='!required &amp;&amp; !hasDefaultValue'>
+                  <code:property-reference name='{name}'>
+                     <copy-of value='typedRef'/>
+                  </code:property-reference>
+               </when>
+               <otherwise>
+                  <code:method-call name='TypedParam'>
+                     <copy-of value='select(src_template_context(null), code + "type-reference")'/>
+                     <if test='required || !hasDefaultValue'>
+                        <code:type-arguments>
+                           <copy-of value='type'/>
+                           <copy-of value='type'/>
+                        </code:type-arguments>
+                     </if>
+                     <code:arguments>
+                        <copy-of value='nameStr'/>
+                        <code:property-reference name='{src_params_type_init_name(xcst_unescape_identifier(name, language))}'>
+                           <copy-of value='typedRef'/>
+                        </code:property-reference>
+                        <code:property-reference name='{name}'>
+                           <copy-of value='typedRef'/>
+                        </code:property-reference>
+                        <if test='hasDefaultValue'>
+                           <code:lambda>
+                              <copy-of value='defaultValue'/>
+                           </code:lambda>
+                        </if>
+                        <if test='required'>
+                           <code:argument name='required'>
+                              <code:bool value='true'/>
+                           </code:argument>
+                        </if>
+                     </code:arguments>
+                  </code:method-call>
+               </otherwise>
+            </choose>
+         </when>
+         <otherwise>
+            <code:method-call name='Param'>
+               <copy-of value='select(context, src + "reference", code)'/>
+               <if test='required
+                     || !hasDefaultValue
+                     || global'>
+                  <code:type-arguments>
+                     <copy-of value='type'/>
+                  </code:type-arguments>
+               </if>
+               <code:arguments>
+                  <copy-of value='nameStr'/>
+                  <if test='hasDefaultValue'>
+                     <code:lambda>
+                        <copy-of value='defaultValue'/>
+                     </code:lambda>
                   </if>
-                  <code:arguments>
-                     <copy-of value='nameStr'/>
-                     <if test='hasDefaultValue'>
-                        <code:lambda>
-                           <copy-of value='defaultValue'/>
-                        </code:lambda>
-                     </if>
-                     <if test='required'>
-                        <code:argument name='required'>
-                           <code:bool value='true'/>
-                        </code:argument>
-                     </if>
-                     <if test='tunnel'>
-                        <code:argument name='tunnel'>
-                           <code:bool value='true'/>
-                        </code:argument>
-                     </if>
-                  </code:arguments>
-               </code:method-call>
-            </otherwise>
-         </choose>
+                  <if test='required'>
+                     <code:argument name='required'>
+                        <code:bool value='true'/>
+                     </code:argument>
+                  </if>
+                  <if test='tunnel'>
+                     <code:argument name='tunnel'>
+                        <code:bool value='true'/>
+                     </code:argument>
+                  </if>
+               </code:arguments>
+            </code:method-call>
+         </otherwise>
+      </choose>
    </template>
 
    <template name='src:param-var'>
@@ -795,18 +795,18 @@
 
       <variable name='name' value='xcst_name(el.Attribute("name")!)'/>
 
-            <code:variable name='{name}'>
-               <call-template name='src:line-number'>
-                  <with-param name='el' value='el'/>
-               </call-template>
-               <if test='el.Attribute("as") is XAttribute asAttr'>
-                  <code:type-reference name='{xcst_type(asAttr)}'/>
-               </if>
-               <call-template name='src:param-expression'>
-                  <with-param name='el' value='el'/>
-                  <with-param name='name' value='name'/>
-               </call-template>
-            </code:variable>
+      <code:variable name='{name}'>
+         <call-template name='src:line-number'>
+            <with-param name='el' value='el'/>
+         </call-template>
+         <if test='el.Attribute("as") is XAttribute asAttr'>
+            <code:type-reference name='{xcst_type(asAttr)}'/>
+         </if>
+         <call-template name='src:param-expression'>
+            <with-param name='el' value='el'/>
+            <with-param name='name' value='name'/>
+         </call-template>
+      </code:variable>
    </template>
 
    <template match='XElement el &amp;&amp; el.Name == c + "variable"' mode='src:statement'>
