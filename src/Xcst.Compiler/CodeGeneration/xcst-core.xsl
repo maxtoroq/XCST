@@ -1529,9 +1529,9 @@
          <when test="$global">
             <code:assign>
                <call-template name="src:line-number"/>
-                     <code:field-reference name="{src:backing-field($meta)}">
-                        <code:this-reference/>
-                     </code:field-reference>
+               <code:field-reference name="{src:backing-field($meta)}">
+                  <code:this-reference/>
+               </code:field-reference>
                <sequence select="$expression"/>
             </code:assign>
          </when>

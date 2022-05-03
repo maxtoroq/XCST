@@ -2240,71 +2240,71 @@
             </when>
             <otherwise>
                <code:getter>
-               <code:block>
-                  <if test="$assign">
-                     <code:if>
-                        <code:not>
-                           <sequence select="$init-field"/>
-                        </code:not>
-                        <code:block>
-                           <if test="parent::c:override">
-                              <variable name="original-meta" select="$package-manifest/xcst:*[@id eq $meta/@overrides]"/>
-                              <variable name="original-ref" select="
-                                 if ($original-meta/@original-visibility ne 'abstract'
-                                    and ($original-meta[self::xcst:variable] or not(xs:boolean($original-meta/@required)))) then
-                                       src:original-member($original-meta)
-                                 else ()"/>
-                              <code:variable name="{$src:contextual-variable}">
-                                 <code:new-object>
-                                    <code:initializer>
-                                       <if test="$original-ref">
-                                          <code:member-initializer name="original">
-                                             <code:method-call>
-                                                <sequence select="$original-ref"/>
-                                             </code:method-call>
-                                          </code:member-initializer>
-                                       </if>
-                                    </code:initializer>
-                                 </code:new-object>
-                              </code:variable>
-                           </if>
-                           <apply-templates select="." mode="src:statement">
-                              <with-param name="context" as="element()" tunnel="yes">
-                                 <src:context>
-                                    <sequence select="src:helper-type('PrimingContext')"/>
-                                    <src:reference>
-                                       <code:property-reference name="PrimingContext">
-                                          <sequence select="$src:context-field/src:reference/code:*"/>
-                                       </code:property-reference>
-                                    </src:reference>
-                                 </src:context>
-                              </with-param>
-                           </apply-templates>
-                           <code:assign>
+                  <code:block>
+                     <if test="$assign">
+                        <code:if>
+                           <code:not>
                               <sequence select="$init-field"/>
-                              <code:bool value="true"/>
-                           </code:assign>
-                        </code:block>
-                     </code:if>
-                  </if>
-                  <code:return>
-                     <sequence select="$backing-field"/>
-                  </code:return>
-               </code:block>
+                           </code:not>
+                           <code:block>
+                              <if test="parent::c:override">
+                                 <variable name="original-meta" select="$package-manifest/xcst:*[@id eq $meta/@overrides]"/>
+                                 <variable name="original-ref" select="
+                                    if ($original-meta/@original-visibility ne 'abstract'
+                                       and ($original-meta[self::xcst:variable] or not(xs:boolean($original-meta/@required)))) then
+                                          src:original-member($original-meta)
+                                    else ()"/>
+                                 <code:variable name="{$src:contextual-variable}">
+                                    <code:new-object>
+                                       <code:initializer>
+                                          <if test="$original-ref">
+                                             <code:member-initializer name="original">
+                                                <code:method-call>
+                                                   <sequence select="$original-ref"/>
+                                                </code:method-call>
+                                             </code:member-initializer>
+                                          </if>
+                                       </code:initializer>
+                                    </code:new-object>
+                                 </code:variable>
+                              </if>
+                              <apply-templates select="." mode="src:statement">
+                                 <with-param name="context" as="element()" tunnel="yes">
+                                    <src:context>
+                                       <sequence select="src:helper-type('PrimingContext')"/>
+                                       <src:reference>
+                                          <code:property-reference name="PrimingContext">
+                                             <sequence select="$src:context-field/src:reference/code:*"/>
+                                          </code:property-reference>
+                                       </src:reference>
+                                    </src:context>
+                                 </with-param>
+                              </apply-templates>
+                              <code:assign>
+                                 <sequence select="$init-field"/>
+                                 <code:bool value="true"/>
+                              </code:assign>
+                           </code:block>
+                        </code:if>
+                     </if>
+                     <code:return>
+                        <sequence select="$backing-field"/>
+                     </code:return>
+                  </code:block>
                </code:getter>
                <code:setter>
-               <code:block>
-                  <code:assign>
-                     <sequence select="$backing-field"/>
-                     <code:setter-value/>
-                  </code:assign>
-                  <if test="$use-init-field">
-                  <code:assign>
-                     <sequence select="$init-field"/>
-                     <code:bool value="true"/>
-                  </code:assign>
-                  </if>
-               </code:block>
+                  <code:block>
+                     <code:assign>
+                        <sequence select="$backing-field"/>
+                        <code:setter-value/>
+                     </code:assign>
+                     <if test="$use-init-field">
+                        <code:assign>
+                           <sequence select="$init-field"/>
+                           <code:bool value="true"/>
+                        </code:assign>
+                     </if>
+                  </code:block>
                </code:setter>
             </otherwise>
          </choose>
@@ -3111,52 +3111,52 @@
          </src:context>
       </variable>
 
-         <code:method name="Prime" visibility="private">
-            <code:implements-interface>
-               <sequence select="$src:package-interface"/>
-            </code:implements-interface>
-            <code:parameters>
-               <code:parameter name="{$context/src:reference/code:*/@name}">
-                  <sequence select="$context/code:type-reference"/>
-               </code:parameter>
-            </code:parameters>
-            <code:block>
-               <for-each select="$package-manifest/xcst:param[@visibility ne 'hidden' and xs:boolean(@required)]">
-                  <code:if>
-                        <code:not>
-                           <code:field-reference name="{src:init-field(.)}">
-                              <code:this-reference/>
-                           </code:field-reference>
-                        </code:not>
-                     <code:block>
-                        <code:assign>
-                           <call-template name="src:line-number"/>
-                           <code:property-reference name="{@member-name}">
-                              <if test="@member-name-was-escaped/xs:boolean(.)">
-                                 <attribute name="verbatim" select="true()"/>
-                              </if>
-                              <code:this-reference/>
-                           </code:property-reference>
-                           <code:method-call name="Param">
-                              <sequence select="$context/src:reference/code:*"/>
-                              <code:type-arguments>
-                                 <sequence select="code:type-reference"/>
-                              </code:type-arguments>
-                              <code:arguments>
-                                 <code:string literal="true">
-                                    <value-of select="@name"/>
-                                 </code:string>
-                                 <code:argument name="required">
-                                    <code:bool value="true"/>
-                                 </code:argument>
-                              </code:arguments>
-                           </code:method-call>
-                        </code:assign>
-                     </code:block>
-                  </code:if>
-               </for-each>
-            </code:block>
-         </code:method>
+      <code:method name="Prime" visibility="private">
+         <code:implements-interface>
+            <sequence select="$src:package-interface"/>
+         </code:implements-interface>
+         <code:parameters>
+            <code:parameter name="{$context/src:reference/code:*/@name}">
+               <sequence select="$context/code:type-reference"/>
+            </code:parameter>
+         </code:parameters>
+         <code:block>
+            <for-each select="$package-manifest/xcst:param[@visibility ne 'hidden' and xs:boolean(@required)]">
+               <code:if>
+                  <code:not>
+                     <code:field-reference name="{src:init-field(.)}">
+                        <code:this-reference/>
+                     </code:field-reference>
+                  </code:not>
+                  <code:block>
+                     <code:assign>
+                        <call-template name="src:line-number"/>
+                        <code:property-reference name="{@member-name}">
+                           <if test="@member-name-was-escaped/xs:boolean(.)">
+                              <attribute name="verbatim" select="true()"/>
+                           </if>
+                           <code:this-reference/>
+                        </code:property-reference>
+                        <code:method-call name="Param">
+                           <sequence select="$context/src:reference/code:*"/>
+                           <code:type-arguments>
+                              <sequence select="code:type-reference"/>
+                           </code:type-arguments>
+                           <code:arguments>
+                              <code:string literal="true">
+                                 <value-of select="@name"/>
+                              </code:string>
+                              <code:argument name="required">
+                                 <code:bool value="true"/>
+                              </code:argument>
+                           </code:arguments>
+                        </code:method-call>
+                     </code:assign>
+                  </code:block>
+               </code:if>
+            </for-each>
+         </code:block>
+      </code:method>
    </template>
 
    <template name="src:get-template-method">
