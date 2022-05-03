@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -26,7 +25,7 @@ namespace Xcst.Compiler {
 
    public class XcstCompiler {
 
-      readonly ConcurrentDictionary<string, XDocument>
+      readonly Dictionary<string, XDocument>
       _packageLibrary = new();
 
       readonly Dictionary<string, IXcstPackage>?
@@ -119,7 +118,8 @@ namespace Xcst.Compiler {
 
          var manifest = new XDocument();
 
-         if (_packageLibrary.TryAdd(packageName, manifest)) {
+         if (!_packageLibrary.ContainsKey(packageName)) {
+            _packageLibrary.Add(packageName, manifest);
             return manifest.CreateWriter();
          }
 

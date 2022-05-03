@@ -66,7 +66,7 @@
 
    <param name='src_module_resolver' as='System.Xml.XmlResolver' required='yes'/>
    <param name='src_package_type_resolver' as='System.Func&lt;string, System.Type?>?'/>
-   <param name='src_package_library' as='System.Collections.Concurrent.ConcurrentDictionary&lt;string, XDocument>?'/>
+   <param name='src_package_library' as='Dictionary&lt;string, XDocument>?'/>
    <param name='src_package_location_resolver' as='System.Func&lt;string, System.Uri?>?'/>
    <param name='src_package_file_directory' as='string?'/>
    <param name='src_package_file_extension' as='string?'/>
