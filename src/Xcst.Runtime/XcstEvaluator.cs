@@ -180,7 +180,7 @@ namespace Xcst {
             }
 
             _parameters.Clear();
-            _package.Prime(_primingContext, null);
+            _package.Prime(_primingContext);
          }
 
          return _primingContext;

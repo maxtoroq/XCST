@@ -575,10 +575,6 @@
          </src:context>
       </variable>
 
-      <variable name='overriddenParams'>
-         <code:variable-reference name='overriddenParams'/>
-      </variable>
-
       <code:method name='Prime' visibility='private'>
          <code:implements-interface>
             <copy-of value='src_package_interface'/>
@@ -586,11 +582,6 @@
          <code:parameters>
             <code:parameter name='{select(context, src + "reference", code).First().Attribute("name")!.Value}'>
                <copy-of value='context.Element(code + "type-reference")'/>
-            </code:parameter>
-            <code:parameter name='{overriddenParams.Attribute("name")!.Value}'>
-               <code:type-reference array-dimensions='1' nullable='true'>
-                  <code:type-reference name='String' namespace='System'/>
-               </code:type-reference>
             </code:parameter>
          </code:parameters>
          <code:block>
