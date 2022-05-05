@@ -20,7 +20,8 @@
    xmlns:code='https://maxtoroq.github.io/XCST/code'
    xmlns:src='https://maxtoroq.github.io/XCST/compiled'
    xmlns:cs='https://maxtoroq.github.io/XCST/csharp'
-   xmlns:vb='https://maxtoroq.github.io/XCST/vb'>
+   xmlns:vb='https://maxtoroq.github.io/XCST/vb'
+   xmlns:xi='http://www.w3.org/2001/XInclude'>
 
    <import-namespace ns='System.Collections.Generic'/>
    <import-namespace ns='System.Linq'/>
@@ -53,6 +54,7 @@
    <import href='_extensibility.xcst'/>
    <import href='_serialization.xcst'/>
    <import href='_other.xcst'/>
+   <import href='_xinclude.xcst'/>
 
    <param name='src_namespace' as='string?'/>
    <param name='src_class' as='string?'/>
@@ -256,6 +258,13 @@
       </if>
 
       <apply-templates value='el.Elements(c + "import")' mode='src:load-imports'/>
+
+      <void>
+         <call-template name='xi:include'>
+            <with-param name='node' value='el'/>
+         </call-template>
+      </void>
+
       <object value='el'/>
    </template>
 
@@ -318,7 +327,7 @@
                <variable name='usedPackageUri' value='PackageLocation(usedPackageName, usingPackageUri)'/>
                <if test='!(usedPackageUri != null)'>
                   <message terminate='yes' error-code='XTSE3000' error-data='src_error_object(usePackageEl)' expand-text='yes' transform-text='trim'>
-                     Cannot find package '{usedPackageName}'.
+                     Could not find package '{usedPackageName}'.
                   </message>
                </if>
                <variable name='result' as='XElement'>

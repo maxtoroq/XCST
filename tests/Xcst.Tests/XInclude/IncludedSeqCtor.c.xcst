@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#'
+   xmlns:c='http://maxtoroq.github.io/XCST'
+   xmlns:xi='http://www.w3.org/2001/XInclude'>
+
+   <c:template name='c:initial-template'>
+      <result>
+         <xi:include href='_IncludedSeqCtor.xml'/>
+      </result>
+   </c:template>
+
+</c:module>

@@ -194,7 +194,7 @@
             <variable name='script' value='unparsed_text(src)'/>
             <if test='!(script != null)'>
                <message terminate='yes' error-data='src_error_object(el)' transform-text='trim'>
-                  Cannot retrieve script.
+                  Could not retrieve script.
                </message>
             </if>
             <code:script>

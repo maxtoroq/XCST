@@ -1,0 +1,113 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!--
+ Copyright 2022 Max Toro Q.
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+-->
+<module version='1.0' language='C#'
+   xmlns='http://maxtoroq.github.io/XCST'
+   xmlns:xcst='https://maxtoroq.github.io/XCST/grammar'
+   xmlns:code='https://maxtoroq.github.io/XCST/code'
+   xmlns:src='https://maxtoroq.github.io/XCST/compiled'
+   xmlns:xi='http://www.w3.org/2001/XInclude'>
+
+   <import-namespace ns='System.Linq'/>
+   <import-namespace ns='System.Xml.Linq'/>
+
+   <param name='xi_aware' as='bool'/>
+
+   <variable name='xi' as='XNamespace'>http://www.w3.org/2001/XInclude</variable>
+   <variable name='xi_base_uri_annotation_type' value='typeof(XNode).Assembly.GetType("System.Xml.Linq.BaseUriAnnotation")' as='System.Type'/>
+
+   <type name='XIncludedAnnotation'>
+      <member name='Location' as='string'/>
+   </type>
+
+   <template name='xi:include'>
+      <param name='node' as='XContainer' required='yes'/>
+
+      <if test='xi_aware'>
+         <apply-templates value='node.Descendants(xi + "include").ToArray()' mode='xi:include'/>
+      </if>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == xi + "include"' mode='xi:include'>
+
+      <call-template name='xcst:validate-attribs'>
+         <with-param name='el' value='el'/>
+         <with-param name='required' value='new[] { "href" }'/>
+         <with-param name='optional' value='new[] { "parse" }'/>
+      </call-template>
+
+      <call-template name='xcst:no-children'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <variable name='href' value='resolve_uri(xcst_uri(el.Attribute("href")!)!, el.BaseUri)'/>
+
+      <variable name='parseChoice' value='new[] { "xml", "text" }'/>
+      <variable name='parse' value='(el.Attribute("parse") is XAttribute parseAttr) ?
+         xcst_non_string(parseAttr)
+         : "xml"'/>
+
+      <if test='!parseChoice.Contains(parse)'>
+         <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(el)' expand-text='yes' transform-text='trim'>
+            Invalid value for 'parse'. Must be one of ({string.Join("|", parseChoice)}).
+         </message>
+      </if>
+
+      <choose>
+         <when test='parse == "text"'>
+            <variable name='text' value='unparsed_text(href)'/>
+            <if test='!(text != null)'>
+               <message terminate='yes' error-data='src_error_object(el)' transform-text='trim'>
+                  Could not retrieve document.
+               </message>
+            </if>
+            <void value='el.ReplaceWith(new XText(text))'/>
+         </when>
+         <otherwise>
+            <variable name='included' as='XDocument'>
+               <try value='doc(href)' rollback-output='no'>
+                  <catch>
+                     <message terminate='yes' error-code='XTSE0165' error-data='src_error_object(el)' transform-text='trim'>
+                        Could not retrieve included document, or it's not a well-formed XML document.
+                     </message>
+                  </catch>
+               </try>
+            </variable>
+            <call-template name='xi:include'>
+               <with-param name='node' value='included'/>
+            </call-template>
+            <variable name='clonedNodes' as='XNode[]'>
+               <for-each name='node' in='included.Nodes().Where(p => p is not XDocumentType)'>
+                  <variable name='clone' as='XNode'>
+                     <copy-of value='node'/>
+                  </variable>
+                  <for-each name='ann' in='node.Annotations&lt;object>()'>
+                     <void value='clone.AddAnnotation(ann)'/>
+                  </for-each>
+                  <if test='string.IsNullOrEmpty(clone.BaseUri)
+                        &amp;&amp; xi_base_uri_annotation_type != null'>
+                     <void value='clone.AddAnnotation(System.Activator.CreateInstance(xi_base_uri_annotation_type, node.BaseUri))'/>
+                  </if>
+                  <void value='clone.AddAnnotation(new XIncludedAnnotation { Location = included.BaseUri })'/>
+                  <object value='clone'/>
+               </for-each>
+            </variable>
+            <void value='el.ReplaceWith(clonedNodes)'/>
+         </otherwise>
+      </choose>
+   </template>
+
+</module>

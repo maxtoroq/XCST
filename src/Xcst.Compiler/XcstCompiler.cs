@@ -88,6 +88,9 @@ namespace Xcst.Compiler {
       public Func<string, TextWriter>?
       CompilationUnitHandler { get; set; }
 
+      public bool
+      XIncludeAware { get; set; } = true;
+
       public void
       RegisterExtension(IXcstPackage extensionPackage) {
 
@@ -319,6 +322,7 @@ namespace Xcst.Compiler {
 
          evaluator.WithParam(nameof(compiler.cs_open_brace_on_new_line), this.OpenBraceOnNewLine);
          evaluator.WithParam(nameof(compiler.src_extensions), _extensions);
+         evaluator.WithParam(nameof(compiler.xi_aware), this.XIncludeAware);
 
          return evaluator.ApplyTemplates(sourceDoc.Root!);
       }

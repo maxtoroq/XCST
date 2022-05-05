@@ -128,7 +128,7 @@ namespace Xcst.Compiler {
       replace(string? input, string pattern, string replacement) =>
          Regex.Replace(input ?? String.Empty, pattern, replacement);
 
-      static XName
+      XName
       resolve_QName(string qname, XElement el) {
 
          var colonIndex = qname.IndexOf(':');

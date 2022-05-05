@@ -144,7 +144,7 @@ namespace Xcst.Compiler {
          return null;
       }
 
-      static object
+      object
       ErrorData(XObject node) {
 
          dynamic data = new System.Dynamic.ExpandoObject();
@@ -160,9 +160,21 @@ namespace Xcst.Compiler {
             li.LineNumber
             : -1;
 
-      static string
-      ModuleUri(XObject node) =>
-         node.Document?.BaseUri ?? node.BaseUri;
+      string
+      ModuleUri(XObject node) {
+
+         if (xi_aware
+            && node.Annotation<XIncludedAnnotation>() is XIncludedAnnotation ann) {
+
+            return ann.Location;
+         }
+
+         if (node.Parent is XElement parent) {
+            return ModuleUri(parent);
+         }
+
+         return node.Document?.BaseUri ?? node.BaseUri;
+      }
 
       static string
       StringId(string value) =>

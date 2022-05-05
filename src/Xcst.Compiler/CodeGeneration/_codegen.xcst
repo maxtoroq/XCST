@@ -212,7 +212,7 @@
 
       <if test='src_use_line_directive'>
          <attribute name='line-number' value='LineNumber(el) + lineNumberOffset'/>
-         <attribute name='line-uri' value='lineUri?.AbsoluteUri ?? el.Document!.BaseUri'/>
+         <attribute name='line-uri' value='lineUri?.AbsoluteUri ?? ModuleUri(el)'/>
       </if>
    </template>
 
