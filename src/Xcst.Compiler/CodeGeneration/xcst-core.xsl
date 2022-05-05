@@ -4148,26 +4148,16 @@
 
       <choose>
          <when test="$tvt">
-            <variable name="format-expr" as="element()">
-               <call-template name="src:format-value-template">
-                  <with-param name="context-node" select="$el"/>
-                  <with-param name="text" select="$text"/>
-                  <with-param name="lre" select="true()"/>
-               </call-template>
-            </variable>
-            <choose>
-               <when test="$tt">
-                  <code:method-call name="{if ($tt eq 'trim') then 'Trim' else 'NormalizeSpace'}">
-                     <sequence select="src:helper-type('SimpleContent')"/>
-                     <code:arguments>
-                        <sequence select="$format-expr"/>
-                     </code:arguments>
-                  </code:method-call>
-               </when>
-               <otherwise>
-                  <sequence select="$format-expr"/>
-               </otherwise>
-            </choose>
+            <if test="not(empty($tt) or $tt ne 'normalize-space')">
+               <sequence select="error((), concat(
+                  '[c:]transform-text=''normalize-space'' is not allowed on text value templates. ',
+                  'Use [c:]expand-text=''no'' to avoid this error.'), src:error-object($el))"/>
+            </if>
+            <call-template name="src:format-value-template">
+               <with-param name="context-node" select="$el"/>
+               <with-param name="text" select="if ($tt eq 'trim') then xcst:trim($text) else $text"/>
+               <with-param name="lre" select="true()"/>
+            </call-template>
          </when>
          <otherwise>
             <code:string verbatim="true">
