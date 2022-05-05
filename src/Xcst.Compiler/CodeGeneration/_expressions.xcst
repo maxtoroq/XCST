@@ -58,7 +58,7 @@
 
       <if test='!(value is null or "none" or "normalize-space" or "trim")'>
          <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(el)' expand-text='yes' transform-text='trim'>
-            Invalid value for '{name(transformTextAttr!)}'. Must be one of (none|normalize-space|trim).
+            Invalid value for '{fn_name(transformTextAttr!)}'. Must be one of (none|normalize-space|trim).
          </message>
       </if>
 
@@ -69,7 +69,7 @@
       <param name='attr' as='XAttribute' required='yes'/>
       <param name='lre' as='bool'/>
 
-      <variable name='text' value='@string(attr)'/>
+      <variable name='text' value='fn_string(attr)'/>
 
       <choose>
          <when test='xcst_is_value_template(text)'>
@@ -124,7 +124,7 @@
             <code:string verbatim='true'>
                <switch value='tt'>
                   <when test='"trim"' value='trim(text)'/>
-                  <when test='"normalize-space"' value='normalize_space(text)'/>
+                  <when test='"normalize-space"' value='fn_normalize_space(text)'/>
                   <otherwise value='text'/>
                </switch>
             </code:string>
@@ -343,7 +343,7 @@
                   <variable name='newOutput'>
                      <src:output kind='obj'>
                         <if test='itemTypeRef is null'>
-                           <attribute name='item-type-is-object' value='@string(true)'/>
+                           <attribute name='item-type-is-object' value='fn_string(true)'/>
                         </if>
                         <src:reference>
                            <code:variable-reference name='{src_aux_variable("output")}_{generate_id(el)}'/>
@@ -448,7 +448,7 @@
             </code:method-call>
          </when>
          <when test='normalizedChildren.OfType&lt;XElement>().Any()
-               || empty(normalizedChildren)'>
+               || fn_empty(normalizedChildren)'>
             <variable name='requiresSome' value='trackCardinality != null
                &amp;&amp; trackCardinality != TypeCardinality.ZeroOrMore'/>
             <if test='!(!requiresSome || normalizedChildren.Any())'>
@@ -505,7 +505,7 @@
 
       <choose>
          <when test='val != null'>
-            <code:bool value='{@string(val.Value)}'/>
+            <code:bool value='{fn_string(val.Value)}'/>
          </when>
          <otherwise>
             <code:method-call name='Boolean'>
@@ -526,7 +526,7 @@
 
       <choose>
          <when test='val != null'>
-            <code:decimal value='{@string(val.Value)}'/>
+            <code:decimal value='{fn_string(val.Value)}'/>
          </when>
          <otherwise>
             <code:method-call name='Decimal'>
@@ -547,7 +547,7 @@
 
       <choose>
          <when test='val != null'>
-            <code:int value='{@string(val.Value)}'/>
+            <code:int value='{fn_string(val.Value)}'/>
          </when>
          <otherwise>
             <code:method-call name='Integer'>
@@ -625,7 +625,7 @@
 
       <choose>
          <when test='val != null'>
-            <code:bool value='{@string(val.Value)}'/>
+            <code:bool value='{fn_string(val.Value)}'/>
          </when>
          <otherwise>
             <code:method-call name='SortOrderDescending'>

@@ -62,7 +62,7 @@
       <variable name='valueAttr' value='el.Attribute("value")'/>
       <variable name='separatorAttr' value='el.Attribute("separator")'/>
 
-      <variable name='attribString' value='valueAttr != null || empty(el.Elements())'/>
+      <variable name='attribString' value='valueAttr != null || fn_empty(el.Elements())'/>
       <variable name='includeSeparator' value='!attribString &amp;&amp; separatorAttr != null'/>
       <variable name='nameAvt' value='xcst_is_value_template(nameAttr)'/>
 
@@ -104,7 +104,7 @@
                         (XName)((colon > -1) ?
                            name.Substring(colon + 1)
                            : name)
-                        : resolve_QName(name, el)'/>
+                        : fn_resolve_QName(name, el)'/>
                   <variable name='prefix' value='(colon > -1) ?
                      name.Substring(0, colon)
                      : el.GetPrefixOfNamespace(qname.Namespace)'/>
@@ -340,7 +340,7 @@
                         (XName)((colon > -1) ?
                            name.Substring(colon + 1)
                            : name)
-                        : resolve_QName(name, el)'/>
+                        : fn_resolve_QName(name, el)'/>
                   <variable name='prefix' value='(colon > -1) ?
                      name.Substring(0, colon)
                      : el.GetPrefixOfNamespace(qname.Namespace)'/>
@@ -432,7 +432,7 @@
 
       <variable name='nameAttr' value='el.Attribute("name")!'/>
       <variable name='valueAttr' value='el.Attribute("value")'/>
-      <variable name='attribString' value='valueAttr != null || empty(el.Elements())'/>
+      <variable name='attribString' value='valueAttr != null || fn_empty(el.Elements())'/>
 
       <code:method-call name='{(attribString ? "WriteAttributeString" : "WriteStartAttribute")}'>
          <call-template name='src:line-number'>

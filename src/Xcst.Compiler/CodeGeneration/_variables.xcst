@@ -114,13 +114,13 @@
 
       <element name='xcst:{el.Name.LocalName}' namespace='{xcst}'>
          <attribute name='name' value='name'/>
-         <attribute name='has-default-value' value='@string(hasDefaultValue)'/>
+         <attribute name='has-default-value' value='fn_string(hasDefaultValue)'/>
          <if test='param'>
-            <attribute name='required' value='@string(required)'/>
+            <attribute name='required' value='fn_string(required)'/>
          </if>
          <attribute name='visibility' value='visibility'/>
          <attribute name='member-name' value='name'/>
-         <attribute name='member-name-was-escaped' value='@string(nameWasEscaped)'/>
+         <attribute name='member-name-was-escaped' value='fn_string(nameWasEscaped)'/>
          <if test='overriddenMeta != null'>
             <attribute name='overrides' value='generate_id(overriddenMeta)'/>
          </if>
@@ -179,7 +179,7 @@
             extensibility='{(visibilityAttr.Value == "public" ? "virtual" : "#default")}'
             verbatim='true'>
          <if test='src_qualified_type(typeRef)'>
-            <attribute name='return-type-verbatim' value='@string(true)'/>
+            <attribute name='return-type-verbatim' value='fn_string(true)'/>
          </if>
          <copy-of value='typeRef'/>
          <code:attributes>
@@ -403,7 +403,7 @@
             </switch>
          </attribute>
          <if test='verbatim'>
-            <attribute name='verbatim' value='@string(verbatim)'/>
+            <attribute name='verbatim' value='fn_string(verbatim)'/>
          </if>
          <call-template name='src:line-number'>
             <with-param name='el' value='el'/>
@@ -609,7 +609,7 @@
                      <code:assign>
                         <code:property-reference name='{param.Attribute("member-name")!.Value}'>
                            <if test='verbatim'>
-                              <attribute name='verbatim' value='@string(verbatim)'/>
+                              <attribute name='verbatim' value='fn_string(verbatim)'/>
                            </if>
                            <code:this-reference/>
                         </code:property-reference>

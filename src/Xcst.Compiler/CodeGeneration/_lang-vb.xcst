@@ -364,7 +364,7 @@
    <template match='XElement el &amp;&amp; el.Name == code + "disable-warning"' mode='vb:source vb:statement'>
       <value-of value='src_new_line'/>
       <text>#Disable Warning </text>
-      <value-of value='tokenize(el.Attribute("codes")!.Value)' separator=','/>
+      <value-of value='fn_tokenize(el.Attribute("codes")!.Value)' separator=','/>
    </template>
 
    <template match='XElement el &amp;&amp; el.Name == code + "double"' mode='vb:source'>
@@ -905,7 +905,7 @@
       <variable name='getter' value='el.Element(code + "getter")'/>
       <variable name='setter' value='el.Element(code + "setter")'/>
       <if test='getter != null
-         &amp;&amp; empty(select(getter, code))
+         &amp;&amp; fn_empty(select(getter, code))
          &amp;&amp; setter is null'>ReadOnly </if>
       <call-template name='vb:member-extensibility'>
          <with-param name='el' value='el'/>
@@ -964,7 +964,7 @@
    <template match='XElement el &amp;&amp; el.Name == code + "restore-warning"' mode='vb:source vb:statement'>
       <value-of value='src_new_line'/>
       <text>#Enable Warning </text>
-      <value-of value='tokenize(el.Attribute("codes")!.Value)' separator=','/>
+      <value-of value='fn_tokenize(el.Attribute("codes")!.Value)' separator=','/>
    </template>
 
    <template match='XElement el &amp;&amp; el.Name == code + "return"' mode='vb:statement'>
@@ -1036,12 +1036,12 @@
                <choose>
                   <when test='el.Attribute("quotes-to-escape") is XAttribute quotesAttr'>
                      <variable name='quotes' value='
-                        tokenize(quotesAttr.Value)
-                           .Select(p => System.Xml.XmlConvert.ToInt32(p))
+                        fn_tokenize(quotesAttr.Value)
+                           .Select(p => xs_integer(p))
                            .ToArray()'/>
                      <variable name='parts' as='string[]'>
                         <choose>
-                           <when test='empty(quotes)'>
+                           <when test='fn_empty(quotes)'>
                               <object value='text'/>
                            </when>
                            <otherwise>

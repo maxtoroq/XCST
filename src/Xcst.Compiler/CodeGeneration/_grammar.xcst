@@ -54,7 +54,7 @@
       <for-each name='a' in='stdAttribs'>
          <if test='!stdNames.Contains(a.Name)'>
             <message terminate='yes' error-code='XTSE0805' error-data='src_error_object(el)' expand-text='yes' transform-text='trim'>
-               Unknown XCST attribute '{name(a)}'
+               Unknown XCST attribute '{fn_name(a)}'
             </message>
          </if>
       </for-each>
@@ -68,7 +68,7 @@
       <for-each name='a' in='attribs'>
          <if test='!allowed.Contains(a.Name.LocalName)'>
             <message terminate='yes' error-code='XTSE0090' error-data='src_error_object(el)' expand-text='yes' transform-text='trim'>
-               Attribute '{a.Name.LocalName}' is not allowed on the {name(el)} element.
+               Attribute '{a.Name.LocalName}' is not allowed on the {fn_name(el)} element.
             </message>
          </if>
       </for-each>
@@ -142,7 +142,7 @@
    <template name='xcst:no-children'>
       <param name='el' as='XElement' required='yes'/>
 
-      <if test='!(empty(el.Elements())
+      <if test='!(fn_empty(el.Elements())
             &amp;&amp; el.Nodes().OfType&lt;XText>()
                .All(tx => trim(tx.Value).Length == 0 &amp;&amp; !xcst_preserve_whitespace(el)))'>
          <message terminate='yes' error-code='XTSE0260' error-data='src_error_object(el)' transform-text='trim'>
@@ -154,7 +154,7 @@
    <template name='xcst:text-only'>
       <param name='el' as='XElement' required='yes'/>
 
-      <if test='!empty(el.Elements())'>
+      <if test='!fn_empty(el.Elements())'>
          <message terminate='yes' error-code='XTSE0010' error-data='src_error_object(el)' expand-text='yes' transform-text='trim'>
             Element c:{el.Name.LocalName} can only contain text.
          </message>
@@ -171,7 +171,7 @@
             Output required.
          </message>
       </if>
-      <if test='!(empty(kind) || kind.Contains(output.Attribute("kind")?.Value))'>
+      <if test='!(fn_empty(kind) || kind.Contains(output.Attribute("kind")?.Value))'>
          <message terminate='yes' error-code='XTSE0010' error-data='src_error_object(el)' transform-text='trim'>
             Incompatible output.
          </message>
@@ -186,7 +186,7 @@
       <param name='children' value='el.Nodes().ToArray()' as='XNode[]'/>
 
       <if test='!(el.Attribute("value") is null
-            || (empty(children.OfType&lt;XElement>())
+            || (fn_empty(children.OfType&lt;XElement>())
                &amp;&amp; children.OfType&lt;XText>()
                   .All(tx => trim(tx.Value).Length == 0 &amp;&amp; !xcst_preserve_whitespace(el))))'>
          <message terminate='yes' error-code='XTSE0010' error-data='src_error_object(el)' transform-text='trim'>
@@ -366,7 +366,7 @@
          <if test='instructions.Length == 1
                &amp;&amp; instructions[0].Attribute("expression") is XAttribute exprAttr
                &amp;&amp; xs_boolean(exprAttr)'>
-            <attribute name='expression' value='@string(true)'/>
+            <attribute name='expression' value='fn_string(true)'/>
          </if>
          <if test='cardinality != null'>
             <attribute name='cardinality' value='cardinality.Value'/>
@@ -411,7 +411,7 @@
          </when>
          <otherwise>
             <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(node)' expand-text='yes' transform-text='trim'>
-               Invalid boolean for '{name(node)}'.
+               Invalid boolean for '{fn_name(node)}'.
             </message>
          </otherwise>
       </choose>
@@ -432,7 +432,7 @@
          </when>
          <otherwise>
             <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(node)' expand-text='yes' transform-text='trim'>
-               Invalid value for '{name(node)}'.
+               Invalid value for '{fn_name(node)}'.
             </message>
          </otherwise>
       </choose>
@@ -454,7 +454,7 @@
             <when test='Regex.IsMatch(str, string.Concat("^", qnamePattern, "$"))'>
                <choose>
                   <when test='@default || str.IndexOf(&apos;:&apos;) != -1'>
-                     <return value='resolve_QName(str, node.Parent!)'/>
+                     <return value='fn_resolve_QName(str, node.Parent!)'/>
                   </when>
                   <otherwise>
                      <return value='str'/>
@@ -466,7 +466,7 @@
             </when>
             <otherwise>
                <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(node)' expand-text='yes' transform-text='trim'>
-                  Invalid value for '{name(node)}'.
+                  Invalid value for '{fn_name(node)}'.
                </message>
             </otherwise>
          </choose>
@@ -480,11 +480,11 @@
 
       <if test='!(xcst_non_string(node) != null)'>
          <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(node)' expand-text='yes' transform-text='trim'>
-            Value of '{name(node)}' must be a non-empty string.
+            Value of '{fn_name(node)}' must be a non-empty string.
          </message>
       </if>
 
-      <return value='@string(node)'/>
+      <return value='fn_string(node)'/>
    </function>
 
    <function name='xcst_integer' as='int?'>
@@ -502,7 +502,7 @@
          </when>
          <otherwise>
             <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(node)' expand-text='yes' transform-text='trim'>
-               Invalid value for '{name(node)}'.
+               Invalid value for '{fn_name(node)}'.
             </message>
          </otherwise>
       </choose>
@@ -512,7 +512,7 @@
       <param name='node' as='XObject'/>
       <param name='avt' value='false' as='bool'/>
 
-      <variable name='str' value='@string(node)'/>
+      <variable name='str' value='fn_string(node)'/>
       <return value='
          (avt &amp;&amp; xcst_is_value_template(node)) ?
             null
@@ -523,8 +523,8 @@
       <param name='a' as='object'/>
       <param name='b' as='object'/>
 
-      <variable name='strA' value='(a is XObject xA) ? @string(xA) : (string)a'/>
-      <variable name='strB' value='(b is XObject xB) ? @string(xB) : (string)b'/>
+      <variable name='strA' value='(a is XObject xA) ? fn_string(xA) : (string)a'/>
+      <variable name='strB' value='(b is XObject xB) ? fn_string(xB) : (string)b'/>
 
       <return value='strA.ToUpperInvariant() == strB.ToUpperInvariant()'/>
    </function>
@@ -564,7 +564,7 @@
          </when>
          <otherwise>
             <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(node)' expand-text='yes' transform-text='trim'>
-               Invalid value for '{name(node)}'.
+               Invalid value for '{fn_name(node)}'.
             </message>
          </otherwise>
       </choose>
@@ -573,11 +573,11 @@
    <function name='xcst_non_string' as='string'>
       <param name='node' as='XObject'/>
 
-      <variable name='str' value='trim(@string(node))'/>
+      <variable name='str' value='trim(fn_string(node))'/>
 
       <if test='!(str.Length > 0)'>
          <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(node)' expand-text='yes' transform-text='trim'>
-            Value of '{name(node)}' must be a non-empty string.
+            Value of '{fn_name(node)}' must be a non-empty string.
          </message>
       </if>
 
@@ -591,7 +591,7 @@
 
       <if test='!(str is "internal" or "public")'>
          <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(node)' expand-text='yes' transform-text='trim'>
-            Invalid value for '{name(node)}'. Must be one of (internal|public).
+            Invalid value for '{fn_name(node)}'. Must be one of (internal|public).
          </message>
       </if>
 
@@ -606,7 +606,7 @@
 
       <if test='!(val is null || val > 0)'>
          <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(node)' expand-text='yes' transform-text='trim'>
-            Value of '{name(node)}' must be a positive integer.
+            Value of '{fn_name(node)}' must be a positive integer.
          </message>
       </if>
 
@@ -631,7 +631,7 @@
          </when>
          <otherwise>
             <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(node)' expand-text='yes' transform-text='trim'>
-               Invalid value for '{name(node)}'. Must be one of (ascending|descending).
+               Invalid value for '{fn_name(node)}'. Must be one of (ascending|descending).
             </message>
          </otherwise>
       </choose>
@@ -640,8 +640,8 @@
    <function name='xcst_URIQualifiedName' as='XName'>
       <param name='str' as='string'/>
 
-      <variable name='ns' value='trim(substring_before(str, &apos;}&apos;).Substring(2))'/>
-      <variable name='local' value='substring_after(str, &apos;}&apos;)'/>
+      <variable name='ns' value='trim(fn_substring_before(str, &apos;}&apos;).Substring(2))'/>
+      <variable name='local' value='fn_substring_after(str, &apos;}&apos;)'/>
 
       <return value='XName.Get(local, ns)'/>
    </function>
@@ -650,7 +650,7 @@
       <param name='node' as='XObject'/>
       <param name='avt' value='false' as='bool'/>
 
-      <variable name='str' value='trim(@string(node))'/>
+      <variable name='str' value='trim(fn_string(node))'/>
 
       <choose>
          <when test='avt &amp;&amp; xcst_is_value_template(node)'>
@@ -661,7 +661,7 @@
          </when>
          <otherwise>
             <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(node)' expand-text='yes' transform-text='trim'>
-               Invalid value for '{name(node)}'.
+               Invalid value for '{fn_name(node)}'.
             </message>
          </otherwise>
       </choose>
@@ -683,7 +683,7 @@
    <function name='xcst_is_value_template' as='bool'>
       <param name='item' as='object'/>
 
-      <return value='(item is XObject xo ? @string(xo) : (string)item)
+      <return value='(item is XObject xo ? fn_string(xo) : (string)item)
          .IndexOf(&apos;{&apos;) != -1'/>
    </function>
 

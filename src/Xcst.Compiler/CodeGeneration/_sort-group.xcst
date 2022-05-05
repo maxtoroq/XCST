@@ -45,7 +45,7 @@
                   <call-template name='xcst:no-other-preceding'>
                      <with-param name='el' value='sort'/>
                   </call-template>
-                  <variable name='first' value='empty(sort.ElementsBeforeSelf())'/>
+                  <variable name='first' value='fn_empty(sort.ElementsBeforeSelf())'/>
                   <code:method-call name='{(first ? "SortBy" : "CreateOrderedEnumerable")}'>
                      <call-template name='src:line-number'>
                         <with-param name='el' value='sort'/>
@@ -104,7 +104,7 @@
    <template match='XElement el
          &amp;&amp; el.Name == c + "for-each-group"
          &amp;&amp; !(el.Attribute("group-size") != null
-            &amp;&amp; empty(el.Elements(c + "sort")))' mode='src:statement'>
+            &amp;&amp; fn_empty(el.Elements(c + "sort")))' mode='src:statement'>
 
       <call-template name='xcst:validate-for-each-group'>
          <with-param name='el' value='el'/>
@@ -163,7 +163,7 @@
    <template match='XElement el
          &amp;&amp; el.Name == c + "for-each-group"
          &amp;&amp; (el.Attribute("group-size") != null
-            &amp;&amp; empty(el.Elements(c + "sort")))' mode='src:statement'>
+            &amp;&amp; fn_empty(el.Elements(c + "sort")))' mode='src:statement'>
 
       <call-template name='xcst:validate-for-each-group'>
          <with-param name='el' value='el'/>

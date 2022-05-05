@@ -53,7 +53,7 @@
          <with-param name='el' value='el'/>
       </call-template>
 
-      <variable name='href' value='resolve_uri(xcst_uri(el.Attribute("href")!)!, el.BaseUri)'/>
+      <variable name='href' value='fn_resolve_uri(xcst_uri(el.Attribute("href")!)!, el.BaseUri)'/>
 
       <variable name='parseChoice' value='new[] { "xml", "text" }'/>
       <variable name='parse' value='(el.Attribute("parse") is XAttribute parseAttr) ?
@@ -68,7 +68,7 @@
 
       <choose>
          <when test='parse == "text"'>
-            <variable name='text' value='unparsed_text(href)'/>
+            <variable name='text' value='fn_unparsed_text(href)'/>
             <if test='!(text != null)'>
                <message terminate='yes' error-data='src_error_object(el)' transform-text='trim'>
                   Could not retrieve document.
@@ -78,7 +78,7 @@
          </when>
          <otherwise>
             <variable name='included' as='XDocument'>
-               <try value='doc(href)' rollback-output='no'>
+               <try value='fn_doc(href)' rollback-output='no'>
                   <catch>
                      <message terminate='yes' error-code='XTSE0165' error-data='src_error_object(el)' transform-text='trim'>
                         Could not retrieve included document, or it's not a well-formed XML document.

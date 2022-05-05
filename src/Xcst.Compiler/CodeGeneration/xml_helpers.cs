@@ -38,7 +38,7 @@ namespace Xcst.Compiler {
             .Select(p => p!);
 
       XDocument
-      doc(Uri uri) {
+      fn_doc(Uri uri) {
 
          if (!uri.IsAbsoluteUri) {
             uri = ((IXcstPackage)this).Context.ResolveUri(uri.OriginalString);
@@ -59,21 +59,21 @@ namespace Xcst.Compiler {
       }
 
       static bool
-      empty<T>(T[] p) => p.Length == 0;
+      fn_empty<T>(T[] p) => p.Length == 0;
 
       static bool
-      empty<T>(IEnumerable<T> p) => !p.Any();
+      fn_empty<T>(IEnumerable<T> p) => !p.Any();
 
       static string
-      name(XObject node) =>
+      fn_name(XObject node) =>
          node switch {
-            XAttribute a => substring_before(a.ToString(), '='),
-            XElement el => @string(el.Name, el),
+            XAttribute a => fn_substring_before(a.ToString(), '='),
+            XElement el => fn_string(el.Name, el),
             _ => throw new NotImplementedException()
          };
 
       static string?
-      namespace_uri_for_prefix(string? prefix, XElement el) {
+      fn_namespace_uri_for_prefix(string? prefix, XElement el) {
 
          if (String.IsNullOrEmpty(prefix)) {
 
@@ -121,15 +121,15 @@ namespace Xcst.Compiler {
       }
 
       static string
-      normalize_space(string? str) =>
+      fn_normalize_space(string? str) =>
          SimpleContent.NormalizeSpace(str);
 
       static string
-      replace(string? input, string pattern, string replacement) =>
+      fn_replace(string? input, string pattern, string replacement) =>
          Regex.Replace(input ?? String.Empty, pattern, replacement);
 
       XName
-      resolve_QName(string qname, XElement el) {
+      fn_resolve_QName(string qname, XElement el) {
 
          var colonIndex = qname.IndexOf(':');
 
@@ -150,7 +150,7 @@ namespace Xcst.Compiler {
       }
 
       static Uri
-      resolve_uri(Uri relative, string baseUri) {
+      fn_resolve_uri(Uri relative, string baseUri) {
 
          if (!(!String.IsNullOrEmpty(baseUri)
             && Uri.TryCreate(baseUri, UriKind.Absolute, out var uri))) {
@@ -187,17 +187,17 @@ namespace Xcst.Compiler {
       }
 
       static string
-      @string(bool value) =>
+      fn_string(bool value) =>
          (value) ? "true" : "false";
 
       static string
-      @string(int value) => XmlConvert.ToString(value);
+      fn_string(int value) => XmlConvert.ToString(value);
 
       static string
-      @string(decimal value) => XmlConvert.ToString(value);
+      fn_string(decimal value) => XmlConvert.ToString(value);
 
       static string
-      @string(XName qname, XElement? context) {
+      fn_string(XName qname, XElement? context) {
 
          if (context is null) {
             return qname.LocalName;
@@ -213,7 +213,7 @@ namespace Xcst.Compiler {
       }
 
       static string
-      @string(XObject node) =>
+      fn_string(XObject node) =>
          node switch {
             XAttribute a => a.Value,
             XElement el => el.Value,
@@ -221,21 +221,21 @@ namespace Xcst.Compiler {
          };
 
       static string
-      substring_after(string str, char c) {
+      fn_substring_after(string str, char c) {
 
          var i = str.IndexOf(c);
          return str.Substring(i + 1);
       }
 
       static string
-      substring_before(string str, char c) {
+      fn_substring_before(string str, char c) {
 
          var i = str.IndexOf(c);
          return str.Substring(0, i);
       }
 
       static string[]
-      tokenize(string str) =>
+      fn_tokenize(string str) =>
          DataType.List(str, DataType.String)
             .ToArray();
 
@@ -244,7 +244,7 @@ namespace Xcst.Compiler {
          SimpleContent.Trim(str);
 
       string?
-      unparsed_text(Uri uri) {
+      fn_unparsed_text(Uri uri) {
 
          if (src_module_resolver.GetEntity(uri, null, typeof(Stream)) is Stream entity) {
             using (entity) {
@@ -257,10 +257,14 @@ namespace Xcst.Compiler {
 
       static bool
       xs_boolean(XObject node) =>
-         XmlConvert.ToBoolean(@string(node));
+         XmlConvert.ToBoolean(fn_string(node));
+
+      static int
+      xs_integer(string str) =>
+         XmlConvert.ToInt32(str);
 
       static int
       xs_integer(XObject node) =>
-         XmlConvert.ToInt32(@string(node));
+         xs_integer(fn_string(node));
    }
 }

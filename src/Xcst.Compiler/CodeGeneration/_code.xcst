@@ -157,11 +157,11 @@
                   <variable name='nullables' value='attributes(new[] { t1, t2 }, "nullable")
                      .Select(p => xs_boolean(p))
                      .ToArray()'/>
-                  <return value='empty(arrayDims)
+                  <return value='fn_empty(arrayDims)
                      &amp;&amp; names[0].Value == names[1].Value
-                     &amp;&amp; (empty(namespaces) || namespaces[0].Value == namespaces[1].Value)
+                     &amp;&amp; (fn_empty(namespaces) || namespaces[0].Value == namespaces[1].Value)
                      &amp;&amp; (!checkNullability
-                        || empty(nullables)
+                        || fn_empty(nullables)
                         /* if both types have @nullable, then must be equal */
                         || (nullables.Length == 2 &amp;&amp; nullables.Distinct().Count() == 1)
                         /* if only one type has @nullable, it must be false */

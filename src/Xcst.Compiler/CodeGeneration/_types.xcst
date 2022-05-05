@@ -101,7 +101,7 @@
       <xcst:type name='{name}'
          visibility='{visibility}'
          member-name='{name}'
-         member-name-was-escaped='{@string(nameWasEscaped)}'
+         member-name-was-escaped='{fn_string(nameWasEscaped)}'
          declaration-id='{generate_id(el)}'
          declaring-module-uri='{el.Document!.BaseUri}'/>
    </template>
@@ -146,7 +146,7 @@
                extensibility='{(visibility == "final" ? "sealed" : "#default")}'>
             <if test='meta.Attribute("member-name-was-escaped") is XAttribute escAttr
                   &amp;&amp; xs_boolean(escAttr)'>
-               <attribute name='verbatim' value='@string(true)'/>
+               <attribute name='verbatim' value='fn_string(true)'/>
             </if>
             <call-template name='src:line-number'>
                <with-param name='el' value='el'/>
@@ -362,7 +362,7 @@
       <assert test='member.Name == c + "member"'/>
 
       <variable name='propertyName' value='xcst_unescape_identifier(xcst_name(member.Attribute("name")!), language)'/>
-      <return value='src_aux_variable(string.Join("_", "type", propertyName, replace(StringId(propertyName), "-", "_")))'/>
+      <return value='src_aux_variable(string.Join("_", "type", propertyName, fn_replace(StringId(propertyName), "-", "_")))'/>
    </function>
 
    <template name='src:type-constructor'>
@@ -540,19 +540,19 @@
 
    <template match='XAttribute attr &amp;&amp; attr.Name == "allow-empty-string"' mode='src:display-format-argument'>
       <code:member-initializer name='ConvertEmptyStringToNull'>
-         <code:bool value='{@string(!xcst_boolean(attr)!.Value)}'/>
+         <code:bool value='{fn_string(!xcst_boolean(attr)!.Value)}'/>
       </code:member-initializer>
    </template>
 
    <template match='XAttribute attr &amp;&amp; attr.Name == "apply-format-in-edit-mode"' mode='src:display-format-argument'>
       <code:member-initializer name='ApplyFormatInEditMode'>
-         <code:bool value='{@string(xcst_boolean(attr)!.Value)}'/>
+         <code:bool value='{fn_string(xcst_boolean(attr)!.Value)}'/>
       </code:member-initializer>
    </template>
 
    <template match='XAttribute attr &amp;&amp; attr.Name == "disable-output-escaping"' mode='src:display-format-argument'>
       <code:member-initializer name='HtmlEncode'>
-         <code:bool value='{@string(!xcst_boolean(attr)!.Value)}'/>
+         <code:bool value='{fn_string(!xcst_boolean(attr)!.Value)}'/>
       </code:member-initializer>
    </template>
 
@@ -620,7 +620,7 @@
          </call-template>
          <code:type-reference name='ScaffoldColumn' namespace='System.ComponentModel.DataAnnotations'/>
          <code:arguments>
-            <code:bool value='{@string(scaffold)}'/>
+            <code:bool value='{fn_string(scaffold)}'/>
          </code:arguments>
       </code:attribute>
    </template>
@@ -729,7 +729,7 @@
                         &amp;&amp; p.Attribute("allow-empty-string") != null)
                      .FirstOrDefault()?.Attribute("allow-empty-string") is XAttribute aesAttr'>
                   <code:member-initializer name='AllowEmptyStrings'>
-                     <code:bool value='{@string(xcst_boolean(aesAttr)!.Value)}'/>
+                     <code:bool value='{fn_string(xcst_boolean(aesAttr)!.Value)}'/>
                   </code:member-initializer>
                </if>
                <call-template name='src:validation-arguments'>

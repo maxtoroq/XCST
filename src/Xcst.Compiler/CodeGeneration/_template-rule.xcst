@@ -79,7 +79,7 @@
                   The name of the parameter is not unique.
                </message>
             </if>
-            <xcst:param name='{paramName}' required='{@string(required)}' tunnel='{@string(tunnel)}'>
+            <xcst:param name='{paramName}' required='{fn_string(required)}' tunnel='{fn_string(tunnel)}'>
                <call-template name='xcst:variable-type'>
                   <with-param name='el' value='param'/>
                   <with-param name='text' value='text'/>
@@ -132,9 +132,9 @@
          <xcst:mode
                name='{mode}'
                member-name='{memberName}'
-               default='{@string(isDefault)}'
+               default='{fn_string(isDefault)}'
                visibility='{visibility}'
-               initial='{@string(initial)}'>
+               initial='{fn_string(initial)}'>
             <for-each name='rule' in='rules.Where(p => xcst_template_modes(p)
                   .Intersect(includeModes).Any())'>
                <xcst:template-rule-ref id='{generate_id(rule)}'/>
@@ -161,7 +161,7 @@
       <choose>
          <when test='el.Attribute("mode") is XAttribute modeAttr'>
             <variable name='modes' value='
-               tokenize(xcst_non_string(modeAttr))
+               fn_tokenize(xcst_non_string(modeAttr))
                   .Select(m =>
                      (m == "#all") ? m
                      : (m == "#default") ? defaultMode
@@ -378,7 +378,7 @@
                   <code:if>
                      <code:equal>
                         <copy-of value='indexRef'/>
-                        <code:int value='{@string(i)}'/>
+                        <code:int value='{fn_string(i)}'/>
                      </code:equal>
                      <code:block>
                         <code:method-call>

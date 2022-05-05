@@ -349,7 +349,7 @@
    <template match='XElement el &amp;&amp; el.Name == code + "disable-warning"' mode='cs:source cs:statement'>
       <value-of value='src_new_line'/>
       <text>#pragma warning disable </text>
-      <value-of value='tokenize(el.Attribute("codes")!.Value)' separator=','/>
+      <value-of value='fn_tokenize(el.Attribute("codes")!.Value)' separator=','/>
    </template>
 
    <template match='XElement el &amp;&amp; el.Name == code + "double"' mode='cs:source'>
@@ -790,9 +790,9 @@
       <variable name='args' value='select(el, code + "arguments", code).ToArray()'/>
       <variable name='inits' value='select(el, code + "initializer", code).ToArray()'/>
       <variable name='collectionInits' value='select(el, code + "collection-initializer", code).ToArray()'/>
-      <variable name='requireParens' value='empty(args)
-         &amp;&amp; empty(inits)
-         &amp;&amp; empty(collectionInits)'/>
+      <variable name='requireParens' value='fn_empty(args)
+         &amp;&amp; fn_empty(inits)
+         &amp;&amp; fn_empty(collectionInits)'/>
 
       <text>new </text>
       <apply-templates value='typeRef'/>
@@ -834,7 +834,7 @@
          <when test='collectionInits.Length > 0'>
             <apply-templates value='collectionInits[0].Parent'/>
          </when>
-         <when test='empty(args)'>
+         <when test='fn_empty(args)'>
             <call-template name='cs:open-brace'/>
             <text> </text>
             <call-template name='cs:close-brace'/>
@@ -970,7 +970,7 @@
    <template match='XElement el &amp;&amp; el.Name == code + "restore-warning"' mode='cs:source cs:statement'>
       <value-of value='src_new_line'/>
       <text>#pragma warning restore </text>
-      <value-of value='tokenize(el.Attribute("codes")!.Value)' separator=','/>
+      <value-of value='fn_tokenize(el.Attribute("codes")!.Value)' separator=','/>
    </template>
 
    <template match='XElement el &amp;&amp; el.Name == code + "return"' mode='cs:statement'>
@@ -1049,12 +1049,12 @@
                <choose>
                   <when test='el.Attribute("quotes-to-escape") is XAttribute quotesAttr'>
                      <variable name='quotes' value='
-                        tokenize(quotesAttr.Value)
-                           .Select(p => System.Xml.XmlConvert.ToInt32(p))
+                        fn_tokenize(quotesAttr.Value)
+                           .Select(p => xs_integer(p))
                            .ToArray()'/>
                      <variable name='parts' as='string[]'>
                         <choose>
-                           <when test='empty(quotes)'>
+                           <when test='fn_empty(quotes)'>
                               <object value='text'/>
                            </when>
                            <otherwise>

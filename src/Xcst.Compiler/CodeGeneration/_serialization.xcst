@@ -214,7 +214,7 @@
       </variable>
 
       <variable name='declarations' value='
-         tokenize(el.Attribute("declaration-ids")!.Value)
+         fn_tokenize(el.Attribute("declaration-ids")!.Value)
             .Select(p => select(modules, c + "output")
                .First(p2 => generate_id(p2) == p))
             .ToArray()'/>
@@ -243,7 +243,7 @@
                      <with-param name='mergedList' as='XName[]'>
                         <if test='grp.Key.LocalName is "cdata-section-elements" or "suppress-indentation"'>
                            <object value='grp
-                              .SelectMany(p => tokenize(p.Value)
+                              .SelectMany(p => fn_tokenize(p.Value)
                                  .Select(p2 => xcst_EQName(p, p2)!))'/>
                         </if>
                      </with-param>
@@ -276,7 +276,7 @@
          <when test='isOutput || !xcst_is_value_template(attr)'>
             <variable name='list' value='
                (isOutput) ? mergedList
-                  : tokenize(attr.Value)
+                  : fn_tokenize(attr.Value)
                   .Select(p => xcst_EQName(attr, p)!)
                   .ToArray()'/>
             <code:new-array>
@@ -383,7 +383,7 @@
             || qname.Namespace != XNamespace.None
             || qname.LocalName is "xml" or "html" or "text")'>
          <message terminate='yes' error-code='XTSE1570' error-data='src_error_object(attr.Parent!)' expand-text='yes' transform-text='trim'>
-            Invalid value for '{name(attr)}'. Must be one of (xml|html|text).
+            Invalid value for '{fn_name(attr)}'. Must be one of (xml|html|text).
          </message>
       </if>
 
@@ -608,7 +608,7 @@
                      .Elements(xcst + "output")
                      .Any(p => xcst_EQName(p.Attribute("name")) == format))'>
                <message terminate='yes' error-code='XTDE1460' error-data='src_error_object(el)' expand-text='yes' transform-text='trim'>
-                  No output definition exists named '{@string(format, el)}'.
+                  No output definition exists named '{fn_string(format, el)}'.
                </message>
             </if>
             <call-template name='src:QName'>

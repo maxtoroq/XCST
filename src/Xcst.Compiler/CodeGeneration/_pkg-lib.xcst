@@ -85,7 +85,7 @@
                <apply-templates value='acceptedPublic.Where(p => p.Name == xcst + "type")'
                   mode='src:import-namespace'/>
 
-               <apply-templates value='doc(new System.Uri(uri)).Root!.Elements(c + "import-namespace")'
+               <apply-templates value='fn_doc(new System.Uri(uri)).Root!.Elements(c + "import-namespace")'
                   mode='src:import-namespace'/>
             </if>
             <code:type name='{packageManifest.Element(code + "type-reference")!.Attribute("name")!.Value}' partial='true'>
@@ -124,7 +124,7 @@
 
       <variable name='qualifiedTypes' value='xs_boolean(el.Attribute("qualified-types")!)'/>
 
-      <code:type name='{src_lib_class_name(el)}' visibility='private' partial='{@string(!qualifiedTypes)}'>
+      <code:type name='{src_lib_class_name(el)}' visibility='private' partial='{fn_string(!qualifiedTypes)}'>
          <code:base-types>
             <copy-of value='el.Element(code + "type-reference")'/>
          </code:base-types>

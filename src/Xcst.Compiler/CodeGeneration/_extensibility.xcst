@@ -126,10 +126,10 @@
                      p.Attribute("extension-element-prefixes")
                      : p.Attribute(c + "extension-element-prefixes"))
                   .Where(p => p != null)'>
-               <for-each name='n' in='tokenize(extAttr!.Value)'>
+               <for-each name='n' in='fn_tokenize(extAttr!.Value)'>
                   <variable name='@default' value='n == "#default"'/>
                   <variable name='prefix' value='(@default) ? "" : xcst_ncname(extAttr, n, false)'/>
-                  <variable name='ns' value='namespace_uri_for_prefix(prefix, el)'/>
+                  <variable name='ns' value='fn_namespace_uri_for_prefix(prefix, el)'/>
                   <if test='!(ns != null)'>
                      <message terminate='yes' error-code='XTSE1430' error-data='src_error_object(el)' expand-text='yes' transform-text='trim'>
                         {(@default ? "Default namespace" : $"Namespace prefix '{prefix}'")} has not been declared.

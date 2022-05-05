@@ -86,7 +86,7 @@
    <variable name='src_nullable_object_type'>
       <code:type-reference name='Object' namespace='System'>
          <if test='cs_nullable_annotate'>
-            <attribute name='nullable' value='@string(true)'/>
+            <attribute name='nullable' value='fn_string(true)'/>
          </if>
       </code:type-reference>
    </variable>
@@ -280,10 +280,10 @@
          <with-param name='el' value='el'/>
       </call-template>
 
-      <variable name='href' value='resolve_uri(xcst_uri(el.Attribute("href")!)!, el.BaseUri)'/>
+      <variable name='href' value='fn_resolve_uri(xcst_uri(el.Attribute("href")!)!, el.BaseUri)'/>
 
       <variable name='imported' as='XDocument'>
-         <try value='doc(href)' rollback-output='no'>
+         <try value='fn_doc(href)' rollback-output='no'>
             <catch>
                <message terminate='yes' error-code='XTSE0165' error-data='src_error_object(el)' transform-text='trim'>
                   Could not retrieve imported module, or it's not a well-formed XML document.
@@ -331,7 +331,7 @@
                   </message>
                </if>
                <variable name='result' as='XElement'>
-                  <apply-templates value='doc(usedPackageUri).Root'>
+                  <apply-templates value='fn_doc(usedPackageUri).Root'>
                      <with-param name='namespace' value='null'/>
                      <with-param name='class' value='null'/>
                      <with-param name='namedPackage' value='true'/>
@@ -356,7 +356,7 @@
          <variable name='component' value='xcst_non_string(accept.Attribute("component")!)'/>
          <variable name='qname' value='xcst_component_qnamed(component)'/>
          <variable name='names' value='xcst_accept_names(accept)'/>
-         <if test='!(empty(names) || xcst_accept_names_is_wildcard(names))'>
+         <if test='!(fn_empty(names) || xcst_accept_names_is_wildcard(names))'>
             <for-each name='name' in='names'>
                <variable name='matches' value='components
                   .Where(p => p.Name.LocalName == component
@@ -451,7 +451,7 @@
       <variable name='qname' value='xcst_component_qnamed(component)'/>
 
       <variable name='names' as='object[]'>
-         <for-each name='n' in='tokenize(acceptEl.Attribute("names")!.Value)'>
+         <for-each name='n' in='fn_tokenize(acceptEl.Attribute("names")!.Value)'>
             <choose>
                <when test='qname &amp;&amp; n != "*"' value='xcst_EQName(acceptEl, n)!'/>
                <otherwise value='(object)n'/>

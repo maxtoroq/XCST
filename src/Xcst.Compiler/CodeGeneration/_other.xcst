@@ -190,8 +190,8 @@
             </code:script>
          </when>
          <when test='srcAttr != null'>
-            <variable name='src' value='resolve_uri(xcst_uri(srcAttr)!, el.BaseUri)'/>
-            <variable name='script' value='unparsed_text(src)'/>
+            <variable name='src' value='fn_resolve_uri(xcst_uri(srcAttr)!, el.BaseUri)'/>
+            <variable name='script' value='fn_unparsed_text(src)'/>
             <if test='!(script != null)'>
                <message terminate='yes' error-data='src_error_object(el)' transform-text='trim'>
                   Could not retrieve script.

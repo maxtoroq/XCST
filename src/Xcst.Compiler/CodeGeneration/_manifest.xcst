@@ -198,7 +198,7 @@
             <copy-of value='attributes(component)'/>
             <attribute name='visibility' value='visibility'/>
             <attribute name='original-visibility' value='component.Attribute("visibility")!.Value'/>
-            <attribute name='accepted' value='@string(true)'/>
+            <attribute name='accepted' value='fn_string(true)'/>
             <attribute name='package-id' value='component.Parent.Attribute("package-id")!.Value'/>
             <attribute name='qualified-types' value='component.Parent.Attribute("qualified-types")!.Value'/>
             <copy-of value='component.Nodes()'/>
@@ -221,7 +221,7 @@
          <when test='"public" or "private" or "final" or "abstract"'/>
          <otherwise>
             <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(node)' expand-text='yes' transform-text='trim'>
-               Invalid value for '{name(node)}'. Must be one of (public|private|final|abstract).
+               Invalid value for '{fn_name(node)}'. Must be one of (public|private|final|abstract).
             </message>
          </otherwise>
       </switch>
@@ -271,7 +271,7 @@
 
       <variable name='escapedName' value='
          (qname != null) ?
-            replace(@string(qname, declaration), "[^A-Za-z0-9]", "_")
+            fn_replace(fn_string(qname, declaration), "[^A-Za-z0-9]", "_")
             : null'/>
 
       <variable name='id' as='string'>

@@ -169,7 +169,7 @@
                   Any non-tunnel parameter on the overriding template for which there is no corresponding non-tunnel parameter on the overridden template must specify required='no'.
                </message>
             </if>
-            <xcst:param name='{paramName}' required='{@string(required)}' tunnel='{@string(tunnel)}'>
+            <xcst:param name='{paramName}' required='{fn_string(required)}' tunnel='{fn_string(tunnel)}'>
                <call-template name='xcst:variable-type'>
                   <with-param name='el' value='param'/>
                   <with-param name='text' value='text'/>
@@ -329,7 +329,7 @@
             declaration-id='{generate_id(el)}'
             declaring-module-uri='{el.Document!.BaseUri}'>
          <if test='name == memberName'>
-            <attribute name='member-name-was-escaped' value='@string(nameWasEscaped)'/>
+            <attribute name='member-name-was-escaped' value='fn_string(nameWasEscaped)'/>
          </if>
          <if test='overriddenMeta != null'>
             <attribute name='overrides' value='generate_id(overriddenMeta)'/>
@@ -421,7 +421,7 @@
             verbatim='true'>
          <if test='typeRef != null
                &amp;&amp; src_qualified_type(typeRef)'>
-            <attribute name='return-type-verbatim' value='@string(true)'/>
+            <attribute name='return-type-verbatim' value='fn_string(true)'/>
          </if>
          <copy-of value='typeRef'/>
          <code:attributes>
@@ -984,7 +984,7 @@
             </attribute>
             <if test='meta.Attribute("member-name-was-escaped") is XAttribute escAttr
                   &amp;&amp; xs_boolean(escAttr)'>
-               <attribute name='verbatim' value='@string(true)'/>
+               <attribute name='verbatim' value='fn_string(true)'/>
             </if>
             <call-template name='src:line-number'>
                <with-param name='el' value='el'/>
@@ -1138,7 +1138,7 @@
    <function name='src_params_type_init_name' as='string'>
       <param name='name' as='object'/>
 
-      <return value='src_aux_variable("init_" + (name is XObject xo ? @string(xo) : (string)name))'/>
+      <return value='src_aux_variable("init_" + (name is XObject xo ? fn_string(xo) : (string)name))'/>
    </function>
 
    <function name='src_hidden_function_delegate_method_name' as='string'>
@@ -1353,7 +1353,7 @@
          <call-template name='xcst:require-output'>
             <with-param name='el' value='el'/>
          </call-template>
-         <variable name='names' value='tokenize(attr.Value)
+         <variable name='names' value='fn_tokenize(attr.Value)
             .Select(p => xcst_EQName(attr, p)!)
             .ToArray()'/>
          <variable name='sets' as='XElement[]'>
@@ -1383,7 +1383,7 @@
                            &amp;&amp; xcst_EQName(p.Attribute("name")!) == name)'/>
                      <if test='!(meta != null)'>
                         <message terminate='yes' error-code='XTSE0710' error-data='src_error_object(el)' expand-text='yes' transform-text='trim'>
-                           No attribute set exists named '{@string(name, el)}'.
+                           No attribute set exists named '{fn_string(name, el)}'.
                         </message>
                      </if>
                      <object value='src_template_member(meta)'/>
@@ -1557,7 +1557,7 @@
                      &amp;&amp; p.Attribute("visibility")!.Value != "hidden")'/>
                <if test='!(meta != null)'>
                   <message terminate='yes' error-code='XTSE0650' error-data='src_error_object(el)' expand-text='yes' transform-text='trim'>
-                     No template exists named '{@string(qname, el)}'.
+                     No template exists named '{fn_string(qname, el)}'.
                   </message>
                </if>
                <object value='meta'/>
@@ -1805,10 +1805,10 @@
                            : (el.Name == c + "invoke-delegate"
                               &amp;&amp; el.Attribute("with-params") != null) ? 1
                            : 0'/>
-                     <code:int value='{@string(paramsCount)}'/>
+                     <code:int value='{fn_string(paramsCount)}'/>
                   </otherwise>
                </choose>
-               <code:int value='{@string(tunnelParams.Length + (tunnelParamsAttr != null ? 1 : 0))}'/>
+               <code:int value='{fn_string(tunnelParams.Length + (tunnelParamsAttr != null ? 1 : 0))}'/>
                <if test='context != null'>
                   <copy-of value='select(context, src + "reference", code)'/>
                </if>
