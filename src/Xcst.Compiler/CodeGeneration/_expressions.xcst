@@ -99,26 +99,17 @@
 
       <choose>
          <when test='tvt'>
-            <variable name='formatExpr'>
-               <call-template name='src:format-value-template'>
-                  <with-param name='text' value='text'/>
-                  <with-param name='contextNode' value='el'/>
-                  <with-param name='lre' value='true'/>
-               </call-template>
-            </variable>
-            <choose>
-               <when test='tt != null'>
-                  <code:method-call name='{(tt == "trim" ? "Trim" : "NormalizeSpace")}'>
-                     <copy-of value='src_helper_type("SimpleContent")'/>
-                     <code:arguments>
-                        <copy-of value='formatExpr'/>
-                     </code:arguments>
-                  </code:method-call>
-               </when>
-               <otherwise>
-                  <copy-of value='formatExpr'/>
-               </otherwise>
-            </choose>
+            <if test='!(tt != "normalize-space")'>
+               <message terminate='yes' error-data='src_error_object(el)'>
+                  <text>[c:]transform-text='normalize-space' is not allowed on text value templates. </text>
+                  <text>Use [c:]expand-text='no' to avoid this error.</text>
+               </message>
+            </if>
+            <call-template name='src:format-value-template'>
+               <with-param name='text' value='(tt == "trim") ? trim(text) : text'/>
+               <with-param name='contextNode' value='el'/>
+               <with-param name='lre' value='true'/>
+            </call-template>
          </when>
          <otherwise>
             <code:string verbatim='true'>
