@@ -10,6 +10,7 @@ $ErrorActionPreference = "Stop"
 Push-Location (Split-Path $script:MyInvocation.MyCommand.Path)
 
 $solutionPath = Resolve-Path ..
+$solution = "$solutionPath\XCST.sln"
 $configuration = "Release"
 
 function BuildProj($target) {
@@ -88,7 +89,7 @@ function NuPack {
    $outputPath = Resolve-Path nupkg
    $tempNotice = PackageNotice
 
-   BuildProj "Pack"
+   BuildProj "Pack" | Out-Null
 
    return Join-Path $outputPath "$($project.name).$pkgVer.nupkg"
 }
@@ -100,10 +101,6 @@ function ProjectData([string]$projName) {
    $project.path = Resolve-Path $solutionPath\src\$($project.name)
    $project.file = "$($project.path)\$($project.name).csproj"
    $project.doc = [xml](Get-Content $project.file)
-   $project.sdkStyle = $project.doc.Project.GetAttributeNode("Sdk") -ne $null
-   $project.targetFx = if ($project.sdkStyle) { (($project.doc.Project.PropertyGroup | select -first 1) | %{ (($_.TargetFramework, $_.TargetFrameworks) -ne $null)[0] }) }
-      else { "net" + ($project.doc.Project.PropertyGroup | select -first 1).TargetFrameworkVersion.Substring(1).Replace(".", "") }
-
    $project.temp = Join-Path (Get-Item .) temp\$($project.name)
 
    if (-not (Test-Path $project.temp -PathType Container)) {
@@ -160,7 +157,7 @@ function Release {
 
    # Make sure everything builds first
    ""
-   MSBuild $solutionPath\XCST.sln /p:Configuration=$configuration /verbosity:minimal
+   MSBuild $solution /p:Configuration=$configuration /verbosity:minimal
 
    $projects = "Xcst.Runtime", "Xcst.Compiler"
    $projectsToRelease = if ($ProjectName -eq '*') { $projects } else { @($ProjectName) }
@@ -210,7 +207,7 @@ function Prompt-Choices($Choices=("&Yes", "&No"), [string]$Title="Confirm", [str
 try {
 
    $nuget = .\ensure-nuget.ps1
-   .\restore-packages.ps1
+   MSBuild $solution -t:Restore
    Release
    
 } finally {

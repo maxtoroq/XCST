@@ -28,7 +28,7 @@ Run the following commands to build everything (source and tests).
 
 ```shell
 # restore packages
-.\build\restore-packages.ps1
+MSBuild -t:restore
 
 # build solution
 MSBuild
