@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
+using Xcst;
 using Xcst.Compiler;
 
 namespace XcstCodeGen {
@@ -69,14 +70,19 @@ namespace XcstCodeGen {
       // Show compilation errors on Visual Studio's Error List
       // Also makes the error on the Output window clickable
       static void
-      VisualStudioErrorLog(CompileException ex) {
+      VisualStudioErrorLog(RuntimeException ex) {
 
-         var uriString = ex.ModuleUri;
-         var path = (Uri.TryCreate(uriString, UriKind.Absolute, out Uri uri) && uri.IsFile) ?
-            uri.LocalPath
-            : uriString;
+         dynamic? errorData = ex.ErrorData;
 
-         Console.WriteLine($"{path}({ex.LineNumber}): XCST error {ex.ErrorCode}: {ex.Message}");
+         if (errorData != null) {
+
+            string uriString = errorData.ModuleUri;
+            string path = (Uri.TryCreate(uriString, UriKind.Absolute, out var uri) && uri.IsFile) ?
+               uri.LocalPath
+               : uriString;
+
+            Console.WriteLine($"{path}({errorData.LineNumber}): XCST error {ex.ErrorCode}: {ex.Message}");
+         }
       }
 
       void
@@ -84,13 +90,12 @@ namespace XcstCodeGen {
 
          var startUri = new Uri(_projectUri, ".");
 
-         var compilerFact = new XcstCompilerFactory();
-         var compiler = compilerFact.CreateCompiler();
-
-         compiler.PackageFileDirectory = startUri.LocalPath;
-         compiler.PackageFileExtension = _fileExt;
-         compiler.IndentChars = "   ";
-         compiler.CompilationUnitHandler = href => output;
+         var compiler = new XcstCompiler {
+            PackageFileDirectory = startUri.LocalPath,
+            PackageFileExtension = _fileExt,
+            IndentChars = "   ",
+            CompilationUnitHandler = href => output
+         };
 
          var projectDoc = XDocument.Load(_projectUri.LocalPath);
 
@@ -129,7 +134,7 @@ namespace XcstCodeGen {
             try {
                compiler.Compile(fileUri);
 
-            } catch (CompileException ex) {
+            } catch (RuntimeException ex) {
                VisualStudioErrorLog(ex);
                throw;
             }

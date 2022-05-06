@@ -26,10 +26,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Xcst.Compiler\Xcst.Compiler.csproj" />
     <ProjectReference Include="..\..\src\Xcst.Runtime\Xcst.Runtime.csproj" />
-    <ProjectReference Include="..\tests-codegen\tests-codegen.csproj">
-      <Private>False</Private>
-      <PrivateAssets>All</PrivateAssets>
-    </ProjectReference>
   </ItemGroup>
 
   <ItemGroup>
@@ -95,6 +91,7 @@
   </ItemGroup>
 
   <Target Name="XcstCodeGen" BeforeTargets="PreBuildEvent" DependsOnTargets="ResolveReferences" Inputs="@(XcstInput);$(MSBuildThisFileFullPath);$(XcstCodegenExe)" Outputs="$(XcstOutput)">
+    <MSBuild Projects="..\tests-codegen\tests-codegen.csproj" />
     <Message Text="xcst-codegen [$(MSBuildProjectName)]" Importance="high" />
     <Exec Command="$(XcstCodegenExe) $(MSBuildThisFileFullPath) $(XcstOutput)" />
   </Target>
