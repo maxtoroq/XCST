@@ -23,21 +23,21 @@ namespace XcstCodeGen {
       static string
       RootNamespace(XDocument projectDoc, string projectPath) {
 
-         XNamespace xmlns = projectDoc.Root.Name.Namespace;
+         var xmlns = projectDoc.Root!.Name.Namespace;
 
-         return projectDoc.Root
-            .Element(xmlns + "PropertyGroup")
+         return projectDoc.Root!
+            .Element(xmlns + "PropertyGroup")?
             .Element(xmlns + "RootNamespace")?.Value
             ?? Path.GetFileNameWithoutExtension(projectPath);
       }
 
-      static string
+      static string?
       Nullable(XDocument projectDoc) {
 
-         XNamespace xmlns = projectDoc.Root.Name.Namespace;
+         var xmlns = projectDoc.Root!.Name.Namespace;
 
-         return projectDoc.Root
-            .Element(xmlns + "PropertyGroup")
+         return projectDoc.Root!
+            .Element(xmlns + "PropertyGroup")?
             .Element(xmlns + "Nullable")?.Value;
       }
 
@@ -49,7 +49,7 @@ namespace XcstCodeGen {
 
          if (relativePath.Contains("/")) {
 
-            var relativeDir = startUri.MakeRelativeUri(new Uri(Path.GetDirectoryName(fileUri.LocalPath), UriKind.Absolute))
+            var relativeDir = startUri.MakeRelativeUri(new Uri(Path.GetDirectoryName(fileUri.LocalPath)!, UriKind.Absolute))
                .OriginalString;
 
             ns = String.Join(".", new[] { ns }.Concat(
@@ -111,7 +111,7 @@ namespace XcstCodeGen {
          output.WriteLine("// </auto-generated>");
          output.WriteLine("//------------------------------------------------------------------------------");
 
-         foreach (string file in Directory.EnumerateFiles(startUri.LocalPath, "*." + _fileExt, SearchOption.AllDirectories)) {
+         foreach (var file in Directory.EnumerateFiles(startUri.LocalPath, "*." + _fileExt, SearchOption.AllDirectories)) {
 
             var fileUri = new Uri(file, UriKind.Absolute);
             var fileName = Path.GetFileName(file);
