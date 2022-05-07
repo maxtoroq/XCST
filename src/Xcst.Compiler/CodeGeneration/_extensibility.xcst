@@ -56,7 +56,7 @@
    </variable>
 
    <variable name='src_expand_attribute'>
-      <delegate>
+      <delegate as='XElement'>
          <param name='attr' as='XAttribute' required='yes'/>
 
          <call-template name='src:expand-attribute'>
@@ -76,7 +76,7 @@
    </variable>
 
    <variable name='src_simple_content'>
-      <delegate>
+      <delegate as='XElement'>
          <param name='el' as='XElement' required='yes'/>
          <param name='attr' as='XAttribute?'/>
 
@@ -88,7 +88,7 @@
    </variable>
 
    <variable name='src_validation_arguments'>
-      <delegate>
+      <delegate as='XElement[]'>
          <param name='el' as='XElement' required='yes'/>
          <param name='name' as='XName' required='yes'/>
 
