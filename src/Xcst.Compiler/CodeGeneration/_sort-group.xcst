@@ -67,7 +67,7 @@
                               <code:expression value='{xcst_expression(byAttr)}'/>
                            </when>
                            <otherwise>
-                              <variable name='param' value='src_aux_variable(generate_id(sort))'/>
+                              <variable name='param' value='src_aux_variable(fn_generate_id(sort))'/>
                               <code:lambda>
                                  <code:parameters>
                                     <code:parameter name='{param}'/>
@@ -128,7 +128,7 @@
                      <code:expression value='{xcst_expression(groupByAttr)}'/>
                   </when>
                   <otherwise>
-                     <variable name='param' value='src_aux_variable(generate_id(el))'/>
+                     <variable name='param' value='src_aux_variable(fn_generate_id(el))'/>
                      <code:lambda>
                         <code:parameters>
                            <code:parameter name='{param}'/>
@@ -170,7 +170,7 @@
       </call-template>
 
       <variable name='groupSizeAttr' value='el.Attribute("group-size")!'/>
-      <variable name='id' value='generate_id(el)'/>
+      <variable name='id' value='fn_generate_id(el)'/>
       <variable name='iter' value='src_aux_variable("iter_" + id)'/>
       <variable name='helper' value='src_helper_type("Grouping")'/>
 

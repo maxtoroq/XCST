@@ -227,7 +227,7 @@
                   .Where(p => (p.Name == c + "param" || p.Name == c + "variable")
                      &amp;&amp; select(packageManifest, xcst)
                         .First(p2 => p2.Attribute("declaration-id") is XAttribute declarationId
-                           &amp;&amp; declarationId.Value == generate_id(p))
+                           &amp;&amp; declarationId.Value == fn_generate_id(p))
                         .Attribute("visibility")!.Value != "hidden")
                   .ToArray()'/>
 

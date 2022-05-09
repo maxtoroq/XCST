@@ -102,7 +102,7 @@
          visibility='{visibility}'
          member-name='{name}'
          member-name-was-escaped='{fn_string(nameWasEscaped)}'
-         declaration-id='{generate_id(el)}'
+         declaration-id='{fn_generate_id(el)}'
          declaring-module-uri='{el.Document!.BaseUri}'/>
    </template>
 
@@ -118,7 +118,7 @@
       <param name='packageManifest' as='XElement' tunnel='yes' required='yes'/>
       <param name='modules' as='XElement[]' tunnel='yes' required='yes'/>
 
-      <variable name='id' value='generate_id(el)'/>
+      <variable name='id' value='fn_generate_id(el)'/>
 
       <variable name='meta' value='packageManifest
          .Elements(xcst + "type")

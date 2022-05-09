@@ -98,7 +98,7 @@
 
    <template match='XElement el &amp;&amp; el.Name == c + "for-each" &amp;&amp; el.Attribute("separator") != null' mode='src:statement'>
       <code:block line-hidden='true'>
-         <variable name='indexVar' value='src_aux_variable("index_" + generate_id(el))'/>
+         <variable name='indexVar' value='src_aux_variable("index_" + fn_generate_id(el))'/>
          <code:variable name='{indexVar}'>
             <code:int value='-1'/>
          </code:variable>

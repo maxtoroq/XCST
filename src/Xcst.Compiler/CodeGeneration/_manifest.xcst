@@ -166,7 +166,7 @@
 
       <for-each name='component' in='select(usedPackages, xcst)
             .Where(p => p.Attribute("visibility")!.Value != "private")'>
-         <variable name='id' value='generate_id(component)'/>
+         <variable name='id' value='fn_generate_id(component)'/>
          <variable name='overriding' value='localComponents
             .FirstOrDefault(p => p.Attribute("overrides")?.Value == id)'/>
          <variable name='visibility' value='
@@ -180,7 +180,7 @@
          <if test='localDuplicate != null'>
             <variable name='declaration' value='select(modules, c)
                .Concat(select(modules, c + "use-package", c + "override", c))
-               .First(p => localDuplicate.Attribute("declaration-id")!.Value == generate_id(p))'/>
+               .First(p => localDuplicate.Attribute("declaration-id")!.Value == fn_generate_id(p))'/>
             <message terminate='yes' error-data='src_error_object(declaration)' expand-text='yes' transform-text='trim'>
                Component is in conflict with an accepted component from '{src_qualified_type_name(packageType)}'.
             </message>
@@ -194,7 +194,7 @@
             </message>
          </if>
          <element name='{component.Name.LocalName}' namespace='{component.Name.Namespace}'>
-            <attribute name='id' value='generate_id(component)'/>
+            <attribute name='id' value='fn_generate_id(component)'/>
             <copy-of value='attributes(component)'/>
             <attribute name='visibility' value='visibility'/>
             <attribute name='original-visibility' value='component.Attribute("visibility")!.Value'/>
@@ -279,7 +279,7 @@
             <when test='deterministic &amp;&amp; qname != null'
                value='StringId(xcst_uri_qualified_name(qname))
                   .Replace(&apos;-&apos;, &apos;_&apos;)'/>
-            <when test='declaration != null' value='generate_id(declaration)'/>
+            <when test='declaration != null' value='fn_generate_id(declaration)'/>
             <otherwise>
                <message terminate='yes'/>
             </otherwise>

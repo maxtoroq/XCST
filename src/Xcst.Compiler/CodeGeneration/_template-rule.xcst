@@ -43,7 +43,7 @@
 
       <xcst:template-rule
             member-name='{src_template_method_name(el, null, "rule", false)}'
-            declaration-id='{generate_id(el)}'
+            declaration-id='{fn_generate_id(el)}'
             declaring-module-uri='{el.Document!.BaseUri}'
             cardinality='{(@as != null ? xcst_cardinality(@as, language) : TypeCardinality.ZeroOrMore)}'>
          <for-each name='param' in='el.Elements(c + "param")'>
@@ -137,7 +137,7 @@
                initial='{fn_string(initial)}'>
             <for-each name='rule' in='rules.Where(p => xcst_template_modes(p)
                   .Intersect(includeModes).Any())'>
-               <xcst:template-rule-ref id='{generate_id(rule)}'/>
+               <xcst:template-rule-ref id='{fn_generate_id(rule)}'/>
             </for-each>
          </xcst:mode>
       </for-each>
@@ -200,7 +200,7 @@
    <template match='XElement el &amp;&amp; el.Name == c + "template" &amp;&amp; el.Attribute("match") is XAttribute matchAttr' mode='src:member'>
       <param name='packageManifest' as='XElement' tunnel='yes' required='yes'/>
 
-      <variable name='id' value='generate_id(el)'/>
+      <variable name='id' value='fn_generate_id(el)'/>
 
       <variable name='meta' value='packageManifest
          .Elements(xcst + "template-rule")
@@ -605,7 +605,7 @@
 
       <assert test='meta.Name == xcst + "mode"'/>
 
-      <return value='src_aux_variable("qname_" + generate_id(meta))'/>
+      <return value='src_aux_variable("qname_" + fn_generate_id(meta))'/>
    </function>
 
 

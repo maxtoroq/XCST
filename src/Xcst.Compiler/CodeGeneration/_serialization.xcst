@@ -91,7 +91,7 @@
          </for-each>
 
          <xcst:output member-name='{src_template_method_name(grp.First(), outputName, "outputdef", false)}'
-               declaration-ids='{grp.Select(p => generate_id(p))}'>
+               declaration-ids='{grp.Select(p => fn_generate_id(p))}'>
             <if test='outputName != null'>
                <attribute name='name' value='xcst_uri_qualified_name(outputName)'/>
             </if>
@@ -216,7 +216,7 @@
       <variable name='declarations' value='
          fn_tokenize(el.Attribute("declaration-ids")!.Value)
             .Select(p => select(modules, c + "output")
-               .First(p2 => generate_id(p2) == p))
+               .First(p2 => fn_generate_id(p2) == p))
             .ToArray()'/>
 
       <code:method name='{el.Attribute("member-name")!.Value}' visibility='private'>

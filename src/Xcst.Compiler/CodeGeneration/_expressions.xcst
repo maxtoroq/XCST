@@ -337,7 +337,7 @@
                            <attribute name='item-type-is-object' value='fn_string(true)'/>
                         </if>
                         <src:reference>
-                           <code:variable-reference name='{src_aux_variable("output")}_{generate_id(el)}'/>
+                           <code:variable-reference name='{src_aux_variable("output")}_{fn_generate_id(el)}'/>
                         </src:reference>
                      </src:output>
                   </variable>

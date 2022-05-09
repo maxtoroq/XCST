@@ -122,9 +122,9 @@
          <attribute name='member-name' value='name'/>
          <attribute name='member-name-was-escaped' value='fn_string(nameWasEscaped)'/>
          <if test='overriddenMeta != null'>
-            <attribute name='overrides' value='generate_id(overriddenMeta)'/>
+            <attribute name='overrides' value='fn_generate_id(overriddenMeta)'/>
          </if>
-         <attribute name='declaration-id' value='generate_id(el)'/>
+         <attribute name='declaration-id' value='fn_generate_id(el)'/>
          <attribute name='declaring-module-uri' value='el.Document!.BaseUri'/>
          <if test='ReferenceEquals(this, this)'>
             <call-template name='xcst:variable-type'>
@@ -348,7 +348,7 @@
       <param name='packageManifest' as='XElement' tunnel='yes' required='yes'/>
 
       <variable name='param' value='el.Name == c + "param"'/>
-      <variable name='id' value='generate_id(el)'/>
+      <variable name='id' value='fn_generate_id(el)'/>
 
       <variable name='meta' value='select(packageManifest, xcst)
          .First(p => p.Attribute("declaration-id")?.Value == id)'/>
@@ -537,7 +537,7 @@
             <code:lambda>
                <copy-of value='memberRef'/>
             </code:lambda>
-            <variable name='param' value='src_aux_variable(generate_id(el))'/>
+            <variable name='param' value='src_aux_variable(fn_generate_id(el))'/>
             <code:lambda void='true'>
                <code:parameters>
                   <code:parameter name='{param}'/>
@@ -672,7 +672,7 @@
          <choose>
             <when test='el.Parent!.Name == c + "template"
                   &amp;&amp; el.Parent.Attribute("name") != null'>
-               <variable name='parentId' value='generate_id(el.Parent!)'/>
+               <variable name='parentId' value='fn_generate_id(el.Parent!)'/>
                <object value='packageManifest
                   .Elements(xcst + "template")
                   .First(p => p.Attribute("declaration-id")?.Value == parentId)'/>

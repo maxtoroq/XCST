@@ -418,7 +418,7 @@
          </if>
       </variable>
 
-      <xcst:package-manifest package-id='{generate_id(manifest)}'>
+      <xcst:package-manifest package-id='{fn_generate_id(manifest)}'>
          <copy-of value='attributes(manifest)'/>
          <copy-of value='select(manifest, code + "type-reference")'/>
          <for-each name='comp' in='components.Where(p => p.Attribute("visibility")!.Value != "hidden")'>

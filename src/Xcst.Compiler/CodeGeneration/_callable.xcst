@@ -120,11 +120,11 @@
             visibility='{visibility}'
             declared-visibility='{declaredVisibility}'
             member-name='{src_template_method_name(el, qname, "tmpl", publicMember)}'
-            declaration-id='{generate_id(el)}'
+            declaration-id='{fn_generate_id(el)}'
             declaring-module-uri='{el.Document!.BaseUri}'
             cardinality='{(@as != null ? xcst_cardinality(@as, language) : TypeCardinality.ZeroOrMore)}'>
          <if test='overriddenMeta != null'>
-            <attribute name='overrides' value='generate_id(overriddenMeta)'/>
+            <attribute name='overrides' value='fn_generate_id(overriddenMeta)'/>
          </if>
          <for-each name='param' in='el.Elements(c + "param")'>
             <call-template name='xcst:validate-attribs'>
@@ -255,10 +255,10 @@
             visibility='{visibility}'
             declared-visibility='{declaredVisibility}'
             member-name='{src_template_method_name(el, qname, "attribs", publicMember)}'
-            declaration-id='{generate_id(el)}'
+            declaration-id='{fn_generate_id(el)}'
             declaring-module-uri='{el.Document!.BaseUri}'>
          <if test='overriddenMeta != null'>
-            <attribute name='overrides' value='generate_id(overriddenMeta)'/>
+            <attribute name='overrides' value='fn_generate_id(overriddenMeta)'/>
          </if>
       </xcst:attribute-set>
    </template>
@@ -319,20 +319,20 @@
 
       <variable name='memberName' value='
          (visibility == "hidden") ?
-            src_aux_variable($"fn_{name}_{generate_id(el)}")
+            src_aux_variable($"fn_{name}_{fn_generate_id(el)}")
             : name'/>
 
       <xcst:function name='{name}'
             visibility='{visibility}'
             declared-visibility='{declaredVisibility}'
             member-name='{memberName}'
-            declaration-id='{generate_id(el)}'
+            declaration-id='{fn_generate_id(el)}'
             declaring-module-uri='{el.Document!.BaseUri}'>
          <if test='name == memberName'>
             <attribute name='member-name-was-escaped' value='fn_string(nameWasEscaped)'/>
          </if>
          <if test='overriddenMeta != null'>
-            <attribute name='overrides' value='generate_id(overriddenMeta)'/>
+            <attribute name='overrides' value='fn_generate_id(overriddenMeta)'/>
          </if>
          <if test='el.Attribute("as") is XAttribute asAttr'>
             <code:type-reference name='{xcst_type(asAttr)}'/>
@@ -613,7 +613,7 @@
       <param name='packageManifest' as='XElement' tunnel='yes' required='yes'/>
       <param name='language' as='string' tunnel='yes' required='yes'/>
 
-      <variable name='id' value='generate_id(el)'/>
+      <variable name='id' value='fn_generate_id(el)'/>
 
       <variable name='meta' value='packageManifest
          .Elements(xcst + "template")
@@ -886,7 +886,7 @@
    <template mode='src:member' match='XElement el &amp;&amp; el.Name == c + "attribute-set"'>
       <param name='packageManifest' as='XElement' tunnel='yes' required='yes'/>
 
-      <variable name='id' value='generate_id(el)'/>
+      <variable name='id' value='fn_generate_id(el)'/>
 
       <variable name='meta' value='packageManifest
          .Elements(xcst + "attribute-set")
@@ -962,7 +962,7 @@
    <template mode='src:member' match='XElement el &amp;&amp; el.Name == c + "function"'>
       <param name='packageManifest' as='XElement' tunnel='yes' required='yes'/>
 
-      <variable name='id' value='generate_id(el)'/>
+      <variable name='id' value='fn_generate_id(el)'/>
 
       <variable name='meta' value='packageManifest
          .Elements(xcst + "function")
@@ -1362,7 +1362,7 @@
                   <when test='el.Name == c + "attribute-set"
                         &amp;&amp; el.Parent!.Name == c + "override"
                         &amp;&amp; name == c + "original"'>
-                     <variable name='id' value='generate_id(el)'/>
+                     <variable name='id' value='fn_generate_id(el)'/>
                      <variable name='currentMeta' value='packageManifest
                         .Elements(xcst + "attribute-set")
                         .First(p => p.Attribute("declaration-id")?.Value == id)'/>
@@ -1535,7 +1535,7 @@
          <choose>
             <when test='original'>
                <variable name='currentTemplate' value='el.Ancestors(c + "template").First()'/>
-               <variable name='id' value='generate_id(currentTemplate)'/>
+               <variable name='id' value='fn_generate_id(currentTemplate)'/>
                <variable name='currentMeta' value='packageManifest
                   .Elements(xcst + "template")
                   .First(p => p.Attribute("declaration-id")?.Value == id)'/>
@@ -1649,7 +1649,7 @@
          </message>
       </if>
 
-      <variable name='id' value='generate_id(currentTemplate)'/>
+      <variable name='id' value='fn_generate_id(currentTemplate)'/>
 
       <variable name='currentMeta' value='packageManifest
          .Elements(xcst + "template")

@@ -41,7 +41,7 @@ namespace Xcst.Compiler {
       _documents = new();
 
       string
-      generate_id(XObject node) {
+      fn_generate_id(XObject node) {
 
          // logic from System.Xml.Xsl.Runtime.XmlQueryRuntime.GenerateId()
 

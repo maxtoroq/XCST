@@ -76,7 +76,7 @@
             xcst_boolean(terminateAttr, true)
             : null'/>
 
-      <variable name='messageVar' value='src_aux_variable("message_" + generate_id(el))'/>
+      <variable name='messageVar' value='src_aux_variable("message_" + fn_generate_id(el))'/>
 
       <code:variable name='{messageVar}'>
          <call-template name='src:line-number'>

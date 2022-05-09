@@ -228,7 +228,7 @@
             <return>
                <src:output kind='map'>
                   <src:reference>
-                     <code:variable-reference name='{src_aux_variable("output_" + generate_id(el))}'/>
+                     <code:variable-reference name='{src_aux_variable("output_" + fn_generate_id(el))}'/>
                   </src:reference>
                </src:output>
             </return>

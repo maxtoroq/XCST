@@ -56,7 +56,7 @@
                   <attribute name='name'>
                      <value-of value='src_aux_variable("context")'/>
                      <if test='el != null'>
-                        <value-of value='"_" + generate_id(el)'/>
+                        <value-of value='"_" + fn_generate_id(el)'/>
                      </if>
                   </attribute>
                </code:variable-reference>
@@ -96,7 +96,7 @@
                         <attribute name='name'>
                            <value-of value='src_aux_variable("output")'/>
                            <if test='el != null'>
-                              <value-of value='"_" + generate_id(el)'/>
+                              <value-of value='"_" + fn_generate_id(el)'/>
                            </if>
                         </attribute>
                      </code:variable-reference>
@@ -125,7 +125,7 @@
                         <attribute name='name'>
                            <value-of value='src_aux_variable("output")'/>
                            <if test='node != null'>
-                              <value-of value='"_" + generate_id(node)'/>
+                              <value-of value='"_" + fn_generate_id(node)'/>
                            </if>
                         </attribute>
                      </code:variable-reference>
