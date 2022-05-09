@@ -23,6 +23,7 @@
 
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using System.Xml.Linq;
 
@@ -36,7 +37,7 @@ namespace Xcst.Compiler {
          'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '1', '2', '3', '4', '5', '6'
       };
 
-      readonly List<XDocument>
+      readonly List<XContainer>
       _documents = new();
 
       string
@@ -51,7 +52,8 @@ namespace Xcst.Compiler {
          int
          doc_index(XObject node) {
 
-            var doc = node.Parent?.Document;
+            var doc = node.Document as XContainer
+               ?? (node as XElement ?? node.Parent).AncestorsAndSelf().Last();
 
             if (doc is null) {
                return 0;
