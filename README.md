@@ -7,7 +7,6 @@ See the [project home][XCST] for more information.
 [![Build status](https://ci.appveyor.com/api/projects/status/93bvxpo3x4bg2po8/branch/v2?svg=true)](https://ci.appveyor.com/project/maxtoroq/xcst/branch/v2) ![Tests](https://img.shields.io/appveyor/tests/maxtoroq/XCST/v2)
 
 ### Packages Built From This Repository
-> NOTE: This branch is not stable yet, consider `v1` instead.
 
 Package | Description | Targets
 ------- | ----------- | -------
@@ -16,7 +15,7 @@ Package | Description | Targets
 
 System Requirements
 -------------------
-The compiler is written in XCST itself, ported from and compiled with the v1 compiler written in XSLT 2. It produces code that is compatible with **C# 6** and **Visual Basic 14**, although template rules are not useful unless you use C# 7 or higher.
+The compiler is written in XCST itself, ported from the v1 compiler written in XSLT 2. It produces code that is compatible with **C# 6** and **Visual Basic 14**, although template rules are not useful unless you use C# 7 or higher.
 
 The [release script](build/release.ps1) (which creates the NuGet packages) and other utility scripts are written in **PowerShell 5.1**.
 
