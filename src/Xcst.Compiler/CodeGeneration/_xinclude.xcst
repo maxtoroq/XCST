@@ -27,7 +27,7 @@
    <param name='xi_aware' as='bool'/>
 
    <variable name='xi' as='XNamespace'>http://www.w3.org/2001/XInclude</variable>
-   <variable name='xi_base_uri_annotation_type' value='typeof(XNode).Assembly.GetType("System.Xml.Linq.BaseUriAnnotation")' as='System.Type'/>
+   <variable name='xi_base_uri_annotation_type' value='typeof(XNode).Assembly.GetType("System.Xml.Linq.BaseUriAnnotation")' as='System.Type?'/>
 
    <type name='XIncludedAnnotation'>
       <member name='Location' as='string'/>
@@ -99,7 +99,7 @@
                   </for-each>
                   <if test='string.IsNullOrEmpty(clone.BaseUri)
                         &amp;&amp; xi_base_uri_annotation_type != null'>
-                     <void value='clone.AddAnnotation(System.Activator.CreateInstance(xi_base_uri_annotation_type, node.BaseUri))'/>
+                     <void value='clone.AddAnnotation(System.Activator.CreateInstance(xi_base_uri_annotation_type, node.BaseUri)!)'/>
                   </if>
                   <void value='clone.AddAnnotation(new XIncludedAnnotation { Location = included.BaseUri })'/>
                   <object value='clone'/>
