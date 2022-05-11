@@ -1251,8 +1251,7 @@
 
             <variable name='templates' value='packageManifest
                .Elements(xcst + "template")
-               .Where(p => p.Attribute("visibility")!.Value is string visibility
-                  &amp;&amp; (visibility is "public" or "final"))
+               .Where(p => p.Attribute("visibility")!.Value is "public" or "final")
                .ToArray()'/>
 
             <variable name='unknownStatement'>
