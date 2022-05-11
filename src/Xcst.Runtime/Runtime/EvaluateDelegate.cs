@@ -32,6 +32,7 @@ namespace Xcst.Runtime {
          del.Invoke(context, derivedWriter);
       }
 
+      [Obsolete("The provided delegate is not compatible with the current sequence constructor.", error: true)]
       public static void
       Invoke<TItem>(Delegate del, TemplateContext context, ISequenceWriter<TItem> output) {
 
