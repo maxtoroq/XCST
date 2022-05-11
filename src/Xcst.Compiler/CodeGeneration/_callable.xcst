@@ -1641,7 +1641,7 @@
          </call-template>
       </void>
 
-      <variable name='currentTemplate' value='el.Ancestors(c + "template").First()'/>
+      <variable name='currentTemplate' value='el.Ancestors(c + "template").FirstOrDefault()'/>
 
       <if test='!(currentTemplate != null)'>
          <message terminate='yes' error-code='XTSE0010' error-data='src_error_object(el)' expand-text='yes' transform-text='trim'>

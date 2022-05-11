@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:function name='foo'>
+      <c:void>
+         <c:next-template/>
+      </c:void>
+   </c:function>
+
+</c:module>
