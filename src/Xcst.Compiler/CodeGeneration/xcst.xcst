@@ -349,7 +349,8 @@
       </variable>
 
       <variable name='components' value='manifest.Elements()
-         .Where(p => p.Name.Namespace == xcst)
+         .Where(p => p.Name.Namespace == xcst
+            &amp;&amp; p.Name.LocalName != "output")
          .ToArray()'/>
 
       <for-each name='accept' in='select(usePackageEls, c + "accept")'>
