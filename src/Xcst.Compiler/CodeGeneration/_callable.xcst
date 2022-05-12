@@ -154,7 +154,7 @@
                </message>
             </if>
             <variable name='paramName' value='xcst_unescape_identifier(xcst_name(param.Attribute("name")!), language)'/>
-            <if test='!param.ElementsBeforeSelf(param.Name).All(p => !xcst_name_equal(p.Attribute("name")!, paramName))'>
+            <if test='!preceding_sibling(param, param.Name).All(p => !xcst_name_equal(p.Attribute("name")!, paramName))'>
                <message terminate='yes' error-code='XTSE0580' error-data='src_error_object(param)' transform-text='trim'>
                   The name of the parameter is not unique.
                </message>
@@ -350,7 +350,7 @@
                <with-param name='el' value='param'/>
             </call-template>
             <variable name='paramName' value='xcst_unescape_identifier(xcst_name(param.Attribute("name")!), language)'/>
-            <if test='!param.ElementsBeforeSelf(param.Name).All(p => !xcst_name_equal(p.Attribute("name")!, paramName))'>
+            <if test='!preceding_sibling(param, param.Name).All(p => !xcst_name_equal(p.Attribute("name")!, paramName))'>
                <message terminate='yes' error-code='XTSE0580' error-data='src_error_object(param)' transform-text='trim'>
                   The name of the parameter is not unique.
                </message>
@@ -1019,10 +1019,8 @@
                </for-each>
             </code:parameters>
             <if test='visibility != "abstract"'>
-               <variable name='hiddenMeta' value='meta
-                  .ElementsBeforeSelf()
-                  .FirstOrDefault(p => p.Name.Namespace == xcst
-                     &amp;&amp; xcst_homonymous(p, meta)
+               <variable name='hiddenMeta' value='preceding_sibling(meta, xcst)
+                  .FirstOrDefault(p => xcst_homonymous(p, meta)
                      &amp;&amp; (p.Attribute("accepted") is null
                         || !xs_boolean(p.Attribute("accepted")!)))'/>
                <code:block>
@@ -1654,8 +1652,7 @@
          .Elements(xcst + "template")
          .First(p => p.Attribute("declaration-id")?.Value == id)'/>
 
-      <variable name='meta' value='currentMeta
-         .ElementsBeforeSelf(xcst + "template")
+      <variable name='meta' value='preceding_sibling(currentMeta, xcst + "template")
          .Where(p => xcst_homonymous(p, currentMeta)
             &amp;&amp; (p.Attribute("accepted") is null
                || !xs_boolean(p.Attribute("accepted")!)))
@@ -1698,7 +1695,7 @@
          <call-template name='xcst:value-or-sequence-constructor'>
             <with-param name='el' value='withParam'/>
          </call-template>
-         <if test='!withParam.ElementsBeforeSelf(withParam.Name)
+         <if test='!preceding_sibling(withParam, withParam.Name)
                .All(p => !xcst_name_equal(p.Attribute("name")!, withParam.Attribute("name")!))'>
             <message terminate='yes' error-code='XTSE0670' error-data='src_error_object(withParam)' transform-text='trim'>
                Duplicate parameter name.
@@ -1957,7 +1954,7 @@
                      <call-template name='xcst:no-other-preceding'>
                         <with-param name='el' value='param'/>
                      </call-template>
-                     <if test='!param.ElementsBeforeSelf(param.Name).All(p => !xcst_name_equal(p.Attribute("name")!, param.Attribute("name")!))'>
+                     <if test='!preceding_sibling(param, param.Name).All(p => !xcst_name_equal(p.Attribute("name")!, param.Attribute("name")!))'>
                         <message terminate='yes' error-code='XTSE0580' error-data='src_error_object(param)' transform-text='trim'>
                            The name of the parameter is not unique.
                         </message>

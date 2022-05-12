@@ -95,7 +95,7 @@
          <with-param name='el' value='el'/>
          <with-param name='allowed' value='new[] { "accept", "override" }'/>
       </call-template>
-      <if test='!el.ElementsBeforeSelf(el.Name)
+      <if test='!preceding_sibling(el, el.Name)
             .All(p => !xcst_name_equal(p.Attribute("name"), el.Attribute("name")))'>
          <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(el)' transform-text='trim'>
             Duplicate c:use-package declaration.

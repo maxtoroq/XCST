@@ -403,9 +403,7 @@
    </template>
 
    <template match='XElement el &amp;&amp; el.Name == code + "field"' mode='cs:source'>
-      <if test='!(el
-            .ElementsBeforeSelf()
-            .Where(p => p.Name.Namespace == code)
+      <if test='!(preceding_sibling(el, code)
             .FirstOrDefault()?.Name == code + "field")'>
          <value-of value='src_new_line'/>
       </if>
@@ -520,7 +518,7 @@
       </call-template>
       <call-template name='src:new-line-indented'/>
       <if test='el.Parent!.Name == code + "if-else"
-            &amp;&amp; el.ElementsBeforeSelf(code + "if").Any()'>
+            &amp;&amp; preceding_sibling(el, code + "if").Any()'>
          <text> else </text>
       </if>
       <text>if (</text>

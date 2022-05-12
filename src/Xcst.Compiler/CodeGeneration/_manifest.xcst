@@ -113,11 +113,10 @@
       <param name='modules' as='XElement[]' tunnel='yes' required='yes'/>
       <param name='modulePos' as='int' tunnel='yes' required='yes'/>
 
-      <if test='!el.ElementsBeforeSelf()
-            .Where(p => p.Name.Namespace == c)
+      <if test='!preceding_sibling(el, c)
             .Concat((el.Parent!.Name == c + "override") ?
-               select(el.Parent.ElementsBeforeSelf(c + "override"), c)
-               : select(el.ElementsBeforeSelf(c + "use-package"), c + "override", c))
+               select(preceding_sibling(el.Parent, c + "override"), c)
+               : select(preceding_sibling(el, c + "use-package"), c + "override", c))
             .All(p => !xcst_homonymous(p, el))'>
          <message terminate='yes' error-code='XTSE0630' error-data='src_error_object(el)'>
             <text>Duplicate </text>

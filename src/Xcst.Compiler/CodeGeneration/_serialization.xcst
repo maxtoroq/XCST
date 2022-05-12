@@ -81,7 +81,7 @@
                   Namespace prefix '{output.GetPrefixOfNamespace(outputName.Namespace)}' refers to a reserved namespace.
                </message>
             </if>
-            <if test='!output.ElementsBeforeSelf(output.Name)
+            <if test='!preceding_sibling(output, output.Name)
                   .Select(p => (p.Attribute("name") is XAttribute nameAttr) ? xcst_EQName(nameAttr) : null)
                   .All(p => (outputName is null) ? p != null : outputName != p)'>
                <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(output)' transform-text='trim'>

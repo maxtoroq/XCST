@@ -124,6 +124,21 @@ namespace Xcst.Compiler {
       fn_normalize_space(string? str) =>
          SimpleContent.NormalizeSpace(str);
 
+      static IEnumerable<XElement>
+      preceding_sibling(XNode node, object name) {
+
+         var result = node.ElementsBeforeSelf()
+            .Reverse();
+
+         result = name switch {
+            XName xname => result.Where(p => p.Name == xname),
+            XNamespace ns => result.Where(p => p.Name.Namespace == ns),
+            _ => throw new ArgumentOutOfRangeException(),
+         };
+
+         return result;
+      }
+
       static string
       fn_replace(string? input, string pattern, string replacement) =>
          Regex.Replace(input ?? String.Empty, pattern, replacement);

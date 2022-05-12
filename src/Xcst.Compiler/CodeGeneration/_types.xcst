@@ -67,7 +67,7 @@
       <variable name='name' value='xcst_unescape_identifier(nameExpr, language)'/>
       <variable name='nameWasEscaped' value='nameExpr != name'/>
 
-      <if test='!el.ElementsBeforeSelf(el.Name).All(p => !xcst_homonymous(p, el))'>
+      <if test='!preceding_sibling(el, el.Name).All(p => !xcst_homonymous(p, el))'>
          <message terminate='yes' error-code='XTSE0220' error-data='src_error_object(el)' transform-text='trim'>
             Duplicate c:type declaration.
          </message>

@@ -234,8 +234,8 @@
          .Except(el.Nodes()
             .Where(p => (p is XElement p2
                   &amp;&amp; (p2.Name == c + "catch" || p2.Name == c + "finally"))
-               || p.ElementsBeforeSelf(c + "catch").Any()
-               || p.ElementsBeforeSelf(c + "finally").Any()))
+               || preceding_sibling(p, c + "catch").Any()
+               || preceding_sibling(p, c + "finally").Any()))
          .ToArray()'/>
 
       <call-template name='xcst:value-or-sequence-constructor'>

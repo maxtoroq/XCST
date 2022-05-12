@@ -74,7 +74,7 @@
                </message>
             </if>
             <variable name='paramName' value='xcst_unescape_identifier(xcst_name(param.Attribute("name")!), language)'/>
-            <if test='!param.ElementsBeforeSelf(param.Name).All(p => !xcst_name_equal(p.Attribute("name")!, paramName))'>
+            <if test='!preceding_sibling(param, param.Name).All(p => !xcst_name_equal(p.Attribute("name")!, paramName))'>
                <message terminate='yes' error-code='XTSE0580' error-data='src_error_object(param)' transform-text='trim'>
                   The name of the parameter is not unique.
                </message>
