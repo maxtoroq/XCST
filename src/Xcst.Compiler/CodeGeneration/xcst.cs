@@ -178,7 +178,7 @@ namespace Xcst.Compiler {
 
       static string
       StringId(string value) =>
-         XmlConvert.ToString(value.GetHashCode());
+         XmlConvert.ToString(GetHashCodeDeterministic(value));
 
       IXcstPackage?
       ExtensionPackage(XElement el) {
