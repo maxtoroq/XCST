@@ -26,7 +26,7 @@ namespace Xcst.Runtime {
 
          foreach (var item in ValueAsEnumerable(input)) {
 
-            TemplateContext context = TemplateContext.ForApplyTemplatesItem(baseContext, mode, item);
+            var context = TemplateContext.ForApplyTemplatesItem(baseContext, mode, item);
             modeFn(context);
          }
       }
@@ -46,7 +46,7 @@ namespace Xcst.Runtime {
                output.WriteString(separator);
             }
 
-            TemplateContext context = TemplateContext.ForApplyTemplatesItem(baseContext, mode, item);
+            var context = TemplateContext.ForApplyTemplatesItem(baseContext, mode, item);
             modeFn(context);
          }
       }
@@ -54,7 +54,7 @@ namespace Xcst.Runtime {
       static IEnumerable
       ValueAsEnumerable(object? input) {
 
-         IEnumerable? valueAsEnum = SimpleContent.ValueAsEnumerable(input, checkToString: false);
+         var valueAsEnum = SimpleContent.ValueAsEnumerable(input, checkToString: false);
 
          if (valueAsEnum is null
             || input is XmlNode

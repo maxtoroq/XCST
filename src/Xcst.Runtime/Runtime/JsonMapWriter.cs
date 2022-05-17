@@ -68,7 +68,7 @@ namespace Xcst.Runtime {
       public static JsonMapWriter
       CastMapEntry(ISequenceWriter<JProperty> output) {
 
-         JsonMapWriter mapWriter = TryCast(output)
+         var mapWriter = TryCast(output)
             ?? throw new RuntimeException("Could not cast output to JsonMapWriter.");
 
          return mapWriter;
@@ -77,17 +77,16 @@ namespace Xcst.Runtime {
       static JsonMapWriter?
       TryCast<TItem>(ISequenceWriter<TItem> output) where TItem : JToken {
 
-         MapWriter? mapWriter = output.TryCastToMapWriter();
+         switch (output.TryCastToMapWriter()) {
+            case null:
+               return null;
 
-         if (mapWriter is null) {
-            return null;
+            case JsonMapWriter jsonWriter:
+               return jsonWriter;
+
+            default:
+               throw new RuntimeException("Cannot mix MapWriter implementations.");
          }
-
-         if (mapWriter is JsonMapWriter jsonWriter) {
-            return jsonWriter;
-         }
-
-         throw new RuntimeException("Cannot mix MapWriter implementations.");
       }
    }
 

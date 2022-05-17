@@ -40,7 +40,7 @@ namespace Xcst.Xml {
       static
       XmlWriterSettingsFactory() {
 
-         Type settingsType = typeof(XmlWriterSettings);
+         var settingsType = typeof(XmlWriterSettings);
 
          _setOutputMethod = (Action<XmlWriterSettings, XmlOutputMethod>)
             Delegate.CreateDelegate(typeof(Action<XmlWriterSettings, XmlOutputMethod>), settingsType.GetProperty(nameof(XmlWriterSettings.OutputMethod), BindingFlags.Instance | BindingFlags.Public)!.GetSetMethod(true)!);
@@ -123,7 +123,7 @@ namespace Xcst.Xml {
             settings.OmitXmlDeclaration = parameters.OmitXmlDeclaration.Value;
          }
 
-         Encoding enc = settings.Encoding;
+         var enc = settings.Encoding;
 
          if (parameters.ByteOrderMark != null
             && !parameters.ByteOrderMark.Value) {

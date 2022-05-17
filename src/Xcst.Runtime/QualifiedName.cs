@@ -101,14 +101,14 @@ namespace Xcst {
             && localOrUriQualifiedName[0] == 'Q'
             && localOrUriQualifiedName[1] == '{') {
 
-            int closeIndex = localOrUriQualifiedName.IndexOf('}');
+            var closeIndex = localOrUriQualifiedName.IndexOf('}');
 
             if (closeIndex < 0) {
                throw new ArgumentException("Closing brace not found.", nameof(localOrUriQualifiedName));
             }
 
-            string ns = SimpleContent.Trim(localOrUriQualifiedName.Substring(2, closeIndex - 2));
-            string local = localOrUriQualifiedName.Substring(closeIndex + 1);
+            var ns = SimpleContent.Trim(localOrUriQualifiedName.Substring(2, closeIndex - 2));
+            var local = localOrUriQualifiedName.Substring(closeIndex + 1);
 
             return new QualifiedName(local, ns);
          }

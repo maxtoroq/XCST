@@ -105,7 +105,7 @@ namespace Xcst.Runtime {
          _inAttr = true;
 
          int hashCode;
-         int idx = 0;
+         var idx = 0;
 
          Assert.That(localName != null);
          Debug.Assert(localName.Length != 0);
@@ -303,20 +303,20 @@ namespace Xcst.Runtime {
 
             if (localName != null) {
 
-               string? prefix = _arrAttrs[idx].Prefix;
-               string? ns = _arrAttrs[idx].Namespace;
-               string? separator = _arrAttrs[idx].Separator;
+               var prefix = _arrAttrs[idx].Prefix;
+               var ns = _arrAttrs[idx].Namespace;
+               var separator = _arrAttrs[idx].Separator;
 
                base.WriteStartAttribute(prefix, localName, ns, null);
 
-               bool first = true;
-               bool lastWasText = false;
+               var first = true;
+               var lastWasText = false;
 
                // Output all of this attribute's text
                while (++idx != idxNext) {
 
-                  object? obj = _arrAttrs[idx].Object;
-                  string? sep = separator;
+                  var obj = _arrAttrs[idx].Object;
+                  var sep = separator;
 
                   if (obj != null) {
 
@@ -340,7 +340,7 @@ namespace Xcst.Runtime {
                         base.WriteString(sep);
                      }
 
-                     string? text = _arrAttrs[idx].Text;
+                     var text = _arrAttrs[idx].Text;
                      base.WriteString(text);
 
                      lastWasText = true;
@@ -365,9 +365,9 @@ namespace Xcst.Runtime {
                _arrAttrs[i].Init(default(object));
             }
 
-            _numEntries = default(int);
-            _idxLastName = default(int);
-            _hashCodeUnion = default(int);
+            _numEntries = default;
+            _idxLastName = default;
+            _hashCodeUnion = default;
          }
       }
 
@@ -377,7 +377,7 @@ namespace Xcst.Runtime {
          if (_lastItem != null
             && (_lastItem.Value != ItemType.Text || type != ItemType.Text)) {
 
-            string? separator = (this.Depth == 0 ? _itemSeparator : null);
+            var separator = (this.Depth == 0 ? _itemSeparator : null);
 
             if (separator is null
                && _lastItem.Value == ItemType.Object

@@ -22,7 +22,7 @@ namespace Xcst {
    public class OutputParameters {
 
       readonly Dictionary<QualifiedName, object?>
-      _parameters = new Dictionary<QualifiedName, object?>();
+      _parameters = new();
 
       public object?
       this[string name] =>
@@ -215,76 +215,78 @@ namespace Xcst {
       RequestedHtmlVersion() {
 
          decimal? value = null/*this.HtmlVersion*/;
-         decimal versionValue;
 
-         if (value != null
-            || this.Version is null
-            || !Decimal.TryParse(this.Version, out versionValue)) {
-
+         if (value != null) {
             return value;
          }
 
-         return versionValue;
+         if (this.Version != null
+            && Decimal.TryParse(this.Version, out var versionValue)) {
+
+            return versionValue;
+         }
+
+         return default;
       }
 
       static class StandardParameters {
 
          public static readonly QualifiedName
-         ByteOrderMark = new QualifiedName("byte-order-mark");
+         ByteOrderMark = new("byte-order-mark");
 
          public static readonly QualifiedName
-         CdataSectionElements = new QualifiedName("cdata-section-elements");
+         CdataSectionElements = new("cdata-section-elements");
 
          public static readonly QualifiedName
-         DoctypePublic = new QualifiedName("doctype-public");
+         DoctypePublic = new("doctype-public");
 
          public static readonly QualifiedName
-         DoctypeSystem = new QualifiedName("doctype-system");
+         DoctypeSystem = new("doctype-system");
 
          public static readonly QualifiedName
-         Encoding = new QualifiedName("encoding");
+         Encoding = new("encoding");
 
          public static readonly QualifiedName
-         EscapeUriAttributes = new QualifiedName("escape-uri-attributes");
+         EscapeUriAttributes = new("escape-uri-attributes");
          /*
          public static readonly QualifiedName
-         HtmlVersion = new QualifiedName("html-version");
+         HtmlVersion = new("html-version");
 
          public static readonly QualifiedName
-         IncludeContentType = new QualifiedName("include-content-type");
+         IncludeContentType = new("include-content-type");
          */
          public static readonly QualifiedName
-         Indent = new QualifiedName("indent");
+         Indent = new("indent");
 
          public static readonly QualifiedName
-         IndentSpaces = new QualifiedName("indent-spaces");
+         IndentSpaces = new("indent-spaces");
 
          public static readonly QualifiedName
-         ItemSeparator = new QualifiedName("item-separator");
+         ItemSeparator = new("item-separator");
 
          public static readonly QualifiedName
-         MediaType = new QualifiedName("media-type");
+         MediaType = new("media-type");
 
          public static readonly QualifiedName
-         Method = new QualifiedName("method");
+         Method = new("method");
 
          public static readonly QualifiedName
-         OmitXmlDeclaration = new QualifiedName("omit-xml-declaration");
+         OmitXmlDeclaration = new("omit-xml-declaration");
 
          public static readonly QualifiedName
-         SkipCharacterCheck = new QualifiedName("skip-character-check");
+         SkipCharacterCheck = new("skip-character-check");
 
          public static readonly QualifiedName
-         Standalone = new QualifiedName("standalone");
+         Standalone = new("standalone");
          /*
          public static readonly QualifiedName
-         SuppressIndentation = new QualifiedName("suppress-indentation");
+         SuppressIndentation = new("suppress-indentation");
 
          public static readonly QualifiedName
-         UndeclarePrefixes = new QualifiedName("undeclare-prefixes");
+         UndeclarePrefixes = new("undeclare-prefixes");
          */
          public static readonly QualifiedName
-         Version = new QualifiedName("version");
+         Version = new("version");
 
          public static QualifiedName
          Parse(string name) =>
@@ -321,13 +323,13 @@ namespace Xcst {
       public static class Methods {
 
          public static readonly QualifiedName
-         Xml = new QualifiedName("xml");
+         Xml = new("xml");
 
          public static readonly QualifiedName
-         Html = new QualifiedName("html");
+         Html = new("html");
 
          public static readonly QualifiedName
-         Text = new QualifiedName("text");
+         Text = new("text");
 
          internal static QualifiedName
          Parse(string method) =>

@@ -22,7 +22,7 @@ namespace Xcst.Runtime {
    public class TemplateContext {
 
       static readonly TemplateContext
-      _emptyContext = new TemplateContext(0, 0, null);
+      _emptyContext = new(0, 0, null);
 
       readonly Dictionary<string, object?>?
       _templateParameters;
@@ -250,22 +250,20 @@ namespace Xcst.Runtime {
             bool required = false,
             bool tunnel = false) {
 
-         Dictionary<string, object?>? paramsDict = (tunnel) ?
+         var paramsDict = (tunnel) ?
             _tunnelParameters
             : _templateParameters;
 
-         object? value = null;
-
-         if (paramsDict?.TryGetValue(name, out value) == true) {
+         if (paramsDict?.TryGetValue(name, out var value) == true) {
 
             if (!tunnel) {
                paramsDict.Remove(name);
             }
 
             try {
-#pragma warning disable CS8603 // let caller decide nullability
+#pragma warning disable CS8600, CS8603 // let caller decide nullability
                return (TDefault)value;
-#pragma warning restore CS8603
+#pragma warning restore CS8600, CS8603
 
             } catch (InvalidCastException) {
                throw DynamicError.InvalidParameterCast(name);
@@ -281,7 +279,7 @@ namespace Xcst.Runtime {
          }
 
 #pragma warning disable CS8603 // let caller decide nullability
-         return default(TDefault);
+         return default;
 #pragma warning restore CS8603
       }
 
@@ -296,9 +294,9 @@ namespace Xcst.Runtime {
          if (valueSet) {
 
             try {
-#pragma warning disable CS8603 // let caller decide nullability
+#pragma warning disable CS8600, CS8603 // let caller decide nullability
                return (TDefault)value;
-#pragma warning restore CS8603
+#pragma warning restore CS8600, CS8603
 
             } catch (InvalidCastException) {
                throw DynamicError.InvalidParameterCast(name);
@@ -314,7 +312,7 @@ namespace Xcst.Runtime {
          }
 
 #pragma warning disable CS8603 // let caller decide nullability
-         return default(TDefault);
+         return default;
 #pragma warning restore CS8603
       }
 

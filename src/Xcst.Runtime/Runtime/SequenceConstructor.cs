@@ -32,7 +32,7 @@ namespace Xcst.Runtime {
          if (_trackStack != null
             && _trackStack.Count > 0) {
 
-            State state = _trackStack.Peek();
+            var state = _trackStack.Peek();
 
             if (state.Depth != depth) {
                return;
@@ -52,7 +52,7 @@ namespace Xcst.Runtime {
          if (_trackStack != null
             && _trackStack.Count > 0) {
 
-            State state = _trackStack.Peek();
+            var state = _trackStack.Peek();
 
             if (state.Depth != depth) {
                return;
@@ -77,7 +77,7 @@ namespace Xcst.Runtime {
             return;
          }
 
-         State state = _trackStack!.Pop();
+         var state = _trackStack!.Pop();
 
          Debug.Assert(!state.EndReached);
 
@@ -87,7 +87,7 @@ namespace Xcst.Runtime {
       public static void
       EndTrack(Stack<State>? _trackStack) {
 
-         State state = _trackStack!.Pop();
+         var state = _trackStack!.Pop();
 
          if (!state.ItemWritten
             && state.Cardinality != '*'
@@ -99,7 +99,7 @@ namespace Xcst.Runtime {
          if (state.ItemWritten
             && _trackStack.Count > 0) {
 
-            State parentState = _trackStack.Pop();
+            var parentState = _trackStack.Pop();
 
             Debug.Assert(!parentState.EndReached);
 

@@ -42,7 +42,7 @@ namespace Xcst.Runtime {
       _arrayOutput;
 
       readonly List<object>
-      _objects = new List<object>();
+      _objects = new();
 
       int
       _depth;
@@ -157,7 +157,7 @@ namespace Xcst.Runtime {
 
          Assert.That(array != null);
 
-         object?[] items = array.ToArray();
+         var items = array.ToArray();
 
          array.Clear();
 
@@ -196,7 +196,7 @@ namespace Xcst.Runtime {
 
          if (key is null) throw new ArgumentNullException(nameof(key));
 
-         var map = Peek<IExpandoMap>()
+         _ = Peek<IExpandoMap>()
             ?? throw new RuntimeException("An entry can only be written to a map.");
 
          OnItemWritting();
@@ -277,7 +277,7 @@ namespace Xcst.Runtime {
       T?
       Peek<T>(int offset = 0) where T : class {
 
-         int i = _objects.Count - 1 - offset;
+         var i = _objects.Count - 1 - offset;
 
          Debug.Assert(i >= 0);
 
@@ -303,7 +303,7 @@ namespace Xcst.Runtime {
             map[entry.Key] = value;
          } else {
 
-            object? existingValue = map[entry.Key];
+            var existingValue = map[entry.Key];
             var implicitArray = new ExpandoArray { existingValue, value };
 
             Push(implicitArray);

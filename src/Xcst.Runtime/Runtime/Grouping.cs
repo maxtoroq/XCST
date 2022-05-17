@@ -40,17 +40,17 @@ namespace Xcst.Runtime {
 
          ValidateGroupSize(size);
 
-         using (IEnumerator<TSource> enumerator = source.GetEnumerator()) {
-            while (enumerator.MoveNext()) {
-               yield return Batch(enumerator, size).ToList();
-            }
+         using var enumerator = source.GetEnumerator();
+
+         while (enumerator.MoveNext()) {
+            yield return Batch(enumerator, size).ToList();
          }
       }
 
       static IEnumerable<T>
       Batch<T>(IEnumerator<T> source, int size) {
 
-         int i = 0;
+         var i = 0;
 
          do {
             yield return source.Current;

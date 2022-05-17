@@ -26,7 +26,7 @@ namespace Xcst {
    static class WriterFactory {
 
       internal static readonly Uri
-      AbsentOutputUri = new Uri(String.Empty, UriKind.Relative);
+      AbsentOutputUri = new(String.Empty, UriKind.Relative);
 
       public static CreateWriterDelegate
       CreateWriter(Stream output, Uri? outputUri) =>
@@ -53,7 +53,7 @@ namespace Xcst {
 
          return (defaultParams, overrideParams, context) => {
 
-            OutputParameters parameters = MergedParameters(defaultParams, overrideParams);
+            var parameters = MergedParameters(defaultParams, overrideParams);
 
             return CreateRuntimeWriter(output, parameters, context);
          };
@@ -64,7 +64,7 @@ namespace Xcst {
 
          return (defaultParams, overrideParams, context) => {
 
-            OutputParameters parameters = MergedParameters(defaultParams, overrideParams);
+            var parameters = MergedParameters(defaultParams, overrideParams);
 
             return CreateRuntimeWriter(CreateXmlXcstWriter(parameters, outputUri ?? context.BaseOutputUri ?? AbsentOutputUri,
                p => writerFn(p)), parameters, context, dispose);
@@ -98,9 +98,9 @@ namespace Xcst {
       static XcstWriter
       CreateXmlXcstWriter(OutputParameters parameters, Uri outputUri, Func<OutputParameters, XmlWriter> writerFn) {
 
-         XmlWriter writer = writerFn(parameters);
+         var writer = writerFn(parameters);
 
-         XmlWriter finalWriter = WrapHtmlWriter(writer, parameters)
+         var finalWriter = WrapHtmlWriter(writer, parameters)
             ?? writer;
 
          return new XmlXcstWriter(finalWriter, outputUri, parameters);

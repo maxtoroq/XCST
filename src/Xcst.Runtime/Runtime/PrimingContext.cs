@@ -23,7 +23,7 @@ namespace Xcst.Runtime {
    public class PrimingContext {
 
       static readonly PrimingContext
-      _emptyContext = new PrimingContext(0);
+      _emptyContext = new(0);
 
       readonly Dictionary<string, object?>?
       _parameters;
@@ -60,16 +60,14 @@ namespace Xcst.Runtime {
       public TValue
       Param<TValue>(string name, Func<TValue>? defaultValue = null, bool required = false) {
 
-         object? value = null;
-
-         if (_parameters?.TryGetValue(name, out value) == true) {
+         if (_parameters?.TryGetValue(name, out var value) == true) {
 
             _parameters.Remove(name);
 
             try {
-#pragma warning disable CS8603 // let caller decide nullability
+#pragma warning disable CS8600, CS8603 // let caller decide nullability
                return (TValue)value;
-#pragma warning restore CS8603
+#pragma warning restore CS8600, CS8603
 
             } catch (InvalidCastException) {
                throw DynamicError.InvalidParameterCast(name);
@@ -85,7 +83,7 @@ namespace Xcst.Runtime {
          }
 
 #pragma warning disable CS8603 // let caller decide nullability
-         return default(TValue);
+         return default;
 #pragma warning restore CS8603
       }
    }

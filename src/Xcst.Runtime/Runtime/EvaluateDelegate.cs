@@ -40,20 +40,20 @@ namespace Xcst.Runtime {
          if (context is null) throw new ArgumentNullException(nameof(context));
          if (output is null) throw new ArgumentNullException(nameof(output));
 
-         Type delType = del.GetType();
-         Type xcstType = delType.GetGenericTypeDefinition();
+         var delType = del.GetType();
+         var xcstType = delType.GetGenericTypeDefinition();
 
          if (xcstType != typeof(XcstDelegate<>)) {
             throw new RuntimeException("Invalid delegate.");
          }
 
-         Type[] xcstTypeParams = delType.GetGenericArguments();
-         Type derivedType = xcstTypeParams[0];
-         Type baseType = typeof(TItem);
+         var xcstTypeParams = delType.GetGenericArguments();
+         var derivedType = xcstTypeParams[0];
+         var baseType = typeof(TItem);
 
          object derivedWriter = output;
 
-         bool compatibleOutput = typeof(ISequenceWriter<>)
+         var compatibleOutput = typeof(ISequenceWriter<>)
             .MakeGenericType(derivedType)
             .IsAssignableFrom(output.GetType());
 

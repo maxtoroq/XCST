@@ -76,11 +76,11 @@ namespace Xcst {
       public void
       WriteStartElementLexical(string lexical, string? ns) {
 
-         int prefixIndex = lexical.IndexOf(':');
-         bool hasPrefix = prefixIndex > 0;
+         var prefixIndex = lexical.IndexOf(':');
+         var hasPrefix = prefixIndex > 0;
 
-         string? prefix = (hasPrefix) ? lexical.Substring(0, prefixIndex) : null;
-         string localName = (hasPrefix) ? lexical.Substring(prefixIndex + 1) : lexical;
+         var prefix = (hasPrefix) ? lexical.Substring(0, prefixIndex) : null;
+         var localName = (hasPrefix) ? lexical.Substring(prefixIndex + 1) : lexical;
 
          WriteStartElement(prefix, localName, ns);
       }
@@ -148,11 +148,11 @@ namespace Xcst {
       public void
       WriteStartAttributeLexical(string lexical, string? ns, string? separator) {
 
-         int prefixIndex = lexical.IndexOf(':');
-         bool hasPrefix = prefixIndex > 0;
+         var prefixIndex = lexical.IndexOf(':');
+         var hasPrefix = prefixIndex > 0;
 
-         string? prefix = (hasPrefix) ? lexical.Substring(0, prefixIndex) : null;
-         string localName = (hasPrefix) ? lexical.Substring(prefixIndex + 1) : lexical;
+         var prefix = (hasPrefix) ? lexical.Substring(0, prefixIndex) : null;
+         var localName = (hasPrefix) ? lexical.Substring(prefixIndex + 1) : lexical;
 
          if (hasPrefix
             && String.IsNullOrEmpty(ns)) {
@@ -282,47 +282,42 @@ namespace Xcst {
       public bool
       TryCopyOf(object? value) {
 
-         if (value is XNode xNode) {
-            CopyOf(xNode);
-            return true;
-         }
+         switch (value) {
+            case XNode xNode:
+               CopyOf(xNode);
+               return true;
 
-         if (value is XAttribute xAttr) {
-            CopyOf(xAttr);
-            return true;
-         }
+            case XAttribute xAttr:
+               CopyOf(xAttr);
+               return true;
 
-         if (value is XmlNode xmlNode) {
-            CopyOf(xmlNode);
-            return true;
-         }
+            case XmlNode xmlNode:
+               CopyOf(xmlNode);
+               return true;
 
-         if (value is IXPathNavigable xpathNav) {
-            CopyOf(xpathNav);
-            return true;
-         }
+            case IXPathNavigable xpathNav:
+               CopyOf(xpathNav);
+               return true;
 
-         if (value is IXmlSerializable xmlSer) {
-            CopyOf(xmlSer);
-            return true;
-         }
+            case IXmlSerializable xmlSer:
+               CopyOf(xmlSer);
+               return true;
 
-         if (value is XmlReader reader) {
-            CopyOf(reader);
-            return true;
-         }
+            case XmlReader reader:
+               CopyOf(reader);
+               return true;
 
-         if (value is JObject jObj) {
-            CopyOf(jObj);
-            return true;
-         }
+            case JObject jObj:
+               CopyOf(jObj);
+               return true;
 
-         if (value is JArray jArr) {
-            CopyOf(jArr);
-            return true;
-         }
+            case JArray jArr:
+               CopyOf(jArr);
+               return true;
 
-         return false;
+            default:
+               return false;
+         }
       }
 
       void
@@ -357,7 +352,7 @@ namespace Xcst {
 
          if (value != null) {
 
-            XPathNavigator nav = value as XPathNavigator
+            var nav = value as XPathNavigator
                ?? value.CreateNavigator()
                ?? throw new RuntimeException("Could not create navigator.");
 

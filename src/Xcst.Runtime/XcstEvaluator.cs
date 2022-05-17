@@ -25,13 +25,13 @@ namespace Xcst {
    public class XcstEvaluator {
 
       static readonly QualifiedName
-      _initialTemplate = new QualifiedName("initial-template", XmlNamespaces.Xcst);
+      _initialTemplate = new("initial-template", XmlNamespaces.Xcst);
 
       readonly IXcstPackage
       _package;
 
       readonly Dictionary<string, object?>
-      _parameters = new Dictionary<string, object?>();
+      _parameters = new();
 
       bool
       _paramsLocked = false;
@@ -128,7 +128,7 @@ namespace Xcst {
 
          if (values != null) {
 
-            PropertyDescriptorCollection props = TypeDescriptor.GetProperties(values);
+            var props = TypeDescriptor.GetProperties(values);
 
             foreach (PropertyDescriptor? prop in props) {
                object val = prop!.GetValue(values);
@@ -261,10 +261,10 @@ namespace Xcst {
       _mode;
 
       readonly Dictionary<string, object?>
-      _templateParameters = new Dictionary<string, object?>();
+      _templateParameters = new();
 
       readonly Dictionary<string, object?>
-      _tunnelParameters = new Dictionary<string, object?>();
+      _tunnelParameters = new();
 
       internal
       XcstTemplateEvaluator(IXcstPackage package, Func<PrimingContext> primeFn, QualifiedName name) {
@@ -443,7 +443,7 @@ namespace Xcst {
 
          if (output is null) throw new ArgumentNullException(nameof(output));
 
-         Action<TemplateContext> tmplFn = TemplateFunction(output);
+         var tmplFn = TemplateFunction(output);
 
          void executionFn(OutputParameters? overrideParams, bool skipFlush, TemplateContext tmplContext) =>
             EvaluateTemplate(tmplFn, tmplContext);
@@ -515,7 +515,7 @@ namespace Xcst {
          var defaultParams = new OutputParameters();
          _package.ReadOutputDefinition(null, defaultParams);
 
-         RuntimeWriter writer = writerFn(defaultParams, overrideParams, _package.Context);
+         var writer = writerFn(defaultParams, overrideParams, _package.Context);
 
          try {
 
@@ -637,8 +637,7 @@ namespace Xcst {
       internal void
       InitPackage() {
 
-         PrimingContext primingContext = _primeFn();
-
+         var primingContext = _primeFn();
          var execContext = new ExecutionContext(_package, primingContext, _formatProviderFn, _baseUri, _baseOutputUri);
 
          _package.Context = execContext;

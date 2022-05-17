@@ -74,7 +74,7 @@ namespace Xcst.PackageModel {
 
          type = GetUnderlyingType(type);
 
-         FieldInfo fld = type.GetField(minOrMax, BindingFlags.Public | BindingFlags.Static)
+         var fld = type.GetField(minOrMax, BindingFlags.Public | BindingFlags.Static)
             ?? throw new ArgumentException(
                   $"Could not find a '{minOrMax}' static field on type '{type.FullName}'. Specify an explicit value.", nameof(type));
 
@@ -102,9 +102,9 @@ namespace Xcst.PackageModel {
             return;
          }
 
-         string minimum = (string)this.Minimum;
-         string maximum = (string)this.Maximum;
-         Type type = this.OperandType;
+         var minimum = (string)this.Minimum;
+         var maximum = (string)this.Maximum;
+         var type = this.OperandType;
 
          if (minimum is null
             || maximum is null
@@ -115,9 +115,9 @@ namespace Xcst.PackageModel {
             return;
          }
 
-         TypeConverter converter = TypeDescriptor.GetConverter(type);
-         IComparable min = (IComparable)converter.ConvertFromString(null, MinMaxFormatCulture, minimum);
-         IComparable max = (IComparable)converter.ConvertFromString(null, MinMaxFormatCulture, maximum);
+         var converter = TypeDescriptor.GetConverter(type);
+         var min = (IComparable)converter.ConvertFromString(null, MinMaxFormatCulture, minimum);
+         var max = (IComparable)converter.ConvertFromString(null, MinMaxFormatCulture, maximum);
 
          object conversion(object value) =>
             (value != null && value.GetType() == type) ? value

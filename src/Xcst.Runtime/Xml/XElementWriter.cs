@@ -77,7 +77,7 @@ namespace Xcst.Xml {
 
             base.Close();
 
-            XElement el = _document.Root!;
+            var el = _document.Root!;
 
             Assert.That(el != null);
 

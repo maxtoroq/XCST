@@ -31,7 +31,6 @@ namespace Xcst.Runtime {
          if (action is null) throw new ArgumentNullException(nameof(action));
 
          var sb = new StringBuilder();
-
          var defaultParams = new OutputParameters();
 
          if (outputName != null) {

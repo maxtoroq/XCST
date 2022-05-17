@@ -62,13 +62,9 @@ namespace Xcst.Runtime {
       // For object, cast to abstract MapWriter
 
       public static MapWriter
-      CastMapEntry(ISequenceWriter<object> output) {
-
-         MapWriter mapWriter = output.TryCastToMapWriter()
+      CastMapEntry(ISequenceWriter<object> output) =>
+         output.TryCastToMapWriter()
             ?? throw new RuntimeException("Could not cast output to MapWriter.");
-
-         return mapWriter;
-      }
 
 
       // ## Maps and Arrays

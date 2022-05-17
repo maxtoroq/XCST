@@ -50,11 +50,11 @@ namespace Xcst.Runtime {
 
          if (value is null) throw new ArgumentNullException(nameof(value));
 
-         NumberStyles style = NumberStyles.AllowLeadingSign
+         var style = NumberStyles.AllowLeadingSign
             | NumberStyles.AllowTrailingSign
             | NumberStyles.AllowDecimalPoint;
 
-         return decimal.Parse(SimpleContent.Trim(value), style, CultureInfo.InvariantCulture);
+         return System.Decimal.Parse(SimpleContent.Trim(value), style, CultureInfo.InvariantCulture);
       }
 
       public static int
@@ -62,9 +62,9 @@ namespace Xcst.Runtime {
 
          if (value is null) throw new ArgumentNullException(nameof(value));
 
-         NumberStyles style = NumberStyles.AllowLeadingSign;
+         var style = NumberStyles.AllowLeadingSign;
 
-         return int.Parse(SimpleContent.Trim(value), style, CultureInfo.InvariantCulture);
+         return System.Int32.Parse(SimpleContent.Trim(value), style, CultureInfo.InvariantCulture);
       }
 
       public static string?
@@ -146,7 +146,7 @@ namespace Xcst.Runtime {
       public static IList<TItem>
       List<TItem>(string list, Func<string, TItem> parseFn) {
 
-         string normalized = SimpleContent.NormalizeSpace(list);
+         var normalized = SimpleContent.NormalizeSpace(list);
 
          if (string.IsNullOrEmpty(normalized)) {
             return Array.Empty<TItem>();

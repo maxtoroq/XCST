@@ -147,7 +147,7 @@ namespace Xcst.Runtime {
             TemplateContext context,
             Func<TDerived>? forTypeInference = null) where TDerived : TItem {
 
-         ISequenceWriter<TDerived> derivedWriter = SequenceWriter.AdjustWriter<TItem, TDerived>(this);
+         var derivedWriter = SequenceWriter.AdjustWriter<TItem, TDerived>(this);
 
          template(context, derivedWriter);
 
@@ -170,7 +170,7 @@ namespace Xcst.Runtime {
             TemplateContext<TParams> context,
             Func<TDerived>? forTypeInference = null) where TDerived : TItem {
 
-         ISequenceWriter<TDerived> derivedWriter = SequenceWriter.AdjustWriter<TItem, TDerived>(this);
+         var derivedWriter = SequenceWriter.AdjustWriter<TItem, TDerived>(this);
 
          template(context, derivedWriter);
 
@@ -180,7 +180,7 @@ namespace Xcst.Runtime {
       public TItem[]
       Flush() {
 
-         TItem[] seq = (_buffer as List<TItem>)?.ToArray()
+         var seq = (_buffer as List<TItem>)?.ToArray()
             ?? _buffer.ToArray();
 
          _buffer.Clear();
@@ -221,8 +221,8 @@ namespace Xcst.Runtime {
             return derivedWriter;
          }
 
-         Type baseType = typeof(TBase);
-         Type derivedType = typeof(TDerived);
+         var baseType = typeof(TBase);
+         var derivedType = typeof(TDerived);
 
          if (baseType.IsAssignableFrom(derivedType)) {
 
@@ -303,15 +303,15 @@ namespace Xcst.Runtime {
 
       public override void
       WriteObject(TDerived value) =>
-#pragma warning disable CS8604
+#pragma warning disable CS8600, CS8604
          _output.WriteObject((TBase)value);
-#pragma warning restore CS8604
+#pragma warning restore CS8600, CS8604
 
       public override void
       CopyOf(TDerived value) =>
-#pragma warning disable CS8604
+#pragma warning disable CS8600, CS8604
          _output.CopyOf((TBase)value);
-#pragma warning restore CS8604
+#pragma warning restore CS8600, CS8604
 
       public override XcstWriter?
       TryCastToDocumentWriter() =>

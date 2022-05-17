@@ -28,13 +28,13 @@ namespace Xcst.Runtime {
       _whiteSpaceChars = { (char)0x20, (char)0x9, (char)0xD, (char)0xA };
 
       static readonly ConcurrentDictionary<Type, bool>
-      _customToString = new ConcurrentDictionary<Type, bool>();
+      _customToString = new();
 
       readonly Func<IFormatProvider>
       _formatProviderFn;
 
       public static SimpleContent
-      Invariant { get; } = new SimpleContent(() => CultureInfo.InvariantCulture);
+      Invariant { get; } = new(() => CultureInfo.InvariantCulture);
 
       internal IFormatProvider
       FormatProvider => _formatProviderFn();
@@ -128,7 +128,7 @@ namespace Xcst.Runtime {
       static bool
       HasCustomToStringImpl(Type type) {
 
-         Type declaringType = type.GetMethod("ToString", Type.EmptyTypes)!.DeclaringType!;
+         var declaringType = type.GetMethod("ToString", Type.EmptyTypes)!.DeclaringType!;
 
          return declaringType != ((type.IsValueType) ?
             typeof(ValueType) : typeof(object));
@@ -146,7 +146,7 @@ namespace Xcst.Runtime {
             return value.ToString(this.FormatProvider);
          }
 
-         object?[] args = value.GetArguments();
+         var args = value.GetArguments();
 
          for (int i = 0; i < args.Length; i++) {
 

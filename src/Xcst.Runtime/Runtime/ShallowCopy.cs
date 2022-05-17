@@ -28,7 +28,7 @@ namespace Xcst.Runtime {
             TemplateContext context,
             ISequenceWriter<TBase> output) {
 
-         object? value = context.Input;
+         var value = context.Input;
 
          if (value is null) {
             ((dynamic)output).CopyOf(value);
@@ -60,17 +60,18 @@ namespace Xcst.Runtime {
             TemplateContext context,
             ISequenceWriter<TBase> output) {
 
-         if (value is XElement el) {
-            CopyXElement(package, currentMode, el, context, (ISequenceWriter<XElement>)output);
-            return true;
-         }
+         switch (value) {
+            case XElement el:
+               CopyXElement(package, currentMode, el, context, (ISequenceWriter<XElement>)output);
+               return true;
 
-         if (value is XDocument doc) {
-            CopyXDocument(package, currentMode, doc, context, (ISequenceWriter<XDocument>)output);
-            return true;
-         }
+            case XDocument doc:
+               CopyXDocument(package, currentMode, doc, context, (ISequenceWriter<XDocument>)output);
+               return true;
 
-         return false;
+            default:
+               return false;
+         }
       }
 
       static void
@@ -81,7 +82,7 @@ namespace Xcst.Runtime {
             TemplateContext context,
             ISequenceWriter<XDocument> output) {
 
-         XcstWriter docOutput = DocumentWriter.CastDocument(package, output);
+         var docOutput = DocumentWriter.CastDocument(package, output);
 
          try {
             foreach (var child in doc.Nodes()) {
@@ -102,8 +103,7 @@ namespace Xcst.Runtime {
             TemplateContext context,
             ISequenceWriter<XElement> output) {
 
-         XcstWriter elOutput = DocumentWriter.CastElement(package, output);
-
+         var elOutput = DocumentWriter.CastElement(package, output);
          elOutput.WriteStartElement(el.Name.LocalName, el.Name.NamespaceName);
 
          try {

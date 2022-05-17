@@ -27,9 +27,9 @@ namespace Xcst.Runtime {
 
          if (descending) {
             return Enumerable.OrderByDescending(source, keySelector);
-         } else {
-            return Enumerable.OrderBy(source, keySelector);
          }
+
+         return Enumerable.OrderBy(source, keySelector);
       }
    }
 }

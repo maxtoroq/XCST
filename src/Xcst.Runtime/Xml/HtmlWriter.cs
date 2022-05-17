@@ -34,7 +34,7 @@ namespace Xcst.Xml {
 
          if (_outputHtml5Doctype) {
 
-            string name = !String.IsNullOrEmpty(prefix) ?
+            var name = !String.IsNullOrEmpty(prefix) ?
                (prefix + ":" + localName)
                : localName;
 
