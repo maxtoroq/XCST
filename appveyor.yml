@@ -2,4 +2,4 @@ before_build:
   - cmd: MSBuild -t:restore
 
 version: '{build}'
-image: Visual Studio 2019
+image: Visual Studio 2022
