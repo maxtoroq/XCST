@@ -16,345 +16,344 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Xcst.Runtime {
+namespace Xcst.Runtime;
 
-   public abstract class BaseSequenceWriter<TItem> : ISequenceWriter<TItem> {
+public abstract class BaseSequenceWriter<TItem> : ISequenceWriter<TItem> {
 
-      Stack<SequenceConstructor.State>?
-      _trackStack;
+   Stack<SequenceConstructor.State>?
+   _trackStack;
 
-      public abstract void
-      WriteObject(TItem value);
+   public abstract void
+   WriteObject(TItem value);
 
-      public void
-      WriteObject(IEnumerable<TItem>? value) {
+   public void
+   WriteObject(IEnumerable<TItem>? value) {
 
-         if (value != null) {
+      if (value != null) {
 
-            foreach (var item in value) {
-               WriteObject(item);
-            }
+         foreach (var item in value) {
+            WriteObject(item);
          }
       }
-
-      public void
-      WriteObject<TDerived>(IEnumerable<TDerived>? value) where TDerived : TItem =>
-         WriteObject(value as IEnumerable<TItem> ?? value?.Cast<TItem>());
-
-      public void
-      WriteString(TItem text) => WriteObject(text);
-
-      public void
-      WriteRaw(TItem data) => WriteObject(data);
-
-      public void
-      WriteComment(string? text) { }
-
-      public abstract void
-      CopyOf(TItem value);
-
-      public void
-      CopyOf(IEnumerable<TItem>? value) {
-
-         if (value != null) {
-
-            foreach (var item in value) {
-               CopyOf(item);
-            }
-         }
-      }
-
-      public void
-      CopyOf<TDerived>(IEnumerable<TDerived>? value) where TDerived : TItem =>
-         CopyOf(value as IEnumerable<TItem> ?? value?.Cast<TItem>());
-
-      public virtual XcstWriter?
-      TryCastToDocumentWriter() => null;
-
-      public virtual MapWriter?
-      TryCastToMapWriter() => null;
-
-      public virtual void
-      BeginTrack(char cardinality) =>
-         SequenceConstructor.BeginTrack(cardinality, 0, ref _trackStack);
-
-      protected void
-      OnItemWritting() => SequenceConstructor.OnItemWritting(_trackStack, 0);
-
-      protected void
-      OnItemWritten() => SequenceConstructor.OnItemWritten(_trackStack, 0);
-
-      public virtual bool
-      OnEmpty() => SequenceConstructor.OnEmpty(_trackStack);
-
-      public virtual void
-      EndOfConstructor() => SequenceConstructor.EndOfConstructor(_trackStack);
-
-      public virtual void
-      EndTrack() => SequenceConstructor.EndTrack(_trackStack);
    }
 
-   /// <exclude/>
-   public class SequenceWriter<TItem> : BaseSequenceWriter<TItem> {
+   public void
+   WriteObject<TDerived>(IEnumerable<TDerived>? value) where TDerived : TItem =>
+      WriteObject(value as IEnumerable<TItem> ?? value?.Cast<TItem>());
 
-      readonly ICollection<TItem>
-      _buffer;
+   public void
+   WriteString(TItem text) => WriteObject(text);
 
-      public
-      SequenceWriter()
-         : this(new List<TItem>()) { }
+   public void
+   WriteRaw(TItem data) => WriteObject(data);
 
-      public
-      SequenceWriter(ICollection<TItem> buffer) {
+   public void
+   WriteComment(string? text) { }
 
-         if (buffer is null) throw new ArgumentNullException(nameof(buffer));
+   public abstract void
+   CopyOf(TItem value);
 
-         _buffer = buffer;
+   public void
+   CopyOf(IEnumerable<TItem>? value) {
+
+      if (value != null) {
+
+         foreach (var item in value) {
+            CopyOf(item);
+         }
       }
-
-      public override void
-      WriteObject(TItem value) {
-         OnItemWritting();
-         _buffer.Add(value);
-         OnItemWritten();
-      }
-
-      public override void
-      CopyOf(TItem value) =>
-         WriteObject(DeepCopy.CopyDynamically<TItem>(value));
-
-      public SequenceWriter<TItem>
-      WriteSequenceConstructor(Action<ISequenceWriter<TItem>> seqCtor) {
-
-         seqCtor(this);
-
-         return this;
-      }
-
-      public SequenceWriter<TItem>
-      WriteTemplate(
-            Action<TemplateContext, ISequenceWriter<TItem>> template,
-            TemplateContext context) {
-
-         template(context, this);
-
-         return this;
-      }
-
-      public SequenceWriter<TItem>
-      WriteTemplate<TDerived>(
-            Action<TemplateContext, ISequenceWriter<TDerived>> template,
-            TemplateContext context,
-            Func<TDerived>? forTypeInference = null) where TDerived : TItem {
-
-         var derivedWriter = SequenceWriter.AdjustWriter<TItem, TDerived>(this);
-
-         template(context, derivedWriter);
-
-         return this;
-      }
-
-      public SequenceWriter<TItem>
-      WriteTemplateWithParams<TParams>(
-            Action<TemplateContext<TParams>, ISequenceWriter<TItem>> template,
-            TemplateContext<TParams> context) {
-
-         template(context, this);
-
-         return this;
-      }
-
-      public SequenceWriter<TItem>
-      WriteTemplateWithParams<TDerived, TParams>(
-            Action<TemplateContext<TParams>, ISequenceWriter<TDerived>> template,
-            TemplateContext<TParams> context,
-            Func<TDerived>? forTypeInference = null) where TDerived : TItem {
-
-         var derivedWriter = SequenceWriter.AdjustWriter<TItem, TDerived>(this);
-
-         template(context, derivedWriter);
-
-         return this;
-      }
-
-      public TItem[]
-      Flush() {
-
-         var seq = (_buffer as List<TItem>)?.ToArray()
-            ?? _buffer.ToArray();
-
-         _buffer.Clear();
-
-         return seq;
-      }
-
-      public TItem
-      FlushSingle() => Flush().Single();
    }
 
-   /// <exclude/>
-   public static class SequenceWriter {
+   public void
+   CopyOf<TDerived>(IEnumerable<TDerived>? value) where TDerived : TItem =>
+      CopyOf(value as IEnumerable<TItem> ?? value?.Cast<TItem>());
 
-      public static SequenceWriter<TItem>
-      Create<TItem>(Func<TItem>? forTypeInference = null) =>
-         new SequenceWriter<TItem>();
+   public virtual XcstWriter?
+   TryCastToDocumentWriter() => null;
 
-      public static ISequenceWriter<TDerived>
-      AdjustWriter<TBase, TDerived>(
-            ISequenceWriter<TBase> output,
-            Func<TDerived>? forTypeInference = null) where TDerived : TBase {
+   public virtual MapWriter?
+   TryCastToMapWriter() => null;
 
-         if (output is null) throw new ArgumentNullException(nameof(output));
+   public virtual void
+   BeginTrack(char cardinality) =>
+      SequenceConstructor.BeginTrack(cardinality, 0, ref _trackStack);
 
-         return output as ISequenceWriter<TDerived>
-            ?? new DerivedSequenceWriter<TDerived, TBase>(output);
-      }
+   protected void
+   OnItemWritting() => SequenceConstructor.OnItemWritting(_trackStack, 0);
 
-      public static ISequenceWriter<TDerived>
-      AdjustWriterDynamically<TBase, TDerived>(
-            ISequenceWriter<TBase> output,
-            Func<TDerived>? forTypeInference = null) {
+   protected void
+   OnItemWritten() => SequenceConstructor.OnItemWritten(_trackStack, 0);
 
-         if (output is null) throw new ArgumentNullException(nameof(output));
+   public virtual bool
+   OnEmpty() => SequenceConstructor.OnEmpty(_trackStack);
 
-         if (output is ISequenceWriter<TDerived> derivedWriter) {
-            return derivedWriter;
-         }
+   public virtual void
+   EndOfConstructor() => SequenceConstructor.EndOfConstructor(_trackStack);
 
-         var baseType = typeof(TBase);
-         var derivedType = typeof(TDerived);
+   public virtual void
+   EndTrack() => SequenceConstructor.EndTrack(_trackStack);
+}
 
-         if (baseType.IsAssignableFrom(derivedType)) {
+/// <exclude/>
+public class SequenceWriter<TItem> : BaseSequenceWriter<TItem> {
 
-            return (ISequenceWriter<TDerived>)Activator.CreateInstance(typeof(DerivedSequenceWriter<,>)
-               .MakeGenericType(derivedType, baseType), output)!;
-         }
+   readonly ICollection<TItem>
+   _buffer;
 
-         if (derivedType.IsAssignableFrom(baseType)) {
+   public
+   SequenceWriter()
+      : this(new List<TItem>()) { }
 
-            return (ISequenceWriter<TDerived>)Activator.CreateInstance(typeof(CastedSequenceWriter<,>)
-               .MakeGenericType(derivedType, baseType), output)!;
-         }
+   public
+   SequenceWriter(ICollection<TItem> buffer) {
 
-         throw new RuntimeException($"{typeof(TDerived).FullName} is not compatible with {typeof(TBase).FullName}.");
-      }
+      if (buffer is null) throw new ArgumentNullException(nameof(buffer));
 
-      public static object?
-      DefaultInfer() => throw DynamicError.InferMethodIsNotMeantToBeCalled();
-
-      public static XcstDelegate<TBase>
-      CastDelegate<TBase, TDerived>(XcstDelegate<TDerived> del) where TDerived : TBase =>
-         (c, o) => del(c, new DerivedSequenceWriter<TDerived, TBase>(o));
+      _buffer = buffer;
    }
 
-   class DerivedSequenceWriter<TDerived, TBase> : BaseSequenceWriter<TDerived> where TDerived : TBase {
-
-      readonly ISequenceWriter<TBase>
-      _output;
-
-      public
-      DerivedSequenceWriter(ISequenceWriter<TBase> baseWriter) {
-
-         if (baseWriter is null) throw new ArgumentNullException(nameof(baseWriter));
-
-         _output = baseWriter;
-      }
-
-      public override void
-      WriteObject(TDerived value) =>
-         _output.WriteObject(value);
-
-      public override void
-      CopyOf(TDerived value) =>
-         _output.CopyOf(value);
-
-      public override XcstWriter?
-      TryCastToDocumentWriter() =>
-         _output.TryCastToDocumentWriter();
-
-      public override MapWriter?
-      TryCastToMapWriter() => _output.TryCastToMapWriter();
-
-      public override void
-      BeginTrack(char cardinality) => _output.BeginTrack(cardinality);
-
-      public override bool
-      OnEmpty() => _output.OnEmpty();
-
-      public override void
-      EndOfConstructor() => _output.EndOfConstructor();
-
-      public override void
-      EndTrack() => _output.EndTrack();
+   public override void
+   WriteObject(TItem value) {
+      OnItemWritting();
+      _buffer.Add(value);
+      OnItemWritten();
    }
 
-   class CastedSequenceWriter<TDerived, TBase> : BaseSequenceWriter<TDerived> where TBase : TDerived {
+   public override void
+   CopyOf(TItem value) =>
+      WriteObject(DeepCopy.CopyDynamically<TItem>(value));
 
-      readonly ISequenceWriter<TBase>
-      _output;
+   public SequenceWriter<TItem>
+   WriteSequenceConstructor(Action<ISequenceWriter<TItem>> seqCtor) {
 
-      public
-      CastedSequenceWriter(ISequenceWriter<TBase> baseWriter) {
+      seqCtor(this);
 
-         if (baseWriter is null) throw new ArgumentNullException(nameof(baseWriter));
+      return this;
+   }
 
-         _output = baseWriter;
+   public SequenceWriter<TItem>
+   WriteTemplate(
+         Action<TemplateContext, ISequenceWriter<TItem>> template,
+         TemplateContext context) {
+
+      template(context, this);
+
+      return this;
+   }
+
+   public SequenceWriter<TItem>
+   WriteTemplate<TDerived>(
+         Action<TemplateContext, ISequenceWriter<TDerived>> template,
+         TemplateContext context,
+         Func<TDerived>? forTypeInference = null) where TDerived : TItem {
+
+      var derivedWriter = SequenceWriter.AdjustWriter<TItem, TDerived>(this);
+
+      template(context, derivedWriter);
+
+      return this;
+   }
+
+   public SequenceWriter<TItem>
+   WriteTemplateWithParams<TParams>(
+         Action<TemplateContext<TParams>, ISequenceWriter<TItem>> template,
+         TemplateContext<TParams> context) {
+
+      template(context, this);
+
+      return this;
+   }
+
+   public SequenceWriter<TItem>
+   WriteTemplateWithParams<TDerived, TParams>(
+         Action<TemplateContext<TParams>, ISequenceWriter<TDerived>> template,
+         TemplateContext<TParams> context,
+         Func<TDerived>? forTypeInference = null) where TDerived : TItem {
+
+      var derivedWriter = SequenceWriter.AdjustWriter<TItem, TDerived>(this);
+
+      template(context, derivedWriter);
+
+      return this;
+   }
+
+   public TItem[]
+   Flush() {
+
+      var seq = (_buffer as List<TItem>)?.ToArray()
+         ?? _buffer.ToArray();
+
+      _buffer.Clear();
+
+      return seq;
+   }
+
+   public TItem
+   FlushSingle() => Flush().Single();
+}
+
+/// <exclude/>
+public static class SequenceWriter {
+
+   public static SequenceWriter<TItem>
+   Create<TItem>(Func<TItem>? forTypeInference = null) =>
+      new SequenceWriter<TItem>();
+
+   public static ISequenceWriter<TDerived>
+   AdjustWriter<TBase, TDerived>(
+         ISequenceWriter<TBase> output,
+         Func<TDerived>? forTypeInference = null) where TDerived : TBase {
+
+      if (output is null) throw new ArgumentNullException(nameof(output));
+
+      return output as ISequenceWriter<TDerived>
+         ?? new DerivedSequenceWriter<TDerived, TBase>(output);
+   }
+
+   public static ISequenceWriter<TDerived>
+   AdjustWriterDynamically<TBase, TDerived>(
+         ISequenceWriter<TBase> output,
+         Func<TDerived>? forTypeInference = null) {
+
+      if (output is null) throw new ArgumentNullException(nameof(output));
+
+      if (output is ISequenceWriter<TDerived> derivedWriter) {
+         return derivedWriter;
       }
 
-      public override void
-      WriteObject(TDerived value) =>
+      var baseType = typeof(TBase);
+      var derivedType = typeof(TDerived);
+
+      if (baseType.IsAssignableFrom(derivedType)) {
+
+         return (ISequenceWriter<TDerived>)Activator.CreateInstance(typeof(DerivedSequenceWriter<,>)
+            .MakeGenericType(derivedType, baseType), output)!;
+      }
+
+      if (derivedType.IsAssignableFrom(baseType)) {
+
+         return (ISequenceWriter<TDerived>)Activator.CreateInstance(typeof(CastedSequenceWriter<,>)
+            .MakeGenericType(derivedType, baseType), output)!;
+      }
+
+      throw new RuntimeException($"{typeof(TDerived).FullName} is not compatible with {typeof(TBase).FullName}.");
+   }
+
+   public static object?
+   DefaultInfer() => throw DynamicError.InferMethodIsNotMeantToBeCalled();
+
+   public static XcstDelegate<TBase>
+   CastDelegate<TBase, TDerived>(XcstDelegate<TDerived> del) where TDerived : TBase =>
+      (c, o) => del(c, new DerivedSequenceWriter<TDerived, TBase>(o));
+}
+
+class DerivedSequenceWriter<TDerived, TBase> : BaseSequenceWriter<TDerived> where TDerived : TBase {
+
+   readonly ISequenceWriter<TBase>
+   _output;
+
+   public
+   DerivedSequenceWriter(ISequenceWriter<TBase> baseWriter) {
+
+      if (baseWriter is null) throw new ArgumentNullException(nameof(baseWriter));
+
+      _output = baseWriter;
+   }
+
+   public override void
+   WriteObject(TDerived value) =>
+      _output.WriteObject(value);
+
+   public override void
+   CopyOf(TDerived value) =>
+      _output.CopyOf(value);
+
+   public override XcstWriter?
+   TryCastToDocumentWriter() =>
+      _output.TryCastToDocumentWriter();
+
+   public override MapWriter?
+   TryCastToMapWriter() => _output.TryCastToMapWriter();
+
+   public override void
+   BeginTrack(char cardinality) => _output.BeginTrack(cardinality);
+
+   public override bool
+   OnEmpty() => _output.OnEmpty();
+
+   public override void
+   EndOfConstructor() => _output.EndOfConstructor();
+
+   public override void
+   EndTrack() => _output.EndTrack();
+}
+
+class CastedSequenceWriter<TDerived, TBase> : BaseSequenceWriter<TDerived> where TBase : TDerived {
+
+   readonly ISequenceWriter<TBase>
+   _output;
+
+   public
+   CastedSequenceWriter(ISequenceWriter<TBase> baseWriter) {
+
+      if (baseWriter is null) throw new ArgumentNullException(nameof(baseWriter));
+
+      _output = baseWriter;
+   }
+
+   public override void
+   WriteObject(TDerived value) =>
 #pragma warning disable CS8600, CS8604
-         _output.WriteObject((TBase)value);
+      _output.WriteObject((TBase)value);
 #pragma warning restore CS8600, CS8604
 
-      public override void
-      CopyOf(TDerived value) =>
+   public override void
+   CopyOf(TDerived value) =>
 #pragma warning disable CS8600, CS8604
-         _output.CopyOf((TBase)value);
+      _output.CopyOf((TBase)value);
 #pragma warning restore CS8600, CS8604
 
-      public override XcstWriter?
-      TryCastToDocumentWriter() =>
-         _output.TryCastToDocumentWriter();
+   public override XcstWriter?
+   TryCastToDocumentWriter() =>
+      _output.TryCastToDocumentWriter();
 
-      public override MapWriter?
-      TryCastToMapWriter() => _output.TryCastToMapWriter();
+   public override MapWriter?
+   TryCastToMapWriter() => _output.TryCastToMapWriter();
 
-      public override void
-      BeginTrack(char cardinality) => _output.BeginTrack(cardinality);
+   public override void
+   BeginTrack(char cardinality) => _output.BeginTrack(cardinality);
 
-      public override bool
-      OnEmpty() => _output.OnEmpty();
+   public override bool
+   OnEmpty() => _output.OnEmpty();
 
-      public override void
-      EndOfConstructor() => _output.EndOfConstructor();
+   public override void
+   EndOfConstructor() => _output.EndOfConstructor();
 
-      public override void
-      EndTrack() => _output.EndTrack();
+   public override void
+   EndTrack() => _output.EndTrack();
+}
+
+class StreamedSequenceWriter<TItem> : BaseSequenceWriter<TItem> {
+
+   readonly Action<TItem>
+   _outputFn;
+
+   public
+   StreamedSequenceWriter(Action<TItem> outputFn) {
+
+      if (outputFn is null) throw new ArgumentNullException(nameof(outputFn));
+
+      _outputFn = outputFn;
    }
 
-   class StreamedSequenceWriter<TItem> : BaseSequenceWriter<TItem> {
-
-      readonly Action<TItem>
-      _outputFn;
-
-      public
-      StreamedSequenceWriter(Action<TItem> outputFn) {
-
-         if (outputFn is null) throw new ArgumentNullException(nameof(outputFn));
-
-         _outputFn = outputFn;
-      }
-
-      public override void
-      WriteObject(TItem value) {
-         OnItemWritting();
-         _outputFn(value);
-         OnItemWritten();
-      }
-
-      public override void
-      CopyOf(TItem value) =>
-         WriteObject(DeepCopy.CopyDynamically<TItem>(value));
+   public override void
+   WriteObject(TItem value) {
+      OnItemWritting();
+      _outputFn(value);
+      OnItemWritten();
    }
+
+   public override void
+   CopyOf(TItem value) =>
+      WriteObject(DeepCopy.CopyDynamically<TItem>(value));
 }

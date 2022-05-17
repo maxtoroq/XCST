@@ -15,142 +15,141 @@
 using System;
 using System.Xml;
 
-namespace Xcst.Xml {
+namespace Xcst.Xml;
 
-   class XcstXmlWriter : XmlWriter {
+class XcstXmlWriter : XmlWriter {
 
-      readonly XcstWriter
-      _output;
+   readonly XcstWriter
+   _output;
 
-      WriteState
+   WriteState
+   _state = WriteState.Content;
+
+   public override WriteState
+   WriteState => _state;
+
+   public
+   XcstXmlWriter(XcstWriter writer) {
+      _output = writer;
+   }
+
+   public override void
+   Flush() { }
+
+   public override string
+   LookupPrefix(string ns) =>
+      throw new NotImplementedException();
+
+   public override void
+   WriteBase64(byte[] buffer, int index, int count) =>
+      throw new NotImplementedException();
+
+   public override void
+   WriteCData(string? text) {
+      _output.WriteString(text);
       _state = WriteState.Content;
+   }
 
-      public override WriteState
-      WriteState => _state;
+   public override void
+   WriteCharEntity(char ch) =>
+      throw new NotImplementedException();
 
-      public
-      XcstXmlWriter(XcstWriter writer) {
-         _output = writer;
-      }
+   public override void
+   WriteChars(char[] buffer, int index, int count) {
 
-      public override void
-      Flush() { }
+      _output.WriteChars(buffer, index, count);
 
-      public override string
-      LookupPrefix(string ns) =>
-         throw new NotImplementedException();
-
-      public override void
-      WriteBase64(byte[] buffer, int index, int count) =>
-         throw new NotImplementedException();
-
-      public override void
-      WriteCData(string? text) {
-         _output.WriteString(text);
+      if (_state != WriteState.Attribute) {
          _state = WriteState.Content;
       }
+   }
 
-      public override void
-      WriteCharEntity(char ch) =>
-         throw new NotImplementedException();
+   public override void
+   WriteComment(string? text) {
+      _output.WriteComment(text);
+      _state = WriteState.Content;
+   }
 
-      public override void
-      WriteChars(char[] buffer, int index, int count) {
+   public override void
+   WriteDocType(string name, string? pubid, string? sysid, string? subset) { }
 
-         _output.WriteChars(buffer, index, count);
+   public override void
+   WriteEndAttribute() {
+      _output.WriteEndAttribute();
+      _state = WriteState.Element;
+   }
 
-         if (_state != WriteState.Attribute) {
-            _state = WriteState.Content;
-         }
-      }
+   public override void
+   WriteEndDocument() {
+      _state = WriteState.Content;
+   }
 
-      public override void
-      WriteComment(string? text) {
-         _output.WriteComment(text);
+   public override void
+   WriteEndElement() {
+      _output.WriteEndElement();
+      _state = WriteState.Content;
+   }
+
+   public override void
+   WriteEntityRef(string name) =>
+      throw new NotImplementedException();
+
+   public override void
+   WriteFullEndElement() {
+      _output.WriteEndElement();
+      _state = WriteState.Content;
+   }
+
+   public override void
+   WriteProcessingInstruction(string name, string? text) {
+      _output.WriteProcessingInstruction(name, text);
+      _state = WriteState.Content;
+   }
+
+   public override void
+   WriteRaw(char[] buffer, int index, int count) =>
+      throw new NotImplementedException();
+
+   public override void
+   WriteRaw(string data) {
+      _output.WriteRaw(data);
+   }
+
+   public override void
+   WriteStartAttribute(string? prefix, string localName, string? ns) {
+      _output.WriteStartAttribute(prefix, localName, ns);
+      _state = WriteState.Attribute;
+   }
+
+   public override void
+   WriteStartDocument() { }
+
+   public override void
+   WriteStartDocument(bool standalone) { }
+
+   public override void
+   WriteStartElement(string? prefix, string localName, string? ns) {
+      _output.WriteStartElement(prefix, localName, ns);
+      _state = WriteState.Element;
+   }
+
+   public override void
+   WriteString(string? text) {
+
+      _output.WriteString(text);
+
+      if (_state != WriteState.Attribute) {
          _state = WriteState.Content;
       }
+   }
 
-      public override void
-      WriteDocType(string name, string? pubid, string? sysid, string? subset) { }
+   public override void
+   WriteSurrogateCharEntity(char lowChar, char highChar) =>
+      throw new NotImplementedException();
 
-      public override void
-      WriteEndAttribute() {
-         _output.WriteEndAttribute();
-         _state = WriteState.Element;
-      }
-
-      public override void
-      WriteEndDocument() {
-         _state = WriteState.Content;
-      }
-
-      public override void
-      WriteEndElement() {
-         _output.WriteEndElement();
-         _state = WriteState.Content;
-      }
-
-      public override void
-      WriteEntityRef(string name) =>
-         throw new NotImplementedException();
-
-      public override void
-      WriteFullEndElement() {
-         _output.WriteEndElement();
-         _state = WriteState.Content;
-      }
-
-      public override void
-      WriteProcessingInstruction(string name, string? text) {
-         _output.WriteProcessingInstruction(name, text);
-         _state = WriteState.Content;
-      }
-
-      public override void
-      WriteRaw(char[] buffer, int index, int count) =>
-         throw new NotImplementedException();
-
-      public override void
-      WriteRaw(string data) {
-         _output.WriteRaw(data);
-      }
-
-      public override void
-      WriteStartAttribute(string? prefix, string localName, string? ns) {
-         _output.WriteStartAttribute(prefix, localName, ns);
-         _state = WriteState.Attribute;
-      }
-
-      public override void
-      WriteStartDocument() { }
-
-      public override void
-      WriteStartDocument(bool standalone) { }
-
-      public override void
-      WriteStartElement(string? prefix, string localName, string? ns) {
-         _output.WriteStartElement(prefix, localName, ns);
-         _state = WriteState.Element;
-      }
-
-      public override void
-      WriteString(string? text) {
-
-         _output.WriteString(text);
-
-         if (_state != WriteState.Attribute) {
-            _state = WriteState.Content;
-         }
-      }
-
-      public override void
-      WriteSurrogateCharEntity(char lowChar, char highChar) =>
-         throw new NotImplementedException();
-
-      public override void
-      WriteWhitespace(string? ws) {
-         _output.WriteString(ws);
-         _state = WriteState.Content;
-      }
+   public override void
+   WriteWhitespace(string? ws) {
+      _output.WriteString(ws);
+      _state = WriteState.Content;
    }
 }

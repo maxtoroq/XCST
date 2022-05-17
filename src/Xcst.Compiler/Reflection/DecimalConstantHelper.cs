@@ -20,49 +20,48 @@
 
 using System.Reflection.Metadata;
 
-namespace Xcst.Compiler.Reflection {
+namespace Xcst.Compiler.Reflection;
 
-   partial class MetadataManifestReader {
+partial class MetadataManifestReader {
 
-      static decimal?
-      TryDecodeDecimalConstantAttribute(CustomAttribute attribute) {
+   static decimal?
+   TryDecodeDecimalConstantAttribute(CustomAttribute attribute) {
 
-         var attrValue = attribute.DecodeValue(_attrTypeProvider);
+      var attrValue = attribute.DecodeValue(_attrTypeProvider);
 
-         if (attrValue.FixedArguments.Length != 5) {
-            return null;
-         }
+      if (attrValue.FixedArguments.Length != 5) {
+         return null;
+      }
 
-         // DecimalConstantAttribute has the arguments (byte scale, byte sign, uint hi, uint mid, uint low)
-         // or (byte scale, byte sign, int hi, int mid, int low)
-         // Both of these invoke the Decimal constructor (int lo, int mid, int hi, bool isNegative, byte scale)
-         // with explicit argument conversions if required.
+      // DecimalConstantAttribute has the arguments (byte scale, byte sign, uint hi, uint mid, uint low)
+      // or (byte scale, byte sign, int hi, int mid, int low)
+      // Both of these invoke the Decimal constructor (int lo, int mid, int hi, bool isNegative, byte scale)
+      // with explicit argument conversions if required.
 
-         if (!(attrValue.FixedArguments[0].Value is byte scale
-            && attrValue.FixedArguments[1].Value is byte sign)) {
-
-            return null;
-         }
-
-         unchecked {
-
-            if (attrValue.FixedArguments[2].Value is uint hi
-               && attrValue.FixedArguments[3].Value is uint mid
-               && attrValue.FixedArguments[4].Value is uint lo) {
-
-               return new decimal((int)lo, (int)mid, (int)hi, sign != 0, scale);
-            }
-         }
-         {
-            if (attrValue.FixedArguments[2].Value is int hi
-               && attrValue.FixedArguments[3].Value is int mid
-               && attrValue.FixedArguments[4].Value is int lo) {
-
-               return new decimal(lo, mid, hi, sign != 0, scale);
-            }
-         }
+      if (!(attrValue.FixedArguments[0].Value is byte scale
+         && attrValue.FixedArguments[1].Value is byte sign)) {
 
          return null;
       }
+
+      unchecked {
+
+         if (attrValue.FixedArguments[2].Value is uint hi
+            && attrValue.FixedArguments[3].Value is uint mid
+            && attrValue.FixedArguments[4].Value is uint lo) {
+
+            return new decimal((int)lo, (int)mid, (int)hi, sign != 0, scale);
+         }
+      }
+      {
+         if (attrValue.FixedArguments[2].Value is int hi
+            && attrValue.FixedArguments[3].Value is int mid
+            && attrValue.FixedArguments[4].Value is int lo) {
+
+            return new decimal(lo, mid, hi, sign != 0, scale);
+         }
+      }
+
+      return null;
    }
 }

@@ -3,26 +3,26 @@ using System.IO;
 using System.Linq;
 using NUnit.Framework;
 
-namespace Xcst.Tests.API.Compilation {
+namespace Xcst.Tests.API.Compilation;
 
-   [TestFixture]
-   public partial class CompilationTests {
+[TestFixture]
+public partial class CompilationTests {
 
-      const string
-      TestCategory = nameof(API) + "." + nameof(Compilation);
+   const string
+   TestCategory = nameof(API) + "." + nameof(Compilation);
 
-      [Test]
-      [Category(TestCategory)]
-      public void
-      CompileResult_Lists_Public_Templates_Only() {
+   [Test]
+   [Category(TestCategory)]
+   public void
+   CompileResult_Lists_Public_Templates_Only() {
 
-         var compiler = TestsHelper.CreateCompiler();
-         compiler.CompilationUnitHandler = n => TextWriter.Null;
+      var compiler = TestsHelper.CreateCompiler();
+      compiler.CompilationUnitHandler = n => TextWriter.Null;
 
-         compiler.TargetClass = "FooPackage";
-         compiler.TargetNamespace = typeof(CompilationTests).Namespace;
+      compiler.TargetClass = "FooPackage";
+      compiler.TargetNamespace = typeof(CompilationTests).Namespace;
 
-         var module = new StringReader(@"
+      var module = new StringReader(@"
 <c:package version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
    <c:template name='private' visibility='private'/>
    <c:template name='public' visibility='public'/>
@@ -31,12 +31,11 @@ namespace Xcst.Tests.API.Compilation {
 </c:package>
 ");
 
-         var result = compiler.Compile(module);
+      var result = compiler.Compile(module);
 
-         Assert.IsFalse(result.Templates.Contains("private"));
-         Assert.IsTrue(result.Templates.Contains("public"));
-         Assert.IsTrue(result.Templates.Contains("final"));
-         Assert.IsTrue(result.Templates.Contains("abstract"));
-      }
+      Assert.IsFalse(result.Templates.Contains("private"));
+      Assert.IsTrue(result.Templates.Contains("public"));
+      Assert.IsTrue(result.Templates.Contains("final"));
+      Assert.IsTrue(result.Templates.Contains("abstract"));
    }
 }

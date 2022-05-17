@@ -15,122 +15,121 @@
 using System;
 using Xcst.Runtime;
 
-namespace Xcst {
+namespace Xcst;
 
-   partial class QualifiedName : IEquatable<QualifiedName> {
+public class QualifiedName : IEquatable<QualifiedName> {
 
-      readonly string
-      _name;
+   readonly string
+   _name;
 
-      readonly string
-      _namespace;
+   readonly string
+   _namespace;
 
-      int
-      _hash;
+   int
+   _hash;
 
-      public string
-      Name => _name;
+   public string
+   Name => _name;
 
-      public string
-      Namespace => _namespace;
+   public string
+   Namespace => _namespace;
 
-      public
-      QualifiedName(string name)
-         : this(name, null) { }
+   public
+   QualifiedName(string name)
+      : this(name, null) { }
 
-      public
-      QualifiedName(string name, string? ns) {
+   public
+   QualifiedName(string name, string? ns) {
 
-         if (name is null) throw new ArgumentNullException(nameof(name));
-         if (String.IsNullOrWhiteSpace(name)) throw new ArgumentException($"{nameof(name)} cannot be empty.", nameof(name));
+      if (name is null) throw new ArgumentNullException(nameof(name));
+      if (String.IsNullOrWhiteSpace(name)) throw new ArgumentException($"{nameof(name)} cannot be empty.", nameof(name));
 
-         _name = name;
-         _namespace = ns ?? String.Empty;
-      }
-
-      public override bool
-      Equals(object? other) =>
-         Equals(other as QualifiedName);
-
-      public virtual bool
-      Equals(QualifiedName? other) {
-
-         if (other is null) {
-            return false;
-         }
-
-         return this.Name == other.Name
-            && this.Namespace == other.Namespace;
-      }
-
-      public override int
-      GetHashCode() {
-
-         if (_hash == 0) {
-            _hash = ToString().GetHashCode();
-         }
-
-         return _hash;
-      }
-
-      public override string
-      ToString() {
-
-         if (this.Namespace.Length == 0) {
-            return this.Name;
-         }
-
-         return ToUriQualifiedName();
-      }
-
-      public string
-      ToUriQualifiedName() =>
-         UriQualifiedName(this.Namespace, this.Name);
-
-      internal static string
-      UriQualifiedName(string? ns, string name) =>
-         "Q{" + ns + "}" + name;
-
-      public static QualifiedName
-      Parse(string localOrUriQualifiedName) {
-
-         if (localOrUriQualifiedName is null) throw new ArgumentNullException(nameof(localOrUriQualifiedName));
-         if (String.IsNullOrWhiteSpace(localOrUriQualifiedName)) throw new ArgumentException($"{nameof(localOrUriQualifiedName)} cannot be empty.", nameof(localOrUriQualifiedName));
-
-         if (localOrUriQualifiedName.Length > 2
-            && localOrUriQualifiedName[0] == 'Q'
-            && localOrUriQualifiedName[1] == '{') {
-
-            var closeIndex = localOrUriQualifiedName.IndexOf('}');
-
-            if (closeIndex < 0) {
-               throw new ArgumentException("Closing brace not found.", nameof(localOrUriQualifiedName));
-            }
-
-            var ns = SimpleContent.Trim(localOrUriQualifiedName.Substring(2, closeIndex - 2));
-            var local = localOrUriQualifiedName.Substring(closeIndex + 1);
-
-            return new QualifiedName(local, ns);
-         }
-
-         return new QualifiedName(localOrUriQualifiedName);
-      }
-
-      public static bool operator
-      ==(QualifiedName? left, QualifiedName? right) {
-
-         if (Object.ReferenceEquals(left, right)) {
-            return true;
-         }
-
-         if (left is null || right is null) {
-            return false;
-         }
-
-         return left.Equals(right);
-      }
-
-      public static bool operator
-      !=(QualifiedName? left, QualifiedName? right) => !(left == right);
+      _name = name;
+      _namespace = ns ?? String.Empty;
    }
+
+   public override bool
+   Equals(object? other) =>
+      Equals(other as QualifiedName);
+
+   public virtual bool
+   Equals(QualifiedName? other) {
+
+      if (other is null) {
+         return false;
+      }
+
+      return this.Name == other.Name
+         && this.Namespace == other.Namespace;
+   }
+
+   public override int
+   GetHashCode() {
+
+      if (_hash == 0) {
+         _hash = ToString().GetHashCode();
+      }
+
+      return _hash;
+   }
+
+   public override string
+   ToString() {
+
+      if (this.Namespace.Length == 0) {
+         return this.Name;
+      }
+
+      return ToUriQualifiedName();
+   }
+
+   public string
+   ToUriQualifiedName() =>
+      UriQualifiedName(this.Namespace, this.Name);
+
+   internal static string
+   UriQualifiedName(string? ns, string name) =>
+      "Q{" + ns + "}" + name;
+
+   public static QualifiedName
+   Parse(string localOrUriQualifiedName) {
+
+      if (localOrUriQualifiedName is null) throw new ArgumentNullException(nameof(localOrUriQualifiedName));
+      if (String.IsNullOrWhiteSpace(localOrUriQualifiedName)) throw new ArgumentException($"{nameof(localOrUriQualifiedName)} cannot be empty.", nameof(localOrUriQualifiedName));
+
+      if (localOrUriQualifiedName.Length > 2
+         && localOrUriQualifiedName[0] == 'Q'
+         && localOrUriQualifiedName[1] == '{') {
+
+         var closeIndex = localOrUriQualifiedName.IndexOf('}');
+
+         if (closeIndex < 0) {
+            throw new ArgumentException("Closing brace not found.", nameof(localOrUriQualifiedName));
+         }
+
+         var ns = SimpleContent.Trim(localOrUriQualifiedName.Substring(2, closeIndex - 2));
+         var local = localOrUriQualifiedName.Substring(closeIndex + 1);
+
+         return new QualifiedName(local, ns);
+      }
+
+      return new QualifiedName(localOrUriQualifiedName);
+   }
+
+   public static bool operator
+   ==(QualifiedName? left, QualifiedName? right) {
+
+      if (Object.ReferenceEquals(left, right)) {
+         return true;
+      }
+
+      if (left is null || right is null) {
+         return false;
+      }
+
+      return left.Equals(right);
+   }
+
+   public static bool operator
+   !=(QualifiedName? left, QualifiedName? right) => !(left == right);
 }

@@ -1,7 +1,6 @@
 ﻿
-namespace Xcst.Tests.ExtensibilityAndFallback.PackageExtensions {
+namespace Xcst.Tests.ExtensibilityAndFallback.PackageExtensions;
 
-   partial class BaseTypes {
-      public interface IExtBase { }
-   }
+partial class BaseTypes {
+   public interface IExtBase { }
 }

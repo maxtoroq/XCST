@@ -14,31 +14,30 @@
 
 using System;
 
-namespace Xcst.PackageModel {
+namespace Xcst.PackageModel;
 
-   [AttributeUsage(_attrTargets)]
-   public sealed class XcstComponentAttribute : Attribute {
+[AttributeUsage(_attrTargets)]
+public sealed class XcstComponentAttribute : Attribute {
 
-      const AttributeTargets
-      _attrTargets = AttributeTargets.Method
-         | AttributeTargets.Property
-         | AttributeTargets.Class;
+   const AttributeTargets
+   _attrTargets = AttributeTargets.Method
+      | AttributeTargets.Property
+      | AttributeTargets.Class;
 
-      public byte
-      Kind { get; }
+   public byte
+   Kind { get; }
 
-      public string?
-      Name { get; set; }
+   public string?
+   Name { get; set; }
 
-      public char
-      Cardinality { get; set; }
+   public char
+   Cardinality { get; set; }
 
-      public
-      XcstComponentAttribute(byte kind) {
-         this.Kind = kind;
-      }
+   public
+   XcstComponentAttribute(byte kind) {
+      this.Kind = kind;
    }
-
-   [AttributeUsage(AttributeTargets.Property)]
-   public sealed class RequiredAttribute : Attribute { }
 }
+
+[AttributeUsage(AttributeTargets.Property)]
+public sealed class RequiredAttribute : Attribute { }

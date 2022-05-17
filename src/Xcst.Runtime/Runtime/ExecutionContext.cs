@@ -17,97 +17,96 @@ using System.Diagnostics;
 using System.Globalization;
 using Xcst.PackageModel;
 
-namespace Xcst.Runtime {
+namespace Xcst.Runtime;
 
-   /// <exclude/>
-   public class ExecutionContext {
+/// <exclude/>
+public class ExecutionContext {
 
-      readonly Func<IFormatProvider>
-      _formatProviderFn;
+   readonly Func<IFormatProvider>
+   _formatProviderFn;
 
-      public IXcstPackage
-      TopLevelPackage { get; }
+   public IXcstPackage
+   TopLevelPackage { get; }
 
-      public PrimingContext
-      PrimingContext { get; }
+   public PrimingContext
+   PrimingContext { get; }
 
-      public SimpleContent
-      SimpleContent { get; }
+   public SimpleContent
+   SimpleContent { get; }
 
-      public Uri?
-      StaticBaseUri { get; }
+   public Uri?
+   StaticBaseUri { get; }
 
-      public Uri?
-      BaseOutputUri { get; }
+   public Uri?
+   BaseOutputUri { get; }
 
-      internal
-      ExecutionContext(
-            IXcstPackage topLevelPackage,
-            PrimingContext primingContext,
-            Func<IFormatProvider>? formatProviderFn,
-            Uri? staticBaseUri,
-            Uri? baseOutputUri) {
+   internal
+   ExecutionContext(
+         IXcstPackage topLevelPackage,
+         PrimingContext primingContext,
+         Func<IFormatProvider>? formatProviderFn,
+         Uri? staticBaseUri,
+         Uri? baseOutputUri) {
 
-         if (topLevelPackage is null) throw new ArgumentNullException(nameof(topLevelPackage));
-         if (primingContext is null) throw new ArgumentNullException(nameof(primingContext));
+      if (topLevelPackage is null) throw new ArgumentNullException(nameof(topLevelPackage));
+      if (primingContext is null) throw new ArgumentNullException(nameof(primingContext));
 
-         this.TopLevelPackage = topLevelPackage;
-         this.PrimingContext = primingContext;
-         _formatProviderFn = formatProviderFn ?? (() => CultureInfo.CurrentCulture);
-         this.SimpleContent = new SimpleContent(_formatProviderFn);
+      this.TopLevelPackage = topLevelPackage;
+      this.PrimingContext = primingContext;
+      _formatProviderFn = formatProviderFn ?? (() => CultureInfo.CurrentCulture);
+      this.SimpleContent = new SimpleContent(_formatProviderFn);
 
-         if (staticBaseUri != null) {
-            Debug.Assert(staticBaseUri.IsAbsoluteUri);
-         }
-
-         if (baseOutputUri != null) {
-            Debug.Assert(baseOutputUri.IsAbsoluteUri);
-         }
-
-         this.StaticBaseUri = staticBaseUri;
-         this.BaseOutputUri = baseOutputUri;
+      if (staticBaseUri != null) {
+         Debug.Assert(staticBaseUri.IsAbsoluteUri);
       }
 
-      public Uri
-      ResolveUri(string relativeUri) {
-
-         var relUri = new Uri(relativeUri, UriKind.RelativeOrAbsolute);
-
-         if (relUri.IsAbsoluteUri) {
-            return relUri;
-         }
-
-         if (this.StaticBaseUri is null) {
-            throw new RuntimeException("Cannot resolve relative URI. Specify a base URI.");
-         }
-
-         return NewUri(this.StaticBaseUri, relativeUri);
+      if (baseOutputUri != null) {
+         Debug.Assert(baseOutputUri.IsAbsoluteUri);
       }
 
-      public Uri
-      ResolveOutputUri(string relativeUri) {
+      this.StaticBaseUri = staticBaseUri;
+      this.BaseOutputUri = baseOutputUri;
+   }
 
-         var relUri = new Uri(relativeUri, UriKind.RelativeOrAbsolute);
+   public Uri
+   ResolveUri(string relativeUri) {
 
-         if (relUri.IsAbsoluteUri) {
-            return relUri;
-         }
+      var relUri = new Uri(relativeUri, UriKind.RelativeOrAbsolute);
 
-         if (this.BaseOutputUri is null) {
-            throw new RuntimeException("Cannot resolve relative URI. Specify a base output URI.");
-         }
-
-         return NewUri(this.BaseOutputUri, relativeUri);
+      if (relUri.IsAbsoluteUri) {
+         return relUri;
       }
 
-      static Uri
-      NewUri(Uri baseUri, string relativeUri) {
+      if (this.StaticBaseUri is null) {
+         throw new RuntimeException("Cannot resolve relative URI. Specify a base URI.");
+      }
 
-         try {
-            return new Uri(baseUri, relativeUri);
-         } catch (UriFormatException ex) {
-            throw new RuntimeException(ex.Message);
-         }
+      return NewUri(this.StaticBaseUri, relativeUri);
+   }
+
+   public Uri
+   ResolveOutputUri(string relativeUri) {
+
+      var relUri = new Uri(relativeUri, UriKind.RelativeOrAbsolute);
+
+      if (relUri.IsAbsoluteUri) {
+         return relUri;
+      }
+
+      if (this.BaseOutputUri is null) {
+         throw new RuntimeException("Cannot resolve relative URI. Specify a base output URI.");
+      }
+
+      return NewUri(this.BaseOutputUri, relativeUri);
+   }
+
+   static Uri
+   NewUri(Uri baseUri, string relativeUri) {
+
+      try {
+         return new Uri(baseUri, relativeUri);
+      } catch (UriFormatException ex) {
+         throw new RuntimeException(ex.Message);
       }
    }
 }

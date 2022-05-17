@@ -15,40 +15,39 @@
 using System;
 using System.Xml;
 
-namespace Xcst.Xml {
+namespace Xcst.Xml;
 
-   class HtmlWriter : WrappingXmlWriter {
+class HtmlWriter : WrappingXmlWriter {
 
-      bool
-      _outputHtml5Doctype;
+   bool
+   _outputHtml5Doctype;
 
-      public
-      HtmlWriter(XmlWriter baseWriter, bool outputHtml5Doctype)
-         : base(baseWriter) {
+   public
+   HtmlWriter(XmlWriter baseWriter, bool outputHtml5Doctype)
+      : base(baseWriter) {
 
-         _outputHtml5Doctype = outputHtml5Doctype;
-      }
+      _outputHtml5Doctype = outputHtml5Doctype;
+   }
 
-      public override void
-      WriteStartElement(string? prefix, string localName, string? ns) {
+   public override void
+   WriteStartElement(string? prefix, string localName, string? ns) {
 
-         if (_outputHtml5Doctype) {
+      if (_outputHtml5Doctype) {
 
-            var name = !String.IsNullOrEmpty(prefix) ?
-               (prefix + ":" + localName)
-               : localName;
+         var name = !String.IsNullOrEmpty(prefix) ?
+            (prefix + ":" + localName)
+            : localName;
 
-            switch (this.WriteState) {
-               case WriteState.Start:
-               case WriteState.Prolog:
-                  WriteDocType(name, null, null, null);
-                  break;
-            }
-
-            _outputHtml5Doctype = false;
+         switch (this.WriteState) {
+            case WriteState.Start:
+            case WriteState.Prolog:
+               WriteDocType(name, null, null, null);
+               break;
          }
 
-         base.WriteStartElement(prefix, localName, ns);
+         _outputHtml5Doctype = false;
       }
+
+      base.WriteStartElement(prefix, localName, ns);
    }
 }

@@ -32,71 +32,70 @@
 
 using System;
 
-namespace Xcst.Compiler {
+namespace Xcst.Compiler;
 
-   partial class XcstCompilerPackage {
+partial class XcstCompilerPackage {
 
-      /// <summary>
-      /// This returns a deterministic hash code that is the same in the full .NET Framework and in .NET Core
-      /// in every session given the same string to hash.
-      /// </summary>
-      /// <param name="hashString">The string to hash</param>
-      /// <returns>The deterministic hash code</returns>
-      /// <remarks>The hashing algorithm differs in .NET Core and returns different hash codes for each session.
-      /// This was done for security to prevent DoS attacks. For the help file builder, we're just using it to
-      /// generate a short filenames or other constant IDs.  As such, we need a deterministic hash code to keep
-      /// generating the same hash code for the same IDs in all sessions regardless of platform so that the
-      /// filenames and other IDs stay the same for backward compatibility.</remarks>
-      static int
-      GetHashCodeDeterministic(string hashString) {
+   /// <summary>
+   /// This returns a deterministic hash code that is the same in the full .NET Framework and in .NET Core
+   /// in every session given the same string to hash.
+   /// </summary>
+   /// <param name="hashString">The string to hash</param>
+   /// <returns>The deterministic hash code</returns>
+   /// <remarks>The hashing algorithm differs in .NET Core and returns different hash codes for each session.
+   /// This was done for security to prevent DoS attacks. For the help file builder, we're just using it to
+   /// generate a short filenames or other constant IDs.  As such, we need a deterministic hash code to keep
+   /// generating the same hash code for the same IDs in all sessions regardless of platform so that the
+   /// filenames and other IDs stay the same for backward compatibility.</remarks>
+   static int
+   GetHashCodeDeterministic(string hashString) {
 
-         if (hashString is null) throw new ArgumentNullException(nameof(hashString));
+      if (hashString is null) throw new ArgumentNullException(nameof(hashString));
 
-         // This is equivalent to the .NET Framework hashing algorithm but doesn't use unsafe code.  It
-         // will generate the same value as the .NET Framework version given the same string.
-         unchecked {
+      // This is equivalent to the .NET Framework hashing algorithm but doesn't use unsafe code.  It
+      // will generate the same value as the .NET Framework version given the same string.
+      unchecked {
 
-            int hash1 = (5381 << 16) + 5381;
-            int hash2 = hash1;
+         int hash1 = (5381 << 16) + 5381;
+         int hash2 = hash1;
 
-            int len = hashString.Length, i = 0, h1, h2;
+         int len = hashString.Length, i = 0, h1, h2;
 
-            while (len > 2) {
+         while (len > 2) {
 
-               h1 = (hashString[i + 1] << 16) + hashString[i];
-               h2 = 0;
+            h1 = (hashString[i + 1] << 16) + hashString[i];
+            h2 = 0;
 
-               if (len >= 3) {
+            if (len >= 3) {
 
-                  if (len >= 4) {
-                     h2 = hashString[i + 3] << 16;
-                  }
-
-                  h2 += hashString[i + 2];
+               if (len >= 4) {
+                  h2 = hashString[i + 3] << 16;
                }
 
-               hash1 = ((hash1 << 5) + hash1 + (hash1 >> 27)) ^ h1;
-               hash2 = ((hash2 << 5) + hash2 + (hash2 >> 27)) ^ h2;
-
-               i += 4;
-               len -= 4;
+               h2 += hashString[i + 2];
             }
 
-            if (len > 0) {
+            hash1 = ((hash1 << 5) + hash1 + (hash1 >> 27)) ^ h1;
+            hash2 = ((hash2 << 5) + hash2 + (hash2 >> 27)) ^ h2;
 
-               h1 = 0;
-
-               if (len >= 2) {
-                  h1 = hashString[i + 1] << 16;
-               }
-
-               h1 += hashString[i];
-
-               hash1 = ((hash1 << 5) + hash1 + (hash1 >> 27)) ^ h1;
-            }
-
-            return hash1 + (hash2 * 1566083941);
+            i += 4;
+            len -= 4;
          }
+
+         if (len > 0) {
+
+            h1 = 0;
+
+            if (len >= 2) {
+               h1 = hashString[i + 1] << 16;
+            }
+
+            h1 += hashString[i];
+
+            hash1 = ((hash1 << 5) + hash1 + (hash1 >> 27)) ^ h1;
+         }
+
+         return hash1 + (hash2 * 1566083941);
       }
    }
 }

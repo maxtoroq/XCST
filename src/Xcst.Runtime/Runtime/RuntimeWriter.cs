@@ -24,497 +24,496 @@
 using System;
 using System.Diagnostics;
 
-namespace Xcst.Runtime {
+namespace Xcst.Runtime;
 
-   // RuntimeWriter is a wrapping writer that implements attribute buffering/overriding
-   // and item separators
+// RuntimeWriter is a wrapping writer that implements attribute buffering/overriding
+// and item separators
 
-   class RuntimeWriter : WrappingWriter {
+class RuntimeWriter : WrappingWriter {
 
-      bool
-      _inAttr;
+   bool
+   _inAttr;
 
-      AttrNameVal[]
-      _arrAttrs = null!; // List of cached attribute names and value parts
+   AttrNameVal[]
+   _arrAttrs = null!; // List of cached attribute names and value parts
 
-      int
-      _numEntries;       // Number of attributes in the cache
+   int
+   _numEntries;       // Number of attributes in the cache
 
-      int
-      _idxLastName;      // The entry containing the name of the last attribute to be cached
+   int
+   _idxLastName;      // The entry containing the name of the last attribute to be cached
 
-      int
-      _hashCodeUnion;    // Set of hash bits that can quickly guarantee a name is not a duplicate
+   int
+   _hashCodeUnion;    // Set of hash bits that can quickly guarantee a name is not a duplicate
 
-      string?
-      _itemSeparator;
+   string?
+   _itemSeparator;
 
-      ItemType?
-      _lastItem;
+   ItemType?
+   _lastItem;
 
-      internal bool
-      DisposeWriter { get; set; }
+   internal bool
+   DisposeWriter { get; set; }
 
-      public
-      RuntimeWriter(XcstWriter baseWriter, OutputParameters parameters)
-         : base(baseWriter) {
+   public
+   RuntimeWriter(XcstWriter baseWriter, OutputParameters parameters)
+      : base(baseWriter) {
 
-         _itemSeparator = parameters.ItemSeparator;
+      _itemSeparator = parameters.ItemSeparator;
+   }
+
+   public override void
+   WriteStartElement(string? prefix, string localName, string? ns) {
+
+      if (_inAttr) {
+         throw new RuntimeException("Cannot create an element within an attribute.");
       }
 
-      public override void
-      WriteStartElement(string? prefix, string localName, string? ns) {
+      FlushAttributes();
+      ItemWriting(ItemType.Element);
 
-         if (_inAttr) {
-            throw new RuntimeException("Cannot create an element within an attribute.");
-         }
+      base.WriteStartElement(prefix, localName, ns);
+   }
 
-         FlushAttributes();
-         ItemWriting(ItemType.Element);
+   public override void
+   WriteEndElement() {
 
-         base.WriteStartElement(prefix, localName, ns);
+      FlushAttributes();
+
+      base.WriteEndElement();
+
+      ItemWritten(ItemType.Element);
+   }
+
+   public override void
+   WriteStartAttribute(string? prefix, string localName, string? ns, string? separator) {
+
+      if (localName is null) throw new ArgumentNullException(nameof(localName));
+
+      if (_inAttr) {
+         throw new RuntimeException("Cannot create an attribute within another attribute.");
       }
 
-      public override void
-      WriteEndElement() {
-
-         FlushAttributes();
-
-         base.WriteEndElement();
-
-         ItemWritten(ItemType.Element);
+      if (prefix is null) {
+         prefix = String.Empty;
       }
 
-      public override void
-      WriteStartAttribute(string? prefix, string localName, string? ns, string? separator) {
+      if (ns is null) {
+         ns = String.Empty;
+      }
 
-         if (localName is null) throw new ArgumentNullException(nameof(localName));
+      _inAttr = true;
 
-         if (_inAttr) {
-            throw new RuntimeException("Cannot create an attribute within another attribute.");
-         }
+      int hashCode;
+      var idx = 0;
 
-         if (prefix is null) {
-            prefix = String.Empty;
-         }
+      Assert.That(localName != null);
+      Debug.Assert(localName.Length != 0);
+      Assert.That(prefix != null);
+      Assert.That(ns != null);
 
-         if (ns is null) {
-            ns = String.Empty;
-         }
+      // Compute hashcode based on first letter of the localName
+      hashCode = (1 << ((int)localName[0] & 31));
 
-         _inAttr = true;
+      // If the hashcode is not in the union, then name will not be found by a scan
+      if ((_hashCodeUnion & hashCode) != 0) {
 
-         int hashCode;
-         var idx = 0;
+         // The name may or may not be present, so scan for it
+         Debug.Assert(_numEntries != 0);
 
-         Assert.That(localName != null);
-         Debug.Assert(localName.Length != 0);
-         Assert.That(prefix != null);
-         Assert.That(ns != null);
+         do {
 
-         // Compute hashcode based on first letter of the localName
-         hashCode = (1 << ((int)localName[0] & 31));
+            if (_arrAttrs[idx].IsDuplicate(localName, ns, hashCode)) {
+               break;
+            }
 
-         // If the hashcode is not in the union, then name will not be found by a scan
-         if ((_hashCodeUnion & hashCode) != 0) {
+            // Next attribute name
+            idx = _arrAttrs[idx].NextNameIndex;
 
-            // The name may or may not be present, so scan for it
-            Debug.Assert(_numEntries != 0);
+         } while (idx != 0);
 
-            do {
+      } else {
 
-               if (_arrAttrs[idx].IsDuplicate(localName, ns, hashCode)) {
-                  break;
-               }
+         // Insert hashcode into union
+         _hashCodeUnion |= hashCode;
+      }
 
-               // Next attribute name
-               idx = _arrAttrs[idx].NextNameIndex;
+      // Insert new attribute; link attribute names together in a list
+      EnsureAttributeCache();
 
-            } while (idx != 0);
+      if (_numEntries != 0) {
+         _arrAttrs[_idxLastName].NextNameIndex = _numEntries;
+      }
 
-         } else {
+      _idxLastName = _numEntries++;
+      _arrAttrs[_idxLastName].Init(prefix, localName, ns, separator, hashCode);
+   }
 
-            // Insert hashcode into union
-            _hashCodeUnion |= hashCode;
-         }
+   public override void
+   WriteEndAttribute() {
+      _inAttr = false;
+   }
 
-         // Insert new attribute; link attribute names together in a list
+   public override void
+   WriteComment(string? text) {
+
+      if (_inAttr) {
+         throw new RuntimeException("Cannot create a comment within an attribute.");
+      }
+
+      FlushAttributes();
+      ItemWriting(ItemType.Comment);
+
+      base.WriteComment(text);
+
+      ItemWritten(ItemType.Comment);
+   }
+
+   public override void
+   WriteProcessingInstruction(string name, string? text) {
+
+      if (_inAttr) {
+         throw new RuntimeException("Cannot create a processing instruction within an attribute.");
+      }
+
+      FlushAttributes();
+      ItemWriting(ItemType.ProcessingInstruction);
+
+      base.WriteProcessingInstruction(name, text);
+
+      ItemWritten(ItemType.ProcessingInstruction);
+   }
+
+   public override void
+   WriteString(string? text) {
+
+      if (_inAttr) {
+
          EnsureAttributeCache();
+         _arrAttrs[_numEntries++].Init(text);
 
-         if (_numEntries != 0) {
-            _arrAttrs[_idxLastName].NextNameIndex = _numEntries;
-         }
-
-         _idxLastName = _numEntries++;
-         _arrAttrs[_idxLastName].Init(prefix, localName, ns, separator, hashCode);
-      }
-
-      public override void
-      WriteEndAttribute() {
-         _inAttr = false;
-      }
-
-      public override void
-      WriteComment(string? text) {
-
-         if (_inAttr) {
-            throw new RuntimeException("Cannot create a comment within an attribute.");
-         }
+      } else {
 
          FlushAttributes();
-         ItemWriting(ItemType.Comment);
+         ItemWriting(ItemType.Text);
 
-         base.WriteComment(text);
+         base.WriteString(text);
 
-         ItemWritten(ItemType.Comment);
+         ItemWritten(ItemType.Text);
       }
+   }
 
-      public override void
-      WriteProcessingInstruction(string name, string? text) {
+   public override void
+   WriteChars(char[] buffer, int index, int count) {
 
-         if (_inAttr) {
-            throw new RuntimeException("Cannot create a processing instruction within an attribute.");
-         }
+      if (_inAttr) {
+
+         EnsureAttributeCache();
+         _arrAttrs[_numEntries++].Init(new string(buffer, index, count));
+
+      } else {
 
          FlushAttributes();
-         ItemWriting(ItemType.ProcessingInstruction);
+         ItemWriting(ItemType.Text);
 
-         base.WriteProcessingInstruction(name, text);
+         base.WriteChars(buffer, index, count);
 
-         ItemWritten(ItemType.ProcessingInstruction);
+         ItemWritten(ItemType.Text);
+      }
+   }
+
+   public override void
+   WriteRaw(string? data) {
+
+      if (_inAttr) {
+         throw new InvalidOperationException($"Calling {nameof(WriteRaw)} for attributes is not supported.");
       }
 
-      public override void
-      WriteString(string? text) {
+      FlushAttributes();
+      ItemWriting(ItemType.Raw);
 
-         if (_inAttr) {
+      base.WriteRaw(data);
 
+      ItemWritten(ItemType.Raw);
+   }
+
+   protected internal override void
+   WriteItem(object? value) {
+
+      if (_inAttr) {
+
+         if (value != null) {
             EnsureAttributeCache();
-            _arrAttrs[_numEntries++].Init(text);
-
-         } else {
-
-            FlushAttributes();
-            ItemWriting(ItemType.Text);
-
-            base.WriteString(text);
-
-            ItemWritten(ItemType.Text);
+            _arrAttrs[_numEntries++].Init(value);
          }
-      }
 
-      public override void
-      WriteChars(char[] buffer, int index, int count) {
-
-         if (_inAttr) {
-
-            EnsureAttributeCache();
-            _arrAttrs[_numEntries++].Init(new string(buffer, index, count));
-
-         } else {
-
-            FlushAttributes();
-            ItemWriting(ItemType.Text);
-
-            base.WriteChars(buffer, index, count);
-
-            ItemWritten(ItemType.Text);
-         }
-      }
-
-      public override void
-      WriteRaw(string? data) {
-
-         if (_inAttr) {
-            throw new InvalidOperationException($"Calling {nameof(WriteRaw)} for attributes is not supported.");
-         }
+      } else {
 
          FlushAttributes();
-         ItemWriting(ItemType.Raw);
 
-         base.WriteRaw(data);
+         if (value != null) {
 
-         ItemWritten(ItemType.Raw);
-      }
+            ItemWriting(ItemType.Object);
 
-      protected internal override void
-      WriteItem(object? value) {
+            base.WriteItem(value);
 
-         if (_inAttr) {
-
-            if (value != null) {
-               EnsureAttributeCache();
-               _arrAttrs[_numEntries++].Init(value);
-            }
-
-         } else {
-
-            FlushAttributes();
-
-            if (value != null) {
-
-               ItemWriting(ItemType.Object);
-
-               base.WriteItem(value);
-
-               ItemWritten(ItemType.Object);
-            }
+            ItemWritten(ItemType.Object);
          }
       }
+   }
 
-      void
-      EnsureAttributeCache() {
+   void
+   EnsureAttributeCache() {
 
-         // Ensure that attribute array has been created and is large enough for at least one
-         // additional entry.
+      // Ensure that attribute array has been created and is large enough for at least one
+      // additional entry.
 
-         if (_arrAttrs is null) {
+      if (_arrAttrs is null) {
 
-            // Create caching array
-            _arrAttrs = new AttrNameVal[32];
+         // Create caching array
+         _arrAttrs = new AttrNameVal[32];
 
-         } else if (_numEntries >= _arrAttrs.Length) {
+      } else if (_numEntries >= _arrAttrs.Length) {
 
-            // Resize caching array
-            Debug.Assert(_numEntries == _arrAttrs.Length);
-            AttrNameVal[] arrNew = new AttrNameVal[_numEntries * 2];
-            Array.Copy(_arrAttrs, arrNew, _numEntries);
-            _arrAttrs = arrNew;
-         }
+         // Resize caching array
+         Debug.Assert(_numEntries == _arrAttrs.Length);
+         AttrNameVal[] arrNew = new AttrNameVal[_numEntries * 2];
+         Array.Copy(_arrAttrs, arrNew, _numEntries);
+         _arrAttrs = arrNew;
       }
+   }
 
-      void
-      FlushAttributes() {
+   void
+   FlushAttributes() {
 
-         int idx = 0, idxNext;
-         string? localName;
+      int idx = 0, idxNext;
+      string? localName;
 
-         while (idx != _numEntries) {
+      while (idx != _numEntries) {
 
-            // Get index of next attribute's name (0 if this is the last attribute)
-            idxNext = _arrAttrs[idx].NextNameIndex;
+         // Get index of next attribute's name (0 if this is the last attribute)
+         idxNext = _arrAttrs[idx].NextNameIndex;
 
-            if (idxNext == 0) {
-               idxNext = _numEntries;
-            }
+         if (idxNext == 0) {
+            idxNext = _numEntries;
+         }
 
-            // If localName is null, then this is a duplicate attribute that has been marked as "deleted"
-            localName = _arrAttrs[idx].LocalName;
+         // If localName is null, then this is a duplicate attribute that has been marked as "deleted"
+         localName = _arrAttrs[idx].LocalName;
 
-            if (localName != null) {
+         if (localName != null) {
 
-               var prefix = _arrAttrs[idx].Prefix;
-               var ns = _arrAttrs[idx].Namespace;
-               var separator = _arrAttrs[idx].Separator;
+            var prefix = _arrAttrs[idx].Prefix;
+            var ns = _arrAttrs[idx].Namespace;
+            var separator = _arrAttrs[idx].Separator;
 
-               base.WriteStartAttribute(prefix, localName, ns, null);
+            base.WriteStartAttribute(prefix, localName, ns, null);
 
-               var first = true;
-               var lastWasText = false;
+            var first = true;
+            var lastWasText = false;
 
-               // Output all of this attribute's text
-               while (++idx != idxNext) {
+            // Output all of this attribute's text
+            while (++idx != idxNext) {
 
-                  var obj = _arrAttrs[idx].Object;
-                  var sep = separator;
+               var obj = _arrAttrs[idx].Object;
+               var sep = separator;
 
-                  if (obj != null) {
+               if (obj != null) {
 
-                     if (!first) {
+                  if (!first) {
 
-                        if (!String.IsNullOrEmpty(sep)) {
-                           base.WriteString(sep);
-                        }
-                     }
-
-                     base.WriteItem(obj);
-
-                     lastWasText = false;
-
-                  } else {
-
-                     if (!first
-                        && !lastWasText
-                        && !String.IsNullOrEmpty(sep)) {
-
+                     if (!String.IsNullOrEmpty(sep)) {
                         base.WriteString(sep);
                      }
-
-                     var text = _arrAttrs[idx].Text;
-                     base.WriteString(text);
-
-                     lastWasText = true;
                   }
 
-                  first = false;
+                  base.WriteItem(obj);
+
+                  lastWasText = false;
+
+               } else {
+
+                  if (!first
+                     && !lastWasText
+                     && !String.IsNullOrEmpty(sep)) {
+
+                     base.WriteString(sep);
+                  }
+
+                  var text = _arrAttrs[idx].Text;
+                  base.WriteString(text);
+
+                  lastWasText = true;
                }
 
-               base.WriteEndAttribute();
-
-            } else {
-               // Skip over duplicate attributes
-               idx = idxNext;
-            }
-         }
-
-         if (_numEntries > 0) {
-
-            for (int i = 0; i < _arrAttrs.Length; i++) {
-               _arrAttrs[i].Init(default(string), default(string), default(string), default(string), default(int));
-               _arrAttrs[i].Init(default(string));
-               _arrAttrs[i].Init(default(object));
+               first = false;
             }
 
-            _numEntries = default;
-            _idxLastName = default;
-            _hashCodeUnion = default;
+            base.WriteEndAttribute();
+
+         } else {
+            // Skip over duplicate attributes
+            idx = idxNext;
          }
       }
 
-      void
-      ItemWriting(ItemType type) {
+      if (_numEntries > 0) {
 
-         if (_lastItem != null
-            && (_lastItem.Value != ItemType.Text || type != ItemType.Text)) {
-
-            var separator = (this.Depth == 0 ? _itemSeparator : null);
-
-            if (separator is null
-               && _lastItem.Value == ItemType.Object
-               && type == ItemType.Object) {
-
-               separator = " ";
-            }
-
-            if (!String.IsNullOrEmpty(separator)) {
-               base.WriteString(separator);
-            }
+         for (int i = 0; i < _arrAttrs.Length; i++) {
+            _arrAttrs[i].Init(default(string), default(string), default(string), default(string), default(int));
+            _arrAttrs[i].Init(default(string));
+            _arrAttrs[i].Init(default(object));
          }
 
-         if (type == ItemType.Element) {
-            // Reset _lastItem for child nodes
-            _lastItem = null;
+         _numEntries = default;
+         _idxLastName = default;
+         _hashCodeUnion = default;
+      }
+   }
+
+   void
+   ItemWriting(ItemType type) {
+
+      if (_lastItem != null
+         && (_lastItem.Value != ItemType.Text || type != ItemType.Text)) {
+
+         var separator = (this.Depth == 0 ? _itemSeparator : null);
+
+         if (separator is null
+            && _lastItem.Value == ItemType.Object
+            && type == ItemType.Object) {
+
+            separator = " ";
+         }
+
+         if (!String.IsNullOrEmpty(separator)) {
+            base.WriteString(separator);
          }
       }
 
-      void
-      ItemWritten(ItemType type) {
-         _lastItem = type;
+      if (type == ItemType.Element) {
+         // Reset _lastItem for child nodes
+         _lastItem = null;
+      }
+   }
+
+   void
+   ItemWritten(ItemType type) {
+      _lastItem = type;
+   }
+
+   enum ItemType {
+      Element,
+      Text,
+      Raw,
+      Comment,
+      ProcessingInstruction,
+      Object
+   }
+
+   struct AttrNameVal {
+
+      string?
+      _localName;
+
+      string?
+      _prefix;
+
+      string?
+      _namespaceName;
+
+      string?
+      _separator;
+
+      string?
+      _text;
+
+      object?
+      _obj;
+
+      int
+      _hashCode;
+
+      int
+      _nextNameIndex;
+
+      public string?
+      LocalName => _localName;
+
+      public string?
+      Prefix => _prefix;
+
+      public string?
+      Namespace => _namespaceName;
+
+      public string?
+      Separator => _separator;
+
+      public string?
+      Text => _text;
+
+      public object?
+      Object => _obj;
+
+      public int
+      NextNameIndex {
+         get => _nextNameIndex;
+         set => _nextNameIndex = value;
       }
 
-      enum ItemType {
-         Element,
-         Text,
-         Raw,
-         Comment,
-         ProcessingInstruction,
-         Object
+      /// <summary>
+      /// Cache an attribute's name and type.
+      /// </summary>
+      public void
+      Init(string? prefix, string? localName, string? ns, string? separator, int hashCode) {
+         _localName = localName;
+         _prefix = prefix;
+         _namespaceName = ns;
+         _separator = separator;
+         _hashCode = hashCode;
+         _nextNameIndex = 0;
       }
 
-      struct AttrNameVal {
+      /// <summary>
+      /// Cache all or part of the attribute's string value.
+      /// </summary>
+      public void
+      Init(string? text) {
+         _text = text;
+      }
 
-         string?
-         _localName;
+      public void
+      Init(object? obj) {
+         _obj = obj;
+      }
 
-         string?
-         _prefix;
+      /// <summary>
+      /// Returns true if this attribute has the specified name (and thus is a duplicate).
+      /// </summary>
+      public bool
+      IsDuplicate(string localName, string? ns, int hashCode) {
 
-         string?
-         _namespaceName;
+         // If attribute is not marked as deleted
+         if (_localName != null) {
 
-         string?
-         _separator;
+            // And if hash codes match,
+            if (_hashCode == hashCode) {
 
-         string?
-         _text;
+               // And if local names match,
+               if (_localName.Equals(localName)) {
 
-         object?
-         _obj;
+                  // And if namespaces match,
+                  if (String.Equals(_namespaceName, ns)) {
 
-         int
-         _hashCode;
-
-         int
-         _nextNameIndex;
-
-         public string?
-         LocalName => _localName;
-
-         public string?
-         Prefix => _prefix;
-
-         public string?
-         Namespace => _namespaceName;
-
-         public string?
-         Separator => _separator;
-
-         public string?
-         Text => _text;
-
-         public object?
-         Object => _obj;
-
-         public int
-         NextNameIndex {
-            get => _nextNameIndex;
-            set => _nextNameIndex = value;
-         }
-
-         /// <summary>
-         /// Cache an attribute's name and type.
-         /// </summary>
-         public void
-         Init(string? prefix, string? localName, string? ns, string? separator, int hashCode) {
-            _localName = localName;
-            _prefix = prefix;
-            _namespaceName = ns;
-            _separator = separator;
-            _hashCode = hashCode;
-            _nextNameIndex = 0;
-         }
-
-         /// <summary>
-         /// Cache all or part of the attribute's string value.
-         /// </summary>
-         public void
-         Init(string? text) {
-            _text = text;
-         }
-
-         public void
-         Init(object? obj) {
-            _obj = obj;
-         }
-
-         /// <summary>
-         /// Returns true if this attribute has the specified name (and thus is a duplicate).
-         /// </summary>
-         public bool
-         IsDuplicate(string localName, string? ns, int hashCode) {
-
-            // If attribute is not marked as deleted
-            if (_localName != null) {
-
-               // And if hash codes match,
-               if (_hashCode == hashCode) {
-
-                  // And if local names match,
-                  if (_localName.Equals(localName)) {
-
-                     // And if namespaces match,
-                     if (String.Equals(_namespaceName, ns)) {
-
-                        // Then found duplicate attribute, so mark the attribute as deleted
-                        _localName = null;
-                        return true;
-                     }
+                     // Then found duplicate attribute, so mark the attribute as deleted
+                     _localName = null;
+                     return true;
                   }
                }
             }
-
-            return false;
          }
+
+         return false;
       }
    }
 }

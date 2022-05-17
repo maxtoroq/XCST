@@ -14,84 +14,83 @@
 
 using System;
 
-namespace Xcst.Runtime {
+namespace Xcst.Runtime;
 
-   /// <exclude/>
-   public static class DynamicError {
+/// <exclude/>
+public static class DynamicError {
 
-      internal static QualifiedName
-      Code(string code) => new QualifiedName(code, XmlNamespaces.XcstErrors);
+   internal static QualifiedName
+   Code(string code) => new QualifiedName(code, XmlNamespaces.XcstErrors);
 
-      public static Exception
-      UnknownTemplate(QualifiedName templateName) {
+   public static Exception
+   UnknownTemplate(QualifiedName templateName) {
 
-         if (templateName is null) throw new ArgumentNullException(nameof(templateName));
+      if (templateName is null) throw new ArgumentNullException(nameof(templateName));
 
-         return new RuntimeException($"No template exists named {templateName.ToString()}.", Code("XTDE0040"));
-      }
-
-      public static Exception
-      RequiredGlobalParameter(string parameterName) {
-
-         if (parameterName is null) throw new ArgumentNullException(nameof(parameterName));
-
-         return new RuntimeException($"No value supplied for required parameter '{parameterName}'.", Code("XTDE0050"));
-      }
-
-      public static Exception
-      RequiredTemplateParameter(string parameterName) {
-
-         if (parameterName is null) throw new ArgumentNullException(nameof(parameterName));
-
-         return new RuntimeException($"No value supplied for required parameter '{parameterName}'.", Code("XTDE0700"));
-      }
-
-      public static Exception
-      InvalidParameterCast(string parameterName) {
-
-         if (parameterName is null) throw new ArgumentNullException(nameof(parameterName));
-
-         return new RuntimeException($"Couldn't cast parameter '{parameterName}' to the required type.", Code("XTTE0590"));
-      }
-
-      public static Exception
-      UnknownOutputDefinition(QualifiedName outputName) {
-
-         if (outputName is null) throw new ArgumentNullException(nameof(outputName));
-
-         return new RuntimeException($"No output definition exists named {outputName.ToString()}.", Code("XTDE1460"));
-      }
-
-      public static Exception
-      Terminate(
-            string message,
-            string defaultMessage,
-            QualifiedName? errorCode = null,
-            object? errorData = null) =>
-         new RuntimeException(
-            (!String.IsNullOrEmpty(message) ? message : defaultMessage),
-            errorCode ?? Code("XTMM9000"),
-            errorData
-         );
-
-      public static Exception
-      InferMethodIsNotMeantToBeCalled() =>
-         new RuntimeException("Infer method is not meant to be called.");
-
-      public static Exception
-      UnknownMode(QualifiedName? mode) =>
-         new RuntimeException($"The mode '{mode?.ToUriQualifiedName()}' does not exist.", Code("XCST9103"));
-
-      public static Exception
-      AbsentCurrentTemplateRule() =>
-         new RuntimeException("The current template rule is absent.", Code("XTDE0560"));
-
-      internal static Exception
-      SequenceOverflow() =>
-         new RuntimeException("A sequence of more than one item is not allowed.", Code("XTTE0505"));
-
-      internal static Exception
-      SequenceUnderflow() =>
-         new RuntimeException("An empty sequence is not allowed.", Code("XTTE0505"));
+      return new RuntimeException($"No template exists named {templateName.ToString()}.", Code("XTDE0040"));
    }
+
+   public static Exception
+   RequiredGlobalParameter(string parameterName) {
+
+      if (parameterName is null) throw new ArgumentNullException(nameof(parameterName));
+
+      return new RuntimeException($"No value supplied for required parameter '{parameterName}'.", Code("XTDE0050"));
+   }
+
+   public static Exception
+   RequiredTemplateParameter(string parameterName) {
+
+      if (parameterName is null) throw new ArgumentNullException(nameof(parameterName));
+
+      return new RuntimeException($"No value supplied for required parameter '{parameterName}'.", Code("XTDE0700"));
+   }
+
+   public static Exception
+   InvalidParameterCast(string parameterName) {
+
+      if (parameterName is null) throw new ArgumentNullException(nameof(parameterName));
+
+      return new RuntimeException($"Couldn't cast parameter '{parameterName}' to the required type.", Code("XTTE0590"));
+   }
+
+   public static Exception
+   UnknownOutputDefinition(QualifiedName outputName) {
+
+      if (outputName is null) throw new ArgumentNullException(nameof(outputName));
+
+      return new RuntimeException($"No output definition exists named {outputName.ToString()}.", Code("XTDE1460"));
+   }
+
+   public static Exception
+   Terminate(
+         string message,
+         string defaultMessage,
+         QualifiedName? errorCode = null,
+         object? errorData = null) =>
+      new RuntimeException(
+         (!String.IsNullOrEmpty(message) ? message : defaultMessage),
+         errorCode ?? Code("XTMM9000"),
+         errorData
+      );
+
+   public static Exception
+   InferMethodIsNotMeantToBeCalled() =>
+      new RuntimeException("Infer method is not meant to be called.");
+
+   public static Exception
+   UnknownMode(QualifiedName? mode) =>
+      new RuntimeException($"The mode '{mode?.ToUriQualifiedName()}' does not exist.", Code("XCST9103"));
+
+   public static Exception
+   AbsentCurrentTemplateRule() =>
+      new RuntimeException("The current template rule is absent.", Code("XTDE0560"));
+
+   internal static Exception
+   SequenceOverflow() =>
+      new RuntimeException("A sequence of more than one item is not allowed.", Code("XTTE0505"));
+
+   internal static Exception
+   SequenceUnderflow() =>
+      new RuntimeException("An empty sequence is not allowed.", Code("XTTE0505"));
 }

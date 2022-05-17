@@ -1,25 +1,23 @@
 ﻿using System.IO;
 using NUnit.Framework;
 
-namespace Xcst.Tests.API.Evaluation {
+namespace Xcst.Tests.API.Evaluation;
+using TestPackage = ExplicitPkgInitDefaultMode;
 
-   using TestPackage = ExplicitPkgInitDefaultMode;
+partial class EvaluationTests {
 
-   partial class EvaluationTests {
+   [Test]
+   [Category(TestCategory)]
+   public void
+   Explicit_Package_Initial_Default_Named_Mode() {
 
-      [Test]
-      [Category(TestCategory)]
-      public void
-      Explicit_Package_Initial_Default_Named_Mode() {
+      var output = new StringWriter();
 
-         var output = new StringWriter();
+      XcstEvaluator.Using(new TestPackage())
+         .ApplyTemplates(new object())
+         .OutputTo(output)
+         .Run();
 
-         XcstEvaluator.Using(new TestPackage())
-            .ApplyTemplates(new object())
-            .OutputTo(output)
-            .Run();
-
-         Assert.AreEqual("foo", output.ToString());
-      }
+      Assert.AreEqual("foo", output.ToString());
    }
 }

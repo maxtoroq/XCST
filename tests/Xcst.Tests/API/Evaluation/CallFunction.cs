@@ -1,21 +1,20 @@
 ﻿using System.IO;
 using NUnit.Framework;
 
-namespace Xcst.Tests.API.Evaluation {
+namespace Xcst.Tests.API.Evaluation;
 
-   partial class EvaluationTests {
+partial class EvaluationTests {
 
-      [Test]
-      [Category(TestCategory)]
-      public void
-      Call_Function() {
+   [Test]
+   [Category(TestCategory)]
+   public void
+   Call_Function() {
 
-         var result = XcstEvaluator.Using(new CallFunction())
-            .WithParam("i", 2)
-            .CallFunction(p => p.Foo())
-            .Evaluate();
+      var result = XcstEvaluator.Using(new CallFunction())
+         .WithParam("i", 2)
+         .CallFunction(p => p.Foo())
+         .Evaluate();
 
-         Assert.AreEqual("foo2", result);
-      }
+      Assert.AreEqual("foo2", result);
    }
 }

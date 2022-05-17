@@ -18,126 +18,125 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 
-namespace Xcst.Xml {
+namespace Xcst.Xml;
 
-   static class XmlWriterSettingsFactory {
+static class XmlWriterSettingsFactory {
 
-      static readonly Action<XmlWriterSettings, XmlOutputMethod>
-      _setOutputMethod;
+   static readonly Action<XmlWriterSettings, XmlOutputMethod>
+   _setOutputMethod;
 
-      static readonly Action<XmlWriterSettings, string>
-      _setDocTypePublic;
+   static readonly Action<XmlWriterSettings, string>
+   _setDocTypePublic;
 
-      static readonly Action<XmlWriterSettings, string>
-      _setDocTypeSystem;
+   static readonly Action<XmlWriterSettings, string>
+   _setDocTypeSystem;
 
-      static readonly Action<XmlWriterSettings, string>
-      _setMediaType;
+   static readonly Action<XmlWriterSettings, string>
+   _setMediaType;
 
-      static readonly FieldInfo
-      _cdataSectionsField;
+   static readonly FieldInfo
+   _cdataSectionsField;
 
-      static
-      XmlWriterSettingsFactory() {
+   static
+   XmlWriterSettingsFactory() {
 
-         var settingsType = typeof(XmlWriterSettings);
+      var settingsType = typeof(XmlWriterSettings);
 
-         _setOutputMethod = (Action<XmlWriterSettings, XmlOutputMethod>)
-            Delegate.CreateDelegate(typeof(Action<XmlWriterSettings, XmlOutputMethod>), settingsType.GetProperty(nameof(XmlWriterSettings.OutputMethod), BindingFlags.Instance | BindingFlags.Public)!.GetSetMethod(true)!);
+      _setOutputMethod = (Action<XmlWriterSettings, XmlOutputMethod>)
+         Delegate.CreateDelegate(typeof(Action<XmlWriterSettings, XmlOutputMethod>), settingsType.GetProperty(nameof(XmlWriterSettings.OutputMethod), BindingFlags.Instance | BindingFlags.Public)!.GetSetMethod(true)!);
 
-         _setDocTypePublic = (Action<XmlWriterSettings, string>)
-            Delegate.CreateDelegate(typeof(Action<XmlWriterSettings, string>), settingsType.GetProperty("DocTypePublic", BindingFlags.Instance | BindingFlags.NonPublic)!.GetSetMethod(true)!);
+      _setDocTypePublic = (Action<XmlWriterSettings, string>)
+         Delegate.CreateDelegate(typeof(Action<XmlWriterSettings, string>), settingsType.GetProperty("DocTypePublic", BindingFlags.Instance | BindingFlags.NonPublic)!.GetSetMethod(true)!);
 
-         _setDocTypeSystem = (Action<XmlWriterSettings, string>)
-            Delegate.CreateDelegate(typeof(Action<XmlWriterSettings, string>), settingsType.GetProperty("DocTypeSystem", BindingFlags.Instance | BindingFlags.NonPublic)!.GetSetMethod(true)!);
+      _setDocTypeSystem = (Action<XmlWriterSettings, string>)
+         Delegate.CreateDelegate(typeof(Action<XmlWriterSettings, string>), settingsType.GetProperty("DocTypeSystem", BindingFlags.Instance | BindingFlags.NonPublic)!.GetSetMethod(true)!);
 
-         _setMediaType = (Action<XmlWriterSettings, string>)
-            Delegate.CreateDelegate(typeof(Action<XmlWriterSettings, string>), settingsType.GetProperty("MediaType", BindingFlags.Instance | BindingFlags.NonPublic)!.GetSetMethod(true)!);
+      _setMediaType = (Action<XmlWriterSettings, string>)
+         Delegate.CreateDelegate(typeof(Action<XmlWriterSettings, string>), settingsType.GetProperty("MediaType", BindingFlags.Instance | BindingFlags.NonPublic)!.GetSetMethod(true)!);
 
-         _cdataSectionsField = settingsType.GetField(
+      _cdataSectionsField = settingsType.GetField(
 #if NETCOREAPP
-            "_cdataSections"
+         "_cdataSections"
 #else
-            "cdataSections"
+         "cdataSections"
 #endif
-            , BindingFlags.Instance | BindingFlags.NonPublic)!;
+         , BindingFlags.Instance | BindingFlags.NonPublic)!;
+   }
+
+   public static XmlWriterSettings
+   Create(OutputParameters parameters) {
+
+      var settings = new XmlWriterSettings {
+         ConformanceLevel = ConformanceLevel.Auto
+      };
+
+      if (parameters.Method != null
+         && parameters.Method != OutputParameters.Methods.Xml) {
+
+         if (parameters.Method == OutputParameters.Methods.Html) {
+            _setOutputMethod(settings, XmlOutputMethod.Html);
+
+         } else if (parameters.Method == OutputParameters.Methods.Text) {
+            _setOutputMethod(settings, XmlOutputMethod.Text);
+         }
       }
 
-      public static XmlWriterSettings
-      Create(OutputParameters parameters) {
+      if (parameters.CdataSectionElements?.Count > 0) {
 
-         var settings = new XmlWriterSettings {
-            ConformanceLevel = ConformanceLevel.Auto
-         };
-
-         if (parameters.Method != null
-            && parameters.Method != OutputParameters.Methods.Xml) {
-
-            if (parameters.Method == OutputParameters.Methods.Html) {
-               _setOutputMethod(settings, XmlOutputMethod.Html);
-
-            } else if (parameters.Method == OutputParameters.Methods.Text) {
-               _setOutputMethod(settings, XmlOutputMethod.Text);
-            }
-         }
-
-         if (parameters.CdataSectionElements?.Count > 0) {
-
-            _cdataSectionsField.SetValue(
-               settings,
-               parameters.CdataSectionElements
-                  .Select(qn => new XmlQualifiedName(qn.Name, qn.Namespace))
-                  .ToList()
-            );
-         }
-
-         if (parameters.DoctypePublic != null) {
-            _setDocTypePublic(settings, parameters.DoctypePublic);
-         }
-
-         if (parameters.DoctypeSystem != null) {
-            _setDocTypeSystem(settings, parameters.DoctypeSystem);
-         }
-
-         if (parameters.EscapeUriAttributes != null) {
-            settings.DoNotEscapeUriAttributes = !parameters.EscapeUriAttributes.Value;
-         }
-
-         if (parameters.Encoding != null) {
-            settings.Encoding = parameters.Encoding;
-         }
-
-         if (parameters.Indent != null) {
-            settings.Indent = parameters.Indent.Value;
-         }
-
-         if (parameters.IndentSpaces != null) {
-            settings.IndentChars = new string(' ', parameters.IndentSpaces.Value);
-         }
-
-         if (parameters.MediaType != null) {
-            _setMediaType(settings, parameters.MediaType);
-         }
-
-         if (parameters.OmitXmlDeclaration != null) {
-            settings.OmitXmlDeclaration = parameters.OmitXmlDeclaration.Value;
-         }
-
-         var enc = settings.Encoding;
-
-         if (parameters.ByteOrderMark != null
-            && !parameters.ByteOrderMark.Value) {
-
-            if (enc is UTF8Encoding) {
-               settings.Encoding = new UTF8Encoding(false);
-            }
-         }
-
-         if (parameters.SkipCharacterCheck != null) {
-            settings.CheckCharacters = !parameters.SkipCharacterCheck.Value;
-         }
-
-         return settings;
+         _cdataSectionsField.SetValue(
+            settings,
+            parameters.CdataSectionElements
+               .Select(qn => new XmlQualifiedName(qn.Name, qn.Namespace))
+               .ToList()
+         );
       }
+
+      if (parameters.DoctypePublic != null) {
+         _setDocTypePublic(settings, parameters.DoctypePublic);
+      }
+
+      if (parameters.DoctypeSystem != null) {
+         _setDocTypeSystem(settings, parameters.DoctypeSystem);
+      }
+
+      if (parameters.EscapeUriAttributes != null) {
+         settings.DoNotEscapeUriAttributes = !parameters.EscapeUriAttributes.Value;
+      }
+
+      if (parameters.Encoding != null) {
+         settings.Encoding = parameters.Encoding;
+      }
+
+      if (parameters.Indent != null) {
+         settings.Indent = parameters.Indent.Value;
+      }
+
+      if (parameters.IndentSpaces != null) {
+         settings.IndentChars = new string(' ', parameters.IndentSpaces.Value);
+      }
+
+      if (parameters.MediaType != null) {
+         _setMediaType(settings, parameters.MediaType);
+      }
+
+      if (parameters.OmitXmlDeclaration != null) {
+         settings.OmitXmlDeclaration = parameters.OmitXmlDeclaration.Value;
+      }
+
+      var enc = settings.Encoding;
+
+      if (parameters.ByteOrderMark != null
+         && !parameters.ByteOrderMark.Value) {
+
+         if (enc is UTF8Encoding) {
+            settings.Encoding = new UTF8Encoding(false);
+         }
+      }
+
+      if (parameters.SkipCharacterCheck != null) {
+         settings.CheckCharacters = !parameters.SkipCharacterCheck.Value;
+      }
+
+      return settings;
    }
 }

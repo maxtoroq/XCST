@@ -18,114 +18,113 @@ using System.Globalization;
 using System.Reflection;
 using BaseRangeAttribute = System.ComponentModel.DataAnnotations.RangeAttribute;
 
-namespace Xcst.PackageModel {
+namespace Xcst.PackageModel;
 
-   // .NET's RangeAttribute parses minimum and maximum arguments using the current culture
-   // this class uses invariant culture instead
-   // 
-   // see also <https://github.com/dotnet/corefx/issues/2648>
+// .NET's RangeAttribute parses minimum and maximum arguments using the current culture
+// this class uses invariant culture instead
+// 
+// see also <https://github.com/dotnet/corefx/issues/2648>
 
-   using BaseInitializeAction = Action<BaseRangeAttribute, IComparable, IComparable, Func<object, object>>;
+using BaseInitializeAction = Action<BaseRangeAttribute, IComparable, IComparable, Func<object, object>>;
 
-   /// <exclude/>
-   public class RangeAttribute : BaseRangeAttribute {
+/// <exclude/>
+public class RangeAttribute : BaseRangeAttribute {
 
-      private static CultureInfo
-      MinMaxFormatCulture => CultureInfo.InvariantCulture;
+   private static CultureInfo
+   MinMaxFormatCulture => CultureInfo.InvariantCulture;
 
-      private static BaseInitializeAction
-      BaseInitialize { get; }
+   private static BaseInitializeAction
+   BaseInitialize { get; }
 
-      static
-      RangeAttribute() {
+   static
+   RangeAttribute() {
 
-         BaseInitialize = (BaseInitializeAction)
-            Delegate.CreateDelegate(
-               typeof(BaseInitializeAction),
-               typeof(BaseRangeAttribute).GetMethod("Initialize",
-                  BindingFlags.Instance | BindingFlags.NonPublic,
-                  null,
-                  new[] { typeof(IComparable), typeof(IComparable), typeof(Func<object, object>) },
-                  null)!);
+      BaseInitialize = (BaseInitializeAction)
+         Delegate.CreateDelegate(
+            typeof(BaseInitializeAction),
+            typeof(BaseRangeAttribute).GetMethod("Initialize",
+               BindingFlags.Instance | BindingFlags.NonPublic,
+               null,
+               new[] { typeof(IComparable), typeof(IComparable), typeof(Func<object, object>) },
+               null)!);
+   }
+
+   bool
+   _conversionInit = false;
+
+   public
+   RangeAttribute(Type type, string? minimum = null, string? maximum = null)
+      : base(
+         GetUnderlyingType(type),
+         minimum ?? DefaultMinMax(type, "MinValue"),
+         maximum ?? DefaultMinMax(type, "MaxValue")) { }
+
+   static Type
+   GetUnderlyingType(Type type) {
+
+      // base class expects type to be IComparable
+      // this excludes Nullable<T>
+
+      return Nullable.GetUnderlyingType(type)
+         ?? type;
+   }
+
+   static string
+   DefaultMinMax(Type type, string minOrMax) {
+
+      type = GetUnderlyingType(type);
+
+      var fld = type.GetField(minOrMax, BindingFlags.Public | BindingFlags.Static)
+         ?? throw new ArgumentException(
+               $"Could not find a '{minOrMax}' static field on type '{type.FullName}'. Specify an explicit value.", nameof(type));
+
+      return Convert.ToString(fld.GetValue(null), MinMaxFormatCulture)!;
+   }
+
+   public override bool
+   IsValid(object? value) {
+
+      SetupConversion();
+      return base.IsValid(value);
+   }
+
+   public override string
+   FormatErrorMessage(string name) {
+
+      SetupConversion();
+      return base.FormatErrorMessage(name);
+   }
+
+   void
+   SetupConversion() {
+
+      if (_conversionInit) {
+         return;
       }
 
-      bool
-      _conversionInit = false;
+      var minimum = (string)this.Minimum;
+      var maximum = (string)this.Maximum;
+      var type = this.OperandType;
 
-      public
-      RangeAttribute(Type type, string? minimum = null, string? maximum = null)
-         : base(
-            GetUnderlyingType(type),
-            minimum ?? DefaultMinMax(type, "MinValue"),
-            maximum ?? DefaultMinMax(type, "MaxValue")) { }
+      if (minimum is null
+         || maximum is null
+         || type is null
+         || !typeof(IComparable).IsAssignableFrom(type)) {
 
-      static Type
-      GetUnderlyingType(Type type) {
-
-         // base class expects type to be IComparable
-         // this excludes Nullable<T>
-
-         return Nullable.GetUnderlyingType(type)
-            ?? type;
+         // let base throw
+         return;
       }
 
-      static string
-      DefaultMinMax(Type type, string minOrMax) {
+      var converter = TypeDescriptor.GetConverter(type);
+      var min = (IComparable)converter.ConvertFromString(null, MinMaxFormatCulture, minimum);
+      var max = (IComparable)converter.ConvertFromString(null, MinMaxFormatCulture, maximum);
 
-         type = GetUnderlyingType(type);
+      object conversion(object value) =>
+         (value != null && value.GetType() == type) ? value
+         : converter.ConvertFrom(value); // uses current culture
 
-         var fld = type.GetField(minOrMax, BindingFlags.Public | BindingFlags.Static)
-            ?? throw new ArgumentException(
-                  $"Could not find a '{minOrMax}' static field on type '{type.FullName}'. Specify an explicit value.", nameof(type));
+      BaseInitialize(this, min, max, conversion);
 
-         return Convert.ToString(fld.GetValue(null), MinMaxFormatCulture)!;
-      }
-
-      public override bool
-      IsValid(object? value) {
-
-         SetupConversion();
-         return base.IsValid(value);
-      }
-
-      public override string
-      FormatErrorMessage(string name) {
-
-         SetupConversion();
-         return base.FormatErrorMessage(name);
-      }
-
-      void
-      SetupConversion() {
-
-         if (_conversionInit) {
-            return;
-         }
-
-         var minimum = (string)this.Minimum;
-         var maximum = (string)this.Maximum;
-         var type = this.OperandType;
-
-         if (minimum is null
-            || maximum is null
-            || type is null
-            || !typeof(IComparable).IsAssignableFrom(type)) {
-
-            // let base throw
-            return;
-         }
-
-         var converter = TypeDescriptor.GetConverter(type);
-         var min = (IComparable)converter.ConvertFromString(null, MinMaxFormatCulture, minimum);
-         var max = (IComparable)converter.ConvertFromString(null, MinMaxFormatCulture, maximum);
-
-         object conversion(object value) =>
-            (value != null && value.GetType() == type) ? value
-            : converter.ConvertFrom(value); // uses current culture
-
-         BaseInitialize(this, min, max, conversion);
-
-         _conversionInit = true;
-      }
+      _conversionInit = true;
    }
 }

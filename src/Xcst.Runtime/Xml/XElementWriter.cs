@@ -16,77 +16,76 @@ using System.Diagnostics;
 using System.Xml.Linq;
 using Xcst.Runtime;
 
-namespace Xcst.Xml {
+namespace Xcst.Xml;
 
-   // XNodeBuilder for XElement does not support top level attributes.
-   // The workaround is to create a writer for a document,
-   // then detaching the root element from that document.
-   // 
-   // The generated code for c:element and literal result elements do not dispose/close writers.
-   // Therefore, using WriteEndElement to check when element is ready,
-   // then calling Close on baseWriter.
+// XNodeBuilder for XElement does not support top level attributes.
+// The workaround is to create a writer for a document,
+// then detaching the root element from that document.
+// 
+// The generated code for c:element and literal result elements do not dispose/close writers.
+// Therefore, using WriteEndElement to check when element is ready,
+// then calling Close on baseWriter.
 
-   class XElementWriter : WrappingXmlWriter {
+class XElementWriter : WrappingXmlWriter {
 
-      readonly XDocument
-      _document;
+   readonly XDocument
+   _document;
 
-      readonly ISequenceWriter<XElement>
-      _output;
+   readonly ISequenceWriter<XElement>
+   _output;
 
-      int
-      _depth;
+   int
+   _depth;
 
-      bool
-      _elementFlushed;
+   bool
+   _elementFlushed;
 
-      public
-      XElementWriter(XDocument document, ISequenceWriter<XElement> output)
-         : base(document.CreateWriter()) {
+   public
+   XElementWriter(XDocument document, ISequenceWriter<XElement> output)
+      : base(document.CreateWriter()) {
 
-         _document = document;
-         _output = output;
+      _document = document;
+      _output = output;
+   }
+
+   public override void
+   WriteStartElement(string? prefix, string localName, string? ns) {
+
+      base.WriteStartElement(prefix, localName, ns);
+
+      _depth++;
+   }
+
+   public override void
+   WriteEndElement() {
+
+      base.WriteEndElement();
+
+      _depth--;
+
+      if (_depth == 0) {
+         Close();
       }
+   }
 
-      public override void
-      WriteStartElement(string? prefix, string localName, string? ns) {
+   public override void
+   Close() {
 
-         base.WriteStartElement(prefix, localName, ns);
+      Debug.Assert(!_elementFlushed);
 
-         _depth++;
-      }
+      if (!_elementFlushed) {
 
-      public override void
-      WriteEndElement() {
+         base.Close();
 
-         base.WriteEndElement();
+         var el = _document.Root!;
 
-         _depth--;
+         Assert.That(el != null);
 
-         if (_depth == 0) {
-            Close();
-         }
-      }
+         el.Remove();
 
-      public override void
-      Close() {
+         _output.WriteObject(el);
 
-         Debug.Assert(!_elementFlushed);
-
-         if (!_elementFlushed) {
-
-            base.Close();
-
-            var el = _document.Root!;
-
-            Assert.That(el != null);
-
-            el.Remove();
-
-            _output.WriteObject(el);
-
-            _elementFlushed = true;
-         }
+         _elementFlushed = true;
       }
    }
 }

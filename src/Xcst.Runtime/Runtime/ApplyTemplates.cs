@@ -17,53 +17,52 @@ using System.Collections;
 using System.Xml;
 using Newtonsoft.Json.Linq;
 
-namespace Xcst.Runtime {
+namespace Xcst.Runtime;
 
-   public static class ApplyTemplates {
+public static class ApplyTemplates {
 
-      public static void
-      Apply(TemplateContext baseContext, object? input, QualifiedName? mode, Action<TemplateContext> modeFn) {
+   public static void
+   Apply(TemplateContext baseContext, object? input, QualifiedName? mode, Action<TemplateContext> modeFn) {
 
-         foreach (var item in ValueAsEnumerable(input)) {
+      foreach (var item in ValueAsEnumerable(input)) {
 
-            var context = TemplateContext.ForApplyTemplatesItem(baseContext, mode, item);
-            modeFn(context);
-         }
+         var context = TemplateContext.ForApplyTemplatesItem(baseContext, mode, item);
+         modeFn(context);
       }
+   }
 
-      public static void
-      Apply<TBase>(
-            TemplateContext baseContext, object? input, QualifiedName? mode,
-            Action<TemplateContext> modeFn, ISequenceWriter<TBase> output, TBase separator) {
+   public static void
+   Apply<TBase>(
+         TemplateContext baseContext, object? input, QualifiedName? mode,
+         Action<TemplateContext> modeFn, ISequenceWriter<TBase> output, TBase separator) {
 
-         int i = -1;
+      int i = -1;
 
-         foreach (var item in ValueAsEnumerable(input)) {
+      foreach (var item in ValueAsEnumerable(input)) {
 
-            i++;
+         i++;
 
-            if (i > 0) {
-               output.WriteString(separator);
-            }
-
-            var context = TemplateContext.ForApplyTemplatesItem(baseContext, mode, item);
-            modeFn(context);
-         }
-      }
-
-      static IEnumerable
-      ValueAsEnumerable(object? input) {
-
-         var valueAsEnum = SimpleContent.ValueAsEnumerable(input, checkToString: false);
-
-         if (valueAsEnum is null
-            || input is XmlNode
-            || input is JToken) {
-
-            return new[] { input };
+         if (i > 0) {
+            output.WriteString(separator);
          }
 
-         return valueAsEnum;
+         var context = TemplateContext.ForApplyTemplatesItem(baseContext, mode, item);
+         modeFn(context);
       }
+   }
+
+   static IEnumerable
+   ValueAsEnumerable(object? input) {
+
+      var valueAsEnum = SimpleContent.ValueAsEnumerable(input, checkToString: false);
+
+      if (valueAsEnum is null
+         || input is XmlNode
+         || input is JToken) {
+
+         return new[] { input };
+      }
+
+      return valueAsEnum;
    }
 }

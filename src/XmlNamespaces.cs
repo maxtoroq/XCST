@@ -12,26 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace Xcst {
+namespace Xcst;
 
-   static class XmlNamespaces {
+static class XmlNamespaces {
 
-      public const string
-      Xcst = "http://maxtoroq.github.io/XCST";
+   public const string
+   Xcst = "http://maxtoroq.github.io/XCST";
 
-      const string
-      XcstImpl = "https://maxtoroq.github.io/XCST";
+   const string
+   XcstImpl = "https://maxtoroq.github.io/XCST";
 
-      public const string
-      XcstGrammar = XcstImpl + "/grammar";
+   public const string
+   XcstGrammar = XcstImpl + "/grammar";
 
-      public const string
-      XcstErrors = XcstImpl + "/errors";
+   public const string
+   XcstErrors = XcstImpl + "/errors";
 
-      public const string
-      XcstCode = XcstImpl + "/code";
+   public const string
+   XcstCode = XcstImpl + "/code";
 
-      public const string
-      XcstCompiled = XcstImpl + "/compiled";
-   }
+   public const string
+   XcstCompiled = XcstImpl + "/compiled";
 }

@@ -16,357 +16,356 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace Xcst.Runtime {
+namespace Xcst.Runtime;
 
-   /// <exclude/>
-   public class TemplateContext {
+/// <exclude/>
+public class TemplateContext {
 
-      static readonly TemplateContext
-      _emptyContext = new(0, 0, null);
+   static readonly TemplateContext
+   _emptyContext = new(0, 0, null);
 
-      readonly Dictionary<string, object?>?
-      _templateParameters;
+   readonly Dictionary<string, object?>?
+   _templateParameters;
 
-      readonly Dictionary<string, object?>?
-      _tunnelParameters;
+   readonly Dictionary<string, object?>?
+   _tunnelParameters;
 
-      readonly bool
-      _inMode;
+   readonly bool
+   _inMode;
 
-      public object?
-      Input { get; }
+   public object?
+   Input { get; }
 
-      public QualifiedName?
-      Mode { get; }
+   public QualifiedName?
+   Mode { get; }
 
-      public int
-      MatchIndex { get; private set; }
+   public int
+   MatchIndex { get; private set; }
 
-      public static TemplateContext
-      Create(int tmplCount, int tunnelCount, TemplateContext? currentContext = null) {
+   public static TemplateContext
+   Create(int tmplCount, int tunnelCount, TemplateContext? currentContext = null) {
 
-         if (tmplCount == 0
-            && tunnelCount == 0
-            && !(currentContext?._inMode).GetValueOrDefault()
-            && (currentContext?._tunnelParameters is null
-               || currentContext._tunnelParameters.Count == 0)) {
+      if (tmplCount == 0
+         && tunnelCount == 0
+         && !(currentContext?._inMode).GetValueOrDefault()
+         && (currentContext?._tunnelParameters is null
+            || currentContext._tunnelParameters.Count == 0)) {
 
-            return _emptyContext;
-         }
-
-         return new TemplateContext(tmplCount, tunnelCount, currentContext);
+         return _emptyContext;
       }
 
-      public static TemplateContext<TParams>
-      CreateTyped<TParams>(TParams parameters, int tunnelCount, TemplateContext? currentContext = null) =>
-         new TemplateContext<TParams>(parameters, tunnelCount, currentContext);
+      return new TemplateContext(tmplCount, tunnelCount, currentContext);
+   }
 
-      public static TemplateContext
-      ForApplyTemplates(
-            int tmplCount,
-            int tunnelCount,
-            TemplateContext? currentContext = null) =>
-         new TemplateContext(tmplCount, tunnelCount, currentContext);
+   public static TemplateContext<TParams>
+   CreateTyped<TParams>(TParams parameters, int tunnelCount, TemplateContext? currentContext = null) =>
+      new TemplateContext<TParams>(parameters, tunnelCount, currentContext);
 
-      internal static TemplateContext
-      ForApplyTemplatesItem(TemplateContext baseContext, QualifiedName? mode, object? input) {
+   public static TemplateContext
+   ForApplyTemplates(
+         int tmplCount,
+         int tunnelCount,
+         TemplateContext? currentContext = null) =>
+      new TemplateContext(tmplCount, tunnelCount, currentContext);
 
-         var newContext = new TemplateContext(
-            baseContext._templateParameters?.Count ?? 0,
-            baseContext._tunnelParameters?.Count ?? 0,
-            baseContext,
-            input,
-            mode,
-            0
-         );
+   internal static TemplateContext
+   ForApplyTemplatesItem(TemplateContext baseContext, QualifiedName? mode, object? input) {
 
-         if (baseContext._templateParameters?.Count > 0) {
-            foreach (var pair in baseContext._templateParameters) {
-               newContext._templateParameters![pair.Key] = pair.Value;
-            }
-         }
+      var newContext = new TemplateContext(
+         baseContext._templateParameters?.Count ?? 0,
+         baseContext._tunnelParameters?.Count ?? 0,
+         baseContext,
+         input,
+         mode,
+         0
+      );
 
-         return newContext;
-      }
-
-      public static TemplateContext
-      ForNextMatch(int tmplCount, int tunnelCount, TemplateContext currentContext) {
-
-         if (currentContext is null
-            || !currentContext._inMode) {
-
-            throw DynamicError.AbsentCurrentTemplateRule();
-         }
-
-         return new TemplateContext(
-            tmplCount,
-            tunnelCount,
-            currentContext,
-            currentContext.Input,
-            currentContext.Mode,
-            currentContext.MatchIndex + 1
-         );
-      }
-
-      internal static TemplateContext
-      ForShallowCopy(TemplateContext currentContext, object? input) {
-
-         Assert.That(currentContext != null);
-         Debug.Assert(currentContext._inMode);
-
-         var newContext = new TemplateContext(
-            currentContext._templateParameters?.Count ?? 0,
-            currentContext._tunnelParameters?.Count ?? 0,
-            currentContext,
-            input,
-            currentContext.Mode,
-            0
-         );
-
-         if (currentContext._templateParameters?.Count > 0) {
-            foreach (var pair in currentContext._templateParameters) {
-               newContext._templateParameters![pair.Key] = pair.Value;
-            }
-         }
-
-         return newContext;
-      }
-
-      public
-      TemplateContext(int tmplCount, int tunnelCount, TemplateContext? currentContext) {
-
-         if (tmplCount > 0) {
-            _templateParameters = new Dictionary<string, object?>(tmplCount);
-         }
-
-         int tunnelTotalCount = tunnelCount + (currentContext?._tunnelParameters?.Count ?? 0);
-
-         if (tunnelTotalCount > 0) {
-            _tunnelParameters = new Dictionary<string, object?>(tunnelTotalCount);
-         }
-
-         if (currentContext?._tunnelParameters != null) {
-
-            foreach (var item in currentContext._tunnelParameters) {
-               WithParam(item.Key, item.Value, tunnel: true);
-            }
-         }
-
-         if (currentContext != null) {
-            _inMode = currentContext._inMode;
-            this.Input = currentContext.Input;
-            this.Mode = currentContext.Mode;
-            this.MatchIndex = currentContext.MatchIndex;
+      if (baseContext._templateParameters?.Count > 0) {
+         foreach (var pair in baseContext._templateParameters) {
+            newContext._templateParameters![pair.Key] = pair.Value;
          }
       }
 
-      private
-      TemplateContext(
-            int tmplCount,
-            int tunnelCount,
-            TemplateContext? currentContext,
-            object? input,
-            QualifiedName? mode,
-            int matchIndex)
-         : this(tmplCount, tunnelCount, currentContext) {
+      return newContext;
+   }
 
-         _inMode = true;
-         this.Input = input;
-         this.Mode = mode;
-         this.MatchIndex = matchIndex;
+   public static TemplateContext
+   ForNextMatch(int tmplCount, int tunnelCount, TemplateContext currentContext) {
+
+      if (currentContext is null
+         || !currentContext._inMode) {
+
+         throw DynamicError.AbsentCurrentTemplateRule();
       }
 
-      public TemplateContext
-      WithParam(string name, object? value, bool tunnel = false) {
+      return new TemplateContext(
+         tmplCount,
+         tunnelCount,
+         currentContext,
+         currentContext.Input,
+         currentContext.Mode,
+         currentContext.MatchIndex + 1
+      );
+   }
 
-         if (tunnel) {
+   internal static TemplateContext
+   ForShallowCopy(TemplateContext currentContext, object? input) {
 
-            Assert.That(_tunnelParameters != null);
-            _tunnelParameters[name] = value;
+      Assert.That(currentContext != null);
+      Debug.Assert(currentContext._inMode);
 
-         } else {
+      var newContext = new TemplateContext(
+         currentContext._templateParameters?.Count ?? 0,
+         currentContext._tunnelParameters?.Count ?? 0,
+         currentContext,
+         input,
+         currentContext.Mode,
+         0
+      );
 
-            Assert.That(_templateParameters != null);
-            _templateParameters[name] = value;
+      if (currentContext._templateParameters?.Count > 0) {
+         foreach (var pair in currentContext._templateParameters) {
+            newContext._templateParameters![pair.Key] = pair.Value;
          }
-
-         return this;
       }
 
-      public TemplateContext
-      WithParams(object? parameters) {
+      return newContext;
+   }
 
-         if (parameters != null) {
-            WithParams(XcstEvaluator.ObjectToDictionary(parameters));
-         }
+   public
+   TemplateContext(int tmplCount, int tunnelCount, TemplateContext? currentContext) {
 
-         return this;
+      if (tmplCount > 0) {
+         _templateParameters = new Dictionary<string, object?>(tmplCount);
       }
 
-      public TemplateContext
-      WithParams(IDictionary<string, object?>? parameters) {
+      int tunnelTotalCount = tunnelCount + (currentContext?._tunnelParameters?.Count ?? 0);
 
-         if (parameters != null) {
-
-            foreach (var pair in parameters) {
-               WithParam(pair.Key, pair.Value);
-            }
-         }
-
-         return this;
+      if (tunnelTotalCount > 0) {
+         _tunnelParameters = new Dictionary<string, object?>(tunnelTotalCount);
       }
 
-      public TemplateContext
-      WithTunnelParams(object? parameters) {
+      if (currentContext?._tunnelParameters != null) {
 
-         if (parameters != null) {
-            WithTunnelParams(XcstEvaluator.ObjectToDictionary(parameters));
+         foreach (var item in currentContext._tunnelParameters) {
+            WithParam(item.Key, item.Value, tunnel: true);
          }
-
-         return this;
       }
 
-      public TemplateContext
-      WithTunnelParams(IDictionary<string, object?>? parameters) {
-
-         if (parameters != null) {
-
-            foreach (var pair in parameters) {
-               WithParam(pair.Key, pair.Value, tunnel: true);
-            }
-         }
-
-         return this;
-      }
-
-      public bool
-      HasParam(string name) =>
-         _templateParameters?.ContainsKey(name) == true;
-
-      public TDefault
-      Param<TDefault>(
-            string name,
-            Func<TDefault>? defaultValue = null,
-            bool required = false,
-            bool tunnel = false) {
-
-         var paramsDict = (tunnel) ?
-            _tunnelParameters
-            : _templateParameters;
-
-         if (paramsDict?.TryGetValue(name, out var value) == true) {
-
-            if (!tunnel) {
-               paramsDict.Remove(name);
-            }
-
-            try {
-#pragma warning disable CS8600, CS8603 // let caller decide nullability
-               return (TDefault)value;
-#pragma warning restore CS8600, CS8603
-
-            } catch (InvalidCastException) {
-               throw DynamicError.InvalidParameterCast(name);
-            }
-         }
-
-         if (defaultValue != null) {
-            return defaultValue();
-         }
-
-         if (required) {
-            throw DynamicError.RequiredTemplateParameter(name);
-         }
-
-#pragma warning disable CS8603 // let caller decide nullability
-         return default;
-#pragma warning restore CS8603
-      }
-
-      public static TDefault
-      TypedParam<TValue, TDefault>(
-            string name,
-            bool valueSet,
-            TValue value,
-            Func<TDefault>? defaultValue = null,
-            bool required = false) where TDefault : TValue {
-
-         if (valueSet) {
-
-            try {
-#pragma warning disable CS8600, CS8603 // let caller decide nullability
-               return (TDefault)value;
-#pragma warning restore CS8600, CS8603
-
-            } catch (InvalidCastException) {
-               throw DynamicError.InvalidParameterCast(name);
-            }
-         }
-
-         if (defaultValue != null) {
-            return defaultValue();
-         }
-
-         if (required) {
-            throw DynamicError.RequiredTemplateParameter(name);
-         }
-
-#pragma warning disable CS8603 // let caller decide nullability
-         return default;
-#pragma warning restore CS8603
-      }
-
-      public void
-      NextMatch() {
-         this.MatchIndex++;
-      }
-
-      internal void
-      CopyTunnelParams(IDictionary<string, object?> buffer) {
-
-         if (_tunnelParameters is null
-            || _tunnelParameters.Count == 0) {
-
-            return;
-         }
-
-         foreach (var pair in _tunnelParameters) {
-            buffer[pair.Key] = pair.Value;
-         }
+      if (currentContext != null) {
+         _inMode = currentContext._inMode;
+         this.Input = currentContext.Input;
+         this.Mode = currentContext.Mode;
+         this.MatchIndex = currentContext.MatchIndex;
       }
    }
 
-   public class TemplateContext<TParams> : TemplateContext {
+   private
+   TemplateContext(
+         int tmplCount,
+         int tunnelCount,
+         TemplateContext? currentContext,
+         object? input,
+         QualifiedName? mode,
+         int matchIndex)
+      : this(tmplCount, tunnelCount, currentContext) {
 
-      public TParams
-      Parameters { get; }
+      _inMode = true;
+      this.Input = input;
+      this.Mode = mode;
+      this.MatchIndex = matchIndex;
+   }
 
-      public
-      TemplateContext(TParams parameters, int tunnelCount, TemplateContext? currentContext)
-         : base(0, tunnelCount, currentContext) {
+   public TemplateContext
+   WithParam(string name, object? value, bool tunnel = false) {
 
-         this.Parameters = parameters;
+      if (tunnel) {
+
+         Assert.That(_tunnelParameters != null);
+         _tunnelParameters[name] = value;
+
+      } else {
+
+         Assert.That(_templateParameters != null);
+         _templateParameters[name] = value;
       }
 
-      public new TemplateContext<TParams>
-      WithParam(string name, object? value, bool tunnel = false) {
+      return this;
+   }
 
-         base.WithParam(name, value, tunnel);
-         return this;
+   public TemplateContext
+   WithParams(object? parameters) {
+
+      if (parameters != null) {
+         WithParams(XcstEvaluator.ObjectToDictionary(parameters));
       }
 
-      public new TemplateContext<TParams>
-      WithTunnelParams(object? parameters) {
+      return this;
+   }
 
-         base.WithTunnelParams(parameters);
-         return this;
+   public TemplateContext
+   WithParams(IDictionary<string, object?>? parameters) {
+
+      if (parameters != null) {
+
+         foreach (var pair in parameters) {
+            WithParam(pair.Key, pair.Value);
+         }
       }
 
-      public new TemplateContext<TParams>
-      WithTunnelParams(IDictionary<string, object?>? parameters) {
+      return this;
+   }
 
-         base.WithTunnelParams(parameters);
-         return this;
+   public TemplateContext
+   WithTunnelParams(object? parameters) {
+
+      if (parameters != null) {
+         WithTunnelParams(XcstEvaluator.ObjectToDictionary(parameters));
       }
+
+      return this;
+   }
+
+   public TemplateContext
+   WithTunnelParams(IDictionary<string, object?>? parameters) {
+
+      if (parameters != null) {
+
+         foreach (var pair in parameters) {
+            WithParam(pair.Key, pair.Value, tunnel: true);
+         }
+      }
+
+      return this;
+   }
+
+   public bool
+   HasParam(string name) =>
+      _templateParameters?.ContainsKey(name) == true;
+
+   public TDefault
+   Param<TDefault>(
+         string name,
+         Func<TDefault>? defaultValue = null,
+         bool required = false,
+         bool tunnel = false) {
+
+      var paramsDict = (tunnel) ?
+         _tunnelParameters
+         : _templateParameters;
+
+      if (paramsDict?.TryGetValue(name, out var value) == true) {
+
+         if (!tunnel) {
+            paramsDict.Remove(name);
+         }
+
+         try {
+#pragma warning disable CS8600, CS8603 // let caller decide nullability
+            return (TDefault)value;
+#pragma warning restore CS8600, CS8603
+
+         } catch (InvalidCastException) {
+            throw DynamicError.InvalidParameterCast(name);
+         }
+      }
+
+      if (defaultValue != null) {
+         return defaultValue();
+      }
+
+      if (required) {
+         throw DynamicError.RequiredTemplateParameter(name);
+      }
+
+#pragma warning disable CS8603 // let caller decide nullability
+      return default;
+#pragma warning restore CS8603
+   }
+
+   public static TDefault
+   TypedParam<TValue, TDefault>(
+         string name,
+         bool valueSet,
+         TValue value,
+         Func<TDefault>? defaultValue = null,
+         bool required = false) where TDefault : TValue {
+
+      if (valueSet) {
+
+         try {
+#pragma warning disable CS8600, CS8603 // let caller decide nullability
+            return (TDefault)value;
+#pragma warning restore CS8600, CS8603
+
+         } catch (InvalidCastException) {
+            throw DynamicError.InvalidParameterCast(name);
+         }
+      }
+
+      if (defaultValue != null) {
+         return defaultValue();
+      }
+
+      if (required) {
+         throw DynamicError.RequiredTemplateParameter(name);
+      }
+
+#pragma warning disable CS8603 // let caller decide nullability
+      return default;
+#pragma warning restore CS8603
+   }
+
+   public void
+   NextMatch() {
+      this.MatchIndex++;
+   }
+
+   internal void
+   CopyTunnelParams(IDictionary<string, object?> buffer) {
+
+      if (_tunnelParameters is null
+         || _tunnelParameters.Count == 0) {
+
+         return;
+      }
+
+      foreach (var pair in _tunnelParameters) {
+         buffer[pair.Key] = pair.Value;
+      }
+   }
+}
+
+public class TemplateContext<TParams> : TemplateContext {
+
+   public TParams
+   Parameters { get; }
+
+   public
+   TemplateContext(TParams parameters, int tunnelCount, TemplateContext? currentContext)
+      : base(0, tunnelCount, currentContext) {
+
+      this.Parameters = parameters;
+   }
+
+   public new TemplateContext<TParams>
+   WithParam(string name, object? value, bool tunnel = false) {
+
+      base.WithParam(name, value, tunnel);
+      return this;
+   }
+
+   public new TemplateContext<TParams>
+   WithTunnelParams(object? parameters) {
+
+      base.WithTunnelParams(parameters);
+      return this;
+   }
+
+   public new TemplateContext<TParams>
+   WithTunnelParams(IDictionary<string, object?>? parameters) {
+
+      base.WithTunnelParams(parameters);
+      return this;
    }
 }

@@ -15,174 +15,173 @@
 using System;
 using System.Xml;
 
-namespace Xcst.Xml {
+namespace Xcst.Xml;
 
-   class XmlXcstWriter : XcstWriter {
+class XmlXcstWriter : XcstWriter {
 
-      readonly XmlWriter
-      _output;
+   readonly XmlWriter
+   _output;
 
-      readonly bool
-      _outputXmlDecl;
+   readonly bool
+   _outputXmlDecl;
 
-      readonly XmlStandalone
-      _standalone;
+   readonly XmlStandalone
+   _standalone;
 
-      bool
-      _xmlDeclWritten;
+   bool
+   _xmlDeclWritten;
 
-      int
-      _depth;
+   int
+   _depth;
 
-      protected internal override int
-      Depth => _depth;
+   protected internal override int
+   Depth => _depth;
 
-      public
-      XmlXcstWriter(XmlWriter writer, Uri outputUri, OutputParameters parameters)
-         : base(outputUri) {
+   public
+   XmlXcstWriter(XmlWriter writer, Uri outputUri, OutputParameters parameters)
+      : base(outputUri) {
 
-         _output = writer;
-         _outputXmlDecl = !parameters.OmitXmlDeclaration.GetValueOrDefault()
-            && (parameters.Method is null
-               || parameters.Method == OutputParameters.Methods.Xml);
+      _output = writer;
+      _outputXmlDecl = !parameters.OmitXmlDeclaration.GetValueOrDefault()
+         && (parameters.Method is null
+            || parameters.Method == OutputParameters.Methods.Xml);
 
-         _standalone = parameters.Standalone.GetValueOrDefault();
-      }
+      _standalone = parameters.Standalone.GetValueOrDefault();
+   }
 
-      void
-      WriteXmlDeclaration() {
+   void
+   WriteXmlDeclaration() {
 
-         if (_outputXmlDecl
-            && !_xmlDeclWritten
-            && _output.WriteState == WriteState.Start) {
+      if (_outputXmlDecl
+         && !_xmlDeclWritten
+         && _output.WriteState == WriteState.Start) {
 
-            if (_standalone == XmlStandalone.Omit) {
-               _output.WriteStartDocument();
-            } else {
-               _output.WriteStartDocument(_standalone == XmlStandalone.Yes);
-            }
-
-            _xmlDeclWritten = true;
+         if (_standalone == XmlStandalone.Omit) {
+            _output.WriteStartDocument();
+         } else {
+            _output.WriteStartDocument(_standalone == XmlStandalone.Yes);
          }
+
+         _xmlDeclWritten = true;
       }
+   }
 
-      public override void
-      WriteComment(string? text) {
+   public override void
+   WriteComment(string? text) {
 
-         WriteXmlDeclaration();
-         OnItemWritting();
-         _output.WriteComment(text);
+      WriteXmlDeclaration();
+      OnItemWritting();
+      _output.WriteComment(text);
+      OnItemWritten();
+   }
+
+   public override void
+   WriteEndAttribute() {
+
+      // WriteEndAttribute is called in a finally block
+      // Checking for error to not overwhelm writer when something goes wrong
+
+      if (_output.WriteState != WriteState.Error) {
+         _output.WriteEndAttribute();
+         _depth--;
+         //OnItemWritten();
+      }
+   }
+
+   public override void
+   WriteEndElement() {
+
+      // WriteEndElement is called in a finally block
+      // Checking for error to not overwhelm writer when something goes wrong
+
+      if (_output.WriteState != WriteState.Error) {
+         _output.WriteEndElement();
+         _depth--;
          OnItemWritten();
       }
+   }
 
-      public override void
-      WriteEndAttribute() {
+   public override void
+   WriteProcessingInstruction(string name, string? text) {
 
-         // WriteEndAttribute is called in a finally block
-         // Checking for error to not overwhelm writer when something goes wrong
+      WriteXmlDeclaration();
+      OnItemWritting();
+      _output.WriteProcessingInstruction(name, text);
+      OnItemWritten();
+   }
 
-         if (_output.WriteState != WriteState.Error) {
-            _output.WriteEndAttribute();
-            _depth--;
-            //OnItemWritten();
-         }
-      }
+   public override void
+   WriteRaw(string? data) {
 
-      public override void
-      WriteEndElement() {
-
-         // WriteEndElement is called in a finally block
-         // Checking for error to not overwhelm writer when something goes wrong
-
-         if (_output.WriteState != WriteState.Error) {
-            _output.WriteEndElement();
-            _depth--;
-            OnItemWritten();
-         }
-      }
-
-      public override void
-      WriteProcessingInstruction(string name, string? text) {
-
+      if (!String.IsNullOrEmpty(data)) {
          WriteXmlDeclaration();
          OnItemWritting();
-         _output.WriteProcessingInstruction(name, text);
+         _output.WriteRaw(data);
          OnItemWritten();
       }
+   }
 
-      public override void
-      WriteRaw(string? data) {
+   public override void
+   WriteStartAttribute(string? prefix, string localName, string? ns, string? separator) {
 
-         if (!String.IsNullOrEmpty(data)) {
-            WriteXmlDeclaration();
-            OnItemWritting();
-            _output.WriteRaw(data);
-            OnItemWritten();
-         }
-      }
+      //OnItemWritting();
+      _output.WriteStartAttribute(prefix, localName, ns);
+      _depth++;
+   }
 
-      public override void
-      WriteStartAttribute(string? prefix, string localName, string? ns, string? separator) {
+   public override void
+   WriteStartElement(string? prefix, string localName, string? ns) {
 
-         //OnItemWritting();
-         _output.WriteStartAttribute(prefix, localName, ns);
-         _depth++;
-      }
+      WriteXmlDeclaration();
 
-      public override void
-      WriteStartElement(string? prefix, string localName, string? ns) {
+      OnItemWritting();
+      _output.WriteStartElement(prefix, localName, ns);
+      _depth++;
+   }
+
+   public override void
+   WriteString(string? text) {
+
+      if (!String.IsNullOrEmpty(text)) {
 
          WriteXmlDeclaration();
-
          OnItemWritting();
-         _output.WriteStartElement(prefix, localName, ns);
-         _depth++;
+         _output.WriteString(text);
+         OnItemWritten();
+      }
+   }
+
+   public override void
+   WriteChars(char[] buffer, int index, int count) {
+
+      if (buffer != null
+         && buffer.Length > 0) {
+
+         WriteXmlDeclaration();
+         OnItemWritting();
+         _output.WriteChars(buffer, index, count);
+         OnItemWritten();
+      }
+   }
+
+   public override void
+   EndTrack() {
+
+      if (_output.WriteState != WriteState.Error) {
+         base.EndTrack();
+      }
+   }
+
+   public override void
+   Flush() => _output.Flush();
+
+   protected override void
+   Dispose(bool disposing) {
+
+      if (disposing) {
+         _output.Dispose();
       }
 
-      public override void
-      WriteString(string? text) {
-
-         if (!String.IsNullOrEmpty(text)) {
-
-            WriteXmlDeclaration();
-            OnItemWritting();
-            _output.WriteString(text);
-            OnItemWritten();
-         }
-      }
-
-      public override void
-      WriteChars(char[] buffer, int index, int count) {
-
-         if (buffer != null
-            && buffer.Length > 0) {
-
-            WriteXmlDeclaration();
-            OnItemWritting();
-            _output.WriteChars(buffer, index, count);
-            OnItemWritten();
-         }
-      }
-
-      public override void
-      EndTrack() {
-
-         if (_output.WriteState != WriteState.Error) {
-            base.EndTrack();
-         }
-      }
-
-      public override void
-      Flush() => _output.Flush();
-
-      protected override void
-      Dispose(bool disposing) {
-
-         if (disposing) {
-            _output.Dispose();
-         }
-
-         base.Dispose(disposing);
-      }
+      base.Dispose(disposing);
    }
 }

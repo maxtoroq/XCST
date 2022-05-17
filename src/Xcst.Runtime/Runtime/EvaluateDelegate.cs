@@ -14,63 +14,62 @@
 
 using System;
 
-namespace Xcst.Runtime {
+namespace Xcst.Runtime;
 
-   public static class EvaluateDelegate {
+public static class EvaluateDelegate {
 
-      public static void
-      Invoke<TDerived, TBase>(XcstDelegate<TDerived> del, TemplateContext context, ISequenceWriter<TBase> output)
-            where TDerived : TBase {
+   public static void
+   Invoke<TDerived, TBase>(XcstDelegate<TDerived> del, TemplateContext context, ISequenceWriter<TBase> output)
+         where TDerived : TBase {
 
-         if (del is null) throw new ArgumentNullException(nameof(del));
-         if (context is null) throw new ArgumentNullException(nameof(context));
-         if (output is null) throw new ArgumentNullException(nameof(output));
+      if (del is null) throw new ArgumentNullException(nameof(del));
+      if (context is null) throw new ArgumentNullException(nameof(context));
+      if (output is null) throw new ArgumentNullException(nameof(output));
 
-         var derivedWriter = output as ISequenceWriter<TDerived>
-            ?? new DerivedSequenceWriter<TDerived, TBase>(output);
+      var derivedWriter = output as ISequenceWriter<TDerived>
+         ?? new DerivedSequenceWriter<TDerived, TBase>(output);
 
-         del.Invoke(context, derivedWriter);
+      del.Invoke(context, derivedWriter);
+   }
+
+   [Obsolete("The provided delegate is not compatible with the current sequence constructor.", error: true)]
+   public static void
+   Invoke<TItem>(Delegate del, TemplateContext context, ISequenceWriter<TItem> output) {
+
+      if (del is null) throw new ArgumentNullException(nameof(del));
+      if (context is null) throw new ArgumentNullException(nameof(context));
+      if (output is null) throw new ArgumentNullException(nameof(output));
+
+      var delType = del.GetType();
+      var xcstType = delType.GetGenericTypeDefinition();
+
+      if (xcstType != typeof(XcstDelegate<>)) {
+         throw new RuntimeException("Invalid delegate.");
       }
 
-      [Obsolete("The provided delegate is not compatible with the current sequence constructor.", error: true)]
-      public static void
-      Invoke<TItem>(Delegate del, TemplateContext context, ISequenceWriter<TItem> output) {
+      var xcstTypeParams = delType.GetGenericArguments();
+      var derivedType = xcstTypeParams[0];
+      var baseType = typeof(TItem);
 
-         if (del is null) throw new ArgumentNullException(nameof(del));
-         if (context is null) throw new ArgumentNullException(nameof(context));
-         if (output is null) throw new ArgumentNullException(nameof(output));
+      object derivedWriter = output;
 
-         var delType = del.GetType();
-         var xcstType = delType.GetGenericTypeDefinition();
+      var compatibleOutput = typeof(ISequenceWriter<>)
+         .MakeGenericType(derivedType)
+         .IsAssignableFrom(output.GetType());
 
-         if (xcstType != typeof(XcstDelegate<>)) {
-            throw new RuntimeException("Invalid delegate.");
+      if (!compatibleOutput) {
+
+         if (baseType.IsAssignableFrom(derivedType)) {
+
+            derivedWriter = Activator.CreateInstance(typeof(DerivedSequenceWriter<,>)
+               .MakeGenericType(derivedType, baseType), output)!;
+
+         } else {
+
+            throw new RuntimeException($"{derivedType.FullName} is not compatible with {baseType.FullName}.");
          }
-
-         var xcstTypeParams = delType.GetGenericArguments();
-         var derivedType = xcstTypeParams[0];
-         var baseType = typeof(TItem);
-
-         object derivedWriter = output;
-
-         var compatibleOutput = typeof(ISequenceWriter<>)
-            .MakeGenericType(derivedType)
-            .IsAssignableFrom(output.GetType());
-
-         if (!compatibleOutput) {
-
-            if (baseType.IsAssignableFrom(derivedType)) {
-
-               derivedWriter = Activator.CreateInstance(typeof(DerivedSequenceWriter<,>)
-                  .MakeGenericType(derivedType, baseType), output)!;
-
-            } else {
-
-               throw new RuntimeException($"{derivedType.FullName} is not compatible with {baseType.FullName}.");
-            }
-         }
-
-         del.DynamicInvoke(context, derivedWriter);
       }
+
+      del.DynamicInvoke(context, derivedWriter);
    }
 }

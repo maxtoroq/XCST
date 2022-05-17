@@ -17,145 +17,144 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
-namespace Xcst.Runtime {
+namespace Xcst.Runtime;
 
-   /// <exclude/>
-   public static class DataType {
+/// <exclude/>
+public static class DataType {
 
-      public static bool
-      Boolean(string value) {
+   public static bool
+   Boolean(string value) {
 
-         if (value is null) throw new ArgumentNullException(nameof(value));
+      if (value is null) throw new ArgumentNullException(nameof(value));
 
-         switch (SimpleContent.Trim(value)) {
-            case "yes":
-            case "true":
-            case "True":
-            case "1":
-               return true;
+      switch (SimpleContent.Trim(value)) {
+         case "yes":
+         case "true":
+         case "True":
+         case "1":
+            return true;
 
-            case "no":
-            case "false":
-            case "False":
-            case "0":
-               return false;
+         case "no":
+         case "false":
+         case "False":
+         case "0":
+            return false;
 
-            default:
-               throw new RuntimeException("Invalid boolean value.", DynamicError.Code("XTDE0030"));
-         }
+         default:
+            throw new RuntimeException("Invalid boolean value.", DynamicError.Code("XTDE0030"));
+      }
+   }
+
+   public static decimal
+   Decimal(string value) {
+
+      if (value is null) throw new ArgumentNullException(nameof(value));
+
+      var style = NumberStyles.AllowLeadingSign
+         | NumberStyles.AllowTrailingSign
+         | NumberStyles.AllowDecimalPoint;
+
+      return System.Decimal.Parse(SimpleContent.Trim(value), style, CultureInfo.InvariantCulture);
+   }
+
+   public static int
+   Integer(string value) {
+
+      if (value is null) throw new ArgumentNullException(nameof(value));
+
+      var style = NumberStyles.AllowLeadingSign;
+
+      return System.Int32.Parse(SimpleContent.Trim(value), style, CultureInfo.InvariantCulture);
+   }
+
+   public static string?
+   ItemSeparator(string value) {
+
+      if (value is null) throw new ArgumentNullException(nameof(value));
+
+      if (value == "#absent") {
+         return null;
       }
 
-      public static decimal
-      Decimal(string value) {
+      return value;
+   }
 
-         if (value is null) throw new ArgumentNullException(nameof(value));
+   public static QualifiedName
+   QName(string localOrUriQualifiedName) =>
+      QualifiedName.Parse(localOrUriQualifiedName);
 
-         var style = NumberStyles.AllowLeadingSign
-            | NumberStyles.AllowTrailingSign
-            | NumberStyles.AllowDecimalPoint;
+   public static QualifiedName
+   QName(string ns, string localName) =>
+      new QualifiedName(localName, ns);
 
-         return System.Decimal.Parse(SimpleContent.Trim(value), style, CultureInfo.InvariantCulture);
+   public static bool
+   SortOrderDescending(string order) {
+
+      if (order is null) throw new ArgumentNullException(nameof(order));
+
+      switch (SimpleContent.Trim(order)) {
+         case "ascending":
+            return false;
+
+         case "descending":
+            return true;
+
+         default:
+            throw new RuntimeException("Invalid order value.", DynamicError.Code("XTDE0030"));
+      }
+   }
+
+   public static XmlStandalone
+   Standalone(string value) {
+
+      if (value is null) throw new ArgumentNullException(nameof(value));
+
+      if (SimpleContent.Trim(value) == "omit") {
+         return XmlStandalone.Omit;
       }
 
-      public static int
-      Integer(string value) {
-
-         if (value is null) throw new ArgumentNullException(nameof(value));
-
-         var style = NumberStyles.AllowLeadingSign;
-
-         return System.Int32.Parse(SimpleContent.Trim(value), style, CultureInfo.InvariantCulture);
+      if (Boolean(value)) {
+         return XmlStandalone.Yes;
       }
 
-      public static string?
-      ItemSeparator(string value) {
+      return XmlStandalone.No;
+   }
 
-         if (value is null) throw new ArgumentNullException(nameof(value));
+   public static string
+   String(string value) => value;
 
-         if (value == "#absent") {
-            return null;
-         }
+   public static Uri
+   Uri(string uriString) {
 
-         return value;
+      try {
+         return new Uri(uriString);
+      } catch (UriFormatException ex) {
+         throw new RuntimeException(ex.Message);
+      }
+   }
+
+   public static Uri
+   Uri(string baseUri, string relativeUri) {
+
+      try {
+         return new Uri(new Uri(baseUri, UriKind.Absolute), relativeUri);
+      } catch (UriFormatException ex) {
+         throw new RuntimeException(ex.Message);
+      }
+   }
+
+   public static IList<TItem>
+   List<TItem>(string list, Func<string, TItem> parseFn) {
+
+      var normalized = SimpleContent.NormalizeSpace(list);
+
+      if (string.IsNullOrEmpty(normalized)) {
+         return Array.Empty<TItem>();
       }
 
-      public static QualifiedName
-      QName(string localOrUriQualifiedName) =>
-         QualifiedName.Parse(localOrUriQualifiedName);
-
-      public static QualifiedName
-      QName(string ns, string localName) =>
-         new QualifiedName(localName, ns);
-
-      public static bool
-      SortOrderDescending(string order) {
-
-         if (order is null) throw new ArgumentNullException(nameof(order));
-
-         switch (SimpleContent.Trim(order)) {
-            case "ascending":
-               return false;
-
-            case "descending":
-               return true;
-
-            default:
-               throw new RuntimeException("Invalid order value.", DynamicError.Code("XTDE0030"));
-         }
-      }
-
-      public static XmlStandalone
-      Standalone(string value) {
-
-         if (value is null) throw new ArgumentNullException(nameof(value));
-
-         if (SimpleContent.Trim(value) == "omit") {
-            return XmlStandalone.Omit;
-         }
-
-         if (Boolean(value)) {
-            return XmlStandalone.Yes;
-         }
-
-         return XmlStandalone.No;
-      }
-
-      public static string
-      String(string value) => value;
-
-      public static Uri
-      Uri(string uriString) {
-
-         try {
-            return new Uri(uriString);
-         } catch (UriFormatException ex) {
-            throw new RuntimeException(ex.Message);
-         }
-      }
-
-      public static Uri
-      Uri(string baseUri, string relativeUri) {
-
-         try {
-            return new Uri(new Uri(baseUri, UriKind.Absolute), relativeUri);
-         } catch (UriFormatException ex) {
-            throw new RuntimeException(ex.Message);
-         }
-      }
-
-      public static IList<TItem>
-      List<TItem>(string list, Func<string, TItem> parseFn) {
-
-         var normalized = SimpleContent.NormalizeSpace(list);
-
-         if (string.IsNullOrEmpty(normalized)) {
-            return Array.Empty<TItem>();
-         }
-
-         return normalized
-            .Split(' ')
-            .Select(i => parseFn(i))
-            .ToArray();
-      }
+      return normalized
+         .Split(' ')
+         .Select(i => parseFn(i))
+         .ToArray();
    }
 }

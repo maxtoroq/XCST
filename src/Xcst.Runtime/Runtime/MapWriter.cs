@@ -17,202 +17,201 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Dynamic;
 
-namespace Xcst.Runtime {
+namespace Xcst.Runtime;
 
-   public abstract partial class MapWriter : ISequenceWriter<object?> {
+public abstract partial class MapWriter : ISequenceWriter<object?> {
 
-      Stack<SequenceConstructor.State>?
-      _trackStack;
+   Stack<SequenceConstructor.State>?
+   _trackStack;
 
-      protected internal abstract int
-      Depth { get; }
+   protected internal abstract int
+   Depth { get; }
 
-      // For object, create ExpandoObjectMapWriter
-      // Having a default Create restricted to object avoids conflicts with other
-      // implementations, like JObject
+   // For object, create ExpandoObjectMapWriter
+   // Having a default Create restricted to object avoids conflicts with other
+   // implementations, like JObject
 
-      public static MapWriter
-      Create(ISequenceWriter<object> output) {
+   public static MapWriter
+   Create(ISequenceWriter<object> output) {
 
-         if (output.TryCastToMapWriter() is MapWriter mapWriter) {
-            return mapWriter;
-         }
-
-         if (output.TryCastToDocumentWriter() is XcstWriter docWriter) {
-            return Create(docWriter);
-         }
-
-         return new ExpandoMapWriter((ISequenceWriter<ExpandoObject>)output);
+      if (output.TryCastToMapWriter() is MapWriter mapWriter) {
+         return mapWriter;
       }
 
-      public static MapWriter
-      CreateArray(ISequenceWriter<object> output) {
-
-         if (output.TryCastToMapWriter() is MapWriter mapWriter) {
-            return mapWriter;
-         }
-
-         if (output.TryCastToDocumentWriter() is XcstWriter docWriter) {
-            return Create(docWriter);
-         }
-
-         return new ExpandoMapWriter(output);
+      if (output.TryCastToDocumentWriter() is XcstWriter docWriter) {
+         return Create(docWriter);
       }
 
-      // For object, cast to abstract MapWriter
+      return new ExpandoMapWriter((ISequenceWriter<ExpandoObject>)output);
+   }
 
-      public static MapWriter
-      CastMapEntry(ISequenceWriter<object> output) =>
-         output.TryCastToMapWriter()
-            ?? throw new RuntimeException("Could not cast output to MapWriter.");
+   public static MapWriter
+   CreateArray(ISequenceWriter<object> output) {
 
-
-      // ## Maps and Arrays
-
-      public abstract void
-      WriteStartMap();
-
-      public abstract void
-      WriteStartMapEntry(string key);
-
-      public abstract void
-      WriteEndMapEntry();
-
-      public abstract void
-      WriteEndMap();
-
-      public abstract void
-      WriteStartArray();
-
-      public abstract void
-      WriteEndArray();
-
-      public abstract void
-      WriteComment(string? text);
-
-      public void
-      WriteString(string? text) => WriteObject(text);
-
-      public abstract void
-      WriteRaw(string? data);
-
-      void
-      ISequenceWriter<object?>.WriteString(object? text) =>
-         WriteString((string?)text);
-
-      void
-      ISequenceWriter<object?>.WriteRaw(object? data) =>
-         WriteRaw((string?)data);
-
-
-      // ## WriteObject
-
-      public abstract void
-      WriteObject(object? value);
-
-      void
-      ISequenceWriter<object?>.WriteObject(IEnumerable<object?>? value) =>
-         WriteObject((IEnumerable?)value);
-
-      void
-      ISequenceWriter<object?>.WriteObject<TDerived>(IEnumerable<TDerived>? value) =>
-         WriteObject((IEnumerable?)value);
-
-      // string implements IEnumerable, treat as single value
-      // IEnumerable<object> works for reference types only, IEnumerable for any type
-
-      public void
-      WriteObject(string? value) => WriteObject((object?)value);
-
-      public void
-      WriteObject(IEnumerable? value) {
-
-         if (value != null) {
-
-            foreach (var item in value) {
-               WriteObject(item);
-            }
-         }
+      if (output.TryCastToMapWriter() is MapWriter mapWriter) {
+         return mapWriter;
       }
 
+      if (output.TryCastToDocumentWriter() is XcstWriter docWriter) {
+         return Create(docWriter);
+      }
 
-      // ## CopyOf
+      return new ExpandoMapWriter(output);
+   }
 
-      public virtual void
-      CopyOf(object? value) => CopyOfImpl(value, recurse: false);
+   // For object, cast to abstract MapWriter
 
-      void
-      ISequenceWriter<object?>.CopyOf(IEnumerable<object?>? value) =>
-         CopyOf((object?)value);
+   public static MapWriter
+   CastMapEntry(ISequenceWriter<object> output) =>
+      output.TryCastToMapWriter()
+         ?? throw new RuntimeException("Could not cast output to MapWriter.");
 
-      void
-      ISequenceWriter<object?>.CopyOf<TDerived>(IEnumerable<TDerived>? value) =>
-         CopyOf((object?)value);
 
-      void
-      CopyOfImpl(object? value, bool recurse) {
+   // ## Maps and Arrays
 
-         if (value != null) {
+   public abstract void
+   WriteStartMap();
 
-            if (TryCopyOf(value)) {
+   public abstract void
+   WriteStartMapEntry(string key);
+
+   public abstract void
+   WriteEndMapEntry();
+
+   public abstract void
+   WriteEndMap();
+
+   public abstract void
+   WriteStartArray();
+
+   public abstract void
+   WriteEndArray();
+
+   public abstract void
+   WriteComment(string? text);
+
+   public void
+   WriteString(string? text) => WriteObject(text);
+
+   public abstract void
+   WriteRaw(string? data);
+
+   void
+   ISequenceWriter<object?>.WriteString(object? text) =>
+      WriteString((string?)text);
+
+   void
+   ISequenceWriter<object?>.WriteRaw(object? data) =>
+      WriteRaw((string?)data);
+
+
+   // ## WriteObject
+
+   public abstract void
+   WriteObject(object? value);
+
+   void
+   ISequenceWriter<object?>.WriteObject(IEnumerable<object?>? value) =>
+      WriteObject((IEnumerable?)value);
+
+   void
+   ISequenceWriter<object?>.WriteObject<TDerived>(IEnumerable<TDerived>? value) =>
+      WriteObject((IEnumerable?)value);
+
+   // string implements IEnumerable, treat as single value
+   // IEnumerable<object> works for reference types only, IEnumerable for any type
+
+   public void
+   WriteObject(string? value) => WriteObject((object?)value);
+
+   public void
+   WriteObject(IEnumerable? value) {
+
+      if (value != null) {
+
+         foreach (var item in value) {
+            WriteObject(item);
+         }
+      }
+   }
+
+
+   // ## CopyOf
+
+   public virtual void
+   CopyOf(object? value) => CopyOfImpl(value, recurse: false);
+
+   void
+   ISequenceWriter<object?>.CopyOf(IEnumerable<object?>? value) =>
+      CopyOf((object?)value);
+
+   void
+   ISequenceWriter<object?>.CopyOf<TDerived>(IEnumerable<TDerived>? value) =>
+      CopyOf((object?)value);
+
+   void
+   CopyOfImpl(object? value, bool recurse) {
+
+      if (value != null) {
+
+         if (TryCopyOf(value)) {
+            return;
+         }
+
+         if (!recurse) {
+
+            if (SimpleContent.ValueAsEnumerable(value, checkToString: false) is IEnumerable seq) {
+               CopyOfSequence(seq);
                return;
             }
-
-            if (!recurse) {
-
-               if (SimpleContent.ValueAsEnumerable(value, checkToString: false) is IEnumerable seq) {
-                  CopyOfSequence(seq);
-                  return;
-               }
-            }
-         }
-
-         WriteObject(value);
-      }
-
-      public virtual bool
-      TryCopyOf(object? value) => false;
-
-      void
-      CopyOfSequence(IEnumerable? value) {
-
-         if (value != null) {
-
-            foreach (var item in value) {
-               CopyOfImpl(item, recurse: true);
-            }
          }
       }
 
-      public void
-      CopyOf(Array? value) => CopyOfSequence(value);
-
-
-      // ## Other
-
-      public virtual XcstWriter?
-      TryCastToDocumentWriter() => null;
-
-      public MapWriter?
-      TryCastToMapWriter() => this;
-
-      public virtual void
-      BeginTrack(char cardinality) =>
-         SequenceConstructor.BeginTrack(cardinality, this.Depth, ref _trackStack);
-
-      protected void
-      OnItemWritting() => SequenceConstructor.OnItemWritting(_trackStack, this.Depth);
-
-      protected void
-      OnItemWritten() => SequenceConstructor.OnItemWritten(_trackStack, this.Depth);
-
-      public virtual bool
-      OnEmpty() => SequenceConstructor.OnEmpty(_trackStack);
-
-      public virtual void
-      EndOfConstructor() => SequenceConstructor.EndOfConstructor(_trackStack);
-
-      public virtual void
-      EndTrack() => SequenceConstructor.EndTrack(_trackStack);
+      WriteObject(value);
    }
+
+   public virtual bool
+   TryCopyOf(object? value) => false;
+
+   void
+   CopyOfSequence(IEnumerable? value) {
+
+      if (value != null) {
+
+         foreach (var item in value) {
+            CopyOfImpl(item, recurse: true);
+         }
+      }
+   }
+
+   public void
+   CopyOf(Array? value) => CopyOfSequence(value);
+
+
+   // ## Other
+
+   public virtual XcstWriter?
+   TryCastToDocumentWriter() => null;
+
+   public MapWriter?
+   TryCastToMapWriter() => this;
+
+   public virtual void
+   BeginTrack(char cardinality) =>
+      SequenceConstructor.BeginTrack(cardinality, this.Depth, ref _trackStack);
+
+   protected void
+   OnItemWritting() => SequenceConstructor.OnItemWritting(_trackStack, this.Depth);
+
+   protected void
+   OnItemWritten() => SequenceConstructor.OnItemWritten(_trackStack, this.Depth);
+
+   public virtual bool
+   OnEmpty() => SequenceConstructor.OnEmpty(_trackStack);
+
+   public virtual void
+   EndOfConstructor() => SequenceConstructor.EndOfConstructor(_trackStack);
+
+   public virtual void
+   EndTrack() => SequenceConstructor.EndTrack(_trackStack);
 }

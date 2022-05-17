@@ -17,299 +17,298 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic;
 
-namespace Xcst.Runtime {
+namespace Xcst.Runtime;
 
-   using IExpandoMap = IDictionary<string, object?>;
-   using ExpandoArray = List<object?>;
+using IExpandoMap = IDictionary<string, object?>;
+using ExpandoArray = List<object?>;
 
-   class ExpandoEntry {
+class ExpandoEntry {
 
-      public readonly string
-      Key;
+   public readonly string
+   Key;
 
-      public
-      ExpandoEntry(string key) {
-         this.Key = key;
+   public
+   ExpandoEntry(string key) {
+      this.Key = key;
+   }
+}
+
+public class ExpandoMapWriter : MapWriter {
+
+   readonly ISequenceWriter<ExpandoObject>?
+   _mapOutput;
+
+   readonly ISequenceWriter<object>?
+   _arrayOutput;
+
+   readonly List<object>
+   _objects = new();
+
+   int
+   _depth;
+
+   protected internal override int
+   Depth => _depth;
+
+   public
+   ExpandoMapWriter(ISequenceWriter<ExpandoObject> output) {
+
+      if (output is null) throw new ArgumentNullException(nameof(output));
+
+      Debug.Assert(output.TryCastToDocumentWriter() is null);
+
+      _mapOutput = output;
+   }
+
+   public
+   ExpandoMapWriter(ISequenceWriter<object> output) {
+
+      if (output is null) throw new ArgumentNullException(nameof(output));
+
+      Debug.Assert(output.TryCastToDocumentWriter() is null);
+
+      _arrayOutput = output;
+   }
+
+   public override void
+   WriteStartMap() {
+
+      var map = new ExpandoObject();
+
+      if (_objects.Count == 0) {
+         OnItemWritting();
+         Push(map);
+         _depth++;
+         return;
+      }
+
+      var parent = Peek<object>();
+
+      if (parent is ExpandoArray parentArr) {
+         OnItemWritting();
+         parentArr.Add(map);
+         Push(map);
+         _depth++;
+         return;
+      }
+
+      if (parent is ExpandoEntry entry) {
+         OnItemWritting();
+         SetEntryValue(entry, map);
+         Push(map);
+         _depth++;
+         return;
+      }
+
+      throw new RuntimeException("A map can only be written to an entry or array.");
+   }
+
+   public override void
+   WriteEndMap() {
+
+      var map = Peek<IExpandoMap>();
+
+      Assert.That(map != null);
+
+      Pop();
+      _depth--;
+      OnItemWritten();
+
+      if (_objects.Count == 0) {
+
+         Assert.That(_mapOutput != null);
+
+         _mapOutput.WriteObject((ExpandoObject)map);
+         return;
       }
    }
 
-   public class ExpandoMapWriter : MapWriter {
+   public override void
+   WriteStartArray() {
 
-      readonly ISequenceWriter<ExpandoObject>?
-      _mapOutput;
+      var arr = new ExpandoArray();
+      object? parent;
 
-      readonly ISequenceWriter<object>?
-      _arrayOutput;
-
-      readonly List<object>
-      _objects = new();
-
-      int
-      _depth;
-
-      protected internal override int
-      Depth => _depth;
-
-      public
-      ExpandoMapWriter(ISequenceWriter<ExpandoObject> output) {
-
-         if (output is null) throw new ArgumentNullException(nameof(output));
-
-         Debug.Assert(output.TryCastToDocumentWriter() is null);
-
-         _mapOutput = output;
-      }
-
-      public
-      ExpandoMapWriter(ISequenceWriter<object> output) {
-
-         if (output is null) throw new ArgumentNullException(nameof(output));
-
-         Debug.Assert(output.TryCastToDocumentWriter() is null);
-
-         _arrayOutput = output;
-      }
-
-      public override void
-      WriteStartMap() {
-
-         var map = new ExpandoObject();
-
-         if (_objects.Count == 0) {
-            OnItemWritting();
-            Push(map);
-            _depth++;
-            return;
-         }
-
-         var parent = Peek<object>();
-
-         if (parent is ExpandoArray parentArr) {
-            OnItemWritting();
-            parentArr.Add(map);
-            Push(map);
-            _depth++;
-            return;
-         }
-
-         if (parent is ExpandoEntry entry) {
-            OnItemWritting();
-            SetEntryValue(entry, map);
-            Push(map);
-            _depth++;
-            return;
-         }
-
-         throw new RuntimeException("A map can only be written to an entry or array.");
-      }
-
-      public override void
-      WriteEndMap() {
-
-         var map = Peek<IExpandoMap>();
-
-         Assert.That(map != null);
-
-         Pop();
-         _depth--;
-         OnItemWritten();
-
-         if (_objects.Count == 0) {
-
-            Assert.That(_mapOutput != null);
-
-            _mapOutput.WriteObject((ExpandoObject)map);
-            return;
-         }
-      }
-
-      public override void
-      WriteStartArray() {
-
-         var arr = new ExpandoArray();
-         object? parent;
-
-         if (_objects.Count == 0
-            || (parent = Peek<object>()) is ExpandoEntry
-            || parent is ExpandoArray) {
-
-            OnItemWritting();
-            Push(arr);
-            _depth++;
-            return;
-         }
-
-         throw new RuntimeException("An array can only be written to an entry or another array.");
-      }
-
-      public override void
-      WriteEndArray() {
-
-         var array = Peek<ExpandoArray>();
-
-         Assert.That(array != null);
-
-         WriteEndArray(array);
-      }
-
-      void
-      WriteEndArray(ExpandoArray array) {
-
-         Assert.That(array != null);
-
-         var items = array.ToArray();
-
-         array.Clear();
-
-         // SetEntryValue call below may Push
-         // Must Pop before that
-         Pop();
-         _depth--;
-         OnItemWritten();
-
-         if (_objects.Count == 0) {
-
-            // Cast to object to avoid flattening
-            _arrayOutput!.WriteObject((object)items);
-
-         } else {
-
-            var parent = Peek<object>();
-
-            if (parent is ExpandoEntry entry) {
-
-               SetEntryValue(entry, items);
-
-            } else {
-
-               var parentArray = parent as ExpandoArray;
-
-               Assert.That(parentArray != null);
-
-               parentArray.Add(items);
-            }
-         }
-      }
-
-      public override void
-      WriteStartMapEntry(string key) {
-
-         if (key is null) throw new ArgumentNullException(nameof(key));
-
-         _ = Peek<IExpandoMap>()
-            ?? throw new RuntimeException("An entry can only be written to a map.");
+      if (_objects.Count == 0
+         || (parent = Peek<object>()) is ExpandoEntry
+         || parent is ExpandoArray) {
 
          OnItemWritting();
-         Push(new ExpandoEntry(key));
+         Push(arr);
          _depth++;
+         return;
       }
 
-      public override void
-      WriteEndMapEntry() {
+      throw new RuntimeException("An array can only be written to an entry or another array.");
+   }
+
+   public override void
+   WriteEndArray() {
+
+      var array = Peek<ExpandoArray>();
+
+      Assert.That(array != null);
+
+      WriteEndArray(array);
+   }
+
+   void
+   WriteEndArray(ExpandoArray array) {
+
+      Assert.That(array != null);
+
+      var items = array.ToArray();
+
+      array.Clear();
+
+      // SetEntryValue call below may Push
+      // Must Pop before that
+      Pop();
+      _depth--;
+      OnItemWritten();
+
+      if (_objects.Count == 0) {
+
+         // Cast to object to avoid flattening
+         _arrayOutput!.WriteObject((object)items);
+
+      } else {
 
          var parent = Peek<object>();
 
          if (parent is ExpandoEntry entry) {
 
-            var map = Peek<IExpandoMap>(1);
-
-            Assert.That(map != null);
-
-            if (!map.ContainsKey(entry.Key)) {
-               // No value written, write null
-               map[entry.Key] = null;
-            }
+            SetEntryValue(entry, items);
 
          } else {
 
-            var implicitArray = parent as ExpandoArray;
+            var parentArray = parent as ExpandoArray;
 
-            Assert.That(implicitArray != null);
+            Assert.That(parentArray != null);
 
-            WriteEndArray(implicitArray);
-
-            var entry2 = Peek<ExpandoEntry>();
-
-            Debug.Assert(entry2 != null);
+            parentArray.Add(items);
          }
-
-         Pop();
-         _depth--;
-         OnItemWritten();
       }
+   }
 
-      public override void
-      WriteComment(string? text) { }
+   public override void
+   WriteStartMapEntry(string key) {
 
-      public override void
-      WriteObject(object? value) {
+      if (key is null) throw new ArgumentNullException(nameof(key));
 
-         var parent = Peek<object>();
+      _ = Peek<IExpandoMap>()
+         ?? throw new RuntimeException("An entry can only be written to a map.");
 
-         if (parent is ExpandoArray arr) {
-            OnItemWritting();
-            arr.Add(value);
-            OnItemWritten();
-            return;
-         }
+      OnItemWritting();
+      Push(new ExpandoEntry(key));
+      _depth++;
+   }
 
-         if (parent is ExpandoEntry entry) {
-            OnItemWritting();
-            SetEntryValue(entry, value);
-            OnItemWritten();
-            return;
-         }
+   public override void
+   WriteEndMapEntry() {
 
-         throw new RuntimeException("A value can only be written to an entry or array.");
-      }
+      var parent = Peek<object>();
 
-      public override void
-      WriteRaw(string? data) =>
-         throw new NotImplementedException();
-
-      public override void
-      CopyOf(object? value) =>
-         throw new NotImplementedException();
-
-      void
-      Push(object obj) => _objects.Add(obj);
-
-      T?
-      Peek<T>(int offset = 0) where T : class {
-
-         var i = _objects.Count - 1 - offset;
-
-         Debug.Assert(i >= 0);
-
-         return _objects[i] as T;
-      }
-
-      void
-      Pop() {
-
-         Debug.Assert(_objects.Count > 0);
-
-         _objects.RemoveAt(_objects.Count - 1);
-      }
-
-      void
-      SetEntryValue(ExpandoEntry entry, object? value) {
+      if (parent is ExpandoEntry entry) {
 
          var map = Peek<IExpandoMap>(1);
 
          Assert.That(map != null);
 
          if (!map.ContainsKey(entry.Key)) {
-            map[entry.Key] = value;
-         } else {
-
-            var existingValue = map[entry.Key];
-            var implicitArray = new ExpandoArray { existingValue, value };
-
-            Push(implicitArray);
-
-            map.Remove(entry.Key);
+            // No value written, write null
+            map[entry.Key] = null;
          }
+
+      } else {
+
+         var implicitArray = parent as ExpandoArray;
+
+         Assert.That(implicitArray != null);
+
+         WriteEndArray(implicitArray);
+
+         var entry2 = Peek<ExpandoEntry>();
+
+         Debug.Assert(entry2 != null);
+      }
+
+      Pop();
+      _depth--;
+      OnItemWritten();
+   }
+
+   public override void
+   WriteComment(string? text) { }
+
+   public override void
+   WriteObject(object? value) {
+
+      var parent = Peek<object>();
+
+      if (parent is ExpandoArray arr) {
+         OnItemWritting();
+         arr.Add(value);
+         OnItemWritten();
+         return;
+      }
+
+      if (parent is ExpandoEntry entry) {
+         OnItemWritting();
+         SetEntryValue(entry, value);
+         OnItemWritten();
+         return;
+      }
+
+      throw new RuntimeException("A value can only be written to an entry or array.");
+   }
+
+   public override void
+   WriteRaw(string? data) =>
+      throw new NotImplementedException();
+
+   public override void
+   CopyOf(object? value) =>
+      throw new NotImplementedException();
+
+   void
+   Push(object obj) => _objects.Add(obj);
+
+   T?
+   Peek<T>(int offset = 0) where T : class {
+
+      var i = _objects.Count - 1 - offset;
+
+      Debug.Assert(i >= 0);
+
+      return _objects[i] as T;
+   }
+
+   void
+   Pop() {
+
+      Debug.Assert(_objects.Count > 0);
+
+      _objects.RemoveAt(_objects.Count - 1);
+   }
+
+   void
+   SetEntryValue(ExpandoEntry entry, object? value) {
+
+      var map = Peek<IExpandoMap>(1);
+
+      Assert.That(map != null);
+
+      if (!map.ContainsKey(entry.Key)) {
+         map[entry.Key] = value;
+      } else {
+
+         var existingValue = map[entry.Key];
+         var implicitArray = new ExpandoArray { existingValue, value };
+
+         Push(implicitArray);
+
+         map.Remove(entry.Key);
       }
    }
 }

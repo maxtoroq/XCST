@@ -17,74 +17,73 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Xcst.Runtime {
+namespace Xcst.Runtime;
 
-   /// <exclude/>
-   public class PrimingContext {
+/// <exclude/>
+public class PrimingContext {
 
-      static readonly PrimingContext
-      _emptyContext = new(0);
+   static readonly PrimingContext
+   _emptyContext = new(0);
 
-      readonly Dictionary<string, object?>?
-      _parameters;
+   readonly Dictionary<string, object?>?
+   _parameters;
 
-      public static PrimingContext
-      Create(int paramCount) {
+   public static PrimingContext
+   Create(int paramCount) {
 
-         if (paramCount == 0) {
-            return _emptyContext;
-         }
-
-         return new PrimingContext(paramCount);
+      if (paramCount == 0) {
+         return _emptyContext;
       }
 
-      public
-      PrimingContext(int paramCount) {
+      return new PrimingContext(paramCount);
+   }
 
-         if (paramCount > 0) {
-            _parameters = new Dictionary<string, object?>(paramCount);
-         }
+   public
+   PrimingContext(int paramCount) {
+
+      if (paramCount > 0) {
+         _parameters = new Dictionary<string, object?>(paramCount);
       }
+   }
 
-      public PrimingContext
-      WithParam(string name, object? value) {
+   public PrimingContext
+   WithParam(string name, object? value) {
 
-         if (name is null) throw new ArgumentNullException(nameof(name));
+      if (name is null) throw new ArgumentNullException(nameof(name));
 
-         Assert.That(_parameters != null);
-         _parameters[name] = value;
+      Assert.That(_parameters != null);
+      _parameters[name] = value;
 
-         return this;
-      }
+      return this;
+   }
 
-      public TValue
-      Param<TValue>(string name, Func<TValue>? defaultValue = null, bool required = false) {
+   public TValue
+   Param<TValue>(string name, Func<TValue>? defaultValue = null, bool required = false) {
 
-         if (_parameters?.TryGetValue(name, out var value) == true) {
+      if (_parameters?.TryGetValue(name, out var value) == true) {
 
-            _parameters.Remove(name);
+         _parameters.Remove(name);
 
-            try {
+         try {
 #pragma warning disable CS8600, CS8603 // let caller decide nullability
-               return (TValue)value;
+            return (TValue)value;
 #pragma warning restore CS8600, CS8603
 
-            } catch (InvalidCastException) {
-               throw DynamicError.InvalidParameterCast(name);
-            }
+         } catch (InvalidCastException) {
+            throw DynamicError.InvalidParameterCast(name);
          }
+      }
 
-         if (defaultValue != null) {
-            return defaultValue();
-         }
+      if (defaultValue != null) {
+         return defaultValue();
+      }
 
-         if (required) {
-            throw DynamicError.RequiredGlobalParameter(name);
-         }
+      if (required) {
+         throw DynamicError.RequiredGlobalParameter(name);
+      }
 
 #pragma warning disable CS8603 // let caller decide nullability
-         return default;
+      return default;
 #pragma warning restore CS8603
-      }
    }
 }

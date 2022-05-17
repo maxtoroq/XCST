@@ -15,23 +15,22 @@
 using System;
 using Xcst.Runtime;
 
-namespace Xcst.PackageModel {
+namespace Xcst.PackageModel;
 
-   public interface IXcstPackage {
+public interface IXcstPackage {
 
-      ExecutionContext
-      Context { get; set; }
+   ExecutionContext
+   Context { get; set; }
 
-      void
-      Prime(PrimingContext context);
+   void
+   Prime(PrimingContext context);
 
-      Action<TemplateContext>?
-      GetTemplate<TBase>(QualifiedName name, ISequenceWriter<TBase> output);
+   Action<TemplateContext>?
+   GetTemplate<TBase>(QualifiedName name, ISequenceWriter<TBase> output);
 
-      Action<TemplateContext>?
-      GetMode<TBase>(QualifiedName? mode, ISequenceWriter<TBase> output);
+   Action<TemplateContext>?
+   GetMode<TBase>(QualifiedName? mode, ISequenceWriter<TBase> output);
 
-      void
-      ReadOutputDefinition(QualifiedName? name, OutputParameters parameters);
-   }
+   void
+   ReadOutputDefinition(QualifiedName? name, OutputParameters parameters);
 }

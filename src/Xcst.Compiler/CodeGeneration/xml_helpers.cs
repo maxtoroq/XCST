@@ -22,264 +22,263 @@ using System.Xml.Linq;
 using Xcst.PackageModel;
 using Xcst.Runtime;
 
-namespace Xcst.Compiler {
+namespace Xcst.Compiler;
 
-   partial class XcstCompilerPackage {
+partial class XcstCompilerPackage {
 
-      static IEnumerable<XAttribute>
-      attributes(XElement node) =>
-         node.Attributes()
-            .Where(p => !p.IsNamespaceDeclaration);
+   static IEnumerable<XAttribute>
+   attributes(XElement node) =>
+      node.Attributes()
+         .Where(p => !p.IsNamespaceDeclaration);
 
-      static IEnumerable<XAttribute>
-      attributes(IEnumerable<XElement> nodes, XName name) =>
-         nodes.Select(p => p.Attribute(name))
-            .Where(p => p != null)
-            .Select(p => p!);
+   static IEnumerable<XAttribute>
+   attributes(IEnumerable<XElement> nodes, XName name) =>
+      nodes.Select(p => p.Attribute(name))
+         .Where(p => p != null)
+         .Select(p => p!);
 
-      XDocument
-      fn_doc(Uri uri) {
+   XDocument
+   fn_doc(Uri uri) {
 
-         if (!uri.IsAbsoluteUri) {
-            uri = ((IXcstPackage)this).Context.ResolveUri(uri.OriginalString);
-         }
-
-         var readerSettings = new XmlReaderSettings {
-            XmlResolver = src_module_resolver,
-            DtdProcessing = DtdProcessing.Parse
-         };
-
-         var opts = LoadOptions.PreserveWhitespace
-            | LoadOptions.SetLineInfo
-            | LoadOptions.SetBaseUri;
-
-         using var reader = XmlReader.Create(uri.AbsoluteUri, readerSettings);
-
-         return XDocument.Load(reader, opts);
+      if (!uri.IsAbsoluteUri) {
+         uri = ((IXcstPackage)this).Context.ResolveUri(uri.OriginalString);
       }
 
-      static bool
-      fn_empty<T>(T[] p) => p.Length == 0;
+      var readerSettings = new XmlReaderSettings {
+         XmlResolver = src_module_resolver,
+         DtdProcessing = DtdProcessing.Parse
+      };
 
-      static bool
-      fn_empty<T>(IEnumerable<T> p) => !p.Any();
+      var opts = LoadOptions.PreserveWhitespace
+         | LoadOptions.SetLineInfo
+         | LoadOptions.SetBaseUri;
 
-      static string
-      fn_name(XObject node) =>
-         node switch {
-            XAttribute a => fn_substring_before(a.ToString(), '='),
-            XElement el => fn_string(el.Name, el),
-            _ => throw new NotImplementedException()
-         };
+      using var reader = XmlReader.Create(uri.AbsoluteUri, readerSettings);
 
-      static string?
-      fn_namespace_uri_for_prefix(string? prefix, XElement el) {
+      return XDocument.Load(reader, opts);
+   }
 
-         if (String.IsNullOrEmpty(prefix)) {
+   static bool
+   fn_empty<T>(T[] p) => p.Length == 0;
 
-            // System.Xml.Linq.XElement.GetDefaultNamespace() returns a value
-            // even if no declaration for the default namespace exists
+   static bool
+   fn_empty<T>(IEnumerable<T> p) => !p.Any();
 
-            var namespaceOfPrefixInScope = GetNamespaceOfPrefixInScope(el, "xmlns", null);
+   static string
+   fn_name(XObject node) =>
+      node switch {
+         XAttribute a => fn_substring_before(a.ToString(), '='),
+         XElement el => fn_string(el.Name, el),
+         _ => throw new NotImplementedException()
+      };
 
-            if (namespaceOfPrefixInScope is null) {
-               return null;
-            }
+   static string?
+   fn_namespace_uri_for_prefix(string? prefix, XElement el) {
 
-            return XNamespace.Get(namespaceOfPrefixInScope).NamespaceName;
-         }
+      if (String.IsNullOrEmpty(prefix)) {
 
-         return el.GetNamespaceOfPrefix(prefix)?.NamespaceName;
+         // System.Xml.Linq.XElement.GetDefaultNamespace() returns a value
+         // even if no declaration for the default namespace exists
 
-         static string?
-         GetNamespaceOfPrefixInScope(XElement el, string prefix, XElement? outOfScope) {
+         var namespaceOfPrefixInScope = GetNamespaceOfPrefixInScope(el, "xmlns", null);
 
-            // see System.Xml.Linq.XElement.GetNamespaceOfPrefixInScope()
-
-            var e = el;
-
-            while (e != outOfScope) {
-
-               var a = e.LastAttribute;
-
-               while (a != null) {
-
-                  if (a.IsNamespaceDeclaration
-                     && a.Name.LocalName == prefix) {
-
-                     return a.Value;
-                  }
-
-                  a = a.PreviousAttribute;
-               }
-
-               e = e.Parent;
-            }
-
+         if (namespaceOfPrefixInScope is null) {
             return null;
          }
+
+         return XNamespace.Get(namespaceOfPrefixInScope).NamespaceName;
       }
 
-      static string
-      fn_normalize_space(string? str) =>
-         SimpleContent.NormalizeSpace(str);
+      return el.GetNamespaceOfPrefix(prefix)?.NamespaceName;
 
-      static IEnumerable<XElement>
-      preceding_sibling(XNode node, object name) {
+      static string?
+      GetNamespaceOfPrefixInScope(XElement el, string prefix, XElement? outOfScope) {
 
-         var result = node.ElementsBeforeSelf()
-            .Reverse();
+         // see System.Xml.Linq.XElement.GetNamespaceOfPrefixInScope()
 
-         result = name switch {
-            XName xname => result.Where(p => p.Name == xname),
-            XNamespace ns => result.Where(p => p.Name.Namespace == ns),
-            _ => throw new ArgumentOutOfRangeException(),
-         };
+         var e = el;
 
-         return result;
-      }
+         while (e != outOfScope) {
 
-      static string
-      fn_replace(string? input, string pattern, string replacement) =>
-         Regex.Replace(input ?? String.Empty, pattern, replacement);
+            var a = e.LastAttribute;
 
-      XName
-      fn_resolve_QName(string qname, XElement el) {
+            while (a != null) {
 
-         var colonIndex = qname.IndexOf(':');
+               if (a.IsNamespaceDeclaration
+                  && a.Name.LocalName == prefix) {
 
-         if (colonIndex != -1) {
+                  return a.Value;
+               }
 
-            var local = qname.Substring(colonIndex + 1);
-            var prefix = qname.Substring(0, colonIndex);
-            var ns = el.GetNamespaceOfPrefix(prefix)?.NamespaceName
-               ?? throw new RuntimeException(
-                  $"There's no namespace binding for prefix '{prefix}'.",
-                  errorCode: new QualifiedName("FONS0004", XmlNamespaces.XcstErrors),
-                  errorData: ErrorData(el));
-
-            return XName.Get(local, ns);
-         }
-
-         return el.GetDefaultNamespace() + qname;
-      }
-
-      static Uri
-      fn_resolve_uri(Uri relative, string baseUri) {
-
-         if (!(!String.IsNullOrEmpty(baseUri)
-            && Uri.TryCreate(baseUri, UriKind.Absolute, out var uri))) {
-
-            throw new ArgumentException("baseUri is not usable.", nameof(baseUri));
-         }
-
-         return new Uri(uri, relative);
-      }
-
-      static IEnumerable<XElement>
-      select(IEnumerable<XElement> nodes, params object[] names) =>
-         nodes.SelectMany(p => select(p, names));
-
-      static IEnumerable<XElement>
-      select(XElement? node, params object[] names) {
-
-         if (node is null) {
-            return Enumerable.Empty<XElement>();
-         }
-
-         IEnumerable<XElement> selected = new XElement[] { node };
-
-         for (int i = 0; i < names.Length; i++) {
-
-            selected = names[i] switch {
-               XName name => selected.SelectMany(p => p.Elements(name)),
-               XNamespace ns => selected.SelectMany(p => p.Elements().Where(p2 => p2.Name.Namespace == ns)),
-               _ => throw new ArgumentOutOfRangeException(),
-            };
-         }
-
-         return selected;
-      }
-
-      static string
-      fn_string(bool value) =>
-         (value) ? "true" : "false";
-
-      static string
-      fn_string(int value) => XmlConvert.ToString(value);
-
-      static string
-      fn_string(decimal value) => XmlConvert.ToString(value);
-
-      static string
-      fn_string(XName qname, XElement? context) {
-
-         if (context is null) {
-            return qname.LocalName;
-         }
-
-         var prefix = context.GetPrefixOfNamespace(qname.Namespace);
-
-         if (prefix != null) {
-            return prefix + ":" + qname.LocalName;
-         }
-
-         return qname.LocalName;
-      }
-
-      static string
-      fn_string(XObject node) =>
-         node switch {
-            XAttribute a => a.Value,
-            XElement el => el.Value,
-            _ => throw new NotImplementedException()
-         };
-
-      static string
-      fn_substring_after(string str, char c) {
-
-         var i = str.IndexOf(c);
-         return str.Substring(i + 1);
-      }
-
-      static string
-      fn_substring_before(string str, char c) {
-
-         var i = str.IndexOf(c);
-         return str.Substring(0, i);
-      }
-
-      static string[]
-      fn_tokenize(string str) =>
-         DataType.List(str, DataType.String)
-            .ToArray();
-
-      static string
-      trim(string? str) =>
-         SimpleContent.Trim(str);
-
-      string?
-      fn_unparsed_text(Uri uri) {
-
-         if (src_module_resolver.GetEntity(uri, null, typeof(Stream)) is Stream entity) {
-            using (entity) {
-               return new StreamReader(entity).ReadToEnd();
+               a = a.PreviousAttribute;
             }
+
+            e = e.Parent;
          }
 
          return null;
       }
-
-      static bool
-      xs_boolean(XObject node) =>
-         XmlConvert.ToBoolean(fn_string(node));
-
-      static int
-      xs_integer(string str) =>
-         XmlConvert.ToInt32(str);
-
-      static int
-      xs_integer(XObject node) =>
-         xs_integer(fn_string(node));
    }
+
+   static string
+   fn_normalize_space(string? str) =>
+      SimpleContent.NormalizeSpace(str);
+
+   static IEnumerable<XElement>
+   preceding_sibling(XNode node, object name) {
+
+      var result = node.ElementsBeforeSelf()
+         .Reverse();
+
+      result = name switch {
+         XName xname => result.Where(p => p.Name == xname),
+         XNamespace ns => result.Where(p => p.Name.Namespace == ns),
+         _ => throw new ArgumentOutOfRangeException(),
+      };
+
+      return result;
+   }
+
+   static string
+   fn_replace(string? input, string pattern, string replacement) =>
+      Regex.Replace(input ?? String.Empty, pattern, replacement);
+
+   XName
+   fn_resolve_QName(string qname, XElement el) {
+
+      var colonIndex = qname.IndexOf(':');
+
+      if (colonIndex != -1) {
+
+         var local = qname.Substring(colonIndex + 1);
+         var prefix = qname.Substring(0, colonIndex);
+         var ns = el.GetNamespaceOfPrefix(prefix)?.NamespaceName
+            ?? throw new RuntimeException(
+               $"There's no namespace binding for prefix '{prefix}'.",
+               errorCode: new QualifiedName("FONS0004", XmlNamespaces.XcstErrors),
+               errorData: ErrorData(el));
+
+         return XName.Get(local, ns);
+      }
+
+      return el.GetDefaultNamespace() + qname;
+   }
+
+   static Uri
+   fn_resolve_uri(Uri relative, string baseUri) {
+
+      if (!(!String.IsNullOrEmpty(baseUri)
+         && Uri.TryCreate(baseUri, UriKind.Absolute, out var uri))) {
+
+         throw new ArgumentException("baseUri is not usable.", nameof(baseUri));
+      }
+
+      return new Uri(uri, relative);
+   }
+
+   static IEnumerable<XElement>
+   select(IEnumerable<XElement> nodes, params object[] names) =>
+      nodes.SelectMany(p => select(p, names));
+
+   static IEnumerable<XElement>
+   select(XElement? node, params object[] names) {
+
+      if (node is null) {
+         return Enumerable.Empty<XElement>();
+      }
+
+      IEnumerable<XElement> selected = new XElement[] { node };
+
+      for (int i = 0; i < names.Length; i++) {
+
+         selected = names[i] switch {
+            XName name => selected.SelectMany(p => p.Elements(name)),
+            XNamespace ns => selected.SelectMany(p => p.Elements().Where(p2 => p2.Name.Namespace == ns)),
+            _ => throw new ArgumentOutOfRangeException(),
+         };
+      }
+
+      return selected;
+   }
+
+   static string
+   fn_string(bool value) =>
+      (value) ? "true" : "false";
+
+   static string
+   fn_string(int value) => XmlConvert.ToString(value);
+
+   static string
+   fn_string(decimal value) => XmlConvert.ToString(value);
+
+   static string
+   fn_string(XName qname, XElement? context) {
+
+      if (context is null) {
+         return qname.LocalName;
+      }
+
+      var prefix = context.GetPrefixOfNamespace(qname.Namespace);
+
+      if (prefix != null) {
+         return prefix + ":" + qname.LocalName;
+      }
+
+      return qname.LocalName;
+   }
+
+   static string
+   fn_string(XObject node) =>
+      node switch {
+         XAttribute a => a.Value,
+         XElement el => el.Value,
+         _ => throw new NotImplementedException()
+      };
+
+   static string
+   fn_substring_after(string str, char c) {
+
+      var i = str.IndexOf(c);
+      return str.Substring(i + 1);
+   }
+
+   static string
+   fn_substring_before(string str, char c) {
+
+      var i = str.IndexOf(c);
+      return str.Substring(0, i);
+   }
+
+   static string[]
+   fn_tokenize(string str) =>
+      DataType.List(str, DataType.String)
+         .ToArray();
+
+   static string
+   trim(string? str) =>
+      SimpleContent.Trim(str);
+
+   string?
+   fn_unparsed_text(Uri uri) {
+
+      if (src_module_resolver.GetEntity(uri, null, typeof(Stream)) is Stream entity) {
+         using (entity) {
+            return new StreamReader(entity).ReadToEnd();
+         }
+      }
+
+      return null;
+   }
+
+   static bool
+   xs_boolean(XObject node) =>
+      XmlConvert.ToBoolean(fn_string(node));
+
+   static int
+   xs_integer(string str) =>
+      XmlConvert.ToInt32(str);
+
+   static int
+   xs_integer(XObject node) =>
+      xs_integer(fn_string(node));
 }

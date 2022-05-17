@@ -1,60 +1,59 @@
 ﻿using System.IO;
 using NUnit.Framework;
 
-namespace Xcst.Tests.API.Evaluation {
+namespace Xcst.Tests.API.Evaluation;
 
-   partial class EvaluationTests {
+partial class EvaluationTests {
 
-      [Test]
-      [Category(TestCategory)]
-      public void
-      Lock_Template_Params() {
+   [Test]
+   [Category(TestCategory)]
+   public void
+   Lock_Template_Params() {
 
-         var template = XcstEvaluator.Using(new LockTemplateParams())
-            .CallInitialTemplate();
+      var template = XcstEvaluator.Using(new LockTemplateParams())
+         .CallInitialTemplate();
 
-         var output1 = new StringWriter();
+      var output1 = new StringWriter();
 
-         var outputter1 = template.WithParam("foo", "foo")
-            .OutputTo(output1);
+      var outputter1 = template.WithParam("foo", "foo")
+         .OutputTo(output1);
 
-         outputter1.Run();
+      outputter1.Run();
 
-         Assert.AreEqual("foo", output1.ToString());
+      Assert.AreEqual("foo", output1.ToString());
 
-         // outputter keeps parameters after first run
-         // second run should give same result
+      // outputter keeps parameters after first run
+      // second run should give same result
 
-         output1.GetStringBuilder().Clear();
-         outputter1.Run();
+      output1.GetStringBuilder().Clear();
+      outputter1.Run();
 
-         Assert.AreEqual("foo", output1.ToString());
+      Assert.AreEqual("foo", output1.ToString());
 
-         // new outputter should also give same result
+      // new outputter should also give same result
 
-         var output2 = new StringWriter();
+      var output2 = new StringWriter();
 
-         template.OutputTo(output2)
-            .Run();
+      template.OutputTo(output2)
+         .Run();
 
-         Assert.AreEqual("foo", output2.ToString());
+      Assert.AreEqual("foo", output2.ToString());
 
-         // adding another parameter
+      // adding another parameter
 
-         var output3 = new StringWriter();
+      var output3 = new StringWriter();
 
-         template.WithParam("bar", "bar")
-            .OutputTo(output3)
-            .Run();
+      template.WithParam("bar", "bar")
+         .OutputTo(output3)
+         .Run();
 
-         Assert.AreEqual("bar", output3.ToString());
+      Assert.AreEqual("bar", output3.ToString());
 
-         // new parameter should not affect previously created outputters
+      // new parameter should not affect previously created outputters
 
-         output1.GetStringBuilder().Clear();
-         outputter1.Run();
+      output1.GetStringBuilder().Clear();
+      outputter1.Run();
 
-         Assert.AreEqual("foo", output1.ToString());
-      }
+      Assert.AreEqual("foo", output1.ToString());
    }
 }

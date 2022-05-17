@@ -16,32 +16,31 @@ using System;
 using System.IO;
 using System.Text;
 
-namespace Xcst.Runtime {
+namespace Xcst.Runtime;
 
-   class XcstTextWriter : TextWriter {
+class XcstTextWriter : TextWriter {
 
-      readonly XcstWriter
-      _output;
+   readonly XcstWriter
+   _output;
 
-      public override Encoding
-      Encoding => throw new NotImplementedException();
+   public override Encoding
+   Encoding => throw new NotImplementedException();
 
-      public
-      XcstTextWriter(XcstWriter baseWriter)
-         : base(baseWriter.SimpleContent.FormatProvider) {
+   public
+   XcstTextWriter(XcstWriter baseWriter)
+      : base(baseWriter.SimpleContent.FormatProvider) {
 
-         _output = baseWriter;
-      }
-
-      public override void
-      Write(char value) =>
-         _output.WriteString(value.ToString());
-
-      public override void
-      Write(string? value) => _output.WriteString(value);
-
-      public override void
-      Write(char[] buffer, int index, int count) =>
-         _output.WriteChars(buffer, index, count);
+      _output = baseWriter;
    }
+
+   public override void
+   Write(char value) =>
+      _output.WriteString(value.ToString());
+
+   public override void
+   Write(string? value) => _output.WriteString(value);
+
+   public override void
+   Write(char[] buffer, int index, int count) =>
+      _output.WriteChars(buffer, index, count);
 }

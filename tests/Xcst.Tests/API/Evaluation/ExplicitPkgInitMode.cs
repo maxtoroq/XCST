@@ -1,37 +1,35 @@
 ﻿using System.IO;
 using NUnit.Framework;
 
-namespace Xcst.Tests.API.Evaluation {
+namespace Xcst.Tests.API.Evaluation;
+using TestPackage = ExplicitPkgInitMode;
 
-   using TestPackage = ExplicitPkgInitMode;
+partial class EvaluationTests {
 
-   partial class EvaluationTests {
+   [Test]
+   [Category(TestCategory)]
+   public void
+   Explicit_Package_Initial_Default_Unnamed_Mode() {
 
-      [Test]
-      [Category(TestCategory)]
-      public void
-      Explicit_Package_Initial_Default_Unnamed_Mode() {
+      var output = new StringWriter();
 
-         var output = new StringWriter();
+      XcstEvaluator.Using(new TestPackage())
+         .ApplyTemplates(new object())
+         .OutputTo(output)
+         .Run();
 
-         XcstEvaluator.Using(new TestPackage())
-            .ApplyTemplates(new object())
-            .OutputTo(output)
-            .Run();
+      Assert.AreEqual("#unnamed", output.ToString());
+   }
 
-         Assert.AreEqual("#unnamed", output.ToString());
-      }
+   [Test]
+   [Category(TestCategory)]
+   public void
+   Explicit_Package_Initial_Named_Mode() {
 
-      [Test]
-      [Category(TestCategory)]
-      public void
-      Explicit_Package_Initial_Named_Mode() {
+      var outputter = XcstEvaluator.Using(new TestPackage())
+         .ApplyTemplates(new object(), new QualifiedName("foo"))
+         .OutputTo(TextWriter.Null);
 
-         var outputter = XcstEvaluator.Using(new TestPackage())
-            .ApplyTemplates(new object(), new QualifiedName("foo"))
-            .OutputTo(TextWriter.Null);
-
-         Assert.Throws<RuntimeException>(() => outputter.Run());
-      }
+      Assert.Throws<RuntimeException>(() => outputter.Run());
    }
 }

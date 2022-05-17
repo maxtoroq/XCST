@@ -16,20 +16,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Xcst.Runtime {
+namespace Xcst.Runtime;
 
-   /// <exclude/>
-   public static class Sorting {
+/// <exclude/>
+public static class Sorting {
 
-      public static IOrderedEnumerable<TSource>
-      SortBy<TSource, TKey>(
-            IEnumerable<TSource> source, Func<TSource, TKey> keySelector, bool descending = false) {
+   public static IOrderedEnumerable<TSource>
+   SortBy<TSource, TKey>(
+         IEnumerable<TSource> source, Func<TSource, TKey> keySelector, bool descending = false) {
 
-         if (descending) {
-            return Enumerable.OrderByDescending(source, keySelector);
-         }
-
-         return Enumerable.OrderBy(source, keySelector);
+      if (descending) {
+         return Enumerable.OrderByDescending(source, keySelector);
       }
+
+      return Enumerable.OrderBy(source, keySelector);
    }
 }

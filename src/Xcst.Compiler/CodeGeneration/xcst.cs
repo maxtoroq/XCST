@@ -19,201 +19,199 @@ using System.Xml.Linq;
 using Xcst.PackageModel;
 using SequenceWriter = Xcst.Runtime.SequenceWriter;
 
-namespace Xcst.Compiler {
+namespace Xcst.Compiler;
+using TypeManifestReader = Reflection.TypeManifestReader;
 
-   using TypeManifestReader = Reflection.TypeManifestReader;
+partial class XcstCompilerPackage {
 
-   partial class XcstCompilerPackage {
+   internal XDocument?
+   PackageManifest(string packageName, XElement usePackageEl) {
 
-      internal XDocument?
-      PackageManifest(string packageName, XElement usePackageEl) {
+      Type? packageType;
+      var errorCode = new QualifiedName("XTSE3000", XmlNamespaces.XcstErrors);
 
-         Type? packageType;
-         var errorCode = new QualifiedName("XTSE3000", XmlNamespaces.XcstErrors);
+      try {
+         packageType = src_package_type_resolver?.Invoke(packageName);
 
-         try {
-            packageType = src_package_type_resolver?.Invoke(packageName);
+      } catch (Exception ex) {
 
-         } catch (Exception ex) {
+         throw new RuntimeException(ex.Message,
+            errorCode: errorCode,
+            errorData: ErrorData(usePackageEl)
+         );
+      }
 
-            throw new RuntimeException(ex.Message,
+      if (packageType != null) {
+
+         if (!TypeManifestReader.IsXcstPackage(packageType)) {
+
+            throw new RuntimeException($"{packageType.FullName} is not a valid XCST package.",
                errorCode: errorCode,
                errorData: ErrorData(usePackageEl)
             );
          }
 
-         if (packageType != null) {
+         var doc = new XDocument();
 
-            if (!TypeManifestReader.IsXcstPackage(packageType)) {
+         using var writer = doc.CreateWriter();
 
-               throw new RuntimeException($"{packageType.FullName} is not a valid XCST package.",
-                  errorCode: errorCode,
-                  errorData: ErrorData(usePackageEl)
-               );
-            }
+         new TypeManifestReader(writer)
+            .WritePackage(packageType);
 
-            var doc = new XDocument();
+         return doc;
+      }
 
-            using var writer = doc.CreateWriter();
+      if (src_package_library != null
+         && src_package_library.TryGetValue(packageName, out var manifest)) {
 
-            new TypeManifestReader(writer)
-               .WritePackage(packageType);
+         return manifest;
+      }
 
-            return doc;
-         }
+      return null;
+   }
 
-         if (src_package_library != null
-            && src_package_library.TryGetValue(packageName, out var manifest)) {
+   internal Uri?
+   PackageLocation(string packageName, Uri? usingPackageUri) {
 
-            return manifest;
-         }
+      if (src_package_location_resolver != null) {
+         return src_package_location_resolver.Invoke(packageName);
+      }
 
+      var fileDirectory = src_package_file_directory;
+      var fileExtension = src_package_file_extension;
+
+      if (fileDirectory is null
+         && usingPackageUri?.IsFile == true) {
+
+         fileDirectory = Path.GetDirectoryName(usingPackageUri.LocalPath);
+      }
+
+      if (!String.IsNullOrEmpty(fileDirectory)
+         && !String.IsNullOrEmpty(fileExtension)) {
+
+         return FindNamedPackage(packageName, fileDirectory!, fileExtension!);
+      }
+
+      return null;
+   }
+
+   static Uri?
+   FindNamedPackage(string packageName, string directory, string extension) {
+
+      if (packageName is null) throw new ArgumentNullException(nameof(packageName));
+      if (packageName.Length == 0) throw new ArgumentException(nameof(packageName));
+
+      var dir = directory;
+      var search = "*." + extension;
+
+      if (!Directory.Exists(dir)) {
          return null;
       }
 
-      internal Uri?
-      PackageLocation(string packageName, Uri? usingPackageUri) {
+      foreach (string path in Directory.EnumerateFiles(dir, search, SearchOption.AllDirectories)) {
 
-         if (src_package_location_resolver != null) {
-            return src_package_location_resolver.Invoke(packageName);
+         if (Path.GetFileNameWithoutExtension(path)[0] == '_') {
+            continue;
          }
 
-         var fileDirectory = src_package_file_directory;
-         var fileExtension = src_package_file_extension;
+         var readerSettings = new XmlReaderSettings {
+            IgnoreComments = true,
+            IgnoreProcessingInstructions = true,
+            IgnoreWhitespace = true,
+            ValidationType = ValidationType.None,
+            DtdProcessing = DtdProcessing.Ignore
+         };
 
-         if (fileDirectory is null
-            && usingPackageUri?.IsFile == true) {
+         using var reader = XmlReader.Create(path, readerSettings);
 
-            fileDirectory = Path.GetDirectoryName(usingPackageUri.LocalPath);
-         }
+         while (reader.Read()) {
 
-         if (!String.IsNullOrEmpty(fileDirectory)
-            && !String.IsNullOrEmpty(fileExtension)) {
+            if (reader.NodeType == XmlNodeType.Element) {
 
-            return FindNamedPackage(packageName, fileDirectory!, fileExtension!);
-         }
+               if (reader.LocalName == "package"
+                  && reader.NamespaceURI == XmlNamespaces.Xcst
+                  && trim(reader.GetAttribute("name")) == packageName) {
 
-         return null;
-      }
-
-      static Uri?
-      FindNamedPackage(string packageName, string directory, string extension) {
-
-         if (packageName is null) throw new ArgumentNullException(nameof(packageName));
-         if (packageName.Length == 0) throw new ArgumentException(nameof(packageName));
-
-         var dir = directory;
-         var search = "*." + extension;
-
-         if (!Directory.Exists(dir)) {
-            return null;
-         }
-
-         foreach (string path in Directory.EnumerateFiles(dir, search, SearchOption.AllDirectories)) {
-
-            if (Path.GetFileNameWithoutExtension(path)[0] == '_') {
-               continue;
-            }
-
-            var readerSettings = new XmlReaderSettings {
-               IgnoreComments = true,
-               IgnoreProcessingInstructions = true,
-               IgnoreWhitespace = true,
-               ValidationType = ValidationType.None,
-               DtdProcessing = DtdProcessing.Ignore
-            };
-
-            using var reader = XmlReader.Create(path, readerSettings);
-
-            while (reader.Read()) {
-
-               if (reader.NodeType == XmlNodeType.Element) {
-
-                  if (reader.LocalName == "package"
-                     && reader.NamespaceURI == XmlNamespaces.Xcst
-                     && trim(reader.GetAttribute("name")) == packageName) {
-
-                     return new Uri(path, UriKind.Absolute);
-                  }
-
-                  break;
+                  return new Uri(path, UriKind.Absolute);
                }
+
+               break;
             }
          }
-
-         return null;
       }
 
-      object
-      ErrorData(XObject node) {
-
-         dynamic data = new System.Dynamic.ExpandoObject();
-         data.LineNumber = LineNumber(node);
-         data.ModuleUri = ModuleUri(node);
-
-         return data;
-      }
-
-      static int
-      LineNumber(XObject node) =>
-         (node is IXmlLineInfo li) ?
-            li.LineNumber
-            : -1;
-
-      string
-      ModuleUri(XObject node) {
-
-         if (xi_aware
-            && node.Annotation<XIncludedAnnotation>() is XIncludedAnnotation ann) {
-
-            return ann.Location;
-         }
-
-         if (node.Parent is XElement parent) {
-            return ModuleUri(parent);
-         }
-
-         return node.Document?.BaseUri ?? node.BaseUri;
-      }
-
-      static string
-      StringId(string value) =>
-         XmlConvert.ToString(GetHashCodeDeterministic(value));
-
-      IXcstPackage?
-      ExtensionPackage(XElement el) {
-
-         if (this.src_extensions != null
-            && this.src_extensions.TryGetValue(el.Name.NamespaceName, out var extPkg)) {
-
-            return extPkg;
-         }
-
-         return null;
-      }
-
-      static bool
-      HasTemplate<TItem>(IXcstPackage pkg, XName mode) =>
-         pkg.GetTemplate(new QualifiedName(mode.LocalName, mode.NamespaceName), SequenceWriter.Create<TItem>()) != null;
-
-      static bool
-      HasMode<TItem>(IXcstPackage pkg, XName mode) =>
-         pkg.GetMode(new QualifiedName(mode.LocalName, mode.NamespaceName), SequenceWriter.Create<TItem>()) != null;
+      return null;
    }
 
-   enum TypeCardinality {
-      ZeroOrMore,
-      One
+   object
+   ErrorData(XObject node) {
+
+      dynamic data = new System.Dynamic.ExpandoObject();
+      data.LineNumber = LineNumber(node);
+      data.ModuleUri = ModuleUri(node);
+
+      return data;
    }
 
-   enum ParsingMode {
-      Text,
-      Code,
-      InterpolatedString,
-      InterpolatedVerbatimString,
-      String,
-      VerbatimString,
-      Char,
-      MultilineComment
+   static int
+   LineNumber(XObject node) =>
+      (node is IXmlLineInfo li) ?
+         li.LineNumber
+         : -1;
+
+   string
+   ModuleUri(XObject node) {
+
+      if (xi_aware
+         && node.Annotation<XIncludedAnnotation>() is XIncludedAnnotation ann) {
+
+         return ann.Location;
+      }
+
+      if (node.Parent is XElement parent) {
+         return ModuleUri(parent);
+      }
+
+      return node.Document?.BaseUri ?? node.BaseUri;
    }
+
+   static string
+   StringId(string value) =>
+      XmlConvert.ToString(GetHashCodeDeterministic(value));
+
+   IXcstPackage?
+   ExtensionPackage(XElement el) {
+
+      if (this.src_extensions != null
+         && this.src_extensions.TryGetValue(el.Name.NamespaceName, out var extPkg)) {
+
+         return extPkg;
+      }
+
+      return null;
+   }
+
+   static bool
+   HasTemplate<TItem>(IXcstPackage pkg, XName mode) =>
+      pkg.GetTemplate(new QualifiedName(mode.LocalName, mode.NamespaceName), SequenceWriter.Create<TItem>()) != null;
+
+   static bool
+   HasMode<TItem>(IXcstPackage pkg, XName mode) =>
+      pkg.GetMode(new QualifiedName(mode.LocalName, mode.NamespaceName), SequenceWriter.Create<TItem>()) != null;
+}
+
+enum TypeCardinality {
+   ZeroOrMore,
+   One
+}
+
+enum ParsingMode {
+   Text,
+   Code,
+   InterpolatedString,
+   InterpolatedVerbatimString,
+   String,
+   VerbatimString,
+   Char,
+   MultilineComment
 }

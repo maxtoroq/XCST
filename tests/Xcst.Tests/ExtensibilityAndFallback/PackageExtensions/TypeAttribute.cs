@@ -1,8 +1,7 @@
 ﻿using System;
 
-namespace Xcst.Tests.ExtensibilityAndFallback.PackageExtensions {
+namespace Xcst.Tests.ExtensibilityAndFallback.PackageExtensions;
 
-   partial class TypeAttribute {
-      public sealed class ExtAttribute : Attribute { }
-   }
+partial class TypeAttribute {
+   public sealed class ExtAttribute : Attribute { }
 }

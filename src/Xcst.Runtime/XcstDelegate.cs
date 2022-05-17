@@ -15,7 +15,6 @@
 using System;
 using Xcst.Runtime;
 
-namespace Xcst {
+namespace Xcst;
 
-   public delegate void XcstDelegate<out TItem>(TemplateContext context, ISequenceWriter<TItem> output);
-}
+public delegate void XcstDelegate<out TItem>(TemplateContext context, ISequenceWriter<TItem> output);
