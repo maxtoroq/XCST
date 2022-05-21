@@ -813,6 +813,7 @@
       </call-template>
 
       <variable name='text' value='xcst_text(el)'/>
+      <variable name='hasValue' value='xcst_has_value(el, text)'/>
 
       <code:variable name='{xcst_name(el.Attribute("name")!)}'>
          <call-template name='src:line-number'>
@@ -823,10 +824,12 @@
             <with-param name='text' value='text'/>
             <with-param name='ignoreSeqctor' value='true'/>
          </call-template>
-         <call-template name='src:value'>
-            <with-param name='el' value='el'/>
-            <with-param name='text' value='text'/>
-         </call-template>
+         <if test='hasValue'>
+            <call-template name='src:value'>
+               <with-param name='el' value='el'/>
+               <with-param name='text' value='text'/>
+            </call-template>
+         </if>
       </code:variable>
    </template>
 

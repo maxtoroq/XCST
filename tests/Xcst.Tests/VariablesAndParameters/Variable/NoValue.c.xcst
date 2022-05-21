@@ -3,7 +3,7 @@
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
    <c:template name='foo'>
-      <c:variable name='a' foo:foo='foo' xmlns:foo='urn:foo'/>
+      <c:variable name='v'/>
    </c:template>
 
 </c:module>
