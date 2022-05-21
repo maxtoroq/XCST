@@ -644,7 +644,7 @@
       </param>
       <param name='global' value='false' as='bool'/>
       <param name='packageManifest' as='XElement' tunnel='yes' required='yes'/>
-      <param name='context' as='XElement' tunnel='yes'/>
+      <param name='context' as='XElement' tunnel='yes' required='yes'/>
       <param name='language' as='string' tunnel='yes' required='yes'/>
 
       <variable name='nameStr'>

@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:template name='c:initial-template'>
+      <c:variable name='foo'>
+         <c:delegate as='int?'>
+            <c:param name='z' tunnel='yes'/>
+
+            <c:script/>
+         </c:delegate>
+      </c:variable>
+      <c:variable name='a' as='int?[]'>
+         <c:invoke-delegate delegate='foo'/>
+      </c:variable>
+      <c:void value='Assert.AreEqual(1, a.Length)'/>
+      <c:void value='Assert.IsNull(a[0])'/>
+   </c:template>
+
+</c:module>

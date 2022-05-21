@@ -626,6 +626,9 @@
       <if test='!(visibility == "hidden"
             &amp;&amp; meta.Attribute("declared-visibility")!.Value == "abstract")'>
 
+         <variable name='itemType' value='select(meta, xcst + "item-type", code + "type-reference")
+            .FirstOrDefault()'/>
+
          <code:method name='{meta.Attribute("member-name")!.Value}'
                visibility='{(publicMember ? "public" : "private")}'>
 
@@ -695,6 +698,7 @@
                               || p.ElementsAfterSelf(c + "param").Any()))
                         .ToArray()'/>
                      <with-param name='trackCardinality' value='cardinality'/>
+                     <with-param name='itemType' value='itemType'/>
                      <with-param name='context' value='context' tunnel='yes'/>
                      <with-param name='output' value='output' tunnel='yes'/>
                   </call-template>
@@ -702,15 +706,12 @@
             </if>
          </code:method>
 
-         <variable name='itemTypeRef' value='select(meta, xcst + "item-type", code + "type-reference")
-            .FirstOrDefault()'/>
-
-         <if test='itemTypeRef != null'>
+         <if test='itemType != null'>
             <code:method name='{src_item_type_inference_member_name(meta)}'
                   visibility='{(publicMember ? "public" : "private")}'
                   extensibility='static'
                   line-hidden='true'>
-               <copy-of value='itemTypeRef'/>
+               <copy-of value='itemType'/>
                <code:attributes>
                   <call-template name='src:editor-browsable-never'/>
                </code:attributes>
@@ -1978,6 +1979,7 @@
                         (@as != null) ?
                            xcst_cardinality(@as, language)
                            : null'/>
+                     <with-param name='itemType' value='itemType'/>
                   </call-template>
                </code:block>
             </code:lambda>

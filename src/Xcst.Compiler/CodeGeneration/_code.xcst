@@ -72,6 +72,26 @@
       </choose>
    </function>
 
+   <function name='src_is_nullable_type' as='bool'>
+      <param name='type' as='XElement'/>
+      <param name='language' as='string'/>
+
+      <assert test='type.Name == code + "type-reference"'/>
+
+      <choose>
+         <when test='type.Attribute("nullable") is XAttribute nullableAttr'>
+            <return value='xs_boolean(nullableAttr)'/>
+         </when>
+         <when test='type.Attribute("name") is XAttribute nameAttr'>
+            <variable name='nonNullable' value='xcst_non_nullable_type(nameAttr.Value, language)'/>
+            <return value='nonNullable != nameAttr.Value'/>
+         </when>
+         <otherwise>
+            <return value='false'/>
+         </otherwise>
+      </choose>
+   </function>
+
    <function name='src_qualified_type' as='bool'>
       <param name='type' as='XElement'/>
 

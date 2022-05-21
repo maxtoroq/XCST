@@ -229,6 +229,9 @@
          </code:parameter>
       </variable>
 
+      <variable name='itemType' value='select(meta, xcst + "item-type", code + "type-reference")
+         .FirstOrDefault()'/>
+
       <code:method name='{meta.Attribute("member-name")!.Value}' visibility='private'>
          <code:attributes>
             <call-template name='src:editor-browsable-never'/>
@@ -286,21 +289,19 @@
                         || p.ElementsAfterSelf(c + "param").Any()))
                   .ToArray()'/>
                <with-param name='trackCardinality' value='cardinality'/>
+               <with-param name='itemType' value='itemType'/>
                <with-param name='context' value='context' tunnel='yes'/>
                <with-param name='output' value='outputAdj' tunnel='yes'/>
             </call-template>
          </code:block>
       </code:method>
 
-      <variable name='itemTypeRef' value='select(meta, xcst + "item-type", code + "type-reference")
-         .FirstOrDefault()'/>
-
-      <if test='itemTypeRef != null'>
+      <if test='itemType != null'>
          <code:method name='{src_item_type_inference_member_name(meta)}'
                visibility='private'
                extensibility='static'
                line-hidden='true'>
-            <copy-of value='itemTypeRef'/>
+            <copy-of value='itemType'/>
             <code:attributes>
                <call-template name='src:editor-browsable-never'/>
             </code:attributes>

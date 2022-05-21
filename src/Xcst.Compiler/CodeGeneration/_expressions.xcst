@@ -320,7 +320,7 @@
                   <apply-templates value='xcst_sequence_constructor_nodes(children)' mode='src:expression'/>
                </when>
                <otherwise>
-                  <variable name='itemTypeRef' as='XElement?'>
+                  <variable name='itemType' as='XElement?'>
                      <choose>
                         <when test='@as != null'>
                            <code:type-reference name='{xcst_item_type(@as, language)}'/>
@@ -333,7 +333,7 @@
                   </variable>
                   <variable name='newOutput'>
                      <src:output kind='obj'>
-                        <if test='itemTypeRef is null'>
+                        <if test='itemType is null'>
                            <attribute name='item-type-is-object' value='fn_string(true)'/>
                         </if>
                         <src:reference>
@@ -358,7 +358,7 @@
                         <code:method-call name='Create'>
                            <copy-of value='src_helper_type("SequenceWriter")'/>
                            <code:type-arguments>
-                              <copy-of value='itemTypeRef'/>
+                              <copy-of value='itemType'/>
                               <on-empty>
                                  <copy-of value='src_nullable_object_type'/>
                               </on-empty>
@@ -375,6 +375,7 @@
                                     <with-param name='children' value='children'/>
                                     <with-param name='output' value='newOutput' tunnel='yes'/>
                                     <with-param name='trackCardinality' value='(track) ? cardinality : null'/>
+                                    <with-param name='itemType' value='itemType'/>
                                  </call-template>
                               </code:block>
                            </code:lambda>
@@ -404,7 +405,9 @@
       <param name='children' value='el.Nodes().ToArray()' as='XNode[]'/>
       <param name='text' value='xcst_text(el, children)' as='string?'/>
       <param name='trackCardinality' as='TypeCardinality?'/>
+      <param name='itemType' as='XElement?'/>
       <param name='output' as='XElement?' tunnel='yes'/>
+      <param name='language' as='string' tunnel='yes' required='yes'/>
 
       <variable name='normalizedChildren' value='xcst_sequence_constructor_nodes(children)'/>
       <variable name='onEmpty' value='normalizedChildren
@@ -442,20 +445,22 @@
                || fn_empty(normalizedChildren)'>
             <variable name='requiresSome' value='trackCardinality != null
                &amp;&amp; trackCardinality != TypeCardinality.ZeroOrMore'/>
-            <if test='!(!requiresSome || normalizedChildren.Any())'>
-               <message terminate='yes' error-code='XTTE0505' error-data='src_error_object(el)' transform-text='trim'>
-                  An empty sequence is not allowed.
-               </message>
-            </if>
             <variable name='track' value='onEmpty != null || requiresSome'/>
             <choose>
                <when test='track'>
+                  <variable name='isNullableItemType' value='itemType != null
+                     &amp;&amp; src_is_nullable_type(itemType, language)'/>
+                  <if test='!(!requiresSome || normalizedChildren.Any() || isNullableItemType)'>
+                     <message terminate='yes' error-code='XTTE0505' error-data='src_error_object(el)' transform-text='trim'>
+                        An empty sequence is not allowed.
+                     </message>
+                  </if>
                   <call-template name='xcst:require-output'>
                      <with-param name='el' value='el'/>
                   </call-template>
                   <variable name='cardinalityChar' value='
                      (trackCardinality is null || trackCardinality == TypeCardinality.ZeroOrMore) ?
-                        "*": " "'/>
+                        "*" : " "'/>
                   <variable name='outputRef' value='select(output, src + "reference", code)'/>
                   <code:method-call name='BeginTrack' line-hidden='true'>
                      <copy-of value='outputRef'/>
@@ -466,6 +471,25 @@
                   <code:try line-hidden='true'>
                      <code:block>
                         <apply-templates value='normalizedChildren' mode='src:statement'/>
+                        <if test='requiresSome
+                              &amp;&amp; isNullableItemType
+                              &amp;&amp; onEmpty is null'>
+                           <code:if line-hidden='true'>
+                              <code:method-call name='OnEmpty'>
+                                 <copy-of value='outputRef'/>
+                              </code:method-call>
+                              <code:block>
+                                 <code:method-call name='WriteObject'>
+                                    <copy-of value='outputRef'/>
+                                    <code:arguments>
+                                       <code:default>
+                                          <copy-of value='itemType'/>
+                                       </code:default>
+                                    </code:arguments>
+                                 </code:method-call>
+                              </code:block>
+                           </code:if>
+                        </if>
                         <code:disable-warning codes='CS0162'/>
                         <code:method-call name='EndOfConstructor' line-hidden='true'>
                            <copy-of value='outputRef'/>
