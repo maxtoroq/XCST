@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:type name='Foo'>
+      <c:member name='bar' text-member=''>
+         <c:member name='baz'/>
+      </c:member>
+   </c:type>
+
+</c:module>

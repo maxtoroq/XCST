@@ -28,7 +28,7 @@
       "data-type-message", "required-message", "min-length-message", "max-length-message", "pattern-message",
       "range-message", "equal-to-message" }' as='string[]'/>
 
-   <variable name='xcst_type_or_member_attributes' value='new[] { "allow-empty-string", "display-text-member" }' as='string[]'/>
+   <variable name='xcst_type_or_member_attributes' value='new[] { "allow-empty-string", "text-member" }' as='string[]'/>
 
    <template match='XElement el &amp;&amp; el.Name == c + "type"' mode='xcst:validate-top-level'/>
 
@@ -389,7 +389,7 @@
       <param name='el' as='XElement' required='yes'/>
 
       <apply-templates value='attributes(el)
-         .Where(p => p.Name == "display-text-member")' mode='src:attribute'/>
+         .Where(p => p.Name == "text-member")' mode='src:attribute'/>
    </template>
 
    <template name='src:member-attributes'>
@@ -625,7 +625,19 @@
       </code:attribute>
    </template>
 
-   <template match='XAttribute attr &amp;&amp; attr.Name == "display-text-member"' mode='src:attribute'>
+   <template match='XAttribute attr &amp;&amp; attr.Name == "text-member"' mode='src:attribute'>
+      <param name='language' as='string' tunnel='yes' required='yes'/>
+
+      <variable name='name' value='xcst_name(attr)'/>
+
+      <if test='!attr.Parent!.Elements(c + "member")
+            .Any(p => p.Attribute("name") is XAttribute nameAttr
+               &amp;&amp; xcst_unescape_identifier(xcst_name(nameAttr), language) == name)'>
+         <message terminate='yes' error-data='src_error_object(attr)' transform-text='trim'>
+            Unknown member specified in 'text-member'.
+         </message>
+      </if>
+
       <code:attribute>
          <call-template name='src:line-number'>
             <with-param name='el' value='attr.Parent!'/>
@@ -633,7 +645,7 @@
          <code:type-reference name='DisplayColumn' namespace='System.ComponentModel.DataAnnotations'/>
          <code:arguments>
             <code:string literal='true'>
-               <value-of value='xcst_name(attr)'/>
+               <value-of value='name'/>
             </code:string>
          </code:arguments>
       </code:attribute>

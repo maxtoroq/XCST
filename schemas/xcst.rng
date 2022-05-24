@@ -692,7 +692,7 @@
                <ann:documentation>Specifies if an empty string is a valid value for this member.</ann:documentation>
                <ref name="boolean"/>
             </attribute>
-            <attribute name="display-text-member" docs:attrib-group="Presentation">
+            <attribute name="text-member" docs:attrib-group="Presentation">
                <ann:documentation>The name of the member to use as the text representation for this type.</ann:documentation>
                <ref name="identifier"/>
             </attribute>

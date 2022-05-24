@@ -653,7 +653,7 @@
             <xs:documentation>Specifies if an empty string is a valid value for this member.</xs:documentation>
          </xs:annotation>
       </xs:attribute>
-      <xs:attribute name="display-text-member" type="c:identifier">
+      <xs:attribute name="text-member" type="c:identifier">
          <xs:annotation>
             <xs:documentation>The name of the member to use as the text representation for this type.</xs:documentation>
          </xs:annotation>
