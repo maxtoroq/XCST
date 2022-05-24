@@ -40,6 +40,7 @@ function BuildProj($target) {
       /p:FileVersion=$pkgVersion `
       /p:VersionPrefix=$pkgVersion `
       /p:VersionSuffix=$versionSuffix `
+      /p:ContinuousIntegrationBuild=true `
       /p:Product=$($notice.work) `
       /p:Copyright=$($notice.copyright) `
       /p:Company=$($notice.website) `
