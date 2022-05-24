@@ -190,7 +190,7 @@
          <with-param name='required' value='new[] { "name" }'/>
          <with-param name='optional' value='new[] { "as", "value", "expression", "auto-initialize", "display", "display-name",
                "description", "short-name", "edit-hint", "order", "group", "format", "apply-format-in-edit-mode",
-               "disable-output-escaping", "null-display-text", "template", "data-type", "required", "max-length",
+               "disable-output-escaping", "null-text", "template", "data-type", "required", "max-length",
                "min-length", "pattern", "min", "max", "equal-to" }
             .Concat(xcst_type_or_member_attributes)
             .Concat(xcst_validation_or_member_attributes)
@@ -516,7 +516,7 @@
                &amp;&amp; p.Name.LocalName is "apply-format-in-edit-mode"
                   or "disable-output-escaping"
                   or "format"
-                  or "null-display-text")' mode='src:display-format-argument'/>
+                  or "null-text")' mode='src:display-format-argument'/>
          <if test='el.AncestorsAndSelf()
                .Where(p => (p.Name == c + "member" || p.Name == c + "type")
                   &amp;&amp; p.Attribute("allow-empty-string") != null)
@@ -564,7 +564,7 @@
       </code:member-initializer>
    </template>
 
-   <template match='XAttribute attr &amp;&amp; attr.Name == "null-display-text"' mode='src:display-format-argument'>
+   <template match='XAttribute attr &amp;&amp; attr.Name == "null-text"' mode='src:display-format-argument'>
       <code:member-initializer name='NullDisplayText'>
          <code:string verbatim='true'>
             <value-of value='attr.Value'/>

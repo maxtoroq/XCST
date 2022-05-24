@@ -600,7 +600,7 @@
                   <ann:documentation>Specifies if this member should not be escaped when displaying in a UI (e.g. HTML content).</ann:documentation>
                   <ref name="boolean"/>
                </attribute>
-               <attribute name="null-display-text">
+               <attribute name="null-text">
                   <ann:documentation>A text that is displayed for this member when the value is null.</ann:documentation>
                   <ref name="string"/>
                </attribute>

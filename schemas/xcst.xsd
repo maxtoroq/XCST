@@ -557,7 +557,7 @@
                <xs:documentation>Specifies if this member should not be escaped when displaying in a UI (e.g. HTML content).</xs:documentation>
             </xs:annotation>
          </xs:attribute>
-         <xs:attribute name="null-display-text" type="c:string">
+         <xs:attribute name="null-text" type="c:string">
             <xs:annotation>
                <xs:documentation>A text that is displayed for this member when the value is null.</xs:documentation>
             </xs:annotation>
