@@ -6,7 +6,7 @@ function EnsureSaxon {
    if (-not (Test-Path $saxonPath -PathType Container)) {
       $saxonTemp = Join-Path (Resolve-Path .) saxonhe.zip
       [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-      Invoke-WebRequest https://www.nuget.org/api/v2/package/Saxon-HE/10.8.0 -OutFile $saxonTemp
+      Invoke-WebRequest https://www.nuget.org/api/v2/package/Saxon-HE/9.9.1.5 -OutFile $saxonTemp
       Expand-Archive $saxonTemp $saxonPath
       rm $saxonTemp
    }
@@ -26,7 +26,7 @@ function EnsureTrang {
 try {
 
    $saxonPath = Join-Path (Resolve-Path .) saxonhe
-   $trangPath = Join-Path (Resolve-Path .) trang
+   $trangPath = Join-Path (Resolve-Path .) trang-
 
    EnsureSaxon
    EnsureTrang
