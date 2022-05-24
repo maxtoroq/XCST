@@ -187,7 +187,7 @@ function Release {
 
       if ((Prompt-Choices -Message "Push package(s) to gallery?" -Default 1) -eq 0) {
          foreach ($pkgPath in $newPackages) {
-            &$nuget push $pkgPath -Source nuget.org
+            dotnet nuget push $pkgPath --source nuget.org
          }
       }
 
@@ -207,7 +207,6 @@ function Prompt-Choices($Choices=("&Yes", "&No"), [string]$Title="Confirm", [str
 
 try {
 
-   $nuget = .\ensure-nuget.ps1
    MSBuild $solution -t:Restore
    Release
    
