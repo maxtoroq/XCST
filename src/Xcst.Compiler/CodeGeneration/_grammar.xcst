@@ -325,7 +325,6 @@
                                  <call-template name='xcst:literal-result-element-instruction'/>
                               </otherwise>
                            </choose>
-                           <on-empty value='(XElement?)null'/>
                         </variable>
                         <object value='i ?? defaultMeta'/>
                      </otherwise>
@@ -355,7 +354,6 @@
                   &amp;&amp; itemTypes.Skip(1).All(p => src_type_reference_equal(p, itemTypes[0]))'>
                <object value='itemTypes.FirstOrDefault()'/>
             </if>
-            <on-empty value='(XElement?)null'/>
          </variable>
          <variable name='cardinality' value='
             (itemType != null

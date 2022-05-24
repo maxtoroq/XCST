@@ -329,7 +329,6 @@
                            <copy-of value='select(seqctorMeta, xcst + "item-type", code + "type-reference")'/>
                         </otherwise>
                      </choose>
-                     <on-empty value='(XElement?)null'/>
                   </variable>
                   <variable name='newOutput'>
                      <src:output kind='obj'>

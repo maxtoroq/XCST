@@ -188,7 +188,6 @@
             initial-mode='xcst:extension-instruction'
             tunnel-passthru='yes'/>
       </if>
-      <on-empty value='(XElement?)null'/>
    </template>
 
 

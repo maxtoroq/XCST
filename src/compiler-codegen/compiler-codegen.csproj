@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Xcst.Compiler" Version="2.0.0.5-pre" />
+    <PackageReference Include="Xcst.Compiler" Version="2.0.1" />
   </ItemGroup>
 
 </Project>

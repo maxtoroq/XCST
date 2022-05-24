@@ -696,7 +696,6 @@
                <with-param name='text' value='text'/>
             </call-template>
          </if>
-         <on-empty value='(XElement?)null'/>
       </variable>
 
       <choose>
