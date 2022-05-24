@@ -21,17 +21,6 @@ The [release script](build/release.ps1) (which creates the NuGet packages) and o
 
 The [XCST schema](schemas/xcst.rng) is written in **Relax NG** and converted to XSD using [Trang], which requires **Java**.
 
-Building
---------
-Run the following commands to build everything (source and tests).
-
-```shell
-# restore packages
-MSBuild -t:restore
-
-# build solution
-MSBuild
-```
 
 [XCST]: https://maxtoroq.github.io/XCST/
 [Xcst.Compiler]: https://www.nuget.org/packages/Xcst.Compiler
