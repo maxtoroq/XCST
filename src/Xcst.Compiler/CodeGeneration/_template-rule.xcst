@@ -464,7 +464,7 @@
          </code:type-parameters>
          <code:parameters>
             <code:parameter name='{nameParam.Attribute("name")!.Value}'>
-               <code:type-reference name='QualifiedName' namespace='Xcst' nullable='true'/>
+               <copy-of value='src_nullable_qname_type'/>
             </code:parameter>
             <code:parameter name='{select(output, src + "reference", code).First().Attribute("name")!.Value}'>
                <copy-of value='output.Element(code + "type-reference")'/>
@@ -528,7 +528,7 @@
                </code:if>
                <code:else>
                   <code:switch>
-                     <code:property-reference name='Namespace'>
+                     <code:property-reference name='Namespace{(src_target_runtime >= 2m ? "Name" : null)}'>
                         <copy-of value='nameParam'/>
                      </code:property-reference>
                      <for-each-group name='grp' in='modes
@@ -540,7 +540,7 @@
                               <value-of value='grp.Key.NamespaceName'/>
                            </code:string>
                            <code:switch>
-                              <code:property-reference name='Name'>
+                              <code:property-reference name='{(src_target_runtime >= 2m ? "Local" : null)}Name'>
                                  <copy-of value='nameParam'/>
                               </code:property-reference>
                               <for-each name='mode' in='grp'>
@@ -591,7 +591,7 @@
          <variable name='qname' value='xcst_URIQualifiedName(mode.Attribute("name")!.Value)'/>
 
          <code:field name='{src_mode_qname_field(mode)}' extensibility='static' readonly='true'>
-            <code:type-reference name='QualifiedName' namespace='Xcst'/>
+            <copy-of value='src_qname_type'/>
             <code:expression>
                <call-template name='src:QName'>
                   <with-param name='qname' value='qname'/>

@@ -56,6 +56,7 @@
    <import href='_other.xcst'/>
    <import href='_xinclude.xcst'/>
 
+   <param name='src_target_runtime' value='1.0m' as='decimal'/>
    <param name='src_namespace' as='string?'/>
    <param name='src_class' as='string?'/>
    <param name='src_base_types' as='XElement[]'/>
@@ -89,6 +90,28 @@
             <attribute name='nullable' value='fn_string(true)'/>
          </if>
       </code:type-reference>
+   </variable>
+
+   <variable name='src_qname_type' as='XElement'>
+      <choose>
+         <when test='src_target_runtime >= 2m'>
+            <code:type-reference name='XName' namespace='System.Xml.Linq'/>
+         </when>
+         <otherwise>
+            <code:type-reference name='QualifiedName' namespace='Xcst'/>
+         </otherwise>
+      </choose>
+   </variable>
+
+   <variable name='src_nullable_qname_type' as='XElement'>
+      <choose>
+         <when test='src_target_runtime >= 2m'>
+            <code:type-reference name='XName' namespace='System.Xml.Linq' nullable='true'/>
+         </when>
+         <otherwise>
+            <code:type-reference name='QualifiedName' namespace='Xcst' nullable='true'/>
+         </otherwise>
+      </choose>
    </variable>
 
    <template match='XElement el &amp;&amp; el.Name.Namespace == c'>

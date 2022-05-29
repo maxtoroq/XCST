@@ -34,6 +34,9 @@ public class XcstCompiler {
    Type[]?
    _tbaseTypes;
 
+   public decimal
+   TargetRuntime { get; set; }
+
    public string?
    TargetNamespace { get; set; }
 
@@ -253,6 +256,10 @@ public class XcstCompiler {
 
       var compiler = new XcstCompilerPackage();
       var evaluator = XcstEvaluator.Using(compiler);
+
+      if (this.TargetRuntime != default) {
+         evaluator.WithParam(nameof(compiler.src_target_runtime), this.TargetRuntime);
+      }
 
       if (this.CompilationUnitHandler != null) {
          evaluator.WithParam(nameof(compiler.src_compilation_unit_handler), this.CompilationUnitHandler);
