@@ -15,6 +15,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Xml.Linq;
 
 namespace Xcst.Runtime;
 
@@ -36,7 +37,7 @@ public class TemplateContext {
    public object?
    Input { get; }
 
-   public QualifiedName?
+   public XName?
    Mode { get; }
 
    public int
@@ -69,7 +70,7 @@ public class TemplateContext {
       new TemplateContext(tmplCount, tunnelCount, currentContext);
 
    internal static TemplateContext
-   ForApplyTemplatesItem(TemplateContext baseContext, QualifiedName? mode, object? input) {
+   ForApplyTemplatesItem(TemplateContext baseContext, XName? mode, object? input) {
 
       var newContext = new TemplateContext(
          baseContext._templateParameters?.Count ?? 0,
@@ -166,7 +167,7 @@ public class TemplateContext {
          int tunnelCount,
          TemplateContext? currentContext,
          object? input,
-         QualifiedName? mode,
+         XName? mode,
          int matchIndex)
       : this(tmplCount, tunnelCount, currentContext) {
 

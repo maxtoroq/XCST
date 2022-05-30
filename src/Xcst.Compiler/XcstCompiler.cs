@@ -20,6 +20,7 @@ using System.Xml;
 using System.Xml.Linq;
 using Xcst.Compiler.Reflection;
 using Xcst.PackageModel;
+using DataType = Xcst.Runtime.DataType;
 
 namespace Xcst.Compiler;
 
@@ -241,11 +242,13 @@ public class XcstCompiler {
                .ToArray()
             : Array.Empty<string>(),
          Templates =
-            docEl.Element(xcst + "package-manifest")!
+            (from t in docEl.Element(xcst + "package-manifest")!
                .Elements(xcst + "template")
-               .Where(p => p.Attribute("visibility")!.Value is "public" or "final" or "abstract")
-               .Select(p => QualifiedName.Parse(p.Attribute("name")!.Value).ToString())
-               .ToArray()
+             where t.Attribute("visibility")!.Value is "public" or "final" or "abstract"
+             let name = DataType.QName(t.Attribute("name")!.Value).ToString()
+             let qname = (name[0] == '{') ? "Q" + name : name
+             select qname)
+            .ToArray()
       };
 
       return result;

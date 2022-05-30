@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Xml.Linq;
 
 namespace Xcst.Runtime;
 
@@ -79,13 +80,50 @@ public static class DataType {
       return value;
    }
 
-   public static QualifiedName
-   QName(string localOrUriQualifiedName) =>
-      QualifiedName.Parse(localOrUriQualifiedName);
+   public static XName
+   QName(string localOrUriQualifiedName) {
 
-   public static QualifiedName
+      if (localOrUriQualifiedName is null) throw new ArgumentNullException(nameof(localOrUriQualifiedName));
+      if (System.String.IsNullOrWhiteSpace(localOrUriQualifiedName)) throw new ArgumentException($"{nameof(localOrUriQualifiedName)} cannot be empty.", nameof(localOrUriQualifiedName));
+
+      if (localOrUriQualifiedName.Length > 2
+         && localOrUriQualifiedName[0] == 'Q'
+         && localOrUriQualifiedName[1] == '{') {
+
+         var closeIndex = localOrUriQualifiedName.IndexOf('}');
+
+         if (closeIndex < 0) {
+            throw new ArgumentException("Closing brace not found.", nameof(localOrUriQualifiedName));
+         }
+
+         var ns = SimpleContent.Trim(localOrUriQualifiedName.Substring(2, closeIndex - 2));
+         var local = localOrUriQualifiedName.Substring(closeIndex + 1);
+
+         return XName.Get(local, ns);
+      }
+
+      return localOrUriQualifiedName;
+   }
+
+   public static XName
    QName(string ns, string localName) =>
-      new QualifiedName(localName, ns);
+      XName.Get(localName, ns);
+
+   internal static string
+   UriQualifiedName(XName name) =>
+      "Q{" + name.NamespaceName + "}" + name.LocalName;
+
+   internal static string
+   QNameString(XName name) {
+
+      string s = name.ToString();
+
+      if (s[0] == '{') {
+         s = "Q" + s;
+      }
+
+      return s;
+   }
 
    public static bool
    SortOrderDescending(string order) {

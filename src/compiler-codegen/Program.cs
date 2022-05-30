@@ -91,6 +91,7 @@ class Program {
       var startUri = new Uri(_projectUri, ".");
 
       var compiler = new XcstCompiler {
+         TargetRuntime = 2m,
          PackageFileDirectory = startUri.LocalPath,
          PackageFileExtension = _fileExt,
          IndentChars = "   ",

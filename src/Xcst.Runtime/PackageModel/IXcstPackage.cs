@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.Xml.Linq;
 using Xcst.Runtime;
 
 namespace Xcst.PackageModel;
@@ -26,11 +27,11 @@ public interface IXcstPackage {
    Prime(PrimingContext context);
 
    Action<TemplateContext>?
-   GetTemplate<TBase>(QualifiedName name, ISequenceWriter<TBase> output);
+   GetTemplate<TBase>(XName name, ISequenceWriter<TBase> output);
 
    Action<TemplateContext>?
-   GetMode<TBase>(QualifiedName? mode, ISequenceWriter<TBase> output);
+   GetMode<TBase>(XName? mode, ISequenceWriter<TBase> output);
 
    void
-   ReadOutputDefinition(QualifiedName? name, OutputParameters parameters);
+   ReadOutputDefinition(XName? name, OutputParameters parameters);
 }

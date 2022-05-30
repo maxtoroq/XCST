@@ -28,7 +28,7 @@ partial class XcstCompilerPackage {
    PackageManifest(string packageName, XElement usePackageEl) {
 
       Type? packageType;
-      var errorCode = new QualifiedName("XTSE3000", XmlNamespaces.XcstErrors);
+      var errorCode = XName.Get("XTSE3000", XmlNamespaces.XcstErrors);
 
       try {
          packageType = src_package_type_resolver?.Invoke(packageName);
@@ -192,12 +192,12 @@ partial class XcstCompilerPackage {
    }
 
    static bool
-   HasTemplate<TItem>(IXcstPackage pkg, XName mode) =>
-      pkg.GetTemplate(new QualifiedName(mode.LocalName, mode.NamespaceName), SequenceWriter.Create<TItem>()) != null;
+   HasTemplate<TItem>(IXcstPackage pkg, XName name) =>
+      pkg.GetTemplate(name, SequenceWriter.Create<TItem>()) != null;
 
    static bool
    HasMode<TItem>(IXcstPackage pkg, XName mode) =>
-      pkg.GetMode(new QualifiedName(mode.LocalName, mode.NamespaceName), SequenceWriter.Create<TItem>()) != null;
+      pkg.GetMode(mode, SequenceWriter.Create<TItem>()) != null;
 }
 
 enum TypeCardinality {

@@ -29,7 +29,7 @@ partial class EvaluationTests {
       var output = new StringWriter();
 
       XcstEvaluator.Using(new TestPackage())
-         .ApplyTemplates(new object(), new QualifiedName("foo"))
+         .ApplyTemplates(new object(), "foo")
          .OutputTo(output)
          .Run();
 

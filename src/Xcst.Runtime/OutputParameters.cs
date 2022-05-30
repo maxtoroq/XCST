@@ -16,20 +16,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Xml.Linq;
 
 namespace Xcst;
 
 public class OutputParameters {
 
-   readonly Dictionary<QualifiedName, object?>
+   readonly Dictionary<XName, object?>
    _parameters = new();
 
    public object?
-   this[string name] =>
-      this[StandardParameters.Parse(name)];
-
-   public object?
-   this[QualifiedName name] {
+   this[XName name] {
       get {
          if (name is null) throw new ArgumentNullException(nameof(name));
 
@@ -42,9 +39,9 @@ public class OutputParameters {
       set {
          if (name is null) throw new ArgumentNullException(nameof(name));
 
-         if (String.IsNullOrEmpty(name.Namespace)) {
+         if (String.IsNullOrEmpty(name.NamespaceName)) {
 
-            StandardParameters.Parse(name.Name);
+            StandardParameters.Parse(name.LocalName);
 
             throw new ArgumentException("Use the strongly-typed properties to set standard parameters.", nameof(name));
          }
@@ -59,10 +56,10 @@ public class OutputParameters {
       set => _parameters[StandardParameters.ByteOrderMark] = value;
    }
 
-   public IList<QualifiedName>?
+   public IList<XName>?
    CdataSectionElements {
       get {
-         var value = (IList<QualifiedName>?)this[StandardParameters.CdataSectionElements];
+         var value = (IList<XName>?)this[StandardParameters.CdataSectionElements];
 
          if (value != null) {
             value = value.ToList();
@@ -133,15 +130,15 @@ public class OutputParameters {
       set => _parameters[StandardParameters.MediaType] = value;
    }
 
-   public QualifiedName?
+   public XName?
    Method {
-      get => (QualifiedName?)this[StandardParameters.Method];
+      get => (XName?)this[StandardParameters.Method];
       set {
 
          if (value != null
-            && String.IsNullOrEmpty(value.Namespace)) {
+            && String.IsNullOrEmpty(value.NamespaceName)) {
 
-            value = Methods.Parse(value.Name);
+            value = Methods.Parse(value.LocalName);
          }
 
          _parameters[StandardParameters.Method] = value;
@@ -166,10 +163,10 @@ public class OutputParameters {
       set => _parameters[StandardParameters.Standalone] = value;
    }
    /*
-   public IList<QualifiedName>?
+   public IList<XName>?
    SuppressIndentation {
       get {
-         var value = (IList<QualifiedName>?)this[StandardParameters.SuppressIndentation];
+         var value = (IList<XName>?)this[StandardParameters.SuppressIndentation];
 
          if (value != null) {
             value = value.ToList();
@@ -231,64 +228,64 @@ public class OutputParameters {
 
    static class StandardParameters {
 
-      public static readonly QualifiedName
-      ByteOrderMark = new("byte-order-mark");
+      public static readonly XName
+      ByteOrderMark = "byte-order-mark";
 
-      public static readonly QualifiedName
-      CdataSectionElements = new("cdata-section-elements");
+      public static readonly XName
+      CdataSectionElements = "cdata-section-elements";
 
-      public static readonly QualifiedName
-      DoctypePublic = new("doctype-public");
+      public static readonly XName
+      DoctypePublic = "doctype-public";
 
-      public static readonly QualifiedName
-      DoctypeSystem = new("doctype-system");
+      public static readonly XName
+      DoctypeSystem = "doctype-system";
 
-      public static readonly QualifiedName
-      Encoding = new("encoding");
+      public static readonly XName
+      Encoding = "encoding";
 
-      public static readonly QualifiedName
-      EscapeUriAttributes = new("escape-uri-attributes");
+      public static readonly XName
+      EscapeUriAttributes = "escape-uri-attributes";
       /*
-      public static readonly QualifiedName
-      HtmlVersion = new("html-version");
+      public static readonly XName
+      HtmlVersion = "html-version";
 
-      public static readonly QualifiedName
-      IncludeContentType = new("include-content-type");
+      public static readonly XName
+      IncludeContentType = "include-content-type";
       */
-      public static readonly QualifiedName
-      Indent = new("indent");
+      public static readonly XName
+      Indent = "indent";
 
-      public static readonly QualifiedName
-      IndentSpaces = new("indent-spaces");
+      public static readonly XName
+      IndentSpaces = "indent-spaces";
 
-      public static readonly QualifiedName
-      ItemSeparator = new("item-separator");
+      public static readonly XName
+      ItemSeparator = "item-separator";
 
-      public static readonly QualifiedName
-      MediaType = new("media-type");
+      public static readonly XName
+      MediaType = "media-type";
 
-      public static readonly QualifiedName
-      Method = new("method");
+      public static readonly XName
+      Method = "method";
 
-      public static readonly QualifiedName
-      OmitXmlDeclaration = new("omit-xml-declaration");
+      public static readonly XName
+      OmitXmlDeclaration = "omit-xml-declaration";
 
-      public static readonly QualifiedName
-      SkipCharacterCheck = new("skip-character-check");
+      public static readonly XName
+      SkipCharacterCheck = "skip-character-check";
 
-      public static readonly QualifiedName
-      Standalone = new("standalone");
+      public static readonly XName
+      Standalone = "standalone";
       /*
-      public static readonly QualifiedName
-      SuppressIndentation = new("suppress-indentation");
+      public static readonly XName
+      SuppressIndentation = "suppress-indentation";
 
-      public static readonly QualifiedName
-      UndeclarePrefixes = new("undeclare-prefixes");
+      public static readonly XName
+      UndeclarePrefixes = "undeclare-prefixes";
       */
-      public static readonly QualifiedName
-      Version = new("version");
+      public static readonly XName
+      Version = "version";
 
-      public static QualifiedName
+      public static XName
       Parse(string name) =>
          name switch {
             null => throw new ArgumentNullException(nameof(name)),
@@ -322,16 +319,16 @@ public class OutputParameters {
 
    public static class Methods {
 
-      public static readonly QualifiedName
-      Xml = new("xml");
+      public static readonly XName
+      Xml = "xml";
 
-      public static readonly QualifiedName
-      Html = new("html");
+      public static readonly XName
+      Html = "html";
 
-      public static readonly QualifiedName
-      Text = new("text");
+      public static readonly XName
+      Text = "text";
 
-      internal static QualifiedName
+      internal static XName
       Parse(string method) =>
          method switch {
             null => throw new ArgumentNullException(nameof(method)),

@@ -27,7 +27,7 @@ partial class EvaluationTests {
    Explicit_Package_Initial_Named_Mode() {
 
       var outputter = XcstEvaluator.Using(new TestPackage())
-         .ApplyTemplates(new object(), new QualifiedName("foo"))
+         .ApplyTemplates(new object(), "foo")
          .OutputTo(TextWriter.Null);
 
       Assert.Throws<RuntimeException>(() => outputter.Run());

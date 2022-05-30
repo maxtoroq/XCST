@@ -13,21 +13,23 @@
 // limitations under the License.
 
 using System;
+using System.Xml.Linq;
 
 namespace Xcst.Runtime;
 
 /// <exclude/>
 public static class DynamicError {
 
-   internal static QualifiedName
-   Code(string code) => new QualifiedName(code, XmlNamespaces.XcstErrors);
+   internal static XName
+   Code(string code) => XName.Get(code, XmlNamespaces.XcstErrors);
 
    public static Exception
-   UnknownTemplate(QualifiedName templateName) {
+   UnknownTemplate(XName templateName) {
 
       if (templateName is null) throw new ArgumentNullException(nameof(templateName));
 
-      return new RuntimeException($"No template exists named {templateName.ToString()}.", Code("XTDE0040"));
+      return new RuntimeException(
+         $"No template exists named {DataType.QNameString(templateName)}.", Code("XTDE0040"));
    }
 
    public static Exception
@@ -35,7 +37,8 @@ public static class DynamicError {
 
       if (parameterName is null) throw new ArgumentNullException(nameof(parameterName));
 
-      return new RuntimeException($"No value supplied for required parameter '{parameterName}'.", Code("XTDE0050"));
+      return new RuntimeException(
+         $"No value supplied for required parameter '{parameterName}'.", Code("XTDE0050"));
    }
 
    public static Exception
@@ -43,7 +46,8 @@ public static class DynamicError {
 
       if (parameterName is null) throw new ArgumentNullException(nameof(parameterName));
 
-      return new RuntimeException($"No value supplied for required parameter '{parameterName}'.", Code("XTDE0700"));
+      return new RuntimeException(
+         $"No value supplied for required parameter '{parameterName}'.", Code("XTDE0700"));
    }
 
    public static Exception
@@ -51,22 +55,24 @@ public static class DynamicError {
 
       if (parameterName is null) throw new ArgumentNullException(nameof(parameterName));
 
-      return new RuntimeException($"Couldn't cast parameter '{parameterName}' to the required type.", Code("XTTE0590"));
+      return new RuntimeException(
+         $"Couldn't cast parameter '{parameterName}' to the required type.", Code("XTTE0590"));
    }
 
    public static Exception
-   UnknownOutputDefinition(QualifiedName outputName) {
+   UnknownOutputDefinition(XName outputName) {
 
       if (outputName is null) throw new ArgumentNullException(nameof(outputName));
 
-      return new RuntimeException($"No output definition exists named {outputName.ToString()}.", Code("XTDE1460"));
+      return new RuntimeException(
+         $"No output definition exists named {DataType.QNameString(outputName)}.", Code("XTDE1460"));
    }
 
    public static Exception
    Terminate(
          string message,
          string defaultMessage,
-         QualifiedName? errorCode = null,
+         XName? errorCode = null,
          object? errorData = null) =>
       new RuntimeException(
          (!String.IsNullOrEmpty(message) ? message : defaultMessage),
@@ -79,8 +85,8 @@ public static class DynamicError {
       new RuntimeException("Infer method is not meant to be called.");
 
    public static Exception
-   UnknownMode(QualifiedName? mode) =>
-      new RuntimeException($"The mode '{mode?.ToUriQualifiedName()}' does not exist.", Code("XCST9103"));
+   UnknownMode(XName? mode) =>
+      new RuntimeException($"The mode '{(mode != null ? DataType.UriQualifiedName(mode) : null)}' does not exist.", Code("XCST9103"));
 
    public static Exception
    AbsentCurrentTemplateRule() =>

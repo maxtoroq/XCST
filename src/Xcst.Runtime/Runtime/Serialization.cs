@@ -16,6 +16,7 @@ using System;
 using System.IO;
 using System.Text;
 using System.Xml;
+using System.Xml.Linq;
 using Xcst.PackageModel;
 
 namespace Xcst.Runtime;
@@ -24,7 +25,7 @@ namespace Xcst.Runtime;
 public static class Serialization {
 
    public static string
-   Serialize(IXcstPackage package, QualifiedName? outputName, OutputParameters parameters, Action<XcstWriter> action) {
+   Serialize(IXcstPackage package, XName? outputName, OutputParameters parameters, Action<XcstWriter> action) {
 
       if (package is null) throw new ArgumentNullException(nameof(package));
       if (parameters is null) throw new ArgumentNullException(nameof(parameters));
@@ -62,7 +63,7 @@ public static class Serialization {
    ResultDocument(
          IXcstPackage package,
          OutputParameters parameters,
-         QualifiedName? outputName,
+         XName? outputName,
          Uri outputUri) {
 
       if (outputUri is null) throw new ArgumentNullException(nameof(outputUri));
@@ -74,7 +75,7 @@ public static class Serialization {
    ResultDocument(
          IXcstPackage package,
          OutputParameters parameters,
-         QualifiedName? outputName,
+         XName? outputName,
          Uri? outputUri,
          Stream output) {
 
@@ -87,7 +88,7 @@ public static class Serialization {
    ResultDocument(
          IXcstPackage package,
          OutputParameters parameters,
-         QualifiedName? outputName,
+         XName? outputName,
          Uri? outputUri,
          TextWriter output) {
 
@@ -100,7 +101,7 @@ public static class Serialization {
    ResultDocument(
          IXcstPackage package,
          OutputParameters parameters,
-         QualifiedName? outputName,
+         XName? outputName,
          Uri? outputUri,
          XmlWriter output) {
 
@@ -113,7 +114,7 @@ public static class Serialization {
    ResultDocument(
          IXcstPackage package,
          OutputParameters parameters,
-         QualifiedName? outputName,
+         XName? outputName,
          Uri? outputUri,
          XcstWriter output) {
 
@@ -128,7 +129,7 @@ public static class Serialization {
          bool customOutput,
          IXcstPackage package,
          OutputParameters parameters,
-         QualifiedName? outputName,
+         XName? outputName,
          Uri? outputUri) {
 
       if (package is null) throw new ArgumentNullException(nameof(package));

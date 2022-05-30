@@ -11,7 +11,7 @@ partial class EvaluationTests {
    Copy_OutputParameters() {
 
       var parameters = new OutputParameters {
-         Method = new QualifiedName("xml"),
+         Method = "xml",
          OmitXmlDeclaration = true
       };
 

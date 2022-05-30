@@ -86,7 +86,7 @@ static class XmlWriterSettingsFactory {
          _cdataSectionsField.SetValue(
             settings,
             parameters.CdataSectionElements
-               .Select(qn => new XmlQualifiedName(qn.Name, qn.Namespace))
+               .Select(qn => new XmlQualifiedName(qn.LocalName, qn.NamespaceName))
                .ToList()
          );
       }

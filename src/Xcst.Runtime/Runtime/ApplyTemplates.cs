@@ -15,6 +15,7 @@
 using System;
 using System.Collections;
 using System.Xml;
+using System.Xml.Linq;
 using Newtonsoft.Json.Linq;
 
 namespace Xcst.Runtime;
@@ -22,7 +23,7 @@ namespace Xcst.Runtime;
 public static class ApplyTemplates {
 
    public static void
-   Apply(TemplateContext baseContext, object? input, QualifiedName? mode, Action<TemplateContext> modeFn) {
+   Apply(TemplateContext baseContext, object? input, XName? mode, Action<TemplateContext> modeFn) {
 
       foreach (var item in ValueAsEnumerable(input)) {
 
@@ -33,7 +34,7 @@ public static class ApplyTemplates {
 
    public static void
    Apply<TBase>(
-         TemplateContext baseContext, object? input, QualifiedName? mode,
+         TemplateContext baseContext, object? input, XName? mode,
          Action<TemplateContext> modeFn, ISequenceWriter<TBase> output, TBase separator) {
 
       int i = -1;

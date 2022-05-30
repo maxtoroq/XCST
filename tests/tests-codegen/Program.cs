@@ -109,6 +109,7 @@ class Program {
       foreach (var pkgDep in pkgDeps) {
 
          var compiler = new XcstCompiler {
+            TargetRuntime = 2m,
             PackageFileExtension = "pxcst",
             TargetClass = Path.GetFileNameWithoutExtension(pkgDep.Name),
             TargetNamespace = ns,

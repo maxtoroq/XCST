@@ -14,6 +14,7 @@
 
 using System;
 using System.Runtime.Serialization;
+using System.Xml.Linq;
 using Xcst.Runtime;
 
 namespace Xcst;
@@ -21,23 +22,23 @@ namespace Xcst;
 [Serializable]
 public class RuntimeException : Exception {
 
-   static readonly QualifiedName
+   static readonly XName
    _defaultCode = DynamicError.Code("XTDE0000");
 
-   readonly QualifiedName?
+   readonly XName?
    _errorCode;
 
    readonly object?
    _errorData;
 
-   public QualifiedName
+   public XName
    ErrorCode => _errorCode ?? _defaultCode;
 
    public object?
    ErrorData => _errorData;
 
    public
-   RuntimeException(string message, QualifiedName? errorCode = null, object? errorData = null)
+   RuntimeException(string message, XName? errorCode = null, object? errorData = null)
       : base(message) {
 
       _errorCode = errorCode;

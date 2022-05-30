@@ -155,7 +155,7 @@ partial class XcstCompilerPackage {
          var ns = el.GetNamespaceOfPrefix(prefix)?.NamespaceName
             ?? throw new RuntimeException(
                $"There's no namespace binding for prefix '{prefix}'.",
-               errorCode: new QualifiedName("FONS0004", XmlNamespaces.XcstErrors),
+               errorCode: XName.Get("FONS0004", XmlNamespaces.XcstErrors),
                errorData: ErrorData(el));
 
          return XName.Get(local, ns);

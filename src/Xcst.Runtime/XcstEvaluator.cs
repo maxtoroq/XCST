@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Xml;
+using System.Xml.Linq;
 using Xcst.PackageModel;
 using Xcst.Runtime;
 
@@ -24,8 +25,8 @@ namespace Xcst;
 
 public class XcstEvaluator {
 
-   static readonly QualifiedName
-   _initialTemplate = new("initial-template", XmlNamespaces.Xcst);
+   static readonly XName
+   _initialTemplate = XName.Get("initial-template", XmlNamespaces.Xcst);
 
    readonly IXcstPackage
    _package;
@@ -143,15 +144,7 @@ public class XcstEvaluator {
    CallInitialTemplate() => CallTemplate(_initialTemplate);
 
    public XcstTemplateEvaluator
-   CallTemplate(string name) {
-
-      if (name is null) throw new ArgumentNullException(nameof(name));
-
-      return CallTemplate(new QualifiedName(name));
-   }
-
-   public XcstTemplateEvaluator
-   CallTemplate(QualifiedName name) {
+   CallTemplate(XName name) {
 
       if (name is null) throw new ArgumentNullException(nameof(name));
 
@@ -161,7 +154,7 @@ public class XcstEvaluator {
    }
 
    public XcstTemplateEvaluator
-   ApplyTemplates(object? input, QualifiedName? mode = null) {
+   ApplyTemplates(object? input, XName? mode = null) {
 
       _paramsLocked = true;
 
@@ -251,13 +244,13 @@ public class XcstTemplateEvaluator {
    readonly Func<PrimingContext>
    _primeFn;
 
-   readonly QualifiedName?
+   readonly XName?
    _name;
 
    readonly object?
    _input;
 
-   readonly QualifiedName?
+   readonly XName?
    _mode;
 
    readonly Dictionary<string, object?>
@@ -267,7 +260,7 @@ public class XcstTemplateEvaluator {
    _tunnelParameters = new();
 
    internal
-   XcstTemplateEvaluator(IXcstPackage package, Func<PrimingContext> primeFn, QualifiedName name) {
+   XcstTemplateEvaluator(IXcstPackage package, Func<PrimingContext> primeFn, XName name) {
 
       if (package is null) throw new ArgumentNullException(nameof(package));
       if (primeFn is null) throw new ArgumentNullException(nameof(primeFn));
@@ -279,7 +272,7 @@ public class XcstTemplateEvaluator {
    }
 
    internal
-   XcstTemplateEvaluator(IXcstPackage package, Func<PrimingContext> primeFn, object? input, QualifiedName? mode) {
+   XcstTemplateEvaluator(IXcstPackage package, Func<PrimingContext> primeFn, object? input, XName? mode) {
 
       if (package is null) throw new ArgumentNullException(nameof(package));
       if (primeFn is null) throw new ArgumentNullException(nameof(primeFn));
