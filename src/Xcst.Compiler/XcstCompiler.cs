@@ -245,9 +245,7 @@ public class XcstCompiler {
             (from t in docEl.Element(xcst + "package-manifest")!
                .Elements(xcst + "template")
              where t.Attribute("visibility")!.Value is "public" or "final" or "abstract"
-             let name = DataType.QName(t.Attribute("name")!.Value).ToString()
-             let qname = (name[0] == '{') ? "Q" + name : name
-             select qname)
+             select DataType.QName(t.Attribute("name")!.Value))
             .ToArray()
       };
 
@@ -396,7 +394,7 @@ public class CompileResult {
    public IReadOnlyList<string>
    CompilationUnits { get; init; }
 
-   public IReadOnlyList<string>
+   public IReadOnlyList<XName>
    Templates { get; init; }
 #pragma warning restore CS8618
 }

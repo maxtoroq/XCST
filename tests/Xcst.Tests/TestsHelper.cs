@@ -9,11 +9,11 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.VisualBasic;
 using Xcst.Compiler;
+using Xcst.PackageModel;
 using CSharpVersion = Microsoft.CodeAnalysis.CSharp.LanguageVersion;
 using VBVersion = Microsoft.CodeAnalysis.VisualBasic.LanguageVersion;
 using TestAssert = NUnit.Framework.Assert;
 using TestAssertException = NUnit.Framework.AssertionException;
-using Xcst.PackageModel;
 
 namespace Xcst.Tests;
 
@@ -22,10 +22,10 @@ static class TestsHelper {
    const bool
    _printCode = false;
 
-   static readonly string
-   _initialName = "Q{" + XmlNamespaces.Xcst + "}initial-template";
+   static readonly XName
+   _initialName = XName.Get("initial-template", XmlNamespaces.Xcst);
 
-   static readonly string
+   static readonly XName
    _expectedName = "expected";
 
    public static void
