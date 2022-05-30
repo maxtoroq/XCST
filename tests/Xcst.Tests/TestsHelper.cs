@@ -192,7 +192,6 @@ static class TestsHelper {
    CreateCompiler(Type? extension = default) {
 
       var compiler = new XcstCompiler();
-      compiler.TargetRuntime = 2m;
 
       if (extension != null) {
          compiler.RegisterExtension((IXcstPackage)Activator.CreateInstance(extension)!);

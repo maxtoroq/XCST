@@ -56,7 +56,7 @@
    <import href='_other.xcst'/>
    <import href='_xinclude.xcst'/>
 
-   <param name='src_target_runtime' value='1.0m' as='decimal'/>
+   <param name='src_target_runtime' value='2m' as='decimal'/>
    <param name='src_namespace' as='string?'/>
    <param name='src_class' as='string?'/>
    <param name='src_base_types' as='XElement[]'/>
