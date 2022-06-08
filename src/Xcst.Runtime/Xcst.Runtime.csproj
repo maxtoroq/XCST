@@ -6,7 +6,9 @@
     <LangVersion>10</LangVersion>
     <Nullable>enable</Nullable>
     <NoWarn>NETSDK1138</NoWarn>
-    <VersionPrefix>2</VersionPrefix>
+    <!-- VersionPrefix is only needed by Tests project, requires a version equal or greater
+      to Compiler's Runtime dependency -->
+    <VersionPrefix>2.0.9999</VersionPrefix>
     <Description>XCST runtime and evaluation API.</Description>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
