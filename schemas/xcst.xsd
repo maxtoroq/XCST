@@ -624,6 +624,11 @@
                <xs:documentation>The name of another member that a valid value for this member should be equal to.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
+         <xs:attribute name="serialize" type="c:boolean">
+            <xs:annotation>
+               <xs:documentation>Specifies if this member should be considered when serializing and instance of the type.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
          <xs:attributeGroup ref="c:type-or-member-attributes"/>
          <xs:attributeGroup ref="c:validation-or-member-attributes"/>
          <xs:attributeGroup ref="c:standard-attributes"/>

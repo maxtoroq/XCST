@@ -191,7 +191,7 @@
          <with-param name='optional' value='new[] { "as", "value", "expression", "auto-initialize", "display", "display-name",
                "description", "short-name", "edit-hint", "order", "group", "format", "apply-format-in-edit-mode",
                "disable-output-escaping", "null-text", "template", "data-type", "required", "max-length",
-               "min-length", "pattern", "min", "max", "equal-to" }
+               "min-length", "pattern", "min", "max", "equal-to", "serialize" }
             .Concat(xcst_type_or_member_attributes)
             .Concat(xcst_validation_or_member_attributes)
             .ToArray()'/>
@@ -390,6 +390,14 @@
 
       <apply-templates value='attributes(el)
          .Where(p => p.Name == "text-member")' mode='src:attribute'/>
+
+      <if test='el.Elements(c + "member")
+            .Any(p => p.Attribute("serialize") is XAttribute serializeAttr
+               &amp;&amp; xcst_boolean(serializeAttr).Value)'>
+         <code:attribute line-hidden='true'>
+            <code:type-reference name='DataContract' namespace='System.Runtime.Serialization'/>
+         </code:attribute>
+      </if>
    </template>
 
    <template name='src:member-attributes'>
@@ -404,6 +412,7 @@
                or "max-length"
                or "pattern"
                or "required"
+               or "serialize"
                or "template")' mode='src:attribute'/>
       <call-template name='src:range-attribute'>
          <with-param name='el' value='el'/>
@@ -826,6 +835,15 @@
             </code:initializer>
          </code:attribute>
       </if>
+   </template>
+
+   <template match='XAttribute attr &amp;&amp; attr.Name == "serialize"' mode='src:attribute'>
+      <code:attribute>
+         <call-template name='src:line-number'>
+            <with-param name='el' value='attr.Parent!'/>
+         </call-template>
+         <code:type-reference name='{(!xcst_boolean(attr)!.Value ? "Ignore" : null)}DataMember' namespace='System.Runtime.Serialization'/>
+      </code:attribute>
    </template>
 
 

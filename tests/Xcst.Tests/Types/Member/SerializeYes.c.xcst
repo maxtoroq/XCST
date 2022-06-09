@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:import-namespace ns='Newtonsoft.Json'/>
+
+   <c:type name='foo'>
+      <c:member name='bar' as='string' serialize='yes'/>
+      <c:member name='baz' as='string'/>
+   </c:type>
+
+   <c:template name='c:initial-template'>
+      <div>
+         <c:value-of value='JsonConvert.SerializeObject(new foo { bar = "x", baz = "y" })'/>
+      </div>
+   </c:template>
+
+   <c:template name='expected'>
+      <div>{"bar":"x"}</div>
+   </c:template>
+
+</c:module>

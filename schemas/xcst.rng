@@ -662,6 +662,12 @@
                </attribute>
             </choice>
          </zeroOrMore>
+         <optional docs:attrib-group="Serialization">
+            <attribute name="serialize">
+               <ann:documentation>Specifies if this member should be considered when serializing and instance of the type.</ann:documentation>
+               <ref name="boolean"/>
+            </attribute>
+         </optional>
          <ref name="type-or-member-attributes"/>
          <ref name="validation-or-member-attributes" docs:attrib-group="Validation"/>
          <ref name="standard-attributes"/>
