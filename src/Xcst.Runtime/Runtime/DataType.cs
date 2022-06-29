@@ -109,7 +109,7 @@ public static class DataType {
    QName(string ns, string localName) =>
       XName.Get(localName, ns);
 
-   internal static string
+   static string
    UriQualifiedName(XName name) =>
       "Q{" + name.NamespaceName + "}" + name.LocalName;
 

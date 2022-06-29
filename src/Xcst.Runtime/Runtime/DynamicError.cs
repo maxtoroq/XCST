@@ -29,7 +29,7 @@ public static class DynamicError {
       if (templateName is null) throw new ArgumentNullException(nameof(templateName));
 
       return new RuntimeException(
-         $"No template exists named {DataType.QNameString(templateName)}.", Code("XTDE0040"));
+         $"No public template exists named {DataType.QNameString(templateName)}.", Code("XTDE0040"));
    }
 
    public static Exception
@@ -86,7 +86,10 @@ public static class DynamicError {
 
    public static Exception
    UnknownMode(XName? mode) =>
-      new RuntimeException($"The mode '{(mode != null ? DataType.UriQualifiedName(mode) : null)}' does not exist.", Code("XCST9103"));
+      new RuntimeException(
+         (mode is null) ? "No unnamed mode exists."
+            : $"No public mode exists named {DataType.QNameString(mode)}."
+         , Code("XCST9103"));
 
    public static Exception
    AbsentCurrentTemplateRule() =>
