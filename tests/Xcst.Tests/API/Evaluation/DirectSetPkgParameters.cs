@@ -10,17 +10,24 @@ partial class EvaluationTests {
    Direct_Set_Package_Parameter_No_Default() {
 
       const int value = 5;
+      const int withParam = 7;
 
       var pkg = new DirectSetPkgParamNoDefault {
          a = value
       };
 
       var result = XcstEvaluator.Using(pkg)
-         .WithParam(nameof(pkg.a), 7)
          .CallFunction(p => p.foo())
          .Evaluate();
 
       Assert.AreEqual(value, result);
+
+      var result2 = XcstEvaluator.Using(pkg)
+         .WithParam(nameof(pkg.a), withParam)
+         .CallFunction(p => p.foo())
+         .Evaluate();
+
+      Assert.AreEqual(withParam, result2);
    }
 
    [Test]
@@ -29,6 +36,7 @@ partial class EvaluationTests {
    Direct_Set_Package_Parameter_With_Default() {
 
       const int value = 5;
+      const int withParam = 7;
 
       var pkg = new DirectSetPkgParamWithDefault {
          a = value
@@ -41,11 +49,17 @@ partial class EvaluationTests {
       Assert.AreEqual(value, result);
 
       var result2 = XcstEvaluator.Using(pkg)
-         .WithParam(nameof(pkg.a), 7)
          .CallFunction(p => p.foo())
          .Evaluate();
 
       Assert.AreEqual(value, result2);
+
+      var result3 = XcstEvaluator.Using(pkg)
+         .WithParam(nameof(pkg.a), withParam)
+         .CallFunction(p => p.foo())
+         .Evaluate();
+
+      Assert.AreEqual(withParam, result3);
    }
 
    [Test]
@@ -61,10 +75,16 @@ partial class EvaluationTests {
       };
 
       var result = XcstEvaluator.Using(pkg)
-         .WithParam(nameof(pkg.a), withParam)
          .CallFunction(p => p.foo())
          .Evaluate();
 
       Assert.AreEqual(value, result);
+
+      var result2 = XcstEvaluator.Using(pkg)
+         .WithParam(nameof(pkg.a), withParam)
+         .CallFunction(p => p.foo())
+         .Evaluate();
+
+      Assert.AreEqual(withParam, result2);
    }
 }

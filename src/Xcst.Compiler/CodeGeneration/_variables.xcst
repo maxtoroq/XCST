@@ -586,41 +586,77 @@
          </code:parameters>
          <code:block>
             <for-each name='param' in='select(packageManifest, xcst + "param")
-                  .Where(p => p.Attribute("visibility")!.Value != "hidden"
-                     &amp;&amp; xs_boolean(p.Attribute("required")!))'>
+                  .Where(p => p.Attribute("visibility")!.Value != "hidden")'>
+               <variable name='required' value='xs_boolean(param.Attribute("required")!)'/>
+               <variable name='accepted' value='param.Attribute("accepted") is XAttribute acceptedAttr
+                  &amp;&amp; xs_boolean(acceptedAttr)'/>
                <variable name='verbatim' value='param.Attribute("member-name-was-escaped") is XAttribute escAttr
                   &amp;&amp; xs_boolean(escAttr)'/>
-               <code:if>
-                  <code:not>
-                     <code:field-reference name='{src_init_field(param)}'>
-                        <code:this-reference/>
-                     </code:field-reference>
-                  </code:not>
-                  <code:block>
-                     <code:assign>
-                        <code:property-reference name='{param.Attribute("member-name")!.Value}'>
-                           <if test='verbatim'>
-                              <attribute name='verbatim' value='fn_string(verbatim)'/>
-                           </if>
-                           <code:this-reference/>
-                        </code:property-reference>
-                        <code:method-call name='Param'>
+               <choose>
+                  <when test='required'>
+                     <code:if>
+                        <code:or-else>
+                           <code:method-call name='HasParam'>
+                              <copy-of value='select(context, src + "reference", code)'/>
+                              <code:arguments>
+                                 <code:string literal='true'>
+                                    <value-of value='param.Attribute("name")!.Value'/>
+                                 </code:string>
+                              </code:arguments>
+                           </code:method-call>
+                           <code:not>
+                              <code:field-reference name='{src_init_field(param)}'>
+                                 <code:this-reference/>
+                              </code:field-reference>
+                           </code:not>
+                        </code:or-else>
+                        <code:block>
+                           <code:assign>
+                              <code:property-reference name='{param.Attribute("member-name")!.Value}'>
+                                 <if test='verbatim'>
+                                    <attribute name='verbatim' value='fn_string(verbatim)'/>
+                                 </if>
+                                 <code:this-reference/>
+                              </code:property-reference>
+                              <code:method-call name='Param'>
+                                 <copy-of value='select(context, src + "reference", code)'/>
+                                 <code:type-arguments>
+                                    <copy-of value='param.Element(code + "type-reference")'/>
+                                 </code:type-arguments>
+                                 <code:arguments>
+                                    <code:string literal='true'>
+                                       <value-of value='param.Attribute("name")!.Value'/>
+                                    </code:string>
+                                    <code:argument name='required'>
+                                       <code:bool value='true'/>
+                                    </code:argument>
+                                 </code:arguments>
+                              </code:method-call>
+                           </code:assign>
+                        </code:block>
+                     </code:if>
+                  </when>
+                  <when test='!accepted'>
+                     <code:if>
+                        <code:method-call name='HasParam'>
                            <copy-of value='select(context, src + "reference", code)'/>
-                           <code:type-arguments>
-                              <copy-of value='param.Element(code + "type-reference")'/>
-                           </code:type-arguments>
                            <code:arguments>
                               <code:string literal='true'>
                                  <value-of value='param.Attribute("name")!.Value'/>
                               </code:string>
-                              <code:argument name='required'>
-                                 <code:bool value='true'/>
-                              </code:argument>
                            </code:arguments>
                         </code:method-call>
-                     </code:assign>
-                  </code:block>
-               </code:if>
+                        <code:block>
+                           <code:assign>
+                              <code:field-reference name='{src_init_field(param)}'>
+                                 <code:this-reference/>
+                              </code:field-reference>
+                              <code:bool value='false'/>
+                           </code:assign>
+                        </code:block>
+                     </code:if>
+                  </when>
+               </choose>
             </for-each>
          </code:block>
       </code:method>

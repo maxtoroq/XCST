@@ -57,6 +57,10 @@ public class PrimingContext {
       return this;
    }
 
+   public bool
+   HasParam(string name) =>
+      _parameters?.ContainsKey(name) == true;
+
    public TValue
    Param<TValue>(string name, Func<TValue>? defaultValue = null, bool required = false) {
 
