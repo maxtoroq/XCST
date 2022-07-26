@@ -1,6 +1,6 @@
 ﻿[XCST] — eXtensible C-Sharp Templates
 =====================================
-XCST is a language optimized for the production of XML and other formats. It's a more general-purpose version of XSLT.
+XCST is a language optimized for the production of XML and other formats. It's a more general-purpose version of [XSLT](https://developer.mozilla.org/en-US/docs/Web/XSLT).
 
 See the [project home][XCST] for more information.
 
