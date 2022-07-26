@@ -596,14 +596,16 @@
                   <when test='required'>
                      <code:if>
                         <code:or-else>
-                           <code:method-call name='HasParam'>
-                              <copy-of value='select(context, src + "reference", code)'/>
-                              <code:arguments>
-                                 <code:string literal='true'>
-                                    <value-of value='param.Attribute("name")!.Value'/>
-                                 </code:string>
-                              </code:arguments>
-                           </code:method-call>
+                           <if test='src_target_runtime >= 2m'>
+                              <code:method-call name='HasParam'>
+                                 <copy-of value='select(context, src + "reference", code)'/>
+                                 <code:arguments>
+                                    <code:string literal='true'>
+                                       <value-of value='param.Attribute("name")!.Value'/>
+                                    </code:string>
+                                 </code:arguments>
+                              </code:method-call>
+                           </if>
                            <code:not>
                               <code:field-reference name='{src_init_field(param)}'>
                                  <code:this-reference/>
@@ -636,7 +638,8 @@
                         </code:block>
                      </code:if>
                   </when>
-                  <when test='!accepted'>
+                  <when test='src_target_runtime >= 2m
+                        &amp;&amp; !accepted'>
                      <code:if>
                         <code:method-call name='HasParam'>
                            <copy-of value='select(context, src + "reference", code)'/>
