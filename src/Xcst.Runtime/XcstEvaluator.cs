@@ -33,7 +33,7 @@ public class XcstEvaluator {
    readonly Dictionary<string, object?>
    _parameters = new();
 
-   bool
+   private protected bool
    _paramsLocked = false;
 
    PrimingContext?
@@ -160,7 +160,7 @@ public class XcstEvaluator {
       return new XcstTemplateEvaluator(_package, Prime, input, mode);
    }
 
-   internal PrimingContext
+   private protected PrimingContext
    Prime() {
 
       if (_primingContext is null) {
@@ -218,6 +218,8 @@ public class XcstEvaluator<TPackage> : XcstEvaluator
 
       if (functionCaller is null) throw new ArgumentNullException(nameof(functionCaller));
 
+      _paramsLocked = true;
+
       void executionFn(OutputParameters? overrideParams, bool skipFlush) =>
          functionCaller(_package);
 
@@ -228,6 +230,8 @@ public class XcstEvaluator<TPackage> : XcstEvaluator
    CallFunction<TResult>(Func<TPackage, TResult> functionCaller) {
 
       if (functionCaller is null) throw new ArgumentNullException(nameof(functionCaller));
+
+      _paramsLocked = true;
 
       TResult executionFn() => functionCaller(_package);
 
@@ -511,7 +515,7 @@ public class XcstTemplateEvaluator {
 
       try {
 
-         Action<TemplateContext> tmplFn = TemplateFunction(writer);
+         var tmplFn = TemplateFunction(writer);
          EvaluateTemplate(tmplFn, tmplContext);
 
          if (!writer.DisposeWriter

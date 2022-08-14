@@ -5,7 +5,13 @@
    <c:param name='bar' as='string'/>
 
    <c:output method='text'/>
-   
+
    <c:template name='c:initial-template'/>
+
+   <c:function name='MyFuncValue' as='string' visibility='public'>
+      <c:return value='bar'/>
+   </c:function>
+
+   <c:function name='MyFuncVoid' visibility='public'/>
 
 </c:module>
