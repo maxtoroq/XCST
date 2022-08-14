@@ -14,7 +14,7 @@
 
 using System;
 
-namespace Xcst.PackageModel;
+namespace Xcst.Runtime;
 
 [AttributeUsage(_attrTargets)]
 public sealed class XcstComponentAttribute : Attribute {

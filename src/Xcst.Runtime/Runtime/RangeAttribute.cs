@@ -18,7 +18,7 @@ using System.Globalization;
 using System.Reflection;
 using BaseRangeAttribute = System.ComponentModel.DataAnnotations.RangeAttribute;
 
-namespace Xcst.PackageModel;
+namespace Xcst.Runtime;
 
 // .NET's RangeAttribute parses minimum and maximum arguments using the current culture
 // this class uses invariant culture instead

@@ -16,7 +16,7 @@ using System;
 using System.Xml.Linq;
 using Xcst.Runtime;
 
-namespace Xcst.PackageModel;
+namespace Xcst;
 
 public interface IXcstPackage {
 
