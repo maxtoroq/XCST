@@ -16,7 +16,6 @@ using System;
 using System.IO;
 using System.Xml;
 using System.Xml.Linq;
-using Xcst.PackageModel;
 using SequenceWriter = Xcst.Runtime.SequenceWriter;
 
 namespace Xcst.Compiler;

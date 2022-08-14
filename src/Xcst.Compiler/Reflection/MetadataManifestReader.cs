@@ -34,7 +34,7 @@ partial class MetadataManifestReader {
    _ns = XmlNamespaces.XcstGrammar;
 
    const string
-   _packageModelNs = "Xcst.PackageModel";
+   _packageModelNs = "Xcst.Runtime";
 
    static readonly ICustomAttributeTypeProvider<TypeSpec>
    _attrTypeProvider = new TypeSpecTypeProvider();
@@ -72,7 +72,7 @@ partial class MetadataManifestReader {
              where i.Interface.Kind == HandleKind.TypeReference
              let t = reader.GetTypeReference(((TypeReferenceHandle)i.Interface))
              select t).Any(t => reader.GetString(t.Name) == "IXcstPackage"
-                && reader.GetString(t.Namespace) == _packageModelNs);
+                && reader.GetString(t.Namespace) == "Xcst");
 
          if (isPkg) {
 

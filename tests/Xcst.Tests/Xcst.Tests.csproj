@@ -25,9 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Xcst.Compiler\Xcst.Compiler.csproj" />
-    <!--
     <ProjectReference Include="..\..\src\Xcst.Runtime\Xcst.Runtime.csproj" />
-    -->
   </ItemGroup>
 
   <ItemGroup>

@@ -9,7 +9,6 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.VisualBasic;
 using Xcst.Compiler;
-using Xcst.PackageModel;
 using CSharpVersion = Microsoft.CodeAnalysis.CSharp.LanguageVersion;
 using VBVersion = Microsoft.CodeAnalysis.VisualBasic.LanguageVersion;
 using TestAssert = NUnit.Framework.Assert;
@@ -269,7 +268,7 @@ static class TestsHelper {
          MetadataReference.CreateFromFile(typeof(System.ComponentModel.DataAnnotations.ValidationAttribute).Assembly.Location),
          MetadataReference.CreateFromFile(typeof(System.Runtime.Serialization.DataContractAttribute).Assembly.Location),
          MetadataReference.CreateFromFile(typeof(Newtonsoft.Json.JsonWriter).Assembly.Location),
-         MetadataReference.CreateFromFile(typeof(Xcst.PackageModel.IXcstPackage).Assembly.Location),
+         MetadataReference.CreateFromFile(typeof(Xcst.IXcstPackage).Assembly.Location),
          // Tests dependencies
          MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Dynamic.Runtime.dll")),
          MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.Linq.Expressions.dll")),

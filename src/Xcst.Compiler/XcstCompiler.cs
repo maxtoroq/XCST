@@ -19,7 +19,6 @@ using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
 using Xcst.Compiler.Reflection;
-using Xcst.PackageModel;
 using DataType = Xcst.Runtime.DataType;
 
 namespace Xcst.Compiler;

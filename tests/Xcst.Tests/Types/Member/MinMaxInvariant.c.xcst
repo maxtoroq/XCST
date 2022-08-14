@@ -20,7 +20,7 @@
       <c:set ref='Thread.CurrentThread.CurrentCulture' value='new CultureInfo("es")'/>
       <c:void value='Assert.IsTrue(IsValid(new foo { bar = -0.5m }))'/>
       <c:void value='Assert.IsFalse(IsValid(new foo { bar = 0.6m }))'/>
-      <c:void value='Assert.IsTrue(new Xcst.PackageModel.RangeAttribute(typeof(decimal), "-0.5", "0.5").IsValid("-0,5"))'/>
+      <c:void value='Assert.IsTrue(new Xcst.Runtime.RangeAttribute(typeof(decimal), "-0.5", "0.5").IsValid("-0,5"))'/>
    </c:template>
 
 </c:module>

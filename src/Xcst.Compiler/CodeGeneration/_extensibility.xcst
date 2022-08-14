@@ -23,7 +23,6 @@
    <import-namespace ns='System.Collections.Generic'/>
    <import-namespace ns='System.Linq'/>
    <import-namespace ns='System.Xml.Linq'/>
-   <import-namespace ns='Xcst.PackageModel'/>
 
    <param name='src_extensions' as='Dictionary&lt;string, IXcstPackage>?'/>
 

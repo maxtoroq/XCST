@@ -3,7 +3,7 @@
 
    <c:import-namespace ns='System'/>
    <c:import-namespace ns='System.IO'/>
-   <c:import-namespace ns='Xcst.PackageModel'/>
+   <c:import-namespace ns='Xcst'/>
 
    <c:variable name='tempFile'>foo.txt</c:variable>
 

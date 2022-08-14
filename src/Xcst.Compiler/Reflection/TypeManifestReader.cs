@@ -436,11 +436,11 @@ class TypeManifestReader {
 
    static Type?
    PackageInterface(Type t) =>
-      (t.GetInterface("Xcst.PackageModel.IXcstPackage") is Type pkgInterface
+      (t.GetInterface("Xcst.IXcstPackage") is Type pkgInterface
          && pkgInterface.Assembly.GetName().Name == "Xcst.Runtime") ? pkgInterface
       : null;
 
    static Type
    ComponentAttributeType(Type pkgInterface, string attributeName) =>
-      pkgInterface.Assembly.GetType("Xcst.PackageModel." + attributeName)!;
+      pkgInterface.Assembly.GetType("Xcst.Runtime." + attributeName)!;
 }

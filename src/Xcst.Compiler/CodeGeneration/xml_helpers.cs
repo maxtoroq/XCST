@@ -19,7 +19,6 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
-using Xcst.PackageModel;
 using Xcst.Runtime;
 
 namespace Xcst.Compiler;
