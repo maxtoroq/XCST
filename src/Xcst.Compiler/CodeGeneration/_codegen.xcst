@@ -25,7 +25,15 @@
    <import-namespace ns='System.Linq'/>
    <import-namespace ns='System.Xml.Linq'/>
 
-   <variable name='src_package_interface' value='src_package_model_type("IXcstPackage", true)' as='XElement'/>
+   <variable name='src_package_interface' as='XElement'>
+      <choose>
+         <when test='src_target_runtime >= 2m'>
+            <code:type-reference name='IXcstPackage' namespace='Xcst' interface='true'/>
+         </when>
+         <otherwise value='src_package_model_type("IXcstPackage", true)'/>
+      </choose>
+   </variable>
+
    <variable name='src_component_attr_type' value='src_package_model_type("XcstComponent")' as='XElement'/>
    <variable name='src_contextual_variable'>__xcst</variable>
 
@@ -183,7 +191,7 @@
       <param name='@interface' value='false' as='bool'/>
 
       <return>
-         <code:type-reference name='{type}' namespace='Xcst.PackageModel'>
+         <code:type-reference name='{type}' namespace='Xcst.{(src_target_runtime >= 2m ? "Runtime" : "PackageModel")}'>
             <if test='@interface'>
                <attribute name='interface' value='fn_string(true)'/>
             </if>
