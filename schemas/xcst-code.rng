@@ -15,8 +15,8 @@
  limitations under the License.
 -->
 <grammar xmlns="http://relaxng.org/ns/structure/1.0"
-   xmlns:code="http://maxtoroq.github.io/XCST/code"
-   ns="http://maxtoroq.github.io/XCST/code">
+   xmlns:code="https://maxtoroq.github.io/XCST/code"
+   ns="https://maxtoroq.github.io/XCST/code">
 
    <define name="_expression">
       <choice>

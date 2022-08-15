@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Converted from Relax NG schema, using Trang. Use only with code completion tools that do not support Relax NG. -->
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:code="http://maxtoroq.github.io/XCST/code" elementFormDefault="qualified" targetNamespace="http://maxtoroq.github.io/XCST/code">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:code="https://maxtoroq.github.io/XCST/code" elementFormDefault="qualified" targetNamespace="https://maxtoroq.github.io/XCST/code">
    <xs:element name="_expression" abstract="true" substitutionGroup="code:_member-binding"/>
    <xs:element name="_literal" abstract="true" substitutionGroup="code:_expression"/>
    <xs:group name="_statement">
