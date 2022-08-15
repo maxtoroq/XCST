@@ -28,8 +28,8 @@ public class XcstCompiler {
    readonly Dictionary<string, XDocument>
    _packageLibrary = new();
 
-   readonly Dictionary<string, IXcstPackage>
-   _extensions = new();
+   readonly List<Func<IXcstPackage>>
+   _extensionFactories = new();
 
    Type[]?
    _tbaseTypes;
@@ -95,20 +95,11 @@ public class XcstCompiler {
    XIncludeAware { get; set; } = true;
 
    public void
-   RegisterExtension(IXcstPackage extensionPackage) {
+   RegisterExtension(Func<IXcstPackage> extensionFactory) {
 
-      if (extensionPackage is null) throw new ArgumentNullException(nameof(extensionPackage));
+      if (extensionFactory is null) throw new ArgumentNullException(nameof(extensionFactory));
 
-      const string nsProp = "ExtensionNamespace";
-
-      var ns = extensionPackage
-         .GetType()
-         .GetProperty(nsProp)?
-         .GetValue(extensionPackage) as string
-         ?? throw new ArgumentException(
-            $"The extension package must define an '{nsProp}' public property that returns the extension namespace as a string.", nameof(extensionPackage));
-
-      _extensions[ns] = extensionPackage;
+      _extensionFactories.Add(extensionFactory);
    }
 
    public void
@@ -328,7 +319,7 @@ public class XcstCompiler {
       }
 
       evaluator.WithParam(nameof(compiler.cs_open_brace_on_new_line), this.OpenBraceOnNewLine);
-      evaluator.WithParam(nameof(compiler.src_extensions), _extensions);
+      evaluator.WithParam(nameof(compiler.src_extension_factories), _extensionFactories);
       evaluator.WithParam(nameof(compiler.xi_aware), this.XIncludeAware);
 
       return evaluator.ApplyTemplates(sourceDoc.Root!);

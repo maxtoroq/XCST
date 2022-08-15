@@ -24,7 +24,7 @@
    <import-namespace ns='System.Linq'/>
    <import-namespace ns='System.Xml.Linq'/>
 
-   <param name='src_extensions' as='Dictionary&lt;string, IXcstPackage>?'/>
+   <param name='src_extension_factories' as='List&lt;System.Func&lt;IXcstPackage>>?'/>
 
    <variable name='src_ext_pkg_params' value='new {
       xcst_is_value_template = (System.Func&lt;object, bool>)xcst_is_value_template,
@@ -195,87 +195,75 @@
    <template name='src:import-namespace-extra'>
       <param name='el' as='XElement' required='yes'/>
 
-      <if test='src_extensions != null'>
-         <for-each name='pair' in='src_extensions.Where(p => HasTemplate&lt;XElement?>(p.Value, src + "import-namespace-extra"))'>
-            <invoke-package package='pair.Value'
-               package-params='src_ext_pkg_params'
-               initial-template='src:import-namespace-extra'
-               template-params='new { el }'
-               tunnel-passthru='yes'/>
-         </for-each>
-      </if>
+      <for-each name='pair' in='this.Extensions.Where(p => HasTemplate&lt;XElement?>(p.Value, src + "import-namespace-extra"))'>
+         <invoke-package package='pair.Value'
+            package-params='src_ext_pkg_params'
+            initial-template='src:import-namespace-extra'
+            template-params='new { el }'
+            tunnel-passthru='yes'/>
+      </for-each>
    </template>
 
    <template name='src:package-attribute-extra'>
       <param name='el' as='XElement' required='yes'/>
 
-      <if test='src_extensions != null'>
-         <for-each name='pair' in='src_extensions.Where(p => HasTemplate&lt;XElement?>(p.Value, src + "package-attribute-extra"))'>
-            <invoke-package package='pair.Value'
-               package-params='src_ext_pkg_params'
-               initial-template='src:package-attribute-extra'
-               template-params='new { el }'
-               tunnel-passthru='yes'/>
-         </for-each>
-      </if>
+      <for-each name='pair' in='this.Extensions.Where(p => HasTemplate&lt;XElement?>(p.Value, src + "package-attribute-extra"))'>
+         <invoke-package package='pair.Value'
+            package-params='src_ext_pkg_params'
+            initial-template='src:package-attribute-extra'
+            template-params='new { el }'
+            tunnel-passthru='yes'/>
+      </for-each>
    </template>
 
    <template name='src:base-types'>
       <param name='el' as='XElement' required='yes'/>
 
-      <if test='src_extensions != null'>
-         <for-each name='pair' in='src_extensions.Where(p => HasTemplate&lt;XElement?>(p.Value, src + "base-types"))'>
-            <invoke-package package='pair.Value'
-               package-params='src_ext_pkg_params'
-               initial-template='src:base-types'
-               template-params='new { el }'
-               tunnel-passthru='yes'/>
-            <break/>
-         </for-each>
-      </if>
+      <for-each name='pair' in='this.Extensions.Where(p => HasTemplate&lt;XElement?>(p.Value, src + "base-types"))'>
+         <invoke-package package='pair.Value'
+            package-params='src_ext_pkg_params'
+            initial-template='src:base-types'
+            template-params='new { el }'
+            tunnel-passthru='yes'/>
+         <break/>
+      </for-each>
    </template>
 
    <template name='src:infrastructure-extra'>
       <param name='el' as='XElement' required='yes'/>
       <param name='principalModule' as='bool' required='yes'/>
 
-      <if test='src_extensions != null'>
-         <for-each name='pair' in='src_extensions.Where(p => HasTemplate&lt;XElement?>(p.Value, src + "infrastructure-extra"))'>
-            <invoke-package package='pair.Value'
-               package-params='src_ext_pkg_params'
-               initial-template='src:infrastructure-extra'
-               template-params='new { el, principalModule }'
-               tunnel-passthru='yes'/>
-         </for-each>
-      </if>
+      <for-each name='pair' in='this.Extensions.Where(p => HasTemplate&lt;XElement?>(p.Value, src + "infrastructure-extra"))'>
+         <invoke-package package='pair.Value'
+            package-params='src_ext_pkg_params'
+            initial-template='src:infrastructure-extra'
+            template-params='new { el, principalModule }'
+            tunnel-passthru='yes'/>
+      </for-each>
    </template>
 
    <template name='src:type-attribute-extra'>
       <param name='el' as='XElement' required='yes'/>
 
-      <if test='src_extensions != null'>
-         <for-each name='pair' in='src_extensions.Where(p => HasTemplate&lt;XElement?>(p.Value, src + "type-attribute-extra"))'>
-            <invoke-package package='pair.Value'
-               package-params='src_ext_pkg_params'
-               initial-template='src:type-attribute-extra'
-               template-params='new { el }'
-               tunnel-passthru='yes'/>
-         </for-each>
-      </if>
+      <for-each name='pair' in='this.Extensions.Where(p => HasTemplate&lt;XElement?>(p.Value, src + "type-attribute-extra"))'>
+         <invoke-package package='pair.Value'
+            package-params='src_ext_pkg_params'
+            initial-template='src:type-attribute-extra'
+            template-params='new { el }'
+            tunnel-passthru='yes'/>
+      </for-each>
    </template>
 
    <template name='src:member-attribute-extra'>
       <param name='el' as='XElement' required='yes'/>
 
-      <if test='src_extensions != null'>
-         <for-each name='pair' in='src_extensions.Where(p => HasTemplate&lt;XElement?>(p.Value, src + "member-attribute-extra"))'>
-            <invoke-package package='pair.Value'
-               package-params='src_ext_pkg_params'
-               initial-template='src:member-attribute-extra'
-               template-params='new { el }'
-               tunnel-passthru='yes'/>
-         </for-each>
-      </if>
+      <for-each name='pair' in='this.Extensions.Where(p => HasTemplate&lt;XElement?>(p.Value, src + "member-attribute-extra"))'>
+         <invoke-package package='pair.Value'
+            package-params='src_ext_pkg_params'
+            initial-template='src:member-attribute-extra'
+            template-params='new { el }'
+            tunnel-passthru='yes'/>
+      </for-each>
    </template>
 
 

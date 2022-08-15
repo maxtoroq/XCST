@@ -193,7 +193,7 @@ static class TestsHelper {
       var compiler = new XcstCompiler();
 
       if (extension != null) {
-         compiler.RegisterExtension((IXcstPackage)Activator.CreateInstance(extension)!);
+         compiler.RegisterExtension(() => (IXcstPackage)Activator.CreateInstance(extension)!);
       }
 
       compiler.UseLineDirective = true;
