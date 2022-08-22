@@ -31,6 +31,9 @@ public class XcstCompiler {
    readonly List<Func<IXcstPackage>>
    _extensionFactories = new();
 
+   readonly Dictionary<string, object?>
+   _tunnelParams = new();
+
    Type[]?
    _tbaseTypes;
 
@@ -133,6 +136,13 @@ public class XcstCompiler {
       }
 
       throw new InvalidOperationException($"Package '{packageName}' has already been registered.");
+   }
+
+   // fine-grained customization for extensions
+   // params are cleared after each run
+   public void
+   SetTunnelParam(string name, object? value) {
+      _tunnelParams[name] = value;
    }
 
    public CompileResult
@@ -322,7 +332,15 @@ public class XcstCompiler {
       evaluator.WithParam(nameof(compiler.src_extension_factories), _extensionFactories);
       evaluator.WithParam(nameof(compiler.xi_aware), this.XIncludeAware);
 
-      return evaluator.ApplyTemplates(sourceDoc.Root!);
+      var tmplEval = evaluator.ApplyTemplates(sourceDoc.Root!);
+
+      foreach (var pair in _tunnelParams) {
+         tmplEval.WithParam(pair.Key, pair.Value, tunnel: true);
+      }
+
+      _tunnelParams.Clear();
+
+      return tmplEval;
    }
 
    XmlResolver
