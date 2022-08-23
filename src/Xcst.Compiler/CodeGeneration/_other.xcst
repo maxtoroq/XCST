@@ -43,11 +43,18 @@
       </call-template>
 
       <code:chain>
-         <code:method-call name='Using'>
+         <code:method-call name='{(src_target_runtime >= 2m ? "InvokePackage" : "Using")}'>
             <call-template name='src:line-number'>
                <with-param name='el' value='el'/>
             </call-template>
-            <code:type-reference name='XcstEvaluator' namespace='Xcst'/>
+            <choose>
+               <when test='src_target_runtime >= 2m'>
+                  <copy-of value='src_helper_type("DynamicLoading")'/>
+               </when>
+               <otherwise>
+                  <code:type-reference name='XcstEvaluator' namespace='Xcst'/>
+               </otherwise>
+            </choose>
             <code:arguments>
                <code:cast>
                   <copy-of value='src_object_type'/>
