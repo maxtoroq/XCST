@@ -13,52 +13,14 @@
 // limitations under the License.
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using System.Xml.Linq;
-using SequenceWriter = Xcst.Runtime.SequenceWriter;
 
 namespace Xcst.Compiler;
 using TypeManifestReader = Reflection.TypeManifestReader;
 
 partial class XcstCompilerPackage {
-
-   Dictionary<string, IXcstPackage>
-   _extensions;
-
-   private Dictionary<string, IXcstPackage>
-   Extensions {
-      get {
-         if (_extensions is null) {
-
-            _extensions = new Dictionary<string, IXcstPackage>();
-
-            if (src_extension_factories != null) {
-
-               foreach (var pkgFn in src_extension_factories) {
-
-                  var pkg = pkgFn.Invoke()
-                     ?? throw new InvalidOperationException("The extension factory cannot return null.");
-
-                  const string nsProp = "ExtensionNamespace";
-
-                  var ns = pkg
-                     .GetType()
-                     .GetProperty(nsProp)?
-                     .GetValue(pkg) as string
-                     ?? throw new InvalidOperationException(
-                        $"The extension package must define an '{nsProp}' public property that returns the extension namespace as a string.");
-
-
-                  _extensions[ns] = pkg;
-               }
-            }
-         }
-
-         return _extensions;
-      }
-   }
 
    internal XDocument?
    PackageManifest(string packageName, XElement usePackageEl) {
@@ -214,24 +176,6 @@ partial class XcstCompilerPackage {
    static string
    StringId(string value) =>
       XmlConvert.ToString(GetHashCodeDeterministic(value));
-
-   IXcstPackage?
-   ExtensionPackage(XElement el) {
-
-      if (this.Extensions.TryGetValue(el.Name.NamespaceName, out var extPkg)) {
-         return extPkg;
-      }
-
-      return null;
-   }
-
-   static bool
-   HasTemplate<TItem>(IXcstPackage pkg, XName name) =>
-      pkg.GetTemplate(name, SequenceWriter.Create<TItem>()) != null;
-
-   static bool
-   HasMode<TItem>(IXcstPackage pkg, XName mode) =>
-      pkg.GetMode(mode, SequenceWriter.Create<TItem>()) != null;
 }
 
 enum TypeCardinality {

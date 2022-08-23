@@ -26,22 +26,6 @@
 
    <param name='src_extension_factories' as='List&lt;System.Func&lt;IXcstPackage>>?'/>
 
-   <variable name='src_ext_pkg_params' value='new {
-      xcst_is_value_template = (System.Func&lt;object, bool>)xcst_is_value_template,
-      xcst_require_output,
-      src_base_types,
-      src_doc_output = (System.Func&lt;XObject?, XElement?, XElement>)src_doc_output,
-      src_output_is_doc = (System.Func&lt;XElement, bool>)src_output_is_doc,
-      src_template_output = (System.Func&lt;XElement?, XElement?, XElement>)src_template_output,
-      src_helper_type = (System.Func&lt;string, XElement>)src_helper_type,
-      src_expand_attribute,
-      src_sequence_constructor,
-      src_simple_content,
-      src_validation_arguments,
-      src_top_level_package_reference,
-      src_line_number
-   }'/>
-
    <variable name='xcst_require_output'>
       <delegate>
          <param name='el' as='XElement' required='yes'/>
@@ -150,8 +134,7 @@
       <variable name='extPkg' value='ExtensionPackage(el)'/>
       <choose>
          <when test='extPkg != null'>
-            <invoke-package package='extPkg'
-               package-params='src_ext_pkg_params'
+            <invoke-package package='ExtensionEvaluator(el.Name.NamespaceName)'
                initial-match-selection='el'
                initial-mode='{xcst_uri_qualified_name(currentMode)}'
                tunnel-passthru='yes'/>
@@ -181,8 +164,7 @@
       <variable name='extPkg' value='ExtensionPackage(el)'/>
       <if test='extPkg != null
             &amp;&amp; HasMode&lt;XElement?>(extPkg, xcst + "extension-instruction")'>
-         <invoke-package package='extPkg'
-            package-params='src_ext_pkg_params'
+         <invoke-package package='ExtensionEvaluator(el.Name.NamespaceName)'
             initial-match-selection='el'
             initial-mode='xcst:extension-instruction'
             tunnel-passthru='yes'/>
@@ -196,8 +178,7 @@
       <param name='el' as='XElement' required='yes'/>
 
       <for-each name='pair' in='this.Extensions.Where(p => HasTemplate&lt;XElement?>(p.Value, src + "import-namespace-extra"))'>
-         <invoke-package package='pair.Value'
-            package-params='src_ext_pkg_params'
+         <invoke-package package='ExtensionEvaluator(pair.Key)'
             initial-template='src:import-namespace-extra'
             template-params='new { el }'
             tunnel-passthru='yes'/>
@@ -208,8 +189,7 @@
       <param name='el' as='XElement' required='yes'/>
 
       <for-each name='pair' in='this.Extensions.Where(p => HasTemplate&lt;XElement?>(p.Value, src + "package-attribute-extra"))'>
-         <invoke-package package='pair.Value'
-            package-params='src_ext_pkg_params'
+         <invoke-package package='ExtensionEvaluator(pair.Key)'
             initial-template='src:package-attribute-extra'
             template-params='new { el }'
             tunnel-passthru='yes'/>
@@ -220,8 +200,7 @@
       <param name='el' as='XElement' required='yes'/>
 
       <for-each name='pair' in='this.Extensions.Where(p => HasTemplate&lt;XElement?>(p.Value, src + "base-types"))'>
-         <invoke-package package='pair.Value'
-            package-params='src_ext_pkg_params'
+         <invoke-package package='ExtensionEvaluator(pair.Key)'
             initial-template='src:base-types'
             template-params='new { el }'
             tunnel-passthru='yes'/>
@@ -234,8 +213,7 @@
       <param name='principalModule' as='bool' required='yes'/>
 
       <for-each name='pair' in='this.Extensions.Where(p => HasTemplate&lt;XElement?>(p.Value, src + "infrastructure-extra"))'>
-         <invoke-package package='pair.Value'
-            package-params='src_ext_pkg_params'
+         <invoke-package package='ExtensionEvaluator(pair.Key)'
             initial-template='src:infrastructure-extra'
             template-params='new { el, principalModule }'
             tunnel-passthru='yes'/>
@@ -246,8 +224,7 @@
       <param name='el' as='XElement' required='yes'/>
 
       <for-each name='pair' in='this.Extensions.Where(p => HasTemplate&lt;XElement?>(p.Value, src + "type-attribute-extra"))'>
-         <invoke-package package='pair.Value'
-            package-params='src_ext_pkg_params'
+         <invoke-package package='ExtensionEvaluator(pair.Key)'
             initial-template='src:type-attribute-extra'
             template-params='new { el }'
             tunnel-passthru='yes'/>
@@ -258,8 +235,7 @@
       <param name='el' as='XElement' required='yes'/>
 
       <for-each name='pair' in='this.Extensions.Where(p => HasTemplate&lt;XElement?>(p.Value, src + "member-attribute-extra"))'>
-         <invoke-package package='pair.Value'
-            package-params='src_ext_pkg_params'
+         <invoke-package package='ExtensionEvaluator(pair.Key)'
             initial-template='src:member-attribute-extra'
             template-params='new { el }'
             tunnel-passthru='yes'/>
