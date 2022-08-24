@@ -34,7 +34,10 @@ partial class MetadataManifestReader {
    _ns = XmlNamespaces.XcstGrammar;
 
    const string
-   _packageModelNs = "Xcst.Runtime";
+   _v1PackageModelNs = "Xcst.PackageModel";
+
+   const string
+   _v2PackageModelNs = "Xcst.Runtime";
 
    static readonly ICustomAttributeTypeProvider<TypeSpec>
    _attrTypeProvider = new TypeSpecTypeProvider();
@@ -47,6 +50,9 @@ partial class MetadataManifestReader {
 
    readonly XmlWriter
    _writer;
+
+   readonly string
+   _packageModelNs;
 
    public static void
    ReadAssembly(Stream assemblySource, Func<string, XmlWriter> writerFn) {
@@ -66,15 +72,21 @@ partial class MetadataManifestReader {
             continue;
          }
 
-         var isPkg =
+         var pkgInterface =
             (from ih in typeDef.GetInterfaceImplementations()
              let i = reader.GetInterfaceImplementation(ih)
              where i.Interface.Kind == HandleKind.TypeReference
-             let t = reader.GetTypeReference(((TypeReferenceHandle)i.Interface))
-             select t).Any(t => reader.GetString(t.Name) == "IXcstPackage"
-                && reader.GetString(t.Namespace) == "Xcst");
+             let t = reader.GetTypeReference((TypeReferenceHandle)i.Interface)
+             where reader.GetString(t.Name) == "IXcstPackage"
+               && t.ResolutionScope.Kind == HandleKind.AssemblyReference
+             let ar = reader.GetAssemblyReference((AssemblyReferenceHandle)t.ResolutionScope)
+             where reader.GetString(ar.Name) == "Xcst.Runtime"
+             let v1rt = !(ar.Version.Major >= 2)
+             where reader.GetString(t.Namespace) == (v1rt ? _v1PackageModelNs : "Xcst")
+             select new { v1rt }
+            ).FirstOrDefault();
 
-         if (isPkg) {
+         if (pkgInterface != null) {
 
             var pkgName = reader.GetString(typeDef.Name);
 
@@ -84,16 +96,18 @@ partial class MetadataManifestReader {
 
             using var writer = writerFn(pkgName);
 
-            new MetadataManifestReader(reader, writer)
+            new MetadataManifestReader(reader, writer, pkgInterface.v1rt)
                .WritePackage(typeDef);
          }
       }
    }
 
    public
-   MetadataManifestReader(MetadataReader reader, XmlWriter writer) {
+   MetadataManifestReader(MetadataReader reader, XmlWriter writer, bool v1rt) {
+
       _reader = reader;
       _writer = writer;
+      _packageModelNs = (v1rt) ? _v1PackageModelNs : _v2PackageModelNs;
    }
 
    void
