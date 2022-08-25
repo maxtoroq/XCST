@@ -197,7 +197,6 @@ static class TestsHelper {
       }
 
       compiler.UseLineDirective = true;
-      //compiler.PackageTypeResolver = n => Assembly.GetExecutingAssembly().GetType(n);
       compiler.AddPackageLibrary(Assembly.GetExecutingAssembly().Location);
 
       return compiler;

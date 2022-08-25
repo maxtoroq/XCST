@@ -68,7 +68,6 @@
    <param name='src_manifest_only' as='bool'/>
 
    <param name='src_module_resolver' as='System.Xml.XmlResolver' required='yes'/>
-   <param name='src_package_type_resolver' as='System.Func&lt;string, System.Type?>?'/>
    <param name='src_package_library' as='Dictionary&lt;string, XDocument>?'/>
    <param name='src_package_location_resolver' as='System.Func&lt;string, System.Uri?>?'/>
    <param name='src_package_file_directory' as='string?'/>
@@ -343,9 +342,8 @@
       <variable name='usePackageEl' value='usePackageEls[0]'/>
 
       <variable name='manifest' as='XElement'>
-         <variable name='man' value='PackageManifest(usedPackageName, usePackageEl)'/>
          <choose>
-            <when test='man != null' value='man.Root!'/>
+            <when test='src_package_library?.TryGetValue(usedPackageName, out var man) == true' value='man.Root!'/>
             <otherwise>
                <variable name='usedPackageUri' value='PackageLocation(usedPackageName, usingPackageUri)'/>
                <if test='!(usedPackageUri != null)'>

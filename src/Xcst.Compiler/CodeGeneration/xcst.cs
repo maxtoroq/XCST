@@ -18,57 +18,10 @@ using System.Xml;
 using System.Xml.Linq;
 
 namespace Xcst.Compiler;
-using TypeManifestReader = Reflection.TypeManifestReader;
 
 partial class XcstCompilerPackage {
 
-   internal XDocument?
-   PackageManifest(string packageName, XElement usePackageEl) {
-
-      Type? packageType;
-      var errorCode = XName.Get("XTSE3000", XmlNamespaces.XcstErrors);
-
-      try {
-         packageType = src_package_type_resolver?.Invoke(packageName);
-
-      } catch (Exception ex) {
-
-         throw new RuntimeException(ex.Message,
-            errorCode: errorCode,
-            errorData: ErrorData(usePackageEl)
-         );
-      }
-
-      if (packageType != null) {
-
-         if (!TypeManifestReader.IsXcstPackage(packageType)) {
-
-            throw new RuntimeException($"{packageType.FullName} is not a valid XCST package.",
-               errorCode: errorCode,
-               errorData: ErrorData(usePackageEl)
-            );
-         }
-
-         var doc = new XDocument();
-
-         using var writer = doc.CreateWriter();
-
-         new TypeManifestReader(writer)
-            .WritePackage(packageType);
-
-         return doc;
-      }
-
-      if (src_package_library != null
-         && src_package_library.TryGetValue(packageName, out var manifest)) {
-
-         return manifest;
-      }
-
-      return null;
-   }
-
-   internal Uri?
+   Uri?
    PackageLocation(string packageName, Uri? usingPackageUri) {
 
       if (src_package_location_resolver != null) {

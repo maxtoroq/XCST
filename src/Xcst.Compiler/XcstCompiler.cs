@@ -64,9 +64,6 @@ public class XcstCompiler {
    public string?
    UsePackageBase { get; set; }
 
-   public Func<string, Type?>?
-   PackageTypeResolver { get; set; }
-
    public Func<string, Uri?>?
    PackageLocationResolver { get; set; }
 
@@ -299,11 +296,6 @@ public class XcstCompiler {
       }
 
       evaluator.WithParam(nameof(compiler.src_module_resolver), moduleResolver);
-
-      if (this.PackageTypeResolver != null) {
-         evaluator.WithParam(nameof(compiler.src_package_type_resolver), this.PackageTypeResolver);
-      }
-
       evaluator.WithParam(nameof(compiler.src_package_library), _packageLibrary);
 
       if (this.PackageLocationResolver != null) {
