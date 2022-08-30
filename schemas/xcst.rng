@@ -664,7 +664,7 @@
          </zeroOrMore>
          <optional docs:attrib-group="Serialization">
             <attribute name="serialize">
-               <ann:documentation>Specifies if this member should be considered when serializing and instance of the type.</ann:documentation>
+               <ann:documentation>Specifies if this member should be considered when serializing an instance of the type.</ann:documentation>
                <ref name="boolean"/>
             </attribute>
          </optional>

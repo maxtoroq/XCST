@@ -626,7 +626,7 @@
          </xs:attribute>
          <xs:attribute name="serialize" type="c:boolean">
             <xs:annotation>
-               <xs:documentation>Specifies if this member should be considered when serializing and instance of the type.</xs:documentation>
+               <xs:documentation>Specifies if this member should be considered when serializing an instance of the type.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attributeGroup ref="c:type-or-member-attributes"/>
