@@ -277,7 +277,7 @@ class RuntimeWriter : WrappingWriter {
 
          // Resize caching array
          Debug.Assert(_numEntries == _arrAttrs.Length);
-         AttrNameVal[] arrNew = new AttrNameVal[_numEntries * 2];
+         var arrNew = new AttrNameVal[_numEntries * 2];
          Array.Copy(_arrAttrs, arrNew, _numEntries);
          _arrAttrs = arrNew;
       }

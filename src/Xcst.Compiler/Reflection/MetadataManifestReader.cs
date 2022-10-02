@@ -575,7 +575,7 @@ partial class MetadataManifestReader {
       const string ns = XmlNamespaces.XcstCode;
       const string prefix = "code";
 
-      BlobReader blobReader = _reader.GetBlobReader(constant.Value);
+      var blobReader = _reader.GetBlobReader(constant.Value);
 
       var str = Convert.ToString(
          blobReader.ReadConstant(constant.TypeCode),
