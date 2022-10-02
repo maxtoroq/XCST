@@ -47,11 +47,8 @@ public class ExecutionContext {
          Uri? staticBaseUri,
          Uri? baseOutputUri) {
 
-      if (topLevelPackage is null) throw new ArgumentNullException(nameof(topLevelPackage));
-      if (primingContext is null) throw new ArgumentNullException(nameof(primingContext));
-
-      this.TopLevelPackage = topLevelPackage;
-      this.PrimingContext = primingContext;
+      this.TopLevelPackage = topLevelPackage ?? throw Argument.Null(topLevelPackage);
+      this.PrimingContext = primingContext ?? throw Argument.Null(primingContext);
       _formatProviderFn = formatProviderFn ?? (() => CultureInfo.CurrentCulture);
       this.SimpleContent = new SimpleContent(_formatProviderFn);
 

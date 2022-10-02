@@ -27,6 +27,8 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Argument.cs" Link="Argument.cs" />
+    <Compile Include="..\CompilerServices.cs" Link="CompilerServices.cs" />
     <Compile Include="..\Diagnostics.cs" Link="Diagnostics.cs" />
     <Compile Include="..\XmlNamespaces.cs" Link="XmlNamespaces.cs" />
   </ItemGroup>

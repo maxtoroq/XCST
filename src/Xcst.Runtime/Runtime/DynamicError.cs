@@ -26,7 +26,7 @@ public static class DynamicError {
    public static Exception
    UnknownTemplate(XName templateName) {
 
-      if (templateName is null) throw new ArgumentNullException(nameof(templateName));
+      Argument.NotNull(templateName);
 
       return new RuntimeException(
          $"No public template exists named {DataType.QNameString(templateName)}.", Code("XTDE0040"));
@@ -35,7 +35,7 @@ public static class DynamicError {
    public static Exception
    RequiredGlobalParameter(string parameterName) {
 
-      if (parameterName is null) throw new ArgumentNullException(nameof(parameterName));
+      Argument.NotNull(parameterName);
 
       return new RuntimeException(
          $"No value supplied for required parameter '{parameterName}'.", Code("XTDE0050"));
@@ -44,7 +44,7 @@ public static class DynamicError {
    public static Exception
    RequiredTemplateParameter(string parameterName) {
 
-      if (parameterName is null) throw new ArgumentNullException(nameof(parameterName));
+      Argument.NotNull(parameterName);
 
       return new RuntimeException(
          $"No value supplied for required parameter '{parameterName}'.", Code("XTDE0700"));
@@ -53,7 +53,7 @@ public static class DynamicError {
    public static Exception
    InvalidParameterCast(string parameterName) {
 
-      if (parameterName is null) throw new ArgumentNullException(nameof(parameterName));
+      Argument.NotNull(parameterName);
 
       return new RuntimeException(
          $"Couldn't cast parameter '{parameterName}' to the required type.", Code("XTTE0590"));
@@ -62,7 +62,7 @@ public static class DynamicError {
    public static Exception
    UnknownOutputDefinition(XName outputName) {
 
-      if (outputName is null) throw new ArgumentNullException(nameof(outputName));
+      Argument.NotNull(outputName);
 
       return new RuntimeException(
          $"No output definition exists named {DataType.QNameString(outputName)}.", Code("XTDE1460"));

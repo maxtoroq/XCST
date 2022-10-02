@@ -49,9 +49,9 @@ public class PrimingContext {
    public PrimingContext
    WithParam(string name, object? value) {
 
-      if (name is null) throw new ArgumentNullException(nameof(name));
-
+      Argument.NotNull(name);
       Assert.That(_parameters != null);
+
       _parameters[name] = value;
 
       return this;

@@ -26,9 +26,9 @@ public static class Serialization {
    public static string
    Serialize(IXcstPackage package, XName? outputName, OutputParameters parameters, Action<XcstWriter> action) {
 
-      if (package is null) throw new ArgumentNullException(nameof(package));
-      if (parameters is null) throw new ArgumentNullException(nameof(parameters));
-      if (action is null) throw new ArgumentNullException(nameof(action));
+      Argument.NotNull(package);
+      Argument.NotNull(parameters);
+      Argument.NotNull(action);
 
       var sb = new StringBuilder();
       var defaultParams = new OutputParameters();
@@ -65,7 +65,7 @@ public static class Serialization {
          XName? outputName,
          Uri outputUri) {
 
-      if (outputUri is null) throw new ArgumentNullException(nameof(outputUri));
+      Argument.NotNull(outputUri);
 
       return ResultDocumentImpl(u => WriterFactory.CreateWriter(u!), false, package, parameters, outputName, outputUri);
    }
@@ -78,7 +78,7 @@ public static class Serialization {
          Uri? outputUri,
          Stream output) {
 
-      if (output is null) throw new ArgumentNullException(nameof(output));
+      Argument.NotNull(output);
 
       return ResultDocumentImpl(u => WriterFactory.CreateWriter(output, u), true, package, parameters, outputName, outputUri);
    }
@@ -91,7 +91,7 @@ public static class Serialization {
          Uri? outputUri,
          TextWriter output) {
 
-      if (output is null) throw new ArgumentNullException(nameof(output));
+      Argument.NotNull(output);
 
       return ResultDocumentImpl(u => WriterFactory.CreateWriter(output, u), true, package, parameters, outputName, outputUri);
    }
@@ -104,7 +104,7 @@ public static class Serialization {
          Uri? outputUri,
          XmlWriter output) {
 
-      if (output is null) throw new ArgumentNullException(nameof(output));
+      Argument.NotNull(output);
 
       return ResultDocumentImpl(u => WriterFactory.CreateWriter(output, u), true, package, parameters, outputName, outputUri);
    }
@@ -117,7 +117,7 @@ public static class Serialization {
          Uri? outputUri,
          XcstWriter output) {
 
-      if (output is null) throw new ArgumentNullException(nameof(output));
+      Argument.NotNull(output);
 
       return ResultDocumentImpl(u => WriterFactory.CreateWriter(output), true, package, parameters, outputName, outputUri);
    }
@@ -131,8 +131,8 @@ public static class Serialization {
          XName? outputName,
          Uri? outputUri) {
 
-      if (package is null) throw new ArgumentNullException(nameof(package));
-      if (parameters is null) throw new ArgumentNullException(nameof(parameters));
+      Argument.NotNull(package);
+      Argument.NotNull(parameters);
 
       if (outputUri != null
          && !customOutput

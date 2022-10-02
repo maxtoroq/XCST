@@ -48,10 +48,7 @@ public abstract class XcstWriter : ISequenceWriter<object?>, IDisposable {
 
    protected
    XcstWriter(Uri outputUri) {
-
-      if (outputUri is null) throw new ArgumentNullException(nameof(outputUri));
-
-      this.OutputUri = outputUri;
+      this.OutputUri = outputUri ?? throw Argument.Null(outputUri);
    }
 
 

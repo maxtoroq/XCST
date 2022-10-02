@@ -22,9 +22,9 @@ public static class EvaluateDelegate {
    Invoke<TDerived, TBase>(XcstDelegate<TDerived> del, TemplateContext context, ISequenceWriter<TBase> output)
          where TDerived : TBase {
 
-      if (del is null) throw new ArgumentNullException(nameof(del));
-      if (context is null) throw new ArgumentNullException(nameof(context));
-      if (output is null) throw new ArgumentNullException(nameof(output));
+      Argument.NotNull(del);
+      Argument.NotNull(context);
+      Argument.NotNull(output);
 
       var derivedWriter = output as ISequenceWriter<TDerived>
          ?? new DerivedSequenceWriter<TDerived, TBase>(output);
@@ -36,9 +36,9 @@ public static class EvaluateDelegate {
    public static void
    Invoke<TItem>(Delegate del, TemplateContext context, ISequenceWriter<TItem> output) {
 
-      if (del is null) throw new ArgumentNullException(nameof(del));
-      if (context is null) throw new ArgumentNullException(nameof(context));
-      if (output is null) throw new ArgumentNullException(nameof(output));
+      Argument.NotNull(del);
+      Argument.NotNull(context);
+      Argument.NotNull(output);
 
       var delType = del.GetType();
       var xcstType = delType.GetGenericTypeDefinition();

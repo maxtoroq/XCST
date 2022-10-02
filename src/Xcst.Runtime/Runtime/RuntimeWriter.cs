@@ -88,7 +88,7 @@ class RuntimeWriter : WrappingWriter {
    public override void
    WriteStartAttribute(string? prefix, string localName, string? ns, string? separator) {
 
-      if (localName is null) throw new ArgumentNullException(nameof(localName));
+      Argument.NotNull(localName);
 
       if (_inAttr) {
          throw new RuntimeException("Cannot create an attribute within another attribute.");

@@ -72,10 +72,7 @@ abstract class WrappingXmlWriter : XmlWriter {
 
    protected
    WrappingXmlWriter(XmlWriter baseWriter) {
-
-      if (baseWriter is null) throw new ArgumentNullException(nameof(baseWriter));
-
-      _output = baseWriter;
+      _output = baseWriter ?? throw Argument.Null(baseWriter);
    }
 
    public override void

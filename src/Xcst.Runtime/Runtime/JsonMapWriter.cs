@@ -113,9 +113,7 @@ public class JsonMapWriter : MapWriter {
    public
    JsonMapWriter(JsonWriter baseWriter, XcstWriter? docWriter) {
 
-      if (baseWriter is null) throw new ArgumentNullException(nameof(baseWriter));
-
-      this.BaseWriter = baseWriter;
+      this.BaseWriter = baseWriter ?? throw Argument.Null(baseWriter);
       _docWriter = docWriter;
    }
 

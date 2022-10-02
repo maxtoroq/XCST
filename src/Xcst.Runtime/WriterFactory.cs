@@ -86,7 +86,7 @@ static class WriterFactory {
    static OutputParameters
    MergedParameters(OutputParameters defaultParams, OutputParameters? overrideParams) {
 
-      if (defaultParams is null) throw new ArgumentNullException(nameof(defaultParams));
+      Argument.NotNull(defaultParams);
 
       if (overrideParams != null) {
          defaultParams.Merge(overrideParams);

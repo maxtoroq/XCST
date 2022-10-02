@@ -106,10 +106,7 @@ public class SequenceWriter<TItem> : BaseSequenceWriter<TItem> {
 
    public
    SequenceWriter(ICollection<TItem> buffer) {
-
-      if (buffer is null) throw new ArgumentNullException(nameof(buffer));
-
-      _buffer = buffer;
+      _buffer = buffer ?? throw Argument.Null(buffer);
    }
 
    public override void
@@ -204,7 +201,7 @@ public static class SequenceWriter {
          ISequenceWriter<TBase> output,
          Func<TDerived>? forTypeInference = null) where TDerived : TBase {
 
-      if (output is null) throw new ArgumentNullException(nameof(output));
+      Argument.NotNull(output);
 
       return output as ISequenceWriter<TDerived>
          ?? new DerivedSequenceWriter<TDerived, TBase>(output);
@@ -215,7 +212,7 @@ public static class SequenceWriter {
          ISequenceWriter<TBase> output,
          Func<TDerived>? forTypeInference = null) {
 
-      if (output is null) throw new ArgumentNullException(nameof(output));
+      Argument.NotNull(output);
 
       if (output is ISequenceWriter<TDerived> derivedWriter) {
          return derivedWriter;
@@ -254,10 +251,7 @@ class DerivedSequenceWriter<TDerived, TBase> : BaseSequenceWriter<TDerived> wher
 
    public
    DerivedSequenceWriter(ISequenceWriter<TBase> baseWriter) {
-
-      if (baseWriter is null) throw new ArgumentNullException(nameof(baseWriter));
-
-      _output = baseWriter;
+      _output = baseWriter ?? throw Argument.Null(baseWriter);
    }
 
    public override void
@@ -295,10 +289,7 @@ class CastedSequenceWriter<TDerived, TBase> : BaseSequenceWriter<TDerived> where
 
    public
    CastedSequenceWriter(ISequenceWriter<TBase> baseWriter) {
-
-      if (baseWriter is null) throw new ArgumentNullException(nameof(baseWriter));
-
-      _output = baseWriter;
+      _output = baseWriter ?? throw Argument.Null(baseWriter);
    }
 
    public override void
@@ -340,10 +331,7 @@ class StreamedSequenceWriter<TItem> : BaseSequenceWriter<TItem> {
 
    public
    StreamedSequenceWriter(Action<TItem> outputFn) {
-
-      if (outputFn is null) throw new ArgumentNullException(nameof(outputFn));
-
-      _outputFn = outputFn;
+      _outputFn = outputFn ?? throw Argument.Null(outputFn);
    }
 
    public override void

@@ -41,10 +41,7 @@ public partial class SimpleContent {
 
    public
    SimpleContent(Func<IFormatProvider> formatProviderFn) {
-
-      if (formatProviderFn is null) throw new ArgumentNullException(nameof(formatProviderFn));
-
-      _formatProviderFn = formatProviderFn;
+      _formatProviderFn = formatProviderFn ?? throw Argument.Null(formatProviderFn);
    }
 
    public string

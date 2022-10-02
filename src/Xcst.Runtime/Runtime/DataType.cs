@@ -26,7 +26,7 @@ public static class DataType {
    public static bool
    Boolean(string value) {
 
-      if (value is null) throw new ArgumentNullException(nameof(value));
+      Argument.NotNull(value);
 
       switch (SimpleContent.Trim(value)) {
          case "yes":
@@ -49,7 +49,7 @@ public static class DataType {
    public static decimal
    Decimal(string value) {
 
-      if (value is null) throw new ArgumentNullException(nameof(value));
+      Argument.NotNull(value);
 
       var style = NumberStyles.AllowLeadingSign
          | NumberStyles.AllowTrailingSign
@@ -61,7 +61,7 @@ public static class DataType {
    public static int
    Integer(string value) {
 
-      if (value is null) throw new ArgumentNullException(nameof(value));
+      Argument.NotNull(value);
 
       var style = NumberStyles.AllowLeadingSign;
 
@@ -71,7 +71,7 @@ public static class DataType {
    public static string?
    ItemSeparator(string value) {
 
-      if (value is null) throw new ArgumentNullException(nameof(value));
+      Argument.NotNull(value);
 
       if (value == "#absent") {
          return null;
@@ -83,7 +83,8 @@ public static class DataType {
    public static XName
    QName(string localOrUriQualifiedName) {
 
-      if (localOrUriQualifiedName is null) throw new ArgumentNullException(nameof(localOrUriQualifiedName));
+      Argument.NotNull(localOrUriQualifiedName);
+
       if (System.String.IsNullOrWhiteSpace(localOrUriQualifiedName)) throw new ArgumentException($"{nameof(localOrUriQualifiedName)} cannot be empty.", nameof(localOrUriQualifiedName));
 
       if (localOrUriQualifiedName.Length > 2
@@ -116,7 +117,7 @@ public static class DataType {
    internal static string
    QNameString(XName name) {
 
-      string s = name.ToString();
+      var s = name.ToString();
 
       if (s[0] == '{') {
          s = "Q" + s;
@@ -128,7 +129,7 @@ public static class DataType {
    public static bool
    SortOrderDescending(string order) {
 
-      if (order is null) throw new ArgumentNullException(nameof(order));
+      Argument.NotNull(order);
 
       switch (SimpleContent.Trim(order)) {
          case "ascending":
@@ -145,7 +146,7 @@ public static class DataType {
    public static XmlStandalone
    Standalone(string value) {
 
-      if (value is null) throw new ArgumentNullException(nameof(value));
+      Argument.NotNull(value);
 
       if (SimpleContent.Trim(value) == "omit") {
          return XmlStandalone.Omit;

@@ -28,7 +28,7 @@ public class OutputParameters {
    public object?
    this[XName name] {
       get {
-         if (name is null) throw new ArgumentNullException(nameof(name));
+         Argument.NotNull(name);
 
          if (_parameters.TryGetValue(name, out var value)) {
             return value;
@@ -37,7 +37,7 @@ public class OutputParameters {
          return null;
       }
       set {
-         if (name is null) throw new ArgumentNullException(nameof(name));
+         Argument.NotNull(name);
 
          if (String.IsNullOrEmpty(name.NamespaceName)) {
 
@@ -195,7 +195,7 @@ public class OutputParameters {
    public
    OutputParameters(OutputParameters parameters) {
 
-      if (parameters is null) throw new ArgumentNullException(nameof(parameters));
+      Argument.NotNull(parameters);
 
       Merge(parameters);
    }
@@ -288,7 +288,7 @@ public class OutputParameters {
       public static XName
       Parse(string name) =>
          name switch {
-            null => throw new ArgumentNullException(nameof(name)),
+            null => throw Argument.Null(name),
             "byte-order-mark" => ByteOrderMark,
             "cdata-section-elements" => CdataSectionElements,
             "doctype-public" => DoctypePublic,
@@ -331,7 +331,7 @@ public class OutputParameters {
       internal static XName
       Parse(string method) =>
          method switch {
-            null => throw new ArgumentNullException(nameof(method)),
+            null => throw Argument.Null(method),
             "xml" => Xml,
             "html" => Html,
             "text" => Text,

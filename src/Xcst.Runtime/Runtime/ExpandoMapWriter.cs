@@ -53,7 +53,7 @@ public class ExpandoMapWriter : MapWriter {
    public
    ExpandoMapWriter(ISequenceWriter<ExpandoObject> output) {
 
-      if (output is null) throw new ArgumentNullException(nameof(output));
+      Argument.NotNull(output);
 
       Debug.Assert(output.TryCastToDocumentWriter() is null);
 
@@ -63,7 +63,7 @@ public class ExpandoMapWriter : MapWriter {
    public
    ExpandoMapWriter(ISequenceWriter<object> output) {
 
-      if (output is null) throw new ArgumentNullException(nameof(output));
+      Argument.NotNull(output);
 
       Debug.Assert(output.TryCastToDocumentWriter() is null);
 
@@ -194,7 +194,7 @@ public class ExpandoMapWriter : MapWriter {
    public override void
    WriteStartMapEntry(string key) {
 
-      if (key is null) throw new ArgumentNullException(nameof(key));
+      Argument.NotNull(key);
 
       _ = Peek<IExpandoMap>()
          ?? throw new RuntimeException("An entry can only be written to a map.");

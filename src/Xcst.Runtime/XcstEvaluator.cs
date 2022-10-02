@@ -42,7 +42,7 @@ public class XcstEvaluator {
    public static XcstEvaluator
    Using(object package) {
 
-      if (package is null) throw new ArgumentNullException(nameof(package));
+      Argument.NotNull(package);
 
       if (package is IXcstPackage pkg) {
          return new XcstEvaluator(pkg);
@@ -54,23 +54,20 @@ public class XcstEvaluator {
    public static XcstEvaluator<TPackage>
    Using<TPackage>(TPackage package) where TPackage : IXcstPackage {
 
-      if (package is null) throw new ArgumentNullException(nameof(package));
+      Argument.NotNull(package);
 
       return new XcstEvaluator<TPackage>(package);
    }
 
    internal
    XcstEvaluator(IXcstPackage package) {
-
-      if (package is null) throw new ArgumentNullException(nameof(package));
-
-      _package = package;
+      _package = package ?? throw Argument.Null(package);
    }
 
    public XcstEvaluator
    WithParam(string name, object? value) {
 
-      if (name is null) throw new ArgumentNullException(nameof(name));
+      Argument.NotNull(name);
 
       // since there's no way to un-prime, a second prime would still use the values
       // of the first prime (for parameters not specified in the second prime)
@@ -145,7 +142,7 @@ public class XcstEvaluator {
    public XcstTemplateEvaluator
    CallTemplate(XName name) {
 
-      if (name is null) throw new ArgumentNullException(nameof(name));
+      Argument.NotNull(name);
 
       _paramsLocked = true;
 
@@ -216,7 +213,7 @@ public class XcstEvaluator<TPackage> : XcstEvaluator
    public XcstOutputter
    CallFunction(Action<TPackage> functionCaller) {
 
-      if (functionCaller is null) throw new ArgumentNullException(nameof(functionCaller));
+      Argument.NotNull(functionCaller);
 
       _paramsLocked = true;
 
@@ -229,7 +226,7 @@ public class XcstEvaluator<TPackage> : XcstEvaluator
    public XcstOutputter<TResult>
    CallFunction<TResult>(Func<TPackage, TResult> functionCaller) {
 
-      if (functionCaller is null) throw new ArgumentNullException(nameof(functionCaller));
+      Argument.NotNull(functionCaller);
 
       _paramsLocked = true;
 
@@ -265,23 +262,16 @@ public class XcstTemplateEvaluator {
    internal
    XcstTemplateEvaluator(IXcstPackage package, Func<PrimingContext> primeFn, XName name) {
 
-      if (package is null) throw new ArgumentNullException(nameof(package));
-      if (primeFn is null) throw new ArgumentNullException(nameof(primeFn));
-      if (name is null) throw new ArgumentNullException(nameof(name));
-
-      _package = package;
-      _primeFn = primeFn;
-      _name = name;
+      _package = package ?? throw Argument.Null(package);
+      _primeFn = primeFn ?? throw Argument.Null(primeFn);
+      _name = name ?? throw Argument.Null(name);
    }
 
    internal
    XcstTemplateEvaluator(IXcstPackage package, Func<PrimingContext> primeFn, object? input, XName? mode) {
 
-      if (package is null) throw new ArgumentNullException(nameof(package));
-      if (primeFn is null) throw new ArgumentNullException(nameof(primeFn));
-
-      _package = package;
-      _primeFn = primeFn;
+      _package = package ?? throw Argument.Null(package);
+      _primeFn = primeFn ?? throw Argument.Null(primeFn);
       _input = input;
       _mode = mode;
    }
@@ -289,7 +279,7 @@ public class XcstTemplateEvaluator {
    public XcstTemplateEvaluator
    WithParam(string name, object? value, bool tunnel = false) {
 
-      if (name is null) throw new ArgumentNullException(nameof(name));
+      Argument.NotNull(name);
 
       if (tunnel) {
          _tunnelParameters[name] = value;
@@ -373,7 +363,8 @@ public class XcstTemplateEvaluator {
    public XcstOutputter
    OutputTo(Uri file) {
 
-      if (file is null) throw new ArgumentNullException(nameof(file));
+      Argument.NotNull(file);
+
       if (!file.IsAbsoluteUri) throw new ArgumentException("file must be an absolute URI.", nameof(file));
       if (!file.IsFile) throw new ArgumentException("file must be a file URI", nameof(file));
 
@@ -383,7 +374,7 @@ public class XcstTemplateEvaluator {
    public XcstOutputter
    OutputTo(Stream output) {
 
-      if (output is null) throw new ArgumentNullException(nameof(output));
+      Argument.NotNull(output);
 
       return CreateOutputter(WriterFactory.CreateWriter(output, null));
    }
@@ -391,7 +382,7 @@ public class XcstTemplateEvaluator {
    public XcstOutputter
    OutputTo(TextWriter output) {
 
-      if (output is null) throw new ArgumentNullException(nameof(output));
+      Argument.NotNull(output);
 
       return CreateOutputter(WriterFactory.CreateWriter(output, null));
    }
@@ -399,7 +390,7 @@ public class XcstTemplateEvaluator {
    public XcstOutputter
    OutputTo(XmlWriter output) {
 
-      if (output is null) throw new ArgumentNullException(nameof(output));
+      Argument.NotNull(output);
 
       return CreateOutputter(WriterFactory.CreateWriter(output, null));
    }
@@ -407,7 +398,7 @@ public class XcstTemplateEvaluator {
    public XcstOutputter
    OutputTo(XcstWriter output) {
 
-      if (output is null) throw new ArgumentNullException(nameof(output));
+      Argument.NotNull(output);
 
       return CreateOutputter(WriterFactory.CreateWriter(output));
    }
@@ -415,7 +406,7 @@ public class XcstTemplateEvaluator {
    public XcstOutputter
    OutputTo<TItem>(ICollection<TItem> output) {
 
-      if (output is null) throw new ArgumentNullException(nameof(output));
+      Argument.NotNull(output);
 
       var seqWriter = new SequenceWriter<TItem>(output);
 
@@ -425,7 +416,7 @@ public class XcstTemplateEvaluator {
    public XcstOutputter
    OutputTo<TItem>(Action<TItem> outputFn) {
 
-      if (outputFn is null) throw new ArgumentNullException(nameof(outputFn));
+      Argument.NotNull(outputFn);
 
       var seqWriter = new StreamedSequenceWriter<TItem>(outputFn);
 
@@ -437,7 +428,7 @@ public class XcstTemplateEvaluator {
    public XcstOutputter
    OutputToRaw<TBase>(ISequenceWriter<TBase> output) {
 
-      if (output is null) throw new ArgumentNullException(nameof(output));
+      Argument.NotNull(output);
 
       var tmplFn = TemplateFunction(output);
 
@@ -559,13 +550,9 @@ public class XcstOutputter {
    internal
    XcstOutputter(IXcstPackage package, Func<PrimingContext> primeFn, Action<OutputParameters?, bool> executionFn) {
 
-      if (package is null) throw new ArgumentNullException(nameof(package));
-      if (primeFn is null) throw new ArgumentNullException(nameof(primeFn));
-      if (executionFn is null) throw new ArgumentNullException(nameof(executionFn));
-
-      _package = package;
-      _primeFn = primeFn;
-      _executionFn = executionFn;
+      _package = package ?? throw Argument.Null(package);
+      _primeFn = primeFn ?? throw Argument.Null(primeFn);
+      _executionFn = executionFn ?? throw Argument.Null(executionFn);
    }
 
    public XcstOutputter

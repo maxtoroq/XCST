@@ -97,7 +97,7 @@ public class XcstCompiler {
    public void
    RegisterExtension(Func<IXcstPackage> extensionFactory) {
 
-      if (extensionFactory is null) throw new ArgumentNullException(nameof(extensionFactory));
+      Argument.NotNull(extensionFactory);
 
       _extensionFactories.Add(extensionFactory);
    }
@@ -117,7 +117,7 @@ public class XcstCompiler {
    public void
    AddPackageLibrary(Stream assemblySource) {
 
-      if (assemblySource is null) throw new ArgumentNullException(nameof(assemblySource));
+      Argument.NotNull(assemblySource);
 
       MetadataManifestReader.ReadAssembly(assemblySource, CreatePackageLibraryManifestWriter);
    }
@@ -145,7 +145,7 @@ public class XcstCompiler {
    public CompileResult
    Compile(Uri file) {
 
-      if (file is null) throw new ArgumentNullException(nameof(file));
+      Argument.NotNull(file);
 
       var resolver = GetModuleResolverOrDefault(this.ModuleResolver);
 

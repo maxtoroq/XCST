@@ -30,7 +30,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="..\Argument.cs" Link="Argument.cs" />
     <Compile Include="..\CompilerServices.cs" Link="CompilerServices.cs" />
+    <Compile Include="..\Diagnostics.cs" Link="Diagnostics.cs" />
     <Compile Include="..\XmlNamespaces.cs" Link="XmlNamespaces.cs" />
     <Content Include="..\..\schemas\xcst.rng" Visible="false" PackagePath="schemas" />
     <Content Include="..\..\schemas\xcst.xsd" Visible="false" PackagePath="schemas" />

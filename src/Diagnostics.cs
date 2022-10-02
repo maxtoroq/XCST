@@ -20,6 +20,9 @@ namespace System.Diagnostics {
 #if NETFRAMEWORK || NETCOREAPP2_0 || NETSTANDARD2_0
 namespace System.Diagnostics.CodeAnalysis {
 
+   [AttributeUsage(AttributeTargets.Method, Inherited = false)]
+   sealed class DoesNotReturnAttribute : Attribute { }
+
    [AttributeUsage(AttributeTargets.Parameter, Inherited = false)]
    sealed class DoesNotReturnIfAttribute : Attribute {
 
