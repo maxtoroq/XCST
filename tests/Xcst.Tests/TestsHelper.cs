@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -33,7 +34,7 @@ static class TestsHelper {
          decimal languageVersion = -1m, string? disableWarning = null, string? warningAsError = null,
          Type? extension = default) {
 
-      var printCode = _printCode;
+      var printCode = _printCode || Debugger.IsAttached;
       var packageUri = new Uri(packageFile, UriKind.Absolute);
 
       CompileResult xcstResult;
