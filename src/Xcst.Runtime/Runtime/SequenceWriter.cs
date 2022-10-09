@@ -38,8 +38,17 @@ public abstract class BaseSequenceWriter<TItem> : ISequenceWriter<TItem> {
    }
 
    public void
-   WriteObject<TDerived>(IEnumerable<TDerived>? value) where TDerived : TItem =>
+   WriteObject<TDerived>(IEnumerable<TDerived>? value) where TDerived : TItem {
+
+      if (value is string
+         && value is TItem item) {
+
+         WriteObject(item);
+         return;
+      }
+
       WriteObject(value as IEnumerable<TItem> ?? value?.Cast<TItem>());
+   }
 
    public void
    WriteString(TItem text) => WriteObject(text);
@@ -65,8 +74,17 @@ public abstract class BaseSequenceWriter<TItem> : ISequenceWriter<TItem> {
    }
 
    public void
-   CopyOf<TDerived>(IEnumerable<TDerived>? value) where TDerived : TItem =>
+   CopyOf<TDerived>(IEnumerable<TDerived>? value) where TDerived : TItem {
+
+      if (value is string
+         && value is TItem item) {
+
+         CopyOf(item);
+         return;
+      }
+
       CopyOf(value as IEnumerable<TItem> ?? value?.Cast<TItem>());
+   }
 
    public virtual XcstWriter?
    TryCastToDocumentWriter() => null;

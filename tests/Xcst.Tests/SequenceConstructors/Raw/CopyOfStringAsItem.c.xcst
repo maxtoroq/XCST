@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:template name='c:initial-template'>
+
+      <c:variable name='a' as='object[]'>
+         <c:copy-of value='"hello"'/>
+         <c:call-template name='world'/>
+      </c:variable>
+
+      <c:void value='Assert.AreEqual(2, a.Length)'/>
+      <c:void value='Assert.AreEqual("hello", a[0])'/>
+      <c:void value='Assert.AreEqual("world", a[1])'/>
+
+      <c:variable name='b' as='char[]'>
+         <c:copy-of value='"hello"'/>
+      </c:variable>
+
+      <c:void value='Assert.AreEqual(5, b.Length)'/>
+      <c:void value='Assert.AreEqual(&apos;h&apos;, b[0])'/>
+   </c:template>
+
+   <c:template name='world'>
+      <c:copy-of value='"world"'/>
+   </c:template>
+
+</c:module>

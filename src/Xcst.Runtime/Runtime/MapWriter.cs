@@ -115,8 +115,15 @@ public abstract partial class MapWriter : ISequenceWriter<object?> {
       WriteObject((IEnumerable?)value);
 
    void
-   ISequenceWriter<object?>.WriteObject<TDerived>(IEnumerable<TDerived>? value) =>
+   ISequenceWriter<object?>.WriteObject<TDerived>(IEnumerable<TDerived>? value) {
+
+      if (value is string) {
+         WriteObject((object?)value);
+         return;
+      }
+
       WriteObject((IEnumerable?)value);
+   }
 
    // string implements IEnumerable, treat as single value
    // IEnumerable<object> works for reference types only, IEnumerable for any type

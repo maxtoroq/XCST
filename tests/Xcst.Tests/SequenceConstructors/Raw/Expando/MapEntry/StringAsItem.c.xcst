@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:template name='c:initial-template'>
+
+      <c:variable name='a' as='dynamic'>
+         <c:map>
+            <c:map-entry key='"foo"'>
+               <c:object value='"hello"'/>
+               <c:call-template name='world'/>
+            </c:map-entry>
+         </c:map>
+      </c:variable>
+
+      <c:void value='Assert.AreEqual(2, a.foo.Length)'/>
+      <c:void value='Assert.AreEqual("hello", a.foo[0])'/>
+      <c:void value='Assert.AreEqual("world", a.foo[1])'/>
+   </c:template>
+
+   <c:template name='world'>
+      <c:object value='"world"'/>
+   </c:template>
+
+</c:module>
