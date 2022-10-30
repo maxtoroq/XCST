@@ -2,10 +2,7 @@
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
    <c:template name='foo'>
-      <c:object>
-         foo
-         <a/>
-      </c:object>
+      <c:object value='"foo"'>foo</c:object>
    </c:template>
 
 </c:module>

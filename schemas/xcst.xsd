@@ -1387,8 +1387,8 @@
       <xs:annotation>
          <xs:documentation>Appends a value to the current output.</xs:documentation>
       </xs:annotation>
-      <xs:complexType>
-         <xs:attribute name="value" use="required" type="c:expression">
+      <xs:complexType mixed="true">
+         <xs:attribute name="value" type="c:expression">
             <xs:annotation>
                <xs:documentation>The value to output. Expression.</xs:documentation>
             </xs:annotation>

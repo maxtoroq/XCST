@@ -1415,10 +1415,13 @@
    <define name="object">
       <element name="object">
          <ann:documentation>Appends a value to the current output.</ann:documentation>
-         <attribute name="value">
-            <ann:documentation>The value to output.</ann:documentation>
-            <ref name="expression"/>
-         </attribute>
+         <choice>
+            <attribute name="value">
+               <ann:documentation>The value to output.</ann:documentation>
+               <ref name="expression"/>
+            </attribute>
+            <text/>
+         </choice>
          <ref name="standard-attributes"/>
       </element>
    </define>
