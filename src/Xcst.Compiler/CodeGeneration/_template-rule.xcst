@@ -112,7 +112,6 @@
 
       <variable name='modes' value='tmplModes
          .Where(p => p != "#all")
-         .Concat(new[] { "#unnamed" })
          .Distinct()'/>
 
       <variable name='defaultMode' value='xcst_default_mode(el)'/>

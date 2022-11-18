@@ -14,6 +14,10 @@
       </output>
    </c:template>
 
+   <c:template match='string s' mode='#default'>
+      <c:value-of value='s + " default"'/>
+   </c:template>
+
    <c:template match='string s' mode='#all'>
       <c:value-of value='s + " all"'/>
    </c:template>
