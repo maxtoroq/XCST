@@ -45,6 +45,7 @@ static class TestsHelper {
 
          if (!correct) {
             // did not fail, caller Assert.Throws will
+            PrintCode(codegenResult.result);
             return;
          }
 
@@ -181,10 +182,15 @@ static class TestsHelper {
       } finally {
 
          if (printCode) {
-            foreach (var unit in xcstResult.CompilationUnits) {
-               Console.WriteLine(unit);
-            }
+            PrintCode(xcstResult);
          }
+      }
+   }
+
+   static void
+   PrintCode(CompileResult result) {
+      foreach (var unit in result.CompilationUnits) {
+         Console.WriteLine(unit);
       }
    }
 
