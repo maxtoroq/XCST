@@ -169,10 +169,10 @@
          <when test='meta.Element(xcst + "item-type") != null'>
             <return>
                <code:method-reference name='{src_item_type_inference_member_name(meta)}'>
-                  <copy-of value='select(meta, xcst + "package-type", code + "type-reference")'/>
-                  <on-empty>
-                     <copy-of value='meta.Parent!.Element(code + "type-reference")'/>
-                  </on-empty>
+                  <variable name='pkgType' value='
+                     select(meta, xcst + "package-type", code + "type-reference").FirstOrDefault()
+                        ?? meta.Parent!.Element(code + "type-reference")'/>
+                  <code:type-reference name='{pkgType.Attribute("name")!.Value}'/>
                </code:method-reference>
             </return>
          </when>
