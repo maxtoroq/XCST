@@ -28,7 +28,7 @@ public static class ApplyTemplates {
       foreach (var item in ValueAsEnumerable(input)) {
 
          var context = TemplateContext.ForApplyTemplatesItem(baseContext, mode, item);
-         modeFn(context);
+         modeFn.Invoke(context);
       }
    }
 
@@ -48,7 +48,7 @@ public static class ApplyTemplates {
          }
 
          var context = TemplateContext.ForApplyTemplatesItem(baseContext, mode, item);
-         modeFn(context);
+         modeFn.Invoke(context);
       }
    }
 

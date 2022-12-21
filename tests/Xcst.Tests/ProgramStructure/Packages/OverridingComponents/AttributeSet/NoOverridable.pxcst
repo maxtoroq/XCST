@@ -1,6 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-<c:package name='NoOverridable' version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
-
-   <c:attribute-set name='foo' visibility='final'/>
-
-</c:package>

@@ -72,7 +72,9 @@ static class SequenceConstructor {
    public static void
    EndOfConstructor(Stack<State>? _trackStack) {
 
-      if (_trackStack is null) {
+      if (_trackStack is null
+         || _trackStack.Count == 0) {
+
          // See c:return
          return;
       }

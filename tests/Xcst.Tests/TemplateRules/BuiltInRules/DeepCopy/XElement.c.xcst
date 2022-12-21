@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xcst-test language-version="7" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:import-namespace ns='System.Xml.Linq'/>
+
+   <c:mode name='foo' on-no-match='deep-copy'/>
+
+   <c:variable name='sourceEl' as='XElement'>
+      <foo bar='1'>
+         <c:processing-instruction name='pi'>value</c:processing-instruction>
+         <baz>text</baz>
+         <c:comment>comment</c:comment>
+      </foo>
+   </c:variable>
+
+   <c:template name='c:initial-template'>
+      <c:apply-templates value='this.sourceEl' mode='foo'/>
+   </c:template>
+
+   <c:template match='XElement el &amp;&amp; el.Name == "baz"' mode='foo'>
+      <c:message terminate='yes'/>
+   </c:template>
+
+   <c:template name='expected'>
+      <foo bar='1'>
+         <c:processing-instruction name='pi'>value</c:processing-instruction>
+         <baz>text</baz>
+         <c:comment>comment</c:comment>
+      </foo>
+   </c:template>
+
+</c:module>

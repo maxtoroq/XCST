@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:package name='OverrideNoMatch' version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:mode name='foo' visibility='public'/>
+
+   <c:template match='int i' mode='foo'>
+      <c:value-of value='"int " + i.ToString()'/>
+   </c:template>
+
+   <c:template name='foo' visibility='public'>
+      <foo>
+         <c:apply-templates value='5' mode='foo'/>
+      </foo>
+   </c:template>
+
+</c:package>

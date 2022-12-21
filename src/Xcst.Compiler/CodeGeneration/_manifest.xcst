@@ -62,6 +62,12 @@
          </message>
       </if>
 
+      <if test='!(nameAttr is null || el.Attribute("mode") is null)'>
+         <message terminate='yes' error-code='XCST9103' error-data='src_error_object(el)' transform-text='trim'>
+            The 'mode' attribute should be omitted when the 'name' attribute is used.
+         </message>
+      </if>
+
       <if test='!(matchAttr is null || el.Attribute("visibility") is null)'>
          <message terminate='yes' error-code='XCST9102' error-data='src_error_object(el)' transform-text='trim'>
             The 'visibility' attribute should be omitted when the 'match' attribute is used.
@@ -84,6 +90,7 @@
 
    <template name='xcst:overridden-component' as='XElement?'>
       <param name='el' as='XElement' required='yes'/>
+      <param name='mode' as='string?'/>
       <param name='usedPackages' as='XElement[]' tunnel='yes' required='yes'/>
       <param name='@namespace' as='string' tunnel='yes' required='yes'/>
 
@@ -91,7 +98,10 @@
          <variable name='pkg' value='usedPackages.Single(p =>
             src_qualified_type_name(select(p, code + "type-reference").First()) ==
                src_resolve_package_name(el.Parent!.Parent!, @namespace))' as='XElement'/>
-         <variable name='meta' value='select(pkg, xcst).FirstOrDefault(p => xcst_homonymous(p, el))'/>
+         <variable name='meta' value='select(pkg, xcst)
+            .FirstOrDefault(p => (mode != null) ?
+               p.Name == xcst + "mode" &amp;&amp; (string?)p.Attribute("name") == mode
+               : xcst_homonymous(p, el))'/>
          <if test='!(meta != null)'>
             <message terminate='yes' error-code='XTSE3058' error-data='src_error_object(el)' transform-text='trim'>
                Couldn't find a matching component in the used package.
@@ -235,7 +245,7 @@
             <return value='(b.Name.LocalName is "param" or "variable")
                &amp;&amp; xcst_name_equal(a.Attribute("name"), b.Attribute("name"))'/>
          </when>
-         <when test='"template" or "attribute-set"'>
+         <when test='"template" or "attribute-set" or "mode"'>
             <return value='b.Name.LocalName == a.Name.LocalName
                &amp;&amp; a.Attribute("name") is XAttribute aNameAttr
                &amp;&amp; b.Attribute("name") is XAttribute bNameAttr

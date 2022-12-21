@@ -39,8 +39,7 @@
                </code:field>
                <variable name='acceptedPublic' value='select(packageManifest, xcst)
                   .Where(p => p.Attribute("package-id")?.Value == el.Attribute("package-id")!.Value
-                     &amp;&amp; p.Attribute("accepted") is XAttribute acceptedAttr
-                     &amp;&amp; xs_boolean(acceptedAttr)
+                     &amp;&amp; (bool?)p.Attribute("accepted") == true
                      &amp;&amp; p.Attribute("visibility")!.Value != "hidden"
                      &amp;&amp; p.Name != xcst + "type")
                   .OrderByDescending(p => p.Name == xcst + "param" || p.Name == xcst + "variable")'/>
@@ -59,8 +58,7 @@
 
       <variable name='acceptedPublic' value='select(packageManifest, xcst)
          .Where(p => p.Attribute("package-id")?.Value == el.Attribute("package-id")!.Value
-            &amp;&amp; p.Attribute("accepted") is XAttribute acceptedAttr
-            &amp;&amp; xs_boolean(acceptedAttr)
+            &amp;&amp; (bool?)p.Attribute("accepted") == true
             &amp;&amp; p.Attribute("visibility")!.Value != "hidden")
          .ToArray()'/>
 
@@ -78,8 +76,7 @@
          <code:namespace name='{packageManifest.Element(code + "type-reference")!.Attribute("namespace")!.Value}' global='true'>
             <if test='uri?.Length > 0'>
                <apply-templates value='el.Elements(xcst + "type")
-                  .Where(p => p.Attribute("accepted") is XAttribute acceptedAttr
-                     &amp;&amp; xs_boolean(acceptedAttr)
+                  .Where(p => (bool?)p.Attribute("accepted") == true
                      &amp;&amp; p.Attribute("visibility")!.Value != "hidden")' mode='src:import-namespace'/>
 
                <apply-templates value='acceptedPublic.Where(p => p.Name == xcst + "type")'
@@ -157,7 +154,7 @@
    <template match='XNode' mode='src:lib-overriding src:lib-override src:lib-tuple'/>
 
    <template match='XElement el &amp;&amp; el.Name.Namespace == xcst
-         &amp;&amp; el.Name.LocalName is "attribute-set" or "function" or "param" or "template" or "variable"' mode='src:lib-overriding'>
+         &amp;&amp; el.Name.LocalName is "attribute-set" or "function" or "mode" or "param" or "template" or "variable"' mode='src:lib-overriding'>
       <code:field name='{src_overriding_field_name(el)}' visibility='public'>
          <apply-templates value='el' mode='src:lib-overriding-type'/>
       </code:field>

@@ -25,16 +25,36 @@
 
    <variable name='src_all_modes_method_name' value='src_aux_variable("modes")'/>
 
+   <template mode='xcst:validate-top-level' match='XElement el &amp;&amp; el.Name == c + "mode"'/>
+
    <template mode='xcst:validate-top-level' match='XElement el &amp;&amp; el.Name == c + "template" &amp;&amp; el.Attribute("match") != null'/>
 
    <template name='xcst:template-rule'>
       <param name='el' as='XElement' required='yes'/>
       <param name='language' as='string' tunnel='yes' required='yes'/>
 
-      <if test='!(el.Parent!.Name != c + "override")'>
-         <message terminate='yes' error-data='src_error_object(el)' transform-text='trim'>
-            Accepting modes from a used package is not yet supported, therefore a template rule cannot be child of the c:override element.
-         </message>
+      <if test='el.Parent?.Name == c + "override"'>
+         <variable name='modes' value='xcst_template_modes(el)'/>
+         <variable name='mode' value='modes[0]'/>
+
+         <if test='!(modes.Length == 1)'>
+            <message terminate='yes' error-code='XCST9106' error-data='src_error_object(el)' transform-text='trim'>
+               An overriding template rule should specify a single mode.
+            </message>
+         </if>
+
+         <if test='!(mode != "#all")'>
+            <message terminate='yes' error-code='XCST9105' error-data='src_error_object(el)' transform-text='trim'>
+               An overriding template rule cannot use mode='#all'.
+            </message>
+         </if>
+
+         <variable name='overriddenMeta'>
+            <call-template name='xcst:overridden-component'>
+               <with-param name='el' value='el'/>
+               <with-param name='mode' value='mode'/>
+            </call-template>
+         </variable>
       </if>
 
       <variable name='@as' value='
@@ -97,8 +117,110 @@
       </xcst:template-rule>
    </template>
 
-   <template name='xcst:modes'>
-      <param name='el' as='XElement' required='yes'/>
+   <template name='xcst:explicit-modes' as='XElement[]'>
+      <param name='packageEl' as='XElement' required='yes'/>
+      <param name='modules' as='XElement[]' tunnel='yes' required='yes'/>
+      <param name='implicitPackage' as='bool' tunnel='yes' required='yes'/>
+
+      <variable name='defaultMode' value='xcst_default_mode(packageEl)'/>
+      <variable name='rules' value='select(modules, c + "template")
+         .Where(p => p.Attribute("match") != null)
+         .ToArray()'/>
+      <variable name='visibility'>private</variable>
+      <variable name='onNoMatch'>shallow-copy</variable>
+
+      <for-each-group name='grp' in='select(modules.Reverse(), c + "mode")'
+            group-by='p => (p.Attribute("name") is XAttribute nameAttr) ? xcst_EQName(nameAttr) : (object)""'>
+         <sort by='p => p.Key is XName'/>
+
+         <variable name='modeName' value='grp.Key as XName'/>
+         <variable name='name' value='(modeName is null) ? "#unnamed" : xcst_uri_qualified_name(modeName)'/>
+
+         <for-each name='mode' in='grp'>
+
+            <void>
+               <call-template name='xcst:validate-attribs'>
+                  <with-param name='el' value='mode'/>
+                  <with-param name='optional' value='new[] { "name", "on-no-match", "visibility" }'/>
+               </call-template>
+
+               <call-template name='xcst:no-children'>
+                  <with-param name='el' value='mode'/>
+               </call-template>
+            </void>
+
+            <if test='!(modeName is null
+                  || !xcst_is_reserved_namespace(modeName.Namespace))'>
+               <message terminate='yes' error-code='XTSE0080' error-data='src_error_object(mode)' expand-text='yes' transform-text='trim'>
+                  Namespace prefix '{mode.GetPrefixOfNamespace(modeName.Namespace)}' refers to a reserved namespace.
+               </message>
+            </if>
+
+            <if test='!preceding_sibling(mode, mode.Name)
+                  .Select(p => (p.Attribute("name") is XAttribute nameAttr) ? xcst_EQName(nameAttr) : null)
+                  .All(p => (modeName is null) ? p != null : modeName != p)'>
+               <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(mode)' transform-text='trim'>
+                  Duplicate c:mode declaration.
+               </message>
+            </if>
+
+            <if test='mode.Attribute("visibility") is XAttribute visibilityAttr'>
+               <variable name='modeVisibility' value='xcst_visibility(visibilityAttr)'/>
+               <if test='!(modeVisibility != "abstract")'>
+                  <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(mode)' transform-text='trim'>
+                     visibility='abstract' is not a valid value for c:mode declarations.
+                  </message>
+               </if>
+               <if test='!(modeName != null || modeVisibility == "private")'>
+                  <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(mode)' expand-text='yes' transform-text='trim'>
+                     visibility='{modeVisibility}' is not a valid value for unnamed c:mode declarations.
+                  </message>
+               </if>
+               <set ref='visibility' value='modeVisibility'/>
+            </if>
+
+            <if test='mode.Attribute("on-no-match") is XAttribute onNoMatchAttr'>
+               <variable name='modeOnNoMatch' value='xcst_non_string(onNoMatchAttr)'/>
+               <if test='!(modeOnNoMatch is "deep-copy" or "shallow-copy" or "deep-skip" or "shallow-skip" or "text-only-copy" or "fail")'>
+                  <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(mode)' transform-text='trim'>
+                     Invalid value for '{fn_name(onNoMatchAttr)}'. Must be one of (deep-copy|shallow-copy|deep-skip|shallow-skip|text-only-copy|fail).
+                  </message>
+               </if>
+               <set ref='onNoMatch' value='modeOnNoMatch'/>
+            </if>
+         </for-each>
+
+         <variable name='memberName' value='
+            (modeName is null) ?
+               src_aux_variable("mode_")
+               : src_template_method_name(null, modeName, "mode", true)'/>
+
+         <variable name='isDefault' value='name == defaultMode'/>
+         <variable name='initial' value='
+            isDefault
+               || (visibility is "public" or "final")
+               || implicitPackage'/>
+
+         <xcst:mode
+               name='{name}'
+               member-name='{memberName}'
+               declaration-id='{fn_generate_id(grp.First())}'
+               default='{fn_string(isDefault)}'
+               initial='{fn_string(initial)}'
+               on-no-match='{onNoMatch}'
+               visibility='{visibility}'>
+            <variable name='includeModes' value='new[] { name, "#all" }'/>
+            <for-each name='rule' in='rules.Where(p => xcst_template_modes(p)
+                  .Intersect(includeModes).Any())'>
+               <xcst:template-rule-ref id='{fn_generate_id(rule)}'/>
+            </for-each>
+         </xcst:mode>
+      </for-each-group>
+   </template>
+
+   <template name='xcst:implicit-modes' as='XElement[]'>
+      <param name='packageEl' as='XElement' required='yes'/>
+      <param name='explicitModes' as='XElement[]' required='yes'/>
       <param name='modules' as='XElement[]' tunnel='yes' required='yes'/>
       <param name='implicitPackage' as='bool' tunnel='yes' required='yes'/>
 
@@ -114,32 +236,75 @@
          .Where(p => p != "#all")
          .Distinct()'/>
 
-      <variable name='defaultMode' value='xcst_default_mode(el)'/>
+      <variable name='defaultMode' value='xcst_default_mode(packageEl)'/>
 
-      <for-each name='mode' in='modes'>
+      <for-each name='mode' in='modes.Where(p => explicitModes.All(p2 => p2.Attribute("name")!.Value != p))'>
          <variable name='memberName' value='
             (mode == "#unnamed") ?
                src_aux_variable("mode_")
                : src_template_method_name(null, xcst_URIQualifiedName(mode), "mode", true)'/>
          <variable name='isDefault' value='mode == defaultMode'/>
-         <variable name='visibility' value='"private"'/>
-         <variable name='initial' value='
-            isDefault
-               || (visibility is "public" or "final")
-               || implicitPackage'/>
+         <variable name='initial' value='isDefault || implicitPackage'/>
          <variable name='includeModes' value='new[] { mode, "#all" }'/>
+         <variable name='modeRules' value='rules.Where(p => xcst_template_modes(p).Intersect(includeModes).Any())
+            .ToArray()'/>
          <xcst:mode
                name='{mode}'
                member-name='{memberName}'
+               declaration-id='{fn_generate_id(modeRules[0])}'
                default='{fn_string(isDefault)}'
-               visibility='{visibility}'
-               initial='{fn_string(initial)}'>
-            <for-each name='rule' in='rules.Where(p => xcst_template_modes(p)
-                  .Intersect(includeModes).Any())'>
+               initial='{fn_string(initial)}'
+               on-no-match='shallow-copy'
+               visibility='private'>
+            <for-each name='rule' in='modeRules'>
                <xcst:template-rule-ref id='{fn_generate_id(rule)}'/>
             </for-each>
          </xcst:mode>
       </for-each>
+   </template>
+
+   <template name='xcst:overriding-modes' as='XElement[]'>
+      <param name='packageEl' as='XElement' required='yes'/>
+      <param name='modules' as='XElement[]' tunnel='yes' required='yes'/>
+      <param name='@namespace' as='string' tunnel='yes' required='yes'/>
+      <param name='implicitPackage' as='bool' tunnel='yes' required='yes'/>
+
+      <variable name='defaultMode' value='xcst_default_mode(packageEl)'/>
+
+      <for-each-group name='grp' in='select(modules, c + "use-package")
+            .Where(p => select(p, c + "override", c + "template").Where(p2 => p2.Attribute("match") != null).Any())'
+            group-by='p => src_resolve_package_name(p, @namespace)'>
+
+         <for-each-group name='rules' in='select(grp, c + "override", c + "template").Where(p => p.Attribute("match") != null)'
+               group-by='p => xcst_template_modes(p)[0]'>
+
+            <variable name='mode' value='rules.Key'/>
+            <variable name='first' value='rules.First()'/>
+            <variable name='memberName' value='src_template_method_name(null, xcst_URIQualifiedName(mode), "mode", true)'/>
+            <variable name='isDefault' value='mode == defaultMode'/>
+            <variable name='initial' value='isDefault || implicitPackage'/>
+
+            <variable name='overriddenMeta'>
+               <call-template name='xcst:overridden-component'>
+                  <with-param name='el' value='first'/>
+                  <with-param name='mode' value='mode'/>
+               </call-template>
+            </variable>
+
+            <xcst:mode
+                  name='{mode}'
+                  member-name='{memberName}'
+                  declaration-id='{fn_generate_id(first)}'
+                  default='{fn_string(isDefault)}'
+                  initial='{fn_string(initial)}'
+                  overrides='{fn_generate_id(overriddenMeta!)}'
+                  visibility='private'>
+               <for-each name='rule' in='rules'>
+                  <xcst:template-rule-ref id='{fn_generate_id(rule)}'/>
+               </for-each>
+            </xcst:mode>
+         </for-each-group>
+      </for-each-group>
    </template>
 
    <function name='xcst_default_mode' as='string'>
@@ -195,6 +360,138 @@
          </otherwise>
       </choose>
    </function>
+
+
+   <!-- ## Library Package -->
+
+   <template mode='src:member' match='XElement el &amp;&amp; el.Name == xcst + "mode"
+      &amp;&amp; (bool?)el.Attribute("accepted") == true'/>
+
+   <template mode='src:lib-overriding-type' match='XElement el &amp;&amp; el.Name == xcst + "mode"'>
+      <code:type-reference name='Action' namespace='System'>
+         <code:type-arguments>
+            <copy-of value='src_template_context(el).Element(code + "type-reference")'/>
+            <copy-of value='src_template_output(el).Element(code + "type-reference")'/>
+            <code:type-reference name='Int32' namespace='System'/>
+         </code:type-arguments>
+      </code:type-reference>
+   </template>
+
+   <template  mode='src:lib-override' match='XElement el &amp;&amp; el.Name == xcst + "mode"'>
+
+      <variable name='tbaseParam'>
+         <code:parameter name='TBase'/>
+      </variable>
+
+      <variable name='auxMeta'>
+         <xcst:aux-method>
+            <xcst:item-type>
+               <code:type-reference name='{tbaseParam.Attribute("name")!.Value}'/>
+            </xcst:item-type>
+         </xcst:aux-method>
+      </variable>
+
+      <variable name='context' value='src_template_context(el)'/>
+      <variable name='output' value='src_template_output(auxMeta)'/>
+
+      <variable name='offsetParam'>
+         <code:variable-reference name='{src_aux_variable("match_offset")}'/>
+      </variable>
+
+      <code:method name='{el.Attribute("member-name")!.Value}' visibility='public' extensibility='override'>
+         <code:type-parameters>
+            <copy-of value='tbaseParam'/>
+         </code:type-parameters>
+         <code:parameters>
+            <code:parameter name='{select(context, src + "reference", code).First().Attribute("name")!.Value}'>
+               <copy-of value='context.Element(code + "type-reference")'/>
+            </code:parameter>
+            <code:parameter name='{select(output, src + "reference", code).First().Attribute("name")!.Value}'>
+               <copy-of value='output.Element(code + "type-reference")'/>
+            </code:parameter>
+            <code:parameter name='{offsetParam.Attribute("name")!.Value}'>
+               <code:type-reference name='Int32' namespace='System'/>
+               <code:int value='0'/>
+            </code:parameter>
+         </code:parameters>
+         <code:block>
+            <code:method-call name='{src_overriding_field_name(el)}'>
+               <code:this-reference/>
+               <code:arguments>
+                  <copy-of value='select(context, src + "reference", code)'/>
+                  <code:method-call name='AdjustWriterDynamically'>
+                     <copy-of value='src_helper_type("SequenceWriter")'/>
+                     <code:arguments>
+                        <copy-of value='select(output, src + "reference", code)'/>
+                        <copy-of value='src_item_type_inference_member_ref(el)'/>
+                     </code:arguments>
+                  </code:method-call>
+                  <copy-of value='offsetParam'/>
+               </code:arguments>
+            </code:method-call>
+         </code:block>
+      </code:method>
+   </template>
+
+   <template mode='src:lib-original' match='XElement el &amp;&amp; el.Name == xcst + "mode"'>
+
+      <variable name='tbaseParam'>
+         <code:parameter name='TBase'/>
+      </variable>
+
+      <variable name='auxMeta'>
+         <xcst:aux-method>
+            <xcst:item-type>
+               <code:type-reference name='{tbaseParam.Attribute("name")!.Value}'/>
+            </xcst:item-type>
+         </xcst:aux-method>
+      </variable>
+
+      <variable name='context' value='src_template_context(el)'/>
+      <variable name='output' value='src_template_output(auxMeta)'/>
+
+      <variable name='offsetParam'>
+         <code:variable-reference name='{src_aux_variable("match_offset")}'/>
+      </variable>
+
+      <code:method name='{src_original_member_name(el)}' visibility='internal'>
+         <code:type-parameters>
+            <copy-of value='tbaseParam'/>
+         </code:type-parameters>
+         <code:parameters>
+            <code:parameter name='{select(context, src + "reference", code).First().Attribute("name")!.Value}'>
+               <copy-of value='context.Element(code + "type-reference")'/>
+            </code:parameter>
+            <code:parameter name='{select(output, src + "reference", code).First().Attribute("name")!.Value}'>
+               <copy-of value='output.Element(code + "type-reference")'/>
+            </code:parameter>
+            <code:parameter name='{offsetParam.Attribute("name")!.Value}'>
+               <code:type-reference name='Int32' namespace='System'/>
+            </code:parameter>
+         </code:parameters>
+         <code:block>
+            <code:method-call name='{el.Attribute("member-name")!.Value}'>
+               <code:base-reference/>
+               <code:arguments>
+                  <copy-of value='select(context, src + "reference", code)'/>
+                  <copy-of value='select(output, src + "reference", code)'/>
+                  <copy-of value='offsetParam'/>
+               </code:arguments>
+            </code:method-call>
+         </code:block>
+      </code:method>
+   </template>
+
+
+   <!-- ## Top Package -->
+
+   <template mode='src:lib-overriding-value' match='XElement el &amp;&amp; el.Name == xcst + "mode"'>
+      <param name='meta' as='XElement' required='yes'/>
+
+      <code:method-reference name='{meta.Attribute("member-name")!.Value}'>
+         <code:this-reference/>
+      </code:method-reference>
+   </template>
 
    <template match='XElement el &amp;&amp; el.Name == c + "template" &amp;&amp; el.Attribute("match") is XAttribute matchAttr' mode='src:member'>
       <param name='packageManifest' as='XElement' tunnel='yes' required='yes'/>
@@ -315,7 +612,8 @@
       </if>
    </template>
 
-   <template match='XElement el &amp;&amp; el.Name == xcst + "mode"' mode='src:member'>
+   <template match='XElement el &amp;&amp; el.Name == xcst + "mode"
+         &amp;&amp; !((bool?)el.Attribute("accepted") ?? false)' mode='src:member'>
       <param name='packageManifest' as='XElement' tunnel='yes' required='yes'/>
 
       <variable name='tbaseParam'>
@@ -335,10 +633,30 @@
       <variable name='visibility' value='el.Attribute("visibility")!.Value'/>
       <variable name='publicMember' value='visibility is "public" or "final"'/>
 
+      <variable name='offsetParam'>
+         <code:variable-reference name='{src_aux_variable("match_offset")}'/>
+      </variable>
+
       <code:method name='{el.Attribute("member-name")!.Value}'
             visibility='{(publicMember ? "public" : "private")}'
             extensibility='{(visibility == "public" ? "virtual" : "#default")}'>
          <code:attributes>
+            <if test='publicMember'>
+               <variable name='qname' value='xcst_EQName(el.Attribute("name")!)!'/>
+               <code:attribute>
+                  <copy-of value='src_component_attr_type'/>
+                  <code:arguments>
+                     <code:int value='7'/>
+                  </code:arguments>
+                  <code:initializer>
+                     <code:member-initializer name='Name'>
+                        <code:string verbatim='true'>
+                           <value-of value='xcst_uri_qualified_name(qname)'/>
+                        </code:string>
+                     </code:member-initializer>
+                  </code:initializer>
+               </code:attribute>
+            </if>
             <call-template name='src:editor-browsable-never'/>
          </code:attributes>
          <code:type-parameters>
@@ -351,12 +669,17 @@
             <code:parameter name='{select(output, src + "reference", code).First().Attribute("name")!.Value}'>
                <copy-of value='output.Element(code + "type-reference")'/>
             </code:parameter>
+            <code:parameter name='{offsetParam.Attribute("name")!.Value}'>
+               <code:type-reference name='Int32' namespace='System'/>
+               <code:int value='0'/>
+            </code:parameter>
          </code:parameters>
          <code:block>
             <variable name='rules' value='el
                .Elements(xcst + "template-rule-ref")
                .Reverse()
                .ToArray()'/>
+            <variable name='overridesAttr' value='el.Attribute("overrides")'/>
             <if test='rules.Length > 0'>
                <variable name='indexRef'>
                   <code:property-reference name='MatchIndex'>
@@ -378,7 +701,10 @@
                   <code:if>
                      <code:equal>
                         <copy-of value='indexRef'/>
-                        <code:int value='{fn_string(i)}'/>
+                        <code:add>
+                           <code:int value='{fn_string(i)}'/>
+                           <copy-of value='offsetParam'/>
+                        </code:add>
                      </code:equal>
                      <code:block>
                         <code:method-call>
@@ -397,7 +723,8 @@
                               <code:return/>
                            </code:block>
                         </code:if>
-                        <if test='i &lt; rules.Length - 1'>
+                        <if test='i &lt; rules.Length - 1
+                              || overridesAttr != null'>
                            <code:method-call name='NextMatch'>
                               <copy-of value='select(context, src + "reference", code)'/>
                            </code:method-call>
@@ -406,17 +733,101 @@
                   </code:if>
                </for-each>
             </if>
-            <code:method-call name='Copy'>
-               <copy-of value='src_helper_type("ShallowCopy")'/>
-               <code:arguments>
-                  <code:this-reference/>
-                  <code:method-reference name='{el.Attribute("member-name")!.Value}'>
-                     <code:this-reference/>
-                  </code:method-reference>
-                  <copy-of value='select(context, src + "reference", code)'/>
-                  <copy-of value='select(output, src + "reference", code)'/>
-               </code:arguments>
-            </code:method-call>
+            <choose>
+               <when test='overridesAttr != null'>
+                  <variable name='originalMeta' value='packageManifest
+                     .Elements(xcst + "mode")
+                     .First(p => p.Attribute("id")!.Value == overridesAttr.Value)'/>
+                  <code:method-call>
+                     <copy-of value='src_original_member(originalMeta)'/>
+                     <code:arguments>
+                        <copy-of value='select(context, src + "reference", code)'/>
+                        <copy-of value='select(output, src + "reference", code)'/>
+                        <code:add>
+                           <copy-of value='offsetParam'/>
+                           <code:int value='{rules.Length}'/>
+                        </code:add>
+                     </code:arguments>
+                  </code:method-call>
+               </when>
+               <otherwise>
+                  <switch value='el.Attribute("on-no-match")!.Value'>
+                     <when test='"deep-copy"'>
+                        <code:method-call name='Copy'>
+                           <copy-of value='src_helper_type("DeepCopy")'/>
+                           <code:arguments>
+                              <code:this-reference/>
+                              <copy-of value='select(context, src + "reference", code)'/>
+                              <copy-of value='select(output, src + "reference", code)'/>
+                           </code:arguments>
+                        </code:method-call>
+                     </when>
+                     <when test='"shallow-copy"'>
+                        <code:method-call name='Copy'>
+                           <copy-of value='src_helper_type("ShallowCopy")'/>
+                           <code:arguments>
+                              <code:this-reference/>
+                              <code:method-reference name='{el.Attribute("member-name")!.Value}'>
+                                 <code:this-reference/>
+                              </code:method-reference>
+                              <copy-of value='select(context, src + "reference", code)'/>
+                              <copy-of value='select(output, src + "reference", code)'/>
+                              <copy-of value='offsetParam'/>
+                           </code:arguments>
+                        </code:method-call>
+                     </when>
+                     <when test='"deep-skip"'>
+                        <code:method-call name='Skip'>
+                           <copy-of value='src_helper_type("DeepSkip")'/>
+                           <code:arguments>
+                              <code:this-reference/>
+                              <code:method-reference name='{el.Attribute("member-name")!.Value}'>
+                                 <code:this-reference/>
+                              </code:method-reference>
+                              <copy-of value='select(context, src + "reference", code)'/>
+                              <copy-of value='select(output, src + "reference", code)'/>
+                              <copy-of value='offsetParam'/>
+                           </code:arguments>
+                        </code:method-call>
+                     </when>
+                     <when test='"shallow-skip"'>
+                        <code:method-call name='Skip'>
+                           <copy-of value='src_helper_type("ShallowSkip")'/>
+                           <code:arguments>
+                              <code:this-reference/>
+                              <code:method-reference name='{el.Attribute("member-name")!.Value}'>
+                                 <code:this-reference/>
+                              </code:method-reference>
+                              <copy-of value='select(context, src + "reference", code)'/>
+                              <copy-of value='select(output, src + "reference", code)'/>
+                              <copy-of value='offsetParam'/>
+                           </code:arguments>
+                        </code:method-call>
+                     </when>
+                     <when test='"text-only-copy"'>
+                        <code:method-call name='Copy'>
+                           <copy-of value='src_helper_type("TextOnlyCopy")'/>
+                           <code:arguments>
+                              <code:this-reference/>
+                              <code:method-reference name='{el.Attribute("member-name")!.Value}'>
+                                 <code:this-reference/>
+                              </code:method-reference>
+                              <copy-of value='select(context, src + "reference", code)'/>
+                              <copy-of value='select(output, src + "reference", code)'/>
+                              <copy-of value='offsetParam'/>
+                           </code:arguments>
+                        </code:method-call>
+                     </when>
+                     <when test='"fail"'>
+                        <code:throw>
+                           <code:method-call name='ModeFail'>
+                              <copy-of value='src_helper_type("DynamicError")'/>
+                           </code:method-call>
+                        </code:throw>
+                     </when>
+                  </switch>
+               </otherwise>
+            </choose>
          </code:block>
       </code:method>
    </template>
@@ -472,6 +883,7 @@
          <code:block>
             <variable name='modes' value='packageManifest
                .Elements(xcst + "mode")
+               .Where(p => p.Attribute("visibility")!.Value != "hidden")
                .Where(p => allModes || xs_boolean(p.Attribute("initial")!))
                .ToArray()'/>
             <variable name='@default' value='modes
@@ -555,7 +967,16 @@
                                              <code:parameter name='{select(context, src + "reference", code).First().Attribute("name")!.Value}'/>
                                           </code:parameters>
                                           <code:method-call name='{mode.Attribute("member-name")!.Value}'>
-                                             <code:this-reference/>
+                                             <choose>
+                                                <when test='!((bool?)mode.Attribute("accepted") ?? false)'>
+                                                   <code:this-reference/>
+                                                </when>
+                                                <otherwise>
+                                                   <code:field-reference name='{src_lib_field_name(mode)}'>
+                                                      <code:this-reference/>
+                                                   </code:field-reference>
+                                                </otherwise>
+                                             </choose>
                                              <code:arguments>
                                                 <copy-of value='select(context, src + "reference", code)'/>
                                                 <copy-of value='select(output, src + "reference", code)'/>
@@ -585,7 +1006,8 @@
       <param name='packageManifest' as='XElement' tunnel='yes' required='yes'/>
 
       <for-each name='mode' in='packageManifest.Elements(xcst + "mode")
-            .Where(p => p.Attribute("name")!.Value != "#unnamed")'>
+            .Where(p => p.Attribute("visibility")!.Value != "hidden"
+               &amp;&amp; p.Attribute("name")!.Value != "#unnamed")'>
 
          <variable name='qname' value='xcst_URIQualifiedName(mode.Attribute("name")!.Value)'/>
 
@@ -652,7 +1074,8 @@
          <if test='modeUQname != "#current"'>
             <variable name='m' value='packageManifest
                .Elements(xcst + "mode")
-               .FirstOrDefault(p => p.Attribute("name")!.Value == modeUQname)'/>
+               .FirstOrDefault(p => p.Attribute("visibility")!.Value != "hidden"
+                  &amp;&amp; p.Attribute("name")!.Value == modeUQname)'/>
             <if test='!(m != null)'>
                <message terminate='yes' error-code='XCST9103' error-data='src_error_object(el)' expand-text='yes' transform-text='trim'>
                   The mode '{(mode[0] == '#' ? modeUQname : mode)}' does not exist.
@@ -767,7 +1190,8 @@
          <when test='thisRuleMode != null'>
             <variable name='meta' value='packageManifest
                .Elements(xcst + "mode")
-               .First(p => p.Attribute("name")!.Value == thisRuleMode)'/>
+               .First(p => p.Attribute("visibility")!.Value != "hidden"
+                  &amp;&amp; p.Attribute("name")!.Value == thisRuleMode)'/>
             <code:method-call>
                <call-template name='src:line-number'>
                   <with-param name='el' value='el'/>

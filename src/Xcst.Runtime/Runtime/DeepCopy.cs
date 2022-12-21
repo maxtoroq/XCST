@@ -13,15 +13,45 @@
 // limitations under the License.
 
 using System;
+using System.Collections.Generic;
 using System.Xml.Linq;
 using Newtonsoft.Json.Linq;
 
 namespace Xcst.Runtime;
 
-class DeepCopy {
+public static class DeepCopy {
+
+   public static void
+   Copy<TBase>(
+         IXcstPackage package,
+         TemplateContext context,
+         ISequenceWriter<TBase> output) {
+
+      var value = context.Input;
+
+      if (value is null) {
+         ((dynamic)output).CopyOf(value);
+         return;
+      }
+
+      if (value is TBase item) {
+         output.CopyOf(item);
+         return;
+      }
+
+      if (value is IEnumerable<TBase> seq) {
+         output.CopyOf(seq);
+         return;
+      }
+
+      throw new NotImplementedException();
+   }
+}
+
+class DeepCopyImpl {
 
    static readonly dynamic
-   _dynamicInstance = new DeepCopy();
+   _dynamicInstance = new DeepCopyImpl();
 
    public static TItem
    CopyDynamically<TItem>(dynamic? value) {

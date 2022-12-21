@@ -1022,8 +1022,7 @@
             <if test='visibility != "abstract"'>
                <variable name='hiddenMeta' value='preceding_sibling(meta, xcst)
                   .FirstOrDefault(p => xcst_homonymous(p, meta)
-                     &amp;&amp; (p.Attribute("accepted") is null
-                        || !xs_boolean(p.Attribute("accepted")!)))'/>
+                     &amp;&amp; !((bool?)p.Attribute("accepted") ?? false))'/>
                <code:block>
                   <if test='el.Parent!.Name == c + "override"
                         || hiddenMeta != null'>
@@ -1071,9 +1070,8 @@
          <variable name='hidingMeta' value='meta
             .ElementsAfterSelf()
             .FirstOrDefault(p => p.Name.Namespace == xcst
-               &amp;&amp;xcst_homonymous(p, meta)
-               &amp;&amp; (p.Attribute("accepted") is null
-                  || !xs_boolean(p.Attribute("accepted")!)))'/>
+               &amp;&amp; xcst_homonymous(p, meta)
+               &amp;&amp; !((bool?)p.Attribute("accepted") ?? false))'/>
 
          <if test='visibility != "abstract"
                &amp;&amp; hidingMeta != null'>
@@ -1120,8 +1118,7 @@
 
       <return>
          <code:type-reference name='{src_params_type_name(meta)}'>
-            <if test='meta.Attribute("accepted") is XAttribute acceptedAttr
-                  &amp;&amp; xs_boolean(acceptedAttr)'>
+            <if test='(bool?)meta.Attribute("accepted") == true'>
                <copy-of value='select(meta, xcst + "package-type", code + "type-reference").First()'/>
             </if>
          </code:type-reference>
@@ -1655,8 +1652,7 @@
 
       <variable name='meta' value='preceding_sibling(currentMeta, xcst + "template")
          .Where(p => xcst_homonymous(p, currentMeta)
-            &amp;&amp; (p.Attribute("accepted") is null
-               || !xs_boolean(p.Attribute("accepted")!)))
+            &amp;&amp; !((bool?)p.Attribute("accepted") ?? false))
          .FirstOrDefault()'/>
 
       <if test='!(meta != null)'>
@@ -1881,8 +1877,7 @@
       <return>
          <code:method-reference name='{meta.Attribute("member-name")!.Value}'>
             <choose>
-               <when test='meta.Attribute("accepted") is XAttribute acceptedAttr
-                     &amp;&amp; xs_boolean(acceptedAttr)'>
+               <when test='(bool?)meta.Attribute("accepted") == true'>
                   <code:field-reference name='{src_lib_field_name(meta)}'>
                      <code:this-reference/>
                   </code:field-reference>

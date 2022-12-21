@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:use-package name='Final'>
+      <c:override>
+         <c:template match='object' mode='foo'/>
+      </c:override>
+   </c:use-package>
+
+</c:module>

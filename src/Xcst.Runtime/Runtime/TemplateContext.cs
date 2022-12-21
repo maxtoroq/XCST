@@ -109,30 +109,6 @@ public class TemplateContext {
       );
    }
 
-   internal static TemplateContext
-   ForShallowCopy(TemplateContext currentContext, object? input) {
-
-      Assert.That(currentContext != null);
-      Debug.Assert(currentContext._inMode);
-
-      var newContext = new TemplateContext(
-         currentContext._templateParameters?.Count ?? 0,
-         currentContext._tunnelParameters?.Count ?? 0,
-         currentContext,
-         input,
-         currentContext.Mode,
-         0
-      );
-
-      if (currentContext._templateParameters?.Count > 0) {
-         foreach (var pair in currentContext._templateParameters) {
-            newContext._templateParameters![pair.Key] = pair.Value;
-         }
-      }
-
-      return newContext;
-   }
-
    public
    TemplateContext(int tmplCount, int tunnelCount, TemplateContext? currentContext) {
 

@@ -1,10 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
-   <c:template name='c:initial-template'>
-      <output>
-         <c:apply-templates/>
-      </output>
+   <c:template name='foo'>
+      <c:apply-templates/>
    </c:template>
 
    <c:template match='object'/>

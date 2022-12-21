@@ -35,6 +35,7 @@
          <ref name="attribute-set"/>
          <ref name="function"/>
          <ref name="import"/>
+         <ref name="mode"/>
          <ref name="output"/>
          <ref name="param"/>
          <ref name="template"/>
@@ -305,6 +306,7 @@
             <choice>
                <value>attribute-set</value>
                <value>function</value>
+               <value>mode</value>
                <value>template</value>
                <value>type</value>
                <value>variable</value>
@@ -474,6 +476,34 @@
          <zeroOrMore>
             <ref name="attribute"/>
          </zeroOrMore>
+      </element>
+   </define>
+
+   <define name="mode">
+      <element name="mode">
+         <ann:documentation>Defines an explicit mode.</ann:documentation>
+         <zeroOrMore>
+            <attribute name="name">
+               <ann:documentation>The name of the mode.</ann:documentation>
+               <ref name="eqname"/>
+            </attribute>
+            <attribute name="on-no-match">
+               <ann:documentation>Specifies the behavior when an item does not match any of the available template rules. The default is shallow-copy.</ann:documentation>
+               <choice>
+                  <value>deep-copy</value>
+                  <value>shallow-copy</value>
+                  <value>deep-skip</value>
+                  <value>shallow-skip</value>
+                  <value>text-only-copy</value>
+                  <value>fail</value>
+               </choice>
+            </attribute>
+            <attribute name="visibility">
+               <ann:documentation>Specifies how the current component can be used in other (using) packages.</ann:documentation>
+               <ref name="visibility-except-abstract"/>
+            </attribute>
+         </zeroOrMore>
+         <ref name="standard-attributes"/>
       </element>
    </define>
 

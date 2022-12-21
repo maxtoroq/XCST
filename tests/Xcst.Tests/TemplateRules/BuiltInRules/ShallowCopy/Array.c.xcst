@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xcst-test language-version="7" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:template name='c:initial-template'>
+      <c:call-template name='obj'/>
+      <c:call-template name='str'/>
+   </c:template>
+
+   <c:template name='obj'>
+      <c:variable name='input' value='new object[] { new object[] { 5 }, 7 }'/>
+      <c:variable name='expected' value='new object[] { new object[] { 6 }, 8 }'/>
+      <c:variable name='actual' as='object[]'>
+         <c:apply-templates value='input' mode='foo'/>
+      </c:variable>
+      <c:void value='Assert.AreEqual(expected, actual)'/>
+   </c:template>
+
+   <c:template name='str'>
+      <c:variable name='input' value='new object[] { new string[] { "5" }, "7" }'/>
+      <c:variable name='expected' value='new object[] { new string[] { "51" }, "71" }'/>
+      <c:variable name='actual' as='object[]'>
+         <c:apply-templates value='input' mode='foo'/>
+      </c:variable>
+      <c:void value='Assert.AreEqual(expected, actual)'/>
+   </c:template>
+
+   <c:template match='int i' mode='foo'>
+      <c:object value='i + 1'/>
+   </c:template>
+
+   <c:template match='string s' mode='foo'>
+      <c:object value='s + 1'/>
+   </c:template>
+
+</c:module>

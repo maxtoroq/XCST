@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:import href='_NextMatchUsingPkg.xcst'/>
+
+   <c:use-package name='NextMatchUsingPkg'>
+      <c:override>
+         <c:template match='int i' mode='foo'>
+            <c:next-match/>
+            <c:text>;</c:text>
+            <c:value-of value='"Integer " + i.ToString()'/>
+         </c:template>
+      </c:override>
+   </c:use-package>
+
+   <c:template name='c:initial-template'>
+      <c:call-template name='foo'/>
+   </c:template>
+
+   <c:template name='expected'>
+      <foo>INTEGER 5;Integer 5</foo>
+   </c:template>
+
+</c:module>

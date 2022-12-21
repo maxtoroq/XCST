@@ -136,7 +136,7 @@ public class SequenceWriter<TItem> : BaseSequenceWriter<TItem> {
 
    public override void
    CopyOf(TItem value) =>
-      WriteObject(DeepCopy.CopyDynamically<TItem>(value));
+      WriteObject(DeepCopyImpl.CopyDynamically<TItem>(value));
 
    public SequenceWriter<TItem>
    WriteSequenceConstructor(Action<ISequenceWriter<TItem>> seqCtor) {
@@ -361,5 +361,5 @@ class StreamedSequenceWriter<TItem> : BaseSequenceWriter<TItem> {
 
    public override void
    CopyOf(TItem value) =>
-      WriteObject(DeepCopy.CopyDynamically<TItem>(value));
+      WriteObject(DeepCopyImpl.CopyDynamically<TItem>(value));
 }

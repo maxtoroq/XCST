@@ -6,6 +6,7 @@
          <xs:element ref="c:attribute-set"/>
          <xs:element ref="c:function"/>
          <xs:element ref="c:import"/>
+         <xs:element ref="c:mode"/>
          <xs:element ref="c:output"/>
          <xs:element ref="c:param"/>
          <xs:element ref="c:template"/>
@@ -220,6 +221,7 @@
                <xs:restriction base="xs:token">
                   <xs:enumeration value="attribute-set"/>
                   <xs:enumeration value="function"/>
+                  <xs:enumeration value="mode"/>
                   <xs:enumeration value="template"/>
                   <xs:enumeration value="type"/>
                   <xs:enumeration value="variable"/>
@@ -410,6 +412,39 @@
             </xs:annotation>
          </xs:attribute>
          <xs:attributeGroup ref="c:visibility-attribute"/>
+         <xs:attributeGroup ref="c:standard-attributes"/>
+      </xs:complexType>
+   </xs:element>
+   <xs:element name="mode">
+      <xs:annotation>
+         <xs:documentation>Defines an explicit mode.</xs:documentation>
+      </xs:annotation>
+      <xs:complexType>
+         <xs:attribute name="name" type="c:eqname">
+            <xs:annotation>
+               <xs:documentation>The name of the mode.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="on-no-match">
+            <xs:annotation>
+               <xs:documentation>Specifies the behavior when an item does not match any of the available template rules. The default is shallow-copy.</xs:documentation>
+            </xs:annotation>
+            <xs:simpleType>
+               <xs:restriction base="xs:token">
+                  <xs:enumeration value="deep-copy"/>
+                  <xs:enumeration value="shallow-copy"/>
+                  <xs:enumeration value="deep-skip"/>
+                  <xs:enumeration value="shallow-skip"/>
+                  <xs:enumeration value="text-only-copy"/>
+                  <xs:enumeration value="fail"/>
+               </xs:restriction>
+            </xs:simpleType>
+         </xs:attribute>
+         <xs:attribute name="visibility" type="c:visibility-except-abstract">
+            <xs:annotation>
+               <xs:documentation>Specifies how the current component can be used in other (using) packages.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>

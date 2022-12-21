@@ -14,12 +14,14 @@
 
    <c:template name='c:initial-template'>
       <c:variable name='el1' as='XElement'>
-         <c:apply-templates value='this.sourceEl' mode='foo'/>
+         <c:apply-templates value='this.sourceEl' mode='foo'>
+            <c:with-param name='p' value='5'/>
+         </c:apply-templates>
       </c:variable>
       <c:variable name='el2' as='XElement'>
          <foo bar='1'>
             <c:processing-instruction name='pi'>value</c:processing-instruction>
-            <new-element>text</new-element>
+            <new-element>text5</new-element>
             <c:comment>comment</c:comment>
          </foo>
       </c:variable>
@@ -27,8 +29,10 @@
    </c:template>
 
    <c:template match='XElement el &amp;&amp; el.Name == "baz"' mode='foo'>
+      <c:param name='p' as='int' required='yes'/>
+
       <new-element>
-         <c:value-of value='el.Value'/>
+         <c:value-of value='el.Value + p.ToString()'/>
       </new-element>
    </c:template>
 

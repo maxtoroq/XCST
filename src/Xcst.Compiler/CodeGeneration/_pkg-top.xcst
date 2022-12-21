@@ -112,7 +112,7 @@
       <call-template name='xcst:no-children'>
          <with-param name='el' value='el'/>
       </call-template>
-      <variable name='componentChoice' value='new[] { "attribute-set", "function", "template", "type", "variable" }'/>
+      <variable name='componentChoice' value='new[] { "attribute-set", "function", "mode", "template", "type", "variable" }'/>
       <variable name='component' value='xcst_non_string(el.Attribute("component")!)'/>
       <if test='!componentChoice.Contains(component)'>
          <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(el)' expand-text='yes' transform-text='trim'>
@@ -144,8 +144,7 @@
       <if test='select(classEl, code + "members", code).Any()'>
          <code:namespace name='{packageManifest.Element(code + "type-reference")!.Attribute("namespace")!.Value}' global='true'>
             <apply-templates value='select(packageManifest, xcst + "type")
-               .Where(p => p.Attribute("accepted") is XAttribute acceptedAttr
-                  &amp;&amp; xs_boolean(acceptedAttr)
+               .Where(p => (bool?)p.Attribute("accepted") == true
                   &amp;&amp; p.Attribute("visibility")!.Value != "hidden")' mode='src:import-namespace'/>
             <apply-templates value='select(el, c + "import-namespace")' mode='src:import-namespace'/>
             <call-template name='src:import-namespace-extra'>

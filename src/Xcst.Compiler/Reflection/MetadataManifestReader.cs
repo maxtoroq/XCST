@@ -138,6 +138,10 @@ partial class MetadataManifestReader {
                case 3:
                   WriteFunction(methodDef, nullableContext);
                   break;
+
+               case 7:
+                  WriteMode(methodDef, componentData);
+                  break;
             }
          }
       }
@@ -328,6 +332,18 @@ partial class MetadataManifestReader {
          }
       }
 
+      _writer.WriteEndElement();
+   }
+
+   void
+   WriteMode(MethodDefinition methodDef, ComponentAttributeData componentData) {
+
+      _writer.WriteStartElement(_prefix, "mode", _ns);
+      _writer.WriteAttributeString("name", componentData.Name);
+      _writer.WriteAttributeString("visibility", ComponentVisibility(methodDef));
+      _writer.WriteAttributeString("member-name", _reader.GetString(methodDef.Name));
+      _writer.WriteAttributeString("initial", "false");
+      _writer.WriteAttributeString("default", "false");
       _writer.WriteEndElement();
    }
 

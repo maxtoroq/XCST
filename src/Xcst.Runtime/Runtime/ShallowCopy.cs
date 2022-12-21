@@ -14,6 +14,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Xml.Linq;
 
 namespace Xcst.Runtime;
@@ -23,9 +24,18 @@ public static class ShallowCopy {
    public static void
    Copy<TBase>(
          IXcstPackage package,
-         Action<TemplateContext, ISequenceWriter<object>> currentMode,
+         Action<TemplateContext, ISequenceWriter<object?>> currentMode,
          TemplateContext context,
-         ISequenceWriter<TBase> output) {
+         ISequenceWriter<TBase> output) =>
+      Copy<TBase>(package, (c, o, of) => currentMode.Invoke(c, o), context, output, 0);
+
+   public static void
+   Copy<TBase>(
+         IXcstPackage package,
+         Action<TemplateContext, ISequenceWriter<object?>, int> currentMode,
+         TemplateContext context,
+         ISequenceWriter<TBase> output,
+         int matchOffset) {
 
       var value = context.Input;
 
@@ -34,7 +44,7 @@ public static class ShallowCopy {
          return;
       }
 
-      if (TryCopy(package, currentMode, value, context, output)) {
+      if (TryCopy(package, (c, o) => currentMode.Invoke(c, o, matchOffset), value, context, output)) {
          return;
       }
 
@@ -54,7 +64,7 @@ public static class ShallowCopy {
    static bool
    TryCopy<TBase>(
          IXcstPackage package,
-         Action<TemplateContext, ISequenceWriter<object>> currentMode,
+         Action<TemplateContext, ISequenceWriter<object?>> currentMode,
          object value,
          TemplateContext context,
          ISequenceWriter<TBase> output) {
@@ -68,6 +78,10 @@ public static class ShallowCopy {
             CopyXDocument(package, currentMode, doc, context, (ISequenceWriter<XDocument>)output);
             return true;
 
+         case object[] arr:
+            CopyArray(package, currentMode, arr, context, (ISequenceWriter<object[]>)output);
+            return true;
+
          default:
             return false;
       }
@@ -76,7 +90,7 @@ public static class ShallowCopy {
    static void
    CopyXDocument(
          IXcstPackage package,
-         Action<TemplateContext, ISequenceWriter<object>> currentMode,
+         Action<TemplateContext, ISequenceWriter<object?>> currentMode,
          XDocument doc,
          TemplateContext context,
          ISequenceWriter<XDocument> output) {
@@ -85,7 +99,7 @@ public static class ShallowCopy {
 
       try {
          foreach (var child in doc.Nodes()) {
-            currentMode(TemplateContext.ForShallowCopy(context, child), docOutput);
+            currentMode.Invoke(TemplateContext.ForApplyTemplatesItem(context, context.Mode, child), docOutput);
          }
       } finally {
          if (output.TryCastToDocumentWriter() is null) {
@@ -97,7 +111,7 @@ public static class ShallowCopy {
    static void
    CopyXElement(
          IXcstPackage package,
-         Action<TemplateContext, ISequenceWriter<object>> currentMode,
+         Action<TemplateContext, ISequenceWriter<object?>> currentMode,
          XElement el,
          TemplateContext context,
          ISequenceWriter<XElement> output) {
@@ -107,16 +121,40 @@ public static class ShallowCopy {
 
       try {
 
-         foreach (var at in el.Attributes()) {
-            currentMode(TemplateContext.ForShallowCopy(context, at), elOutput);
+         foreach (var at in el.Attributes().Where(p => !p.IsNamespaceDeclaration)) {
+            currentMode.Invoke(TemplateContext.ForApplyTemplatesItem(context, context.Mode, at), elOutput);
          }
 
          foreach (var child in el.Nodes()) {
-            currentMode(TemplateContext.ForShallowCopy(context, child), elOutput);
+            currentMode.Invoke(TemplateContext.ForApplyTemplatesItem(context, context.Mode, child), elOutput);
          }
 
       } finally {
          elOutput.WriteEndElement();
       }
+   }
+
+   static void
+   CopyArray(
+         IXcstPackage package,
+         Action<TemplateContext, ISequenceWriter<object?>> currentMode,
+         object[] arr,
+         TemplateContext context,
+         ISequenceWriter<object[]> output) {
+
+      var arrType = arr.GetType();
+      var elemType = arrType.GetElementType();
+      var elemTypeObj = elemType == typeof(System.Object);
+      dynamic buffer = Activator.CreateInstance(typeof(List<>).MakeGenericType(elemType));
+
+      var arrOutput = new StreamedSequenceWriter<object?>(item => {
+         buffer.Add((elemTypeObj ? item : DynamicCast.Cast(item, elemType)));
+      });
+
+      foreach (var item in arr) {
+         currentMode.Invoke(TemplateContext.ForApplyTemplatesItem(context, context.Mode, item), arrOutput);
+      }
+
+      output.WriteObject((object[])buffer.ToArray());
    }
 }

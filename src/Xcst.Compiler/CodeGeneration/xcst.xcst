@@ -216,6 +216,27 @@
             <with-param name='implicitPackage' value='implicitPackage' tunnel='yes'/>
             <with-param name='language' value='language' tunnel='yes'/>
          </apply-templates>
+         <variable name='explicitModes'>
+            <call-template name='xcst:explicit-modes'>
+               <with-param name='packageEl' value='el'/>
+               <with-param name='modules' value='modules' tunnel='yes'/>
+               <with-param name='implicitPackage' value='implicitPackage' tunnel='yes'/>
+            </call-template>
+         </variable>
+         <copy-of value='explicitModes'/>
+         <call-template name='xcst:implicit-modes'>
+            <with-param name='packageEl' value='el'/>
+            <with-param name='explicitModes' value='explicitModes'/>
+            <with-param name='modules' value='modules' tunnel='yes'/>
+            <with-param name='implicitPackage' value='implicitPackage' tunnel='yes'/>
+         </call-template>
+         <call-template name='xcst:overriding-modes'>
+            <with-param name='packageEl' value='el'/>
+            <with-param name='modules' value='modules' tunnel='yes'/>
+            <with-param name='usedPackages' value='usedPackages' tunnel='yes'/>
+            <with-param name='namespace' value='ns' tunnel='yes'/>
+            <with-param name='implicitPackage' value='implicitPackage' tunnel='yes'/>
+         </call-template>
       </variable>
 
       <variable name='packageVisibility' value='
@@ -235,11 +256,6 @@
                <with-param name='localComponents' value='localComponents'/>
             </call-template>
             <copy-of value='localComponents'/>
-            <call-template name='xcst:modes'>
-               <with-param name='el' value='el'/>
-               <with-param name='modules' value='modules' tunnel='yes'/>
-               <with-param name='implicitPackage' value='implicitPackage' tunnel='yes'/>
-            </call-template>
             <call-template name='xcst:output-definitions'>
                <with-param name='modules' value='modules' tunnel='yes'/>
             </call-template>
@@ -409,14 +425,16 @@
          <if test='!acceptAll'>
             <variable name='implicitAccepts' as='XElement[]'>
                <for-each-group name='grp' in='select(usePackageEls, c + "override", c)'
-                     group-by='p => (p.Name == c + "param") ? "variable" : p.Name.LocalName'>
+                     group-by='p => (p.Name == c + "param") ? "variable"
+                        : (p.Name == c + "template" &amp;&amp; p.Attribute("match") != null) ? "mode"
+                        : p.Name.LocalName'>
                   <variable name='component' value='grp.Key'/>
                   <variable name='qname' value='xcst_component_qnamed(component)'/>
                   <variable name='names' value='(
                      from p in grp
                      let nameAttr = p.Attribute("name")!
-                     select (qname ?
-                        xcst_uri_qualified_name(xcst_EQName(nameAttr)!)
+                     select (component == "mode" ? xcst_template_modes(p)[0]
+                        : qname ? xcst_uri_qualified_name(xcst_EQName(nameAttr)!)
                         : xcst_unescape_identifier(xcst_name(nameAttr), language)))
                      .ToArray()'/>
                   <src:accept component='{component}' names='{names}'/>
@@ -496,7 +514,7 @@
    <function name='xcst_component_qnamed' as='bool'>
       <param name='component' as='string'/>
 
-      <return value='component is "template" or "attribute-set"'/>
+      <return value='component is "template" or "attribute-set" or "mode"'/>
    </function>
 
    <function name='src_resolve_package_name' as='string'>

@@ -95,6 +95,10 @@ public static class DynamicError {
    AbsentCurrentTemplateRule() =>
       new RuntimeException("The current template rule is absent.", Code("XTDE0560"));
 
+   public static Exception
+   ModeFail() =>
+      new RuntimeException("There's no defined template rule for the current item.", Code("XTDE0555"));
+
    internal static Exception
    SequenceOverflow() =>
       new RuntimeException("A sequence of more than one item is not allowed.", Code("XTTE0505"));

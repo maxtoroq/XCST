@@ -2,10 +2,11 @@
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
    <c:template name='c:initial-template'>
+      <c:variable name='item' value='5'/>
       <c:variable name='i' as='int'>
-         <c:apply-templates value='5' mode='foo'/>
+         <c:apply-templates value='item' mode='foo'/>
       </c:variable>
-      <c:void value='Assert.AreEqual(5, i)'/>
+      <c:void value='Assert.AreEqual(item, i)'/>
    </c:template>
 
    <c:template match='string' mode='foo'/>

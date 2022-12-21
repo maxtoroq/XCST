@@ -588,8 +588,7 @@
             <for-each name='param' in='select(packageManifest, xcst + "param")
                   .Where(p => p.Attribute("visibility")!.Value != "hidden")'>
                <variable name='required' value='xs_boolean(param.Attribute("required")!)'/>
-               <variable name='accepted' value='param.Attribute("accepted") is XAttribute acceptedAttr
-                  &amp;&amp; xs_boolean(acceptedAttr)'/>
+               <variable name='accepted' value='(bool?)param.Attribute("accepted") == true'/>
                <variable name='verbatim' value='param.Attribute("member-name-was-escaped") is XAttribute escAttr
                   &amp;&amp; xs_boolean(escAttr)'/>
                <choose>
