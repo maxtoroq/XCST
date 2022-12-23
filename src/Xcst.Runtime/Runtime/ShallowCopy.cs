@@ -40,11 +40,14 @@ public static class ShallowCopy {
       var value = context.Input;
 
       if (value is null) {
-         ((dynamic)output).CopyOf(value);
+         ((dynamic)output).WriteObject(value);
          return;
       }
 
-      if (TryCopy(package, (c, o) => currentMode.Invoke(c, o, matchOffset), value, context, output)) {
+      void currMode(TemplateContext c, ISequenceWriter<object?> o) =>
+         currentMode.Invoke(c, o, matchOffset);
+
+      if (TryCopy(package, currMode, value, context, output)) {
          return;
       }
 

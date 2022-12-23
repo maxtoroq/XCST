@@ -25,7 +25,7 @@ public class FailMode {
       var value = context.Input;
 
       if (value is null) {
-         ((dynamic)output).CopyOf(value);
+         ((dynamic)output).WriteObject(value);
          return;
       }
 

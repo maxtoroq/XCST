@@ -33,7 +33,7 @@ public class DeepSkip {
          return;
       }
 
-      Action<TemplateContext, ISequenceWriter<object?>> currMode = (c, o) =>
+      void currMode(TemplateContext c, ISequenceWriter<object?> o) =>
          currentMode.Invoke(c, o, matchOffset);
 
       switch (value) {
