@@ -1761,6 +1761,15 @@
          .Except(tunnelParams)
          .ToArray()'/>
 
+      <variable name='withParamsAttr' value='
+         (el.Name.Namespace == c
+            &amp;&amp; el.Name.LocalName is (
+               "apply-templates"
+               or "next-match"
+               or "invoke-delegate")) ?
+            el.Attribute("with-params")
+            : null'/>
+
       <code:chain>
          <code:method-call>
             <attribute name='name'>
@@ -1795,8 +1804,7 @@
                      <variable name='tmplParamsCount' value='templateParams.Length'/>
                      <variable name='paramsCount' value='
                         (tmplParamsCount > 0) ? tmplParamsCount
-                           : (el.Name == c + "invoke-delegate"
-                              &amp;&amp; el.Attribute("with-params") != null) ? 1
+                           : (withParamsAttr != null) ? 1
                            : 0'/>
                      <code:int value='{fn_string(paramsCount)}'/>
                   </otherwise>
@@ -1830,6 +1838,17 @@
                </code:arguments>
             </code:method-call>
          </for-each>
+         <if test='withParamsAttr != null'>
+            <code:method-call name='WithParams'>
+               <call-template name='src:line-number'>
+                  <with-param name='el' value='el'/>
+               </call-template>
+               <code:chain-reference/>
+               <code:arguments>
+                  <code:expression value='{xcst_expression(withParamsAttr)}'/>
+               </code:arguments>
+            </code:method-call>
+         </if>
          <if test='tunnelParamsAttr != null'>
             <code:method-call name='WithTunnelParams'>
                <call-template name='src:line-number'>
@@ -2017,22 +2036,9 @@
          <copy-of value='src_helper_type("EvaluateDelegate")'/>
          <code:arguments>
             <code:expression value='{xcst_expression(el.Attribute("delegate")!)}'/>
-            <code:chain>
-               <call-template name='src:call-template-context'>
-                  <with-param name='el' value='el'/>
-               </call-template>
-               <if test='el.Attribute("with-params") is XAttribute withParamsAttr'>
-                  <code:method-call name='WithParams'>
-                     <call-template name='src:line-number'>
-                        <with-param name='el' value='el'/>
-                     </call-template>
-                     <code:chain-reference/>
-                     <code:arguments>
-                        <code:expression value='{xcst_expression(withParamsAttr)}'/>
-                     </code:arguments>
-                  </code:method-call>
-               </if>
-            </code:chain>
+            <call-template name='src:call-template-context'>
+               <with-param name='el' value='el'/>
+            </call-template>
             <copy-of value='select(output, src + "reference", code)'/>
          </code:arguments>
       </code:method-call>

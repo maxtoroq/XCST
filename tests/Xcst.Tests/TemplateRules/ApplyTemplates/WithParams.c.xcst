@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:template name='c:initial-template'>
+      <doc>
+         <c:apply-templates value='new object()' with-params='new { a = 1 }'/>
+         <c:apply-templates value='new object()' with-params='new { a = 2 }'/>
+      </doc>
+   </c:template>
+
+   <c:template match='object' expand-text='yes'>
+      <c:param name='a' as='int'/>
+
+      <foo>{a}</foo>
+   </c:template>
+
+   <c:template name='expected'>
+      <doc>
+         <foo>1</foo>
+         <foo>2</foo>
+      </doc>
+   </c:template>
+
+</c:module>

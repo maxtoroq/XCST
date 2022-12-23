@@ -903,6 +903,10 @@
                      <ref name="eqname"/>
                   </choice>
                </attribute>
+               <attribute name="with-params">
+                  <ann:documentation>An object with parameters.</ann:documentation>
+                  <ref name="expr-obj-dict"/>
+               </attribute>
                <attribute name="tunnel-params">
                   <ann:documentation>An object with tunnel parameters.</ann:documentation>
                   <ref name="expr-obj-dict"/>
@@ -1413,12 +1417,18 @@
    <define name="next-match">
       <element name="next-match">
          <ann:documentation>Invokes the next template rule that matches the current input.</ann:documentation>
-         <optional>
-            <attribute name="tunnel-params">
-               <ann:documentation>An object with tunnel parameters.</ann:documentation>
-               <ref name="expr-obj-dict"/>
-            </attribute>
-         </optional>
+         <zeroOrMore>
+            <choice>
+               <attribute name="with-params">
+                  <ann:documentation>An object with parameters.</ann:documentation>
+                  <ref name="expr-obj-dict"/>
+               </attribute>
+               <attribute name="tunnel-params">
+                  <ann:documentation>An object with tunnel parameters.</ann:documentation>
+                  <ref name="expr-obj-dict"/>
+               </attribute>
+            </choice>
+         </zeroOrMore>
          <ref name="standard-attributes"/>
          <zeroOrMore>
             <ref name="with-param"/>

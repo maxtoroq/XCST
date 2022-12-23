@@ -1044,7 +1044,7 @@
       <call-template name='xcst:validate-attribs'>
          <with-param name='el' value='el'/>
          <with-param name='required' value='new[] { "value" }'/>
-         <with-param name='optional' value='new[] { "mode", "tunnel-params", "separator" }'/>
+         <with-param name='optional' value='new[] { "mode", "with-params", "tunnel-params", "separator" }'/>
       </call-template>
 
       <variable name='modeAttr' value='el.Attribute("mode")'/>
@@ -1165,7 +1165,7 @@
 
       <call-template name='xcst:validate-attribs'>
          <with-param name='el' value='el'/>
-         <with-param name='optional' value='new[] { "tunnel-params" }'/>
+         <with-param name='optional' value='new[] { "with-params", "tunnel-params" }'/>
       </call-template>
 
       <call-template name='xcst:validate-children'>
