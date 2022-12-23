@@ -819,11 +819,14 @@
                         </code:method-call>
                      </when>
                      <when test='"fail"'>
-                        <code:throw>
-                           <code:method-call name='ModeFail'>
-                              <copy-of value='src_helper_type("DynamicError")'/>
-                           </code:method-call>
-                        </code:throw>
+                        <code:method-call name='Fail'>
+                           <copy-of value='src_helper_type("FailMode")'/>
+                           <code:arguments>
+                              <code:this-reference/>
+                              <copy-of value='select(context, src + "reference", code)'/>
+                              <copy-of value='select(output, src + "reference", code)'/>
+                           </code:arguments>
+                        </code:method-call>
                      </when>
                   </switch>
                </otherwise>
