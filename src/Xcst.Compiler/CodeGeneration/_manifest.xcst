@@ -24,7 +24,7 @@
    <import-namespace ns='System.Linq'/>
    <import-namespace ns='System.Xml.Linq'/>
 
-   <template match='XElement el &amp;&amp; el.Name.Namespace == c'/>
+   <mode name='xcst:package-manifest' on-no-match='deep-skip'/>
 
    <template match='XElement el &amp;&amp; (el.Name == c + "module" || el.Name == c + "package")'>
       <param name='modules' as='XElement[]' tunnel='yes' required='yes'/>

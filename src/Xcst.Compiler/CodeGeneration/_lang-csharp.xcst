@@ -24,6 +24,9 @@
    <import-namespace ns='System.Linq'/>
    <import-namespace ns='System.Xml.Linq'/>
 
+   <mode name='cs:source' on-no-match='deep-skip'/>
+   <mode name='cs:statement' on-no-match='deep-skip'/>
+
    <param name='cs_open_brace_on_new_line' as='bool'/>
    <param name='cs_nullable_annotate' as='bool'/>
    <param name='cs_nullable_context' as='string?'/>

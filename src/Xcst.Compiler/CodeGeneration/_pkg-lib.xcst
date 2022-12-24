@@ -23,6 +23,11 @@
    <import-namespace ns='System.Linq'/>
    <import-namespace ns='System.Xml.Linq'/>
 
+   <mode name='src:lib-overriding' on-no-match='deep-skip'/>
+   <mode name='src:lib-override' on-no-match='deep-skip'/>
+   <mode name='src:lib-tuple' on-no-match='deep-skip'/>
+   <mode name='src:lib-overriding-value' on-no-match='fail'/>
+
    <template match='XElement el &amp;&amp; el.Name == xcst + "package-manifest"
          &amp;&amp; el.Attribute("qualified-types") is XAttribute qtAttr
          &amp;&amp; xs_boolean(qtAttr)' mode='src:namespace'>
@@ -150,8 +155,6 @@
          </code:members>
       </code:type>
    </template>
-
-   <template match='XNode' mode='src:lib-overriding src:lib-override src:lib-tuple'/>
 
    <template match='XElement el &amp;&amp; el.Name.Namespace == xcst
          &amp;&amp; el.Name.LocalName is "attribute-set" or "function" or "mode" or "param" or "template" or "variable"' mode='src:lib-overriding'>

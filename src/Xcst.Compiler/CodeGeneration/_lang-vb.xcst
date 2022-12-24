@@ -24,6 +24,9 @@
    <import-namespace ns='System.Linq'/>
    <import-namespace ns='System.Xml.Linq'/>
 
+   <mode name='vb:source' on-no-match='deep-skip'/>
+   <mode name='vb:statement' on-no-match='deep-skip'/>
+
    <variable name='xcst_vb_lang'>VisualBasic</variable>
 
    <variable name='vb_primitives'>

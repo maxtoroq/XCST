@@ -22,6 +22,8 @@
 
    <import-namespace ns='System.Xml.Linq'/>
 
+   <mode name='xcst:instruction' on-no-match='deep-skip'/>
+
    <template match='XElement el &amp;&amp; el.Name.Namespace == c' mode='src:statement'>
       <param name='output' as='XElement?' tunnel='yes'/>
 
@@ -50,8 +52,6 @@
          Element c:{el.Name.LocalName} cannot be compiled into an expression.
       </message>
    </template>
-
-   <template match='XElement el &amp;&amp; el.Name.Namespace == c' mode='xcst:instruction'/>
 
    <template match='XElement el &amp;&amp; el.Name.Namespace != c' mode='src:statement'>
       <call-template name='src:unknown-element'>

@@ -23,6 +23,8 @@
    <import-namespace ns='System.Linq'/>
    <import-namespace ns='System.Xml.Linq'/>
 
+   <mode name='xcst:validate-top-level' on-no-match='fail'/>
+
    <variable name='src_context_field'>
       <src:context>
          <copy-of value='src_helper_type("ExecutionContext")'/>
@@ -101,10 +103,10 @@
             Duplicate c:use-package declaration.
          </message>
       </if>
-      <apply-templates value='el.Elements().Where(p => p.Name == c + "accept" || p.Name == c + "override")'/>
+      <apply-templates value='el.Elements().Where(p => p.Name == c + "accept" || p.Name == c + "override")' mode='xcst:validate-use-package'/>
    </template>
 
-   <template match='XElement el &amp;&amp; el.Name == c + "accept" &amp;&amp; el.Parent?.Name == c + "use-package"' mode='xcst:validate-top-level'>
+   <template match='XElement el &amp;&amp; el.Name == c + "accept"' mode='xcst:validate-use-package'>
       <call-template name='xcst:validate-attribs'>
          <with-param name='el' value='el'/>
          <with-param name='required' value='new[] { "component", "names" }'/>
@@ -121,7 +123,7 @@
       </if>
    </template>
 
-   <template match='XElement el &amp;&amp; el.Name == c + "override" &amp;&amp; el.Parent?.Name == c + "use-package"' mode='xcst:validate-top-level'>
+   <template match='XElement el &amp;&amp; el.Name == c + "override"' mode='xcst:validate-use-package'>
       <call-template name='xcst:validate-attribs'>
          <with-param name='el' value='el'/>
       </call-template>
