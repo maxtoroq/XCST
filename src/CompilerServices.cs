@@ -1,7 +1,7 @@
 ﻿
 namespace System.Runtime.CompilerServices;
 
-#if NETFRAMEWORK || NETCOREAPP2_0
+#if NETFRAMEWORK || NETCOREAPP2_0 || NETSTANDARD
 static class IsExternalInit { }
 #endif
 

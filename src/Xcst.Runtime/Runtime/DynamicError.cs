@@ -81,6 +81,14 @@ public static class DynamicError {
       );
 
    public static Exception
+   Terminate(MessageArgs args, string defaultMessage) =>
+      new RuntimeException(
+         (!String.IsNullOrEmpty(args.Message) ? args.Message : defaultMessage),
+         args.ErrorCode ?? Code("XTMM9000"),
+         args.ErrorData
+      );
+
+   public static Exception
    InferMethodIsNotMeantToBeCalled() =>
       new RuntimeException("Infer method is not meant to be called.");
 

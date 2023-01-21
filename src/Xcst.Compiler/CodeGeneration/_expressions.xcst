@@ -133,7 +133,7 @@
          <choose>
             <when test='lre'>
                <code:property-reference name='SimpleContent'>
-                  <copy-of value='select(src_context_field.Element(src + "reference"), code).First()'/>
+                  <copy-of value='select(src_context_field, src + "reference", code)'/>
                </code:property-reference>
             </when>
             <otherwise>

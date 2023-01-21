@@ -82,14 +82,59 @@
          <call-template name='src:line-number'>
             <with-param name='el' value='el'/>
          </call-template>
-         <call-template name='src:simple-content'>
-            <with-param name='el' value='el'/>
-            <with-param name='attr' value='el.Attribute("value")'/>
-         </call-template>
+         <code:new-object>
+            <code:type-reference name='MessageArgs' namespace='Xcst'/>
+            <code:arguments>
+               <call-template name='src:simple-content'>
+                  <with-param name='el' value='el'/>
+                  <with-param name='attr' value='el.Attribute("value")'/>
+               </call-template>
+            </code:arguments>
+            <code:initializer>
+               <if test='el.Attribute("error-code") is XAttribute errorCodeAttr'>
+                  <code:member-initializer name='ErrorCode'>
+                     <call-template name='src:line-number'>
+                        <with-param name='el' value='el'/>
+                     </call-template>
+                     <call-template name='src:QName'>
+                        <with-param name='qname' value='xcst_EQName(errorCodeAttr, null, false, true)'/>
+                        <with-param name='avt' value='errorCodeAttr'/>
+                     </call-template>
+                  </code:member-initializer>
+               </if>
+               <if test='el.Attribute("error-data") is XAttribute errorDataAttr'>
+                  <code:member-initializer name='ErrorData'>
+                     <call-template name='src:line-number'>
+                        <with-param name='el' value='el'/>
+                     </call-template>
+                     <code:expression value='{xcst_expression(errorDataAttr)}'/>
+                  </code:member-initializer>
+               </if>
+               <if test='terminate == true
+                     || terminateAttr != null'>
+                  <code:member-initializer name='Terminate'>
+                     <choose>
+                        <when test='terminate == true'>
+                           <code:bool value='true'/>
+                        </when>
+                        <otherwise>
+                           <call-template name='src:line-number'>
+                              <with-param name='el' value='el'/>
+                           </call-template>
+                           <call-template name='src:boolean'>
+                              <with-param name='val' value='terminate'/>
+                              <with-param name='avt' value='terminateAttr'/>
+                           </call-template>
+                        </otherwise>
+                     </choose>
+                  </code:member-initializer>
+               </if>
+            </code:initializer>
+         </code:new-object>
       </code:variable>
 
-      <code:method-call name='WriteLine' line-hidden='true'>
-         <code:type-reference name='Trace' namespace='System.Diagnostics'/>
+      <code:method-call name='LogMessage' line-hidden='true'>
+         <copy-of value='select(src_context_field, src + "reference", code)'/>
          <code:arguments>
             <code:variable-reference name='{messageVar}'/>
          </code:arguments>
@@ -109,17 +154,6 @@
                         Processing terminated by c:{el.Name.LocalName} at line {LineNumber(el)} in {ModuleUri(el).Split('/').Last()}.
                      </text>
                   </code:string>
-                  <if test='el.Attribute("error-code") is XAttribute errorCodeAttr'>
-                     <call-template name='src:QName'>
-                        <with-param name='qname' value='xcst_EQName(errorCodeAttr, null, false, true)'/>
-                        <with-param name='avt' value='errorCodeAttr'/>
-                     </call-template>
-                  </if>
-                  <if test='el.Attribute("error-data") is XAttribute errorDataAttr'>
-                     <code:argument name='errorData'>
-                        <code:expression value='{xcst_expression(errorDataAttr)}'/>
-                     </code:argument>
-                  </if>
                </code:arguments>
             </code:method-call>
          </code:throw>
@@ -131,13 +165,9 @@
          </when>
          <when test='terminateAttr != null'>
             <code:if>
-               <call-template name='src:line-number'>
-                  <with-param name='el' value='el'/>
-               </call-template>
-               <call-template name='src:boolean'>
-                  <with-param name='val' value='terminate'/>
-                  <with-param name='avt' value='terminateAttr'/>
-               </call-template>
+               <code:property-reference name='Terminate'>
+                  <code:variable-reference name='{messageVar}'/>
+               </code:property-reference>
                <code:block>
                   <copy-of value='throwExpr'/>
                </code:block>

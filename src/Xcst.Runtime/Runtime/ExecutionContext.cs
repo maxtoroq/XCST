@@ -25,43 +25,31 @@ public class ExecutionContext {
    _formatProviderFn;
 
    public IXcstPackage
-   TopLevelPackage { get; }
+   TopLevelPackage { get; init; }
 
    public PrimingContext
-   PrimingContext { get; }
+   PrimingContext { get; init; }
 
    public SimpleContent
    SimpleContent { get; }
 
    public Uri?
-   StaticBaseUri { get; }
+   StaticBaseUri { get; init; }
 
    public Uri?
-   BaseOutputUri { get; }
+   BaseOutputUri { get; init; }
+
+   internal Action<MessageArgs>?
+   MessageListener { get; init; }
 
    internal
+#pragma warning disable CS8618
    ExecutionContext(
-         IXcstPackage topLevelPackage,
-         PrimingContext primingContext,
-         Func<IFormatProvider>? formatProviderFn,
-         Uri? staticBaseUri,
-         Uri? baseOutputUri) {
+#pragma warning restore CS8618
+         Func<IFormatProvider>? formatProviderFn) {
 
-      this.TopLevelPackage = topLevelPackage ?? throw Argument.Null(topLevelPackage);
-      this.PrimingContext = primingContext ?? throw Argument.Null(primingContext);
       _formatProviderFn = formatProviderFn ?? (() => CultureInfo.CurrentCulture);
       this.SimpleContent = new SimpleContent(_formatProviderFn);
-
-      if (staticBaseUri != null) {
-         Debug.Assert(staticBaseUri.IsAbsoluteUri);
-      }
-
-      if (baseOutputUri != null) {
-         Debug.Assert(baseOutputUri.IsAbsoluteUri);
-      }
-
-      this.StaticBaseUri = staticBaseUri;
-      this.BaseOutputUri = baseOutputUri;
    }
 
    public Uri
@@ -104,5 +92,10 @@ public class ExecutionContext {
       } catch (UriFormatException ex) {
          throw new RuntimeException(ex.Message);
       }
+   }
+
+   public void
+   LogMessage(MessageArgs args) {
+      this.MessageListener?.Invoke(args);
    }
 }

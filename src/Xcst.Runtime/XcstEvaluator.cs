@@ -547,6 +547,9 @@ public class XcstOutputter {
    Uri?
    _baseOutputUri;
 
+   Action<MessageArgs>?
+   _messageListenerFn;
+
    internal
    XcstOutputter(IXcstPackage package, Func<PrimingContext> primeFn, Action<OutputParameters?, bool> executionFn) {
 
@@ -610,6 +613,13 @@ public class XcstOutputter {
       return this;
    }
 
+   public XcstOutputter
+   WithMessageListener(Action<MessageArgs>? messageListenerFn) {
+
+      _messageListenerFn = messageListenerFn;
+      return this;
+   }
+
    public void
    Run(bool skipFlush = false) {
 
@@ -617,11 +627,18 @@ public class XcstOutputter {
       _executionFn(_parameters, skipFlush);
    }
 
-   internal void
+   private protected void
    InitPackage() {
 
       var primingContext = _primeFn();
-      var execContext = new ExecutionContext(_package, primingContext, _formatProviderFn, _baseUri, _baseOutputUri);
+
+      var execContext = new ExecutionContext(_formatProviderFn) {
+         TopLevelPackage = _package,
+         PrimingContext = primingContext,
+         StaticBaseUri = _baseUri,
+         BaseOutputUri = _baseOutputUri,
+         MessageListener = _messageListenerFn
+      };
 
       _package.Context = execContext;
    }
@@ -674,10 +691,41 @@ public class XcstOutputter<TResult> : XcstOutputter {
       return this;
    }
 
+   public new XcstOutputter<TResult>
+   WithMessageListener(Action<MessageArgs>? messageListenerFn) {
+
+      base.WithMessageListener(messageListenerFn);
+      return this;
+   }
+
    public TResult
    Evaluate() {
 
       InitPackage();
       return _executionFn();
+   }
+}
+
+public readonly struct MessageArgs {
+
+   public string
+   Message { get; }
+
+   public XName?
+   ErrorCode { get; init; }
+
+   public object?
+   ErrorData { get; init; }
+
+   public bool
+   Terminate { get; init; }
+
+   public
+   MessageArgs(string message) {
+
+      this.Message = message;
+      this.ErrorCode = default;
+      this.ErrorData = default;
+      this.Terminate = default;
    }
 }
