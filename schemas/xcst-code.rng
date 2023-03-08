@@ -160,6 +160,9 @@
                <attribute name="ref">
                   <ref name="_boolean"/>
                </attribute>
+               <attribute name="verbatim">
+                  <ref name="_boolean"/>
+               </attribute>
             </choice>
          </zeroOrMore>
          <ref name="_expression"/>

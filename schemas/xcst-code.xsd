@@ -75,6 +75,7 @@
          </xs:sequence>
          <xs:attribute name="name"/>
          <xs:attribute name="ref" type="code:_boolean"/>
+         <xs:attribute name="verbatim" type="code:_boolean"/>
       </xs:complexType>
    </xs:element>
    <xs:element name="arguments">

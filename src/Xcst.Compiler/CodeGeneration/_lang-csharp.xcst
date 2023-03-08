@@ -96,6 +96,9 @@
       <if test='el.Attribute("ref") is XAttribute refAttr
           &amp;&amp; xs_boolean(refAttr)'>ref </if>
       <if test='el.Attribute("name") is XAttribute nameAttr'>
+         <call-template name='cs:verbatim'>
+            <with-param name='el' value='el'/>
+         </call-template>
          <value-of value='nameAttr.Value'/>
          <text>: </text>
       </if>

@@ -94,9 +94,11 @@
    <template match='XElement el &amp;&amp; el.Name == code + "argument"' mode='vb:source'>
       <if test='el.Attribute("ref") is XAttribute refAttr
           &amp;&amp; xs_boolean(refAttr)'>ByRef </if>
-      <if test='el.Attribute("name") is XAttribute nameAttr
+      <if test='el.Attribute("name") != null
             &amp;&amp; el.Parent!.Name != code + "attribute"'>
-         <value-of value='nameAttr.Value'/>
+         <call-template name='vb:escaped-name'>
+            <with-param name='el' value='el'/>
+         </call-template>
          <text>:=</text>
       </if>
       <apply-templates value='el.Nodes()'/>
