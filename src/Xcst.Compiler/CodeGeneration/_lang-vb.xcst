@@ -273,6 +273,7 @@
       <call-template name='src:new-line-indented'/>
       <apply-templates value='children[0]' mode='vb:source'/>
       <for-each name='child' in='children.Skip(1)'>
+         <text> _</text>
          <call-template name='src:new-line-indented'>
             <with-param name='indent' value='indent + 1' tunnel='yes'/>
          </call-template>
