@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <LangVersion>10</LangVersion>
     <Nullable>enable</Nullable>
     <NoWarn>NETSDK1138</NoWarn>
@@ -11,7 +11,7 @@
   <PropertyGroup>
     <XcstInput>**\*.xcst;**\*.pxcst</XcstInput>
     <XcstOutput>Tests.generated.cs</XcstOutput>
-    <XcstCodegenExe>$(ProjectDir)..\tests-codegen\bin\$(Configuration)\net5.0\tests-codegen.exe</XcstCodegenExe>
+    <XcstCodegenExe>$(ProjectDir)..\tests-codegen\bin\$(Configuration)\net6.0\tests-codegen.exe</XcstCodegenExe>
     <DefaultItemExcludes>$(DefaultItemExcludes);$(XcstOutput)</DefaultItemExcludes>
   </PropertyGroup>
 

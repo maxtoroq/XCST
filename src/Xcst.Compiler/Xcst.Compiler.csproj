@@ -15,7 +15,7 @@
   <PropertyGroup>
     <XcstInput>**\*.xcst</XcstInput>
     <XcstOutput>xcst.$(TargetFramework).generated.cs</XcstOutput>
-    <XcstCodegenExe>$(ProjectDir)..\compiler-codegen\bin\$(Configuration)\net5.0\compiler-codegen.exe</XcstCodegenExe>
+    <XcstCodegenExe>$(ProjectDir)..\compiler-codegen\bin\$(Configuration)\net6.0\compiler-codegen.exe</XcstCodegenExe>
     <DefaultItemExcludes>$(DefaultItemExcludes);*.generated.cs</DefaultItemExcludes>
   </PropertyGroup>
 
@@ -46,7 +46,7 @@
   </ItemGroup>
 
   <Target Name="XcstCodeGen" BeforeTargets="PreBuildEvent" DependsOnTargets="ResolveReferences" Inputs="@(XcstInput);$(MSBuildThisFileFullPath);$(XcstCodegenExe)" Outputs="$(XcstOutput)">
-    <MSBuild Projects="..\compiler-codegen\compiler-codegen.csproj" Properties="TargetFramework=net5.0" />
+    <MSBuild Projects="..\compiler-codegen\compiler-codegen.csproj" Properties="TargetFramework=net6.0" />
     <Message Text="xcst-codegen [$(MSBuildProjectName)]" Importance="high" />
     <Exec Command="$(XcstCodegenExe) $(MSBuildThisFileFullPath) $(XcstOutput)" />
   </Target>
