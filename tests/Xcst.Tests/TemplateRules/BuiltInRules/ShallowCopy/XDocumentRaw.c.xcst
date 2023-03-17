@@ -4,6 +4,8 @@
 
    <c:import-namespace ns='System.Xml.Linq'/>
 
+   <c:mode name='foo' on-no-match='shallow-copy'/>
+
    <c:variable name='sourceDoc' as='XDocument'>
       <c:document>
          <c:processing-instruction name='pi'>value</c:processing-instruction>

@@ -2,6 +2,8 @@
 <?xcst-test language-version="7" ?>
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
+   <c:mode name='foo' on-no-match='shallow-copy'/>
+
    <c:template name='c:initial-template'>
       <c:call-template name='obj'/>
       <c:call-template name='str'/>

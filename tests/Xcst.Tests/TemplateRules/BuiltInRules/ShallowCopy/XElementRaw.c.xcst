@@ -4,6 +4,8 @@
 
    <c:import-namespace ns='System.Xml.Linq'/>
 
+   <c:mode name='foo' on-no-match='shallow-copy'/>
+
    <c:variable name='sourceEl' as='XElement'>
       <foo bar='1'>
          <c:processing-instruction name='pi'>value</c:processing-instruction>
