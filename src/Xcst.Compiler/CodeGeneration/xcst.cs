@@ -21,6 +21,12 @@ namespace Xcst.Compiler;
 
 partial class XcstCompilerPackage {
 
+   private bool
+   V1 => src_target_runtime < 2m;
+
+   private bool
+   V2_OR_GREATER => src_target_runtime >= 2m;
+
    Uri?
    PackageLocation(string packageName, Uri? usingPackageUri) {
 

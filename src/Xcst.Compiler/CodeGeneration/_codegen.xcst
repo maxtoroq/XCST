@@ -27,7 +27,7 @@
 
    <variable name='src_package_interface' as='XElement'>
       <choose>
-         <when test='src_target_runtime >= 2m'>
+         <when test='V2_OR_GREATER'>
             <code:type-reference name='IXcstPackage' namespace='Xcst' interface='true'/>
          </when>
          <otherwise value='src_package_model_type("IXcstPackage", true)'/>
@@ -191,7 +191,7 @@
       <param name='@interface' value='false' as='bool'/>
 
       <return>
-         <code:type-reference name='{type}' namespace='Xcst.{(src_target_runtime >= 2m ? "Runtime" : "PackageModel")}'>
+         <code:type-reference name='{type}' namespace='Xcst.{(V2_OR_GREATER ? "Runtime" : "PackageModel")}'>
             <if test='@interface'>
                <attribute name='interface' value='fn_string(true)'/>
             </if>

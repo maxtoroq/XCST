@@ -595,7 +595,7 @@
                   <when test='required'>
                      <code:if>
                         <code:or-else>
-                           <if test='src_target_runtime >= 2m'>
+                           <if test='V2_OR_GREATER'>
                               <code:method-call name='HasParam'>
                                  <copy-of value='select(context, src + "reference", code)'/>
                                  <code:arguments>
@@ -637,7 +637,7 @@
                         </code:block>
                      </code:if>
                   </when>
-                  <when test='src_target_runtime >= 2m
+                  <when test='V2_OR_GREATER
                         &amp;&amp; !accepted'>
                      <code:if>
                         <code:method-call name='HasParam'>

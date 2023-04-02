@@ -43,12 +43,12 @@
       </call-template>
 
       <code:chain>
-         <code:method-call name='{(src_target_runtime >= 2m ? "InvokePackage" : "Using")}'>
+         <code:method-call name='{(V2_OR_GREATER ? "InvokePackage" : "Using")}'>
             <call-template name='src:line-number'>
                <with-param name='el' value='el'/>
             </call-template>
             <choose>
-               <when test='src_target_runtime >= 2m'>
+               <when test='V2_OR_GREATER'>
                   <copy-of value='src_helper_type("DynamicLoading")'/>
                </when>
                <otherwise>

@@ -93,7 +93,7 @@
 
    <variable name='src_qname_type' as='XElement'>
       <choose>
-         <when test='src_target_runtime >= 2m'>
+         <when test='V2_OR_GREATER'>
             <code:type-reference name='XName' namespace='System.Xml.Linq'/>
          </when>
          <otherwise>
@@ -104,7 +104,7 @@
 
    <variable name='src_nullable_qname_type' as='XElement'>
       <choose>
-         <when test='src_target_runtime >= 2m'>
+         <when test='V2_OR_GREATER'>
             <code:type-reference name='XName' namespace='System.Xml.Linq' nullable='true'/>
          </when>
          <otherwise>

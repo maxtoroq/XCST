@@ -943,7 +943,7 @@
                </code:if>
                <code:else>
                   <code:switch>
-                     <code:property-reference name='Namespace{(src_target_runtime >= 2m ? "Name" : null)}'>
+                     <code:property-reference name='Namespace{(V2_OR_GREATER ? "Name" : null)}'>
                         <copy-of value='nameParam'/>
                      </code:property-reference>
                      <for-each-group name='grp' in='modes
@@ -955,7 +955,7 @@
                               <value-of value='grp.Key.NamespaceName'/>
                            </code:string>
                            <code:switch>
-                              <code:property-reference name='{(src_target_runtime >= 2m ? "Local" : null)}Name'>
+                              <code:property-reference name='{(V2_OR_GREATER ? "Local" : null)}Name'>
                                  <copy-of value='nameParam'/>
                               </code:property-reference>
                               <for-each name='mode' in='grp'>
