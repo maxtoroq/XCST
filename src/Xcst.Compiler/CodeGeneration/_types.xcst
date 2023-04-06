@@ -60,7 +60,7 @@
 
       <call-template name='xcst:validate-children'>
          <with-param name='el' value='el'/>
-         <with-param name='allowed' value='new[] { "metadata", "member" }'/>
+         <with-param name='allowed' value='new[] { "meta", "member" }'/>
       </call-template>
 
       <variable name='nameExpr' value='xcst_name(el.Attribute("name")!)'/>
@@ -166,7 +166,7 @@
                <call-template name='src:type-attribute-extra'>
                   <with-param name='el' value='el'/>
                </call-template>
-               <apply-templates value='el.Elements(c + "metadata")' mode='src:attribute'/>
+               <apply-templates value='el.Elements(c + "meta")' mode='src:attribute'/>
             </code:attributes>
             <code:members>
                <variable name='members' value='el.Elements(c + "member").ToArray()'/>
@@ -199,7 +199,7 @@
 
       <call-template name='xcst:validate-children'>
          <with-param name='el' value='el'/>
-         <with-param name='allowed' value='new[] { "metadata", "member" }'/>
+         <with-param name='allowed' value='new[] { "meta", "member" }'/>
       </call-template>
 
       <variable name='asAttr' value='el.Attribute("as")'/>
@@ -259,7 +259,7 @@
             <call-template name='src:member-attribute-extra'>
                <with-param name='el' value='el'/>
             </call-template>
-            <apply-templates value='el.Elements(c + "metadata")' mode='src:attribute'/>
+            <apply-templates value='el.Elements(c + "meta")' mode='src:attribute'/>
          </code:attributes>
          <code:getter>
             <if test='expressionAttr != null'>
@@ -288,11 +288,11 @@
       </code:property>
    </template>
 
-   <template match='XElement el &amp;&amp; el.Name == c + "metadata"' mode='src:attribute'>
+   <template match='XElement el &amp;&amp; el.Name == c + "meta"' mode='src:attribute'>
 
       <call-template name='xcst:validate-attribs'>
          <with-param name='el' value='el'/>
-         <with-param name='required' value='new[] { "name" }'/>
+         <with-param name='required' value='new[] { "type" }'/>
          <with-param name='optional' value='new[] { "args" }'/>
       </call-template>
 
@@ -308,7 +308,7 @@
          <call-template name='src:line-number'>
             <with-param name='el' value='el'/>
          </call-template>
-         <code:type-reference name='{xcst_type(el.Attribute("name")!)}'/>
+         <code:type-reference name='{xcst_type(el.Attribute("type")!)}'/>
          <if test='el.Attribute("args") is XAttribute argsAttr'>
             <code:arguments>
                <code:expression value='{xcst_expression(argsAttr)}'/>

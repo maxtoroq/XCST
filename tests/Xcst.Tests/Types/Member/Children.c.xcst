@@ -11,19 +11,19 @@
          <c:member name='c2'/>
       </c:member>
       <c:member name='d'>
-         <c:metadata name='System.Obsolete'/>
+         <c:meta type='System.Obsolete'/>
       </c:member>
       <c:member name='e'>
-         <c:metadata name='System.Obsolete'/>
-         <c:metadata name='System.ComponentModel.Description' args='"Some description."'/>
+         <c:meta type='System.Obsolete'/>
+         <c:meta type='System.ComponentModel.Description' args='"Some description."'/>
       </c:member>
       <c:member name='f'>
-         <c:metadata name='System.Obsolete'/>
+         <c:meta type='System.Obsolete'/>
          <c:member name='f1'/>
       </c:member>
       <c:member name='g'>
-         <c:metadata name='System.Obsolete'/>
-         <c:metadata name='System.ComponentModel.Description' args='"Some description."'/>
+         <c:meta type='System.Obsolete'/>
+         <c:meta type='System.ComponentModel.Description' args='"Some description."'/>
          <c:member name='g1'/>
          <c:member name='g2'/>
       </c:member>

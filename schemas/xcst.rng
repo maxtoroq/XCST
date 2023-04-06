@@ -530,7 +530,7 @@
          <ref name="validation-or-type-attributes"/>
          <ref name="standard-attributes"/>
          <zeroOrMore>
-            <ref name="metadata"/>
+            <ref name="meta"/>
          </zeroOrMore>
          <zeroOrMore>
             <ref name="member"/>
@@ -546,7 +546,7 @@
             <ref name="identifier"/>
          </attribute>
          <zeroOrMore>
-            <ref name="metadata"/>
+            <ref name="meta"/>
          </zeroOrMore>
          <optional>
             <choice>
@@ -704,11 +704,11 @@
       </element>
    </define>
 
-   <define name="metadata">
-      <element name="metadata">
+   <define name="meta">
+      <element name="meta">
          <ann:documentation>Defines type or member custom metadata.</ann:documentation>
-         <attribute name="name">
-            <ann:documentation>The metadata name.</ann:documentation>
+         <attribute name="type">
+            <ann:documentation>The metadata type.</ann:documentation>
             <ref name="type_name"/>
          </attribute>
          <optional>

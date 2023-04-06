@@ -3,9 +3,9 @@
 
    <c:type name='foo'>
       <c:member name='bar' as='string'>
-         bar
-         <c:metadata value='System.Obsolete'/>
-         <c:metadata value='System.CLSCompliant(true)'/>
+         <a/>
+         <c:meta type='System.Obsolete'/>
+         <c:meta type='System.CLSCompliant' args='true'/>
       </c:member>
    </c:type>
 

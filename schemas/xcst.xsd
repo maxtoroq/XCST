@@ -454,7 +454,7 @@
       </xs:annotation>
       <xs:complexType>
          <xs:sequence>
-            <xs:element minOccurs="0" maxOccurs="unbounded" ref="c:metadata"/>
+            <xs:element minOccurs="0" maxOccurs="unbounded" ref="c:meta"/>
             <xs:element minOccurs="0" maxOccurs="unbounded" ref="c:member"/>
          </xs:sequence>
          <xs:attribute name="name" use="required" type="c:identifier">
@@ -483,7 +483,7 @@
       </xs:annotation>
       <xs:complexType>
          <xs:sequence>
-            <xs:element minOccurs="0" maxOccurs="unbounded" ref="c:metadata"/>
+            <xs:element minOccurs="0" maxOccurs="unbounded" ref="c:meta"/>
             <xs:element minOccurs="0" maxOccurs="unbounded" ref="c:member"/>
          </xs:sequence>
          <xs:attribute name="name" use="required" type="c:identifier">
@@ -669,14 +669,14 @@
          <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>
-   <xs:element name="metadata">
+   <xs:element name="meta">
       <xs:annotation>
          <xs:documentation>Defines type or member custom metadata.</xs:documentation>
       </xs:annotation>
       <xs:complexType>
-         <xs:attribute name="name" use="required" type="c:type_name">
+         <xs:attribute name="type" use="required" type="c:type_name">
             <xs:annotation>
-               <xs:documentation>The metadata name.</xs:documentation>
+               <xs:documentation>The metadata type.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attribute name="args" type="c:expression">

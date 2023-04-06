@@ -2,7 +2,9 @@
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
    <c:type name='foo'>
-      <c:metadata/>
+      foo
+      <c:meta type='System.Obsolete'/>
+      <c:meta type='System.CLSCompliant' args='true'/>
    </c:type>
 
 </c:module>
