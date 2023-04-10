@@ -105,6 +105,8 @@ static class TestsHelper {
          }
       }
 
+      Debug.Assert(correct);
+
       try {
 
          Type packageType;
@@ -123,12 +125,13 @@ static class TestsHelper {
                printCode
             );
 
-            if (!correct) {
-               // did not fail, caller Assert.Throws will
+            if (error) {
+               // did not fail
+               TestAssert.Fail("Compilation was expected to fail and didn't.");
                return;
             }
 
-         } catch (ApplicationException) when (correct) {
+         } catch (ApplicationException) when (!error) {
 
             printCode = true;
             throw;
