@@ -913,9 +913,29 @@
    </template>
 
    <template match='XAttribute attr &amp;&amp; attr.Name == "validation-resource-type"' mode='src:validation-argument'>
+      <param name='packageManifest' as='XElement' tunnel='yes' required='yes'/>
+
       <code:member-initializer name='ErrorMessageResourceType'>
          <code:typeof>
-            <code:type-reference name='{xcst_type(attr)}'/>
+            <variable name='type' value='xcst_type(attr)'/>
+            <choose>
+               <when test='attr.Parent!.Name == c + "validation"'>
+                  <variable name='lastSep' value='type.LastIndexOf(&apos;.&apos;)'/>
+                  <choose>
+                     <when test='lastSep != -1'>
+                        <code:type-reference name='{type.Substring(lastSep + 1)}'
+                           namespace='{type.Substring(0, lastSep)}'/>
+                     </when>
+                     <otherwise>
+                        <code:type-reference name='{type}'
+                           namespace='{select(packageManifest, code + "type-reference").First().Attribute("namespace")!.Value}'/>
+                     </otherwise>
+                  </choose>
+               </when>
+               <otherwise>
+                  <code:type-reference name='{type}'/>
+               </otherwise>
+            </choose>
          </code:typeof>
       </code:member-initializer>
    </template>

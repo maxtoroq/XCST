@@ -521,7 +521,7 @@
       <param name='usePackageEl' as='XElement'/>
       <param name='ns' as='string'/>
 
-      <variable name='name' value='xcst_name(usePackageEl.Attribute("name")!)'/>
+      <variable name='name' value='xcst_type(usePackageEl.Attribute("name")!)'/>
       <return value='
          (name.IndexOf(&apos;.&apos;) != -1) ? name
             : string.Concat((src_use_package_base ?? ns), ".", name)'/>

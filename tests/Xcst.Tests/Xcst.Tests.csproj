@@ -49,6 +49,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources2.resx</DependentUpon>
     </Compile>
+    <Compile Update="Validation\Foo\Resources.Designer.cs">
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
     <Compile Update="Validation\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -73,6 +78,10 @@
     <EmbeddedResource Update="Types\Resources2.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources2.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Validation\Foo\Resources.resx">
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <Generator>PublicResXFileCodeGenerator</Generator>
     </EmbeddedResource>
     <EmbeddedResource Update="Validation\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
