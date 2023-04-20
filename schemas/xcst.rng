@@ -634,15 +634,8 @@
                   <ann:documentation>A text that is displayed for this member when the value is null.</ann:documentation>
                   <ref name="string"/>
                </attribute>
-               <attribute name="template">
-                  <ann:documentation>The name of a template to use when displaying this member in a UI.</ann:documentation>
-                  <ref name="string"/>
-               </attribute>
-            </choice>
-         </zeroOrMore>
-         <zeroOrMore docs:attrib-group="Validation">
-            <choice>
                <attribute name="data-type">
+                  <ann:documentation>A more specific type. Using this attribute can be a way to provide default values to the 'format' and 'template' attributes, and for using a specific input type in HTML.</ann:documentation>
                   <choice>
                      <value>CreditCard</value>
                      <value>Currency</value>
@@ -662,6 +655,14 @@
                      <value>Url</value>
                   </choice>
                </attribute>
+               <attribute name="template">
+                  <ann:documentation>The name of a template to use when displaying this member in a UI.</ann:documentation>
+                  <ref name="string"/>
+               </attribute>
+            </choice>
+         </zeroOrMore>
+         <zeroOrMore docs:attrib-group="Validation">
+            <choice>
                <attribute name="required">
                   <ann:documentation>Specifies if this member is required.</ann:documentation>
                   <ref name="boolean"/>
@@ -852,10 +853,6 @@
    <define name="validation-or-member-attributes">
       <zeroOrMore>
          <choice>
-            <attribute name="data-type-message">
-               <ann:documentation>An error message for the data-type attribute.</ann:documentation>
-               <ref name="string"/>
-            </attribute>
             <attribute name="required-message">
                <ann:documentation>An error message for the required attribute.</ann:documentation>
                <ref name="string"/>

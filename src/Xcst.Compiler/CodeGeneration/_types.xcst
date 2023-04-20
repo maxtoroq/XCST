@@ -25,7 +25,7 @@
 
    <variable name='xcst_validation_or_type_attributes' value='new[] { "validation-resource-type" }' as='string[]'/>
    <variable name='xcst_validation_or_member_attributes' value='new[] {
-      "data-type-message", "required-message", "min-length-message", "max-length-message", "pattern-message",
+      "required-message", "min-length-message", "max-length-message", "pattern-message",
       "range-message", "equal-to-message" }' as='string[]'/>
 
    <variable name='xcst_type_or_member_attributes' value='new[] { "allow-empty-string", "text-member" }' as='string[]'/>
@@ -592,28 +592,12 @@
          <call-template name='src:line-number'>
             <with-param name='el' value='attr.Parent!'/>
          </call-template>
-         <switch value='dataType'>
-            <when test='"EmailAddress" or "CreditCard" or "Url"'>
-               <code:type-reference name='{dataType}' namespace='System.ComponentModel.DataAnnotations'/>
-            </when>
-            <when test='"PhoneNumber"'>
-               <code:type-reference name='Phone' namespace='System.ComponentModel.DataAnnotations'/>
-            </when>
-            <otherwise>
+         <code:type-reference name='DataType' namespace='System.ComponentModel.DataAnnotations'/>
+         <code:arguments>
+            <code:field-reference name='{dataType}'>
                <code:type-reference name='DataType' namespace='System.ComponentModel.DataAnnotations'/>
-               <code:arguments>
-                  <code:field-reference name='{dataType}'>
-                     <code:type-reference name='DataType' namespace='System.ComponentModel.DataAnnotations'/>
-                  </code:field-reference>
-               </code:arguments>
-            </otherwise>
-         </switch>
-         <code:initializer>
-            <call-template name='src:validation-arguments'>
-               <with-param name='el' value='attr.Parent!'/>
-               <with-param name='name' value='attr.Name'/>
-            </call-template>
-         </code:initializer>
+            </code:field-reference>
+         </code:arguments>
       </code:attribute>
    </template>
 
