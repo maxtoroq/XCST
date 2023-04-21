@@ -173,9 +173,18 @@
 
       <for-each name='component' in='select(usedPackages, xcst)
             .Where(p => p.Attribute("visibility")!.Value != "private")'>
+         <variable name='name' value='component.Attribute("name")!.Value'/>
+         <variable name='originalVisibility' value='component.Attribute("visibility")!.Value'/>
          <variable name='id' value='fn_generate_id(component)'/>
          <variable name='overriding' value='localComponents
             .FirstOrDefault(p => p.Attribute("overrides")?.Value == id)'/>
+         <variable name='packageType' value='component.Parent!.Element(code + "type-reference")!'/>
+         <if test='originalVisibility == "abstract"
+               &amp;&amp; overriding is null'>
+            <message terminate='yes' error-data='src_error_object(el)' expand-text='yes' transform-text='trim'>
+               Must override abstract component '{name}' from '{src_qualified_type_name(packageType)}'.
+            </message>
+         </if>
          <variable name='visibility' value='
             (overriding != null) ? "hidden"
             : (component.Name == xcst + "param") ? "public"
@@ -183,7 +192,6 @@
          <variable name='localDuplicate' value='(visibility != "hidden") ?
             localComponents.FirstOrDefault(p => xcst_homonymous(p, component))
             : null'/>
-         <variable name='packageType' value='component.Parent!.Element(code + "type-reference")!'/>
          <if test='localDuplicate != null'>
             <variable name='declaration' value='select(modules, c)
                .Concat(select(modules, c + "use-package", c + "override", c))
@@ -196,7 +204,7 @@
          <if test='acceptedDuplicate != null'>
             <message terminate='yes' error-code='XTSE3050' error-data='src_error_object(el)' expand-text='yes'>
                <text>Cannot accept two or more homonymous components with a visibility other than hidden: </text>
-               <text>'{component.Attribute("name")!.Value}' from {src_qualified_type_name(packageType)}</text>
+               <text>'{name}' from {src_qualified_type_name(packageType)}</text>
                <text> and '{acceptedDuplicate.Attribute("name")!.Value}' from {src_qualified_type_name(acceptedDuplicate.Parent!.Element(code + "type-reference")!)}.</text>
             </message>
          </if>
@@ -204,7 +212,7 @@
             <attribute name='id' value='fn_generate_id(component)'/>
             <copy-of value='attributes(component)'/>
             <attribute name='visibility' value='visibility'/>
-            <attribute name='original-visibility' value='component.Attribute("visibility")!.Value'/>
+            <attribute name='original-visibility' value='originalVisibility'/>
             <attribute name='accepted' value='fn_string(true)'/>
             <attribute name='package-id' value='component.Parent.Attribute("package-id")!.Value'/>
             <attribute name='qualified-types' value='component.Parent.Attribute("qualified-types")!.Value'/>
