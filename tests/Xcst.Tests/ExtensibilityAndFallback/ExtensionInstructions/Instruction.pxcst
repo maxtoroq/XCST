@@ -18,6 +18,12 @@
    <c:param name='src_helper_type' as='Func&lt;string, XElement>' required='yes'/>
    <c:param name='src_line_number' as='Xcst.XcstDelegate&lt;object>' required='yes'/>
 
+   <!--
+      These params are not needed by this extension, but added here to test the correct priming
+   -->
+   <c:param name='xcst_is_value_template' as='Func&lt;object, bool>' required='yes'/>
+   <c:param name='src_template_output' as='Func&lt;XElement?, XElement?, XElement>' required='yes'/>
+
    <c:template match='XElement el &amp;&amp; el.Name == ext + "instruction"' mode='src:statement'>
       <c:param name='output' as='XElement' tunnel='yes'/>
 

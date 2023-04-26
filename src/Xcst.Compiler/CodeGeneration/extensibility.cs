@@ -87,13 +87,13 @@ partial class XcstCompilerPackage {
       if (this.Extensions.TryGetValue(extensionNamespace, out var pkg)) {
 
          var evaluator = XcstEvaluator.Using(pkg)
-            .WithParam("xcst_is_value_template", (System.Delegate)xcst_is_value_template)
+            .WithParam("xcst_is_value_template", (System.Func<object, bool>)xcst_is_value_template)
             .WithParam("xcst_require_output", xcst_require_output)
             .WithParam("src_base_types", src_base_types)
-            .WithParam("src_doc_output", (System.Delegate)src_doc_output)
-            .WithParam("src_output_is_doc", (System.Delegate)src_output_is_doc)
-            .WithParam("src_template_output", (System.Delegate)src_template_output)
-            .WithParam("src_helper_type", (System.Delegate)src_helper_type)
+            .WithParam("src_doc_output", (System.Func<XObject?, XElement?, XElement>)src_doc_output)
+            .WithParam("src_output_is_doc", (System.Func<XElement, bool>)src_output_is_doc)
+            .WithParam("src_template_output", (System.Func<XElement?, XElement?, XElement>)src_template_output)
+            .WithParam("src_helper_type", (System.Func<string, XElement>)src_helper_type)
             .WithParam("src_expand_attribute", src_expand_attribute)
             .WithParam("src_sequence_constructor", src_sequence_constructor)
             .WithParam("src_simple_content", src_simple_content)
