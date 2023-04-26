@@ -23,8 +23,6 @@
    <import-namespace ns='System.Linq'/>
    <import-namespace ns='System.Xml.Linq'/>
 
-   <mode name='xcst:validate-top-level' on-no-match='fail'/>
-
    <variable name='src_context_field'>
       <src:context>
          <copy-of value='src_helper_type("ExecutionContext")'/>

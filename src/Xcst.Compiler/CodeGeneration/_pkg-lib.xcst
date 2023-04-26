@@ -26,7 +26,6 @@
    <mode name='src:lib-overriding' on-no-match='deep-skip'/>
    <mode name='src:lib-override' on-no-match='deep-skip'/>
    <mode name='src:lib-tuple' on-no-match='deep-skip'/>
-   <mode name='src:lib-overriding-value' on-no-match='fail'/>
 
    <template match='XElement el &amp;&amp; el.Name == xcst + "package-manifest"
          &amp;&amp; el.Attribute("qualified-types") is XAttribute qtAttr

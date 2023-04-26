@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Xcst.Compiler" Version="2.0.12" />
+    <PackageReference Include="Xcst.Compiler" Version="2.0.13" />
   </ItemGroup>
 
 </Project>
