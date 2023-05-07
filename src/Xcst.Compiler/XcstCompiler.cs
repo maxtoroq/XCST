@@ -228,8 +228,8 @@ public class XcstCompiler {
 
       var docEl = resultDoc.Root!;
 
-      XNamespace src = XmlNamespaces.XcstCompiled;
-      XNamespace xcst = XmlNamespaces.XcstGrammar;
+      var src = XNamespace.Get(XmlNamespaces.XcstCompiled);
+      var xcst = XNamespace.Get(XmlNamespaces.XcstGrammar);
 
       var result = new CompileResult {
          Language = docEl.Attribute("language")!.Value,
