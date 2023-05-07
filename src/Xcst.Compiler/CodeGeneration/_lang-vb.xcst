@@ -54,8 +54,7 @@
       <variable name='compUnit' as='XElement'>
          <choose>
             <when test='el.Elements(code + "import")
-                  .ToArray() is var imports
-                  &amp;&amp; imports.Length > 0'>
+                  .ToArray() is { Length: > 0 } imports'>
                <code:compilation-unit>
                   <copy-of value='imports'/>
                   <code:namespace>
@@ -266,8 +265,7 @@
 
    <template match='XElement el
          &amp;&amp; el.Name == code + "chain"
-         &amp;&amp; select(el, code).ToArray() is var children
-         &amp;&amp; children.Length > 1' mode='vb:statement'>
+         &amp;&amp; select(el, code).ToArray() is { Length: > 1 } children' mode='vb:statement'>
       <param name='indent' as='int' tunnel='yes'/>
 
       <call-template name='src:new-line-indented'/>
@@ -702,8 +700,7 @@
       <call-template name='vb:member-name'>
          <with-param name='el' value='el'/>
       </call-template>
-      <if test='select(el, code + "type-parameters", code).ToArray() is var typeParams
-            &amp;&amp; typeParams.Length > 0'>
+      <if test='select(el, code + "type-parameters", code).ToArray() is { Length: > 0 } typeParams'>
          <text>(Of </text>
          <apply-templates value='typeParams' separator=', '/>
          <text>)</text>
@@ -775,8 +772,7 @@
       <apply-templates value='select(el, code).First()'/>
       <text>.</text>
       <value-of value='el.Attribute("name")!.Value'/>
-      <if test='select(el, code + "type-arguments", code).ToArray() is var typeArgs
-            &amp;&amp; typeArgs.Length > 0'>
+      <if test='select(el, code + "type-arguments", code).ToArray() is { Length: > 0 } typeArgs'>
          <text>(Of </text>
          <apply-templates value='typeArgs' separator=', '/>
          <text>)</text>
@@ -1238,8 +1234,7 @@
                </when>
             </choose>
             <value-of value='el.Attribute("name")?.Value'/>
-            <if test='select(el, code + "type-arguments", code).ToArray() is XElement[] typeArgs
-                  &amp;&amp; typeArgs.Length > 0'>
+            <if test='select(el, code + "type-arguments", code).ToArray() is { Length: > 0 } typeArgs'>
                <text>(Of </text>
                <apply-templates value='typeArgs' separator=', '>
                   <with-param name='omitNamespaceAlias' value='omitNamespaceAlias'/>

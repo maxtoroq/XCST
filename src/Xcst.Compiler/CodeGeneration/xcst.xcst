@@ -132,9 +132,9 @@
       <param name='manifestOnly' value='src_manifest_only' as='bool'/>
 
       <variable name='packageUri' value='
-         (el.Document?.BaseUri is string uriStr
-            &amp;&amp; uriStr.Length > 0) ? new System.Uri(uriStr)
-         : null'/>
+         (el.Document?.BaseUri is { Length: > 0 } uriStr) ?
+            new System.Uri(uriStr)
+            : null'/>
 
       <variable name='packageName' value='
          (el.Name == c + "package" &amp;&amp; el.Attribute("name") is XAttribute name) ?
@@ -448,7 +448,7 @@
                   .ToArray()'/>
                <src:accept component='{grp.Key}'>
                   <attribute name='names' value='
-                     names.Any(n => n is string nStr &amp;&amp; nStr == "*") ? "*"
+                     names.Any(n => n is "*") ? "*"
                      : string.Join(" ",
                         names.Select(n => (n is XName q) ?
                            xcst_uri_qualified_name(q)
@@ -505,10 +505,7 @@
    <function name='xcst_accept_names_is_wildcard' as='bool'>
       <param name='names' as='object[]'/>
 
-      <return value='
-         (names.Length == 1 &amp;&amp; names[0] is string n) ?
-            n == "*"
-         : false'/>
+      <return value='names.Length == 1 &amp;&amp; names[0] is "*"'/>
    </function>
 
    <function name='xcst_component_qnamed' as='bool'>

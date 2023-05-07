@@ -139,8 +139,7 @@
                initial-mode='{xcst_uri_qualified_name(currentMode)}'
                tunnel-passthru='yes'/>
          </when>
-         <when test='el.Elements(c + "fallback").ToArray() is var fbEls
-               &amp;&amp; fbEls.Length > 0'>
+         <when test='el.Elements(c + "fallback").ToArray() is { Length: > 0 } fbEls'>
             <for-each name='fb' in='fbEls'>
                <call-template name='xcst:validate-attribs'>
                   <with-param name='el' value='fb'/>

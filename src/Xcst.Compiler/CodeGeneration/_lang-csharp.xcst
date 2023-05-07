@@ -254,8 +254,7 @@
 
    <template match='XElement el
          &amp;&amp; el.Name == code + "chain"
-         &amp;&amp; select(el, code).ToArray() is var children
-         &amp;&amp; children.Length > 1' mode='cs:statement'>
+         &amp;&amp; select(el, code).ToArray() is { Length: > 1 } children' mode='cs:statement'>
       <param name='indent' as='int' tunnel='yes'/>
 
       <call-template name='src:new-line-indented'/>
@@ -582,8 +581,7 @@
    <template match='XElement el &amp;&amp; el.Name == code + "initializer"' mode='cs:source'>
       <param name='indent' as='int' tunnel='yes'/>
 
-      <if test='select(el, code).ToArray() is var children
-            &amp;&amp; children.Length > 0'>
+      <if test='select(el, code).ToArray() is { Length: > 0 } children'>
          <call-template name='cs:open-brace'/>
          <text> </text>
          <for-each name='child' in='children' separator=', '>
@@ -1214,8 +1212,7 @@
                <with-param name='verbatim' value='verbatim'/>
             </call-template>
             <value-of value='el.Attribute("name")?.Value'/>
-            <if test='select(el, code + "type-arguments", code).ToArray() is XElement[] typeArgs
-                  &amp;&amp; typeArgs.Length > 0'>
+            <if test='select(el, code + "type-arguments", code).ToArray() is { Length: > 0 } typeArgs'>
                <text>&lt;</text>
                <apply-templates value='typeArgs' separator=', '>
                   <with-param name='omitNamespaceAlias' value='omitNamespaceAlias'/>
