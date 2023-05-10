@@ -253,11 +253,19 @@
             <return value='(b.Name.LocalName is "param" or "variable")
                &amp;&amp; xcst_name_equal(a.Attribute("name"), b.Attribute("name"))'/>
          </when>
-         <when test='"template" or "attribute-set" or "mode"'>
+         <when test='"template" or "attribute-set"'>
             <return value='b.Name.LocalName == a.Name.LocalName
                &amp;&amp; a.Attribute("name") is XAttribute aNameAttr
                &amp;&amp; b.Attribute("name") is XAttribute bNameAttr
                &amp;&amp; xcst_EQName(aNameAttr) == xcst_EQName(bNameAttr)'/>
+         </when>
+         <when test='"mode"'>
+            <return value='b.Name.LocalName == a.Name.LocalName
+               &amp;&amp; a.Attribute("name") is XAttribute aNameAttr
+               &amp;&amp; b.Attribute("name") is XAttribute bNameAttr
+               &amp;&amp; ((aNameAttr.Value.StartsWith("#") || bNameAttr.Value.StartsWith("#")) ?
+                  aNameAttr.Value == bNameAttr.Value
+                  : xcst_EQName(aNameAttr) == xcst_EQName(bNameAttr))'/>
          </when>
          <when test='"function"'>
             <return value='b.Name.LocalName == a.Name.LocalName
