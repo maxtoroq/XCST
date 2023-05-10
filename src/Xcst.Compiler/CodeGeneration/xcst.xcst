@@ -387,7 +387,8 @@
 
       <variable name='components' value='manifest.Elements()
          .Where(p => p.Name.Namespace == xcst
-            &amp;&amp; p.Name.LocalName != "output")
+            &amp;&amp; !(p.Name.LocalName is "output" or "template-rule")
+            &amp;&amp; p.Attribute("visibility") != null)
          .ToArray()'/>
 
       <for-each name='accept' in='select(usePackageEls, c + "accept")'>
