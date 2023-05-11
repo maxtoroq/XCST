@@ -101,11 +101,13 @@
                   </if>
                   <apply-templates value='acceptedPublic
                      .Where(p => p.Name != xcst + "type"
-                        &amp;&amp; p.Attribute("declaring-module-uri")!.Value == uri)
+                        &amp;&amp; p.Attribute("declaring-module-uri") is XAttribute declModUriAttr
+                        &amp;&amp; declModUriAttr.Value == uri)
                      .OrderByDescending(p => p.Name == xcst + "param" || p.Name == xcst + "variable")' mode='src:member'/>
                   <apply-templates value='el' mode='src:lib-class'>
                      <with-param name='overridden' value='overridden
-                        .Where(p => p.Attribute("declaring-module-uri")!.Value == uri)
+                        .Where(p => p.Attribute("declaring-module-uri") is XAttribute declModUriAttr
+                           &amp;&amp; declModUriAttr.Value == uri)
                         .ToArray()'/>
                   </apply-templates>
                </code:members>
