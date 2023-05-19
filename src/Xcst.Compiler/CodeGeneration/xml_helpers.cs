@@ -25,12 +25,12 @@ namespace Xcst.Compiler;
 
 partial class XcstCompilerPackage {
 
-   static IEnumerable<XAttribute>
+   public static IEnumerable<XAttribute>
    attributes(XElement node) =>
       node.Attributes()
          .Where(p => !p.IsNamespaceDeclaration);
 
-   static IEnumerable<XAttribute>
+   public static IEnumerable<XAttribute>
    attributes(IEnumerable<XElement> nodes, XName name) =>
       nodes.Select(p => p.Attribute(name))
          .Where(p => p != null)
@@ -57,10 +57,10 @@ partial class XcstCompilerPackage {
       return XDocument.Load(reader, opts);
    }
 
-   static bool
+   public static bool
    fn_empty<T>(T[] p) => p.Length == 0;
 
-   static bool
+   public static bool
    fn_empty<T>(IEnumerable<T> p) => !p.Any();
 
    static string
@@ -123,7 +123,7 @@ partial class XcstCompilerPackage {
    fn_normalize_space(string? str) =>
       SimpleContent.NormalizeSpace(str);
 
-   static IEnumerable<XElement>
+   public static IEnumerable<XElement>
    preceding_sibling(XNode node, object name) {
 
       var result = node.ElementsBeforeSelf()
@@ -175,11 +175,11 @@ partial class XcstCompilerPackage {
       return new Uri(uri, relative);
    }
 
-   static IEnumerable<XElement>
+   public static IEnumerable<XElement>
    select(IEnumerable<XElement> nodes, params object[] names) =>
       nodes.SelectMany(p => select(p, names));
 
-   static IEnumerable<XElement>
+   public static IEnumerable<XElement>
    select(XElement? node, params object[] names) {
 
       if (node is null) {
@@ -248,7 +248,7 @@ partial class XcstCompilerPackage {
       return str.Substring(0, i);
    }
 
-   static string[]
+   public static string[]
    fn_tokenize(string str) =>
       DataType.List(str, DataType.String)
          .ToArray();
@@ -269,15 +269,15 @@ partial class XcstCompilerPackage {
       return null;
    }
 
-   static bool
+   public static bool
    xs_boolean(XObject node) =>
       XmlConvert.ToBoolean(fn_string(node));
 
-   static int
+   public static int
    xs_integer(string str) =>
       XmlConvert.ToInt32(str);
 
-   static int
+   public static int
    xs_integer(XObject node) =>
       xs_integer(fn_string(node));
 }

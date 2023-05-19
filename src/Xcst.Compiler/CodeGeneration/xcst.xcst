@@ -19,8 +19,6 @@
    xmlns:xcst='https://maxtoroq.github.io/XCST/grammar'
    xmlns:code='https://maxtoroq.github.io/XCST/code'
    xmlns:src='https://maxtoroq.github.io/XCST/compiled'
-   xmlns:cs='https://maxtoroq.github.io/XCST/csharp'
-   xmlns:vb='https://maxtoroq.github.io/XCST/vb'
    xmlns:xi='http://www.w3.org/2001/XInclude'>
 
    <import-namespace ns='System.Collections.Generic'/>
@@ -550,24 +548,24 @@
                <when test='src_compilation_unit_handler != null'>
                   <variable name='href' expand-text='yes'>{namePrefix}.{nameSuffix}.cs</variable>
                   <result-document output='src_compilation_unit_handler.Invoke(href)' method='text'>
-                     <call-template name='cs:nullable-directive'/>
+                     <call-template name='cs-nullable-directive'/>
                      <for-each name='ns' in='namespaces'>
-                        <call-template name='cs:serialize'>
+                        <call-template name='cs-serialize'>
                            <with-param name='el' value='ns'/>
                         </call-template>
                      </for-each>
-                     <call-template name='cs:nullable-restore'/>
+                     <call-template name='cs-nullable-restore'/>
                   </result-document>
                </when>
                <otherwise>
                   <src:compilation-unit>
-                     <call-template name='cs:nullable-directive'/>
+                     <call-template name='cs-nullable-directive'/>
                      <for-each name='ns' in='namespaces'>
-                        <call-template name='cs:serialize'>
+                        <call-template name='cs-serialize'>
                            <with-param name='el' value='ns'/>
                         </call-template>
                      </for-each>
-                     <call-template name='cs:nullable-restore'/>
+                     <call-template name='cs-nullable-restore'/>
                   </src:compilation-unit>
                </otherwise>
             </choose>
@@ -580,14 +578,14 @@
                   <when test='src_compilation_unit_handler != null'>
                      <variable name='href' expand-text='yes'>{namePrefix}.{i + 1}.{nameSuffix}.vb</variable>
                      <result-document output='src_compilation_unit_handler.Invoke(href)' method='text'>
-                        <call-template name='vb:serialize'>
+                        <call-template name='vb-serialize'>
                            <with-param name='el' value='ns'/>
                         </call-template>
                      </result-document>
                   </when>
                   <otherwise>
                      <src:compilation-unit>
-                        <call-template name='vb:serialize'>
+                        <call-template name='vb-serialize'>
                            <with-param name='el' value='ns'/>
                         </call-template>
                      </src:compilation-unit>

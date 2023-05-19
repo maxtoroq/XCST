@@ -18,16 +18,92 @@
    xmlns='http://maxtoroq.github.io/XCST'
    xmlns:code='https://maxtoroq.github.io/XCST/code'
    xmlns:src='https://maxtoroq.github.io/XCST/compiled'
-   xmlns:cs='https://maxtoroq.github.io/XCST/csharp'>
+   xmlns:cs='https://maxtoroq.github.io/XCST/csharp'
+   xmlns:vb='https://maxtoroq.github.io/XCST/vb'>
 
    <import-namespace ns='System.Linq'/>
    <import-namespace ns='System.Xml.Linq'/>
 
-   <import href='_lang-csharp.xcst'/>
-   <import href='_lang-vb.xcst'/>
+   <use-package name='CSharpSerializer'>
+      <override>
+         <variable name='cs_new_line' value='src_new_line' as='string'/>
+         <variable name='cs_indent' value='src_indent' as='string'/>
+         <variable name='cs_use_line_directive' value='src_use_line_directive' as='bool'/>
+         <template match='XElement el &amp;&amp; el.Name == code + "region"' mode='cs:source'>
+            <if test='select(el, code).Any()'>
+               <next-match/>
+            </if>
+         </template>
+      </override>
+   </use-package>
+
+   <use-package name='VisualBasicSerializer'>
+      <override>
+         <variable name='vb_new_line' value='src_new_line' as='string'/>
+         <variable name='vb_indent' value='src_indent' as='string'/>
+         <variable name='vb_use_line_directive' value='src_use_line_directive' as='bool'/>
+         <template match='XElement el &amp;&amp; el.Name == code + "region"' mode='vb:source'>
+            <if test='select(el, code).Any()'>
+               <next-match/>
+            </if>
+         </template>
+      </override>
+   </use-package>
 
    <param name='src_new_line' xml:space='preserve'>&#xA;</param>
    <param name='src_indent' xml:space='preserve'>    </param>
+
+   <variable name='xcst_csharp_lang'>C#</variable>
+   <variable name='xcst_vb_lang'>VisualBasic</variable>
+
+   <template name='cs-serialize'>
+      <param name='el' as='XElement' required='yes'/>
+
+      <apply-templates value='el' mode='cs:source'>
+         <with-param name='indent' value='0' tunnel='yes'/>
+      </apply-templates>
+   </template>
+
+   <template name='vb-serialize'>
+      <param name='el' as='XElement' required='yes'/>
+
+      <assert test='el.Name == code + "namespace"'/>
+
+      <variable name='compUnit' as='XElement'>
+         <choose>
+            <when test='el.Elements(code + "import")
+                  .ToArray() is { Length: > 0 } imports'>
+               <code:compilation-unit>
+                  <copy-of value='imports'/>
+                  <code:namespace>
+                     <copy-of value='attributes(el)'/>
+                     <copy-of value='select(el, code)
+                        .Except(imports)'/>
+                  </code:namespace>
+               </code:compilation-unit>
+            </when>
+            <otherwise value='el'/>
+         </choose>
+      </variable>
+      <apply-templates value='compUnit' mode='vb:source'>
+         <with-param name='indent' value='0' tunnel='yes'/>
+      </apply-templates>
+   </template>
+
+   <template name='cs-nullable-directive'>
+      <if test='cs_nullable_context != null'>
+         <call-template name='src:new-line-indented'/>
+         <text>#nullable </text>
+         <value-of value='cs_nullable_context'/>
+      </if>
+   </template>
+
+   <template name='cs-nullable-restore'>
+      <if test='cs_nullable_context != null'>
+         <call-template name='src:new-line-indented'/>
+         <text>#nullable restore</text>
+      </if>
+   </template>
 
    <function name='xcst_cardinality' as='TypeCardinality'>
       <param name='name' as='string'/>

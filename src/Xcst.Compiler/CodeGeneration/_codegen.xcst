@@ -18,9 +18,7 @@
    xmlns='http://maxtoroq.github.io/XCST'
    xmlns:xcst='https://maxtoroq.github.io/XCST/grammar'
    xmlns:code='https://maxtoroq.github.io/XCST/code'
-   xmlns:src='https://maxtoroq.github.io/XCST/compiled'
-   xmlns:cs='https://maxtoroq.github.io/XCST/csharp'
-   xmlns:vb='https://maxtoroq.github.io/XCST/vb'>
+   xmlns:src='https://maxtoroq.github.io/XCST/compiled'>
 
    <import-namespace ns='System.Linq'/>
    <import-namespace ns='System.Xml.Linq'/>
@@ -233,12 +231,6 @@
             </code:field-reference>
          </code:arguments>
       </code:attribute>
-   </template>
-
-   <template match='XElement el &amp;&amp; el.Name == code + "region"' mode='cs:source vb:source'>
-      <if test='select(el, code).Any()'>
-         <next-match/>
-      </if>
    </template>
 
 </module>

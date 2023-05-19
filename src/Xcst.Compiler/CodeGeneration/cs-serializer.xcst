@@ -14,25 +14,34 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -->
-<module version='1.0' language='C#'
+<package name='Xcst.Compiler.CSharpSerializer' version='1.0' language='C#'
    xmlns='http://maxtoroq.github.io/XCST'
    xmlns:code='https://maxtoroq.github.io/XCST/code'
-   xmlns:src='https://maxtoroq.github.io/XCST/compiled'
    xmlns:cs='https://maxtoroq.github.io/XCST/csharp'>
 
    <import-namespace ns='System.Collections.Generic'/>
    <import-namespace ns='System.Linq'/>
    <import-namespace ns='System.Xml.Linq'/>
+   <import-namespace ns='static XcstCompilerPackage'/>
 
-   <mode name='cs:source' on-no-match='deep-skip'/>
-   <mode name='cs:statement' on-no-match='deep-skip'/>
+   <import href='_type_reference_equal.xcst'/>
+
+   <mode name='cs:source' on-no-match='deep-skip' visibility='public'/>
+   <mode name='cs:statement' on-no-match='deep-skip' visibility='public'/>
 
    <param name='cs_open_brace_on_new_line' as='bool'/>
    <param name='cs_nullable_annotate' as='bool'/>
    <param name='cs_nullable_context' as='string?'/>
+   <param name='cs_new_line' xml:space='preserve'>&#xA;</param>
+   <param name='cs_indent' xml:space='preserve'>    </param>
+   <param name='cs_use_line_directive' as='bool'/>
 
-   <variable name='xcst_csharp_lang'>C#</variable>
    <variable name='cs_statement_delimiter'>;</variable>
+   <variable name='code' value='XmlNamespaces.XcstCode' as='XNamespace'/>
+
+   <variable name='src_object_type'>
+      <code:type-reference name='Object' namespace='System'/>
+   </variable>
 
    <variable name='cs_primitives'>
       <data xmlns=''>
@@ -51,31 +60,8 @@
       </data>
    </variable>
 
-   <template name='cs:serialize'>
-      <param name='el' as='XElement' required='yes'/>
-
-      <apply-templates value='el' mode='cs:source'>
-         <with-param name='indent' value='0' tunnel='yes'/>
-      </apply-templates>
-   </template>
-
-   <template name='cs:nullable-directive'>
-      <if test='cs_nullable_context != null'>
-         <call-template name='src:new-line-indented'/>
-         <text>#nullable </text>
-         <value-of value='cs_nullable_context'/>
-      </if>
-   </template>
-
-   <template name='cs:nullable-restore'>
-      <if test='cs_nullable_context != null'>
-         <call-template name='src:new-line-indented'/>
-         <text>#nullable restore</text>
-      </if>
-   </template>
-
    <template match='XElement el &amp;&amp; el.Name.Namespace == code' mode='cs:source cs:statement'>
-      <message terminate='yes' error-code='CS0001' error-data='src_error_object(el)' expand-text='yes' transform-text='trim'>
+      <message terminate='yes' error-code='CS0001' error-data='ErrorData(el)' expand-text='yes' transform-text='trim'>
          Element code:{el.Name.LocalName} cannot be compiled to C#.
       </message>
    </template>
@@ -113,7 +99,7 @@
       <call-template name='cs:line-pragma'>
          <with-param name='el' value='el'/>
       </call-template>
-      <call-template name='src:new-line-indented'/>
+      <call-template name='new-line-indented'/>
       <apply-templates value='select(el, code)' separator=' = ' mode='cs:source'/>
       <value-of value='cs_statement_delimiter'/>
    </template>
@@ -129,7 +115,7 @@
       <call-template name='cs:line-pragma'>
          <with-param name='el' value='el'/>
       </call-template>
-      <call-template name='src:new-line-indented'/>
+      <call-template name='new-line-indented'/>
       <text>[</text>
       <apply-templates value='el.Element(code + "type-reference")'/>
       <variable name='argsAndInit' value='
@@ -152,7 +138,7 @@
       <call-template name='cs:line-pragma'>
          <with-param name='el' value='el'/>
       </call-template>
-      <call-template name='src:new-line-indented'/>
+      <call-template name='new-line-indented'/>
       <apply-templates value='el' mode='cs:source'/>
    </template>
 
@@ -174,7 +160,7 @@
       <call-template name='cs:line-pragma'>
          <with-param name='el' value='el'/>
       </call-template>
-      <call-template name='src:new-line-indented'/>
+      <call-template name='new-line-indented'/>
       <text>break</text>
       <value-of value='cs_statement_delimiter'/>
    </template>
@@ -185,7 +171,7 @@
       <call-template name='cs:line-pragma'>
          <with-param name='el' value='el'/>
       </call-template>
-      <call-template name='src:new-line-indented'/>
+      <call-template name='new-line-indented'/>
       <text>case </text>
       <apply-templates value='select(el, code).First()'/>
       <text>:</text>
@@ -207,7 +193,7 @@
       <call-template name='cs:line-pragma'>
          <with-param name='el' value='el'/>
       </call-template>
-      <call-template name='src:new-line-indented'/>
+      <call-template name='new-line-indented'/>
       <text>default:</text>
       <choose>
          <when test='el.Element(code + "block") is XElement blockEl'>
@@ -257,10 +243,10 @@
          &amp;&amp; select(el, code).ToArray() is { Length: > 1 } children' mode='cs:statement'>
       <param name='indent' as='int' tunnel='yes'/>
 
-      <call-template name='src:new-line-indented'/>
+      <call-template name='new-line-indented'/>
       <apply-templates value='children[0]' mode='cs:source'/>
       <for-each name='child' in='children.Skip(1)'>
-         <call-template name='src:new-line-indented'>
+         <call-template name='new-line-indented'>
             <with-param name='indent' value='indent + 1' tunnel='yes'/>
          </call-template>
          <apply-templates value='child' mode='cs:source'/>
@@ -291,12 +277,12 @@
    </template>
 
    <template match='XElement el &amp;&amp; el.Name == code + "constructor"' mode='cs:source'>
-      <value-of value='src_new_line'/>
+      <value-of value='cs_new_line'/>
       <apply-templates value='select(el, code + "attributes", code)'/>
       <call-template name='cs:line-pragma'>
          <with-param name='el' value='el'/>
       </call-template>
-      <call-template name='src:new-line-indented'/>
+      <call-template name='new-line-indented'/>
       <if test='el.Attribute("visibility") is XAttribute visibilityAttr
             &amp;&amp; visibilityAttr.Value != "#default"'>
          <value-of value='visibilityAttr.Value'/>
@@ -314,18 +300,18 @@
    </template>
 
    <template match='XElement el &amp;&amp; el.Name == code + "continue"' mode='cs:statement'>
-      <call-template name='src:new-line-indented'/>
+      <call-template name='new-line-indented'/>
       <text>continue</text>
       <value-of value='cs_statement_delimiter'/>
    </template>
 
    <template match='XElement el &amp;&amp; el.Name == code + "conversion"' mode='cs:source'>
-      <value-of value='src_new_line'/>
+      <value-of value='cs_new_line'/>
       <apply-templates value='select(el, code + "attributes", code)'/>
       <call-template name='cs:line-pragma'>
          <with-param name='el' value='el'/>
       </call-template>
-      <call-template name='src:new-line-indented'/>
+      <call-template name='new-line-indented'/>
       <text>public static </text>
       <choose>
          <when test='el.Attribute("implicit") is XAttribute implicitAttr
@@ -352,7 +338,7 @@
    </template>
 
    <template match='XElement el &amp;&amp; el.Name == code + "disable-warning"' mode='cs:source cs:statement'>
-      <value-of value='src_new_line'/>
+      <value-of value='cs_new_line'/>
       <text>#pragma warning disable </text>
       <value-of value='fn_tokenize(el.Attribute("codes")!.Value)' separator=','/>
    </template>
@@ -397,7 +383,7 @@
    <template match='XElement el &amp;&amp; el.Name == code + "expression"' mode='cs:statement'>
       <choose>
          <when test='el.Attribute("value") is XAttribute valueAttr'>
-            <call-template name='src:new-line-indented'/>
+            <call-template name='new-line-indented'/>
             <value-of value='valueAttr.Value'/>
             <value-of value='cs_statement_delimiter'/>
          </when>
@@ -410,13 +396,13 @@
    <template match='XElement el &amp;&amp; el.Name == code + "field"' mode='cs:source'>
       <if test='!(preceding_sibling(el, code)
             .FirstOrDefault()?.Name == code + "field")'>
-         <value-of value='src_new_line'/>
+         <value-of value='cs_new_line'/>
       </if>
       <apply-templates value='select(el, code + "attributes", code)'/>
       <call-template name='cs:line-pragma'>
          <with-param name='el' value='el'/>
       </call-template>
-      <call-template name='src:new-line-indented'/>
+      <call-template name='new-line-indented'/>
       <if test='el.Attribute("visibility") is XAttribute visibilityAttr
             &amp;&amp; visibilityAttr.Value != "#default"'>
          <value-of value='visibilityAttr.Value'/>
@@ -474,7 +460,7 @@
       <call-template name='cs:line-pragma'>
          <with-param name='el' value='el'/>
       </call-template>
-      <call-template name='src:new-line-indented'/>
+      <call-template name='new-line-indented'/>
       <text>foreach (</text>
       <apply-templates value='select(el, code).First()' mode='cs:source'/>
       <text>)</text>
@@ -488,7 +474,7 @@
       </call-template>
       <choose>
          <when test='block != null'>
-            <call-template name='src:new-line-indented'/>
+            <call-template name='new-line-indented'/>
          </when>
          <otherwise value='" "'/>
       </choose>
@@ -521,7 +507,7 @@
       <call-template name='cs:line-pragma'>
          <with-param name='el' value='el'/>
       </call-template>
-      <call-template name='src:new-line-indented'/>
+      <call-template name='new-line-indented'/>
       <if test='el.Parent!.Name == code + "if-else"
             &amp;&amp; preceding_sibling(el, code + "if").Any()'>
          <text> else </text>
@@ -536,7 +522,7 @@
       <call-template name='cs:line-pragma'>
          <with-param name='el' value='el'/>
       </call-template>
-      <call-template name='src:new-line-indented'/>
+      <call-template name='new-line-indented'/>
       <text>using </text>
       <if test='el.Attribute("static") is XAttribute staticAttr
          &amp;&amp; xs_boolean(staticAttr)'>static </if>
@@ -588,7 +574,7 @@
             <call-template name='cs:line-pragma'>
                <with-param name='el' value='el'/>
             </call-template>
-            <call-template name='src:new-line-indented'>
+            <call-template name='new-line-indented'>
                <with-param name='indent' value='indent + 1' tunnel='yes'/>
             </call-template>
             <apply-templates value='child'>
@@ -649,13 +635,13 @@
    </template>
 
    <template match='XElement el &amp;&amp; el.Name == code + "method"' mode='cs:source'>
-      <value-of value='src_new_line'/>
+      <value-of value='cs_new_line'/>
       <apply-templates value='select(el, code + "attributes", code)'/>
       <call-template name='cs:line-pragma'>
          <with-param name='el' value='el'/>
       </call-template>
       <variable name='implementsInterface' value='el.Element(code + "implements-interface")'/>
-      <call-template name='src:new-line-indented'/>
+      <call-template name='new-line-indented'/>
       <if test='el.Attribute("visibility") is XAttribute visibilityAttr
             &amp;&amp; visibilityAttr.Value != "#default"
             &amp;&amp; implementsInterface is null'>
@@ -711,7 +697,7 @@
       <call-template name='cs:line-pragma'>
          <with-param name='el' value='el'/>
       </call-template>
-      <call-template name='src:new-line-indented'/>
+      <call-template name='new-line-indented'/>
       <apply-templates value='el' mode='cs:source'/>
       <value-of value='cs_statement_delimiter'/>
    </template>
@@ -763,8 +749,8 @@
    <template match='XElement el &amp;&amp; el.Name == code + "namespace"' mode='cs:source'>
       <param name='indent' as='int' tunnel='yes'/>
 
-      <value-of value='src_new_line'/>
-      <call-template name='src:new-line-indented'/>
+      <value-of value='cs_new_line'/>
+      <call-template name='new-line-indented'/>
       <text>namespace </text>
       <value-of value='el.Attribute("name")!.Value'/>
       <call-template name='cs:open-brace'/>
@@ -899,12 +885,12 @@
             &amp;&amp; (setter is null || setter.Element(code + "block") is null)'/>
       <variable name='implementsInterface' value='el.Element(code + "implements-interface")'/>
 
-      <value-of value='src_new_line'/>
+      <value-of value='cs_new_line'/>
       <apply-templates value='select(el, code + "attributes", code)'/>
       <call-template name='cs:line-pragma'>
          <with-param name='el' value='el'/>
       </call-template>
-      <call-template name='src:new-line-indented'/>
+      <call-template name='new-line-indented'/>
       <if test='el.Attribute("visibility") is XAttribute visibilityAttr
             &amp;&amp; visibilityAttr.Value != "#default"
             &amp;&amp; implementsInterface is null'>
@@ -960,17 +946,17 @@
    </template>
 
    <template match='XElement el &amp;&amp; el.Name == code + "region"' mode='cs:source'>
-      <value-of value='src_new_line'/>
-      <call-template name='src:new-line-indented'/>
+      <value-of value='cs_new_line'/>
+      <call-template name='new-line-indented'/>
       <text>#region </text>
       <value-of value='el.Attribute("name")!.Value'/>
       <apply-templates value='el.Nodes()'/>
-      <call-template name='src:new-line-indented'/>
+      <call-template name='new-line-indented'/>
       <text>#endregion</text>
    </template>
 
    <template match='XElement el &amp;&amp; el.Name == code + "restore-warning"' mode='cs:source cs:statement'>
-      <value-of value='src_new_line'/>
+      <value-of value='cs_new_line'/>
       <text>#pragma warning restore </text>
       <value-of value='fn_tokenize(el.Attribute("codes")!.Value)' separator=','/>
    </template>
@@ -979,7 +965,7 @@
       <call-template name='cs:line-pragma'>
          <with-param name='el' value='el'/>
       </call-template>
-      <call-template name='src:new-line-indented'/>
+      <call-template name='new-line-indented'/>
       <text>return</text>
       <if test='select(el, code).FirstOrDefault() is XElement child'>
          <text> </text>
@@ -992,7 +978,7 @@
       <call-template name='cs:line-pragma'>
          <with-param name='el' value='el'/>
       </call-template>
-      <value-of value='src_new_line'/>
+      <value-of value='cs_new_line'/>
       <value-of value='el.Value'/>
    </template>
 
@@ -1003,7 +989,7 @@
       </call-template>
       <choose>
          <when test='block != null'>
-            <call-template name='src:new-line-indented'/>
+            <call-template name='new-line-indented'/>
          </when>
          <otherwise value='" "'/>
       </choose>
@@ -1096,7 +1082,7 @@
       <call-template name='cs:line-pragma'>
          <with-param name='el' value='el'/>
       </call-template>
-      <call-template name='src:new-line-indented'/>
+      <call-template name='new-line-indented'/>
       <text>switch (</text>
       <apply-templates value='select(el, code).First()' mode='cs:source'/>
       <text>)</text>
@@ -1115,7 +1101,7 @@
       <call-template name='cs:line-pragma'>
          <with-param name='el' value='el'/>
       </call-template>
-      <call-template name='src:new-line-indented'/>
+      <call-template name='new-line-indented'/>
       <apply-templates value='el' mode='cs:source'/>
       <value-of value='cs_statement_delimiter'/>
    </template>
@@ -1129,7 +1115,7 @@
       <call-template name='cs:line-pragma'>
          <with-param name='el' value='el'/>
       </call-template>
-      <call-template name='src:new-line-indented'/>
+      <call-template name='new-line-indented'/>
       <text>try</text>
       <apply-templates value='el.Element(code + "block")' mode='cs:source'/>
       <apply-templates value='select(el, code + "catch")' mode='cs:source'/>
@@ -1139,12 +1125,12 @@
    <template match='XElement el &amp;&amp; el.Name == code + "type"' mode='cs:source'>
       <param name='indent' as='int' tunnel='yes'/>
 
-      <value-of value='src_new_line'/>
+      <value-of value='cs_new_line'/>
       <apply-templates value='select(el, code + "attributes", code)'/>
       <call-template name='cs:line-pragma'>
          <with-param name='el' value='el'/>
       </call-template>
-      <call-template name='src:new-line-indented'/>
+      <call-template name='new-line-indented'/>
       <if test='el.Attribute("visibility") is XAttribute visibilityAttr
             &amp;&amp; visibilityAttr.Value != "#default"'>
          <value-of value='visibilityAttr.Value'/>
@@ -1274,7 +1260,7 @@
       <call-template name='cs:line-pragma'>
          <with-param name='el' value='el'/>
       </call-template>
-      <call-template name='src:new-line-indented'/>
+      <call-template name='new-line-indented'/>
       <text>using (</text>
       <apply-templates value='select(el, code).First()' mode='cs:source'>
          <with-param name='indent' value='indent + 1' tunnel='yes'/>
@@ -1287,7 +1273,7 @@
       <call-template name='cs:line-pragma'>
          <with-param name='el' value='el'/>
       </call-template>
-      <call-template name='src:new-line-indented'/>
+      <call-template name='new-line-indented'/>
       <apply-templates value='el' mode='cs:source'/>
       <value-of value='cs_statement_delimiter'/>
    </template>
@@ -1326,7 +1312,7 @@
       <call-template name='cs:line-pragma'>
          <with-param name='el' value='el'/>
       </call-template>
-      <call-template name='src:new-line-indented'/>
+      <call-template name='new-line-indented'/>
       <text>while (</text>
       <apply-templates value='select(el, code).First()' mode='cs:source'/>
       <text>)</text>
@@ -1336,7 +1322,7 @@
 
    <!-- ## Syntax -->
 
-   <function name='cs_cardinality' as='TypeCardinality'>
+   <function name='cs_cardinality' as='TypeCardinality' visibility='public'>
       <param name='name' as='string'/>
 
       <return value='(name.EndsWith("[]")) ?
@@ -1344,7 +1330,7 @@
          : TypeCardinality.One'/>
    </function>
 
-   <function name='cs_item_type' as='string'>
+   <function name='cs_item_type' as='string' visibility='public'>
       <param name='name' as='string'/>
 
       <return value='(name.EndsWith("[]")) ?
@@ -1352,13 +1338,13 @@
          : name'/>
    </function>
 
-   <function name='cs_non_nullable_type' as='string'>
+   <function name='cs_non_nullable_type' as='string' visibility='public'>
       <param name='name' as='string'/>
 
       <return value="name.TrimEnd('?')"/>
    </function>
 
-   <function name='cs_quotes_to_escape' as='int[]'>
+   <function name='cs_quotes_to_escape' as='int[]' visibility='public'>
       <param name='text' as='string'/>
       <param name='contextNode' as='XObject'/>
 
@@ -1493,7 +1479,7 @@
       </while>
 
       <if test='!(modes.Count == 1)'>
-         <message terminate='yes' error-code='XTSE0350' error-data='src_error_object(contextNode)' transform-text='trim'>
+         <message terminate='yes' error-code='XTSE0350' error-data='ErrorData(contextNode)' transform-text='trim'>
             Value template brace mismatch.
          </message>
       </if>
@@ -1501,7 +1487,7 @@
       <return value='quotes.ToArray()'/>
    </function>
 
-   <function name='cs_unescape_identifier' as='string'>
+   <function name='cs_unescape_identifier' as='string' visibility='public'>
       <param name='name' as='string'/>
 
       <return value='(name[0] == &apos;@&apos;) ? name.Substring(1) : name'/>
@@ -1537,7 +1523,7 @@
    <template name='cs:open-brace'>
       <choose>
          <when test='cs_open_brace_on_new_line'>
-            <call-template name='src:new-line-indented'/>
+            <call-template name='new-line-indented'/>
          </when>
          <otherwise>
             <text> </text>
@@ -1550,7 +1536,7 @@
       <param name='omitNewLine' value='false' as='bool'/>
 
       <if test='!omitNewLine'>
-         <call-template name='src:new-line-indented'/>
+         <call-template name='new-line-indented'/>
       </if>
       <text>}</text>
    </template>
@@ -1559,29 +1545,36 @@
       <param name='el' as='XElement' required='yes'/>
       <param name='appendLine' value='false' as='bool'/>
 
-      <if test='src_use_line_directive'>
+      <if test='cs_use_line_directive'>
          <choose>
             <when test='el.Attribute("line-number") is XAttribute lineNumberAttr
                   &amp;&amp; el.Attribute("line-uri") is XAttribute lineUriAttr'>
-               <call-template name='src:new-line-indented'/>
+               <call-template name='new-line-indented'/>
                <text>#line </text>
                <value-of value='lineNumberAttr.Value'/>
                <text> </text>
                <value-of value='cs_string(new System.Uri(lineUriAttr.Value).LocalPath)'/>
                <if test='appendLine'>
-                  <call-template name='src:new-line-indented'/>
+                  <call-template name='new-line-indented'/>
                </if>
             </when>
             <when test='el.Attribute("line-hidden") is XAttribute lineHiddenAttr
                   &amp;&amp; xs_boolean(lineHiddenAttr)'>
-               <call-template name='src:new-line-indented'/>
+               <call-template name='new-line-indented'/>
                <text>#line hidden</text>
                <if test='appendLine'>
-                  <call-template name='src:new-line-indented'/>
+                  <call-template name='new-line-indented'/>
                </if>
             </when>
          </choose>
       </if>
    </template>
 
-</module>
+   <template name='new-line-indented'>
+      <param name='indent' value='0' as='int' tunnel='yes'/>
+
+      <value-of value='cs_new_line'/>
+      <value-of value='Enumerable.Repeat(cs_indent, indent)' separator=''/>
+   </template>
+
+</package>
