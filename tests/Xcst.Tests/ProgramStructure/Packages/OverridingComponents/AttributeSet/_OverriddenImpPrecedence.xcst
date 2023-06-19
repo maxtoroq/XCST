@@ -1,9 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
-   <c:use-package name='OverrideOverridden'>
+   <c:use-package name='OverriddenImpPrecedence'>
       <c:override>
-         <c:variable name='foo' as='string'>bar</c:variable>
+         <c:attribute-set name='foo'>
+            <c:attribute name='bar'>bar</c:attribute>
+         </c:attribute-set>
       </c:override>
    </c:use-package>
 

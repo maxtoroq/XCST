@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<c:package name='OverrideOverridden' version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+<c:package name='OverriddenImpPrecedence' version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
-   <c:variable name='foo' as='string' visibility='public'>foo</c:variable>
+   <c:param name='foo' as='string'>foo</c:param>
 
    <c:template name='foo' visibility='public'>
       <foo>

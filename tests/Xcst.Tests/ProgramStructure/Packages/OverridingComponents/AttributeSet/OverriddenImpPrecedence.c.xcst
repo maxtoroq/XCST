@@ -1,16 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
-   <c:use-package name='OverrideOverridden'>
+   <c:use-package name='OverriddenImpPrecedence'>
       <c:override>
-         <c:param name='foo' as='string'>baz</c:param>
+         <c:attribute-set name='foo'>
+            <c:attribute name='baz'>baz</c:attribute>
+         </c:attribute-set>
       </c:override>
    </c:use-package>
 
-   <c:import href='_OverrideOverridden.xcst'/>
+   <c:import href='_OverriddenImpPrecedence.xcst'/>
 
    <c:template name='expected'>
-      <foo>baz</foo>
+      <foo baz="baz"/>
    </c:template>
 
 </c:module>
