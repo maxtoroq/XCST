@@ -1,20 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
-   <c:import href='_Hidden.xcst'/>
+   <c:import href='_ImpPrecedence3.xcst'/>
 
-   <c:type name='MyType'>
-      <c:member name='foo' as='string' value='"bar"'/>
-   </c:type>
+   <c:param name='foo' as='string'>param</c:param>
 
    <c:template name='c:initial-template'>
       <foo>
-         <c:value-of value='new MyType().foo'/>
+         <c:value-of value='foo'/>
       </foo>
    </c:template>
 
    <c:template name='expected'>
-      <foo>bar</foo>
+      <foo>param</foo>
    </c:template>
 
 </c:module>

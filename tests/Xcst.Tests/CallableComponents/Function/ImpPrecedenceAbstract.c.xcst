@@ -1,18 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
-   <c:import href='_Hidden1.xcst'/>
-   
-   <c:param name='foo' as='string'>bar</c:param>
+   <c:import href='_ImpPrecedenceAbstract.xcst'/>
+
+   <c:function name='foo' as='string'>
+      <c:return>bar</c:return>
+   </c:function>
 
    <c:template name='c:initial-template'>
-      <foo>
-         <c:value-of value='foo'/>
-      </foo>
+      <foo foo='{foo()}'/>
    </c:template>
 
    <c:template name='expected'>
-      <foo>bar</foo>
+      <foo foo="bar"/>
    </c:template>
 
 </c:module>
