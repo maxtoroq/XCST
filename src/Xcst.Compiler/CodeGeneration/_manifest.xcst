@@ -120,29 +120,90 @@
       <param name='el' as='XElement' required='yes'/>
       <param name='modules' as='XElement[]' tunnel='yes' required='yes'/>
       <param name='modulePos' as='int' tunnel='yes' required='yes'/>
+      <param name='@namespace' as='string' tunnel='yes' required='yes'/>
 
-      <if test='!preceding_sibling(el, c)
-            .Concat((el.Parent!.Name == c + "override") ?
-               select(preceding_sibling(el.Parent, c + "override"), c)
-               : select(preceding_sibling(el, c + "use-package"), c + "override", c))
-            .All(p => !xcst_homonymous(p, el))'>
-         <message terminate='yes' error-code='XTSE0630' error-data='src_error_object(el)'>
-            <text>Duplicate </text>
-            <switch value='el.Name.LocalName'>
-               <when test='"param" or "variable"'>global variable</when>
-               <otherwise expand-text='yes'>c:{el.Name.LocalName}</otherwise>
-            </switch>
-            <text> declaration.</text>
-         </message>
-      </if>
+      <variable name='parent' value='el.Parent!'/>
+      <variable name='isOverriding' value='parent.Name == c + "override"'/>
+      <variable name='topLevel' value='(isOverriding) ? parent.Parent! : el'/>
 
-      <if test='!(el.Parent.Name == c + "override"
-            || select(modules.Where((p, i) => i != modulePos), c + "use-package", c + "override", c)
-               .All(p => !xcst_homonymous(p, el)))'>
-         <message terminate='yes' error-code='XTSE3055' error-data='src_error_object(el)' transform-text='trim'>
-            There is an homonymous overriding component.
-         </message>
-      </if>
+      <!--
+         Duplicity of "local" components is only an issue if it happens in the
+         same module.
+         Duplicity of overriding components in a library package is also only an
+         issue if it happens in the same module.
+      -->
+      <apply-templates value='preceding_sibling(el, c)
+            .Concat((isOverriding) ?
+               select(preceding_sibling(parent, c + "override"), c)
+               : Enumerable.Empty&lt;XElement>())
+            .Where(p => xcst_homonymous(p, el))' mode='xcst:throw-duplicate-local'>
+         <with-param name='el' value='el'/>
+      </apply-templates>
+
+      <choose>
+         <when test='isOverriding'>
+            <if test='!xcst_is_hidden(el)'>
+               <!--
+                  Duplicity between overriding components in different library packages
+                  is an issue unless all other components with the highest import precedence
+                  have a "hidden" declared visibility
+               -->
+               <variable name='libName' value='src_resolve_package_name(topLevel, @namespace)'/>
+               <for-each-group name='grp' in='select(modules, c + "use-package")'
+                     group-by='p => src_resolve_package_name(p, @namespace)'>
+
+                  <if test='grp.Key != libName'>
+                     <apply-templates value='select(grp, c + "override", c)
+                           .Where(p => xcst_homonymous(p, el))
+                           .Reverse()
+                           .Take(1)
+                           .Where(p => !xcst_is_hidden(p))' mode='xcst:throw-duplicate-overr'>
+                        <with-param name='el' value='el'/>
+                     </apply-templates>
+                  </if>
+               </for-each-group>
+            </if>
+         </when>
+         <otherwise>
+            <!--
+               Duplicity between "local" and overriding components is an issue
+               unless all overriding components with the highest import precedence
+               have a "hidden" declared visibility
+            -->
+            <for-each-group name='grp' in='select(modules, c + "use-package")'
+                  group-by='p => src_resolve_package_name(p, @namespace)'>
+
+               <apply-templates value='select(grp, c + "override", c)
+                     .Where(p => xcst_homonymous(p, el))
+                     .Reverse()
+                     .Take(1)
+                     .Where(p => !xcst_is_hidden(p))' mode='xcst:throw-duplicate-overr'>
+                  <with-param name='el' value='el'/>
+               </apply-templates>
+            </for-each-group>
+         </otherwise>
+      </choose>
+   </template>
+
+   <template match='XElement' mode='xcst:throw-duplicate-local'>
+      <param name='el' as='XElement' required='yes'/>
+
+      <message terminate='yes' error-code='XTSE0630' error-data='src_error_object(el)'>
+         <text>Duplicate </text>
+         <switch value='el.Name.LocalName'>
+            <when test='"param" or "variable"'>global variable</when>
+            <otherwise expand-text='yes'>c:{el.Name.LocalName}</otherwise>
+         </switch>
+         <text> declaration.</text>
+      </message>
+   </template>
+
+   <template match='XElement' mode='xcst:throw-duplicate-overr'>
+      <param name='el' as='XElement' required='yes'/>
+
+      <message terminate='yes' error-code='XTSE3055' error-data='src_error_object(el)' transform-text='trim'>
+         There is an homonymous overriding component.
+      </message>
    </template>
 
    <template name='xcst:validate-empty-abstract'>
@@ -160,6 +221,18 @@
                No content is allowed when visibility='abstract'.
             </message>
          </if>
+      </if>
+   </template>
+
+   <template name='xcst:validate-hidden'>
+      <param name='el' as='XElement' required='yes'/>
+      <param name='visibility' as='string' required='yes'/>
+
+      <if test='!(visibility != "hidden"
+            || el.Parent!.Name == c + "override")'>
+         <message terminate='yes' error-code='XTSE0010' error-data='src_error_object(el)' transform-text='trim'>
+            visibility='hidden' is only allowed if the parent element is c:override.
+         </message>
       </if>
    </template>
 
@@ -227,16 +300,24 @@
       </for-each>
    </template>
 
+   <function name='xcst_is_hidden' as='bool'>
+      <param name='el' as='XElement'/>
+
+      <return value='el.Parent!.Name == c + "override"
+         &amp;&amp; el.Attribute("visibility") is XAttribute pVisAttr
+         &amp;&amp; xcst_visibility(pVisAttr) == "hidden"'/>
+   </function>
+
    <function name='xcst_visibility' as='string'>
       <param name='node' as='XObject'/>
 
       <variable name='str' value='xcst_non_string(node)'/>
 
       <switch value='str'>
-         <when test='"public" or "private" or "final" or "abstract"'/>
+         <when test='"public" or "private" or "final" or "abstract" or "hidden"'/>
          <otherwise>
             <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(node)' expand-text='yes' transform-text='trim'>
-               Invalid value for '{fn_name(node)}'. Must be one of (public|private|final|abstract).
+               Invalid value for '{fn_name(node)}'. Must be one of (public|private|final|abstract|hidden).
             </message>
          </otherwise>
       </switch>

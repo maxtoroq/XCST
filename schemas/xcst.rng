@@ -500,7 +500,7 @@
             </attribute>
             <attribute name="visibility">
                <ann:documentation>Specifies how the current component can be used in other (using) packages.</ann:documentation>
-               <ref name="visibility-except-abstract"/>
+               <ref name="visibility-except-abstract-and-hidden"/>
             </attribute>
          </zeroOrMore>
          <ref name="standard-attributes"/>
@@ -517,7 +517,7 @@
          <optional>
             <attribute name="visibility">
                <ann:documentation>Specifies how the current component can be used in other (using) packages.</ann:documentation>
-               <ref name="visibility-except-abstract"/>
+               <ref name="visibility-except-abstract-and-hidden"/>
             </attribute>
          </optional>
          <ref name="type-or-member-attributes" docs:attrib-group=""/>
@@ -2074,14 +2074,15 @@
    </define>
 
    <define name="visibility">
-      <ann:documentation>One of the values "public", "private", "final" or "abstract".</ann:documentation>
+      <ann:documentation>One of the values "public", "private", "final", "abstract" or "hidden".</ann:documentation>
       <choice>
-         <ref name="visibility-except-abstract"/>
+         <ref name="visibility-except-abstract-and-hidden"/>
          <value>abstract</value>
+         <value>hidden</value>
       </choice>
    </define>
 
-   <define name="visibility-except-abstract">
+   <define name="visibility-except-abstract-and-hidden">
       <ann:documentation>One of the values "public", "private" or "final".</ann:documentation>
       <choice>
          <value>public</value>

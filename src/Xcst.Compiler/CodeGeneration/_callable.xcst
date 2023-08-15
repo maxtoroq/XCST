@@ -91,6 +91,11 @@
          <with-param name='visibility' value='declaredVisibility'/>
       </call-template>
 
+      <call-template name='xcst:validate-hidden'>
+         <with-param name='el' value='el'/>
+         <with-param name='visibility' value='declaredVisibility'/>
+      </call-template>
+
       <variable name='visibility' as='string'>
          <variable name='followingModules' value='modules.Skip(modulePos + 1).ToArray()'/>
          <choose>
@@ -229,6 +234,11 @@
          <with-param name='visibility' value='declaredVisibility'/>
       </call-template>
 
+      <call-template name='xcst:validate-hidden'>
+         <with-param name='el' value='el'/>
+         <with-param name='visibility' value='declaredVisibility'/>
+      </call-template>
+
       <variable name='visibility' as='string'>
          <variable name='followingModules' value='modules.Skip(modulePos + 1).ToArray()'/>
          <choose>
@@ -293,6 +303,11 @@
          : "private"'/>
 
       <call-template name='xcst:validate-empty-abstract'>
+         <with-param name='el' value='el'/>
+         <with-param name='visibility' value='declaredVisibility'/>
+      </call-template>
+
+      <call-template name='xcst:validate-hidden'>
          <with-param name='el' value='el'/>
          <with-param name='visibility' value='declaredVisibility'/>
       </call-template>

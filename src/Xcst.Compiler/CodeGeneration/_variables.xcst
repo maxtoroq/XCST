@@ -92,6 +92,11 @@
          </message>
       </if>
 
+      <call-template name='xcst:validate-hidden'>
+         <with-param name='el' value='el'/>
+         <with-param name='visibility' value='declaredVisibility'/>
+      </call-template>
+
       <variable name='visibility' as='string'>
          <variable name='followingModules' value='modules.Skip(modulePos + 1).ToArray()'/>
          <choose>
@@ -112,6 +117,11 @@
          </choose>
       </variable>
 
+      <variable name='memberName' value='
+         (visibility == "hidden") ?
+            src_aux_variable($"var_{name}_{fn_generate_id(el)}")
+            : name'/>
+
       <element name='xcst:{el.Name.LocalName}' namespace='{xcst}'>
          <attribute name='name' value='name'/>
          <attribute name='has-default-value' value='fn_string(hasDefaultValue)'/>
@@ -119,8 +129,10 @@
             <attribute name='required' value='fn_string(required)'/>
          </if>
          <attribute name='visibility' value='visibility'/>
-         <attribute name='member-name' value='name'/>
-         <attribute name='member-name-was-escaped' value='fn_string(nameWasEscaped)'/>
+         <attribute name='member-name' value='memberName'/>
+         <if test='name == memberName'>
+            <attribute name='member-name-was-escaped' value='fn_string(nameWasEscaped)'/>
+         </if>
          <if test='overriddenMeta != null'>
             <attribute name='overrides' value='fn_generate_id(overriddenMeta)'/>
          </if>
@@ -554,13 +566,17 @@
    <function name='src_backing_field' as='string'>
       <param name='meta' as='XElement'/>
 
-      <return value='src_aux_variable("back_" + meta.Attribute("name")!.Value)'/>
+      <return value='src_aux_variable(string.Join("_",
+         "back" + (meta.Attribute("visibility")!.Value == "hidden" ? "h" : ""),
+         meta.Attribute("name")!.Value))'/>
    </function>
 
    <function name='src_init_field' as='string'>
       <param name='meta' as='XElement'/>
 
-      <return value='src_aux_variable("init_" + meta.Attribute("name")!.Value)'/>
+      <return value='src_aux_variable(string.Join("_",
+         "init" + (meta.Attribute("visibility")!.Value == "hidden" ? "h" : ""),
+         meta.Attribute("name")!.Value))'/>
    </function>
 
    <template name='src:prime-method'>

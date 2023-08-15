@@ -83,9 +83,9 @@
          (el.Attribute("visibility") is XAttribute visibilityAttr) ? xcst_visibility(visibilityAttr)
          : "private"'/>
 
-      <if test='!(declaredVisibility != "abstract")'>
-         <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(el)' transform-text='trim'>
-            visibility='abstract' is not a valid value for c:type declarations.
+      <if test='!(declaredVisibility is not ("abstract" or "hidden"))'>
+         <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(el)' expand-text='yes' transform-text='trim'>
+            visibility='{declaredVisibility}' is not a valid value for c:type declarations.
          </message>
       </if>
 

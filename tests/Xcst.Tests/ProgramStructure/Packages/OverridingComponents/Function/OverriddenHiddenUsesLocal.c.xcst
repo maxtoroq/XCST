@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:use-package name='OverriddenHidden'>
+      <c:override>
+         <c:function name='foo' as='string' visibility='hidden' expand-text='yes'>
+            <c:return>bar{foo()}</c:return>
+         </c:function>
+      </c:override>
+   </c:use-package>
+
+   <c:function name='foo' as='string'>
+      <c:return>baz</c:return>
+   </c:function>
+
+   <c:template name='c:initial-template'>
+      <c:call-template name='foo'/>
+   </c:template>
+
+   <c:template name='expected'>
+      <foo>barbaz</foo>
+   </c:template>
+
+</c:module>

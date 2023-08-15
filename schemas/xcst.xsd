@@ -440,7 +440,7 @@
                </xs:restriction>
             </xs:simpleType>
          </xs:attribute>
-         <xs:attribute name="visibility" type="c:visibility-except-abstract">
+         <xs:attribute name="visibility" type="c:visibility-except-abstract-and-hidden">
             <xs:annotation>
                <xs:documentation>Specifies how the current component can be used in other (using) packages.</xs:documentation>
             </xs:annotation>
@@ -462,7 +462,7 @@
                <xs:documentation>The name of the type.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
-         <xs:attribute name="visibility" type="c:visibility-except-abstract">
+         <xs:attribute name="visibility" type="c:visibility-except-abstract-and-hidden">
             <xs:annotation>
                <xs:documentation>Specifies how the current component can be used in other (using) packages.</xs:documentation>
             </xs:annotation>
@@ -2009,17 +2009,22 @@
    </xs:simpleType>
    <xs:simpleType name="visibility">
       <xs:annotation>
-         <xs:documentation>One of the values "public", "private", "final" or "abstract".</xs:documentation>
+         <xs:documentation>One of the values "public", "private", "final", "abstract" or "hidden".</xs:documentation>
       </xs:annotation>
-      <xs:union memberTypes="c:visibility-except-abstract">
+      <xs:union memberTypes="c:visibility-except-abstract-and-hidden">
          <xs:simpleType>
             <xs:restriction base="xs:token">
                <xs:enumeration value="abstract"/>
             </xs:restriction>
          </xs:simpleType>
+         <xs:simpleType>
+            <xs:restriction base="xs:token">
+               <xs:enumeration value="hidden"/>
+            </xs:restriction>
+         </xs:simpleType>
       </xs:union>
    </xs:simpleType>
-   <xs:simpleType name="visibility-except-abstract">
+   <xs:simpleType name="visibility-except-abstract-and-hidden">
       <xs:annotation>
          <xs:documentation>One of the values "public", "private" or "final".</xs:documentation>
       </xs:annotation>

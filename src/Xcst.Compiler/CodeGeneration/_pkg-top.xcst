@@ -221,14 +221,16 @@
          </if>
 
          <code:members>
-            <variable name='globalVars' value='
-               select(new[] { el }.Concat(select(el, c + "use-package", c + "override")), c)
-                  .Where(p => (p.Name == c + "param" || p.Name == c + "variable")
-                     &amp;&amp; select(packageManifest, xcst)
-                        .First(p2 => p2.Attribute("declaration-id") is XAttribute declarationId
-                           &amp;&amp; declarationId.Value == fn_generate_id(p))
-                        .Attribute("visibility")!.Value != "hidden")
-                  .ToArray()'/>
+            <variable name='globalVars' value='(
+               from p in @select(new[] { el }.Concat(@select(el, c + "use-package", c + "override")), c)
+               where (p.Name == c + "param" || p.Name == c + "variable")
+               let meta = @select(packageManifest, xcst)
+                  .First(p2 => p2.Attribute("declaration-id") is XAttribute declarationId
+                     &amp;&amp; declarationId.Value == fn_generate_id(p))
+               where (meta.Attribute("visibility")!.Value != "hidden"
+                  || meta.Attributes("overrides") != null)
+               select p)
+               .ToArray()'/>
 
             <variable name='otherComponents' value='
                select(new[] { el }.Concat(select(el, c + "use-package", c + "override")), c)
@@ -291,10 +293,11 @@
                      <code:type-reference name='{src_lib_class_name(usedPkg)}'/>
                      <code:initializer>
                         <for-each name='component' in='overridden'>
+                           <variable name='id' value='component.Attribute("id")!.Value'/>
                            <variable name='meta' value='select(packageManifest, xcst)
+                              .Reverse()
                               .First(p => p.Attribute("overrides") is XAttribute overridesAttr
-                                 &amp;&amp; overridesAttr.Value == component.Attribute("id")!.Value
-                                 &amp;&amp; p.Attribute("visibility")!.Value != "hidden")'/>
+                                 &amp;&amp; overridesAttr.Value == id)'/>
                            <apply-templates value='component' mode='src:lib-overriding-init'>
                               <with-param name='meta' value='meta'/>
                            </apply-templates>

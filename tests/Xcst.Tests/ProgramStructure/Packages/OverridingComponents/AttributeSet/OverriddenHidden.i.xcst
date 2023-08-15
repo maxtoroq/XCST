@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:use-package name='OverriddenHidden'>
+      <c:override>
+         <c:attribute-set name='foo' visibility='hidden'>
+            <c:attribute name='bar'>bar</c:attribute>
+         </c:attribute-set>
+      </c:override>
+   </c:use-package>
+
+   <c:template name='my-tmpl'>
+      <foo c:use-attribute-sets='foo'/>
+   </c:template>
+
+</c:module>
