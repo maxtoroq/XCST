@@ -71,16 +71,6 @@
       <variable name='name' value='xcst_unescape_identifier(nameExpr, language)'/>
       <variable name='nameWasEscaped' value='nameExpr != name'/>
 
-      <call-template name='xcst:check-duplicate-component'>
-         <with-param name='el' value='el'/>
-      </call-template>
-
-      <variable name='overriddenMeta'>
-         <call-template name='xcst:overridden-component'>
-            <with-param name='el' value='el'/>
-         </call-template>
-      </variable>
-
       <variable name='declaredVisibility' value='
          (param) ? "public"
          : (el.Attribute("visibility") is XAttribute visibilityAttr) ? xcst_visibility(visibilityAttr)
@@ -97,9 +87,10 @@
          <with-param name='visibility' value='declaredVisibility'/>
       </call-template>
 
-      <variable name='visibility' as='string'>
+      <variable name='effectiveVisibility' as='string'>
          <variable name='followingModules' value='modules.Skip(modulePos + 1).ToArray()'/>
          <choose>
+            <when test='declaredVisibility == "hidden"'>hidden</when>
             <when test='el.Parent!.Name == c + "override"'>
                <variable name='usePackageEls' value='select(followingModules, c + "use-package")
                   .Where(p => xcst_name_equal(p.Attribute("name"), el.Parent.Parent!.Attribute("name")))
@@ -117,8 +108,19 @@
          </choose>
       </variable>
 
+      <call-template name='xcst:check-duplicate-component'>
+         <with-param name='el' value='el'/>
+         <with-param name='effectiveVisibility' value='effectiveVisibility'/>
+      </call-template>
+
+      <variable name='overriddenMeta'>
+         <call-template name='xcst:overridden-component'>
+            <with-param name='el' value='el'/>
+         </call-template>
+      </variable>
+
       <variable name='memberName' value='
-         (visibility == "hidden") ?
+         (effectiveVisibility == "hidden") ?
             src_aux_variable($"var_{name}_{fn_generate_id(el)}")
             : name'/>
 
@@ -128,13 +130,14 @@
          <if test='param'>
             <attribute name='required' value='fn_string(required)'/>
          </if>
-         <attribute name='visibility' value='visibility'/>
+         <attribute name='visibility' value='effectiveVisibility'/>
          <attribute name='member-name' value='memberName'/>
          <if test='name == memberName'>
             <attribute name='member-name-was-escaped' value='fn_string(nameWasEscaped)'/>
          </if>
          <if test='overriddenMeta != null'>
             <attribute name='overrides' value='fn_generate_id(overriddenMeta)'/>
+            <attribute name='overriding' value='fn_string(effectiveVisibility != "hidden" || declaredVisibility == "hidden")'/>
          </if>
          <attribute name='declaration-id' value='fn_generate_id(el)'/>
          <attribute name='declaring-module-uri' value='el.Document!.BaseUri'/>
@@ -566,17 +569,21 @@
    <function name='src_backing_field' as='string'>
       <param name='meta' as='XElement'/>
 
-      <return value='src_aux_variable(string.Join("_",
-         "back" + (meta.Attribute("visibility")!.Value == "hidden" ? "h" : ""),
-         meta.Attribute("name")!.Value))'/>
+      <return value='src_aux_variable(
+         (meta.Attribute("visibility")!.Value == "hidden") ?
+            "backh_" + meta.Attribute("name")!.Value + "_" + meta.Attribute("declaration-id")!.Value
+            : "back_" + meta.Attribute("name")!.Value
+         )'/>
    </function>
 
    <function name='src_init_field' as='string'>
       <param name='meta' as='XElement'/>
 
-      <return value='src_aux_variable(string.Join("_",
-         "init" + (meta.Attribute("visibility")!.Value == "hidden" ? "h" : ""),
-         meta.Attribute("name")!.Value))'/>
+      <return value='src_aux_variable(
+         (meta.Attribute("visibility")!.Value == "hidden") ?
+            "inith_" + meta.Attribute("name")!.Value + "_" + meta.Attribute("declaration-id")!.Value
+            : "init_" + meta.Attribute("name")!.Value
+         )'/>
    </function>
 
    <template name='src:prime-method'>

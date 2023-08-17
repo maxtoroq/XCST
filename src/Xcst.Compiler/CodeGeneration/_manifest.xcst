@@ -118,6 +118,7 @@
 
    <template name='xcst:check-duplicate-component'>
       <param name='el' as='XElement' required='yes'/>
+      <param name='effectiveVisibility' as='string' required='yes'/>
       <param name='modules' as='XElement[]' tunnel='yes' required='yes'/>
       <param name='modulePos' as='int' tunnel='yes' required='yes'/>
       <param name='@namespace' as='string' tunnel='yes' required='yes'/>
@@ -140,49 +141,51 @@
          <with-param name='el' value='el'/>
       </apply-templates>
 
-      <choose>
-         <when test='isOverriding'>
-            <if test='!xcst_is_hidden(el)'>
+      <if test='effectiveVisibility != "hidden"'>
+         <choose>
+            <when test='isOverriding'>
+               <if test='!xcst_is_hidden(el)'>
+                  <!--
+                     Duplicity between overriding components in different library packages
+                     is an issue unless all other components with the highest import precedence
+                     have a "hidden" declared visibility
+                  -->
+                  <variable name='libName' value='src_resolve_package_name(topLevel, @namespace)'/>
+                  <for-each-group name='grp' in='select(modules, c + "use-package")'
+                        group-by='p => src_resolve_package_name(p, @namespace)'>
+
+                     <if test='grp.Key != libName'>
+                        <apply-templates value='select(grp, c + "override", c)
+                              .Where(p => xcst_homonymous(p, el))
+                              .Reverse()
+                              .Take(1)
+                              .Where(p => !xcst_is_hidden(p))' mode='xcst:throw-duplicate-overr'>
+                           <with-param name='el' value='el'/>
+                        </apply-templates>
+                     </if>
+                  </for-each-group>
+               </if>
+            </when>
+            <otherwise>
                <!--
-                  Duplicity between overriding components in different library packages
-                  is an issue unless all other components with the highest import precedence
+                  Duplicity between "local" and overriding components is an issue
+                  unless all overriding components with the highest import precedence
                   have a "hidden" declared visibility
                -->
-               <variable name='libName' value='src_resolve_package_name(topLevel, @namespace)'/>
                <for-each-group name='grp' in='select(modules, c + "use-package")'
                      group-by='p => src_resolve_package_name(p, @namespace)'>
 
-                  <if test='grp.Key != libName'>
-                     <apply-templates value='select(grp, c + "override", c)
-                           .Where(p => xcst_homonymous(p, el))
-                           .Reverse()
-                           .Take(1)
-                           .Where(p => !xcst_is_hidden(p))' mode='xcst:throw-duplicate-overr'>
-                        <with-param name='el' value='el'/>
-                     </apply-templates>
-                  </if>
+                  <apply-templates value='select(grp, c + "override", c)
+                        .Where(p => xcst_homonymous(p, el))
+                        .Reverse()
+                        .Take(1)
+                        .Where(p => !xcst_is_hidden(p))' mode='xcst:throw-duplicate-overr'>
+                     <with-param name='el' value='el'/>
+                  </apply-templates>
                </for-each-group>
-            </if>
-         </when>
-         <otherwise>
-            <!--
-               Duplicity between "local" and overriding components is an issue
-               unless all overriding components with the highest import precedence
-               have a "hidden" declared visibility
-            -->
-            <for-each-group name='grp' in='select(modules, c + "use-package")'
-                  group-by='p => src_resolve_package_name(p, @namespace)'>
-
-               <apply-templates value='select(grp, c + "override", c)
-                     .Where(p => xcst_homonymous(p, el))
-                     .Reverse()
-                     .Take(1)
-                     .Where(p => !xcst_is_hidden(p))' mode='xcst:throw-duplicate-overr'>
-                  <with-param name='el' value='el'/>
-               </apply-templates>
-            </for-each-group>
-         </otherwise>
-      </choose>
+            </otherwise>
+         </choose>
+      </if>
    </template>
 
    <template match='XElement' mode='xcst:throw-duplicate-local'>

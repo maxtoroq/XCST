@@ -49,8 +49,45 @@
          </message>
       </if>
 
+      <variable name='declaredVisibility' value='
+         (el.Attribute("visibility") is XAttribute visibilityAttr) ? xcst_visibility(visibilityAttr)
+         : (el.Parent!.Name != c + "override" &amp;&amp; implicitPackage) ? "public"
+         : "private"'/>
+
+      <call-template name='xcst:validate-empty-abstract'>
+         <with-param name='el' value='el'/>
+         <with-param name='visibility' value='declaredVisibility'/>
+      </call-template>
+
+      <call-template name='xcst:validate-hidden'>
+         <with-param name='el' value='el'/>
+         <with-param name='visibility' value='declaredVisibility'/>
+      </call-template>
+
+      <variable name='effectiveVisibility' as='string'>
+         <variable name='followingModules' value='modules.Skip(modulePos + 1).ToArray()'/>
+         <choose>
+            <when test='declaredVisibility == "hidden"'>hidden</when>
+            <when test='el.Parent!.Name == c + "override"'>
+               <variable name='usePackageEls' value='select(followingModules, c + "use-package")
+                  .Where(p => xcst_name_equal(p.Attribute("name"), el.Parent.Parent!.Attribute("name")))
+                  .ToArray()'/>
+               <variable name='hidingComponents' value='select(usePackageEls, c + "override", c)
+                  .Where(p => xcst_homonymous(p, el))'/>
+               <choose>
+                  <when test='hidingComponents.Any()'>hidden</when>
+                  <otherwise value='declaredVisibility'/>
+               </choose>
+            </when>
+            <when test='select(followingModules, c)
+               .Any(p => xcst_homonymous(p, el))'>hidden</when>
+            <otherwise value='declaredVisibility'/>
+         </choose>
+      </variable>
+
       <call-template name='xcst:check-duplicate-component'>
          <with-param name='el' value='el'/>
+         <with-param name='effectiveVisibility' value='effectiveVisibility'/>
       </call-template>
 
       <variable name='overriddenMeta'>
@@ -81,48 +118,13 @@
          </for-each>
       </if>
 
-      <variable name='declaredVisibility' value='
-         (el.Attribute("visibility") is XAttribute visibilityAttr) ? xcst_visibility(visibilityAttr)
-         : (el.Parent!.Name != c + "override" &amp;&amp; implicitPackage) ? "public"
-         : "private"'/>
-
-      <call-template name='xcst:validate-empty-abstract'>
-         <with-param name='el' value='el'/>
-         <with-param name='visibility' value='declaredVisibility'/>
-      </call-template>
-
-      <call-template name='xcst:validate-hidden'>
-         <with-param name='el' value='el'/>
-         <with-param name='visibility' value='declaredVisibility'/>
-      </call-template>
-
-      <variable name='visibility' as='string'>
-         <variable name='followingModules' value='modules.Skip(modulePos + 1).ToArray()'/>
-         <choose>
-            <when test='el.Parent!.Name == c + "override"'>
-               <variable name='usePackageEls' value='select(followingModules, c + "use-package")
-                  .Where(p => xcst_name_equal(p.Attribute("name"), el.Parent.Parent!.Attribute("name")))
-                  .ToArray()'/>
-               <variable name='hidingComponents' value='select(usePackageEls, c + "override", c)
-                  .Where(p => xcst_homonymous(p, el))'/>
-               <choose>
-                  <when test='hidingComponents.Any()'>hidden</when>
-                  <otherwise value='declaredVisibility'/>
-               </choose>
-            </when>
-            <when test='select(followingModules, c)
-               .Any(p => xcst_homonymous(p, el))'>hidden</when>
-            <otherwise value='declaredVisibility'/>
-         </choose>
-      </variable>
-
-      <variable name='publicMember' value='visibility is "public" or "final" or "abstract"'/>
+      <variable name='publicMember' value='effectiveVisibility is "public" or "final" or "abstract"'/>
       <variable name='@as' value='
          (el.Attribute("as") is XAttribute asAttr) ?
             xcst_type(asAttr) : null'/>
 
       <xcst:template name='{xcst_uri_qualified_name(qname)}'
-            visibility='{visibility}'
+            visibility='{effectiveVisibility}'
             declared-visibility='{declaredVisibility}'
             member-name='{src_template_method_name(el, qname, "tmpl", publicMember)}'
             declaration-id='{fn_generate_id(el)}'
@@ -215,16 +217,6 @@
          </message>
       </if>
 
-      <call-template name='xcst:check-duplicate-component'>
-         <with-param name='el' value='el'/>
-      </call-template>
-
-      <variable name='overriddenMeta'>
-         <call-template name='xcst:overridden-component'>
-            <with-param name='el' value='el'/>
-         </call-template>
-      </variable>
-
       <variable name='declaredVisibility' value='
          (el.Attribute("visibility") is XAttribute visibilityAttr) ? xcst_visibility(visibilityAttr)
          : "private"'/>
@@ -239,9 +231,10 @@
          <with-param name='visibility' value='declaredVisibility'/>
       </call-template>
 
-      <variable name='visibility' as='string'>
+      <variable name='effectiveVisibility' as='string'>
          <variable name='followingModules' value='modules.Skip(modulePos + 1).ToArray()'/>
          <choose>
+            <when test='declaredVisibility == "hidden"'>hidden</when>
             <when test='el.Parent!.Name == c + "override"'>
                <variable name='usePackageEls' value='select(followingModules, c + "use-package")
                   .Where(p => xcst_name_equal(p.Attribute("name"), el.Parent.Parent!.Attribute("name")))
@@ -259,10 +252,21 @@
          </choose>
       </variable>
 
-      <variable name='publicMember' value='visibility is "public" or "final" or "abstract"'/>
+      <call-template name='xcst:check-duplicate-component'>
+         <with-param name='el' value='el'/>
+         <with-param name='effectiveVisibility' value='effectiveVisibility'/>
+      </call-template>
+
+      <variable name='overriddenMeta'>
+         <call-template name='xcst:overridden-component'>
+            <with-param name='el' value='el'/>
+         </call-template>
+      </variable>
+
+      <variable name='publicMember' value='effectiveVisibility is "public" or "final" or "abstract"'/>
 
       <xcst:attribute-set name='{xcst_uri_qualified_name(qname)}'
-            visibility='{visibility}'
+            visibility='{effectiveVisibility}'
             declared-visibility='{declaredVisibility}'
             member-name='{src_template_method_name(el, qname, "attribs", publicMember)}'
             declaration-id='{fn_generate_id(el)}'
@@ -288,16 +292,6 @@
       <variable name='name' value='xcst_unescape_identifier(nameExpr, language)'/>
       <variable name='nameWasEscaped' value='nameExpr != name'/>
 
-      <call-template name='xcst:check-duplicate-component'>
-         <with-param name='el' value='el'/>
-      </call-template>
-
-      <variable name='overriddenMeta'>
-         <call-template name='xcst:overridden-component'>
-            <with-param name='el' value='el'/>
-         </call-template>
-      </variable>
-
       <variable name='declaredVisibility' value='
          (el.Attribute("visibility") is XAttribute visibilityAttr) ? xcst_visibility(visibilityAttr)
          : "private"'/>
@@ -312,9 +306,10 @@
          <with-param name='visibility' value='declaredVisibility'/>
       </call-template>
 
-      <variable name='visibility' as='string'>
+      <variable name='effectiveVisibility' as='string'>
          <variable name='followingModules' value='modules.Skip(modulePos + 1).ToArray()'/>
          <choose>
+            <when test='declaredVisibility == "hidden"'>hidden</when>
             <when test='el.Parent!.Name == c + "override"'>
                <variable name='usePackageEls' value='select(followingModules, c + "use-package")
                   .Where(p => xcst_name_equal(p.Attribute("name"), el.Parent.Parent!.Attribute("name")))
@@ -332,13 +327,24 @@
          </choose>
       </variable>
 
+      <call-template name='xcst:check-duplicate-component'>
+         <with-param name='el' value='el'/>
+         <with-param name='effectiveVisibility' value='effectiveVisibility'/>
+      </call-template>
+
+      <variable name='overriddenMeta'>
+         <call-template name='xcst:overridden-component'>
+            <with-param name='el' value='el'/>
+         </call-template>
+      </variable>
+
       <variable name='memberName' value='
-         (visibility == "hidden") ?
+         (effectiveVisibility == "hidden") ?
             src_aux_variable($"fn_{name}_{fn_generate_id(el)}")
             : name'/>
 
       <xcst:function name='{name}'
-            visibility='{visibility}'
+            visibility='{effectiveVisibility}'
             declared-visibility='{declaredVisibility}'
             member-name='{memberName}'
             declaration-id='{fn_generate_id(el)}'

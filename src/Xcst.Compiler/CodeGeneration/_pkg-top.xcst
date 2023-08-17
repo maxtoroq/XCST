@@ -228,7 +228,8 @@
                   .First(p2 => p2.Attribute("declaration-id") is XAttribute declarationId
                      &amp;&amp; declarationId.Value == fn_generate_id(p))
                where (meta.Attribute("visibility")!.Value != "hidden"
-                  || meta.Attributes("overrides") != null)
+                  || (meta.Attribute("overrides") != null
+                     &amp;&amp; xs_boolean(meta.Attribute("overriding")!)))
                select p)
                .ToArray()'/>
 

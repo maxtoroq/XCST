@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:import href='_DuplicateLibraryImpPrecedenceHidden1.xcst'/>
+
+   <c:use-package name='Duplicate2'>
+      <c:override>
+         <c:variable name='foo' visibility='hidden'/>
+      </c:override>
+   </c:use-package>
+
+</c:module>
