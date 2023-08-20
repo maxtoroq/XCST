@@ -188,6 +188,7 @@
          <call-template name='src:imports-and-self'>
             <with-param name='el' value='el'/>
             <with-param name='moduleDocs' value='new List&lt;XDocument> { el.Document! }' tunnel='yes'/>
+            <with-param name='namespace' value='ns' tunnel='yes'/>
             <with-param name='language' value='language' tunnel='yes'/>
          </call-template>
       </variable>

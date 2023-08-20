@@ -87,16 +87,22 @@
    <template match='XElement el &amp;&amp; (el.Name == c + "import" || el.Name == c + "import-namespace")' mode='xcst:validate-top-level'/>
 
    <template match='XElement el &amp;&amp; el.Name == c + "use-package"' mode='xcst:validate-top-level'>
+      <param name='@namespace' as='string' tunnel='yes' required='yes'/>
+
       <call-template name='xcst:validate-attribs'>
          <with-param name='el' value='el'/>
          <with-param name='required' value='new[] { "name" }'/>
       </call-template>
+
       <call-template name='xcst:validate-children'>
          <with-param name='el' value='el'/>
          <with-param name='allowed' value='new[] { "accept", "override" }'/>
       </call-template>
+
+      <variable name='resolvedName' value='src_resolve_package_name(el, @namespace)'/>
+
       <if test='!preceding_sibling(el, el.Name)
-            .All(p => !xcst_name_equal(p.Attribute("name"), el.Attribute("name")))'>
+            .All(p => src_resolve_package_name(p, @namespace) != resolvedName)'>
          <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(el)' transform-text='trim'>
             Duplicate c:use-package declaration.
          </message>

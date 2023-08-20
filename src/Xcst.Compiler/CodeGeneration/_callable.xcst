@@ -35,8 +35,6 @@
 
    <template name='xcst:named-template'>
       <param name='el' as='XElement' required='yes'/>
-      <param name='modules' as='XElement[]' tunnel='yes' required='yes'/>
-      <param name='modulePos' as='int' tunnel='yes' required='yes'/>
       <param name='implicitPackage' as='bool' tunnel='yes' required='yes'/>
       <param name='language' as='string' tunnel='yes' required='yes'/>
 
@@ -64,25 +62,11 @@
          <with-param name='visibility' value='declaredVisibility'/>
       </call-template>
 
-      <variable name='effectiveVisibility' as='string'>
-         <variable name='followingModules' value='modules.Skip(modulePos + 1).ToArray()'/>
-         <choose>
-            <when test='declaredVisibility == "hidden"'>hidden</when>
-            <when test='el.Parent!.Name == c + "override"'>
-               <variable name='usePackageEls' value='select(followingModules, c + "use-package")
-                  .Where(p => xcst_name_equal(p.Attribute("name"), el.Parent.Parent!.Attribute("name")))
-                  .ToArray()'/>
-               <variable name='hidingComponents' value='select(usePackageEls, c + "override", c)
-                  .Where(p => xcst_homonymous(p, el))'/>
-               <choose>
-                  <when test='hidingComponents.Any()'>hidden</when>
-                  <otherwise value='declaredVisibility'/>
-               </choose>
-            </when>
-            <when test='select(followingModules, c)
-               .Any(p => xcst_homonymous(p, el))'>hidden</when>
-            <otherwise value='declaredVisibility'/>
-         </choose>
+      <variable name='effectiveVisibility'>
+         <call-template name='xcst:effective-visibility'>
+            <with-param name='el' value='el'/>
+            <with-param name='declaredVisibility' value='declaredVisibility'/>
+         </call-template>
       </variable>
 
       <call-template name='xcst:check-duplicate-component'>
@@ -195,8 +179,6 @@
    </template>
 
    <template mode='xcst:package-manifest' match='XElement el &amp;&amp; el.Name == c + "attribute-set"'>
-      <param name='modules' as='XElement[]' tunnel='yes' required='yes'/>
-      <param name='modulePos' as='int' tunnel='yes' required='yes'/>
 
       <call-template name='xcst:validate-attribs'>
          <with-param name='el' value='el'/>
@@ -231,25 +213,11 @@
          <with-param name='visibility' value='declaredVisibility'/>
       </call-template>
 
-      <variable name='effectiveVisibility' as='string'>
-         <variable name='followingModules' value='modules.Skip(modulePos + 1).ToArray()'/>
-         <choose>
-            <when test='declaredVisibility == "hidden"'>hidden</when>
-            <when test='el.Parent!.Name == c + "override"'>
-               <variable name='usePackageEls' value='select(followingModules, c + "use-package")
-                  .Where(p => xcst_name_equal(p.Attribute("name"), el.Parent.Parent!.Attribute("name")))
-                  .ToArray()'/>
-               <variable name='hidingComponents' value='select(usePackageEls, c + "override", c)
-                  .Where(p => xcst_homonymous(p, el))'/>
-               <choose>
-                  <when test='hidingComponents.Any()'>hidden</when>
-                  <otherwise value='declaredVisibility'/>
-               </choose>
-            </when>
-            <when test='select(followingModules, c)
-               .Any(p => xcst_homonymous(p, el))'>hidden</when>
-            <otherwise value='declaredVisibility'/>
-         </choose>
+      <variable name='effectiveVisibility'>
+         <call-template name='xcst:effective-visibility'>
+            <with-param name='el' value='el'/>
+            <with-param name='declaredVisibility' value='declaredVisibility'/>
+         </call-template>
       </variable>
 
       <call-template name='xcst:check-duplicate-component'>
@@ -278,8 +246,6 @@
    </template>
 
    <template mode='xcst:package-manifest' match='XElement el &amp;&amp; el.Name == c + "function"'>
-      <param name='modules' as='XElement[]' tunnel='yes' required='yes'/>
-      <param name='modulePos' as='int' tunnel='yes' required='yes'/>
       <param name='language' as='string' tunnel='yes' required='yes'/>
 
       <call-template name='xcst:validate-attribs'>
@@ -306,25 +272,11 @@
          <with-param name='visibility' value='declaredVisibility'/>
       </call-template>
 
-      <variable name='effectiveVisibility' as='string'>
-         <variable name='followingModules' value='modules.Skip(modulePos + 1).ToArray()'/>
-         <choose>
-            <when test='declaredVisibility == "hidden"'>hidden</when>
-            <when test='el.Parent!.Name == c + "override"'>
-               <variable name='usePackageEls' value='select(followingModules, c + "use-package")
-                  .Where(p => xcst_name_equal(p.Attribute("name"), el.Parent.Parent!.Attribute("name")))
-                  .ToArray()'/>
-               <variable name='hidingComponents' value='select(usePackageEls, c + "override", c)
-                  .Where(p => xcst_homonymous(p, el))'/>
-               <choose>
-                  <when test='hidingComponents.Any()'>hidden</when>
-                  <otherwise value='declaredVisibility'/>
-               </choose>
-            </when>
-            <when test='select(followingModules, c)
-               .Any(p => xcst_homonymous(p, el))'>hidden</when>
-            <otherwise value='declaredVisibility'/>
-         </choose>
+      <variable name='effectiveVisibility'>
+         <call-template name='xcst:effective-visibility'>
+            <with-param name='el' value='el'/>
+            <with-param name='declaredVisibility' value='declaredVisibility'/>
+         </call-template>
       </variable>
 
       <call-template name='xcst:check-duplicate-component'>

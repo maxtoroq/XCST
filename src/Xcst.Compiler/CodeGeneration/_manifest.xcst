@@ -239,6 +239,35 @@
       </if>
    </template>
 
+   <template name='xcst:effective-visibility' as='string'>
+      <param name='el' as='XElement' required='yes'/>
+      <param name='declaredVisibility' as='string' required='yes'/>
+      <param name='modules' as='XElement[]' tunnel='yes' required='yes'/>
+      <param name='modulePos' as='int' tunnel='yes' required='yes'/>
+      <param name='@namespace' as='string' tunnel='yes' required='yes'/>
+
+      <variable name='followingModules' value='modules.Skip(modulePos + 1).ToArray()'/>
+
+      <choose>
+         <when test='declaredVisibility == "hidden"'>hidden</when>
+         <when test='el.Parent!.Name == c + "override"'>
+            <variable name='resolvedName' value='src_resolve_package_name(el.Parent.Parent!, @namespace)'/>
+            <variable name='usePackageEls' value='select(followingModules, c + "use-package")
+                  .Where(p => src_resolve_package_name(p, @namespace) == resolvedName)
+                  .ToArray()'/>
+            <variable name='hidingComponents' value='select(usePackageEls, c + "override", c)
+                  .Where(p => xcst_homonymous(p, el))'/>
+            <choose>
+               <when test='hidingComponents.Any()'>hidden</when>
+               <otherwise value='declaredVisibility'/>
+            </choose>
+         </when>
+         <when test='select(followingModules, c)
+               .Any(p => xcst_homonymous(p, el))'>hidden</when>
+         <otherwise value='declaredVisibility'/>
+      </choose>
+   </template>
+
    <template name='xcst:accepted-components'>
       <param name='el' as='XElement' required='yes'/>
       <param name='modules' as='XElement[]' required='yes'/>
