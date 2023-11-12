@@ -11,8 +11,6 @@
   <PropertyGroup>
     <XcstInput>**\*.xcst;**\*.pxcst</XcstInput>
     <XcstOutput>Tests.generated.cs</XcstOutput>
-    <XcstCodegenExe>$(ProjectDir)..\tests-codegen\bin\$(Configuration)\net6.0\tests-codegen.exe</XcstCodegenExe>
-    <DefaultItemExcludes>$(DefaultItemExcludes);$(XcstOutput)</DefaultItemExcludes>
   </PropertyGroup>
 
   <ItemGroup>
@@ -95,15 +93,32 @@
 
   <ItemGroup>
     <XcstInput Include="$(XcstInput)" />
+    <XcstOutput Include="$(XcstOutput)" />
     <UpToDateCheckInput Include="@(XcstInput)" />
-    <UpToDateCheckBuilt Include="$(XcstOutput)" />
-    <Compile Include="$(XcstOutput)" />
   </ItemGroup>
 
-  <Target Name="XcstCodeGen" BeforeTargets="PreBuildEvent" DependsOnTargets="ResolveReferences" Inputs="@(XcstInput);$(MSBuildThisFileFullPath);$(XcstCodegenExe)" Outputs="$(XcstOutput)">
-    <MSBuild Projects="..\tests-codegen\tests-codegen.csproj" />
+  <ItemGroup Condition="'@(XcstOutput)' == ''">
+    <!-- target won't run the first time if @(XcstOutput) is empty -->
+    <XcstOutput Include="72942035-eb8e-4e76-afb9-ac559f7bf12a" />
+  </ItemGroup>
+
+  <Target Name="XcstCodeGen"
+          BeforeTargets="PreBuildEvent"
+          DependsOnTargets="ResolveReferences"
+          Inputs="@(XcstInput);$(MSBuildThisFileFullPath)"
+          Outputs="@(XcstOutput)">
+    <MSBuild Projects="..\tests-codegen\tests-codegen.csproj">
+      <Output TaskParameter="TargetOutputs" PropertyName="XcstCodeGen" />
+    </MSBuild>
     <Message Text="xcst-codegen [$(MSBuildProjectName)]" Importance="high" />
-    <Exec Command="$(XcstCodegenExe) $(MSBuildThisFileFullPath) $(XcstOutput)" />
+    <Exec Command="dotnet $(XcstCodeGen) $(ProjectPath) $(XcstOutput)" />
+    <ItemGroup>
+      <!-- when target runs the first time generated source files are not included in compilation -->
+      <!-- on subsequent builds the files are automatically included -->
+      <!-- when the target runs again, must first remove source files to avoid duplication -->
+      <Compile Remove="$(XcstOutput)" />
+      <Compile Include="$(XcstOutput)" />
+    </ItemGroup>
   </Target>
 
 </Project>
