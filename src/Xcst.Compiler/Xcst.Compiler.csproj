@@ -4,7 +4,7 @@
     <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
     <LangVersion>10</LangVersion>
     <Nullable>enable</Nullable>
-    <NoWarn>NETSDK1138</NoWarn>
+    <NoWarn>NETSDK1138,NU1903</NoWarn>
     <VersionPrefix>2</VersionPrefix>
     <Description>XCST compilation API. Use this package to translate your XCST programs into C# or Visual Basic code.</Description>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>

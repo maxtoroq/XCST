@@ -94,13 +94,8 @@ class RuntimeWriter : WrappingWriter {
          throw new RuntimeException("Cannot create an attribute within another attribute.");
       }
 
-      if (prefix is null) {
-         prefix = String.Empty;
-      }
-
-      if (ns is null) {
-         ns = String.Empty;
-      }
+      prefix ??= String.Empty;
+      ns ??= String.Empty;
 
       _inAttr = true;
 

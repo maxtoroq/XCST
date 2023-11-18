@@ -228,7 +228,7 @@ class Program {
 
       var currentDir = Environment.CurrentDirectory;
 
-      if (currentDir.Last() != Path.DirectorySeparatorChar) {
+      if (currentDir[^1] != Path.DirectorySeparatorChar) {
          currentDir += Path.DirectorySeparatorChar;
       }
 

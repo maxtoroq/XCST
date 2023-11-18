@@ -5,7 +5,7 @@
     <RootNamespace>Xcst</RootNamespace>
     <LangVersion>10</LangVersion>
     <Nullable>enable</Nullable>
-    <NoWarn>NETSDK1138</NoWarn>
+    <NoWarn>NETSDK1138,NU1903</NoWarn>
     <!-- VersionPrefix is only needed by Tests project, requires a version equal or greater
       to Compiler's Runtime dependency -->
     <VersionPrefix>2.0.9999</VersionPrefix>

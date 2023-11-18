@@ -19,12 +19,6 @@ namespace Xcst.Compiler.Reflection;
 
 class TypeManifestReader {
 
-   const string
-   _ns = XmlNamespaces.XcstGrammar;
-
-   const string
-   _prefix = "xcst";
-
    readonly XmlWriter
    _writer;
 

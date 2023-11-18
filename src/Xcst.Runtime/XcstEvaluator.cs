@@ -119,9 +119,7 @@ public class XcstEvaluator {
          }
       }
 
-      if (dict is null) {
-         dict = new Dictionary<string, object?>();
-      }
+      dict ??= new Dictionary<string, object?>();
 
       if (values != null) {
 
