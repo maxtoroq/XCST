@@ -77,11 +77,9 @@ public partial class SimpleContent {
       value ?? String.Empty;
 
    public string
-   Join(string separator, IFormattable? value) {
-
-      return value?.ToString(null, this.FormatProvider)
+   Join(string separator, IFormattable? value) =>
+      value?.ToString(null, this.FormatProvider)
          ?? String.Empty;
-   }
 
    protected string
    JoinSequence(string separator, IEnumerable? value) {
@@ -100,8 +98,8 @@ public partial class SimpleContent {
    ValueAsEnumerable(object? value, bool checkToString = true) {
 
       if (value is null
-         || value is string
-         || value is IFormattable) {
+         or string
+         or IFormattable) {
 
          return null;
       }

@@ -65,7 +65,7 @@ partial class XcstCompilerPackage {
          return null;
       }
 
-      foreach (string path in Directory.EnumerateFiles(dir, search, SearchOption.AllDirectories)) {
+      foreach (var path in Directory.EnumerateFiles(dir, search, SearchOption.AllDirectories)) {
 
          if (Path.GetFileNameWithoutExtension(path)[0] == '_') {
             continue;

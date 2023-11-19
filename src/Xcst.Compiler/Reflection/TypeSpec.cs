@@ -557,7 +557,6 @@ class TypeSpec {
       } else {
 
          _nested ??= new List<ITypeIdentifier>();
-
          _nested.Add(ParsedTypeIdentifier(typeName));
       }
    }
@@ -571,7 +570,6 @@ class TypeSpec {
    AddModifier(IModifierSpec md) {
 
       _modifierSpec ??= new List<IModifierSpec>();
-
       _modifierSpec.Add(md);
    }
 
