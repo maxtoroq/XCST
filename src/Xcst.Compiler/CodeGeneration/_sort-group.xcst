@@ -63,7 +63,7 @@
                            <copy-of value='source'/>
                         </if>
                         <choose>
-                           <when test='sort.Attribute("by") is XAttribute byAttr'>
+                           <when test='sort.Attribute("by") is { } byAttr'>
                               <code:expression value='{xcst_expression(byAttr)}'/>
                            </when>
                            <otherwise>
@@ -80,7 +80,7 @@
                            <code:null/>
                         </if>
                         <choose>
-                           <when test='sort.Attribute("order") is XAttribute orderAttr'>
+                           <when test='sort.Attribute("order") is { } orderAttr'>
                               <call-template name='src:sort-order-descending'>
                                  <with-param name='val' value='xcst_sort_order_descending(orderAttr, true)'/>
                                  <with-param name='avt' value='orderAttr'/>
@@ -124,7 +124,7 @@
                         <with-param name='avt' value='groupSizeAttr'/>
                      </call-template>
                   </when>
-                  <when test='el.Attribute("group-by") is XAttribute groupByAttr'>
+                  <when test='el.Attribute("group-by") is { } groupByAttr'>
                      <code:expression value='{xcst_expression(groupByAttr)}'/>
                   </when>
                   <otherwise>

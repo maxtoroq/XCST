@@ -36,11 +36,11 @@ public partial class MapWriter {
    public static JsonMapWriter
    Create(ISequenceWriter<JObject> output) {
 
-      if (TryCast(output) is JsonMapWriter mapWriter) {
+      if (TryCast(output) is { } mapWriter) {
          return mapWriter;
       }
 
-      if (output.TryCastToDocumentWriter() is XcstWriter docWriter) {
+      if (output.TryCastToDocumentWriter() is { } docWriter) {
          return Create(docWriter);
       }
 
@@ -52,11 +52,11 @@ public partial class MapWriter {
    public static JsonMapWriter
    CreateArray(ISequenceWriter<JArray> output) {
 
-      if (TryCast(output) is JsonMapWriter mapWriter) {
+      if (TryCast(output) is { } mapWriter) {
          return mapWriter;
       }
 
-      if (output.TryCastToDocumentWriter() is XcstWriter docWriter) {
+      if (output.TryCastToDocumentWriter() is { } docWriter) {
          return Create(docWriter);
       }
 

@@ -189,7 +189,7 @@ public abstract class XcstWriter : ISequenceWriter<object?>, IDisposable {
    public void
    WriteObject(object? value) {
 
-      if (SimpleContent.ValueAsEnumerable(value) is IEnumerable seq) {
+      if (SimpleContent.ValueAsEnumerable(value) is { } seq) {
          WriteSequence(seq);
       } else {
          WriteItem(value);
@@ -267,7 +267,7 @@ public abstract class XcstWriter : ISequenceWriter<object?>, IDisposable {
 
       if (!recurse) {
 
-         if (SimpleContent.ValueAsEnumerable(value, checkToString: false) is IEnumerable seq) {
+         if (SimpleContent.ValueAsEnumerable(value, checkToString: false) is { } seq) {
             CopyOfSequence(seq);
             return;
          }

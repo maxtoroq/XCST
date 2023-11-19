@@ -62,7 +62,7 @@
                </code:cast>
             </code:arguments>
          </code:method-call>
-         <if test='el.Attribute("package-params") is XAttribute pkgParamsAttr'>
+         <if test='el.Attribute("package-params") is { } pkgParamsAttr'>
             <code:method-call name='WithParams'>
                <code:chain-reference/>
                <code:arguments>
@@ -71,12 +71,12 @@
             </code:method-call>
          </if>
          <choose>
-            <when test='el.Attribute("initial-match-selection") is XAttribute matchAttr'>
+            <when test='el.Attribute("initial-match-selection") is { } matchAttr'>
                <code:method-call name='ApplyTemplates'>
                   <code:chain-reference/>
                   <code:arguments>
                      <code:expression value='{xcst_expression(matchAttr)}'/>
-                     <if test='el.Attribute("initial-mode") is XAttribute initialModeAttr'>
+                     <if test='el.Attribute("initial-mode") is { } initialModeAttr'>
                         <call-template name='src:QName'>
                            <with-param name='qname' value='xcst_EQName(initialModeAttr, null, false, true)'/>
                            <with-param name='avt' value='initialModeAttr'/>
@@ -100,7 +100,7 @@
                </code:method-call>
             </otherwise>
          </choose>
-         <if test='el.Attribute("template-params") is XAttribute tmplParamsAttr'>
+         <if test='el.Attribute("template-params") is { } tmplParamsAttr'>
             <code:method-call name='WithParams'>
                <code:chain-reference/>
                <code:arguments>
@@ -108,7 +108,7 @@
                </code:arguments>
             </code:method-call>
          </if>
-         <if test='el.Attribute("tunnel-passthru") is XAttribute passthruAttr
+         <if test='el.Attribute("tunnel-passthru") is { } passthruAttr
                &amp;&amp; context != null'>
             <variable name='passthru' value='xcst_boolean(passthruAttr, true)'/>
             <if test='passthru is null || passthru == true'>
@@ -126,7 +126,7 @@
                </code:method-call>
             </if>
          </if>
-         <if test='el.Attribute("tunnel-params") is XAttribute tunnelParamsAttr'>
+         <if test='el.Attribute("tunnel-params") is { } tunnelParamsAttr'>
             <code:method-call name='WithTunnelParams'>
                <code:chain-reference/>
                <code:arguments>
@@ -140,7 +140,7 @@
                <copy-of value='select(output, src + "reference", code)'/>
             </code:arguments>
          </code:method-call>
-         <if test='el.Attribute("base-uri") is XAttribute baseUriAttr'>
+         <if test='el.Attribute("base-uri") is { } baseUriAttr'>
             <code:method-call name='WithBaseUri'>
                <code:chain-reference/>
                <code:arguments>
@@ -151,7 +151,7 @@
                </code:arguments>
             </code:method-call>
          </if>
-         <if test='el.Attribute("base-output-uri") is XAttribute bouAttr'>
+         <if test='el.Attribute("base-output-uri") is { } bouAttr'>
             <code:method-call name='WithBaseOutputUri'>
                <code:chain-reference/>
                <code:arguments>

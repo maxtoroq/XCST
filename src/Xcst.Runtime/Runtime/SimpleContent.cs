@@ -65,7 +65,7 @@ public partial class SimpleContent {
    public string
    Join(string separator, object? value) {
 
-      if (ValueAsEnumerable(value) is IEnumerable seq) {
+      if (ValueAsEnumerable(value) is { } seq) {
          return JoinSequence(separator, seq);
       }
 
@@ -147,7 +147,7 @@ public partial class SimpleContent {
 
       for (int i = 0; i < args.Length; i++) {
 
-         if (ValueAsEnumerable(args[i]) is IEnumerable seq) {
+         if (ValueAsEnumerable(args[i]) is { } seq) {
             args[i] = Join(" ", seq);
          }
       }

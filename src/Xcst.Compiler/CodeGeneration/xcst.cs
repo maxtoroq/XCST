@@ -120,12 +120,12 @@ partial class XcstCompilerPackage {
    ModuleUri(XObject node) {
 
       if (xi_aware
-         && node.Annotation<XIncludedAnnotation>() is XIncludedAnnotation ann) {
+         && node.Annotation<XIncludedAnnotation>() is { } ann) {
 
          return ann.Location;
       }
 
-      if (node.Parent is XElement parent) {
+      if (node.Parent is { } parent) {
          return ModuleUri(parent);
       }
 

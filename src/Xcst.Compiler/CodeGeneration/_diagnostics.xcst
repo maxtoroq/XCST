@@ -91,7 +91,7 @@
                </call-template>
             </code:arguments>
             <code:initializer>
-               <if test='el.Attribute("error-code") is XAttribute errorCodeAttr'>
+               <if test='el.Attribute("error-code") is { } errorCodeAttr'>
                   <code:member-initializer name='ErrorCode'>
                      <call-template name='src:line-number'>
                         <with-param name='el' value='el'/>
@@ -102,7 +102,7 @@
                      </call-template>
                   </code:member-initializer>
                </if>
-               <if test='el.Attribute("error-data") is XAttribute errorDataAttr'>
+               <if test='el.Attribute("error-data") is { } errorDataAttr'>
                   <code:member-initializer name='ErrorData'>
                      <call-template name='src:line-number'>
                         <with-param name='el' value='el'/>

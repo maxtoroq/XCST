@@ -48,7 +48,7 @@
       </if>
 
       <variable name='declaredVisibility' value='
-         (el.Attribute("visibility") is XAttribute visibilityAttr) ? xcst_visibility(visibilityAttr)
+         (el.Attribute("visibility") is { } visibilityAttr) ? xcst_visibility(visibilityAttr)
          : (el.Parent!.Name != c + "override" &amp;&amp; implicitPackage) ? "public"
          : "private"'/>
 
@@ -93,7 +93,7 @@
                .FirstOrDefault()'/>
             <if test='!(param != null
                   &amp;&amp; xs_boolean(paramOriginal.Attribute("required")!)
-                      == ((param.Attribute("required") is XAttribute reqAttr) ?
+                      == ((param.Attribute("required") is { } reqAttr) ?
                         xcst_boolean(reqAttr)! : false))'>
                <message terminate='yes' error-code='XTSE3070' error-data='src_error_object(param ?? el)' transform-text='trim'>
                   For every non-tunnel parameter on the overridden template, there must be a non-tunnel parameter on the overriding template that has the same name and the same effective value for the 'required' attribute.
@@ -104,7 +104,7 @@
 
       <variable name='publicMember' value='effectiveVisibility is "public" or "final" or "abstract"'/>
       <variable name='@as' value='
-         (el.Attribute("as") is XAttribute asAttr) ?
+         (el.Attribute("as") is { } asAttr) ?
             xcst_type(asAttr) : null'/>
 
       <xcst:template name='{xcst_uri_qualified_name(qname)}'
@@ -130,11 +130,11 @@
                <with-param name='el' value='param'/>
             </call-template>
             <variable name='required' value='
-               (param.Attribute("required") is XAttribute reqAttr) ?
+               (param.Attribute("required") is { } reqAttr) ?
                   xcst_boolean(reqAttr)!.Value
                   : false'/>
             <variable name='tunnel' value='
-               (param.Attribute("tunnel") is XAttribute tunnelAttr) ?
+               (param.Attribute("tunnel") is { } tunnelAttr) ?
                   xcst_boolean(tunnelAttr)!.Value
                   : false'/>
             <variable name='text' value='xcst_text(param)'/>
@@ -200,7 +200,7 @@
       </if>
 
       <variable name='declaredVisibility' value='
-         (el.Attribute("visibility") is XAttribute visibilityAttr) ? xcst_visibility(visibilityAttr)
+         (el.Attribute("visibility") is { } visibilityAttr) ? xcst_visibility(visibilityAttr)
          : "private"'/>
 
       <call-template name='xcst:validate-empty-abstract'>
@@ -259,7 +259,7 @@
       <variable name='nameWasEscaped' value='nameExpr != name'/>
 
       <variable name='declaredVisibility' value='
-         (el.Attribute("visibility") is XAttribute visibilityAttr) ? xcst_visibility(visibilityAttr)
+         (el.Attribute("visibility") is { } visibilityAttr) ? xcst_visibility(visibilityAttr)
          : "private"'/>
 
       <call-template name='xcst:validate-empty-abstract'>
@@ -307,7 +307,7 @@
          <if test='overriddenMeta != null'>
             <attribute name='overrides' value='fn_generate_id(overriddenMeta)'/>
          </if>
-         <if test='el.Attribute("as") is XAttribute asAttr'>
+         <if test='el.Attribute("as") is { } asAttr'>
             <code:type-reference name='{xcst_type(asAttr)}'/>
          </if>
          <for-each name='param' in='el.Elements(c + "param")'>
@@ -328,7 +328,7 @@
                   The name of the parameter is not unique.
                </message>
             </if>
-            <if test='param.Attribute("tunnel") is XAttribute tunnelAttr
+            <if test='param.Attribute("tunnel") is { } tunnelAttr
                   &amp;&amp; xcst_boolean(tunnelAttr)!.Value'>
                <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(param)' transform-text='trim'>
                   For attribute ''tunnel'' within a c:function parameter, the only permitted values are: ''no'', ''false'', ''0''.
@@ -815,7 +815,7 @@
                      </code:block>
                   </code:method>
 
-                  <if test='meta.Attribute("overrides") is XAttribute overridesAttr'>
+                  <if test='meta.Attribute("overrides") is { } overridesAttr'>
 
                      <variable name='originalMeta' value='packageManifest
                         .Elements(xcst + "template")
@@ -956,7 +956,7 @@
                   <otherwise>#default</otherwise>
                </switch>
             </attribute>
-            <if test='meta.Attribute("member-name-was-escaped") is XAttribute escAttr
+            <if test='meta.Attribute("member-name-was-escaped") is { } escAttr
                   &amp;&amp; xs_boolean(escAttr)'>
                <attribute name='verbatim' value='fn_string(true)'/>
             </if>
@@ -1001,7 +1001,7 @@
                         || hiddenMeta != null'>
                      <variable name='originalMeta' value='packageManifest
                         .Elements(xcst + "function")
-                        .FirstOrDefault(p => p.Attribute("id") is XAttribute idAttr
+                        .FirstOrDefault(p => p.Attribute("id") is { } idAttr
                            &amp;&amp; idAttr.Value == meta.Attribute("overrides")?.Value)'/>
 
                      <code:variable name='{src_contextual_variable}' line-hidden='true'>
@@ -1725,7 +1725,7 @@
 
       <variable name='tunnelParams' value='el
          .Elements(c + "with-param")
-         .Where(p => p.Attribute("tunnel") is XAttribute tunnelAttr
+         .Where(p => p.Attribute("tunnel") is { } tunnelAttr
             &amp;&amp; xcst_boolean(tunnelAttr)!.Value)
          .ToArray()'/>
 
@@ -1843,7 +1843,7 @@
 
       <variable name='outputItemTypeIsObject' value='
          !src_output_is_obj(output)
-            || (output.Attribute("item-type-is-object") is XAttribute attr
+            || (output.Attribute("item-type-is-object") is { } attr
                &amp;&amp; xs_boolean(attr))'/>
 
       <choose>
@@ -1894,7 +1894,7 @@
       </call-template>
 
       <variable name='@as' value='
-         (el.Attribute("as") is XAttribute asAttr) ?
+         (el.Attribute("as") is { } asAttr) ?
             xcst_type(asAttr)
             : null'/>
 

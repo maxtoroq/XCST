@@ -47,12 +47,12 @@
       <variable name='text' value='xcst_text(el)'/>
       <variable name='hasDefaultValue' value='xcst_has_value(el, text)'/>
       <variable name='required' value='
-         (param &amp;&amp; el.Attribute("required") is XAttribute reqAttr) ?
+         (param &amp;&amp; el.Attribute("required") is { } reqAttr) ?
             xcst_boolean(reqAttr)!.Value
             : false'/>
 
       <if test='param'>
-         <if test='el.Attribute("tunnel") is XAttribute tunnelAttr
+         <if test='el.Attribute("tunnel") is { } tunnelAttr
                &amp;&amp; xcst_boolean(tunnelAttr)!.Value'>
             <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(el)' transform-text='trim'>
                For attribute 'tunnel' within a package parameter, the only permitted values are: 'no', 'false', '0'.
@@ -71,7 +71,7 @@
 
       <variable name='declaredVisibility' value='
          (param) ? "public"
-         : (el.Attribute("visibility") is XAttribute visibilityAttr) ? xcst_visibility(visibilityAttr)
+         : (el.Attribute("visibility") is { } visibilityAttr) ? xcst_visibility(visibilityAttr)
          : "private"'/>
 
       <if test='!(!hasDefaultValue || declaredVisibility != "abstract")'>
@@ -190,7 +190,7 @@
                   </code:arguments>
                </code:attribute>
                <if test='param
-                     &amp;&amp; el.Attribute("required") is XAttribute requiredAttr
+                     &amp;&amp; el.Attribute("required") is { } requiredAttr
                      &amp;&amp; xs_boolean(requiredAttr)'>
                   <code:attribute>
                      <copy-of value='src_package_model_type("Required")'/>
@@ -355,7 +355,7 @@
       <variable name='visibility' value='meta.Attribute("visibility")!.Value'/>
       <variable name='required' value='(param) ? xs_boolean(meta.Attribute("required")!) : false'/>
       <variable name='publicMember' value='visibility is "public" or "final" or "abstract"'/>
-      <variable name='verbatim' value='meta.Attribute("member-name-was-escaped") is XAttribute escAttr
+      <variable name='verbatim' value='meta.Attribute("member-name-was-escaped") is { } escAttr
          &amp;&amp; xs_boolean(escAttr)'/>
 
       <variable name='assign' value='(param) ? !required : xs_boolean(meta.Attribute("has-default-value")!)'/>
@@ -437,7 +437,7 @@
                               <copy-of value='initField'/>
                            </code:not>
                            <code:block>
-                              <if test='meta.Attribute("overrides") is XAttribute overridesAttr'>
+                              <if test='meta.Attribute("overrides") is { } overridesAttr'>
                                  <variable name='originalMeta' value='select(packageManifest, xcst)
                                     .First(p => p.Attribute("id")!.Value == overridesAttr.Value)'/>
                                  <variable name='originalRef' value='
@@ -596,7 +596,7 @@
                   .Where(p => p.Attribute("visibility")!.Value != "hidden")'>
                <variable name='required' value='xs_boolean(param.Attribute("required")!)'/>
                <variable name='accepted' value='(bool?)param.Attribute("accepted") == true'/>
-               <variable name='verbatim' value='param.Attribute("member-name-was-escaped") is XAttribute escAttr
+               <variable name='verbatim' value='param.Attribute("member-name-was-escaped") is { } escAttr
                   &amp;&amp; xs_boolean(escAttr)'/>
                <choose>
                   <when test='required'>
@@ -679,7 +679,7 @@
       <param name='name' value='xcst_name(el.Attribute("name")!)' as='string'/>
       <param name='type' as='XElement'>
          <choose>
-            <when test='el.Attribute("as") is XAttribute asAttr'>
+            <when test='el.Attribute("as") is { } asAttr'>
                <code:type-reference name='{xcst_type(asAttr)}'/>
             </when>
             <otherwise>
@@ -702,12 +702,12 @@
       <variable name='hasDefaultValue' value='xcst_has_value(el, text)'/>
 
       <variable name='required' value='
-         (el.Attribute("required") is XAttribute reqAttr) ?
+         (el.Attribute("required") is { } reqAttr) ?
             xcst_boolean(reqAttr)!.Value
             : false'/>
 
       <variable name='tunnel' value='
-         (el.Attribute("tunnel") is XAttribute tunnelAttr) ?
+         (el.Attribute("tunnel") is { } tunnelAttr) ?
             xcst_boolean(tunnelAttr)!.Value
             : false'/>
 
@@ -834,7 +834,7 @@
          <call-template name='src:line-number'>
             <with-param name='el' value='el'/>
          </call-template>
-         <if test='el.Attribute("as") is XAttribute asAttr'>
+         <if test='el.Attribute("as") is { } asAttr'>
             <code:type-reference name='{xcst_type(asAttr)}'/>
          </if>
          <call-template name='src:param-expression'>

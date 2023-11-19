@@ -57,7 +57,7 @@
       <param name='modules' as='XElement[]' tunnel='yes' required='yes'/>
 
       <for-each-group name='grp' in='select(modules.Reverse(), c + "output")'
-            group-by='p => (p.Attribute("name") is XAttribute nameAttr) ? xcst_EQName(nameAttr) : (object)""'>
+            group-by='p => (p.Attribute("name") is { } nameAttr) ? xcst_EQName(nameAttr) : (object)""'>
          <sort by='p => p.Key is XName'/>
 
          <variable name='outputName' value='grp.Key as XName'/>
@@ -82,7 +82,7 @@
                </message>
             </if>
             <if test='!preceding_sibling(output, output.Name)
-                  .Select(p => (p.Attribute("name") is XAttribute nameAttr) ? xcst_EQName(nameAttr) : null)
+                  .Select(p => (p.Attribute("name") is { } nameAttr) ? xcst_EQName(nameAttr) : null)
                   .All(p => (outputName is null) ? p != null : outputName != p)'>
                <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(output)' transform-text='trim'>
                   Duplicate c:output declaration.
@@ -601,7 +601,7 @@
       <param name='packageManifest' as='XElement' tunnel='yes' required='yes'/>
 
       <choose>
-         <when test='el.Attribute("format") is XAttribute formatAttr'>
+         <when test='el.Attribute("format") is { } formatAttr'>
             <variable name='format' value='xcst_EQName(formatAttr, null, false, true)'/>
             <if test='!(format is null
                   || packageManifest
@@ -644,7 +644,7 @@
       </call-template>
 
       <choose>
-         <when test='el.Attribute("value") is XAttribute valueAttr'>
+         <when test='el.Attribute("value") is { } valueAttr'>
             <code:expression value='{xcst_expression(valueAttr)}'>
                <call-template name='src:line-number'>
                   <with-param name='el' value='el'/>

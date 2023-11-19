@@ -58,7 +58,7 @@
                      <code:int value='1'/>
                   </code:add>
                </code:assign>
-               <if test='el.Attribute("separator") is XAttribute separatorAttr'>
+               <if test='el.Attribute("separator") is { } separatorAttr'>
                   <call-template name='xcst:require-output'>
                      <with-param name='el' value='el'/>
                   </call-template>

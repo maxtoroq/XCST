@@ -256,7 +256,7 @@
       </if>
 
       <variable name='rollback' value='
-         (el.Attribute("rollback-output") is XAttribute rollbackAttr) ?
+         (el.Attribute("rollback-output") is { } rollbackAttr) ?
             xcst_boolean(rollbackAttr)!.Value
             : true'/>
 
@@ -300,12 +300,12 @@
          <call-template name='src:line-number'>
             <with-param name='el' value='el'/>
          </call-template>
-         <if test='el.Attribute("exception") is XAttribute exceptionAttr'>
+         <if test='el.Attribute("exception") is { } exceptionAttr'>
             <code:exception>
                <code:expression value='{xcst_expression(exceptionAttr)}'/>
             </code:exception>
          </if>
-         <if test='el.Attribute("when") is XAttribute whenAttr'>
+         <if test='el.Attribute("when") is { } whenAttr'>
             <code:when>
                <code:expression value='{xcst_expression(whenAttr)}'/>
             </code:when>

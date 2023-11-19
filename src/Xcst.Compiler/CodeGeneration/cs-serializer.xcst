@@ -79,9 +79,9 @@
    </template>
 
    <template match='XElement el &amp;&amp; el.Name == code + "argument"' mode='cs:source'>
-      <if test='el.Attribute("ref") is XAttribute refAttr
+      <if test='el.Attribute("ref") is { } refAttr
           &amp;&amp; xs_boolean(refAttr)'>ref </if>
-      <if test='el.Attribute("name") is XAttribute nameAttr'>
+      <if test='el.Attribute("name") is { } nameAttr'>
          <call-template name='cs:verbatim'>
             <with-param name='el' value='el'/>
          </call-template>
@@ -176,7 +176,7 @@
       <apply-templates value='select(el, code).First()'/>
       <text>:</text>
       <choose>
-         <when test='el.Element(code + "block") is XElement blockEl'>
+         <when test='el.Element(code + "block") is { } blockEl'>
             <apply-templates value='blockEl'/>
          </when>
          <otherwise>
@@ -196,7 +196,7 @@
       <call-template name='new-line-indented'/>
       <text>default:</text>
       <choose>
-         <when test='el.Element(code + "block") is XElement blockEl'>
+         <when test='el.Element(code + "block") is { } blockEl'>
             <apply-templates value='blockEl'/>
          </when>
          <otherwise>
@@ -221,12 +221,12 @@
          <with-param name='appendLine' value='true'/>
       </call-template>
       <text> catch</text>
-      <if test='el.Element(code + "exception") is XElement exEl'>
+      <if test='el.Element(code + "exception") is { } exEl'>
          <text>(</text>
          <apply-templates value='select(exEl, code)'/>
          <text>)</text>
       </if>
-      <if test='el.Element(code + "when") is XElement whenEl'>
+      <if test='el.Element(code + "when") is { } whenEl'>
          <text> when (</text>
          <apply-templates value='select(whenEl, code)'/>
          <text>)</text>
@@ -283,7 +283,7 @@
          <with-param name='el' value='el'/>
       </call-template>
       <call-template name='new-line-indented'/>
-      <if test='el.Attribute("visibility") is XAttribute visibilityAttr
+      <if test='el.Attribute("visibility") is { } visibilityAttr
             &amp;&amp; visibilityAttr.Value != "#default"'>
          <value-of value='visibilityAttr.Value'/>
          <text> </text>
@@ -314,7 +314,7 @@
       <call-template name='new-line-indented'/>
       <text>public static </text>
       <choose>
-         <when test='el.Attribute("implicit") is XAttribute implicitAttr
+         <when test='el.Attribute("implicit") is { } implicitAttr
             &amp;&amp; xs_boolean(implicitAttr)'>implicit</when>
          <otherwise>explicit</otherwise>
       </choose>
@@ -371,7 +371,7 @@
 
    <template match='XElement el &amp;&amp; el.Name == code + "expression"' mode='cs:source'>
       <choose>
-         <when test='el.Attribute("value") is XAttribute valueAttr'>
+         <when test='el.Attribute("value") is { } valueAttr'>
             <value-of value='valueAttr.Value'/>
          </when>
          <otherwise>
@@ -382,7 +382,7 @@
 
    <template match='XElement el &amp;&amp; el.Name == code + "expression"' mode='cs:statement'>
       <choose>
-         <when test='el.Attribute("value") is XAttribute valueAttr'>
+         <when test='el.Attribute("value") is { } valueAttr'>
             <call-template name='new-line-indented'/>
             <value-of value='valueAttr.Value'/>
             <value-of value='cs_statement_delimiter'/>
@@ -403,24 +403,24 @@
          <with-param name='el' value='el'/>
       </call-template>
       <call-template name='new-line-indented'/>
-      <if test='el.Attribute("visibility") is XAttribute visibilityAttr
+      <if test='el.Attribute("visibility") is { } visibilityAttr
             &amp;&amp; visibilityAttr.Value != "#default"'>
          <value-of value='visibilityAttr.Value'/>
          <text> </text>
       </if>
-      <if test='el.Attribute("extensibility") is XAttribute extensibilityAttr
+      <if test='el.Attribute("extensibility") is { } extensibilityAttr
             &amp;&amp; extensibilityAttr.Value != "#default"'>
          <value-of value='extensibilityAttr.Value'/>
          <text> </text>
       </if>
-      <if test='el.Attribute("readonly") is XAttribute readonlyAttr
+      <if test='el.Attribute("readonly") is { } readonlyAttr
             &amp;&amp; xs_boolean(readonlyAttr)'>
          <text>readonly </text>
       </if>
       <apply-templates value='el.Element(code + "type-reference")'/>
       <text> </text>
       <value-of value='el.Attribute("name")!.Value'/>
-      <if test='el.Element(code + "expression") is XElement exprEl'>
+      <if test='el.Element(code + "expression") is { } exprEl'>
          <text> = </text>
          <apply-templates value='exprEl'/>
       </if>
@@ -524,9 +524,9 @@
       </call-template>
       <call-template name='new-line-indented'/>
       <text>using </text>
-      <if test='el.Attribute("static") is XAttribute staticAttr
+      <if test='el.Attribute("static") is { } staticAttr
          &amp;&amp; xs_boolean(staticAttr)'>static </if>
-      <if test='el.Attribute("alias") is XAttribute aliasAttr'>
+      <if test='el.Attribute("alias") is { } aliasAttr'>
          <call-template name='cs:verbatim'>
             <with-param name='el' value='el'/>
          </call-template>
@@ -534,12 +534,12 @@
          <text> = </text>
       </if>
       <choose>
-         <when test='el.Attribute("namespace") is XAttribute namespaceAttr'>
+         <when test='el.Attribute("namespace") is { } namespaceAttr'>
             <value-of value='namespaceAttr.Value'/>
          </when>
          <otherwise>
             <variable name='typeVerbatim' value='
-               (el.Attribute("type-verbatim") is XAttribute typeVerbatimAttr) ?
+               (el.Attribute("type-verbatim") is { } typeVerbatimAttr) ?
                   xs_boolean(typeVerbatimAttr)
                   : false'/>
             <apply-templates value='el.Element(code + "type-reference")'>
@@ -642,22 +642,22 @@
       </call-template>
       <variable name='implementsInterface' value='el.Element(code + "implements-interface")'/>
       <call-template name='new-line-indented'/>
-      <if test='el.Attribute("visibility") is XAttribute visibilityAttr
+      <if test='el.Attribute("visibility") is { } visibilityAttr
             &amp;&amp; visibilityAttr.Value != "#default"
             &amp;&amp; implementsInterface is null'>
          <value-of value='visibilityAttr.Value'/>
          <text> </text>
       </if>
-      <if test='el.Attribute("extensibility") is XAttribute extensibilityAttr
+      <if test='el.Attribute("extensibility") is { } extensibilityAttr
             &amp;&amp; extensibilityAttr.Value != "#default"'>
          <value-of value='extensibilityAttr.Value'/>
          <if test='extensibilityAttr.Value == "sealed"'> override</if>
          <text> </text>
       </if>
       <choose>
-         <when test='el.Element(code + "type-reference") is XElement typeRef'>
+         <when test='el.Element(code + "type-reference") is { } typeRef'>
             <variable name='returnTypeVerbatim' value='
-               (el.Attribute("return-type-verbatim") is XAttribute rtvAttr) ?
+               (el.Attribute("return-type-verbatim") is { } rtvAttr) ?
                   xs_boolean(rtvAttr)
                   : false'/>
             <apply-templates value='typeRef'>
@@ -675,7 +675,7 @@
          <with-param name='el' value='el'/>
       </call-template>
       <value-of value='el.Attribute("name")!.Value'/>
-      <if test='el.Element(code + "type-parameters") is XElement typeParams'>
+      <if test='el.Element(code + "type-parameters") is { } typeParams'>
          <text>&lt;</text>
          <apply-templates value='select(typeParams, code)' separator=', '/>
          <text>></text>
@@ -684,7 +684,7 @@
       <apply-templates value='select(el, code + "parameters")'/>
       <text>)</text>
       <choose>
-         <when test='el.Element(code + "block") is XElement block'>
+         <when test='el.Element(code + "block") is { } block'>
             <apply-templates value='block'/>
          </when>
          <otherwise>
@@ -704,7 +704,7 @@
 
    <template match='XElement el &amp;&amp; el.Name == code + "method-call"' mode='cs:source'>
       <choose>
-         <when test='el.Element(code + "method-reference") is XElement methodRef'>
+         <when test='el.Element(code + "method-reference") is { } methodRef'>
             <apply-templates value='methodRef'/>
          </when>
          <otherwise>
@@ -733,7 +733,7 @@
          <with-param name='el' value='el'/>
       </call-template>
       <value-of value='el.Attribute("name")!.Value'/>
-      <if test='el.Element(code + "type-arguments") is XElement typeArgs'>
+      <if test='el.Element(code + "type-arguments") is { } typeArgs'>
          <text>&lt;</text>
          <apply-templates value='select(typeArgs, code)' separator=', '/>
          <text>></text>
@@ -763,7 +763,7 @@
 
    <template match='XElement el &amp;&amp; el.Name == code + "new-array"' mode='cs:source'>
       <text>new</text>
-      <if test='el.Element(code + "type-reference") is XElement typeRef'>
+      <if test='el.Element(code + "type-reference") is { } typeRef'>
          <text> </text>
          <apply-templates value='typeRef'/>
       </if>
@@ -773,7 +773,7 @@
 
    <template match='XElement el
          &amp;&amp; el.Name == code + "new-object"
-         &amp;&amp; el.Element(code + "type-reference") is XElement typeRef' mode='cs:source'>
+         &amp;&amp; el.Element(code + "type-reference") is { } typeRef' mode='cs:source'>
 
       <variable name='args' value='select(el, code + "arguments", code).ToArray()'/>
       <variable name='inits' value='select(el, code + "initializer", code).ToArray()'/>
@@ -853,10 +853,10 @@
          <with-param name='appendLine' value='true'/>
          <with-param name='indent' value='indent + 2' tunnel='yes'/>
       </call-template>
-      <if test='el.Element(code + "type-reference") is XElement typeRef'>
-         <if test='el.Attribute("ref") is XAttribute refAttr
+      <if test='el.Element(code + "type-reference") is { } typeRef'>
+         <if test='el.Attribute("ref") is { } refAttr
             &amp;&amp; xs_boolean(refAttr)'>ref </if>
-         <if test='el.Attribute("params") is XAttribute paramsAttr
+         <if test='el.Attribute("params") is { } paramsAttr
             &amp;&amp; xs_boolean(paramsAttr)'>params </if>
          <apply-templates value='typeRef'/>
          <text> </text>
@@ -865,7 +865,7 @@
          <with-param name='el' value='el'/>
       </call-template>
       <value-of value='el.Attribute("name")!.Value'/>
-      <if test='select(el, code).Skip(1).FirstOrDefault() is XElement defaultValue'>
+      <if test='select(el, code).Skip(1).FirstOrDefault() is { } defaultValue'>
          <text> = </text>
          <apply-templates value='defaultValue'/>
       </if>
@@ -891,20 +891,20 @@
          <with-param name='el' value='el'/>
       </call-template>
       <call-template name='new-line-indented'/>
-      <if test='el.Attribute("visibility") is XAttribute visibilityAttr
+      <if test='el.Attribute("visibility") is { } visibilityAttr
             &amp;&amp; visibilityAttr.Value != "#default"
             &amp;&amp; implementsInterface is null'>
          <value-of value='visibilityAttr.Value'/>
          <text> </text>
       </if>
-      <if test='el.Attribute("extensibility") is XAttribute extensibilityAttr
+      <if test='el.Attribute("extensibility") is { } extensibilityAttr
             &amp;&amp; extensibilityAttr.Value != "#default"'>
          <value-of value='extensibilityAttr.Value'/>
          <if test='extensibilityAttr.Value == "sealed"'> override</if>
          <text> </text>
       </if>
       <variable name='returnTypeVerbatim' value='
-         (el.Attribute("return-type-verbatim") is XAttribute rtvAttr) ?
+         (el.Attribute("return-type-verbatim") is { } rtvAttr) ?
             xs_boolean(rtvAttr)
             : false'/>
       <apply-templates value='el.Element(code + "type-reference")'>
@@ -929,7 +929,7 @@
       <call-template name='cs:close-brace'>
          <with-param name='omitNewLine' value='autoImpl'/>
       </call-template>
-      <if test='el.Element(code + "expression") is XElement expressionEl'>
+      <if test='el.Element(code + "expression") is { } expressionEl'>
          <text> = </text>
          <apply-templates value='expressionEl'/>
          <value-of value='cs_statement_delimiter'/>
@@ -967,7 +967,7 @@
       </call-template>
       <call-template name='new-line-indented'/>
       <text>return</text>
-      <if test='select(el, code).FirstOrDefault() is XElement child'>
+      <if test='select(el, code).FirstOrDefault() is { } child'>
          <text> </text>
          <apply-templates value='child' mode='cs:source'/>
       </if>
@@ -1009,17 +1009,17 @@
    <template match='XElement el &amp;&amp; el.Name == code + "string"' mode='cs:source'>
 
       <variable name='literal' value='
-         (el.Attribute("literal") is XAttribute literalAttr) ?
+         (el.Attribute("literal") is { } literalAttr) ?
             xs_boolean(literalAttr)
             : false'/>
 
       <variable name='verbatim' value='
-         (el.Attribute("verbatim") is XAttribute verbatimAttr) ?
+         (el.Attribute("verbatim") is { } verbatimAttr) ?
             xs_boolean(verbatimAttr)
             : false'/>
 
       <variable name='interpolated' value='
-         (el.Attribute("interpolated") is XAttribute interpolatedAttr) ?
+         (el.Attribute("interpolated") is { } interpolatedAttr) ?
             xs_boolean(interpolatedAttr)
             : false'/>
 
@@ -1035,7 +1035,7 @@
             </when>
             <when test='interpolated'>
                <choose>
-                  <when test='el.Attribute("quotes-to-escape") is XAttribute quotesAttr'>
+                  <when test='el.Attribute("quotes-to-escape") is { } quotesAttr'>
                      <variable name='quotes' value='
                         fn_tokenize(quotesAttr.Value)
                            .Select(p => xs_integer(p))
@@ -1131,22 +1131,22 @@
          <with-param name='el' value='el'/>
       </call-template>
       <call-template name='new-line-indented'/>
-      <if test='el.Attribute("visibility") is XAttribute visibilityAttr
+      <if test='el.Attribute("visibility") is { } visibilityAttr
             &amp;&amp; visibilityAttr.Value != "#default"'>
          <value-of value='visibilityAttr.Value'/>
          <text> </text>
       </if>
-      <if test='el.Attribute("extensibility") is XAttribute extensibilityAttr
+      <if test='el.Attribute("extensibility") is { } extensibilityAttr
             &amp;&amp; extensibilityAttr.Value != "#default"'>
          <value-of value='extensibilityAttr.Value'/>
          <text> </text>
       </if>
-      <if test='el.Attribute("partial") is XAttribute partialAttr
+      <if test='el.Attribute("partial") is { } partialAttr
             &amp;&amp; xs_boolean(partialAttr)'>
          <text>partial </text>
       </if>
       <choose>
-         <when test='el.Attribute("struct") is XAttribute structAttr
+         <when test='el.Attribute("struct") is { } structAttr
             &amp;&amp; xs_boolean(structAttr)'>struct </when>
          <otherwise>class </otherwise>
       </choose>
@@ -1171,7 +1171,7 @@
       <param name='verbatim' as='bool' tunnel='yes'/>
 
       <choose>
-         <when test='el.Attribute("array-dimensions") is XAttribute arrDimAttr'>
+         <when test='el.Attribute("array-dimensions") is { } arrDimAttr'>
             <apply-templates value='select(el, code + "type-reference")'>
                <with-param name='omitNamespaceAlias' value='omitNamespaceAlias'/>
             </apply-templates>
@@ -1182,11 +1182,11 @@
          </when>
          <otherwise>
             <choose>
-               <when test='el.Attribute("namespace") is XAttribute nsAttr'>
+               <when test='el.Attribute("namespace") is { } nsAttr'>
                   <if test='!omitNamespaceAlias'>global::</if>
                   <text>{nsAttr.Value}.</text>
                </when>
-               <when test='el.Element(code + "type-reference") is XElement typeRef'>
+               <when test='el.Element(code + "type-reference") is { } typeRef'>
                   <apply-templates value='typeRef'>
                      <with-param name='omitNamespaceAlias' value='omitNamespaceAlias'/>
                   </apply-templates>
@@ -1224,7 +1224,7 @@
          <when test='primitive != null'>
             <choose>
                <when test='src_type_reference_equal(el, src_object_type)
-                  &amp;&amp; el.Attribute("dynamic") is XAttribute dynamicAttr
+                  &amp;&amp; el.Attribute("dynamic") is { } dynamicAttr
                   &amp;&amp; xs_boolean(dynamicAttr)'>dynamic</when>
                <otherwise value='primitive.Parent!.Name.LocalName'/>
             </choose>
@@ -1281,7 +1281,7 @@
    <template match='XElement el &amp;&amp; el.Name == code + "variable"' mode='cs:source'>
       <variable name='typeRef' value='el.Element(code + "type-reference")'/>
       <variable name='value' value='
-         (select(el, code).LastOrDefault() is XElement valueEl
+         (select(el, code).LastOrDefault() is { } valueEl
             &amp;&amp; valueEl != typeRef) ? valueEl
             : null'/>
       <choose>
@@ -1508,7 +1508,7 @@
 
       <if test='verbatim.GetValueOrDefault()
           || (verbatim is null
-            &amp;&amp; el.Attribute("verbatim") is XAttribute verbatimAttr
+            &amp;&amp; el.Attribute("verbatim") is { } verbatimAttr
             &amp;&amp; xs_boolean(verbatimAttr))'>@</if>
    </template>
 
@@ -1516,7 +1516,7 @@
       <param name='el' as='XElement' required='yes'/>
 
       <if test='cs_nullable_annotate
-          &amp;&amp; el.Attribute("nullable") is XAttribute nullableAttr
+          &amp;&amp; el.Attribute("nullable") is { } nullableAttr
           &amp;&amp; xs_boolean(nullableAttr)'>?</if>
    </template>
 
@@ -1547,8 +1547,8 @@
 
       <if test='cs_use_line_directive'>
          <choose>
-            <when test='el.Attribute("line-number") is XAttribute lineNumberAttr
-                  &amp;&amp; el.Attribute("line-uri") is XAttribute lineUriAttr'>
+            <when test='el.Attribute("line-number") is { } lineNumberAttr
+                  &amp;&amp; el.Attribute("line-uri") is { } lineUriAttr'>
                <call-template name='new-line-indented'/>
                <text>#line </text>
                <value-of value='lineNumberAttr.Value'/>
@@ -1558,7 +1558,7 @@
                   <call-template name='new-line-indented'/>
                </if>
             </when>
-            <when test='el.Attribute("line-hidden") is XAttribute lineHiddenAttr
+            <when test='el.Attribute("line-hidden") is { } lineHiddenAttr
                   &amp;&amp; xs_boolean(lineHiddenAttr)'>
                <call-template name='new-line-indented'/>
                <text>#line hidden</text>

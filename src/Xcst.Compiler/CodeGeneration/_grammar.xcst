@@ -236,7 +236,7 @@
    <function name='xcst_insignificant_whitespace' as='bool'>
       <param name='t' as='XText'/>
 
-      <return value='t.Parent is XElement parent
+      <return value='t.Parent is { } parent
          &amp;&amp; parent.Elements().Any()
          &amp;&amp; !parent.Nodes()
             .OfType&lt;XText>()
@@ -251,7 +251,7 @@
       <!-- This is a template and not a function to allow access to tunnel parameters -->
 
       <choose>
-         <when test='el.Attribute("as") is XAttribute asAttr'>
+         <when test='el.Attribute("as") is { } asAttr'>
             <code:type-reference name='{xcst_type(asAttr)}'/>
          </when>
          <when test='text != null'>
@@ -336,7 +336,7 @@
 
       <xcst:sequence-constructor>
          <variable name='voids' value='instructions
-            .Where(p => p.Attribute("void") is XAttribute voidAttr &amp;&amp; xs_boolean(voidAttr))
+            .Where(p => p.Attribute("void") is { } voidAttr &amp;&amp; xs_boolean(voidAttr))
             .ToArray()'/>
          <variable name='nonVoid' value='instructions
             .Except(voids)
@@ -362,7 +362,7 @@
             : (itemType is null &amp;&amp; instructions.Length == 1) ? null
             : TypeCardinality.ZeroOrMore' as='TypeCardinality?'/>
          <if test='instructions.Length == 1
-               &amp;&amp; instructions[0].Attribute("expression") is XAttribute exprAttr
+               &amp;&amp; instructions[0].Attribute("expression") is { } exprAttr
                &amp;&amp; xs_boolean(exprAttr)'>
             <attribute name='expression' value='fn_string(true)'/>
          </if>

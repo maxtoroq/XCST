@@ -135,7 +135,7 @@
             : null'/>
 
       <variable name='packageName' value='
-         (el.Name == c + "package" &amp;&amp; el.Attribute("name") is XAttribute name) ?
+         (el.Name == c + "package" &amp;&amp; el.Attribute("name") is { } name) ?
             xcst_name(name)
             : null'/>
 
@@ -182,7 +182,7 @@
       </variable>
 
       <variable name='language' value='
-         (el.Attribute("language") is XAttribute a) ? xcst_non_string(a) : null'/>
+         (el.Attribute("language") is { } a) ? xcst_non_string(a) : null'/>
 
       <variable name='modules'>
          <call-template name='src:imports-and-self'>
@@ -239,7 +239,7 @@
       </variable>
 
       <variable name='packageVisibility' value='
-         (el.Attribute("visibility") is XAttribute visibilityAttr) ?
+         (el.Attribute("visibility") is { } visibilityAttr) ?
             xcst_package_visibility(visibilityAttr)
             : src_visibility'/>
 
@@ -398,7 +398,7 @@
             <for-each name='name' in='names'>
                <variable name='matches' value='components
                   .Where(p => p.Name.LocalName == component
-                     &amp;&amp; p.Attribute("name") is XAttribute nameAttr
+                     &amp;&amp; p.Attribute("name") is { } nameAttr
                      &amp;&amp; name.Equals((qname ? xcst_EQName(nameAttr) : (object)nameAttr.Value)))
                   .ToArray()'/>
                <choose>

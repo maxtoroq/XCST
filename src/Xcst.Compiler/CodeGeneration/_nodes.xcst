@@ -543,7 +543,7 @@
       </call-template>
 
       <variable name='doe' value='
-         (el.Attribute("disable-output-escaping") is XAttribute doeAttr) ?
+         (el.Attribute("disable-output-escaping") is { } doeAttr) ?
             xcst_boolean(doeAttr)!.Value
             : false'/>
 

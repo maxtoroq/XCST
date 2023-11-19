@@ -59,7 +59,7 @@
       </if>
 
       <variable name='@as' value='
-         (el.Attribute("as") is XAttribute asAttr) ?
+         (el.Attribute("as") is { } asAttr) ?
             xcst_type(asAttr) : null'/>
 
       <xcst:template-rule
@@ -80,11 +80,11 @@
                <with-param name='el' value='param'/>
             </call-template>
             <variable name='required' value='
-               (param.Attribute("required") is XAttribute reqAttr) ?
+               (param.Attribute("required") is { } reqAttr) ?
                   xcst_boolean(reqAttr)!.Value
                   : false'/>
             <variable name='tunnel' value='
-               (param.Attribute("tunnel") is XAttribute tunnelAttr) ?
+               (param.Attribute("tunnel") is { } tunnelAttr) ?
                   xcst_boolean(tunnelAttr)!.Value
                   : false'/>
             <variable name='text' value='xcst_text(param)'/>
@@ -131,7 +131,7 @@
       <variable name='onNoMatch' value='src_on_no_match_default'/>
 
       <for-each-group name='grp' in='select(modules.Reverse(), c + "mode")'
-            group-by='p => (p.Attribute("name") is XAttribute nameAttr) ? xcst_EQName(nameAttr) : (object)""'>
+            group-by='p => (p.Attribute("name") is { } nameAttr) ? xcst_EQName(nameAttr) : (object)""'>
          <sort by='p => p.Key is XName'/>
 
          <variable name='modeName' value='grp.Key as XName'/>
@@ -158,14 +158,14 @@
             </if>
 
             <if test='!preceding_sibling(mode, mode.Name)
-                  .Select(p => (p.Attribute("name") is XAttribute nameAttr) ? xcst_EQName(nameAttr) : null)
+                  .Select(p => (p.Attribute("name") is { } nameAttr) ? xcst_EQName(nameAttr) : null)
                   .All(p => (modeName is null) ? p != null : modeName != p)'>
                <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(mode)' transform-text='trim'>
                   Duplicate c:mode declaration.
                </message>
             </if>
 
-            <if test='mode.Attribute("visibility") is XAttribute visibilityAttr'>
+            <if test='mode.Attribute("visibility") is { } visibilityAttr'>
                <variable name='modeVisibility' value='xcst_visibility(visibilityAttr)'/>
                <if test='!(modeVisibility is not ("abstract" or "hidden"))'>
                   <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(mode)' expand-text='yes' transform-text='trim'>
@@ -180,7 +180,7 @@
                <set ref='visibility' value='modeVisibility'/>
             </if>
 
-            <if test='mode.Attribute("on-no-match") is XAttribute onNoMatchAttr'>
+            <if test='mode.Attribute("on-no-match") is { } onNoMatchAttr'>
                <variable name='modeOnNoMatch' value='xcst_non_string(onNoMatchAttr)'/>
                <if test='!(modeOnNoMatch is "deep-copy" or "shallow-copy" or "deep-skip" or "shallow-skip" or "text-only-copy" or "fail")'>
                   <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(mode)' transform-text='trim'>
@@ -313,7 +313,7 @@
 
       <return value='el.AncestorsAndSelf()
          .Where(p => p.Name == c + "module" || p.Name == c + "package")
-         .Select(p => (p.Attribute("default-mode") is XAttribute defaultModeAttr) ?
+         .Select(p => (p.Attribute("default-mode") is { } defaultModeAttr) ?
             xcst_uri_qualified_name(xcst_EQName(defaultModeAttr)!) : null)
          .First()
          ?? "#unnamed"'/>
@@ -324,7 +324,7 @@
 
       <variable name='defaultMode' value='xcst_default_mode(el)'/>
       <choose>
-         <when test='el.Attribute("mode") is XAttribute modeAttr'>
+         <when test='el.Attribute("mode") is { } modeAttr'>
             <variable name='modes' value='
                fn_tokenize(xcst_non_string(modeAttr))
                   .Select(m =>
@@ -494,7 +494,7 @@
       </code:method-reference>
    </template>
 
-   <template match='XElement el &amp;&amp; el.Name == c + "template" &amp;&amp; el.Attribute("match") is XAttribute matchAttr' mode='src:member'>
+   <template match='XElement el &amp;&amp; el.Name == c + "template" &amp;&amp; el.Attribute("match") is { } matchAttr' mode='src:member'>
       <param name='packageManifest' as='XElement' tunnel='yes' required='yes'/>
 
       <variable name='id' value='fn_generate_id(el)'/>
@@ -1149,7 +1149,7 @@
                   </code:method-call>
                </otherwise>
             </choose>
-            <if test='el.Attribute("separator") is XAttribute separatorAttr'>
+            <if test='el.Attribute("separator") is { } separatorAttr'>
                <copy-of value='select(output, src +"reference", code)'/>
                <call-template name='src:expand-attribute'>
                   <with-param name='attr' value='separatorAttr'/>

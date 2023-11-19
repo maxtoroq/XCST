@@ -42,7 +42,7 @@
       <assert test='type.Name == code + "type-reference"'/>
 
       <choose>
-         <when test='type.Attribute("nullable") is XAttribute nullableAttr'>
+         <when test='type.Attribute("nullable") is { } nullableAttr'>
             <choose>
                <when test='xs_boolean(nullableAttr)'>
                   <return>
@@ -58,7 +58,7 @@
                </otherwise>
             </choose>
          </when>
-         <when test='type.Attribute("name") is XAttribute nameAttr'>
+         <when test='type.Attribute("name") is { } nameAttr'>
             <variable name='nonNullable' value='xcst_non_nullable_type(nameAttr.Value, language)'/>
             <return>
                <code:type-reference name='{nonNullable}'>
@@ -81,10 +81,10 @@
       <assert test='type.Name == code + "type-reference"'/>
 
       <choose>
-         <when test='type.Attribute("nullable") is XAttribute nullableAttr'>
+         <when test='type.Attribute("nullable") is { } nullableAttr'>
             <return value='xs_boolean(nullableAttr)'/>
          </when>
-         <when test='type.Attribute("name") is XAttribute nameAttr'>
+         <when test='type.Attribute("name") is { } nameAttr'>
             <variable name='nonNullable' value='xcst_non_nullable_type(nameAttr.Value, language)'/>
             <return value='nonNullable != nameAttr.Value'/>
          </when>
@@ -110,7 +110,7 @@
                      .All(p => src_qualified_type(p))'/>
                </when>
                <otherwise>
-                  <return value='type.Element(code + "type-reference") is XElement nestedType
+                  <return value='type.Element(code + "type-reference") is { } nestedType
                      &amp;&amp; src_qualified_type(nestedType)'/>
                </otherwise>
             </choose>

@@ -80,7 +80,7 @@
       </if>
 
       <variable name='declaredVisibility' value='
-         (el.Attribute("visibility") is XAttribute visibilityAttr) ? xcst_visibility(visibilityAttr)
+         (el.Attribute("visibility") is { } visibilityAttr) ? xcst_visibility(visibilityAttr)
          : "private"'/>
 
       <if test='!(declaredVisibility is not ("abstract" or "hidden"))'>
@@ -144,7 +144,7 @@
          <code:type name='{meta.Attribute("member-name")!.Value}'
                visibility='{(publicMember ? "public" : "private")}'
                extensibility='{(visibility == "final" ? "sealed" : "#default")}'>
-            <if test='meta.Attribute("member-name-was-escaped") is XAttribute escAttr
+            <if test='meta.Attribute("member-name-was-escaped") is { } escAttr
                   &amp;&amp; xs_boolean(escAttr)'>
                <attribute name='verbatim' value='fn_string(true)'/>
             </if>
@@ -309,7 +309,7 @@
             <with-param name='el' value='el'/>
          </call-template>
          <code:type-reference name='{xcst_type(el.Attribute("type")!)}'/>
-         <if test='el.Attribute("args") is XAttribute argsAttr'>
+         <if test='el.Attribute("args") is { } argsAttr'>
             <code:arguments>
                <code:expression value='{xcst_expression(argsAttr)}'/>
             </code:arguments>
@@ -392,7 +392,7 @@
          .Where(p => p.Name == "text-member")' mode='src:attribute'/>
 
       <if test='el.Elements(c + "member")
-            .Any(p => p.Attribute("serialize") is XAttribute serializeAttr
+            .Any(p => p.Attribute("serialize") is { } serializeAttr
                &amp;&amp; xcst_boolean(serializeAttr).Value)'>
          <code:attribute line-hidden='true'>
             <code:type-reference name='DataContract' namespace='System.Runtime.Serialization'/>
@@ -441,7 +441,7 @@
                   or "order"
                   or "short-name")' mode='src:display-argument'/>
          <if test='el.Ancestors(c + "type")
-               .First()!.Attribute("resource-type") is XAttribute rtAttr'>
+               .First()!.Attribute("resource-type") is { } rtAttr'>
             <apply-templates value='rtAttr' mode='src:display-argument'/>
          </if>
       </variable>
@@ -529,7 +529,7 @@
          <if test='el.AncestorsAndSelf()
                .Where(p => (p.Name == c + "member" || p.Name == c + "type")
                   &amp;&amp; p.Attribute("allow-empty-string") != null)
-               .FirstOrDefault()?.Attribute("allow-empty-string") is XAttribute aesAttr'>
+               .FirstOrDefault()?.Attribute("allow-empty-string") is { } aesAttr'>
             <apply-templates value='aesAttr' mode='src:display-format-argument'/>
          </if>
       </variable>
@@ -624,7 +624,7 @@
       <variable name='name' value='xcst_name(attr)'/>
 
       <if test='!attr.Parent!.Elements(c + "member")
-            .Any(p => p.Attribute("name") is XAttribute nameAttr
+            .Any(p => p.Attribute("name") is { } nameAttr
                &amp;&amp; xcst_unescape_identifier(xcst_name(nameAttr), language) == name)'>
          <message terminate='yes' error-data='src_error_object(attr)' transform-text='trim'>
             Unknown member specified in 'text-member'.
@@ -732,7 +732,7 @@
                      .AncestorsAndSelf()
                      .Where(p => (p.Name == c + "member" || p.Name == c + "type")
                         &amp;&amp; p.Attribute("allow-empty-string") != null)
-                     .FirstOrDefault()?.Attribute("allow-empty-string") is XAttribute aesAttr'>
+                     .FirstOrDefault()?.Attribute("allow-empty-string") is { } aesAttr'>
                   <code:member-initializer name='AllowEmptyStrings'>
                      <code:bool value='{fn_string(xcst_boolean(aesAttr)!.Value)}'/>
                   </code:member-initializer>
@@ -771,7 +771,7 @@
             || maxAttr != null'>
 
          <variable name='@as' value='
-            (el.Attribute("as") is XAttribute asAttr) ?
+            (el.Attribute("as") is { } asAttr) ?
                xcst_type(asAttr)
                : null'/>
 

@@ -181,7 +181,7 @@
          <call-template name='src:line-number'>
             <with-param name='el' value='el'/>
          </call-template>
-         <if test='el.Attribute("alias") is XAttribute aliasAttr'>
+         <if test='el.Attribute("alias") is { } aliasAttr'>
             <attribute name='alias' value='xcst_type(aliasAttr)'/>
          </if>
       </code:import>
@@ -231,7 +231,7 @@
                from p in @select(new[] { el }.Concat(@select(el, c + "use-package", c + "override")), c)
                where (p.Name == c + "param" || p.Name == c + "variable")
                let meta = @select(packageManifest, xcst)
-                  .First(p2 => p2.Attribute("declaration-id") is XAttribute declarationId
+                  .First(p2 => p2.Attribute("declaration-id") is { } declarationId
                      &amp;&amp; declarationId.Value == fn_generate_id(p))
                where (meta.Attribute("visibility")!.Value != "hidden"
                   || (meta.Attribute("overrides") != null
@@ -303,7 +303,7 @@
                            <variable name='id' value='component.Attribute("id")!.Value'/>
                            <variable name='meta' value='select(packageManifest, xcst)
                               .Reverse()
-                              .First(p => p.Attribute("overrides") is XAttribute overridesAttr
+                              .First(p => p.Attribute("overrides") is { } overridesAttr
                                  &amp;&amp; overridesAttr.Value == id)'/>
                            <apply-templates value='component' mode='src:lib-overriding-init'>
                               <with-param name='meta' value='meta'/>

@@ -28,7 +28,7 @@
    <mode name='src:lib-tuple' on-no-match='deep-skip'/>
 
    <template match='XElement el &amp;&amp; el.Name == xcst + "package-manifest"
-         &amp;&amp; el.Attribute("qualified-types") is XAttribute qtAttr
+         &amp;&amp; el.Attribute("qualified-types") is { } qtAttr
          &amp;&amp; xs_boolean(qtAttr)' mode='src:namespace'>
       <param name='packageManifest' as='XElement' tunnel='yes' required='yes'/>
 
@@ -101,7 +101,7 @@
                   </if>
                   <apply-templates value='acceptedPublic
                      .Where(p => p.Name != xcst + "type"
-                        &amp;&amp; p.Attribute("declaring-module-uri") is XAttribute declModUriAttr
+                        &amp;&amp; p.Attribute("declaring-module-uri") is { } declModUriAttr
                         &amp;&amp; declModUriAttr.Value == uri)
                      .OrderByDescending(p => p.Name == xcst + "param" || p.Name == xcst + "variable")' mode='src:member'/>
                   <apply-templates value='el' mode='src:lib-class'>

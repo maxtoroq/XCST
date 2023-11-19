@@ -34,11 +34,11 @@ public abstract partial class MapWriter : ISequenceWriter<object?> {
    public static MapWriter
    Create(ISequenceWriter<object> output) {
 
-      if (output.TryCastToMapWriter() is MapWriter mapWriter) {
+      if (output.TryCastToMapWriter() is { } mapWriter) {
          return mapWriter;
       }
 
-      if (output.TryCastToDocumentWriter() is XcstWriter docWriter) {
+      if (output.TryCastToDocumentWriter() is { } docWriter) {
          return Create(docWriter);
       }
 
@@ -48,11 +48,11 @@ public abstract partial class MapWriter : ISequenceWriter<object?> {
    public static MapWriter
    CreateArray(ISequenceWriter<object> output) {
 
-      if (output.TryCastToMapWriter() is MapWriter mapWriter) {
+      if (output.TryCastToMapWriter() is { } mapWriter) {
          return mapWriter;
       }
 
-      if (output.TryCastToDocumentWriter() is XcstWriter docWriter) {
+      if (output.TryCastToDocumentWriter() is { } docWriter) {
          return Create(docWriter);
       }
 
@@ -167,7 +167,7 @@ public abstract partial class MapWriter : ISequenceWriter<object?> {
 
          if (!recurse) {
 
-            if (SimpleContent.ValueAsEnumerable(value, checkToString: false) is IEnumerable seq) {
+            if (SimpleContent.ValueAsEnumerable(value, checkToString: false) is { } seq) {
                CopyOfSequence(seq);
                return;
             }

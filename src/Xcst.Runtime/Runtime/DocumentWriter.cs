@@ -65,7 +65,7 @@ public static class DocumentWriter {
    public static XcstWriter
    CastElement(IXcstPackage package, ISequenceWriter<XElement> output) {
 
-      if (output.TryCastToDocumentWriter() is XcstWriter docWriter) {
+      if (output.TryCastToDocumentWriter() is { } docWriter) {
          return docWriter;
       }
 

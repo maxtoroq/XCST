@@ -38,7 +38,7 @@ partial class VisualBasicSerializer {
    static string
    ModuleUri(XObject node) {
 
-      if (node.Parent is XElement parent) {
+      if (node.Parent is { } parent) {
          return ModuleUri(parent);
       }
 

@@ -336,7 +336,7 @@
       <param name='el' as='XElement'/>
 
       <return value='el.Parent!.Name == c + "override"
-         &amp;&amp; el.Attribute("visibility") is XAttribute pVisAttr
+         &amp;&amp; el.Attribute("visibility") is { } pVisAttr
          &amp;&amp; xcst_visibility(pVisAttr) == "hidden"'/>
    </function>
 
@@ -368,14 +368,14 @@
          </when>
          <when test='"template" or "attribute-set"'>
             <return value='b.Name.LocalName == a.Name.LocalName
-               &amp;&amp; a.Attribute("name") is XAttribute aNameAttr
-               &amp;&amp; b.Attribute("name") is XAttribute bNameAttr
+               &amp;&amp; a.Attribute("name") is { } aNameAttr
+               &amp;&amp; b.Attribute("name") is { } bNameAttr
                &amp;&amp; xcst_EQName(aNameAttr) == xcst_EQName(bNameAttr)'/>
          </when>
          <when test='"mode"'>
             <return value='b.Name.LocalName == a.Name.LocalName
-               &amp;&amp; a.Attribute("name") is XAttribute aNameAttr
-               &amp;&amp; b.Attribute("name") is XAttribute bNameAttr
+               &amp;&amp; a.Attribute("name") is { } aNameAttr
+               &amp;&amp; b.Attribute("name") is { } bNameAttr
                &amp;&amp; ((aNameAttr.Value.StartsWith("#") || bNameAttr.Value.StartsWith("#")) ?
                   aNameAttr.Value == bNameAttr.Value
                   : xcst_EQName(aNameAttr) == xcst_EQName(bNameAttr))'/>

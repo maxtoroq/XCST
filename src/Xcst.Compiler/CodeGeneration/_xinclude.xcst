@@ -56,7 +56,7 @@
       <variable name='href' value='fn_resolve_uri(xcst_uri(el.Attribute("href")!)!, el.BaseUri)'/>
 
       <variable name='parseChoice' value='new[] { "xml", "text" }'/>
-      <variable name='parse' value='(el.Attribute("parse") is XAttribute parseAttr) ?
+      <variable name='parse' value='(el.Attribute("parse") is { } parseAttr) ?
          xcst_non_string(parseAttr)
          : "xml"'/>
 

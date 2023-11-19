@@ -239,7 +239,7 @@
       <param name='output' as='XElement' tunnel='yes'/>
 
       <choose>
-         <when test='el.Attribute("value") is XAttribute valueAttr'>
+         <when test='el.Attribute("value") is { } valueAttr'>
             <call-template name='xcst:require-output'>
                <with-param name='el' value='el'/>
             </call-template>
@@ -273,7 +273,7 @@
             || el.Name == c + "set"
             || el.Name == c + "variable"
             || el.Name == c + "with-param")
-            &amp;&amp; el.Attribute("as") is XAttribute asAttr) ? xcst_type(asAttr)
+            &amp;&amp; el.Attribute("as") is { } asAttr) ? xcst_type(asAttr)
          : null'/>
 
       <choose>
@@ -314,7 +314,7 @@
                </call-template>
             </variable>
             <choose>
-               <when test='seqctorMeta.Attribute("expression") is XAttribute exprAttr
+               <when test='seqctorMeta.Attribute("expression") is { } exprAttr
                      &amp;&amp; xs_boolean(exprAttr)
                      &amp;&amp; @as is null'>
                   <apply-templates value='xcst_sequence_constructor_nodes(children)' mode='src:expression'/>

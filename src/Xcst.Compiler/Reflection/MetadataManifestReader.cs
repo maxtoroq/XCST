@@ -123,8 +123,7 @@ partial class MetadataManifestReader {
 
       foreach (var methodDef in typeDef.GetMethods().Select(_reader.GetMethodDefinition)) {
 
-         if (FindComponentAttribute(methodDef.GetCustomAttributes())
-            is ComponentAttributeData componentData) {
+         if (FindComponentAttribute(methodDef.GetCustomAttributes()) is { } componentData) {
 
             switch (componentData.Kind) {
                case 1:
@@ -148,8 +147,7 @@ partial class MetadataManifestReader {
 
       foreach (var propDef in typeDef.GetProperties().Select(_reader.GetPropertyDefinition)) {
 
-         if (FindComponentAttribute(propDef.GetCustomAttributes())
-            is ComponentAttributeData componentData) {
+         if (FindComponentAttribute(propDef.GetCustomAttributes()) is { } componentData) {
 
             switch (componentData.Kind) {
                case 4:
@@ -163,8 +161,7 @@ partial class MetadataManifestReader {
 
       foreach (var nestedTypeDef in typeDef.GetNestedTypes().Select(_reader.GetTypeDefinition)) {
 
-         if (FindComponentAttribute(nestedTypeDef.GetCustomAttributes())
-            is ComponentAttributeData componentData) {
+         if (FindComponentAttribute(nestedTypeDef.GetCustomAttributes()) is { } componentData) {
 
             switch (componentData.Kind) {
                case 6:
