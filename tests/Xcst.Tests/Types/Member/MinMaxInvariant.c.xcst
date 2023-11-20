@@ -5,7 +5,7 @@
    <c:import-namespace ns='System.Globalization'/>
    <c:import-namespace ns='System.Threading'/>
 
-   <c:type name='foo'>
+   <c:type name='Foo'>
       <c:member name='bar' as='decimal' min='-0.5' max='0.5'/>
    </c:type>
 
@@ -18,8 +18,8 @@
 
    <c:template name='c:initial-template'>
       <c:set ref='Thread.CurrentThread.CurrentCulture' value='new CultureInfo("es")'/>
-      <c:void value='Assert.IsTrue(IsValid(new foo { bar = -0.5m }))'/>
-      <c:void value='Assert.IsFalse(IsValid(new foo { bar = 0.6m }))'/>
+      <c:void value='Assert.IsTrue(IsValid(new Foo { bar = -0.5m }))'/>
+      <c:void value='Assert.IsFalse(IsValid(new Foo { bar = 0.6m }))'/>
       <c:void value='Assert.IsTrue(new Xcst.Runtime.RangeAttribute(typeof(decimal), "-0.5", "0.5").IsValid("-0,5"))'/>
    </c:template>
 

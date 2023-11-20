@@ -3,14 +3,14 @@
 
    <c:import-namespace ns='Newtonsoft.Json'/>
 
-   <c:type name='foo'>
+   <c:type name='Foo'>
       <c:member name='bar' as='string' serialize='no'/>
       <c:member name='baz' as='string'/>
    </c:type>
 
    <c:template name='c:initial-template'>
       <div>
-         <c:value-of value='JsonConvert.SerializeObject(new foo { bar = "x", baz = "y" })'/>
+         <c:value-of value='JsonConvert.SerializeObject(new Foo { bar = "x", baz = "y" })'/>
       </div>
    </c:template>
 

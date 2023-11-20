@@ -5,12 +5,12 @@
 
    <c:template name='c:initial-template'>
       <foo>
-         <c:value-of value='typeof(foo).Name'/>
+         <c:value-of value='typeof(Foo).Name'/>
       </foo>
    </c:template>
 
    <c:template name='expected'>
-      <foo>foo</foo>
+      <foo>Foo</foo>
    </c:template>
 
 </c:module>

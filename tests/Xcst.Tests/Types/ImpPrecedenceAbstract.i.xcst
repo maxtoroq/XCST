@@ -3,6 +3,6 @@
 
    <c:import href='_ImpPrecedenceAbstract.xcst'/>
 
-   <c:type name='foo'/>
+   <c:type name='Foo'/>
 
 </c:module>

@@ -9,7 +9,7 @@
 
    <c:validation min-length-message='MinLength' validation-resource-type='Resources2'/>
 
-   <c:type name='foo'>
+   <c:type name='Foo'>
       <c:member name='bar' as='string' required='yes' min-length='3'/>
    </c:type>
 
@@ -29,8 +29,8 @@
    </c:function>
 
    <c:template name='c:initial-template'>
-      <c:variable name='results' value='Validate(new foo())'/>
-      <c:variable name='results2' value='Validate(new foo { bar = "a" })'/>
+      <c:variable name='results' value='Validate(new Foo())'/>
+      <c:variable name='results2' value='Validate(new Foo { bar = "a" })'/>
       <ol>
          <c:for-each name='r' in='results.Concat(results2)' expand-text='yes'>
             <li>{r.ErrorMessage}</li>

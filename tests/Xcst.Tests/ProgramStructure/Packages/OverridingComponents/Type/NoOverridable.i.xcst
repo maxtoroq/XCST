@@ -3,7 +3,7 @@
 
    <c:use-package name='NoOverridable'>
       <c:override>
-         <c:type name='foo'/>
+         <c:type name='Foo'/>
       </c:override>
    </c:use-package>
 

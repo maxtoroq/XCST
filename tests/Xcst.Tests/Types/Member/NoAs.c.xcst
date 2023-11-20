@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
-   <c:type name='foo'>
+   <c:type name='Foo'>
       <c:member name='bar'/>
    </c:type>
 
    <c:template name='c:initial-template'>
-      <c:void value='Assert.IsTrue(typeof(foo).GetProperty("bar").PropertyType == typeof(object))'/>
+      <c:void value='Assert.IsTrue(typeof(Foo).GetProperty("bar").PropertyType == typeof(object))'/>
    </c:template>
 
 </c:module>

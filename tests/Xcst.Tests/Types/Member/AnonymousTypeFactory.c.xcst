@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
-   <c:type name='foo'>
+   <c:type name='Foo'>
       <c:member name='bar'>
          <c:member name='@class'>
             <c:member name='m1'/>
@@ -10,7 +10,7 @@
    </c:type>
 
    <c:template name='c:initial-template'>
-      <c:variable name='foo' value='new foo()'/>
+      <c:variable name='foo' value='new Foo()'/>
       <c:variable name='bar' value='foo.__xcst_new_bar()'/>
       <c:variable name='@class' value='bar.__xcst_new_class()'/>
    </c:template>

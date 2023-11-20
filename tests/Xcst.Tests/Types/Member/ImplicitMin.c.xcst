@@ -3,7 +3,7 @@
 
    <c:import-namespace ns='System.ComponentModel.DataAnnotations'/>
 
-   <c:type name='foo'>
+   <c:type name='Foo'>
       <c:member name='bar' as='int' max='5'/>
    </c:type>
 
@@ -15,8 +15,8 @@
    </c:function>
 
    <c:template name='c:initial-template'>
-      <c:void value='Assert.IsTrue(IsValid(new foo { bar = 5 }))'/>
-      <c:void value='Assert.IsFalse(IsValid(new foo { bar = 6 }))'/>
+      <c:void value='Assert.IsTrue(IsValid(new Foo { bar = 5 }))'/>
+      <c:void value='Assert.IsFalse(IsValid(new Foo { bar = 6 }))'/>
    </c:template>
 
 </c:module>

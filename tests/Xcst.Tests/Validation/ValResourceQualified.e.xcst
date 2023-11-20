@@ -3,7 +3,7 @@
 
    <c:validation required-message='Required' validation-resource-type='Foo.Resources'/>
 
-   <c:type name='foo'>
+   <c:type name='Foo'>
       <c:member name='bar' as='string' required='yes'/>
    </c:type>
 
