@@ -48,7 +48,7 @@
           DependsOnTargets="ResolveReferences"
           Inputs="@(XcstInput);$(MSBuildThisFileFullPath)"
           Outputs="$(XcstOutput)">
-    <MSBuild Projects="..\compiler-codegen\compiler-codegen.csproj" Properties="TargetFramework=net6.0">
+    <MSBuild Projects="..\compiler-codegen\compiler-codegen.csproj" Properties="TargetFramework=net7.0">
       <Output TaskParameter="TargetOutputs" PropertyName="XcstCodeGen" />
     </MSBuild>
     <Message Text="xcst-codegen [$(MSBuildProjectName)]" Importance="high" />
