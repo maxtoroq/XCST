@@ -51,7 +51,7 @@ public static class EvaluateDelegate {
       var derivedType = xcstTypeParams[0];
       var baseType = typeof(TItem);
 
-      object derivedWriter = output;
+      var derivedWriter = (object)output;
 
       var compatibleOutput = typeof(ISequenceWriter<>)
          .MakeGenericType(derivedType)

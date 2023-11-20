@@ -116,14 +116,14 @@ public class RangeAttribute : BaseRangeAttribute {
       }
 
       var converter = TypeDescriptor.GetConverter(type);
-      var min = (IComparable)converter.ConvertFromString(null, MinMaxFormatCulture, minimum);
-      var max = (IComparable)converter.ConvertFromString(null, MinMaxFormatCulture, maximum);
+      var min = (IComparable)converter.ConvertFromString(null, MinMaxFormatCulture, minimum)!;
+      var max = (IComparable)converter.ConvertFromString(null, MinMaxFormatCulture, maximum)!;
 
       object conversion(object value) =>
          (value != null && value.GetType() == type) ? value
-         : converter.ConvertFrom(value); // uses current culture
+         : converter.ConvertFrom(value!)!; // uses current culture
 
-      BaseInitialize(this, min, max, conversion);
+      BaseInitialize.Invoke(this, min, max, conversion);
 
       _conversionInit = true;
    }

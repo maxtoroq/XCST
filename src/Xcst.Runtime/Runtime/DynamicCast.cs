@@ -22,7 +22,7 @@ static class DynamicCast {
    public static dynamic?
    Cast(object? instance, Type castType) {
 
-      var openCast = typeof(DynamicCast).GetMethod(nameof(CastImpl), BindingFlags.Static | BindingFlags.NonPublic);
+      var openCast = typeof(DynamicCast).GetMethod(nameof(CastImpl), BindingFlags.Static | BindingFlags.NonPublic)!;
       var closeCast = openCast.MakeGenericMethod(castType);
 
       return closeCast.Invoke(null, new[] { instance });

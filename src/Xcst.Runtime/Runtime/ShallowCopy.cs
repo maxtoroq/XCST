@@ -146,9 +146,9 @@ public static class ShallowCopy {
          ISequenceWriter<object[]> output) {
 
       var arrType = arr.GetType();
-      var elemType = arrType.GetElementType();
+      var elemType = arrType.GetElementType()!;
       var elemTypeObj = elemType == typeof(System.Object);
-      dynamic buffer = Activator.CreateInstance(typeof(List<>).MakeGenericType(elemType));
+      dynamic buffer = Activator.CreateInstance(typeof(List<>).MakeGenericType(elemType))!;
 
       var arrOutput = new StreamedSequenceWriter<object?>(item => {
          buffer.Add((elemTypeObj ? item : DynamicCast.Cast(item, elemType)));

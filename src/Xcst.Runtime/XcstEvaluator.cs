@@ -126,7 +126,7 @@ public class XcstEvaluator {
          var props = TypeDescriptor.GetProperties(values);
 
          foreach (PropertyDescriptor? prop in props) {
-            object val = prop!.GetValue(values);
+            var val = prop!.GetValue(values);
             dict.Add(prop.Name, val);
          }
       }
@@ -720,10 +720,6 @@ public readonly struct MessageArgs {
 
    public
    MessageArgs(string message) {
-
       this.Message = message;
-      this.ErrorCode = default;
-      this.ErrorData = default;
-      this.Terminate = default;
    }
 }

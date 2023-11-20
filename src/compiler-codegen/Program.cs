@@ -8,13 +8,11 @@ namespace XcstCodeGen;
 
 class Program {
 
-#pragma warning disable CS8618
-   public Uri
+   public required Uri
    ProjectUri { get; init; }
 
-   public string[]
+   public required string[]
    SourceFiles { get; init; }
-#pragma warning restore CS8618
 
    // Show compilation errors on Visual Studio's Error List
    // Also makes the error on the Output window clickable

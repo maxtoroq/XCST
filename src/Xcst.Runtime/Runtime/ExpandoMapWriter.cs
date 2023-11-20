@@ -299,16 +299,16 @@ public class ExpandoMapWriter : MapWriter {
 
       Assert.That(map != null);
 
-      if (!map.ContainsKey(entry.Key)) {
-         map[entry.Key] = value;
-      } else {
+      if (map.TryGetValue(entry.Key, out var existingValue)) {
 
-         var existingValue = map[entry.Key];
          var implicitArray = new ExpandoArray { existingValue, value };
 
          Push(implicitArray);
 
          map.Remove(entry.Key);
+
+      } else {
+         map[entry.Key] = value;
       }
    }
 }

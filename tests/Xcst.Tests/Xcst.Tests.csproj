@@ -2,9 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <LangVersion>10</LangVersion>
+    <LangVersion>11</LangVersion>
     <Nullable>enable</Nullable>
-    <NoWarn>NETSDK1138</NoWarn>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 

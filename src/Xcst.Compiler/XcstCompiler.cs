@@ -387,14 +387,12 @@ public enum CodeVisibility {
 /// </summary>
 public class CompileResult {
 
-#pragma warning disable CS8618
-   public string
+   public required string
    Language { get; init; }
 
-   public IReadOnlyList<string>
+   public required IReadOnlyList<string>
    CompilationUnits { get; init; }
 
-   public IReadOnlyList<XName>
+   public required IReadOnlyList<XName>
    Templates { get; init; }
-#pragma warning restore CS8618
 }

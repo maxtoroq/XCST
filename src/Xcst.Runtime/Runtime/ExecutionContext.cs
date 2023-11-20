@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System;
-using System.Diagnostics;
 using System.Globalization;
 
 namespace Xcst.Runtime;
@@ -24,10 +23,10 @@ public class ExecutionContext {
    readonly Func<IFormatProvider>
    _formatProviderFn;
 
-   public IXcstPackage
+   public required IXcstPackage
    TopLevelPackage { get; init; }
 
-   public PrimingContext
+   public required PrimingContext
    PrimingContext { get; init; }
 
    public SimpleContent
@@ -43,10 +42,7 @@ public class ExecutionContext {
    MessageListener { get; init; }
 
    internal
-#pragma warning disable CS8618
-   ExecutionContext(
-#pragma warning restore CS8618
-         Func<IFormatProvider>? formatProviderFn) {
+   ExecutionContext(Func<IFormatProvider>? formatProviderFn) {
 
       _formatProviderFn = formatProviderFn ?? (() => CultureInfo.CurrentCulture);
       this.SimpleContent = new SimpleContent(_formatProviderFn);
