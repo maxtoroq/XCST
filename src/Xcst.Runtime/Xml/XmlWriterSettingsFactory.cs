@@ -17,6 +17,7 @@ using System.Reflection;
 using System.Linq;
 using System.Text;
 using System.Xml;
+using System.Collections.Generic;
 
 namespace Xcst.Xml;
 
@@ -34,8 +35,13 @@ static class XmlWriterSettingsFactory {
    static readonly Action<XmlWriterSettings, string>
    _setMediaType;
 
+#if NET7_0_OR_GREATER
+   static readonly Action<XmlWriterSettings, List<XmlQualifiedName>>
+   _setCdataSections;
+#else
    static readonly FieldInfo
    _cdataSectionsField;
+#endif
 
    static
    XmlWriterSettingsFactory() {
@@ -54,13 +60,14 @@ static class XmlWriterSettingsFactory {
       _setMediaType = (Action<XmlWriterSettings, string>)
          Delegate.CreateDelegate(typeof(Action<XmlWriterSettings, string>), settingsType.GetProperty("MediaType", BindingFlags.Instance | BindingFlags.NonPublic)!.GetSetMethod(true)!);
 
-      _cdataSectionsField = settingsType.GetField(
-#if NETCOREAPP
-         "_cdataSections"
+#if NET7_0_OR_GREATER
+      _setCdataSections = (Action<XmlWriterSettings, List<XmlQualifiedName>>)
+         Delegate.CreateDelegate(typeof(Action<XmlWriterSettings, List<XmlQualifiedName>>), settingsType.GetProperty("CDataSectionElements", BindingFlags.Instance | BindingFlags.NonPublic)!.GetSetMethod(true)!);
+#elif NETCOREAPP
+      _cdataSectionsField = settingsType.GetField("_cdataSections", BindingFlags.Instance | BindingFlags.NonPublic)!;
 #else
-         "cdataSections"
+      _cdataSectionsField = settingsType.GetField("cdataSections", BindingFlags.Instance | BindingFlags.NonPublic)!;
 #endif
-         , BindingFlags.Instance | BindingFlags.NonPublic)!;
    }
 
    public static XmlWriterSettings
@@ -74,29 +81,32 @@ static class XmlWriterSettingsFactory {
          && parameters.Method != OutputParameters.Methods.Xml) {
 
          if (parameters.Method == OutputParameters.Methods.Html) {
-            _setOutputMethod(settings, XmlOutputMethod.Html);
+            _setOutputMethod.Invoke(settings, XmlOutputMethod.Html);
 
          } else if (parameters.Method == OutputParameters.Methods.Text) {
-            _setOutputMethod(settings, XmlOutputMethod.Text);
+            _setOutputMethod.Invoke(settings, XmlOutputMethod.Text);
          }
       }
 
       if (parameters.CdataSectionElements?.Count > 0) {
 
-         _cdataSectionsField.SetValue(
-            settings,
-            parameters.CdataSectionElements
-               .Select(qn => new XmlQualifiedName(qn.LocalName, qn.NamespaceName))
-               .ToList()
-         );
+         var names = parameters.CdataSectionElements
+            .Select(qn => new XmlQualifiedName(qn.LocalName, qn.NamespaceName))
+            .ToList();
+
+#if NET7_0_OR_GREATER
+         _setCdataSections.Invoke(settings, names);
+#else
+         _cdataSectionsField.SetValue(settings, names);
+#endif
       }
 
       if (parameters.DoctypePublic != null) {
-         _setDocTypePublic(settings, parameters.DoctypePublic);
+         _setDocTypePublic.Invoke(settings, parameters.DoctypePublic);
       }
 
       if (parameters.DoctypeSystem != null) {
-         _setDocTypeSystem(settings, parameters.DoctypeSystem);
+         _setDocTypeSystem.Invoke(settings, parameters.DoctypeSystem);
       }
 
       if (parameters.EscapeUriAttributes != null) {
@@ -116,7 +126,7 @@ static class XmlWriterSettingsFactory {
       }
 
       if (parameters.MediaType != null) {
-         _setMediaType(settings, parameters.MediaType);
+         _setMediaType.Invoke(settings, parameters.MediaType);
       }
 
       if (parameters.OmitXmlDeclaration != null) {
