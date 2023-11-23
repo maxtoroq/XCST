@@ -37,10 +37,20 @@ partial class XcstCompilerPackage {
       var fileDirectory = src_package_file_directory;
       var fileExtension = src_package_file_extension;
 
-      if (fileDirectory is null
-         && usingPackageUri?.IsFile == true) {
+      var usingPkgPath = (usingPackageUri?.IsFile == true) ?
+         usingPackageUri.LocalPath
+         : null;
 
-         fileDirectory = Path.GetDirectoryName(usingPackageUri.LocalPath);
+      if (fileDirectory is null
+         && usingPkgPath != null) {
+
+         fileDirectory = Path.GetDirectoryName(usingPkgPath);
+      }
+
+      if (fileExtension is null
+         && usingPkgPath != null) {
+
+         fileExtension = Path.GetExtension(usingPkgPath).TrimStart('.');
       }
 
       if (!String.IsNullOrEmpty(fileDirectory)
