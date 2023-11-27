@@ -711,13 +711,13 @@ public readonly struct MessageArgs {
    Message { get; }
 
    public XName?
-   ErrorCode { get; init; }
+   ErrorCode { get; }
 
    public object?
-   ErrorData { get; init; }
+   ErrorData { get; }
 
    public bool
-   Terminate { get; init; }
+   Terminate { get; }
 
    public
    MessageArgs(string message) {
