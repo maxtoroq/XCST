@@ -64,8 +64,6 @@ class Program {
             continue;
          }
 
-         compiler.PackageFileExtension = Path.GetExtension(file).TrimStart('.');
-
          try {
             compiler.Compile(fileUri);
 
