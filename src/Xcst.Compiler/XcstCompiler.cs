@@ -231,20 +231,20 @@ public class XcstCompiler {
       var src = XNamespace.Get(XmlNamespaces.XcstCompiled);
       var xcst = XNamespace.Get(XmlNamespaces.XcstGrammar);
 
-      var result = new CompileResult {
-         Language = docEl.Attribute("language")!.Value,
-         CompilationUnits = (this.CompilationUnitHandler == null) ?
+      var result = new CompileResult(
+         language: docEl.Attribute("language")!.Value,
+         compilationUnits: (this.CompilationUnitHandler == null) ?
             docEl.Elements(src + "compilation-unit")
                .Select(p => p.Value)
                .ToArray()
             : Array.Empty<string>(),
-         Templates =
+         templates:
             (from t in docEl.Element(xcst + "package-manifest")!
                .Elements(xcst + "template")
              where t.Attribute("visibility")!.Value is "public" or "final" or "abstract"
              select DataType.QName(t.Attribute("name")!.Value))
             .ToArray()
-      };
+      );
 
       return result;
    }
@@ -387,12 +387,23 @@ public enum CodeVisibility {
 /// </summary>
 public class CompileResult {
 
-   public required string
-   Language { get; init; }
+   public string
+   Language { get; }
 
-   public required IReadOnlyList<string>
-   CompilationUnits { get; init; }
+   public IReadOnlyList<string>
+   CompilationUnits { get; }
 
-   public required IReadOnlyList<XName>
-   Templates { get; init; }
+   public IReadOnlyList<XName>
+   Templates { get; }
+
+   internal
+   CompileResult(
+         string language,
+         IReadOnlyList<string> compilationUnits,
+         IReadOnlyList<XName> templates) {
+
+      this.Language = language;
+      this.CompilationUnits = compilationUnits;
+      this.Templates = templates;
+   }
 }

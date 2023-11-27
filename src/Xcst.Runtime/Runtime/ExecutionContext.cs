@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.Diagnostics;
 using System.Globalization;
 
 namespace Xcst.Runtime;
@@ -23,29 +24,50 @@ public class ExecutionContext {
    readonly Func<IFormatProvider>
    _formatProviderFn;
 
-   public required IXcstPackage
-   TopLevelPackage { get; init; }
+   public IXcstPackage
+   TopLevelPackage { get; }
 
-   public required PrimingContext
-   PrimingContext { get; init; }
+   public PrimingContext
+   PrimingContext { get; }
 
    public SimpleContent
    SimpleContent { get; }
 
    public Uri?
-   StaticBaseUri { get; init; }
+   StaticBaseUri { get; }
 
    public Uri?
-   BaseOutputUri { get; init; }
+   BaseOutputUri { get; }
 
    internal Action<MessageArgs>?
-   MessageListener { get; init; }
+   MessageListener { get; }
 
    internal
-   ExecutionContext(Func<IFormatProvider>? formatProviderFn) {
+   ExecutionContext(
+         IXcstPackage topLevelPackage,
+         PrimingContext primingContext,
+         Func<IFormatProvider>? formatProviderFn,
+         Uri? staticBaseUri,
+         Uri? baseOutputUri,
+         Action<MessageArgs>? messageListener) {
+
+      this.TopLevelPackage = topLevelPackage ?? throw Argument.Null(topLevelPackage);
+      this.PrimingContext = primingContext ?? throw Argument.Null(primingContext);
 
       _formatProviderFn = formatProviderFn ?? (() => CultureInfo.CurrentCulture);
       this.SimpleContent = new SimpleContent(_formatProviderFn);
+
+      if (staticBaseUri != null) {
+         Debug.Assert(staticBaseUri.IsAbsoluteUri);
+      }
+
+      if (baseOutputUri != null) {
+         Debug.Assert(baseOutputUri.IsAbsoluteUri);
+      }
+
+      this.StaticBaseUri = staticBaseUri;
+      this.BaseOutputUri = baseOutputUri;
+      this.MessageListener = messageListener;
    }
 
    public Uri

@@ -630,13 +630,14 @@ public class XcstOutputter {
 
       var primingContext = _primeFn();
 
-      var execContext = new ExecutionContext(_formatProviderFn) {
-         TopLevelPackage = _package,
-         PrimingContext = primingContext,
-         StaticBaseUri = _baseUri,
-         BaseOutputUri = _baseOutputUri,
-         MessageListener = _messageListenerFn
-      };
+      var execContext = new ExecutionContext(
+         topLevelPackage: _package,
+         primingContext: primingContext,
+         formatProviderFn: _formatProviderFn,
+         staticBaseUri: _baseUri,
+         baseOutputUri: _baseOutputUri,
+         messageListener: _messageListenerFn
+      );
 
       _package.Context = execContext;
    }
@@ -721,5 +722,18 @@ public readonly struct MessageArgs {
    public
    MessageArgs(string message) {
       this.Message = message;
+   }
+
+   public
+   MessageArgs(
+         string message,
+         XName? errorCode = null,
+         object? errorData = null,
+         bool terminate = false) {
+
+      this.Message = message;
+      this.ErrorCode = errorCode;
+      this.ErrorData = errorData;
+      this.Terminate = terminate;
    }
 }
