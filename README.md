@@ -29,11 +29,33 @@ The XCST language is still version `1.0` and continues to be refined. Breaking c
 
 Tests now run on .NET Core and compatibility with this framework is the priority. Support for .NET Framework and .NET Standard remains for the time being.
 
+Breaking Changes
+----------------
+### Language
+
+- [renamed c:metadata to c:meta and 'name' attribute to 'type'](https://github.com/maxtoroq/XCST/commit/1607566fd799b36bc5034e5097831810c9325e14)
+- [removed 'html-version' since xhtml output is not supported](https://github.com/maxtoroq/XCST/commit/b36590e9a212dc405e5e25a91c744d8c8bd64ef6)
+- [renamed 'display-text-member' to 'text-member'](https://github.com/maxtoroq/XCST/commit/2eee63272488034c2536ba81b61087bb692e0356)
+- [renamed 'null-display-text' to 'null-text'](https://github.com/maxtoroq/XCST/commit/df54dad48d4315c2adf67e4e2ccbafca7e08dc34)
+
+### Compiler
+- [removed implicit unnamed mode](https://github.com/maxtoroq/XCST/commit/bb1269abf695410a112e5851194768cc6f7b9f88)
+- [changed default built-in template rule to fail](https://github.com/maxtoroq/XCST/commit/bf8a3319cf120c1b19c3e257a1f643cc0522d994)
+- [don't assign local variable without value](https://github.com/maxtoroq/XCST/commit/216d0e6fa5fa72e8e5ec3fdf01e6a747787319f9)
+- [removed XcstCompilerFactory](https://github.com/maxtoroq/XCST/commit/493f489671bd364ac1dd412e5947aa693d75f185)
+- [switched CompileResult.Templates to XName](https://github.com/maxtoroq/XCST/commit/e4709f7e7d754d4ee37c212943a455c1debc34a2)
+- [removed PackageTypeResolver](https://github.com/maxtoroq/XCST/commit/888cead3a83d26a4a7545139c53aa2a5d45297d5)
+- [resolve 'validation-resource-type' from c:validation against package namespace, or treat as fully-qualified](https://github.com/maxtoroq/XCST/commit/8a42ce48473a62c94ba3f75248a621eacddbc070)
+- [not using 'data-type' for validation](https://github.com/maxtoroq/XCST/commit/944fc8de7741c21e078a64708395032fa1deb1a3)
+
+### Runtime
+- [deprecated System.Delegate fallback on invoke-delegate as it hides programming errors](https://github.com/maxtoroq/XCST/commit/0e25b838ffcdc4aabf5a29de76c4848dadeec06d)
+- [replaced QualifiedName with XName](https://github.com/maxtoroq/XCST/commit/d5ab75484241f7d1cb349aef3573434cdd1786c7)
+- [moved IXcstPackage to root and merged PackageModel with Runtime](https://github.com/maxtoroq/XCST/commit/099b042aa9a20d68ee628ab5fe0da76f2c816e57)
+
 System Requirements
 -------------------
 The compiler produces code that is compatible with **C# 6** and **Visual Basic 14**, although template rules are not useful unless you use C# 7 or higher.
-
-The [release script](build/release.ps1) (which creates the NuGet packages) and other utility scripts require **PowerShell 5.1** or **PowerShell Core**.
 
 The [XCST schema](schemas/xcst.rng) is written in **Relax NG** and converted to XSD using [Trang], which requires **Java**.
 
