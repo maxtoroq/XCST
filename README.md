@@ -21,9 +21,9 @@ About v2
 --------
 *v2* is the main branch for major version 2. See *v1* for version 1 (no longer maintained).
 
-On v2, the compiler can generate code for runtime v1 or v2 (the default). The runtime is not backwards compatible, programs compiled against v1 must be recompiled to run on v2.
-
 The compiler was rewritten in XCST itself, ported from the v1 compiler written in XSLT 2. Consequently, compiler extensions such as extension instructions and extension attributes must now be implemented in XCST.
+
+The compiler can generate code for runtime v1 or v2 (the default). The runtime is not backwards compatible, programs compiled against v1 must be recompiled to run on v2.
 
 The XCST language is still version `1.0` and continues to be refined. Breaking changes are rare and have low impact (e.g. renaming an attribute or element). One of the big new features in v2 are `c:mode` declarations. New language features that require special runtime support are not supported when targeting the v1 runtime.
 
