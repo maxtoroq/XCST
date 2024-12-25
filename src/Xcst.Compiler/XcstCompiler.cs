@@ -365,7 +365,7 @@ public class XcstCompiler {
       var typeRefDoc = new XDocument();
 
       using (var writer = typeRefDoc.CreateWriter()) {
-         writeFn(writer);
+         writeFn.Invoke(writer);
       }
 
       var typeRef = typeRefDoc.Root!;

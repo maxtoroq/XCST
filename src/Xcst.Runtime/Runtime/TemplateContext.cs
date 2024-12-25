@@ -248,7 +248,7 @@ public class TemplateContext {
       }
 
       if (defaultValue != null) {
-         return defaultValue();
+         return defaultValue.Invoke();
       }
 
       if (required) {
@@ -281,7 +281,7 @@ public class TemplateContext {
       }
 
       if (defaultValue != null) {
-         return defaultValue();
+         return defaultValue.Invoke();
       }
 
       if (required) {

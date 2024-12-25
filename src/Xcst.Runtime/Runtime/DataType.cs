@@ -193,7 +193,7 @@ public static class DataType {
 
       return normalized
          .Split(' ')
-         .Select(i => parseFn(i))
+         .Select(parseFn.Invoke)
          .ToArray();
    }
 }

@@ -79,7 +79,7 @@ public class PrimingContext {
       }
 
       if (defaultValue != null) {
-         return defaultValue();
+         return defaultValue.Invoke();
       }
 
       if (required) {

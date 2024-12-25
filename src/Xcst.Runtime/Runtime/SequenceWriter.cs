@@ -141,7 +141,7 @@ public class SequenceWriter<TItem> : BaseSequenceWriter<TItem> {
    public SequenceWriter<TItem>
    WriteSequenceConstructor(Action<ISequenceWriter<TItem>> seqCtor) {
 
-      seqCtor(this);
+      seqCtor.Invoke(this);
 
       return this;
    }
@@ -151,7 +151,7 @@ public class SequenceWriter<TItem> : BaseSequenceWriter<TItem> {
          Action<TemplateContext, ISequenceWriter<TItem>> template,
          TemplateContext context) {
 
-      template(context, this);
+      template.Invoke(context, this);
 
       return this;
    }
@@ -164,7 +164,7 @@ public class SequenceWriter<TItem> : BaseSequenceWriter<TItem> {
 
       var derivedWriter = SequenceWriter.AdjustWriter<TItem, TDerived>(this);
 
-      template(context, derivedWriter);
+      template.Invoke(context, derivedWriter);
 
       return this;
    }
@@ -174,7 +174,7 @@ public class SequenceWriter<TItem> : BaseSequenceWriter<TItem> {
          Action<TemplateContext<TParams>, ISequenceWriter<TItem>> template,
          TemplateContext<TParams> context) {
 
-      template(context, this);
+      template.Invoke(context, this);
 
       return this;
    }
@@ -187,7 +187,7 @@ public class SequenceWriter<TItem> : BaseSequenceWriter<TItem> {
 
       var derivedWriter = SequenceWriter.AdjustWriter<TItem, TDerived>(this);
 
-      template(context, derivedWriter);
+      template.Invoke(context, derivedWriter);
 
       return this;
    }
@@ -259,7 +259,7 @@ public static class SequenceWriter {
 
    public static XcstDelegate<TBase>
    CastDelegate<TBase, TDerived>(XcstDelegate<TDerived> del) where TDerived : TBase =>
-      (c, o) => del(c, new DerivedSequenceWriter<TDerived, TBase>(o));
+      (c, o) => del.Invoke(c, new DerivedSequenceWriter<TDerived, TBase>(o));
 }
 
 class DerivedSequenceWriter<TDerived, TBase> : BaseSequenceWriter<TDerived> where TDerived : TBase {
@@ -355,7 +355,7 @@ class StreamedSequenceWriter<TItem> : BaseSequenceWriter<TItem> {
    public override void
    WriteObject(TItem value) {
       OnItemWritting();
-      _outputFn(value);
+      _outputFn.Invoke(value);
       OnItemWritten();
    }
 

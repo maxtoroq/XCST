@@ -37,8 +37,8 @@ public static class Serialization {
          package.ReadOutputDefinition(outputName, defaultParams);
       }
 
-      using (XcstWriter writer = WriterFactory.CreateWriter(sb)(defaultParams, parameters, package.Context)) {
-         action(writer);
+      using (XcstWriter writer = WriterFactory.CreateWriter(sb).Invoke(defaultParams, parameters, package.Context)) {
+         action.Invoke(writer);
       }
 
       return sb.ToString();
@@ -145,11 +145,11 @@ public static class Serialization {
       package.ReadOutputDefinition(outputName, defaultParams);
 
       return writerFn(outputUri)
-         (defaultParams, parameters, package.Context);
+         .Invoke(defaultParams, parameters, package.Context);
    }
 
    public static XcstWriter
    Void(IXcstPackage package) =>
       WriterFactory.CreateWriter(new NullWriter(WriterFactory.AbsentOutputUri))
-         (new OutputParameters(), null, package.Context);
+         .Invoke(new OutputParameters(), null, package.Context);
 }

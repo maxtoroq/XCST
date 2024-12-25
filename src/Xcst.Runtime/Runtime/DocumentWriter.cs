@@ -36,7 +36,7 @@ public static class DocumentWriter {
       };
 
       return WriterFactory.CreateWriter(doc.CreateWriter(), WriterFactory.AbsentOutputUri)
-         (defaultParams, null, package.Context);
+         .Invoke(defaultParams, null, package.Context);
    }
 
    public static XcstWriter
@@ -50,7 +50,7 @@ public static class DocumentWriter {
       };
 
       return WriterFactory.CreateWriter(doc.CreateNavigator()!.AppendChild(), WriterFactory.AbsentOutputUri)
-         (defaultParams, null, package.Context);
+         .Invoke(defaultParams, null, package.Context);
    }
 
    internal static XcstWriter
@@ -76,7 +76,7 @@ public static class DocumentWriter {
       };
 
       return WriterFactory.CreateWriter(new XElementWriter(doc, output), WriterFactory.AbsentOutputUri)
-         (defaultParams, null, package.Context);
+         .Invoke(defaultParams, null, package.Context);
    }
 
    public static XcstWriter

@@ -91,7 +91,7 @@ public partial class SimpleContent {
       return Join(separator, value
          .Cast<object>()
          .Where(v => v != null)
-         .Select(v => Convert(v)));
+         .Select(Convert));
    }
 
    internal static IEnumerable?

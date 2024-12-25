@@ -94,7 +94,7 @@ partial class MetadataManifestReader {
                pkgName = reader.GetString(typeDef.Namespace) + "." + pkgName;
             }
 
-            using var writer = writerFn(pkgName);
+            using var writer = writerFn.Invoke(pkgName);
 
             new MetadataManifestReader(reader, writer, pkgInterface.v1rt)
                .WritePackage(typeDef);
@@ -672,7 +672,7 @@ partial class MetadataManifestReader {
       return attributeHandles
          .Select(_reader.GetCustomAttribute)
          .Where(c => CustomAttributeName(c) == componentAttrName)
-         .Select(c => ParseComponentAttribute(c))
+         .Select(ParseComponentAttribute)
          .FirstOrDefault();
    }
 

@@ -57,7 +57,7 @@ class XDocumentNormalizer {
 
       return new XElement(element.Name,
          NormalizeAttributes(element),
-         element.Nodes().Select(n => NormalizeNode(n))
+         element.Nodes().Select(NormalizeNode)
       );
    }
 

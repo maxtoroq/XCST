@@ -216,7 +216,7 @@ public class XcstEvaluator<TPackage> : XcstEvaluator
       _paramsLocked = true;
 
       void executionFn(OutputParameters? overrideParams, bool skipFlush) =>
-         functionCaller(_package);
+         functionCaller.Invoke(_package);
 
       return new XcstOutputter(_package, Prime, executionFn);
    }
@@ -228,7 +228,7 @@ public class XcstEvaluator<TPackage> : XcstEvaluator
 
       _paramsLocked = true;
 
-      TResult executionFn() => functionCaller(_package);
+      TResult executionFn() => functionCaller.Invoke(_package);
 
       return new XcstOutputter<TResult>(_package, Prime, executionFn);
    }
@@ -455,7 +455,7 @@ public class XcstTemplateEvaluator {
       var tunnelParams = new Dictionary<string, object?>(_tunnelParameters);
 
       void executionFn2(OutputParameters? overrideParams, bool skipFlush) =>
-         executionFn(overrideParams, skipFlush, CreateTemplateContext(templateParams, tunnelParams));
+         executionFn.Invoke(overrideParams, skipFlush, CreateTemplateContext(templateParams, tunnelParams));
 
       return new XcstOutputter(_package, _primeFn, executionFn2);
    }
@@ -488,7 +488,7 @@ public class XcstTemplateEvaluator {
    EvaluateTemplate(Action<TemplateContext> tmplFn, TemplateContext tmplContext) {
 
       if (_name != null) {
-         tmplFn(tmplContext);
+         tmplFn.Invoke(tmplContext);
       } else {
          ApplyTemplates.Apply(tmplContext, _input, _mode, tmplFn);
       }
@@ -500,7 +500,7 @@ public class XcstTemplateEvaluator {
       var defaultParams = new OutputParameters();
       _package.ReadOutputDefinition(null, defaultParams);
 
-      var writer = writerFn(defaultParams, overrideParams, _package.Context);
+      var writer = writerFn.Invoke(defaultParams, overrideParams, _package.Context);
 
       try {
 
@@ -622,13 +622,13 @@ public class XcstOutputter {
    Run(bool skipFlush = false) {
 
       InitPackage();
-      _executionFn(_parameters, skipFlush);
+      _executionFn.Invoke(_parameters, skipFlush);
    }
 
    private protected void
    InitPackage() {
 
-      var primingContext = _primeFn();
+      var primingContext = _primeFn.Invoke();
 
       var execContext = new ExecutionContext(
          topLevelPackage: _package,
@@ -650,7 +650,7 @@ public class XcstOutputter<TResult> : XcstOutputter {
 
    internal
    XcstOutputter(IXcstPackage package, Func<PrimingContext> primeFn, Func<TResult> executionFn)
-      : base(package, primeFn, (p, sf) => executionFn()) {
+      : base(package, primeFn, (p, sf) => executionFn.Invoke()) {
 
       _executionFn = executionFn;
    }
@@ -701,7 +701,7 @@ public class XcstOutputter<TResult> : XcstOutputter {
    Evaluate() {
 
       InitPackage();
-      return _executionFn();
+      return _executionFn.Invoke();
    }
 }
 
