@@ -155,6 +155,86 @@
 
    <!-- ## Sequence Constructors -->
 
+   <template name='src:buffered-simple-content'>
+      <param name='el' as='XElement' required='yes'/>
+      <param name='attr' as='XAttribute?'/>
+      <param name='separator' as='XAttribute?'/>
+
+      <choose>
+         <when test='attr != null || !el.HasElements'>
+            <apply-templates value='el' mode='src:buffered-simple-content'>
+               <with-param name='stringRef'>
+                  <call-template name='src:simple-content'>
+                     <with-param name='el' value='el'/>
+                     <with-param name='attr' value='attr'/>
+                     <with-param name='separator' value='separator'/>
+                  </call-template>
+               </with-param>
+            </apply-templates>
+         </when>
+         <otherwise>
+            <variable name='newOutput' value='src_doc_output(el, null)'/>
+            <variable name='defaultSep' value='
+               (el.Name == c + "value-of" || el.Name == c + "attribute") ?
+                  "" : " "'/>
+            <variable name='bufferVar' value='src_aux_variable("buffer_" + fn_generate_id(el))'/>
+
+            <code:variable name='{bufferVar}'>
+               <code:new-object>
+                  <code:type-reference name='StringBuilder' namespace='System.Text'/>
+               </code:new-object>
+            </code:variable>
+
+            <code:try line-hidden='true'>
+               <code:block>
+                  <code:using>
+                     <call-template name='src:line-number'>
+                        <with-param name='el' value='el'/>
+                     </call-template>
+                     <code:variable name='{select(newOutput, src + "reference", code).First().Attribute("name")!.Value}'>
+                        <code:method-call name='SimpleContentWriter'>
+                           <copy-of value='src_helper_type("Serialization")'/>
+                           <code:arguments>
+                              <code:this-reference/>
+                              <choose>
+                                 <when test='separator != null'>
+                                    <call-template name='src:expand-attribute'>
+                                       <with-param name='attr' value='separator'/>
+                                    </call-template>
+                                 </when>
+                                 <otherwise>
+                                    <code:string literal='true'>
+                                       <attribute name='xml:space'>preserve</attribute>
+                                       <value-of value='defaultSep'/>
+                                    </code:string>
+                                 </otherwise>
+                              </choose>
+                              <code:variable-reference name='{bufferVar}'/>
+                           </code:arguments>
+                        </code:method-call>
+                     </code:variable>
+                     <code:block>
+                        <call-template name='src:sequence-constructor'>
+                           <with-param name='el' value='el'/>
+                           <with-param name='output' value='newOutput' tunnel='yes'/>
+                        </call-template>
+                     </code:block>
+                  </code:using>
+               </code:block>
+               <code:finally line-hidden='true'>
+                  <apply-templates value='el' mode='src:buffered-simple-content'>
+                     <with-param name='stringRef'>
+                        <code:method-call name='ToString'>
+                           <code:variable-reference name='{bufferVar}'/>
+                        </code:method-call>
+                     </with-param>
+                  </apply-templates>
+               </code:finally>
+            </code:try>
+         </otherwise>
+      </choose>
+   </template>
+
    <template name='src:simple-content' as='XElement'>
       <param name='el' as='XElement' required='yes'/>
       <param name='attr' as='XAttribute?'/>
@@ -191,41 +271,8 @@
                </code:arguments>
             </code:method-call>
          </when>
-         <when test='el.Elements().Any()'>
-            <variable name='newOutput' value='src_doc_output(el, null)'/>
-            <variable name='defaultSep' value='
-               (el.Name == c + "value-of" || el.Name == c + "attribute") ?
-                  "" : " "'/>
-            <code:method-call name='SimpleContent'>
-               <copy-of value='src_helper_type("Serialization")'/>
-               <code:arguments>
-                  <code:this-reference/>
-                  <choose>
-                     <when test='separator != null'>
-                        <call-template name='src:expand-attribute'>
-                           <with-param name='attr' value='separator'/>
-                        </call-template>
-                     </when>
-                     <otherwise>
-                        <code:string literal='true'>
-                           <attribute name='xml:space'>preserve</attribute>
-                           <value-of value='defaultSep'/>
-                        </code:string>
-                     </otherwise>
-                  </choose>
-                  <code:lambda void='true'>
-                     <code:parameters>
-                        <code:parameter name='{select(newOutput, src + "reference", code).First().Attribute("name")!.Value}'/>
-                     </code:parameters>
-                     <code:block>
-                        <call-template name='src:sequence-constructor'>
-                           <with-param name='el' value='el'/>
-                           <with-param name='output' value='newOutput' tunnel='yes'/>
-                        </call-template>
-                     </code:block>
-                  </code:lambda>
-               </code:arguments>
-            </code:method-call>
+         <when test='el.HasElements'>
+            <message terminate='yes'/>
          </when>
          <otherwise>
             <code:string/>
@@ -304,7 +351,7 @@
                </otherwise>
             </choose>
          </when>
-         <when test='el.Elements().Any()'>
+         <when test='el.HasElements'>
             <variable name='children' value='el.Nodes().ToArray()'/>
             <variable name='seqctorMeta'>
                <call-template name='xcst:sequence-constructor'>
@@ -352,17 +399,18 @@
                      : false'/>
                   <variable name='flushSingle' value='cardinality == TypeCardinality.One'/>
 
-                  <code:method-call name='Flush{(flushSingle ? "Single" : null)}'>
+                  <code:chain>
+                     <code:method-call name='Create'>
+                        <copy-of value='src_helper_type("SequenceWriter")'/>
+                        <code:type-arguments>
+                           <copy-of value='itemType'/>
+                           <on-empty>
+                              <copy-of value='src_nullable_object_type'/>
+                           </on-empty>
+                        </code:type-arguments>
+                     </code:method-call>
                      <code:method-call name='WriteSequenceConstructor'>
-                        <code:method-call name='Create'>
-                           <copy-of value='src_helper_type("SequenceWriter")'/>
-                           <code:type-arguments>
-                              <copy-of value='itemType'/>
-                              <on-empty>
-                                 <copy-of value='src_nullable_object_type'/>
-                              </on-empty>
-                           </code:type-arguments>
-                        </code:method-call>
+                        <code:chain-reference/>
                         <code:arguments>
                            <code:lambda void='true'>
                               <code:parameters>
@@ -380,7 +428,10 @@
                            </code:lambda>
                         </code:arguments>
                      </code:method-call>
-                  </code:method-call>
+                     <code:method-call name='Flush{(flushSingle ? "Single" : null)}'>
+                        <code:chain-reference/>
+                     </code:method-call>
+                  </code:chain>
                </otherwise>
             </choose>
          </when>

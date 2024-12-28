@@ -23,6 +23,39 @@ namespace Xcst.Runtime;
 /// <exclude/>
 public static class Serialization {
 
+   public static XcstWriter
+   SerializeWriter(IXcstPackage package, OutputParameters parameters, XName? outputName, StringBuilder output) {
+
+      Argument.NotNull(package);
+      Argument.NotNull(parameters);
+      Argument.NotNull(output);
+
+      var defaultParams = new OutputParameters();
+
+      if (outputName != null) {
+         package.ReadOutputDefinition(outputName, defaultParams);
+      }
+
+      return WriterFactory.CreateWriter(output)
+         .Invoke(defaultParams, parameters, package.Context);
+   }
+
+   public static XcstWriter
+   SimpleContentWriter(IXcstPackage package, string separator, StringBuilder output) {
+
+      return SerializeWriter(
+         package,
+         new OutputParameters {
+            Method = OutputParameters.Methods.Text,
+            ItemSeparator = separator
+         },
+         null,
+         output
+      );
+   }
+
+#warning TODO: remove Serialize and SimpleContent
+
    public static string
    Serialize(IXcstPackage package, XName? outputName, OutputParameters parameters, Action<XcstWriter> action) {
 

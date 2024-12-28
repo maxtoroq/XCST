@@ -62,7 +62,7 @@
       <variable name='valueAttr' value='el.Attribute("value")'/>
       <variable name='separatorAttr' value='el.Attribute("separator")'/>
 
-      <variable name='attribString' value='valueAttr != null || fn_empty(el.Elements())'/>
+      <variable name='attribString' value='valueAttr != null || !el.HasElements'/>
       <variable name='includeSeparator' value='!attribString &amp;&amp; separatorAttr != null'/>
       <variable name='nameAvt' value='xcst_is_value_template(nameAttr)'/>
 
@@ -177,7 +177,6 @@
    </template>
 
    <template match='XElement el &amp;&amp; el.Name == c + "comment"' mode='src:statement'>
-      <param name='output' as='XElement' tunnel='yes'/>
 
       <call-template name='xcst:validate-attribs'>
          <with-param name='el' value='el'/>
@@ -187,6 +186,16 @@
       <call-template name='xcst:value-or-sequence-constructor'>
          <with-param name='el' value='el'/>
       </call-template>
+
+      <call-template name='src:buffered-simple-content'>
+         <with-param name='el' value='el'/>
+         <with-param name='attr' value='el.Attribute("value")'/>
+      </call-template>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "comment"' mode='src:buffered-simple-content'>
+      <param name='stringRef' as='XElement' required='yes'/>
+      <param name='output' as='XElement' tunnel='yes'/>
 
       <call-template name='xcst:require-output'>
          <with-param name='el' value='el'/>
@@ -198,10 +207,7 @@
          </call-template>
          <copy-of value='select(output, src + "reference", code)'/>
          <code:arguments>
-            <call-template name='src:simple-content'>
-               <with-param name='el' value='el'/>
-               <with-param name='attr' value='el.Attribute("value")'/>
-            </call-template>
+            <copy-of value='stringRef'/>
          </code:arguments>
       </code:method-call>
    </template>
@@ -432,7 +438,7 @@
 
       <variable name='nameAttr' value='el.Attribute("name")!'/>
       <variable name='valueAttr' value='el.Attribute("value")'/>
-      <variable name='attribString' value='valueAttr != null || fn_empty(el.Elements())'/>
+      <variable name='attribString' value='valueAttr != null || !el.HasElements'/>
 
       <code:method-call name='{(attribString ? "WriteAttributeString" : "WriteStartAttribute")}'>
          <call-template name='src:line-number'>
@@ -513,11 +519,24 @@
          </code:variable>
       </if>
 
+      <call-template name='src:buffered-simple-content'>
+         <with-param name='el' value='el'/>
+         <with-param name='attr' value='el.Attribute("value")'/>
+         <with-param name='output' value='docOutput' tunnel='yes'/>
+      </call-template>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "processing-instruction"' mode='src:buffered-simple-content'>
+      <param name='stringRef' as='XElement' required='yes'/>
+      <param name='output' as='XElement' tunnel='yes' required='yes'/>
+
+      <variable name='nameAttr' value='el.Attribute("name")!'/>
+
       <code:method-call name='WriteProcessingInstruction'>
          <call-template name='src:line-number'>
             <with-param name='el' value='el'/>
          </call-template>
-         <copy-of value='select(docOutput, src + "reference", code)'/>
+         <copy-of value='select(output, src + "reference", code)'/>
          <code:arguments>
             <call-template name='src:string'>
                <with-param name='val' value='xcst_ncname(nameAttr, null, true)'/>
@@ -525,17 +544,13 @@
                <with-param name='literal' value='true'/>
             </call-template>
             <code:method-call name='TrimStart'>
-               <call-template name='src:simple-content'>
-                  <with-param name='el' value='el'/>
-                  <with-param name='attr' value='el.Attribute("value")'/>
-               </call-template>
+               <copy-of value='stringRef'/>
             </code:method-call>
          </code:arguments>
       </code:method-call>
    </template>
 
-   <template match='XElement el
-         &amp;&amp; (el.Name == c + "text" || el.Name == c + "value-of")' mode='src:statement'>
+   <template match='XElement el &amp;&amp; el.Name == c + "text"' mode='src:statement'>
       <param name='output' as='XElement' tunnel='yes'/>
 
       <call-template name='xcst:require-output'>
@@ -584,7 +599,68 @@
       </choose>
    </template>
 
+   <template match='XElement el &amp;&amp; el.Name == c + "text"' mode='xcst:instruction'>
+      <xcst:instruction expression='true'>
+         <code:type-reference name='String' namespace='System'/>
+      </xcst:instruction>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "value-of"' mode='src:statement'>
+
+      <call-template name='xcst:validate-value-of'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <call-template name='src:buffered-simple-content'>
+         <with-param name='el' value='el'/>
+         <with-param name='attr' value='el.Attribute("value")'/>
+         <with-param name='separator' value='el.Attribute("separator")'/>
+      </call-template>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "value-of"' mode='src:buffered-simple-content'>
+      <param name='stringRef' as='XElement' required='yes'/>
+      <param name='output' as='XElement' tunnel='yes'/>
+
+      <call-template name='xcst:require-output'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <variable name='doe' value='
+         (el.Attribute("disable-output-escaping") is { } doeAttr) ?
+            xcst_boolean(doeAttr)!.Value
+            : false'/>
+
+      <code:method-call name='{(doe ? "WriteRaw" : "WriteString")}'>
+         <call-template name='src:line-number'>
+            <with-param name='el' value='el'/>
+         </call-template>
+         <copy-of value='select(output, src + "reference", code)'/>
+         <code:arguments>
+            <copy-of value='stringRef'/>
+         </code:arguments>
+      </code:method-call>
+   </template>
+
    <template match='XElement el &amp;&amp; el.Name == c + "value-of"' mode='src:expression'>
+
+      <call-template name='xcst:validate-value-of'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <variable name='valueAttr' value='el.Attribute("value")'/>
+
+      <assert test='valueAttr != null || !el.HasElements'/>
+
+      <call-template name='src:simple-content'>
+         <with-param name='el' value='el'/>
+         <with-param name='attr' value='valueAttr'/>
+         <with-param name='separator' value='el.Attribute("separator")'/>
+      </call-template>
+   </template>
+
+   <template name='xcst:validate-value-of'>
+      <param name='el' as='XElement' required='yes'/>
 
       <call-template name='xcst:validate-attribs'>
          <with-param name='el' value='el'/>
@@ -594,17 +670,13 @@
       <call-template name='xcst:value-or-sequence-constructor'>
          <with-param name='el' value='el'/>
       </call-template>
-
-      <call-template name='src:simple-content'>
-         <with-param name='el' value='el'/>
-         <with-param name='attr' value='el.Attribute("value")'/>
-         <with-param name='separator' value='el.Attribute("separator")'/>
-      </call-template>
    </template>
 
-   <template match='XElement el
-         &amp;&amp; (el.Name == c + "text" || el.Name == c + "value-of")' mode='xcst:instruction'>
-      <xcst:instruction expression='true'>
+   <template match='XElement el &amp;&amp; el.Name == c + "value-of"' mode='xcst:instruction'>
+      <xcst:instruction>
+         <if test='el.Attribute("value") != null || !el.HasElements'>
+            <attribute name='expression'>true</attribute>
+         </if>
          <code:type-reference name='String' namespace='System'/>
       </xcst:instruction>
    </template>

@@ -48,24 +48,24 @@
       </delegate>
    </variable>
 
+   <variable name='src_expand_text'>
+      <delegate as='XElement'>
+         <param name='el' as='XElement' required='yes'/>
+         <param name='text' as='string' required='yes'/>
+
+         <call-template name='src:expand-text'>
+            <with-param name='el' value='el'/>
+            <with-param name='text' value='text'/>
+         </call-template>
+      </delegate>
+   </variable>
+
    <variable name='src_sequence_constructor'>
       <delegate>
          <param name='el' as='XElement' required='yes'/>
 
          <call-template name='src:sequence-constructor'>
             <with-param name='el' value='el'/>
-         </call-template>
-      </delegate>
-   </variable>
-
-   <variable name='src_simple_content'>
-      <delegate as='XElement'>
-         <param name='el' as='XElement' required='yes'/>
-         <param name='attr' as='XAttribute?'/>
-
-         <call-template name='src:simple-content'>
-            <with-param name='el' value='el'/>
-            <with-param name='attr' value='attr'/>
          </call-template>
       </delegate>
    </variable>

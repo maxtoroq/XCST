@@ -142,7 +142,7 @@
    <template name='xcst:no-children'>
       <param name='el' as='XElement' required='yes'/>
 
-      <if test='!(fn_empty(el.Elements())
+      <if test='!(!el.HasElements
             &amp;&amp; el.Nodes().OfType&lt;XText>()
                .All(tx => trim(tx.Value).Length == 0 &amp;&amp; !xcst_preserve_whitespace(el)))'>
          <message terminate='yes' error-code='XTSE0260' error-data='src_error_object(el)' transform-text='trim'>
@@ -154,7 +154,7 @@
    <template name='xcst:text-only'>
       <param name='el' as='XElement' required='yes'/>
 
-      <if test='!fn_empty(el.Elements())'>
+      <if test='!(!el.HasElements)'>
          <message terminate='yes' error-code='XTSE0010' error-data='src_error_object(el)' expand-text='yes' transform-text='trim'>
             Element c:{el.Name.LocalName} can only contain text.
          </message>
@@ -201,7 +201,7 @@
 
       <return value='el.Attribute("value") != null
          || text != null
-         || el.Elements().Any()'/>
+         || el.HasElements'/>
    </function>
 
    <function name='xcst_text' as='string?'>
@@ -237,7 +237,7 @@
       <param name='t' as='XText'/>
 
       <return value='t.Parent is { } parent
-         &amp;&amp; parent.Elements().Any()
+         &amp;&amp; parent.HasElements
          &amp;&amp; !parent.Nodes()
             .OfType&lt;XText>()
             .Any(p => trim(p.Value).Length > 0)'/>

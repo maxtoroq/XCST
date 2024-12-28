@@ -542,56 +542,148 @@
       <xcst:instruction void='true'/>
    </template>
 
-   <template match='XElement el &amp;&amp; el.Name == c + "serialize"' mode='src:expression'>
+   <template match='XElement el &amp;&amp; el.Name == c + "serialize"' mode='src:statement'>
 
-      <call-template name='xcst:validate-attribs'>
+      <variable name='validateResult'>
+         <call-template name='xcst:validate-serialize'>
+            <with-param name='el' value='el'/>
+         </call-template>
+      </variable>
+
+      <choose>
+         <when test='(!el.HasElements &amp;&amp; xcst_text(el) is null)'>
+            <call-template name='src:buffered-serialize'>
+               <with-param name='el' value='el'/>
+               <with-param name='stringRef' as='XElement'>
+                  <apply-templates value='el' mode='src:expression'/>
+               </with-param>
+            </call-template>
+         </when>
+         <otherwise>
+            <variable name='newOutput' value='src_doc_output(el, null)'/>
+            <variable name='bufferVar' value='src_aux_variable("buffer_" + fn_generate_id(el))'/>
+
+            <code:variable name='{bufferVar}'>
+               <code:new-object>
+                  <code:type-reference name='StringBuilder' namespace='System.Text'/>
+               </code:new-object>
+            </code:variable>
+
+            <code:try line-hidden='true'>
+               <code:block>
+                  <code:using>
+                     <call-template name='src:line-number'>
+                        <with-param name='el' value='el'/>
+                     </call-template>
+                     <code:variable name='{select(newOutput, src + "reference", code).First().Attribute("name")!.Value}'>
+                        <code:method-call name='SerializeWriter'>
+                           <copy-of value='src_helper_type("Serialization")'/>
+                           <code:arguments>
+                              <code:this-reference/>
+                              <code:new-object>
+                                 <code:type-reference name='OutputParameters' namespace='Xcst'/>
+                                 <code:initializer>
+                                    <copy-of value='select(validateResult.Where(p => p.Name == src + "output-parameters"), code)'/>
+                                 </code:initializer>
+                              </code:new-object>
+                              <copy-of value='select(validateResult.Where(p => p.Name == src + "output-format"), code)'/>
+                              <code:variable-reference name='{bufferVar}'/>
+                           </code:arguments>
+                        </code:method-call>
+                     </code:variable>
+                     <code:block>
+                        <call-template name='src:sequence-constructor'>
+                           <with-param name='el' value='el'/>
+                           <with-param name='output' value='newOutput' tunnel='yes'/>
+                        </call-template>
+                     </code:block>
+                  </code:using>
+               </code:block>
+               <code:finally line-hidden='true'>
+                  <call-template name='src:buffered-serialize'>
+                     <with-param name='el' value='el'/>
+                     <with-param name='stringRef'>
+                        <code:method-call name='ToString'>
+                           <code:variable-reference name='{bufferVar}'/>
+                        </code:method-call>
+                     </with-param>
+                  </call-template>
+               </code:finally>
+            </code:try>
+         </otherwise>
+      </choose>
+   </template>
+
+   <template name='src:buffered-serialize'>
+      <param name='el' as='XElement' required='yes'/>
+      <param name='stringRef' as='XElement' required='yes'/>
+      <param name='output' as='XElement' tunnel='yes'/>
+
+      <call-template name='xcst:require-output'>
          <with-param name='el' value='el'/>
-         <with-param name='optional' value='
-            new[] { "format" }
-               .Concat(src_output_parameters.Keys.Where(p => p != "version"))
-               .ToArray()'/>
       </call-template>
 
-      <variable name='newOutput' value='src_doc_output(el, null)'/>
-
-      <code:method-call name='Serialize'>
-         <copy-of value='src_helper_type("Serialization")'/>
+      <code:method-call name='WriteObject'>
+         <call-template name='src:line-number'>
+            <with-param name='el' value='el'/>
+         </call-template>
+         <copy-of value='select(output, src + "reference", code)'/>
          <code:arguments>
-            <code:this-reference/>
-            <call-template name='src:format-QName'>
-               <with-param name='el' value='el'/>
-            </call-template>
-            <code:new-object>
-               <code:type-reference name='OutputParameters' namespace='Xcst'/>
-               <code:initializer>
-                  <for-each name='attr' in='attributes(el)
-                        .Where(p => p.Name.Namespace == XNamespace.None
-                           &amp;&amp; p.Name != "format"
-                           &amp;&amp; p.Name != "version"
-                           &amp;&amp; src_output_parameters.ContainsKey(p.Name.LocalName))'>
-                     <call-template name='src:output-parameter-initializer'>
-                        <with-param name='attr' value='attr'/>
-                     </call-template>
-                  </for-each>
-               </code:initializer>
-            </code:new-object>
-            <code:lambda void='true'>
-               <code:parameters>
-                  <code:parameter name='{select(newOutput, src + "reference", code).First().Attribute("name")!.Value}'/>
-               </code:parameters>
-               <code:block>
-                  <call-template name='src:sequence-constructor'>
-                     <with-param name='el' value='el'/>
-                     <with-param name='output' value='newOutput' tunnel='yes'/>
-                  </call-template>
-               </code:block>
-            </code:lambda>
+            <copy-of value='stringRef'/>
          </code:arguments>
       </code:method-call>
    </template>
 
+   <template match='XElement el &amp;&amp; el.Name == c + "serialize"' mode='src:expression'>
+
+      <void>
+         <call-template name='xcst:validate-serialize'>
+            <with-param name='el' value='el'/>
+         </call-template>
+      </void>
+
+      <assert test='!el.HasElements &amp;&amp; xcst_text(el) is null'/>
+
+      <code:string/>
+   </template>
+
+   <template name='xcst:validate-serialize' as='XElement[]'>
+      <param name='el' as='XElement' required='yes'/>
+
+      <void>
+         <call-template name='xcst:validate-attribs'>
+            <with-param name='el' value='el'/>
+            <with-param name='optional' value='
+               new[] { "format" }
+                  .Concat(src_output_parameters.Keys.Where(p => p != "version"))
+                  .ToArray()'/>
+         </call-template>
+      </void>
+
+      <src:output-format>
+         <call-template name='src:format-QName'>
+            <with-param name='el' value='el'/>
+         </call-template>
+      </src:output-format>
+
+      <src:output-parameters>
+         <for-each name='attr' in='attributes(el)
+               .Where(p => p.Name.Namespace == XNamespace.None
+                  &amp;&amp; p.Name != "format"
+                  &amp;&amp; p.Name != "version"
+                  &amp;&amp; src_output_parameters.ContainsKey(p.Name.LocalName))'>
+            <call-template name='src:output-parameter-initializer'>
+               <with-param name='attr' value='attr'/>
+            </call-template>
+         </for-each>
+      </src:output-parameters>
+   </template>
+
    <template match='XElement el &amp;&amp; el.Name == c + "serialize"' mode='xcst:instruction'>
-      <xcst:instruction expression='true'>
+      <xcst:instruction>
+         <if test='(!el.HasElements &amp;&amp; xcst_text(el) is null)'>
+            <attribute name='expression'>true</attribute>
+         </if>
          <code:type-reference name='String' namespace='System'/>
       </xcst:instruction>
    </template>

@@ -87,6 +87,7 @@ partial class XcstCompilerPackage {
       if (this.Extensions.TryGetValue(extensionNamespace, out var pkg)) {
 
          var evaluator = XcstEvaluator.Using(pkg)
+            .WithParam("xcst_text", (System.Func<XElement, XNode[]?, string?>)xcst_text)
             .WithParam("xcst_is_value_template", (System.Func<object, bool>)xcst_is_value_template)
             .WithParam("xcst_require_output", xcst_require_output)
             .WithParam("src_base_types", src_base_types)
@@ -95,8 +96,8 @@ partial class XcstCompilerPackage {
             .WithParam("src_template_output", (System.Func<XElement?, XElement?, XElement>)src_template_output)
             .WithParam("src_helper_type", (System.Func<string, XElement>)src_helper_type)
             .WithParam("src_expand_attribute", src_expand_attribute)
+            .WithParam("src_expand_text", src_expand_text)
             .WithParam("src_sequence_constructor", src_sequence_constructor)
-            .WithParam("src_simple_content", src_simple_content)
             .WithParam("src_validation_arguments", src_validation_arguments)
             .WithParam("src_top_level_package_reference", src_top_level_package_reference)
             .WithParam("src_line_number", src_line_number)

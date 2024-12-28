@@ -35,7 +35,14 @@
          <with-param name='el' value='el'/>
       </call-template>
 
-      <variable name='text' value='xcst_text(el)'/>
+      <call-template name='src:buffered-simple-content'>
+         <with-param name='el' value='el'/>
+         <with-param name='attr' value='el.Attribute("value")'/>
+      </call-template>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "assert"' mode='src:buffered-simple-content'>
+      <param name='stringRef' as='XElement' required='yes'/>
 
       <code:method-call name='Assert'>
          <call-template name='src:line-number'>
@@ -44,12 +51,8 @@
          <code:type-reference name='Debug' namespace='System.Diagnostics'/>
          <code:arguments>
             <code:expression value='{xcst_expression(el.Attribute("test")!)}'/>
-            <if test='xcst_has_value(el, text)'>
-               <call-template name='src:simple-content'>
-                  <with-param name='el' value='el'/>
-                  <with-param name='attr' value='el.Attribute("value")'/>
-                  <with-param name='text' value='text'/>
-               </call-template>
+            <if test='xcst_has_value(el, xcst_text(el))'>
+               <copy-of value='stringRef'/>
             </if>
          </code:arguments>
       </code:method-call>
@@ -70,6 +73,15 @@
          <with-param name='el' value='el'/>
       </call-template>
 
+      <call-template name='src:buffered-simple-content'>
+         <with-param name='el' value='el'/>
+         <with-param name='attr' value='el.Attribute("value")'/>
+      </call-template>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "message"' mode='src:buffered-simple-content'>
+      <param name='stringRef' as='XElement' required='yes'/>
+
       <variable name='terminateAttr' value='el.Attribute("terminate")'/>
       <variable name='terminate' value='
          (terminateAttr != null) ?
@@ -85,10 +97,7 @@
          <code:new-object>
             <code:type-reference name='MessageArgs' namespace='Xcst'/>
             <code:arguments>
-               <call-template name='src:simple-content'>
-                  <with-param name='el' value='el'/>
-                  <with-param name='attr' value='el.Attribute("value")'/>
-               </call-template>
+               <copy-of value='stringRef'/>
                <if test='el.Attribute("error-code") is { } errorCodeAttr'>
                   <code:argument name='errorCode'>
                      <call-template name='src:line-number'>

@@ -363,13 +363,7 @@
                or "with-param"
                or "variable"
                or "set"
-               or "return"
-               or "comment"
-               or "processing-instruction"
-               or "value-of"
-               or "serialize"
-               or "assert"
-               or "message")
+               or "return")
          .FirstOrDefault()'/>
 
       <variable name='allowedAncestor' value='el
@@ -439,9 +433,7 @@
          .Where(p => p.Name.Namespace == c
             &amp;&amp; ((p.Name.LocalName is "delegate"
                or "with-param"
-               or "variable"
-               or "value-of"
-               or "serialize")
+               or "variable")
                || (p.Name.LocalName is "switch"
                   &amp;&amp; el.Name == c + "break")))
          .FirstOrDefault()'/>
