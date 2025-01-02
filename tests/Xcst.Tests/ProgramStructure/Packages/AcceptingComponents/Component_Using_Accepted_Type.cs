@@ -5,6 +5,7 @@ using System.Xml;
 using NUnit.Framework;
 
 namespace Xcst.Tests.ProgramStructure.Packages.AcceptingComponents;
+
 using ModuleResolver = AcceptingComponentsTests.Component_Using_Accepted_Type_Resolver;
 
 public partial class AcceptingComponentsTests {
