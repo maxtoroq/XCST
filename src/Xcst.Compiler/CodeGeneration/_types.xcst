@@ -143,10 +143,8 @@
 
          <code:type name='{meta.Attribute("member-name")!.Value}'
                visibility='{(publicMember ? "public" : "private")}'
-               extensibility='{(visibility == "final" ? "sealed" : "#default")}'>
-            <if test='V2_OR_GREATER'>
-               <attribute name='partial' value='fn_string(true)'/>
-            </if>
+               extensibility='{(visibility == "final" ? "sealed" : "#default")}'
+               partial='true'>
             <if test='meta.Attribute("member-name-was-escaped") is { } escAttr
                   &amp;&amp; xs_boolean(escAttr)'>
                <attribute name='verbatim' value='fn_string(true)'/>
