@@ -70,6 +70,22 @@
       </delegate>
    </variable>
 
+   <!--
+      TODO: remove src_simple_content
+   -->
+
+   <variable name='src_simple_content'>
+      <delegate as='XElement'>
+         <param name='el' as='XElement' required='yes'/>
+         <param name='attr' as='XAttribute?'/>
+
+         <call-template name='src:simple-content'>
+            <with-param name='el' value='el'/>
+            <with-param name='attr' value='attr'/>
+         </call-template>
+      </delegate>
+   </variable>
+
    <variable name='src_validation_arguments'>
       <delegate as='XElement[]'>
          <param name='el' as='XElement' required='yes'/>
