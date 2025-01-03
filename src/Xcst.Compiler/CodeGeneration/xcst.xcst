@@ -84,7 +84,7 @@
    <variable name='src_nullable_object_type'>
       <code:type-reference name='Object' namespace='System'>
          <if test='cs_nullable_annotate'>
-            <attribute name='nullable' value='fn_string(true)'/>
+            <attribute name='nullable'>true</attribute>
          </if>
       </code:type-reference>
    </variable>

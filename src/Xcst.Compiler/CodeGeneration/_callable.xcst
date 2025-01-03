@@ -394,7 +394,7 @@
             verbatim='true'>
          <if test='typeRef != null
                &amp;&amp; src_qualified_type(typeRef)'>
-            <attribute name='return-type-verbatim' value='fn_string(true)'/>
+            <attribute name='return-type-verbatim'>true</attribute>
          </if>
          <copy-of value='typeRef'/>
          <code:attributes>
@@ -958,7 +958,7 @@
             </attribute>
             <if test='meta.Attribute("member-name-was-escaped") is { } escAttr
                   &amp;&amp; xs_boolean(escAttr)'>
-               <attribute name='verbatim' value='fn_string(true)'/>
+               <attribute name='verbatim'>true</attribute>
             </if>
             <call-template name='src:line-number'>
                <with-param name='el' value='el'/>

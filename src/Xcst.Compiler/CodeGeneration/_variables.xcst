@@ -178,7 +178,7 @@
             extensibility='{(visibilityAttr.Value == "public" ? "virtual" : "#default")}'
             verbatim='true'>
          <if test='src_qualified_type(typeRef)'>
-            <attribute name='return-type-verbatim' value='fn_string(true)'/>
+            <attribute name='return-type-verbatim'>true</attribute>
          </if>
          <copy-of value='typeRef'/>
          <code:attributes>

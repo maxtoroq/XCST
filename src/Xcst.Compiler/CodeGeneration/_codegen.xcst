@@ -86,7 +86,7 @@
             <return>
                <src:output kind='obj'>
                   <if test='itemTypeRef is null'>
-                     <attribute name='item-type-is-object' value='fn_string(true)'/>
+                     <attribute name='item-type-is-object'>true</attribute>
                   </if>
                   <code:type-reference>
                      <copy-of value='attributes(src_helper_type("ISequenceWriter"))'/>
@@ -191,7 +191,7 @@
       <return>
          <code:type-reference name='{type}' namespace='Xcst.{(V2_OR_GREATER ? "Runtime" : "PackageModel")}'>
             <if test='@interface'>
-               <attribute name='interface' value='fn_string(true)'/>
+               <attribute name='interface'>true</attribute>
             </if>
          </code:type-reference>
       </return>

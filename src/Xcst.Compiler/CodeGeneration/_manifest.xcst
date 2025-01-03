@@ -318,7 +318,7 @@
             <copy-of value='attributes(component)'/>
             <attribute name='visibility' value='visibility'/>
             <attribute name='original-visibility' value='originalVisibility'/>
-            <attribute name='accepted' value='fn_string(true)'/>
+            <attribute name='accepted'>true</attribute>
             <attribute name='package-id' value='component.Parent.Attribute("package-id")!.Value'/>
             <attribute name='qualified-types' value='component.Parent.Attribute("qualified-types")!.Value'/>
             <copy-of value='component.Nodes()'/>

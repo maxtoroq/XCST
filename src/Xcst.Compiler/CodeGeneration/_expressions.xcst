@@ -416,7 +416,7 @@
                   <variable name='newOutput'>
                      <src:output kind='obj'>
                         <if test='itemType is null'>
-                           <attribute name='item-type-is-object' value='fn_string(true)'/>
+                           <attribute name='item-type-is-object'>true</attribute>
                         </if>
                         <src:reference>
                            <code:variable-reference name='{src_aux_variable("output")}_{fn_generate_id(el)}'/>

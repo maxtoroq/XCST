@@ -364,7 +364,7 @@
          <if test='instructions.Length == 1
                &amp;&amp; instructions[0].Attribute("expression") is { } exprAttr
                &amp;&amp; xs_boolean(exprAttr)'>
-            <attribute name='expression' value='fn_string(true)'/>
+            <attribute name='expression'>true</attribute>
          </if>
          <if test='cardinality != null'>
             <attribute name='cardinality' value='cardinality.Value'/>
