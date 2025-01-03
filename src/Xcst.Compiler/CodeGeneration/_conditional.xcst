@@ -359,11 +359,19 @@
       <variable name='disallowedAncestor' value='el
          .Ancestors()
          .Where(p => p.Name.Namespace == c
-            &amp;&amp; p.Name.LocalName is "param"
+            &amp;&amp; (p.Name.LocalName
+               is "param"
                or "with-param"
                or "variable"
                or "set"
-               or "return")
+               or "return"
+               || (V1 &amp;&amp; p.Name.LocalName
+                  is "comment"
+                  or "processing-instruction"
+                  or "value-of"
+                  or "serialize"
+                  or "assert"
+                  or "message")))
          .FirstOrDefault()'/>
 
       <variable name='allowedAncestor' value='el
@@ -431,9 +439,12 @@
       <variable name='disallowedAncestor' value='el
          .Ancestors()
          .Where(p => p.Name.Namespace == c
-            &amp;&amp; ((p.Name.LocalName is "delegate"
+            &amp;&amp; ((p.Name.LocalName
+               is "delegate"
                or "with-param"
-               or "variable")
+               or "variable" || (V1 &amp;&amp; p.Name.LocalName
+                  is "value-of"
+                  or "serialize"))
                || (p.Name.LocalName is "switch"
                   &amp;&amp; el.Name == c + "break")))
          .FirstOrDefault()'/>

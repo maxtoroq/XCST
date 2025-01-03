@@ -542,7 +542,49 @@
       <xcst:instruction void='true'/>
    </template>
 
-   <template match='XElement el &amp;&amp; el.Name == c + "serialize"' mode='src:statement'>
+   <template match='XElement el &amp;&amp; el.Name == c + "serialize" &amp;&amp; V1' mode='src:expression'>
+
+      <variable name='validateResult'>
+         <call-template name='xcst:validate-serialize'>
+            <with-param name='el' value='el'/>
+         </call-template>
+      </variable>
+
+      <variable name='newOutput' value='src_doc_output(el, null)'/>
+
+      <code:method-call name='Serialize'>
+         <copy-of value='src_helper_type("Serialization")'/>
+         <code:arguments>
+            <code:this-reference/>
+            <copy-of value='select(validateResult.Where(p => p.Name == src + "output-format"), code)'/>
+            <code:new-object>
+               <code:type-reference name='OutputParameters' namespace='Xcst'/>
+               <code:initializer>
+                  <copy-of value='select(validateResult.Where(p => p.Name == src + "output-parameters"), code)'/>
+               </code:initializer>
+            </code:new-object>
+            <code:lambda void='true'>
+               <code:parameters>
+                  <code:parameter name='{select(newOutput, src + "reference", code).First().Attribute("name")!.Value}'/>
+               </code:parameters>
+               <code:block>
+                  <call-template name='src:sequence-constructor'>
+                     <with-param name='el' value='el'/>
+                     <with-param name='output' value='newOutput' tunnel='yes'/>
+                  </call-template>
+               </code:block>
+            </code:lambda>
+         </code:arguments>
+      </code:method-call>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "serialize" &amp;&amp; V1' mode='xcst:instruction'>
+      <xcst:instruction expression='true'>
+         <code:type-reference name='String' namespace='System'/>
+      </xcst:instruction>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "serialize" &amp;&amp; V2_OR_GREATER' mode='src:statement'>
 
       <variable name='validateResult'>
          <call-template name='xcst:validate-serialize'>
@@ -634,7 +676,7 @@
       </code:method-call>
    </template>
 
-   <template match='XElement el &amp;&amp; el.Name == c + "serialize"' mode='src:expression'>
+   <template match='XElement el &amp;&amp; el.Name == c + "serialize" &amp;&amp; V2_OR_GREATER' mode='src:expression'>
 
       <void>
          <call-template name='xcst:validate-serialize'>
@@ -679,9 +721,9 @@
       </src:output-parameters>
    </template>
 
-   <template match='XElement el &amp;&amp; el.Name == c + "serialize"' mode='xcst:instruction'>
+   <template match='XElement el &amp;&amp; el.Name == c + "serialize" &amp;&amp; V2_OR_GREATER' mode='xcst:instruction'>
       <xcst:instruction>
-         <if test='(!el.HasElements &amp;&amp; xcst_text(el) is null)'>
+         <if test='!el.HasElements &amp;&amp; xcst_text(el) is null'>
             <attribute name='expression'>true</attribute>
          </if>
          <code:type-reference name='String' namespace='System'/>

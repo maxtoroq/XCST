@@ -161,7 +161,7 @@
       <param name='separator' as='XAttribute?'/>
 
       <choose>
-         <when test='attr != null || !el.HasElements'>
+         <when test='V1 || attr != null || !el.HasElements'>
             <apply-templates value='el' mode='src:buffered-simple-content'>
                <with-param name='stringRef'>
                   <call-template name='src:simple-content'>
@@ -271,7 +271,43 @@
                </code:arguments>
             </code:method-call>
          </when>
-         <when test='el.HasElements'>
+         <when test='el.HasElements &amp;&amp; V1'>
+            <variable name='newOutput' value='src_doc_output(el, null)'/>
+            <variable name='defaultSep' value='
+               (el.Name == c + "value-of" || el.Name == c + "attribute") ?
+                  "" : " "'/>
+            <code:method-call name='SimpleContent'>
+               <copy-of value='src_helper_type("Serialization")'/>
+               <code:arguments>
+                  <code:this-reference/>
+                  <choose>
+                     <when test='separator != null'>
+                        <call-template name='src:expand-attribute'>
+                           <with-param name='attr' value='separator'/>
+                        </call-template>
+                     </when>
+                     <otherwise>
+                        <code:string literal='true'>
+                           <attribute name='xml:space'>preserve</attribute>
+                           <value-of value='defaultSep'/>
+                        </code:string>
+                     </otherwise>
+                  </choose>
+                  <code:lambda void='true'>
+                     <code:parameters>
+                        <code:parameter name='{select(newOutput, src + "reference", code).First().Attribute("name")!.Value}'/>
+                     </code:parameters>
+                     <code:block>
+                        <call-template name='src:sequence-constructor'>
+                           <with-param name='el' value='el'/>
+                           <with-param name='output' value='newOutput' tunnel='yes'/>
+                        </call-template>
+                     </code:block>
+                  </code:lambda>
+               </code:arguments>
+            </code:method-call>
+         </when>
+         <when test='el.HasElements &amp;&amp; V2_OR_GREATER'>
             <message terminate='yes'/>
          </when>
          <otherwise>
