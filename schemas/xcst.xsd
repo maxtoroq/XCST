@@ -427,7 +427,7 @@
          </xs:attribute>
          <xs:attribute name="on-no-match">
             <xs:annotation>
-               <xs:documentation>Specifies the behavior when an item does not match any of the available template rules. The default is shallow-copy.</xs:documentation>
+               <xs:documentation>Specifies the behavior when an item does not match any of the available template rules. The default is fail.</xs:documentation>
             </xs:annotation>
             <xs:simpleType>
                <xs:restriction base="xs:token">

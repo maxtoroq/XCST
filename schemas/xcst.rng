@@ -488,7 +488,7 @@
                <ref name="eqname"/>
             </attribute>
             <attribute name="on-no-match">
-               <ann:documentation>Specifies the behavior when an item does not match any of the available template rules. The default is shallow-copy.</ann:documentation>
+               <ann:documentation>Specifies the behavior when an item does not match any of the available template rules. The default is fail.</ann:documentation>
                <choice>
                   <value>deep-copy</value>
                   <value>shallow-copy</value>
