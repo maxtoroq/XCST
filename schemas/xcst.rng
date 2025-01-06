@@ -416,6 +416,12 @@
             </attribute>
          </optional>
          <ref name="visibility-attribute"/>
+         <optional>
+            <attribute name="partial">
+               <ann:documentation>Specifies if the function should be implemented in another partial declaration.</ann:documentation>
+               <ref name="boolean"/>
+            </attribute>
+         </optional>
          <ref name="standard-attributes"/>
          <zeroOrMore>
             <ref name="param"/>

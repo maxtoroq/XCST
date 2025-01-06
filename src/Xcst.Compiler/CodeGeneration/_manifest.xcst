@@ -209,19 +209,24 @@
       </message>
    </template>
 
-   <template name='xcst:validate-empty-abstract'>
+   <template name='xcst:validate-empty-component'>
       <param name='el' as='XElement' required='yes'/>
       <param name='visibility' as='string' required='yes'/>
+      <param name='partial' value='false' as='bool'/>
 
-      <if test='visibility == "abstract"'>
+      <if test='visibility == "abstract" || partial'>
          <variable name='children' value='el.Nodes()
             .Where(p => !((p is XElement pEl &amp;&amp; pEl.Name == c + "param")
                || p.ElementsAfterSelf(c + "param").Any()))
             .ToArray()'/>
          <variable name='text' value='xcst_text(el, children)'/>
          <if test='!(text is null &amp;&amp; !children.OfType&lt;XElement>().Any())'>
-            <message terminate='yes' error-code='XTSE0010' error-data='src_error_object(el)' transform-text='trim'>
-               No content is allowed when visibility='abstract'.
+            <message terminate='yes' error-code='XTSE0010' error-data='src_error_object(el)'>
+               <text>No content is allowed when </text>
+               <choose>
+                  <when test='partial'>partial='yes'.</when>
+                  <otherwise>visibility='abstract'.</otherwise>
+               </choose>
             </message>
          </if>
       </if>

@@ -52,7 +52,7 @@
          : (el.Parent!.Name != c + "override" &amp;&amp; implicitPackage) ? "public"
          : "private"'/>
 
-      <call-template name='xcst:validate-empty-abstract'>
+      <call-template name='xcst:validate-empty-component'>
          <with-param name='el' value='el'/>
          <with-param name='visibility' value='declaredVisibility'/>
       </call-template>
@@ -203,7 +203,7 @@
          (el.Attribute("visibility") is { } visibilityAttr) ? xcst_visibility(visibilityAttr)
          : "private"'/>
 
-      <call-template name='xcst:validate-empty-abstract'>
+      <call-template name='xcst:validate-empty-component'>
          <with-param name='el' value='el'/>
          <with-param name='visibility' value='declaredVisibility'/>
       </call-template>
@@ -251,7 +251,7 @@
       <call-template name='xcst:validate-attribs'>
          <with-param name='el' value='el'/>
          <with-param name='required' value='new[] { "name" }'/>
-         <with-param name='optional' value='new[] { "as", "visibility" }'/>
+         <with-param name='optional' value='new[] { "as", "visibility", "partial" }'/>
       </call-template>
 
       <variable name='nameExpr' value='xcst_name(el.Attribute("name")!)'/>
@@ -259,13 +259,25 @@
       <variable name='nameWasEscaped' value='nameExpr != name'/>
 
       <variable name='declaredVisibility' value='
-         (el.Attribute("visibility") is { } visibilityAttr) ? xcst_visibility(visibilityAttr)
-         : "private"'/>
+         (el.Attribute("visibility") is { } visibilityAttr) ?
+            xcst_visibility(visibilityAttr)
+            : "private"'/>
 
-      <call-template name='xcst:validate-empty-abstract'>
+      <variable name='partial' value='el.Attribute("partial") is { } partialAttr
+         &amp;&amp; xcst_boolean(partialAttr)!.Value'/>
+
+      <call-template name='xcst:validate-empty-component'>
          <with-param name='el' value='el'/>
          <with-param name='visibility' value='declaredVisibility'/>
+         <with-param name='partial' value='partial'/>
       </call-template>
+
+      <if test='declaredVisibility == "abstract"
+            &amp;&amp; partial'>
+         <message terminate='yes' error-code='XTSE0010' error-data='src_error_object(el)' transform-text='trim'>
+            A component cannot specify both visibility='abstract' and partial='yes'.
+         </message>
+      </if>
 
       <call-template name='xcst:validate-hidden'>
          <with-param name='el' value='el'/>
@@ -306,6 +318,9 @@
          </if>
          <if test='overriddenMeta != null'>
             <attribute name='overrides' value='fn_generate_id(overriddenMeta)'/>
+         </if>
+         <if test='partial'>
+            <attribute name='partial'>true</attribute>
          </if>
          <if test='el.Attribute("as") is { } asAttr'>
             <code:type-reference name='{xcst_type(asAttr)}'/>
@@ -943,10 +958,13 @@
          .First(p => p.Attribute("declaration-id")?.Value == id)'/>
 
       <variable name='visibility' value='meta.Attribute("visibility")!.Value'/>
+      <variable name='declaredVisibility' value='meta.Attribute("declared-visibility")!.Value'/>
       <variable name='publicMember' value='visibility is "public" or "final" or "abstract"'/>
+      <variable name='partial' value='meta.Attribute("partial") is { } partialAttr
+         &amp;&amp; xs_boolean(partialAttr)'/>
 
       <if test='!(visibility == "hidden"
-            &amp;&amp; meta.Attribute("declared-visibility")!.Value == "abstract")'>
+            &amp;&amp; (declaredVisibility == "abstract" || partial))'>
          <code:method name='{meta.Attribute("member-name")!.Value}'
                visibility='{(publicMember ? "public" : "private")}'>
             <attribute name='extensibility'>
@@ -956,6 +974,9 @@
                   <otherwise>#default</otherwise>
                </switch>
             </attribute>
+            <if test='partial'>
+               <attribute name='partial'>true</attribute>
+            </if>
             <if test='meta.Attribute("member-name-was-escaped") is { } escAttr
                   &amp;&amp; xs_boolean(escAttr)'>
                <attribute name='verbatim'>true</attribute>
@@ -992,11 +1013,11 @@
                   </code:parameter>
                </for-each>
             </code:parameters>
-            <if test='visibility != "abstract"'>
-               <variable name='hiddenMeta' value='preceding_sibling(meta, xcst)
-                  .FirstOrDefault(p => xcst_homonymous(p, meta)
-                     &amp;&amp; !((bool?)p.Attribute("accepted") ?? false))'/>
+            <if test='!(visibility == "abstract" || partial)'>
                <code:block>
+                  <variable name='hiddenMeta' value='preceding_sibling(meta, xcst)
+                     .FirstOrDefault(p => xcst_homonymous(p, meta)
+                        &amp;&amp; !((bool?)p.Attribute("accepted") ?? false))'/>
                   <if test='el.Parent!.Name == c + "override"
                         || hiddenMeta != null'>
                      <variable name='originalMeta' value='packageManifest
@@ -1016,7 +1037,8 @@
                                  </code:member-initializer>
                               </if>
                               <if test='hiddenMeta != null
-                                    &amp;&amp; hiddenMeta.Attribute("declared-visibility")!.Value != "abstract"'>
+                                    &amp;&amp; !(hiddenMeta.Attribute("declared-visibility")!.Value == "abstract"
+                                       || (hiddenMeta.Attribute("partial") is { } hidPartialAttr &amp;&amp; xs_boolean(hidPartialAttr)))'>
                                  <code:member-initializer name='next_function'>
                                     <code:method-call name='{src_hidden_function_delegate_method_name(hiddenMeta)}'>
                                        <code:this-reference/>

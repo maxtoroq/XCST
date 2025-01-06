@@ -356,6 +356,11 @@
             </xs:annotation>
          </xs:attribute>
          <xs:attributeGroup ref="c:visibility-attribute"/>
+         <xs:attribute name="partial" type="c:boolean">
+            <xs:annotation>
+               <xs:documentation>Specifies if the function should be implemented in another partial declaration.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>
       </xs:complexType>
    </xs:element>

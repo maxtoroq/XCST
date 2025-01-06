@@ -654,6 +654,10 @@
          <if test='extensibilityAttr.Value == "sealed"'> override</if>
          <text> </text>
       </if>
+      <if test='el.Attribute("partial") is { } partialAttr
+            &amp;&amp; xs_boolean(partialAttr)'>
+         <text>partial </text>
+      </if>
       <choose>
          <when test='el.Element(code + "type-reference") is { } typeRef'>
             <variable name='returnTypeVerbatim' value='

@@ -669,6 +669,10 @@
       </call-template>
       <apply-templates value='select(el, code + "attributes", code)'/>
       <call-template name='new-line-indented'/>
+      <if test='el.Attribute("partial") is { } partialAttr
+            &amp;&amp; xs_boolean(partialAttr)'>
+         <text>Partial </text>
+      </if>
       <call-template name='vb:visibility'>
          <with-param name='el' value='el'/>
       </call-template>
