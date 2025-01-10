@@ -1300,10 +1300,15 @@
          <xs:documentation>Defines conditional behavior.</xs:documentation>
       </xs:annotation>
       <xs:complexType mixed="true">
-         <xs:group ref="c:sequence-constructor"/>
+         <xs:group minOccurs="0" ref="c:sequence-constructor"/>
          <xs:attribute name="test" use="required" type="c:boolean_expression">
             <xs:annotation>
                <xs:documentation>The condition to check for the contents to be processed.</xs:documentation>
+            </xs:annotation>
+         </xs:attribute>
+         <xs:attribute name="value" type="c:expression">
+            <xs:annotation>
+               <xs:documentation>The value to output. Expression.</xs:documentation>
             </xs:annotation>
          </xs:attribute>
          <xs:attributeGroup ref="c:standard-attributes"/>

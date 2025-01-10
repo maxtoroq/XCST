@@ -1329,8 +1329,14 @@
             <ann:documentation>The condition to check for the contents to be processed.</ann:documentation>
             <ref name="boolean_expression"/>
          </attribute>
+         <choice>
+            <attribute name="value">
+               <ann:documentation>The value to output.</ann:documentation>
+               <ref name="expression"/>
+            </attribute>
+            <ref name="sequence-constructor"/>
+         </choice>
          <ref name="standard-attributes"/>
-         <ref name="sequence-constructor"/>
       </element>
    </define>
 

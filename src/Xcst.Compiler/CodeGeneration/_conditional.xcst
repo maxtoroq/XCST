@@ -108,6 +108,11 @@
       <call-template name='xcst:validate-attribs'>
          <with-param name='el' value='el'/>
          <with-param name='required' value='new[] { "test" }'/>
+         <with-param name='optional' value='new[] { "value" }'/>
+      </call-template>
+
+      <call-template name='xcst:value-or-sequence-constructor'>
+         <with-param name='el' value='el'/>
       </call-template>
 
       <code:if>
@@ -116,7 +121,7 @@
          </call-template>
          <code:expression value='{xcst_expression(el.Attribute("test")!)}'/>
          <code:block>
-            <call-template name='src:sequence-constructor'>
+            <call-template name='src:value-or-sequence-constructor'>
                <with-param name='el' value='el'/>
             </call-template>
          </code:block>
