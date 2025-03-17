@@ -141,7 +141,7 @@ class RuntimeWriter : WrappingWriter {
       }
 
       _idxLastName = _numEntries++;
-      _arrAttrs[_idxLastName].Init(prefix, localName, ns, separator, hashCode);
+      _arrAttrs[_idxLastName].Init(prefix, localName, ns, separator ?? " ", hashCode);
    }
 
    public override void

@@ -52,8 +52,8 @@
 
    <c:template name='expected'>
       <foo>
-         <bar>0abcd12345</bar>
-         <baz>45</baz>
+         <bar>0ab c d  1 2 3 4 5  </bar>
+         <baz>4 5  </baz>
          <qux>0ab|c|d||1|2|3|4|5||</qux>
       </foo>
    </c:template>

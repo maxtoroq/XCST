@@ -37,8 +37,8 @@
    </c:template>
 
    <c:template name='expected'>
-      <foo bar='0ab12345'
-           baz='45'
+      <foo bar='0ab 1 2 3 4 5'
+           baz='4 5'
            qux='0ab|1|2|3|4|5'/>
    </c:template>
 

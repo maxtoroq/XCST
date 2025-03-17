@@ -174,9 +174,7 @@
          </when>
          <otherwise>
             <variable name='newOutput' value='src_doc_output(el, null)'/>
-            <variable name='defaultSep' value='
-               (el.Name == c + "value-of" || el.Name == c + "attribute") ?
-                  "" : " "'/>
+            <variable name='defaultSep' value='" "'/>
             <variable name='bufferVar' value='src_aux_variable("buffer_" + fn_generate_id(el))'/>
 
             <code:variable name='{bufferVar}'>
