@@ -54,43 +54,6 @@ public static class Serialization {
       );
    }
 
-#warning TODO: remove Serialize and SimpleContent
-
-   public static string
-   Serialize(IXcstPackage package, XName? outputName, OutputParameters parameters, Action<XcstWriter> action) {
-
-      Argument.NotNull(package);
-      Argument.NotNull(parameters);
-      Argument.NotNull(action);
-
-      var sb = new StringBuilder();
-      var defaultParams = new OutputParameters();
-
-      if (outputName != null) {
-         package.ReadOutputDefinition(outputName, defaultParams);
-      }
-
-      using (XcstWriter writer = WriterFactory.CreateWriter(sb).Invoke(defaultParams, parameters, package.Context)) {
-         action.Invoke(writer);
-      }
-
-      return sb.ToString();
-   }
-
-   public static string
-   SimpleContent(IXcstPackage package, string separator, Action<XcstWriter> action) {
-
-      return Serialize(
-         package,
-         null,
-         new OutputParameters {
-            Method = OutputParameters.Methods.Text,
-            ItemSeparator = separator
-         },
-         action
-      );
-   }
-
    public static XcstWriter
    ResultDocument(
          IXcstPackage package,

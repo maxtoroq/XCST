@@ -98,7 +98,6 @@ partial class XcstCompilerPackage {
             .WithParam("src_expand_attribute", src_expand_attribute)
             .WithParam("src_expand_text", src_expand_text)
             .WithParam("src_sequence_constructor", src_sequence_constructor)
-            .WithParam("src_simple_content", src_simple_content)
             .WithParam("src_validation_arguments", src_validation_arguments)
             .WithParam("src_top_level_package_reference", src_top_level_package_reference)
             .WithParam("src_line_number", src_line_number)
