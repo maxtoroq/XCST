@@ -94,13 +94,10 @@ class RuntimeWriter : WrappingWriter {
          throw new RuntimeException("Cannot create an attribute within another attribute.");
       }
 
-      prefix ??= String.Empty;
-      ns ??= String.Empty;
-
       _inAttr = true;
 
-      int hashCode;
-      var idx = 0;
+      prefix ??= String.Empty;
+      ns ??= String.Empty;
 
       Assert.That(localName != null);
       Debug.Assert(localName.Length != 0);
@@ -108,13 +105,15 @@ class RuntimeWriter : WrappingWriter {
       Assert.That(ns != null);
 
       // Compute hashcode based on first letter of the localName
-      hashCode = (1 << ((int)localName[0] & 31));
+      var hashCode = (1 << ((int)localName[0] & 31));
 
       // If the hashcode is not in the union, then name will not be found by a scan
       if ((_hashCodeUnion & hashCode) != 0) {
 
          // The name may or may not be present, so scan for it
          Debug.Assert(_numEntries != 0);
+
+         var idx = 0;
 
          do {
 
@@ -141,7 +140,7 @@ class RuntimeWriter : WrappingWriter {
       }
 
       _idxLastName = _numEntries++;
-      _arrAttrs[_idxLastName].Init(prefix, localName, ns, separator ?? " ", hashCode);
+      _arrAttrs[_idxLastName].Init(prefix, localName, ns, separator, hashCode);
    }
 
    public override void
@@ -296,11 +295,16 @@ class RuntimeWriter : WrappingWriter {
          // If localName is null, then this is a duplicate attribute that has been marked as "deleted"
          localName = _arrAttrs[idx].LocalName;
 
-         if (localName != null) {
+         if (localName is null) {
+            // Skip over duplicate attributes
+            idx = idxNext;
+            continue;
+         }
 
+         {
             var prefix = _arrAttrs[idx].Prefix;
             var ns = _arrAttrs[idx].Namespace;
-            var separator = _arrAttrs[idx].Separator;
+            var separator = _arrAttrs[idx].Separator ?? " ";
 
             base.WriteStartAttribute(prefix, localName, ns, null);
 
@@ -310,16 +314,12 @@ class RuntimeWriter : WrappingWriter {
             // Output all of this attribute's text
             while (++idx != idxNext) {
 
-               var obj = _arrAttrs[idx].Object;
-               var sep = separator;
+               if (_arrAttrs[idx].Object is { } obj) {
 
-               if (obj != null) {
+                  if (!first
+                     && !String.IsNullOrEmpty(separator)) {
 
-                  if (!first) {
-
-                     if (!String.IsNullOrEmpty(sep)) {
-                        base.WriteString(sep);
-                     }
+                     base.WriteString(separator);
                   }
 
                   base.WriteItem(obj);
@@ -330,9 +330,9 @@ class RuntimeWriter : WrappingWriter {
 
                   if (!first
                      && !lastWasText
-                     && !String.IsNullOrEmpty(sep)) {
+                     && !String.IsNullOrEmpty(separator)) {
 
-                     base.WriteString(sep);
+                     base.WriteString(separator);
                   }
 
                   var text = _arrAttrs[idx].Text;
@@ -345,10 +345,6 @@ class RuntimeWriter : WrappingWriter {
             }
 
             base.WriteEndAttribute();
-
-         } else {
-            // Skip over duplicate attributes
-            idx = idxNext;
          }
       }
 
@@ -372,7 +368,7 @@ class RuntimeWriter : WrappingWriter {
       if (_lastItem != null
          && (_lastItem.Value != ItemType.Text || type != ItemType.Text)) {
 
-         var separator = (this.Depth == 0 ? _itemSeparator : null);
+         var separator = (this.Depth == 0) ? _itemSeparator : null;
 
          if (separator is null
             && _lastItem.Value == ItemType.Object
@@ -489,23 +485,17 @@ class RuntimeWriter : WrappingWriter {
       IsDuplicate(string localName, string? ns, int hashCode) {
 
          // If attribute is not marked as deleted
-         if (_localName != null) {
-
+         if (_localName != null
             // And if hash codes match,
-            if (_hashCode == hashCode) {
+            && _hashCode == hashCode
+            // And if local names match,
+            && _localName.Equals(localName)
+            // And if namespaces match,
+            && String.Equals(_namespaceName, ns)) {
 
-               // And if local names match,
-               if (_localName.Equals(localName)) {
-
-                  // And if namespaces match,
-                  if (String.Equals(_namespaceName, ns)) {
-
-                     // Then found duplicate attribute, so mark the attribute as deleted
-                     _localName = null;
-                     return true;
-                  }
-               }
-            }
+            // Then found duplicate attribute, so mark the attribute as deleted
+            _localName = null;
+            return true;
          }
 
          return false;
