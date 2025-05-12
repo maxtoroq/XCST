@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
+    <TargetFrameworks>net461;netcoreapp2.0;net8.0</TargetFrameworks>
     <LangVersion>11</LangVersion>
     <Nullable>enable</Nullable>
     <NoWarn>NETSDK1138,NU1903</NoWarn>
@@ -48,7 +48,7 @@
           DependsOnTargets="ResolveReferences"
           Inputs="@(XcstInput);$(MSBuildThisFileFullPath)"
           Outputs="$(XcstOutput)">
-    <MSBuild Projects="..\compiler-codegen\compiler-codegen.csproj" Properties="TargetFramework=net7.0">
+    <MSBuild Projects="..\compiler-codegen\compiler-codegen.csproj" Properties="TargetFramework=net8.0">
       <Output TaskParameter="TargetOutputs" PropertyName="XcstCodeGen" />
     </MSBuild>
     <Message Text="xcst-codegen [$(MSBuildProjectName)]" Importance="high" />
