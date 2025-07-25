@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
 using Xcst.Runtime;
@@ -451,8 +452,8 @@ public class XcstTemplateEvaluator {
       // it's important to keep template parameters' variables outside the execution delegate
       // so subsequent modifications do not affect previously created outputters
 
-      var templateParams = new Dictionary<string, object?>(_templateParameters);
-      var tunnelParams = new Dictionary<string, object?>(_tunnelParameters);
+      var templateParams = _templateParameters.ToArray();
+      var tunnelParams = _tunnelParameters.ToArray();
 
       void executionFn2(OutputParameters? overrideParams, bool skipFlush) =>
          executionFn.Invoke(overrideParams, skipFlush, CreateTemplateContext(templateParams, tunnelParams));
@@ -461,11 +462,11 @@ public class XcstTemplateEvaluator {
    }
 
    TemplateContext
-   CreateTemplateContext(Dictionary<string, object?> templateParams, Dictionary<string, object?> tunnelParams) {
+   CreateTemplateContext(KeyValuePair<string, object?>[] templateParams, KeyValuePair<string, object?>[] tunnelParams) {
 
       var context = (_name != null) ?
-         TemplateContext.Create(templateParams.Count, tunnelParams.Count)
-         : TemplateContext.ForApplyTemplates(templateParams.Count, tunnelParams.Count);
+         TemplateContext.Create(templateParams.Length, tunnelParams.Length)
+         : TemplateContext.ForApplyTemplates(templateParams.Length, tunnelParams.Length);
 
       foreach (var param in templateParams) {
          context.WithParam(param.Key, param.Value);

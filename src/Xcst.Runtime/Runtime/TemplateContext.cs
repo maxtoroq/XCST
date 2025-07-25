@@ -25,7 +25,7 @@ public class TemplateContext {
    static readonly TemplateContext
    _emptyContext = new(0, 0, null);
 
-   readonly Dictionary<string, object?>?
+   Dictionary<string, object?>?
    _templateParameters;
 
    readonly Dictionary<string, object?>?
@@ -48,9 +48,10 @@ public class TemplateContext {
 
       if (tmplCount == 0
          && tunnelCount == 0
-         && !(currentContext?._inMode).GetValueOrDefault()
-         && (currentContext?._tunnelParameters is null
-            || currentContext._tunnelParameters.Count == 0)) {
+         && currentContext is null or {
+            _inMode: false,
+            _tunnelParameters: null or { Count: 0 }
+         }) {
 
          return _emptyContext;
       }
@@ -63,29 +64,14 @@ public class TemplateContext {
       new TemplateContext<TParams>(parameters, tunnelCount, currentContext);
 
    public static TemplateContext
-   ForApplyTemplates(
-         int tmplCount,
-         int tunnelCount,
-         TemplateContext? currentContext = null) =>
+   ForApplyTemplates(int tmplCount, int tunnelCount, TemplateContext? currentContext = null) =>
       new TemplateContext(tmplCount, tunnelCount, currentContext);
 
    internal static TemplateContext
    ForApplyTemplatesItem(TemplateContext baseContext, XName? mode, object? input) {
 
-      var newContext = new TemplateContext(
-         baseContext._templateParameters?.Count ?? 0,
-         baseContext._tunnelParameters?.Count ?? 0,
-         baseContext,
-         input,
-         mode,
-         0
-      );
-
-      if (baseContext._templateParameters?.Count > 0) {
-         foreach (var pair in baseContext._templateParameters) {
-            newContext._templateParameters![pair.Key] = pair.Value;
-         }
-      }
+      var newContext = new TemplateContext(0, 0, baseContext, input, mode, 0);
+      newContext._templateParameters = baseContext._templateParameters;
 
       return newContext;
    }
@@ -93,9 +79,7 @@ public class TemplateContext {
    public static TemplateContext
    ForNextMatch(int tmplCount, int tunnelCount, TemplateContext currentContext) {
 
-      if (currentContext is null
-         || !currentContext._inMode) {
-
+      if (currentContext is null or { _inMode: false }) {
          throw DynamicError.AbsentCurrentTemplateRule();
       }
 
@@ -116,17 +100,22 @@ public class TemplateContext {
          _templateParameters = new Dictionary<string, object?>(tmplCount);
       }
 
-      int tunnelTotalCount = tunnelCount + (currentContext?._tunnelParameters?.Count ?? 0);
+      if (tunnelCount > 0) {
 
-      if (tunnelTotalCount > 0) {
+         var tunnelTotalCount = tunnelCount + (currentContext?._tunnelParameters?.Count ?? 0);
+
          _tunnelParameters = new Dictionary<string, object?>(tunnelTotalCount);
-      }
 
-      if (currentContext?._tunnelParameters != null) {
+         if (currentContext?._tunnelParameters != null) {
 
-         foreach (var item in currentContext._tunnelParameters) {
-            WithParam(item.Key, item.Value, tunnel: true);
+            foreach (var item in currentContext._tunnelParameters) {
+               _tunnelParameters!.Add(item.Key, item.Value);
+            }
          }
+
+      } else {
+
+         _tunnelParameters = currentContext?._tunnelParameters;
       }
 
       if (currentContext != null) {
@@ -138,13 +127,8 @@ public class TemplateContext {
    }
 
    private
-   TemplateContext(
-         int tmplCount,
-         int tunnelCount,
-         TemplateContext? currentContext,
-         object? input,
-         XName? mode,
-         int matchIndex)
+   TemplateContext(int tmplCount, int tunnelCount, TemplateContext? currentContext,
+         object? input, XName? mode, int matchIndex)
       : this(tmplCount, tunnelCount, currentContext) {
 
       _inMode = true;
@@ -233,10 +217,6 @@ public class TemplateContext {
 
       if (paramsDict?.TryGetValue(name, out var value) == true) {
 
-         if (!tunnel) {
-            paramsDict.Remove(name);
-         }
-
          try {
 #pragma warning disable CS8600, CS8603 // let caller decide nullability
             return (TDefault)value;
@@ -301,9 +281,7 @@ public class TemplateContext {
    internal void
    CopyTunnelParams(IDictionary<string, object?> buffer) {
 
-      if (_tunnelParameters is null
-         || _tunnelParameters.Count == 0) {
-
+      if (_tunnelParameters is null or { Count: 0 }) {
          return;
       }
 
