@@ -157,6 +157,7 @@ public partial class SimpleContent {
    }
 
 #if NET6_0_OR_GREATER
+   [OverloadResolutionPriority(1)]
    public string
    FormatValueTemplate([InterpolatedStringHandlerArgument("")] ref ValueTemplateHandler handler) =>
       handler.ToString();

@@ -14,3 +14,17 @@ sealed class CallerArgumentExpressionAttribute : Attribute {
    }
 }
 #endif
+
+#if !NET9_0_OR_GREATER
+[AttributeUsage(AttributeTargets.Method | AttributeTargets.Constructor | AttributeTargets.Property, AllowMultiple = false, Inherited = false)]
+sealed class OverloadResolutionPriorityAttribute : Attribute {
+
+   public int
+   Priority { get; }
+
+   public
+   OverloadResolutionPriorityAttribute(int priority) {
+      this.Priority = priority;
+   }
+}
+#endif
