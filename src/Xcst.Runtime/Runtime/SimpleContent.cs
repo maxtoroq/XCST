@@ -18,6 +18,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace Xcst.Runtime;
 
@@ -81,15 +82,17 @@ public partial class SimpleContent {
       value?.ToString(null, this.FormatProvider)
          ?? String.Empty;
 
-   protected string
+   protected internal string
    JoinSequence(string separator, IEnumerable? value) {
 
       if (value is null) {
          return String.Empty;
       }
 
-      return Join(separator, value
-         .Cast<object>()
+      var genericValue = value as IEnumerable<object?>
+         ?? value.Cast<object?>();
+
+      return Join(separator, genericValue
          .Where(v => v != null)
          .Select(Convert));
    }
@@ -146,12 +149,18 @@ public partial class SimpleContent {
       for (int i = 0; i < args.Length; i++) {
 
          if (ValueAsEnumerable(args[i]) is { } seq) {
-            args[i] = Join(" ", seq);
+            args[i] = JoinSequence(" ", seq);
          }
       }
 
       return Format(value.Format, args);
    }
+
+#if NET6_0_OR_GREATER
+   public string
+   FormatValueTemplate([InterpolatedStringHandlerArgument("")] ref ValueTemplateHandler handler) =>
+      handler.ToString();
+#endif
 
    public string
    Convert(object? value) =>
@@ -167,4 +176,74 @@ public partial class SimpleContent {
 
       return value!.Trim(_whiteSpaceChars);
    }
+
+#if NET6_0_OR_GREATER
+   [InterpolatedStringHandler]
+   public ref struct ValueTemplateHandler {
+
+      DefaultInterpolatedStringHandler
+      _inner;
+
+      readonly SimpleContent
+      _simpleContent;
+
+      public
+      ValueTemplateHandler(int literalLength, int formattedCount, SimpleContent simpleContent) {
+
+         ArgumentNullException.ThrowIfNull(simpleContent);
+
+         _inner = new DefaultInterpolatedStringHandler(literalLength, formattedCount, simpleContent.FormatProvider);
+         _simpleContent = simpleContent;
+      }
+
+      public void
+      AppendLiteral(string value) =>
+         _inner.AppendLiteral(value);
+
+      public void
+      AppendFormatted(string? value) =>
+         _inner.AppendFormatted(value);
+
+      public void
+      AppendFormatted(string? value, int alignment = 0, string? format = null) =>
+         _inner.AppendFormatted(value, alignment, format);
+
+      public void
+      AppendFormatted(object? value, int alignment = 0, string? format = null) =>
+         _inner.AppendFormatted(value, alignment, format);
+
+      public void
+      AppendFormatted(scoped ReadOnlySpan<char> value) =>
+         _inner.AppendFormatted(value);
+
+      public void
+      AppendFormatted(scoped ReadOnlySpan<char> value, int alignment = 0, string? format = null) =>
+         _inner.AppendFormatted(value, alignment, format);
+
+      public void
+      AppendFormatted<T>(T value) {
+
+         if (ValueAsEnumerable(value) is { } seq) {
+            _inner.AppendFormatted(_simpleContent.JoinSequence(" ", seq));
+         } else {
+            _inner.AppendFormatted(value);
+         }
+      }
+
+      public void
+      AppendFormatted<T>(T value, string? format) =>
+         _inner.AppendFormatted(value, format);
+
+      public void
+      AppendFormatted<T>(T value, int alignment) =>
+         _inner.AppendFormatted(value, alignment);
+
+      public void
+      AppendFormatted<T>(T value, int alignment, string? format) =>
+         _inner.AppendFormatted(value, alignment, format);
+
+      public override string
+      ToString() => _inner.ToStringAndClear();
+   }
+#endif
 }
