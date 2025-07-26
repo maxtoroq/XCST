@@ -350,8 +350,6 @@ static class TestsHelper {
    static CSharpVersion
    CSharpVersionEnum(decimal languageVersion) =>
       languageVersion switch {
-#warning need C# 13 for now to disambiguate FormatValueTemplate()
-         //-1m or < 11m => CSharpVersion.CSharp13,
          // use at least C# 10 to use string interpolated handler on FormatValueTemplate()
          -1m or < 11m => CSharpVersion.CSharp10,
          11m => CSharpVersion.CSharp11,

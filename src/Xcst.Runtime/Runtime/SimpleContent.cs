@@ -136,6 +136,11 @@ public partial class SimpleContent {
    Format(string format, params object?[]? args) =>
       String.Format(this.FormatProvider, format, args ?? Array.Empty<object>());
 
+#if NET6_0_OR_GREATER
+   public string
+   FormatValueTemplate([InterpolatedStringHandlerArgument("")] ref ValueTemplateHandler handler) =>
+      handler.ToString();
+#else
    public string
    FormatValueTemplate(FormattableString value) {
 
@@ -155,12 +160,6 @@ public partial class SimpleContent {
 
       return Format(value.Format, args);
    }
-
-#if NET6_0_OR_GREATER
-   [OverloadResolutionPriority(1)]
-   public string
-   FormatValueTemplate([InterpolatedStringHandlerArgument("")] ref ValueTemplateHandler handler) =>
-      handler.ToString();
 #endif
 
    public string
