@@ -140,9 +140,17 @@ public partial class SimpleContent {
    public string
    FormatValueTemplate([InterpolatedStringHandlerArgument("")] ref ValueTemplateHandler handler) =>
       handler.ToString();
+
+   public string
+   FormatValueTemplateLegacy(FormattableString value) {
 #else
    public string
+   FormatValueTemplateLegacy(FormattableString value) =>
+      FormatValueTemplate(value);
+
+   public string
    FormatValueTemplate(FormattableString value) {
+#endif
 
       if (value.ArgumentCount == 0) {
          // Shouldn't be, but just in case...
@@ -160,7 +168,6 @@ public partial class SimpleContent {
 
       return Format(value.Format, args);
    }
-#endif
 
    public string
    Convert(object? value) =>

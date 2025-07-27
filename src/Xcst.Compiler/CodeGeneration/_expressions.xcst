@@ -129,7 +129,12 @@
       <param name='lre' value='false' as='bool'/>
       <param name='language' as='string' tunnel='yes' required='yes'/>
 
-      <code:method-call name='FormatValueTemplate'>
+      <code:method-call>
+         <attribute name='name'>
+            <text>FormatValueTemplate</text>
+            <if test='V2_OR_GREATER
+                &amp;&amp; xcst_language_equal(language, xcst_vb_lang)'>Legacy</if>
+         </attribute>
          <choose>
             <when test='lre'>
                <code:property-reference name='SimpleContent'>
