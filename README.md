@@ -10,8 +10,8 @@ See the [project home][XCST] for more information.
 
 Package | Description | Targets
 ------- | ----------- | -------
-[Xcst.Compiler] | Compilation API. Use this package to translate your XCST programs into C# or Visual Basic code. | .NET 4.6, .NET Core 2.0
-[Xcst.Runtime] | Runtime and evaluation API. | .NET 4.6, .NET Core 2.0, .NET Standard 2.0
+[Xcst.Compiler] | Compilation API. Use this package to translate your XCST programs into C# or Visual Basic code. | .NET 4.6 / .NET Core 2.0
+[Xcst.Runtime] | Runtime and evaluation API. | .NET 4.6 / .NET Core 2.0 / .NET Standard 2.0
 
 Documentation
 -------------
@@ -52,6 +52,7 @@ Breaking Changes
 ### Runtime
 - [replaced QualifiedName with XName](https://github.com/maxtoroq/XCST/commit/d5ab75484241f7d1cb349aef3573434cdd1786c7)
 - [moved IXcstPackage to root and merged PackageModel with Runtime](https://github.com/maxtoroq/XCST/commit/099b042aa9a20d68ee628ab5fe0da76f2c816e57)
+- [C# 10 is required when targeting .NET 7+ (interpolated string handlers)](https://github.com/maxtoroq/XCST/commit/258711852a2045335160aea0142e423c8f7b4a75)
 
 System Requirements
 -------------------
