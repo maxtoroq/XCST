@@ -1574,11 +1574,15 @@
       </if>
    </template>
 
+   <template name='cs:new-line-indented' visibility='final'>
+      <call-template name='new-line-indented'/>
+   </template>
+
    <template name='new-line-indented'>
       <param name='indent' value='0' as='int' tunnel='yes'/>
 
       <value-of value='cs_new_line'/>
-      <value-of value='Enumerable.Repeat(cs_indent, indent)' separator=''/>
+      <value-of value='IndentString(indent)'/>
    </template>
 
 </package>

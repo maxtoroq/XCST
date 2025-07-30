@@ -85,6 +85,7 @@
             <otherwise value='el'/>
          </choose>
       </variable>
+
       <apply-templates value='compUnit' mode='vb:source'>
          <with-param name='indent' value='0' tunnel='yes'/>
       </apply-templates>
@@ -92,7 +93,7 @@
 
    <template name='cs-nullable-directive'>
       <if test='cs_nullable_context != null'>
-         <call-template name='src:new-line-indented'/>
+         <call-template name='cs:new-line-indented'/>
          <text>#nullable </text>
          <value-of value='cs_nullable_context'/>
       </if>
@@ -100,7 +101,7 @@
 
    <template name='cs-nullable-restore'>
       <if test='cs_nullable_context != null'>
-         <call-template name='src:new-line-indented'/>
+         <call-template name='cs:new-line-indented'/>
          <text>#nullable restore</text>
       </if>
    </template>
@@ -201,12 +202,5 @@
          </value-of>
       </return>
    </function>
-
-   <template name='src:new-line-indented'>
-      <param name='indent' value='0' as='int' tunnel='yes'/>
-
-      <value-of value='src_new_line'/>
-      <value-of value='Enumerable.Repeat(src_indent, indent)' separator=''/>
-   </template>
 
 </module>

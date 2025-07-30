@@ -1560,7 +1560,7 @@
       <param name='indent' value='0' as='int' tunnel='yes'/>
 
       <value-of value='vb_new_line'/>
-      <value-of value='Enumerable.Repeat(vb_indent, indent)' separator=''/>
+      <value-of value='IndentString(indent)'/>
    </template>
 
 </package>

@@ -12,12 +12,36 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
 
 namespace Xcst.Compiler;
 
 partial class CSharpSerializer {
+
+   readonly Dictionary<int, string>
+   _indentStrings = new();
+
+   string
+   IndentString(int indent) {
+
+      if (indent == 0) {
+         return String.Empty;
+      }
+
+      if (_indentStrings.TryGetValue(indent, out var str)) {
+         return str;
+      }
+
+      var value = String.Concat(Enumerable.Repeat(cs_indent, indent));
+
+      _indentStrings[indent] = value;
+
+      return value;
+   }
 
    static object
    ErrorData(XObject node) {
