@@ -60,6 +60,11 @@ static class TestsHelper {
          Console.WriteLine($"// Module URI: {errorData?.ModuleUri}");
          Console.WriteLine($"// Line number: {errorData?.LineNumber}");
 
+         if (correct) {
+            TestAssert.Fail("Code generation wasn't expected to fail");
+            return;
+         }
+
          throw;
       }
 
