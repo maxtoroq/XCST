@@ -5,12 +5,15 @@
       <foo>
          <c:value-of>
             <c:processing-instruction name='baz'>baz</c:processing-instruction>
+            <bar>
+               <c:processing-instruction name='bar'>bar</c:processing-instruction>
+            </bar>
          </c:value-of>
       </foo>
    </c:template>
 
    <c:template name='expected'>
-      <foo>baz</foo>
+      <foo>baz </foo>
    </c:template>
 
 </c:module>

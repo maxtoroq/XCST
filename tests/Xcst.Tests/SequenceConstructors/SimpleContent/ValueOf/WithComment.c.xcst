@@ -5,12 +5,15 @@
       <foo>
          <c:value-of>
             <c:comment>baz</c:comment>
+            <bar>
+               <c:comment>bar</c:comment>
+            </bar>
          </c:value-of>
       </foo>
    </c:template>
 
    <c:template name='expected'>
-      <foo>baz</foo>
+      <foo>baz </foo>
    </c:template>
 
 </c:module>

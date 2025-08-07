@@ -63,19 +63,31 @@ sealed class SimpleContentWriter : XcstWriter {
    }
 
    public override void
-   WriteComment(string? text) =>
-      WriteString(text);
+   WriteComment(string? text) {
+
+      if (_depth == 0) {
+         WriteStringImpl(text);
+      }
+   }
 
    public override void
-   WriteProcessingInstruction(string name, string? text) =>
-      WriteString(text);
+   WriteProcessingInstruction(string name, string? text) {
+
+      if (_depth == 0) {
+         WriteStringImpl(text);
+      }
+   }
 
    public override void
    WriteString(string? text) {
 
-      if (this.InElementAttribute) {
-         return;
+      if (!this.InElementAttribute) {
+         WriteStringImpl(text);
       }
+   }
+
+   void
+   WriteStringImpl(string? text) {
 
       if (!String.IsNullOrEmpty(text)) {
          OnItemWritting();
@@ -87,11 +99,9 @@ sealed class SimpleContentWriter : XcstWriter {
    public override void
    WriteChars(char[] buffer, int index, int count) {
 
-      if (this.InElementAttribute) {
-         return;
-      }
+      if (!this.InElementAttribute
+         && buffer is { Length: > 0 }) {
 
-      if (buffer is { Length: > 0 }) {
          OnItemWritting();
          _sb.Append(buffer, index, count);
          OnItemWritten();
@@ -101,11 +111,9 @@ sealed class SimpleContentWriter : XcstWriter {
    public override void
    WriteRaw(string? data) {
 
-      if (this.InElementAttribute) {
-         return;
-      }
+      if (!this.InElementAttribute
+         && !String.IsNullOrEmpty(data)) {
 
-      if (!String.IsNullOrEmpty(data)) {
          OnItemWritting();
          _sb.Append(data);
          OnItemWritten();

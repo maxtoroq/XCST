@@ -5,13 +5,16 @@
       <foo>
          <c:comment>
             <c:attribute name='baz'>baz</c:attribute>
+            <bar>
+               <c:attribute name='x'>1</c:attribute>
+            </bar>
          </c:comment>
       </foo>
    </c:template>
 
    <c:template name='expected'>
       <foo>
-         <c:comment>baz</c:comment>
+         <c:comment>baz </c:comment>
       </foo>
    </c:template>
 

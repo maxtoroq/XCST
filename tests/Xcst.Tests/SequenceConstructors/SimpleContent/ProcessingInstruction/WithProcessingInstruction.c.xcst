@@ -5,13 +5,16 @@
       <foo>
          <c:processing-instruction name='bar'>
             <c:processing-instruction name='baz'>baz</c:processing-instruction>
+            <qux>
+               <c:processing-instruction name='qux'>qux</c:processing-instruction>
+            </qux>
          </c:processing-instruction>
       </foo>
    </c:template>
 
    <c:template name='expected'>
       <foo>
-         <c:processing-instruction name='bar'>baz</c:processing-instruction>
+         <c:processing-instruction name='bar'>baz </c:processing-instruction>
       </foo>
    </c:template>
 
