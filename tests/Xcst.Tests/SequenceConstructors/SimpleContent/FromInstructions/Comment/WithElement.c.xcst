@@ -3,9 +3,15 @@
 
    <c:template name='c:initial-template'>
       <foo>
-         <c:attribute name='bar'>
+         <c:comment>
             <c x='1'>c</c>
-         </c:attribute>
+         </c:comment>
+      </foo>
+   </c:template>
+
+   <c:template name='expected'>
+      <foo>
+         <c:comment>c</c:comment>
       </foo>
    </c:template>
 

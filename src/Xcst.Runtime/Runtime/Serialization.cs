@@ -41,18 +41,11 @@ public static class Serialization {
    }
 
    public static XcstWriter
-   SimpleContentWriter(IXcstPackage package, string separator, StringBuilder output) {
-
-      return SerializeWriter(
-         package,
-         new OutputParameters {
-            Method = OutputParameters.Methods.Text,
-            ItemSeparator = separator
-         },
-         null,
-         output
-      );
-   }
+   SimpleContentWriter(IXcstPackage package, string separator, StringBuilder output) =>
+      WriterFactory.CreateRuntimeWriter(
+         new SimpleContentWriter(WriterFactory.AbsentOutputUri, output),
+         separator,
+         package.Context);
 
    public static XcstWriter
    ResultDocument(
@@ -140,12 +133,14 @@ public static class Serialization {
       var defaultParams = new OutputParameters();
       package.ReadOutputDefinition(outputName, defaultParams);
 
-      return writerFn(outputUri)
+      return writerFn.Invoke(outputUri)
          .Invoke(defaultParams, parameters, package.Context);
    }
 
    public static XcstWriter
    Void(IXcstPackage package) =>
-      WriterFactory.CreateWriter(new NullWriter(WriterFactory.AbsentOutputUri))
-         .Invoke(new OutputParameters(), null, package.Context);
+      WriterFactory.CreateRuntimeWriter(
+         new NullWriter(WriterFactory.AbsentOutputUri),
+         null,
+         package.Context);
 }

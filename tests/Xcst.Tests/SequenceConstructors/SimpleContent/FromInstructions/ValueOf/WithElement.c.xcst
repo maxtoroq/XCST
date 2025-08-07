@@ -3,10 +3,14 @@
 
    <c:template name='c:initial-template'>
       <foo>
-         <c:attribute name='bar'>
+         <c:value-of>
             <c x='1'>c</c>
-         </c:attribute>
+         </c:value-of>
       </foo>
+   </c:template>
+
+   <c:template name='expected'>
+      <foo>c</foo>
    </c:template>
 
 </c:module>

@@ -3,9 +3,10 @@
 
    <c:template name='c:initial-template'>
       <foo>
-         <c:attribute name='bar'>
+         <c:namespace name='foo'>
+            <c:text>foo</c:text>
             <c x='1'>c</c>
-         </c:attribute>
+         </c:namespace>
       </foo>
    </c:template>
 

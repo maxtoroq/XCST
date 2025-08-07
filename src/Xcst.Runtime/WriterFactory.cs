@@ -66,18 +66,28 @@ static class WriterFactory {
 
          var parameters = MergedParameters(defaultParams, overrideParams);
 
-         return CreateRuntimeWriter(CreateXmlXcstWriter(parameters, outputUri ?? context.BaseOutputUri ?? AbsentOutputUri,
-            p => writerFn(p)), parameters, context, dispose);
+         return CreateRuntimeWriter(
+            CreateXmlXcstWriter(
+               parameters,
+               outputUri ?? context.BaseOutputUri ?? AbsentOutputUri,
+               writerFn),
+            parameters,
+            context,
+            dispose);
       };
    }
 
    static RuntimeWriter
-   CreateRuntimeWriter(XcstWriter writer, OutputParameters parameters, ExecutionContext context, bool dispose = false) {
+   CreateRuntimeWriter(XcstWriter writer, OutputParameters parameters, ExecutionContext context, bool dispose = false) =>
+      CreateRuntimeWriter(writer, parameters.ItemSeparator, context, dispose);
+
+   internal static RuntimeWriter
+   CreateRuntimeWriter(XcstWriter writer, string? itemSeparator, ExecutionContext context, bool dispose = false) {
 
       var runtimeWriter = writer as RuntimeWriter
-         ?? new RuntimeWriter(writer, parameters) {
+         ?? new RuntimeWriter(writer, itemSeparator) {
             SimpleContent = context.SimpleContent,
-            DisposeWriter = dispose
+            DisposeWriter = dispose,
          };
 
       return runtimeWriter;

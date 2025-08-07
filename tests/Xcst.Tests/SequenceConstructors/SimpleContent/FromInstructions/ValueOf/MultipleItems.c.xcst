@@ -11,7 +11,10 @@
                <c:text>a</c:text>
                <c:text>b</c:text>
                <c>c</c>
-               <d>d</d>
+               <d>
+                  <c:text>d</c:text>
+                  <c:object value='new[] { "1d", "2d" }'/>
+               </d>
                <e></e>
                <c:object value='"1"'/>
                <c:object value='default(string)'/>
@@ -36,7 +39,10 @@
                <c:text>a</c:text>
                <c:text>b</c:text>
                <c>c</c>
-               <d>d</d>
+               <d>
+                  <c:text>d</c:text>
+                  <c:object value='new[] { "1d", "2d" }'/>
+               </d>
                <e></e>
                <c:object value='"1"'/>
                <c:object value='default(string)'/>
@@ -52,9 +58,9 @@
 
    <c:template name='expected'>
       <foo>
-         <bar>0ab c d  1 2 3 4 5  </bar>
+         <bar>0ab c d1d 2d  1 2 3 4 5  </bar>
          <baz>4 5  </baz>
-         <qux>0ab|c|d||1|2|3|4|5||</qux>
+         <qux>0ab|c|d1d 2d||1|2|3|4|5||</qux>
       </foo>
    </c:template>
 

@@ -31,6 +31,9 @@ namespace Xcst.Runtime;
 
 class RuntimeWriter : WrappingWriter {
 
+   readonly bool
+   _isSimplContent;
+
    bool
    _inAttr;
 
@@ -46,7 +49,7 @@ class RuntimeWriter : WrappingWriter {
    int
    _hashCodeUnion;    // Set of hash bits that can quickly guarantee a name is not a duplicate
 
-   string?
+   readonly string?
    _itemSeparator;
 
    ItemType?
@@ -56,10 +59,11 @@ class RuntimeWriter : WrappingWriter {
    DisposeWriter { get; set; }
 
    public
-   RuntimeWriter(XcstWriter baseWriter, OutputParameters parameters)
+   RuntimeWriter(XcstWriter baseWriter, string? itemSeparator)
       : base(baseWriter) {
 
-      _itemSeparator = parameters.ItemSeparator;
+      _isSimplContent = baseWriter is SimpleContentWriter;
+      _itemSeparator = itemSeparator;
    }
 
    public override void
@@ -95,6 +99,11 @@ class RuntimeWriter : WrappingWriter {
       }
 
       _inAttr = true;
+
+      if (_isSimplContent) {
+         base.WriteStartAttribute(prefix, localName, ns, separator);
+         return;
+      }
 
       prefix ??= String.Empty;
       ns ??= String.Empty;
@@ -145,7 +154,12 @@ class RuntimeWriter : WrappingWriter {
 
    public override void
    WriteEndAttribute() {
+
       _inAttr = false;
+
+      if (_isSimplContent) {
+         base.WriteEndAttribute();
+      }
    }
 
    public override void
@@ -181,7 +195,8 @@ class RuntimeWriter : WrappingWriter {
    public override void
    WriteString(string? text) {
 
-      if (_inAttr) {
+      if (_inAttr
+         && !_isSimplContent) {
 
          EnsureAttributeCache();
          _arrAttrs[_numEntries++].Init(text);
@@ -200,7 +215,8 @@ class RuntimeWriter : WrappingWriter {
    public override void
    WriteChars(char[] buffer, int index, int count) {
 
-      if (_inAttr) {
+      if (_inAttr
+         && !_isSimplContent) {
 
          EnsureAttributeCache();
          _arrAttrs[_numEntries++].Init(new string(buffer, index, count));
@@ -234,7 +250,8 @@ class RuntimeWriter : WrappingWriter {
    protected internal override void
    WriteItem(object? value) {
 
-      if (_inAttr) {
+      if (_inAttr
+         && !_isSimplContent) {
 
          if (value != null) {
             EnsureAttributeCache();
@@ -279,6 +296,12 @@ class RuntimeWriter : WrappingWriter {
 
    void
    FlushAttributes() {
+
+      if (_inAttr
+         || _isSimplContent) {
+
+         return;
+      }
 
       int idx = 0, idxNext;
       string? localName;
