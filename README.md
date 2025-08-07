@@ -54,6 +54,7 @@ Breaking Changes
 - [Moved IXcstPackage to root and merged PackageModel with Runtime](https://github.com/maxtoroq/XCST/commit/099b042aa9a20d68ee628ab5fe0da76f2c816e57)
 - [C# 10 is required when targeting .NET 7+ (interpolated string handlers)](https://github.com/maxtoroq/XCST/commit/258711852a2045335160aea0142e423c8f7b4a75)
 - [On .NET 7+, dynamic expressions are not allowed in value templates (interpolated string handler implementation limitation)](https://github.com/maxtoroq/XCST/commit/30e353aaff34f3b779aff087bdfd8ae14b9c64f8)
+- [New simple content writer outputs the atomized value of all simple content instructions](https://github.com/maxtoroq/XCST/commit/733a3541d7aa63b10cfbd9b620bb1067b1128db6)
 
 System Requirements
 -------------------
