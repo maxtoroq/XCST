@@ -48,7 +48,7 @@ public static class DeepCopy {
    }
 }
 
-class DeepCopyImpl {
+sealed class DeepCopyImpl {
 
    static readonly dynamic
    _dynamicInstance = new DeepCopyImpl();

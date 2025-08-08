@@ -18,7 +18,7 @@ using System.Text;
 
 namespace Xcst.Runtime;
 
-class XcstTextWriter : TextWriter {
+sealed class XcstTextWriter : TextWriter {
 
    readonly XcstWriter
    _output;

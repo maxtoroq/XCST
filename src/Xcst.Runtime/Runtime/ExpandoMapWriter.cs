@@ -22,7 +22,7 @@ namespace Xcst.Runtime;
 using IExpandoMap = IDictionary<string, object?>;
 using ExpandoArray = List<object?>;
 
-class ExpandoEntry {
+sealed class ExpandoEntry {
 
    public readonly string
    Key;

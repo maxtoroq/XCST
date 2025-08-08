@@ -26,7 +26,7 @@ namespace Xcst.Xml;
 // Therefore, using WriteEndElement to check when element is ready,
 // then calling Close on baseWriter.
 
-class XElementWriter : WrappingXmlWriter {
+sealed class XElementWriter : WrappingXmlWriter {
 
    readonly XDocument
    _document;

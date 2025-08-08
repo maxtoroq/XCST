@@ -17,7 +17,7 @@ using System.Xml;
 
 namespace Xcst.Xml;
 
-class XcstXmlWriter : XmlWriter {
+sealed class XcstXmlWriter : XmlWriter {
 
    readonly XcstWriter
    _output;

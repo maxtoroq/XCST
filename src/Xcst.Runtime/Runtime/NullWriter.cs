@@ -16,7 +16,7 @@ using System;
 
 namespace Xcst.Runtime;
 
-class NullWriter : XcstWriter {
+sealed class NullWriter : XcstWriter {
 
    int
    _depth;

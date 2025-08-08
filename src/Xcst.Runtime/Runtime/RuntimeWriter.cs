@@ -29,7 +29,7 @@ namespace Xcst.Runtime;
 // RuntimeWriter is a wrapping writer that implements attribute buffering/overriding
 // and item separators
 
-class RuntimeWriter : WrappingWriter {
+sealed class RuntimeWriter : WrappingWriter {
 
    readonly bool
    _isSimplContent;

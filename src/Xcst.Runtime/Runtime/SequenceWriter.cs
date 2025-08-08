@@ -262,7 +262,7 @@ public static class SequenceWriter {
       (c, o) => del.Invoke(c, new DerivedSequenceWriter<TDerived, TBase>(o));
 }
 
-class DerivedSequenceWriter<TDerived, TBase> : BaseSequenceWriter<TDerived> where TDerived : TBase {
+sealed class DerivedSequenceWriter<TDerived, TBase> : BaseSequenceWriter<TDerived> where TDerived : TBase {
 
    readonly ISequenceWriter<TBase>
    _output;
@@ -300,7 +300,7 @@ class DerivedSequenceWriter<TDerived, TBase> : BaseSequenceWriter<TDerived> wher
    EndTrack() => _output.EndTrack();
 }
 
-class CastedSequenceWriter<TDerived, TBase> : BaseSequenceWriter<TDerived> where TBase : TDerived {
+sealed class CastedSequenceWriter<TDerived, TBase> : BaseSequenceWriter<TDerived> where TBase : TDerived {
 
    readonly ISequenceWriter<TBase>
    _output;
