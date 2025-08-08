@@ -108,7 +108,7 @@ static class WriterFactory {
    static XcstWriter
    CreateXmlXcstWriter(OutputParameters parameters, Uri outputUri, Func<OutputParameters, XmlWriter> writerFn) {
 
-      var writer = writerFn(parameters);
+      var writer = writerFn.Invoke(parameters);
 
       var finalWriter = WrapHtmlWriter(writer, parameters)
          ?? writer;

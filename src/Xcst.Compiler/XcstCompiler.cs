@@ -204,7 +204,7 @@ public class XcstCompiler {
          | LoadOptions.SetBaseUri
          | LoadOptions.SetLineInfo;
 
-      var reader = readerFn(settings, baseUriStr);
+      var reader = readerFn.Invoke(settings, baseUriStr);
       XDocument moduleDoc;
 
       try {

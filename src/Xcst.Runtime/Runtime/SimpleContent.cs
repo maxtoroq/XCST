@@ -38,7 +38,7 @@ public partial class SimpleContent {
    Invariant { get; } = new(() => CultureInfo.InvariantCulture);
 
    internal IFormatProvider
-   FormatProvider => _formatProviderFn();
+   FormatProvider => _formatProviderFn.Invoke();
 
    public
    SimpleContent(Func<IFormatProvider> formatProviderFn) {
