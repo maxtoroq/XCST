@@ -14,7 +14,7 @@
 
 namespace Xcst.Runtime;
 
-public class FailMode {
+public static class FailMode {
 
    public static void
    Fail<TBase>(

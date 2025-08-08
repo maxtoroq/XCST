@@ -18,7 +18,7 @@ using System.Xml.Linq;
 
 namespace Xcst.Runtime;
 
-public class ShallowSkip {
+public static class ShallowSkip {
 
    public static void
    Skip<TBase>(

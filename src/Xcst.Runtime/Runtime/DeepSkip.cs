@@ -17,7 +17,7 @@ using System.Xml.Linq;
 
 namespace Xcst.Runtime;
 
-public class DeepSkip {
+public static class DeepSkip {
 
    public static void
    Skip<TBase>(
