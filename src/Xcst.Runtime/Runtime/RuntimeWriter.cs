@@ -327,51 +327,49 @@ class RuntimeWriter : WrappingWriter {
             continue;
          }
 
-         {
-            var prefix = _arrAttrs[idx].Prefix;
-            var ns = _arrAttrs[idx].Namespace;
-            var separator = _arrAttrs[idx].Separator ?? " ";
+         var prefix = _arrAttrs[idx].Prefix;
+         var ns = _arrAttrs[idx].Namespace;
+         var separator = _arrAttrs[idx].Separator ?? " ";
 
-            base.WriteStartAttribute(prefix, localName, ns, null);
+         base.WriteStartAttribute(prefix, localName, ns, null);
 
-            var first = true;
-            var lastWasText = false;
+         var first = true;
+         var lastWasText = false;
 
-            // Output all of this attribute's text
-            while (++idx != idxNext) {
+         // Output all of this attribute's text
+         while (++idx != idxNext) {
 
-               if (_arrAttrs[idx].Object is { } obj) {
+            if (_arrAttrs[idx].Object is { } obj) {
 
-                  if (!first
-                     && !String.IsNullOrEmpty(separator)) {
+               if (!first
+                  && !String.IsNullOrEmpty(separator)) {
 
-                     base.WriteString(separator);
-                  }
-
-                  base.WriteItem(obj);
-
-                  lastWasText = false;
-
-               } else {
-
-                  if (!first
-                     && !lastWasText
-                     && !String.IsNullOrEmpty(separator)) {
-
-                     base.WriteString(separator);
-                  }
-
-                  var text = _arrAttrs[idx].Text;
-                  base.WriteString(text);
-
-                  lastWasText = true;
+                  base.WriteString(separator);
                }
 
-               first = false;
+               base.WriteItem(obj);
+
+               lastWasText = false;
+
+            } else {
+
+               if (!first
+                  && !lastWasText
+                  && !String.IsNullOrEmpty(separator)) {
+
+                  base.WriteString(separator);
+               }
+
+               var text = _arrAttrs[idx].Text;
+               base.WriteString(text);
+
+               lastWasText = true;
             }
 
-            base.WriteEndAttribute();
+            first = false;
          }
+
+         base.WriteEndAttribute();
       }
 
       if (_numEntries > 0) {
