@@ -52,7 +52,7 @@ class RuntimeWriter : WrappingWriter {
    readonly string?
    _itemSeparator;
 
-   ItemType?
+   ItemType
    _lastItem;
 
    internal bool
@@ -218,8 +218,7 @@ class RuntimeWriter : WrappingWriter {
       if (_inAttr
          && !_isSimplContent) {
 
-         EnsureAttributeCache();
-         _arrAttrs[_numEntries++].Init(new string(buffer, index, count));
+         WriteString(new String(buffer, index, count));
 
       } else {
 
@@ -235,16 +234,20 @@ class RuntimeWriter : WrappingWriter {
    public override void
    WriteRaw(string? data) {
 
-      if (_inAttr) {
-         throw new InvalidOperationException($"Calling {nameof(WriteRaw)} for attributes is not supported.");
+      if (_inAttr
+         && !_isSimplContent) {
+
+         WriteString(data);
+
+      } else {
+
+         FlushAttributes();
+         ItemWriting(ItemType.Text);
+
+         base.WriteRaw(data);
+
+         ItemWritten(ItemType.Text);
       }
-
-      FlushAttributes();
-      ItemWriting(ItemType.Raw);
-
-      base.WriteRaw(data);
-
-      ItemWritten(ItemType.Raw);
    }
 
    protected internal override void
@@ -388,13 +391,13 @@ class RuntimeWriter : WrappingWriter {
    void
    ItemWriting(ItemType type) {
 
-      if (_lastItem != null
-         && (_lastItem.Value != ItemType.Text || type != ItemType.Text)) {
+      if (_lastItem != default
+         && (_lastItem != ItemType.Text || type != ItemType.Text)) {
 
          var separator = (this.Depth == 0) ? _itemSeparator : null;
 
          if (separator is null
-            && _lastItem.Value == ItemType.Object
+            && _lastItem == ItemType.Object
             && type == ItemType.Object) {
 
             separator = " ";
@@ -407,7 +410,7 @@ class RuntimeWriter : WrappingWriter {
 
       if (type == ItemType.Element) {
          // Reset _lastItem for child nodes
-         _lastItem = null;
+         _lastItem = default;
       }
    }
 
@@ -417,9 +420,9 @@ class RuntimeWriter : WrappingWriter {
    }
 
    enum ItemType {
+      None,
       Element,
       Text,
-      Raw,
       Comment,
       ProcessingInstruction,
       Object

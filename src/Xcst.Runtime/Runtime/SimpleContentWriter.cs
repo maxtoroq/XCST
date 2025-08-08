@@ -109,16 +109,8 @@ sealed class SimpleContentWriter : XcstWriter {
    }
 
    public override void
-   WriteRaw(string? data) {
-
-      if (!this.InElementAttribute
-         && !String.IsNullOrEmpty(data)) {
-
-         OnItemWritting();
-         _sb.Append(data);
-         OnItemWritten();
-      }
-   }
+   WriteRaw(string? data) =>
+      WriteString(data);
 
    public override void
    Flush() { }
