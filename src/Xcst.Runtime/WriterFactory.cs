@@ -110,24 +110,7 @@ static class WriterFactory {
 
       var writer = writerFn.Invoke(parameters);
 
-      var finalWriter = WrapHtmlWriter(writer, parameters)
-         ?? writer;
-
-      return new XmlXcstWriter(finalWriter, outputUri, parameters);
-   }
-
-   static XmlWriter?
-   WrapHtmlWriter(XmlWriter writer, OutputParameters parameters) {
-
-      if (parameters.Method == OutputParameters.Methods.Html
-         && parameters.DoctypePublic is null
-         && parameters.DoctypeSystem is null
-         && parameters.RequestedHtmlVersion() >= 5m) {
-
-         return new HtmlWriter(writer, outputHtml5Doctype: true);
-      }
-
-      return null;
+      return new XmlXcstWriter(writer, outputUri, parameters);
    }
 
    static XmlWriter

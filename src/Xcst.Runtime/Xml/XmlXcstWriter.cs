@@ -22,14 +22,14 @@ class XmlXcstWriter : XcstWriter {
    readonly XmlWriter
    _output;
 
-   readonly bool
+   bool
    _outputXmlDecl;
 
    readonly XmlStandalone
    _standalone;
 
    bool
-   _xmlDeclWritten;
+   _outputHtml5Doctype;
 
    int
    _depth;
@@ -47,13 +47,17 @@ class XmlXcstWriter : XcstWriter {
             || parameters.Method == OutputParameters.Methods.Xml);
 
       _standalone = parameters.Standalone.GetValueOrDefault();
+
+      _outputHtml5Doctype = parameters.Method == OutputParameters.Methods.Html
+         && parameters.DoctypePublic is null
+         && parameters.DoctypeSystem is null
+         && parameters.RequestedHtmlVersion() >= 5m;
    }
 
    void
    WriteXmlDeclaration() {
 
       if (_outputXmlDecl
-         && !_xmlDeclWritten
          && _output.WriteState == WriteState.Start) {
 
          if (_standalone == XmlStandalone.Omit) {
@@ -62,7 +66,25 @@ class XmlXcstWriter : XcstWriter {
             _output.WriteStartDocument(_standalone == XmlStandalone.Yes);
          }
 
-         _xmlDeclWritten = true;
+         _outputXmlDecl = false;
+      }
+   }
+
+   void
+   WriteHtml5Doctype(string? prefix, string localName) {
+
+      if (_outputHtml5Doctype) {
+
+         if (_output.WriteState is WriteState.Start or WriteState.Prolog) {
+
+            var name = !String.IsNullOrEmpty(prefix) ?
+               (prefix + ":" + localName)
+               : localName;
+
+            _output.WriteDocType(name, null, null, null);
+         }
+
+         _outputHtml5Doctype = false;
       }
    }
 
@@ -133,6 +155,7 @@ class XmlXcstWriter : XcstWriter {
    WriteStartElement(string? prefix, string localName, string? ns) {
 
       WriteXmlDeclaration();
+      WriteHtml5Doctype(prefix, localName);
 
       OnItemWritting();
       _output.WriteStartElement(prefix, localName, ns);
