@@ -29,23 +29,20 @@ class NullWriter : XcstWriter {
       : base(outputUri) { }
 
    public override void
-   Flush() { }
-
-   public override void
-   WriteChars(char[] buffer, int index, int count) {
-
-      if (buffer != null
-         && buffer.Length > 0) {
-
-         OnItemWritting();
-         OnItemWritten();
-      }
+   WriteStartElement(string? prefix, string localName, string? ns) {
+      OnItemWritting();
+      _depth++;
    }
 
    public override void
-   WriteComment(string? text) {
-      OnItemWritting();
+   WriteEndElement() {
+      _depth--;
       OnItemWritten();
+   }
+
+   public override void
+   WriteStartAttribute(string? prefix, string localName, string? ns, string? separator) {
+      _depth++;
    }
 
    public override void
@@ -54,8 +51,8 @@ class NullWriter : XcstWriter {
    }
 
    public override void
-   WriteEndElement() {
-      _depth--;
+   WriteComment(string? text) {
+      OnItemWritting();
       OnItemWritten();
    }
 
@@ -66,24 +63,26 @@ class NullWriter : XcstWriter {
    }
 
    public override void
-   WriteRaw(string? data) { }
-
-   public override void
-   WriteStartAttribute(string? prefix, string localName, string? ns, string? separator) {
-      _depth++;
-   }
-
-   public override void
-   WriteStartElement(string? prefix, string localName, string? ns) {
-      OnItemWritting();
-      _depth++;
-   }
-
-   public override void
    WriteString(string? text) {
       if (!String.IsNullOrEmpty(text)) {
          OnItemWritting();
          OnItemWritten();
       }
    }
+
+   public override void
+   WriteChars(char[] buffer, int index, int count) {
+
+      if (buffer is { Length: > 0 }) {
+         OnItemWritting();
+         OnItemWritten();
+      }
+   }
+
+   public override void
+   WriteRaw(string? data) =>
+      WriteString(data);
+
+   public override void
+   Flush() { }
 }

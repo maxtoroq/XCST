@@ -89,25 +89,14 @@ class XmlXcstWriter : XcstWriter {
    }
 
    public override void
-   WriteComment(string? text) {
+   WriteStartElement(string? prefix, string localName, string? ns) {
 
       WriteXmlDeclaration();
+      WriteHtml5Doctype(prefix, localName);
+
       OnItemWritting();
-      _output.WriteComment(text);
-      OnItemWritten();
-   }
-
-   public override void
-   WriteEndAttribute() {
-
-      // WriteEndAttribute is called in a finally block
-      // Checking for error to not overwhelm writer when something goes wrong
-
-      if (_output.WriteState != WriteState.Error) {
-         _output.WriteEndAttribute();
-         _depth--;
-         //OnItemWritten();
-      }
+      _output.WriteStartElement(prefix, localName, ns);
+      _depth++;
    }
 
    public override void
@@ -124,26 +113,6 @@ class XmlXcstWriter : XcstWriter {
    }
 
    public override void
-   WriteProcessingInstruction(string name, string? text) {
-
-      WriteXmlDeclaration();
-      OnItemWritting();
-      _output.WriteProcessingInstruction(name, text);
-      OnItemWritten();
-   }
-
-   public override void
-   WriteRaw(string? data) {
-
-      if (!String.IsNullOrEmpty(data)) {
-         WriteXmlDeclaration();
-         OnItemWritting();
-         _output.WriteRaw(data);
-         OnItemWritten();
-      }
-   }
-
-   public override void
    WriteStartAttribute(string? prefix, string localName, string? ns, string? separator) {
 
       //OnItemWritting();
@@ -152,14 +121,34 @@ class XmlXcstWriter : XcstWriter {
    }
 
    public override void
-   WriteStartElement(string? prefix, string localName, string? ns) {
+   WriteEndAttribute() {
+
+      // WriteEndAttribute is called in a finally block
+      // Checking for error to not overwhelm writer when something goes wrong
+
+      if (_output.WriteState != WriteState.Error) {
+         _output.WriteEndAttribute();
+         _depth--;
+         //OnItemWritten();
+      }
+   }
+
+   public override void
+   WriteComment(string? text) {
 
       WriteXmlDeclaration();
-      WriteHtml5Doctype(prefix, localName);
-
       OnItemWritting();
-      _output.WriteStartElement(prefix, localName, ns);
-      _depth++;
+      _output.WriteComment(text);
+      OnItemWritten();
+   }
+
+   public override void
+   WriteProcessingInstruction(string name, string? text) {
+
+      WriteXmlDeclaration();
+      OnItemWritting();
+      _output.WriteProcessingInstruction(name, text);
+      OnItemWritten();
    }
 
    public override void
@@ -183,6 +172,17 @@ class XmlXcstWriter : XcstWriter {
          WriteXmlDeclaration();
          OnItemWritting();
          _output.WriteChars(buffer, index, count);
+         OnItemWritten();
+      }
+   }
+
+   public override void
+   WriteRaw(string? data) {
+
+      if (!String.IsNullOrEmpty(data)) {
+         WriteXmlDeclaration();
+         OnItemWritting();
+         _output.WriteRaw(data);
          OnItemWritten();
       }
    }

@@ -61,7 +61,8 @@ abstract class WrappingWriter : XcstWriter {
       _output.WriteProcessingInstruction(name, text);
 
    public override void
-   WriteRaw(string? data) => _output.WriteRaw(data);
+   WriteRaw(string? data) =>
+      _output.WriteRaw(data);
 
    public override void
    WriteStartAttribute(string? prefix, string localName, string? ns, string? separator) =>
@@ -72,25 +73,31 @@ abstract class WrappingWriter : XcstWriter {
       _output.WriteStartElement(prefix, localName, ns);
 
    public override void
-   WriteString(string? text) => _output.WriteString(text);
+   WriteString(string? text) =>
+      _output.WriteString(text);
 
    protected internal override void
-   WriteItem(object? value) => _output.WriteItem(value);
+   WriteItem(object? value) =>
+      _output.WriteItem(value);
 
    public override void
-   BeginTrack(char cardinality) => _output.BeginTrack(cardinality);
+   BeginTrack(char cardinality) =>
+      _output.BeginTrack(cardinality);
 
    internal override void
-   OnItemWritting() => _output.OnItemWritting();
+   OnItemWritting() =>
+      _output.OnItemWritting();
 
    internal override void
-   OnItemWritten() => _output.OnItemWritten();
+   OnItemWritten() =>
+      _output.OnItemWritten();
 
    public override bool
    OnEmpty() => _output.OnEmpty();
 
    public override void
-   EndOfConstructor() => _output.EndOfConstructor();
+   EndOfConstructor() =>
+      _output.EndOfConstructor();
 
    public override void
    EndTrack() => _output.EndTrack();

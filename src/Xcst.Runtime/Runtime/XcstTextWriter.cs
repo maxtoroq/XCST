@@ -38,7 +38,8 @@ class XcstTextWriter : TextWriter {
       _output.WriteString(value.ToString());
 
    public override void
-   Write(string? value) => _output.WriteString(value);
+   Write(string? value) =>
+      _output.WriteString(value);
 
    public override void
    Write(char[] buffer, int index, int count) =>
