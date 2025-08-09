@@ -19,7 +19,6 @@
    xmlns:code='https://maxtoroq.github.io/XCST/code'
    xmlns:cs='https://maxtoroq.github.io/XCST/csharp'>
 
-   <import-namespace ns='System.Collections.Generic'/>
    <import-namespace ns='System.Linq'/>
    <import-namespace ns='System.Xml.Linq'/>
    <import-namespace ns='static XcstCompilerPackage'/>
@@ -1352,143 +1351,15 @@
       <param name='text' as='string'/>
       <param name='contextNode' as='XObject'/>
 
-      <variable name='quotes' value='new List&lt;int>()'/>
-      <variable name='modes' value='new Stack&lt;ParsingMode>()'/>
-      <void value='modes.Push(ParsingMode.Text)'/>
-      <variable name='i' value='0'/>
-      <variable name='nextChar' value='() =>
-         (i + 1 &lt; text.Length) ? text[i + 1] : (char?)null' as='System.Func&lt;char?>'/>
+      <variable name='quotes' as='int[]'/>
 
-      <while test='i &lt; text.Length'>
-         <variable name='currentChar' value='text[i]'/>
-         <variable name='currentMode' value='modes.Peek()'/>
-         <switch value='currentMode'>
-            <when test='ParsingMode.Code'>
-               <switch value='currentChar'>
-                  <when test="'{'">
-                     <void value='modes.Push(ParsingMode.Code)'/>
-                  </when>
-                  <when test="'}'">
-                     <void value='modes.Pop()'/>
-                  </when>
-                  <when test="'\''">
-                     <void value='modes.Push(ParsingMode.Char)'/>
-                  </when>
-                  <when test="'&quot;'">
-                     <variable name='m' as='ParsingMode'>
-                        <switch value='text[i - 1]'>
-                           <when test="'@'">
-                              <choose>
-                                 <when test="i - 2 >= 0 &amp;&amp; text[i - 2] == '$'"
-                                    value='ParsingMode.InterpolatedVerbatimString'/>
-                                 <otherwise value='ParsingMode.VerbatimString'/>
-                              </choose>
-                           </when>
-                           <when test="'$'" value='ParsingMode.InterpolatedString'/>
-                        </switch>
-                        <on-empty value='ParsingMode.String'/>
-                     </variable>
-                     <void value='modes.Push(m)'/>
-                  </when>
-                  <when test="'/'">
-                     <if test="nextChar() == '*'">
-                        <void value='modes.Push(ParsingMode.MultilineComment)'/>
-                        <void value='i++'/>
-                     </if>
-                  </when>
-               </switch>
-            </when>
-            <when test='ParsingMode.Text
-                  or ParsingMode.InterpolatedString
-                  or ParsingMode.InterpolatedVerbatimString'>
-               <switch value='currentChar'>
-                  <when test="'{'">
-                     <choose>
-                        <when test="nextChar() == '{'">
-                           <void value='i++'/>
-                        </when>
-                        <otherwise>
-                           <void value='modes.Push(ParsingMode.Code)'/>
-                        </otherwise>
-                     </choose>
-                  </when>
-                  <when test="'&quot;'">
-                     <switch value='currentMode'>
-                        <when test='ParsingMode.Text'>
-                           <void value='quotes.Add(i)'/>
-                        </when>
-                        <when test='ParsingMode.InterpolatedString'>
-                           <void value='modes.Pop()'/>
-                        </when>
-                        <when test='ParsingMode.InterpolatedVerbatimString'>
-                           <choose>
-                              <when test="nextChar() == '&quot;'">
-                                 <void value='i++'/>
-                              </when>
-                              <otherwise>
-                                 <void value='modes.Pop()'/>
-                              </otherwise>
-                           </choose>
-                        </when>
-                     </switch>
-                  </when>
-                  <when test="'\\'">
-                     <if test='currentMode == ParsingMode.InterpolatedString'>
-                        <void value='i++'/>
-                     </if>
-                  </when>
-               </switch>
-            </when>
-            <when test='ParsingMode.String'>
-               <switch value='currentChar'>
-                  <when test="'\\'">
-                     <void value='i++'/>
-                  </when>
-                  <when test="'&quot;'">
-                     <void value='modes.Pop()'/>
-                  </when>
-               </switch>
-            </when>
-            <when test='ParsingMode.VerbatimString'>
-               <if test="currentChar == '&quot;'">
-                  <choose>
-                     <when test="nextChar() == '&quot;'">
-                        <void value='i++'/>
-                     </when>
-                     <otherwise>
-                        <void value='modes.Pop()'/>
-                     </otherwise>
-                  </choose>
-               </if>
-            </when>
-            <when test='ParsingMode.Char'>
-               <switch value='currentChar'>
-                  <when test="'\\'">
-                     <void value='i++'/>
-                  </when>
-                  <when test="'\''">
-                     <void value='modes.Pop()'/>
-                  </when>
-               </switch>
-            </when>
-            <when test='ParsingMode.MultilineComment'>
-               <if test="currentChar == '*'
-                     &amp;&amp; nextChar() == '/'">
-                  <void value='modes.Pop()'/>
-                  <void value='i++'/>
-               </if>
-            </when>
-         </switch>
-         <void value='i++'/>
-      </while>
-
-      <if test='!(modes.Count == 1)'>
+      <if test='!ParseValueTemplate(text, contextNode, out quotes)'>
          <message terminate='yes' error-code='XTSE0350' error-data='ErrorData(contextNode)' transform-text='trim'>
             Value template brace mismatch.
          </message>
       </if>
 
-      <return value='quotes.ToArray()'/>
+      <return value='quotes'/>
    </function>
 
    <function name='cs_unescape_identifier' as='string' visibility='public'>

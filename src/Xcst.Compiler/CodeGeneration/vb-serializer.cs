@@ -68,4 +68,100 @@ partial class VisualBasicSerializer {
 
       return node.Document?.BaseUri ?? node.BaseUri;
    }
+
+   static bool
+   ParseValueTemplate(string text, XObject contextNode, out int[] quotesToEscape) {
+
+      var quotes = new List<int>();
+      var modes = new Stack<ParsingMode>();
+      modes.Push(ParsingMode.Text);
+
+      var i = 0;
+
+      char? nextChar() => (i + 1 < text.Length) ?
+         text[i + 1]
+         : null;
+
+      while (i < text.Length) {
+
+         var currentChar = text[i];
+         var currentMode = modes.Peek();
+
+         if (currentMode is ParsingMode.Code) {
+
+            switch (currentChar) {
+               case '{':
+                  modes.Push(ParsingMode.Code);
+                  break;
+
+               case '}':
+                  modes.Pop();
+                  break;
+
+               case '"': {
+
+                     var m = (text[i - 1] == '$') ?
+                        ParsingMode.InterpolatedString
+                        : ParsingMode.String;
+
+                     modes.Push(m);
+                     break;
+                  }
+            }
+
+         } else if (currentMode is ParsingMode.Text
+            or ParsingMode.InterpolatedString) {
+
+            switch (currentChar) {
+               case '{':
+                  if (nextChar() == '{') {
+                     i++;
+                  } else {
+                     modes.Push(ParsingMode.Code);
+                  }
+                  break;
+
+               case '"':
+                  switch (currentMode) {
+                     case ParsingMode.Text:
+                        quotes.Add(i);
+                        break;
+
+                     case ParsingMode.InterpolatedString:
+                        if (nextChar() == '"') {
+                           i++;
+                        } else {
+                           modes.Pop();
+                        }
+                        break;
+
+                  }
+                  break;
+            }
+
+         } else if (currentMode is ParsingMode.String) {
+
+            if (currentChar == '"') {
+               if (nextChar() == '"') {
+                  i++;
+               } else {
+                  modes.Pop();
+               }
+            }
+         }
+
+         i++;
+      }
+
+      quotesToEscape = quotes.ToArray();
+
+      return modes.Count == 1;
+   }
+
+   enum ParsingMode {
+      Text,
+      Code,
+      InterpolatedString,
+      String,
+   }
 }

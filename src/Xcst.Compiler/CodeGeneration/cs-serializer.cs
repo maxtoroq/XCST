@@ -68,4 +68,159 @@ partial class CSharpSerializer {
 
       return node.Document?.BaseUri ?? node.BaseUri;
    }
+
+   static bool
+   ParseValueTemplate(string text, XObject contextNode, out int[] quotesToEscape) {
+
+      var quotes = new List<int>();
+      var modes = new Stack<ParsingMode>();
+      modes.Push(ParsingMode.Text);
+
+      var i = 0;
+
+      char? nextChar() => (i + 1 < text.Length) ?
+         text[i + 1]
+         : null;
+
+      while (i < text.Length) {
+
+         var currentChar = text[i];
+         var currentMode = modes.Peek();
+
+         if (currentMode is ParsingMode.Code) {
+
+            switch (currentChar) {
+               case '{':
+                  modes.Push(ParsingMode.Code);
+                  break;
+
+               case '}':
+                  modes.Pop();
+                  break;
+
+               case '\'':
+                  modes.Push(ParsingMode.Char);
+                  break;
+
+               case '"': {
+
+                     var m = text[i - 1] switch {
+                        '@' => (i - 2 >= 0 && text[i - 2] == '$') ?
+                           ParsingMode.InterpolatedVerbatimString
+                           : ParsingMode.VerbatimString,
+                        '$' => ParsingMode.InterpolatedString,
+                        _ => ParsingMode.String
+                     };
+
+                     modes.Push(m);
+                     break;
+                  }
+               case '/':
+                  if (nextChar() == '*') {
+                     modes.Push(ParsingMode.MultilineComment);
+                     i++;
+                  }
+                  break;
+            }
+
+         } else if (currentMode is ParsingMode.Text
+               or ParsingMode.InterpolatedString
+               or ParsingMode.InterpolatedVerbatimString) {
+
+            switch (currentChar) {
+               case '{':
+                  if (nextChar() == '{') {
+                     i++;
+                  } else {
+                     modes.Push(ParsingMode.Code);
+                  }
+                  break;
+
+               case '"':
+                  switch (currentMode) {
+                     case ParsingMode.Text:
+                        quotes.Add(i);
+                        break;
+
+                     case ParsingMode.InterpolatedString:
+                        modes.Pop();
+                        break;
+
+                     case ParsingMode.InterpolatedVerbatimString:
+                        if (nextChar() == '"') {
+                           i++;
+                        } else {
+                           modes.Pop();
+                        }
+                        break;
+                  }
+                  break;
+
+               case '\\':
+                  if (currentMode == ParsingMode.InterpolatedString) {
+                     i++;
+                  }
+                  break;
+            }
+
+         } else if (currentMode is ParsingMode.String) {
+
+            switch (currentChar) {
+               case '\\':
+                  i++;
+                  break;
+
+               case '"':
+                  modes.Pop();
+                  break;
+            }
+
+         } else if (currentMode is ParsingMode.VerbatimString) {
+
+            if (currentChar == '"') {
+               if (nextChar() == '"') {
+                  i++;
+               } else {
+                  modes.Pop();
+               }
+            }
+
+         } else if (currentMode is ParsingMode.Char) {
+
+            switch (currentChar) {
+               case '\\':
+                  i++;
+                  break;
+
+               case '\'':
+                  modes.Pop();
+                  break;
+            }
+
+         } else if (currentMode is ParsingMode.MultilineComment) {
+
+            if (currentChar == '*' && nextChar() == '/') {
+               modes.Pop();
+               i++;
+            }
+         }
+
+         i++;
+      }
+
+      quotesToEscape = quotes.ToArray();
+
+      return modes.Count == 1;
+   }
+
+   enum ParsingMode {
+      Text,
+      Code,
+      InterpolatedString,
+      InterpolatedVerbatimString,
+      String,
+      VerbatimString,
+      Char,
+      MultilineComment
+   }
 }

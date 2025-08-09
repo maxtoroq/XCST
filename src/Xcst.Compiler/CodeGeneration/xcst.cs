@@ -151,14 +151,3 @@ enum TypeCardinality {
    ZeroOrMore,
    One
 }
-
-enum ParsingMode {
-   Text,
-   Code,
-   InterpolatedString,
-   InterpolatedVerbatimString,
-   String,
-   VerbatimString,
-   Char,
-   MultilineComment
-}
