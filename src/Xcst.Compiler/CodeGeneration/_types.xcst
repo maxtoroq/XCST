@@ -394,7 +394,7 @@
 
       <if test='el.Elements(c + "member")
             .Any(p => p.Attribute("serialize") is { } serializeAttr
-               &amp;&amp; xcst_boolean(serializeAttr).Value)'>
+               &amp;&amp; xcst_boolean(serializeAttr)!.Value)'>
          <code:attribute line-hidden='true'>
             <code:type-reference name='DataContract' namespace='System.Runtime.Serialization'/>
          </code:attribute>

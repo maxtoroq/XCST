@@ -169,7 +169,7 @@
                <code:method-reference name='{src_item_type_inference_member_name(meta)}'>
                   <variable name='pkgType' value='
                      select(meta, xcst + "package-type", code + "type-reference").FirstOrDefault()
-                        ?? meta.Parent!.Element(code + "type-reference")'/>
+                        ?? meta.Parent!.Element(code + "type-reference")!'/>
                   <code:type-reference name='{pkgType.Attribute("name")!.Value}'/>
                </code:method-reference>
             </return>
