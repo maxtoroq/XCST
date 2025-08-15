@@ -85,7 +85,9 @@ public static class DataType {
 
       Argument.NotNull(localOrUriQualifiedName);
 
-      if (System.String.IsNullOrWhiteSpace(localOrUriQualifiedName)) throw new ArgumentException($"{nameof(localOrUriQualifiedName)} cannot be empty.", nameof(localOrUriQualifiedName));
+      if (System.String.IsNullOrWhiteSpace(localOrUriQualifiedName)) {
+         throw new ArgumentException($"{nameof(localOrUriQualifiedName)} cannot be empty.", nameof(localOrUriQualifiedName));
+      }
 
       if (localOrUriQualifiedName.Length > 2
          && localOrUriQualifiedName[0] == 'Q'
@@ -109,10 +111,6 @@ public static class DataType {
    public static XName
    QName(string ns, string localName) =>
       XName.Get(localName, ns);
-
-   static string
-   UriQualifiedName(XName name) =>
-      "Q{" + name.NamespaceName + "}" + name.LocalName;
 
    internal static string
    QNameString(XName name) {

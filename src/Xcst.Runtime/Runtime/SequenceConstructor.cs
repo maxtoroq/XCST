@@ -19,6 +19,8 @@ namespace Xcst.Runtime;
 
 static class SequenceConstructor {
 
+   public record struct State(char Cardinality, int Depth, bool ItemWritten, bool EndReached);
+
    public static void
    BeginTrack(char cardinality, int depth, ref Stack<State>? _trackStack) {
 
@@ -29,8 +31,7 @@ static class SequenceConstructor {
    public static void
    OnItemWritting(Stack<State>? _trackStack, int depth) {
 
-      if (_trackStack != null
-         && _trackStack.Count > 0) {
+      if (_trackStack is { Count: > 0 }) {
 
          var state = _trackStack.Peek();
 
@@ -38,9 +39,7 @@ static class SequenceConstructor {
             return;
          }
 
-         if (state.ItemWritten
-            && state.Cardinality == ' ') {
-
+         if (state is { ItemWritten: true, Cardinality: ' ' }) {
             throw DynamicError.SequenceOverflow();
          }
       }
@@ -49,8 +48,7 @@ static class SequenceConstructor {
    public static void
    OnItemWritten(Stack<State>? _trackStack, int depth) {
 
-      if (_trackStack != null
-         && _trackStack.Count > 0) {
+      if (_trackStack is { Count: > 0 }) {
 
          var state = _trackStack.Peek();
 
@@ -60,7 +58,7 @@ static class SequenceConstructor {
 
          if (!state.ItemWritten) {
             _trackStack.Pop();
-            _trackStack.Push(state.WithItemWritten(true));
+            _trackStack.Push(state with { ItemWritten = true });
          }
       }
    }
@@ -72,9 +70,7 @@ static class SequenceConstructor {
    public static void
    EndOfConstructor(Stack<State>? _trackStack) {
 
-      if (_trackStack is null
-         || _trackStack.Count == 0) {
-
+      if (_trackStack is null or { Count: 0 }) {
          // See c:return
          return;
       }
@@ -83,7 +79,7 @@ static class SequenceConstructor {
 
       Debug.Assert(!state.EndReached);
 
-      _trackStack.Push(state.WithEndReached(true));
+      _trackStack.Push(state with { EndReached = true });
    }
 
    public static void
@@ -91,10 +87,7 @@ static class SequenceConstructor {
 
       var state = _trackStack!.Pop();
 
-      if (!state.ItemWritten
-         && state.Cardinality != '*'
-         && state.EndReached) {
-
+      if (state is { ItemWritten: false, Cardinality: not '*', EndReached: true }) {
          throw DynamicError.SequenceUnderflow();
       }
 
@@ -105,38 +98,7 @@ static class SequenceConstructor {
 
          Debug.Assert(!parentState.EndReached);
 
-         _trackStack.Push(parentState.WithItemWritten(true));
+         _trackStack.Push(parentState with { ItemWritten = true });
       }
-   }
-
-   public struct State {
-
-      public char
-      Cardinality { get; }
-
-      public int
-      Depth { get; }
-
-      public bool
-      ItemWritten { get; }
-
-      public bool
-      EndReached { get; }
-
-      public
-      State(char cardinality, int depth, bool itemWritten, bool endReached) {
-         this.Cardinality = cardinality;
-         this.Depth = depth;
-         this.ItemWritten = itemWritten;
-         this.EndReached = endReached;
-      }
-
-      public State
-      WithItemWritten(bool itemWritten) =>
-         new State(this.Cardinality, this.Depth, itemWritten, this.EndReached);
-
-      public State
-      WithEndReached(bool endReached) =>
-         new State(this.Cardinality, this.Depth, this.ItemWritten, endReached);
    }
 }

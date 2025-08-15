@@ -166,8 +166,7 @@ sealed class XmlXcstWriter : XcstWriter {
    public override void
    WriteChars(char[] buffer, int index, int count) {
 
-      if (buffer != null
-         && buffer.Length > 0) {
+      if (buffer is { Length: > 0 }) {
 
          WriteXmlDeclaration();
          OnItemWritting();

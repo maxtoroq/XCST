@@ -7,7 +7,7 @@ namespace Xcst;
 static class Argument {
 
    public static void
-   NotNull(object? argument, [CallerArgumentExpression("argument")] string? paramName = null) {
+   NotNull(object? argument, [CallerArgumentExpression(nameof(argument))] string? paramName = null) {
 
       if (argument is null) {
          Throw(paramName);
@@ -19,6 +19,6 @@ static class Argument {
    Throw(string? paramName) => throw new ArgumentNullException(paramName);
 
    public static ArgumentNullException
-   Null(object? argument, [CallerArgumentExpression("argument")] string? paramName = null) =>
+   Null(object? argument, [CallerArgumentExpression(nameof(argument))] string? paramName = null) =>
       new ArgumentNullException(paramName);
 }

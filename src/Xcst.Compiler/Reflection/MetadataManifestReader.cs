@@ -318,7 +318,7 @@ partial class MetadataManifestReader {
          var defaultVal = attribsH
             .Select(_reader.GetCustomAttribute)
             .Where(p => CustomAttributeName(p) == "System.Runtime.CompilerServices.DecimalConstantAttribute")
-            .Select(p => TryDecodeDecimalConstantAttribute(p))
+            .Select(TryDecodeDecimalConstantAttribute)
             .FirstOrDefault(p => p != null);
 
          if (defaultVal != null) {
@@ -474,7 +474,7 @@ partial class MetadataManifestReader {
          fullName = fullName.Substring(0, fullName.IndexOf('`'));
       }
 
-      var nspace = (fullName.Contains(".")) ?
+      var nspace = (fullName.Contains('.')) ?
          fullName.Substring(0, fullName.LastIndexOf('.'))
          : "";
 

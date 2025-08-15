@@ -589,9 +589,7 @@ public class XcstOutputter {
    public XcstOutputter
    WithBaseUri(Uri? baseUri) {
 
-      if (baseUri != null
-         && !baseUri.IsAbsoluteUri) {
-
+      if (baseUri is { IsAbsoluteUri: false }) {
          throw new ArgumentException("An absolute URI is expected.", nameof(baseUri));
       }
 
@@ -602,9 +600,7 @@ public class XcstOutputter {
    public XcstOutputter
    WithBaseOutputUri(Uri? baseOutputUri) {
 
-      if (baseOutputUri != null
-         && !baseOutputUri.IsAbsoluteUri) {
-
+      if (baseOutputUri is { IsAbsoluteUri: false }) {
          throw new ArgumentException("An absolute URI is expected.", nameof(baseOutputUri));
       }
 
