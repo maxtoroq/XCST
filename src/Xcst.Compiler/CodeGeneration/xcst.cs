@@ -111,14 +111,8 @@ partial class XcstCompilerPackage {
    }
 
    object
-   ErrorData(XObject node) {
-
-      dynamic data = new System.Dynamic.ExpandoObject();
-      data.LineNumber = LineNumber(node);
-      data.ModuleUri = ModuleUri(node);
-
-      return data;
-   }
+   ErrorData(XObject node) =>
+      new CompileErrorData(LineNumber(node), ModuleUri(node));
 
    static int
    LineNumber(XObject node) =>

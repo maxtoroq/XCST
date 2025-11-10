@@ -54,7 +54,7 @@ static class TestsHelper {
 
       } catch (RuntimeException ex) {
 
-         dynamic? errorData = ex.ErrorData;
+         var errorData = (CompileErrorData?)ex.ErrorData;
 
          Console.WriteLine($"// {ex.Message}");
          Console.WriteLine($"// Module URI: {errorData?.ModuleUri}");

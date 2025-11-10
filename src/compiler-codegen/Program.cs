@@ -19,6 +19,7 @@ class Program {
    static void
    VisualStudioErrorLog(RuntimeException ex) {
 
+      // TODO: use CompileErrorData on next upgrade
       dynamic? errorData = ex.ErrorData;
 
       if (errorData != null) {

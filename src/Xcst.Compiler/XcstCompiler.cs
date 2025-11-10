@@ -407,3 +407,21 @@ public class CompileResult {
       this.Templates = templates;
    }
 }
+
+public class CompileErrorData {
+
+   public int
+   LineNumber { get; }
+
+   public string
+   ModuleUri { get; }
+
+   internal
+   CompileErrorData(int lineNumber, string moduleUri) {
+
+      Argument.NotNull(moduleUri);
+
+      this.LineNumber = lineNumber;
+      this.ModuleUri = moduleUri;
+   }
+}
