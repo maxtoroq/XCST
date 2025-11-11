@@ -60,6 +60,14 @@
          </xs:sequence>
       </xs:complexType>
    </xs:element>
+   <xs:element name="and" substitutionGroup="code:_expression">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element ref="code:_expression"/>
+            <xs:element ref="code:_expression"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
    <xs:element name="and-also" substitutionGroup="code:_expression">
       <xs:complexType>
          <xs:sequence>

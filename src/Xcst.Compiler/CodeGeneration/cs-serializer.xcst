@@ -71,6 +71,12 @@
       <text>)</text>
    </template>
 
+   <template match='XElement el &amp;&amp; el.Name == code + "and"' mode='cs:source'>
+      <text>(</text>
+      <apply-templates value='select(el, code)' separator=' &amp; '/>
+      <text>)</text>
+   </template>
+
    <template match='XElement el &amp;&amp; el.Name == code + "and-also"' mode='cs:source'>
       <text>(</text>
       <apply-templates value='select(el, code)' separator=' &amp;&amp; '/>

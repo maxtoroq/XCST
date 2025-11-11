@@ -21,6 +21,7 @@
    <define name="_expression">
       <choice>
          <ref name="add"/>
+         <ref name="and"/>
          <ref name="and-also"/>
          <ref name="base-reference"/>
          <ref name="cast"/>
@@ -140,6 +141,13 @@
 
    <define name="add">
       <element name="add">
+         <ref name="_expression"/>
+         <ref name="_expression"/>
+      </element>
+   </define>
+
+   <define name="and">
+      <element name="and">
          <ref name="_expression"/>
          <ref name="_expression"/>
       </element>
