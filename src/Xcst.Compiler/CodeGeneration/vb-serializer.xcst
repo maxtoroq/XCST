@@ -863,6 +863,12 @@
       <text>Nothing</text>
    </template>
 
+   <template match='XElement el &amp;&amp; el.Name == code + "or"' mode='vb:source'>
+      <text>(</text>
+      <apply-templates value='select(el, code)' separator=' Or '/>
+      <text>)</text>
+   </template>
+
    <template match='XElement el &amp;&amp; el.Name == code + "or-else"' mode='vb:source'>
       <text>(</text>
       <apply-templates value='select(el, code)' separator=' OrElse '/>

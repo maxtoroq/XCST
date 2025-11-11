@@ -865,6 +865,12 @@
       <text>null</text>
    </template>
 
+   <template match='XElement el &amp;&amp; el.Name == code + "or"' mode='cs:source'>
+      <text>(</text>
+      <apply-templates value='select(el, code)' separator=' | '/>
+      <text>)</text>
+   </template>
+
    <template match='XElement el &amp;&amp; el.Name == code + "or-else"' mode='cs:source'>
       <text>(</text>
       <apply-templates value='select(el, code)' separator=' || '/>

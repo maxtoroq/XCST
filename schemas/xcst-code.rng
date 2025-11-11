@@ -47,6 +47,7 @@
          <ref name="not"/>
          <ref name="not-equal"/>
          <ref name="null"/>
+         <ref name="or"/>
          <ref name="or-else"/>
          <ref name="property-reference"/>
          <ref name="setter-value"/>
@@ -806,6 +807,13 @@
    <define name="null">
       <element name="null">
          <empty/>
+      </element>
+   </define>
+
+   <define name="or">
+      <element name="or">
+         <ref name="_expression"/>
+         <ref name="_expression"/>
       </element>
    </define>
 
