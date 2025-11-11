@@ -27,6 +27,7 @@
          <ref name="cast"/>
          <ref name="chain"/>
          <ref name="chain-reference"/>
+         <ref name="conditional"/>
          <ref name="default"/>
          <ref name="equal"/>
          <ref name="expression"/>
@@ -337,6 +338,14 @@
          <zeroOrMore>
             <ref name="namespace"/>
          </zeroOrMore>
+      </element>
+   </define>
+
+   <define name="conditional">
+      <element name="conditional">
+         <ref name="_expression"/>
+         <ref name="_expression"/>
+         <ref name="_expression"/>
       </element>
    </define>
 

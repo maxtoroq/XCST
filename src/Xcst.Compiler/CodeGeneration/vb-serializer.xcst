@@ -289,6 +289,17 @@
       <apply-templates value='el.Nodes()'/>
    </template>
 
+   <template match='XElement el &amp;&amp; el.Name == code + "conditional"' mode='vb:source'>
+      <variable name='children' value='select(el, code).ToArray()'/>
+      <text>If((</text>
+      <apply-templates value='children[0]'/>
+      <text>), (</text>
+      <apply-templates value='children[1]'/>
+      <text>), (</text>
+      <apply-templates value='children[2]'/>
+      <text>))</text>
+   </template>
+
    <template match='XElement el &amp;&amp; el.Name == code + "constructor"' mode='vb:source'>
       <value-of value='vb_new_line'/>
       <call-template name='vb:line-pragma'>

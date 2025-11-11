@@ -281,6 +281,17 @@
       <apply-templates value='el.Nodes()'/>
    </template>
 
+   <template match='XElement el &amp;&amp; el.Name == code + "conditional"' mode='cs:source'>
+      <variable name='children' value='select(el, code).ToArray()'/>
+      <text>((</text>
+      <apply-templates value='children[0]'/>
+      <text>) ? (</text>
+      <apply-templates value='children[1]'/>
+      <text>) : (</text>
+      <apply-templates value='children[2]'/>
+      <text>))</text>
+   </template>
+
    <template match='XElement el &amp;&amp; el.Name == code + "constructor"' mode='cs:source'>
       <value-of value='cs_new_line'/>
       <apply-templates value='select(el, code + "attributes", code)'/>
