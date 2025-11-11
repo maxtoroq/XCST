@@ -45,6 +45,7 @@
          <ref name="new-array"/>
          <ref name="new-object"/>
          <ref name="not"/>
+         <ref name="not-equal"/>
          <ref name="null"/>
          <ref name="or-else"/>
          <ref name="property-reference"/>
@@ -791,6 +792,13 @@
 
    <define name="not">
       <element name="not">
+         <ref name="_expression"/>
+      </element>
+   </define>
+
+   <define name="not-equal">
+      <element name="not-equal">
+         <ref name="_expression"/>
          <ref name="_expression"/>
       </element>
    </define>

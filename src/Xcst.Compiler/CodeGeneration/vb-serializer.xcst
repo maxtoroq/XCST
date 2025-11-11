@@ -846,6 +846,19 @@
       <apply-templates value='el.Nodes()'/>
    </template>
 
+   <template match='XElement el &amp;&amp; el.Name == code + "not-equal"' mode='vb:source'>
+      <variable name='left' value='select(el, code).First()'/>
+      <variable name='right' value='select(el, code).ElementAt(1)'/>
+      <text>(</text>
+      <apply-templates value='left'/>
+      <choose>
+         <when test='right.Name == code + "null"'> IsNot </when>
+         <otherwise> &lt;> </otherwise>
+      </choose>
+      <apply-templates value='right'/>
+      <text>)</text>
+   </template>
+
    <template match='XElement el &amp;&amp; el.Name == code + "null"' mode='vb:source'>
       <text>Nothing</text>
    </template>

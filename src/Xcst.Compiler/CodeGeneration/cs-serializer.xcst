@@ -855,6 +855,12 @@
       <apply-templates value='el.Nodes()'/>
    </template>
 
+   <template match='XElement el &amp;&amp; el.Name == code + "not-equal"' mode='cs:source'>
+      <text>(</text>
+      <apply-templates value='select(el, code)' separator=' != '/>
+      <text>)</text>
+   </template>
+
    <template match='XElement el &amp;&amp; el.Name == code + "null"' mode='cs:source'>
       <text>null</text>
    </template>
