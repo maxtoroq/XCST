@@ -115,7 +115,9 @@
    </template>
 
    <template match='XElement el &amp;&amp; el.Name == code + "attribute"' mode='vb:source'>
-      <call-template name='new-line-indented'/>
+      <if test='el.Parent?.Parent?.Name != code + "parameter"'>
+         <call-template name='new-line-indented'/>
+      </if>
       <text>&lt;</text>
       <apply-templates value='el.Element(code + "type-reference")'/>
       <variable name='argsAndInit' value='
@@ -883,8 +885,13 @@
          <with-param name='appendLine' value='true'/>
          <with-param name='indent' value='indent + 2' tunnel='yes'/>
       </call-template>
+      <if test='select(el, code + "attributes", code).ToArray() is { Length: > 0 } attribs'>
+         <apply-templates value='attribs' separator=' '/>
+         <text> </text>
+      </if>
       <variable name='defaultValue' value='select(el, code)
-         .Skip(1)
+         .SkipWhile(p => p.Name == code + "attributes"
+            || p.Name == code + "type-reference")
          .FirstOrDefault()'/>
       <choose>
          <when test='el.Attribute("params") is { } paramsAttr

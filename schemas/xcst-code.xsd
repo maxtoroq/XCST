@@ -592,6 +592,7 @@
    <xs:element name="parameter">
       <xs:complexType>
          <xs:sequence>
+            <xs:element minOccurs="0" ref="code:attributes"/>
             <xs:element minOccurs="0" ref="code:type-reference"/>
             <xs:element minOccurs="0" ref="code:_expression"/>
          </xs:sequence>

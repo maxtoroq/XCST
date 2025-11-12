@@ -117,10 +117,12 @@
    </template>
 
    <template match='XElement el &amp;&amp; el.Name == code + "attribute"' mode='cs:source'>
-      <call-template name='cs:line-pragma'>
-         <with-param name='el' value='el'/>
-      </call-template>
-      <call-template name='new-line-indented'/>
+      <if test='el.Parent?.Parent?.Name != code + "parameter"'>
+         <call-template name='cs:line-pragma'>
+            <with-param name='el' value='el'/>
+         </call-template>
+         <call-template name='new-line-indented'/>
+      </if>
       <text>[</text>
       <apply-templates value='el.Element(code + "type-reference")'/>
       <variable name='argsAndInit' value='
@@ -885,6 +887,10 @@
          <with-param name='appendLine' value='true'/>
          <with-param name='indent' value='indent + 2' tunnel='yes'/>
       </call-template>
+      <if test='select(el, code + "attributes", code).ToArray() is { Length: > 0 } attribs'>
+         <apply-templates value='attribs' separator=' '/>
+         <text> </text>
+      </if>
       <if test='el.Element(code + "type-reference") is { } typeRef'>
          <if test='el.Attribute("ref") is { } refAttr
             &amp;&amp; xs_boolean(refAttr)'>ref </if>
@@ -897,7 +903,10 @@
          <with-param name='el' value='el'/>
       </call-template>
       <value-of value='el.Attribute("name")!.Value'/>
-      <if test='select(el, code).Skip(1).FirstOrDefault() is { } defaultValue'>
+      <if test='select(el, code)
+            .SkipWhile(p => p.Name == code + "attributes"
+               || p.Name == code + "type-reference")
+            .FirstOrDefault() is { } defaultValue'>
          <text> = </text>
          <apply-templates value='defaultValue'/>
       </if>

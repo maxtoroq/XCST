@@ -841,6 +841,9 @@
             </choice>
          </zeroOrMore>
          <optional>
+            <ref name="attributes"/>
+         </optional>
+         <optional>
             <ref name="type-reference"/>
          </optional>
          <optional>
