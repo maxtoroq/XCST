@@ -977,7 +977,11 @@
                </attribute>
             </choice>
          </zeroOrMore>
-         <text/>
+         <mixed>
+            <zeroOrMore>
+               <ref name="expression"/>
+            </zeroOrMore>
+         </mixed>
       </element>
    </define>
 

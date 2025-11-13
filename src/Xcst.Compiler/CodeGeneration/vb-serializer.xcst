@@ -984,8 +984,9 @@
    <template match='XElement el &amp;&amp; el.Name == code + "region"' mode='vb:source'>
       <value-of value='vb_new_line'/>
       <call-template name='new-line-indented'/>
-      <text>#Region </text>
-      <value-of value='vb_string(el.Attribute("name")!.Value)'/>
+      <text>#Region "</text>
+      <value-of value='el.Attribute("name")!.Value'/>
+      <text>"</text>
       <apply-templates value='el.Nodes()'/>
       <call-template name='new-line-indented'/>
       <text>#End Region</text>
@@ -1053,56 +1054,86 @@
             xs_boolean(interpolatedAttr)
             : false'/>
 
-      <variable name='text' value='el.Value'/>
+      <variable name='quotesAttr' value='el.Attribute("quotes-to-escape")'/>
+      <variable name='hasElements' value='el.HasElements'/>
+
+      <if test='hasElements'>
+         <if test='!interpolated'>
+            <message terminate='yes' transform-text='trim'>
+               code:string element with child elements must specify interpolated='true'.
+            </message>
+         </if>
+         <if test='!(quotesAttr is null)'>
+            <message terminate='yes' transform-text='trim'>
+               code:string element with interpolated='true' and child elements should not use 'quotes-to-escape' attribute.
+            </message>
+         </if>
+      </if>
+
+      <if test='!hasElements'>
+         <if test='interpolated &amp;&amp; !(literal || quotesAttr is not null)'>
+            <message terminate='yes' transform-text='trim'>
+               Either literal='true' or 'quotes-to-escape' attribute is expected when interpolated='true' and text-only content is used.
+            </message>
+         </if>
+      </if>
+
+      <variable name='text' value='(!hasElements) ? el.Value : string.Empty'/>
 
       <if test='interpolated'>$</if>
 
-      <variable name='escaped' as='string'>
-         <choose>
-            <when test='literal || text.Length == 0'>
-               <object value='text'/>
-            </when>
-            <when test='interpolated'>
+      <text>"</text>
+      <choose>
+         <when test='hasElements'>
+            <apply-templates value='el.Nodes()' mode='vb:interpolated-string'>
+               <with-param name='literal' value='literal'/>
+            </apply-templates>
+         </when>
+         <when test='literal || text.Length == 0' value='text'/>
+         <when test='interpolated'>
+            <assert test='quotesAttr is not null'/>
+            <variable name='quotes' value='
+               fn_tokenize(quotesAttr.Value)
+                  .Select(p => xs_integer(p))
+                  .ToArray()'/>
+            <variable name='parts' as='string[]'>
                <choose>
-                  <when test='el.Attribute("quotes-to-escape") is { } quotesAttr'>
-                     <variable name='quotes' value='
-                        fn_tokenize(quotesAttr.Value)
-                           .Select(p => xs_integer(p))
-                           .ToArray()'/>
-                     <variable name='parts' as='string[]'>
-                        <choose>
-                           <when test='fn_empty(quotes)'>
-                              <object value='text'/>
-                           </when>
-                           <otherwise>
-                              <variable name='i' value='-1'/>
-                              <for-each name='q' in='quotes'>
-                                 <void value='i++'/>
-                                 <variable name='start' value='
-                                    (i == 0) ? 0 : quotes[i - 1] + 1'/>
-                                 <variable name='length' value='q - start + 1'/>
-                                 <object value='text.Substring(start, length)'/>
-                              </for-each>
-                              <object value='
-                                 (quotes[quotes.Length - 1] == text.Length) ? ""
-                                    : text.Substring(quotes[quotes.Length - 1] + 1)'/>
-                           </otherwise>
-                        </choose>
-                     </variable>
-                     <object value='string.Join("\"", parts)'/>
-                  </when>
+                  <when test='fn_empty(quotes)' value='text'/>
                   <otherwise>
-                     <message terminate='yes'/>
+                     <variable name='i' value='-1'/>
+                     <for-each name='q' in='quotes'>
+                        <void value='i++'/>
+                        <variable name='start' value='
+                           (i == 0) ? 0 : quotes[i - 1] + 1'/>
+                        <variable name='length' value='q - start + 1'/>
+                        <object value='text.Substring(start, length)'/>
+                     </for-each>
+                     <object value='
+                        (quotes[quotes.Length - 1] == text.Length) ? ""
+                           : text.Substring(quotes[quotes.Length - 1] + 1)'/>
                   </otherwise>
                </choose>
-            </when>
-            <otherwise>
-               <object value='text.Replace("\"", "\"\"")'/>
-            </otherwise>
-         </choose>
-      </variable>
+            </variable>
+            <value-of value='string.Join("\"", parts)'/>
+         </when>
+         <otherwise value='text.Replace("\"", "\"\"")'/>
+      </choose>
+      <text>"</text>
+   </template>
 
-      <value-of value='vb_string(escaped)'/>
+   <template match='XText tx' mode='vb:interpolated-string'>
+      <param name='literal' as='bool' required='yes'/>
+
+      <choose>
+         <when test='literal' value='tx.Value'/>
+         <otherwise value='tx.Value.Replace("\"", "\"\"")'/>
+      </choose>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == code + "expression"' mode='vb:interpolated-string'>
+      <text>{(</text>
+      <apply-templates value='el' mode='vb:source'/>
+      <text>)}</text>
    </template>
 
    <template match='XElement el &amp;&amp; el.Name == code + "switch"' mode='vb:statement'>
@@ -1416,12 +1447,6 @@
 
    <!-- ## Expressions -->
 
-   <function name='vb_string' as='string'>
-      <param name='str' as='string'/>
-
-      <return value='"\"" + str + "\""'/>
-   </function>
-
    <template name='vb:visibility'>
       <param name='el' as='XElement' required='yes'/>
 
@@ -1492,9 +1517,9 @@
 
       <if test='vb_use_external_source(el)'>
          <call-template name='new-line-indented'/>
-         <text>#ExternalSource(</text>
-         <value-of value='vb_string(new System.Uri(el.Attribute("line-uri")!.Value).LocalPath)'/>
-         <text>, </text>
+         <text>#ExternalSource("</text>
+         <value-of value='new System.Uri(el.Attribute("line-uri")!.Value).LocalPath'/>
+         <text>", </text>
          <value-of value='el.Attribute("line-number")!.Value'/>
          <text>)</text>
          <if test='appendLine'>

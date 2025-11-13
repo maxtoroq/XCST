@@ -660,6 +660,9 @@
    </xs:element>
    <xs:element name="string" substitutionGroup="code:_literal">
       <xs:complexType mixed="true">
+         <xs:sequence>
+            <xs:element minOccurs="0" maxOccurs="unbounded" ref="code:expression"/>
+         </xs:sequence>
          <xs:attribute name="interpolated" type="code:_boolean"/>
          <xs:attribute name="literal" type="code:_boolean"/>
          <xs:attribute name="verbatim" type="code:_boolean"/>
