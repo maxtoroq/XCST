@@ -254,8 +254,7 @@
       <apply-templates value='el.Nodes()'/>
    </template>
 
-   <template match='XElement el
-         &amp;&amp; el.Name == code + "chain"
+   <template match='XElement el &amp;&amp; el.Name == code + "chain"
          &amp;&amp; select(el, code).ToArray() is { Length: > 1 } children' mode='vb:statement'>
       <param name='indent' as='int' tunnel='yes'/>
 
@@ -1306,8 +1305,7 @@
       </choose>
    </template>
 
-   <template match='XElement el
-         &amp;&amp; el.Name == code + "type-reference"
+   <template match='XElement el &amp;&amp; el.Name == code + "type-reference"
          &amp;&amp; el.Attribute("namespace")?.Value == "System"' mode='vb:source'>
 
       <variable name='primitive' value='

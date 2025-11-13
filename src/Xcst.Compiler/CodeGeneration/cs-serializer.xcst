@@ -245,8 +245,7 @@
       <apply-templates value='el.Nodes()'/>
    </template>
 
-   <template match='XElement el
-         &amp;&amp; el.Name == code + "chain"
+   <template match='XElement el &amp;&amp; el.Name == code + "chain"
          &amp;&amp; select(el, code).ToArray() is { Length: > 1 } children' mode='cs:statement'>
       <param name='indent' as='int' tunnel='yes'/>
 
@@ -793,8 +792,7 @@
       <apply-templates value='el.Element(code + "collection-initializer")'/>
    </template>
 
-   <template match='XElement el
-         &amp;&amp; el.Name == code + "new-object"
+   <template match='XElement el &amp;&amp; el.Name == code + "new-object"
          &amp;&amp; el.Element(code + "type-reference") is { } typeRef' mode='cs:source'>
 
       <variable name='args' value='select(el, code + "arguments", code).ToArray()'/>
@@ -823,8 +821,7 @@
       </choose>
    </template>
 
-   <template match='XElement el
-         &amp;&amp; el.Name == code + "new-object"
+   <template match='XElement el &amp;&amp; el.Name == code + "new-object"
          &amp;&amp; el.Element(code + "type-reference") is null' mode='cs:source'>
 
       <variable name='args' value='select(el, code + "arguments", code).ToArray()'/>
@@ -1311,8 +1308,7 @@
       </call-template>
    </template>
 
-   <template match='XElement el
-         &amp;&amp; el.Name == code + "type-reference"
+   <template match='XElement el &amp;&amp; el.Name == code + "type-reference"
          &amp;&amp; el.Attribute("namespace")?.Value == "System"' mode='cs:source'>
 
       <variable name='primitive' value='
