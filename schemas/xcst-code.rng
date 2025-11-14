@@ -972,6 +972,9 @@
                <attribute name="literal">
                   <ref name="_boolean"/>
                </attribute>
+               <attribute name="raw">
+                  <ref name="_boolean"/>
+               </attribute>
                <attribute name="verbatim">
                   <ref name="_boolean"/>
                </attribute>

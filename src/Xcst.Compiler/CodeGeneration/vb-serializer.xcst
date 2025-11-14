@@ -1053,26 +1053,12 @@
             xs_boolean(interpolatedAttr)
             : false'/>
 
-      <variable name='quotesAttr' value='el.Attribute("quotes-to-escape")'/>
       <variable name='hasElements' value='el.HasElements'/>
 
       <if test='hasElements'>
          <if test='!interpolated'>
             <message terminate='yes' transform-text='trim'>
                code:string element with child elements must specify interpolated='true'.
-            </message>
-         </if>
-         <if test='!(quotesAttr is null)'>
-            <message terminate='yes' transform-text='trim'>
-               code:string element with interpolated='true' and child elements should not use 'quotes-to-escape' attribute.
-            </message>
-         </if>
-      </if>
-
-      <if test='!hasElements'>
-         <if test='interpolated &amp;&amp; !(literal || quotesAttr is not null)'>
-            <message terminate='yes' transform-text='trim'>
-               Either literal='true' or 'quotes-to-escape' attribute is expected when interpolated='true' and text-only content is used.
             </message>
          </if>
       </if>
@@ -1090,11 +1076,12 @@
          </when>
          <when test='literal || text.Length == 0' value='text'/>
          <when test='interpolated'>
-            <assert test='quotesAttr is not null'/>
-            <variable name='quotes' value='
+            <variable name='quotes' value='(el.Attribute("quotes-to-escape") is { } quotesAttr) ?
                fn_tokenize(quotesAttr.Value)
                   .Select(p => xs_integer(p))
-                  .ToArray()'/>
+                  .ToArray()
+               : (ParseValueTemplate(text, out var arr)) ? arr
+               : System.Array.Empty&lt;int>()'/>
             <variable name='parts' as='string[]'>
                <choose>
                   <when test='fn_empty(quotes)' value='text'/>
@@ -1427,7 +1414,7 @@
 
       <variable name='quotes' as='int[]'/>
 
-      <if test='!ParseValueTemplate(text, contextNode, out quotes)'>
+      <if test='!ParseValueTemplate(text, out quotes)'>
          <message terminate='yes' error-code='XTSE0350' error-data='ErrorData(contextNode)' transform-text='trim'>
             Value template brace mismatch.
          </message>

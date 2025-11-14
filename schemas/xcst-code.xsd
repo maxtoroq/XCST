@@ -665,6 +665,7 @@
          </xs:sequence>
          <xs:attribute name="interpolated" type="code:_boolean"/>
          <xs:attribute name="literal" type="code:_boolean"/>
+         <xs:attribute name="raw" type="code:_boolean"/>
          <xs:attribute name="verbatim" type="code:_boolean"/>
       </xs:complexType>
    </xs:element>

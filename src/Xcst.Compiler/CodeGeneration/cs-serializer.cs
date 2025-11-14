@@ -64,7 +64,7 @@ partial class CSharpSerializer {
    }
 
    static bool
-   ParseValueTemplate(string text, XObject contextNode, out int[] quotesToEscape) {
+   ParseValueTemplate(string text, out int[] quotesToEscape) {
 
       var quotes = new List<int>();
       var modes = new Stack<ParsingMode>();
