@@ -510,7 +510,7 @@
    </xs:element>
    <xs:group name="_method-reference-model">
       <xs:sequence>
-         <xs:element ref="code:_member-binding"/>
+         <xs:element minOccurs="0" ref="code:_member-binding"/>
          <xs:element minOccurs="0" ref="code:type-arguments"/>
       </xs:sequence>
    </xs:group>

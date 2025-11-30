@@ -736,7 +736,9 @@
             <ref name="_boolean"/>
          </attribute>
       </optional>
-      <ref name="_member-binding"/>
+      <optional>
+         <ref name="_member-binding"/>
+      </optional>
       <optional>
          <ref name="type-arguments"/>
       </optional>

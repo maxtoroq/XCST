@@ -748,15 +748,19 @@
    <template name='cs:method-reference'>
       <param name='el' as='XElement' required='yes'/>
 
-      <apply-templates value='select(el, code).First()'/>
-      <text>.</text>
+      <if test='select(el, code).FirstOrDefault() is { } first
+            &amp;&amp; first.Name.Namespace == code
+            &amp;&amp; first.Name.LocalName is not ("type-arguments" or "arguments")'>
+         <apply-templates value='first'/>
+         <text>.</text>
+      </if>
       <call-template name='cs:verbatim'>
          <with-param name='el' value='el'/>
       </call-template>
       <value-of value='el.Attribute("name")!.Value'/>
-      <if test='el.Element(code + "type-arguments") is { } typeArgs'>
+      <if test='select(el, code + "type-arguments", code).ToArray() is { Length: > 0 } typeArgs'>
          <text>&lt;</text>
-         <apply-templates value='select(typeArgs, code)' separator=', '/>
+         <apply-templates value='typeArgs' separator=', '/>
          <text>></text>
       </if>
    </template>

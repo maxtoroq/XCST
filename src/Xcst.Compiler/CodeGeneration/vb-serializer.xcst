@@ -774,8 +774,12 @@
 
       <if test='el.Name == code + "method-reference"
          &amp;&amp; el.Parent?.Name != code + "method-call"'>AddressOf </if>
-      <apply-templates value='select(el, code).First()'/>
-      <text>.</text>
+      <if test='select(el, code).FirstOrDefault() is { } first
+            &amp;&amp; first.Name.Namespace == code
+            &amp;&amp; first.Name.LocalName is not ("type-arguments" or "arguments")'>
+         <apply-templates value='first'/>
+         <text>.</text>
+      </if>
       <value-of value='el.Attribute("name")!.Value'/>
       <if test='select(el, code + "type-arguments", code).ToArray() is { Length: > 0 } typeArgs'>
          <text>(Of </text>
