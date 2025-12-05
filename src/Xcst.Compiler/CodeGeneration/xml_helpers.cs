@@ -191,7 +191,7 @@ partial class XcstCompilerPackage {
       for (int i = 0; i < names.Length; i++) {
 
          selected = names[i] switch {
-            XName name => selected.SelectMany(p => p.Elements(name)),
+            XName name => selected.Elements(name),
             XNamespace ns => selected.SelectMany(p => p.Elements().Where(p2 => p2.Name.Namespace == ns)),
             _ => throw new ArgumentOutOfRangeException(),
          };
