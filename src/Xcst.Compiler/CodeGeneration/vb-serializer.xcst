@@ -306,13 +306,13 @@
       <call-template name='vb:line-pragma'>
          <with-param name='el' value='el'/>
       </call-template>
-      <apply-templates value='select(el, code + "attributes", code)'/>
+      <apply-templates value='select(el, code + "attributes", code + "attribute")'/>
       <call-template name='new-line-indented'/>
       <call-template name='vb:visibility'>
          <with-param name='el' value='el'/>
       </call-template>
       <text>Sub New(</text>
-      <apply-templates value='el.Element(code + "parameters")'/>
+      <apply-templates value='select(el, code + "parameters", code + "parameter")' separator=', '/>
       <text>)</text>
       <apply-templates value='el.Element(code + "block")'/>
       <call-template name='new-line-indented'/>
@@ -340,10 +340,10 @@
       <call-template name='vb:line-pragma'>
          <with-param name='el' value='el'/>
       </call-template>
-      <apply-templates value='select(el, code + "attributes", code)'/>
+      <apply-templates value='select(el, code + "attributes", code + "attribute")'/>
       <call-template name='new-line-indented'/>
       <text>Public Shared Widening Operator CType(</text>
-      <apply-templates value='el.Element(code + "parameters")'/>
+      <apply-templates value='select(el, code + "parameters", code + "parameter")' separator=', '/>
       <text>) As </text>
       <apply-templates value='el.Element(code + "type-reference")'/>
       <call-template name='new-line-indented'/>
@@ -437,7 +437,7 @@
       <call-template name='vb:line-pragma'>
          <with-param name='el' value='el'/>
       </call-template>
-      <apply-templates value='select(el, code + "attributes", code)'/>
+      <apply-templates value='select(el, code + "attributes", code + "attribute")'/>
       <call-template name='new-line-indented'/>
       <variable name='visibility' value='el.Attribute("visibility")?.Value'/>
       <choose>
@@ -631,7 +631,7 @@
          <otherwise>Function</otherwise>
       </choose>
       <text>(</text>
-      <apply-templates value='el.Element(code + "parameters")'/>
+      <apply-templates value='select(el, code + "parameters", code + "parameter")' separator=', '/>
       <text>)</text>
       <choose>
          <when test='el.Element(code + "block") is { } blockEl'>
@@ -684,7 +684,16 @@
       <call-template name='vb:line-pragma'>
          <with-param name='el' value='el'/>
       </call-template>
-      <apply-templates value='select(el, code + "attributes", code)'/>
+      <if test='el.Attribute("extension") is { } extAttr
+            &amp;&amp; xs_boolean(extAttr)'>
+         <variable name='extAttrEl'>
+            <code:attribute>
+               <code:type-reference name='Extension' namespace='System.Runtime.CompilerServices'/>
+            </code:attribute>
+         </variable>
+         <apply-templates value='extAttrEl'/>
+      </if>
+      <apply-templates value='select(el, code + "attributes", code + "attribute")'/>
       <call-template name='new-line-indented'/>
       <if test='el.Attribute("partial") is { } partialAttr
             &amp;&amp; xs_boolean(partialAttr)'>
@@ -711,7 +720,7 @@
          <text>)</text>
       </if>
       <text>(</text>
-      <apply-templates value='el.Element(code + "parameters")'/>
+      <apply-templates value='select(el, code + "parameters", code + "parameter")' separator=', '/>
       <text>)</text>
       <if test='typeRef != null'>
          <text> As </text>
@@ -888,7 +897,7 @@
          <with-param name='appendLine' value='true'/>
          <with-param name='indent' value='indent + 2' tunnel='yes'/>
       </call-template>
-      <if test='select(el, code + "attributes", code).ToArray() is { Length: > 0 } attribs'>
+      <if test='select(el, code + "attributes", code + "attribute").ToArray() is { Length: > 0 } attribs'>
          <apply-templates value='attribs' separator=' '/>
          <text> </text>
       </if>
@@ -919,10 +928,6 @@
       </call-template>
    </template>
 
-   <template match='XElement el &amp;&amp; el.Name == code + "parameters"' mode='vb:source'>
-      <apply-templates value='select(el, code)' separator=', '/>
-   </template>
-
    <template match='XElement el &amp;&amp; el.Name == code + "property"' mode='vb:source'>
       <param name='indent' as='int' tunnel='yes'/>
 
@@ -930,7 +935,7 @@
       <call-template name='vb:line-pragma'>
          <with-param name='el' value='el'/>
       </call-template>
-      <apply-templates value='select(el, code + "attributes", code)'/>
+      <apply-templates value='select(el, code + "attributes", code + "attribute")'/>
       <call-template name='new-line-indented'/>
       <call-template name='vb:visibility'>
          <with-param name='el' value='el'/>
@@ -1197,7 +1202,7 @@
       <call-template name='vb:line-pragma'>
          <with-param name='el' value='el'/>
       </call-template>
-      <apply-templates value='select(el, code + "attributes", code)'/>
+      <apply-templates value='select(el, code + "attributes", code + "attribute")'/>
       <call-template name='new-line-indented'/>
       <call-template name='vb:visibility'>
          <with-param name='el' value='el'/>

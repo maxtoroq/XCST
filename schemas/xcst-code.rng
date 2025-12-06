@@ -683,6 +683,9 @@
                <attribute name="extensibility">
                   <ref name="_extensibility"/>
                </attribute>
+               <attribute name="extension">
+                  <ref name="_boolean"/>
+               </attribute>
                <attribute name="return-type-verbatim">
                   <ref name="_boolean"/>
                </attribute>

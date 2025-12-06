@@ -295,7 +295,7 @@
 
    <template match='XElement el &amp;&amp; el.Name == code + "constructor"' mode='cs:source'>
       <value-of value='cs_new_line'/>
-      <apply-templates value='select(el, code + "attributes", code)'/>
+      <apply-templates value='select(el, code + "attributes", code + "attribute")'/>
       <call-template name='cs:line-pragma'>
          <with-param name='el' value='el'/>
       </call-template>
@@ -311,7 +311,7 @@
       </call-template>
       <value-of value='type.Attribute("name")!.Value'/>
       <text>(</text>
-      <apply-templates value='select(el, code + "parameters")'/>
+      <apply-templates value='select(el, code + "parameters", code + "parameter")' separator=', '/>
       <text>)</text>
       <apply-templates value='select(el, code + "block")'/>
    </template>
@@ -324,7 +324,7 @@
 
    <template match='XElement el &amp;&amp; el.Name == code + "conversion"' mode='cs:source'>
       <value-of value='cs_new_line'/>
-      <apply-templates value='select(el, code + "attributes", code)'/>
+      <apply-templates value='select(el, code + "attributes", code + "attribute")'/>
       <call-template name='cs:line-pragma'>
          <with-param name='el' value='el'/>
       </call-template>
@@ -338,7 +338,7 @@
       <text> operator </text>
       <apply-templates value='el.Element(code + "type-reference")'/>
       <text>(</text>
-      <apply-templates value='el.Element(code + "parameters")'/>
+      <apply-templates value='select(el, code + "parameters", code + "parameter")' separator=', '/>
       <text>)</text>
       <apply-templates value='el.Element(code + "block")'/>
    </template>
@@ -415,7 +415,7 @@
             .FirstOrDefault()?.Name == code + "field")'>
          <value-of value='cs_new_line'/>
       </if>
-      <apply-templates value='select(el, code + "attributes", code)'/>
+      <apply-templates value='select(el, code + "attributes", code + "attribute")'/>
       <call-template name='cs:line-pragma'>
          <with-param name='el' value='el'/>
       </call-template>
@@ -613,15 +613,9 @@
    </template>
 
    <template match='XElement el &amp;&amp; el.Name == code + "lambda"' mode='cs:source'>
-      <variable name='parametersEl' value='el.Element(code + "parameters")'/>
-      <variable name='paramCount' value='
-         (parametersEl != null) ?
-            select(parametersEl, code).Count()
-            : 0'/>
-      <if test='paramCount != 1'>(</if>
-      <apply-templates value='parametersEl'/>
-      <if test='paramCount != 1'>)</if>
-      <text> => </text>
+      <text>(</text>
+      <apply-templates value='select(el, code + "parameters", code + "parameter")' separator=', '/>
+      <text>) => </text>
       <apply-templates value='select(el, code).Last()'/>
    </template>
 
@@ -653,11 +647,13 @@
 
    <template match='XElement el &amp;&amp; el.Name == code + "method"' mode='cs:source'>
       <value-of value='cs_new_line'/>
-      <apply-templates value='select(el, code + "attributes", code)'/>
+      <apply-templates value='select(el, code + "attributes", code + "attribute")'/>
       <call-template name='cs:line-pragma'>
          <with-param name='el' value='el'/>
       </call-template>
       <variable name='implementsInterface' value='el.Element(code + "implements-interface")'/>
+      <variable name='isExtension' value='el.Attribute("extension") is { } extAttr
+         &amp;&amp; xs_boolean(extAttr)'/>
       <call-template name='new-line-indented'/>
       <if test='el.Attribute("visibility") is { } visibilityAttr
             &amp;&amp; visibilityAttr.Value != "#default"
@@ -702,7 +698,9 @@
          <text>></text>
       </if>
       <text>(</text>
-      <apply-templates value='select(el, code + "parameters")'/>
+      <apply-templates value='select(el, code + "parameters", code + "parameter")' separator=', '>
+         <with-param name='isExtensionMethod' value='isExtension'/>
+      </apply-templates>
       <text>)</text>
       <choose>
          <when test='el.Element(code + "block") is { } block'>
@@ -881,6 +879,7 @@
    </template>
 
    <template match='XElement el &amp;&amp; el.Name == code + "parameter"' mode='cs:source'>
+      <param name='isExtensionMethod' as='bool'/>
       <param name='indent' as='int' tunnel='yes'/>
 
       <call-template name='cs:line-pragma'>
@@ -888,15 +887,17 @@
          <with-param name='appendLine' value='true'/>
          <with-param name='indent' value='indent + 2' tunnel='yes'/>
       </call-template>
-      <if test='select(el, code + "attributes", code).ToArray() is { Length: > 0 } attribs'>
+      <if test='select(el, code + "attributes", code + "attribute").ToArray() is { Length: > 0 } attribs'>
          <apply-templates value='attribs' separator=' '/>
          <text> </text>
       </if>
+      <if test='isExtensionMethod
+         &amp;&amp; !el.ElementsBeforeSelf(code + "parameter").Any()'>this </if>
+      <if test='el.Attribute("ref") is { } refAttr
+         &amp;&amp; xs_boolean(refAttr)'>ref </if>
+      <if test='el.Attribute("params") is { } paramsAttr
+         &amp;&amp; xs_boolean(paramsAttr)'>params </if>
       <if test='el.Element(code + "type-reference") is { } typeRef'>
-         <if test='el.Attribute("ref") is { } refAttr
-            &amp;&amp; xs_boolean(refAttr)'>ref </if>
-         <if test='el.Attribute("params") is { } paramsAttr
-            &amp;&amp; xs_boolean(paramsAttr)'>params </if>
          <apply-templates value='typeRef'/>
          <text> </text>
       </if>
@@ -913,10 +914,6 @@
       </if>
    </template>
 
-   <template match='XElement el &amp;&amp; el.Name == code + "parameters"' mode='cs:source'>
-      <apply-templates value='select(el, code)' separator=', '/>
-   </template>
-
    <template match='XElement el &amp;&amp; el.Name == code + "property"' mode='cs:source'>
       <param name='indent' as='int' tunnel='yes'/>
 
@@ -928,7 +925,7 @@
       <variable name='implementsInterface' value='el.Element(code + "implements-interface")'/>
 
       <value-of value='cs_new_line'/>
-      <apply-templates value='select(el, code + "attributes", code)'/>
+      <apply-templates value='select(el, code + "attributes", code + "attribute")'/>
       <call-template name='cs:line-pragma'>
          <with-param name='el' value='el'/>
       </call-template>
@@ -1208,7 +1205,7 @@
       <param name='indent' as='int' tunnel='yes'/>
 
       <value-of value='cs_new_line'/>
-      <apply-templates value='select(el, code + "attributes", code)'/>
+      <apply-templates value='select(el, code + "attributes", code + "attribute")'/>
       <call-template name='cs:line-pragma'>
          <with-param name='el' value='el'/>
       </call-template>
