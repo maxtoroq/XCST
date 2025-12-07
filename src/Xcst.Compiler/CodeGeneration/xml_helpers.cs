@@ -269,15 +269,7 @@ partial class XcstCompilerPackage {
       return null;
    }
 
-   public static bool
-   xs_boolean(XObject node) =>
-      XmlConvert.ToBoolean(fn_string(node));
-
    public static int
    xs_integer(string str) =>
       XmlConvert.ToInt32(str);
-
-   public static int
-   xs_integer(XObject node) =>
-      xs_integer(fn_string(node));
 }

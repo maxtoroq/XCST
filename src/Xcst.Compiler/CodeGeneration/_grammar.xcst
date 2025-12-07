@@ -336,7 +336,7 @@
 
       <xcst:sequence-constructor>
          <variable name='voids' value='instructions
-            .Where(p => p.Attribute("void") is { } voidAttr &amp;&amp; xs_boolean(voidAttr))
+            .Where(p => (bool?)p.Attribute("void") == true)
             .ToArray()'/>
          <variable name='nonVoid' value='instructions
             .Except(voids)
@@ -362,8 +362,7 @@
             : (itemType is null &amp;&amp; instructions.Length == 1) ? null
             : TypeCardinality.ZeroOrMore' as='TypeCardinality?'/>
          <if test='instructions.Length == 1
-               &amp;&amp; instructions[0].Attribute("expression") is { } exprAttr
-               &amp;&amp; xs_boolean(exprAttr)'>
+               &amp;&amp; (bool?)instructions[0].Attribute("expression") == true'>
             <attribute name='expression'>true</attribute>
          </if>
          <if test='cardinality != null'>

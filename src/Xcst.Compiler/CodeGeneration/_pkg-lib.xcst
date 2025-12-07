@@ -28,8 +28,7 @@
    <mode name='src:lib-tuple' on-no-match='deep-skip'/>
 
    <template match='XElement el &amp;&amp; el.Name == xcst + "package-manifest"
-         &amp;&amp; el.Attribute("qualified-types") is { } qtAttr
-         &amp;&amp; xs_boolean(qtAttr)' mode='src:namespace'>
+         &amp;&amp; (bool?)el.Attribute("qualified-types") == true' mode='src:namespace'>
       <param name='packageManifest' as='XElement' tunnel='yes' required='yes'/>
 
       <code:namespace name='{packageManifest.Element(code + "type-reference")!.Attribute("namespace")!.Value}' global='true'>
@@ -56,8 +55,7 @@
    </template>
 
    <template match='XElement el &amp;&amp; el.Name == xcst + "package-manifest"
-         &amp;&amp; (el.Attribute("qualified-types") is null
-            || !xs_boolean(el.Attribute("qualified-types")!))' mode='src:namespace'>
+         &amp;&amp; !((bool?)el.Attribute("qualified-types")).GetValueOrDefault()' mode='src:namespace'>
       <param name='packageManifest' as='XElement' tunnel='yes' required='yes'/>
 
       <variable name='acceptedPublic' value='select(packageManifest, xcst)
@@ -130,7 +128,7 @@
          xcst_language_equal(language, xcst_csharp_lang)
             &amp;&amp; cs_nullable_annotate'/>
 
-      <variable name='qualifiedTypes' value='xs_boolean(el.Attribute("qualified-types")!)'/>
+      <variable name='qualifiedTypes' value='(bool)el.Attribute("qualified-types")!'/>
 
       <code:type name='{src_lib_class_name(el)}' visibility='private' partial='{fn_string(!qualifiedTypes)}'>
          <code:base-types>

@@ -92,7 +92,7 @@
                      || !xcst_boolean(p.Attribute("tunnel")!)!.Value))
                .FirstOrDefault()'/>
             <if test='!(param != null
-                  &amp;&amp; xs_boolean(paramOriginal.Attribute("required")!)
+                  &amp;&amp; (bool)paramOriginal.Attribute("required")!
                       == ((param.Attribute("required") is { } reqAttr) ?
                         xcst_boolean(reqAttr)! : false))'>
                <message terminate='yes' error-code='XTSE3070' error-data='src_error_object(param ?? el)' transform-text='trim'>
@@ -718,7 +718,7 @@
             <variable name='paramsType' value='src_params_type_name(meta)'/>
             <variable name='nonTunnelParams' value='meta
                .Elements(xcst + "param")
-               .Where(p => !xs_boolean(p.Attribute("tunnel")!))
+               .Where(p => !(bool)p.Attribute("tunnel")!)
                .ToArray()'/>
 
             <code:type name='{paramsType}' struct='true' line-hidden='true'
@@ -744,7 +744,7 @@
                      <code:property name='{name}' visibility='public' verbatim='true'>
                         <copy-of value='typeRef'/>
                         <code:attributes>
-                           <if test='xs_boolean(param.Attribute("required")!)'>
+                           <if test='(bool)param.Attribute("required")!'>
                               <code:attribute>
                                  <copy-of value='src_package_model_type("Required")'/>
                               </code:attribute>
@@ -852,7 +852,7 @@
                                  <code:initializer>
                                     <for-each name='param' in='originalMeta
                                           .Elements(xcst + "param")
-                                          .Where(p => !xs_boolean(p.Attribute("tunnel")!))'>
+                                          .Where(p => !(bool)p.Attribute("tunnel")!)'>
                                        <variable name='name' value='param.Attribute("name")!.Value'/>
                                        <code:member-initializer name='{name}' verbatim='true'>
                                           <code:property-reference name='{name}' verbatim='true'>
@@ -960,8 +960,7 @@
       <variable name='visibility' value='meta.Attribute("visibility")!.Value'/>
       <variable name='declaredVisibility' value='meta.Attribute("declared-visibility")!.Value'/>
       <variable name='publicMember' value='visibility is "public" or "final" or "abstract"'/>
-      <variable name='partial' value='meta.Attribute("partial") is { } partialAttr
-         &amp;&amp; xs_boolean(partialAttr)'/>
+      <variable name='partial' value='(bool?)meta.Attribute("partial") == true'/>
 
       <if test='!(visibility == "hidden"
             &amp;&amp; (declaredVisibility == "abstract" || partial))'>
@@ -977,8 +976,7 @@
             <if test='partial'>
                <attribute name='partial'>true</attribute>
             </if>
-            <if test='meta.Attribute("member-name-was-escaped") is { } escAttr
-                  &amp;&amp; xs_boolean(escAttr)'>
+            <if test='(bool?)meta.Attribute("member-name-was-escaped") == true'>
                <attribute name='verbatim'>true</attribute>
             </if>
             <call-template name='src:line-number'>
@@ -1038,7 +1036,7 @@
                               </if>
                               <if test='hiddenMeta != null
                                     &amp;&amp; !(hiddenMeta.Attribute("declared-visibility")!.Value == "abstract"
-                                       || (hiddenMeta.Attribute("partial") is { } hidPartialAttr &amp;&amp; xs_boolean(hidPartialAttr)))'>
+                                       || (bool?)hiddenMeta.Attribute("partial") == true)'>
                                  <code:member-initializer name='next_function'>
                                     <code:method-call name='{src_hidden_function_delegate_method_name(hiddenMeta)}'>
                                        <code:this-reference/>
@@ -1104,8 +1102,7 @@
 
       <return value='meta.Name == xcst + "template"
          &amp;&amp; meta.Elements(xcst + "param")
-            .Any(p => p.Attribute("tunnel") is null
-               || !xs_boolean(p.Attribute("tunnel")!))'/>
+            .Any(p => !((bool?)p.Attribute("tunnel")).GetValueOrDefault())'/>
    </function>
 
    <function name='src_params_type' as='XElement'>
@@ -1479,7 +1476,7 @@
       <variable name='itemType' value='select(meta, xcst + "item-type", code + "type-reference")
          .FirstOrDefault()'/>
       <variable name='qualifiedTypes' value='attributes(new[] { meta, meta.Parent! }, "qualified-types")
-         .Select(p => xs_boolean(p))
+         .Select(p => (bool)p)
          .First()'/>
 
       <xcst:instruction expression='true'>
@@ -1699,7 +1696,7 @@
             <variable name='paramName' value='xcst_name(withParam.Attribute("name")!)'/>
             <if test='!(meta.Elements(xcst + "param")
                   .Any(p => p.Attribute("name")!.Value  == paramName
-                     &amp;&amp; !xs_boolean(p.Attribute("tunnel")!)))'>
+                     &amp;&amp; !(bool)p.Attribute("tunnel")!))'>
                <message terminate='yes' error-code='XTSE0680' error-data='src_error_object(withParam)' expand-text='yes' transform-text='trim'>
                   Parameter '{paramName}' is not declared in the called template.
                </message>
@@ -1710,8 +1707,8 @@
       <if test='meta != null'>
          <for-each name='param' in='meta
                .Elements(xcst + "param")
-               .Where(p => xs_boolean(p.Attribute("required")!)
-                  &amp;&amp; !xs_boolean(p.Attribute("tunnel")!))'>
+               .Where(p => (bool)p.Attribute("required")!
+                  &amp;&amp; !(bool)p.Attribute("tunnel")!)'>
             <variable name='paramName' value='param.Attribute("name")!.Value'/>
             <if test='!(el.Elements(c + "with-param")
                   .Any(p => (p.Attribute("tunnel") is null || !xcst_boolean(p.Attribute("tunnel")!)!.Value)
@@ -1865,8 +1862,7 @@
 
       <variable name='outputItemTypeIsObject' value='
          !src_output_is_obj(output)
-            || (output.Attribute("item-type-is-object") is { } attr
-               &amp;&amp; xs_boolean(attr))'/>
+            || (bool?)output.Attribute("item-type-is-object") == true'/>
 
       <choose>
          <when test='meta.Element(xcst + "item-type") != null

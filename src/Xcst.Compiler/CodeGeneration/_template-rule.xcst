@@ -888,10 +888,10 @@
             <variable name='modes' value='packageManifest
                .Elements(xcst + "mode")
                .Where(p => p.Attribute("visibility")!.Value != "hidden")
-               .Where(p => allModes || xs_boolean(p.Attribute("initial")!))
+               .Where(p => allModes || (bool)p.Attribute("initial")!)
                .ToArray()'/>
             <variable name='@default' value='modes
-               .FirstOrDefault(p => xs_boolean(p.Attribute("default")!))'/>
+               .FirstOrDefault(p => (bool)p.Attribute("default")!)'/>
             <variable name='unknownStatement'>
                <choose>
                   <when test='allModes'>

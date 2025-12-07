@@ -400,8 +400,7 @@
                </call-template>
             </variable>
             <choose>
-               <when test='seqctorMeta.Attribute("expression") is { } exprAttr
-                     &amp;&amp; xs_boolean(exprAttr)
+               <when test='(bool?)seqctorMeta.Attribute("expression") == true
                      &amp;&amp; @as is null'>
                   <apply-templates value='xcst_sequence_constructor_nodes(children)' mode='src:expression'/>
                </when>

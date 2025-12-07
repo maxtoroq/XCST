@@ -235,7 +235,7 @@
                      &amp;&amp; declarationId.Value == fn_generate_id(p))
                where (meta.Attribute("visibility")!.Value != "hidden"
                   || (meta.Attribute("overrides") != null
-                     &amp;&amp; xs_boolean(meta.Attribute("overriding")!)))
+                     &amp;&amp; (bool)meta.Attribute("overriding")!))
                select p)
                .ToArray()'/>
 

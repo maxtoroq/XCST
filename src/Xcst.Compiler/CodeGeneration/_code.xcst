@@ -44,7 +44,7 @@
       <choose>
          <when test='type.Attribute("nullable") is { } nullableAttr'>
             <choose>
-               <when test='xs_boolean(nullableAttr)'>
+               <when test='(bool)nullableAttr'>
                   <return>
                      <code:type-reference nullable='false'>
                         <copy-of value='attributes(type)
@@ -82,7 +82,7 @@
 
       <choose>
          <when test='type.Attribute("nullable") is { } nullableAttr'>
-            <return value='xs_boolean(nullableAttr)'/>
+            <return value='(bool)nullableAttr'/>
          </when>
          <when test='type.Attribute("name") is { } nameAttr'>
             <variable name='nonNullable' value='xcst_non_nullable_type(nameAttr.Value, language)'/>

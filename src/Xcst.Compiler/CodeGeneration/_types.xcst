@@ -145,8 +145,7 @@
                visibility='{(publicMember ? "public" : "private")}'
                extensibility='{(visibility == "final" ? "sealed" : "#default")}'
                partial='true'>
-            <if test='meta.Attribute("member-name-was-escaped") is { } escAttr
-                  &amp;&amp; xs_boolean(escAttr)'>
+            <if test='(bool?)meta.Attribute("member-name-was-escaped") == true'>
                <attribute name='verbatim'>true</attribute>
             </if>
             <call-template name='src:line-number'>

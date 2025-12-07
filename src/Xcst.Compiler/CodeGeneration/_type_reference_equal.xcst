@@ -42,12 +42,12 @@
 
             <choose>
                <when test='arrayDims.Length == 2'>
-                  <return value='xs_integer(arrayDims[0]) == xs_integer(arrayDims[1])
+                  <return value='(int)arrayDims[0] == (int)arrayDims[1]
                      &amp;&amp; src_type_reference_equal(types[0], types[1], checkNullability)'/>
                </when>
                <otherwise>
                   <variable name='nullables' value='attributes(new[] { t1, t2 }, "nullable")
-                     .Select(p => xs_boolean(p))
+                     .Select(p => (bool)p)
                      .ToArray()'/>
                   <return value='fn_empty(arrayDims)
                      &amp;&amp; names[0].Value == names[1].Value

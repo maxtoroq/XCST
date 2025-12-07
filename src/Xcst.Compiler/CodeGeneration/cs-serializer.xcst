@@ -84,8 +84,7 @@
    </template>
 
    <template match='XElement el &amp;&amp; el.Name == code + "argument"' mode='cs:source'>
-      <if test='el.Attribute("ref") is { } refAttr
-          &amp;&amp; xs_boolean(refAttr)'>ref </if>
+      <if test='(bool?)el.Attribute("ref") == true'>ref </if>
       <if test='el.Attribute("name") is { } nameAttr'>
          <call-template name='cs:verbatim'>
             <with-param name='el' value='el'/>
@@ -331,8 +330,7 @@
       <call-template name='new-line-indented'/>
       <text>public static </text>
       <choose>
-         <when test='el.Attribute("implicit") is { } implicitAttr
-            &amp;&amp; xs_boolean(implicitAttr)'>implicit</when>
+         <when test='(bool?)el.Attribute("implicit") == true'>implicit</when>
          <otherwise>explicit</otherwise>
       </choose>
       <text> operator </text>
@@ -430,10 +428,7 @@
          <value-of value='extensibilityAttr.Value'/>
          <text> </text>
       </if>
-      <if test='el.Attribute("readonly") is { } readonlyAttr
-            &amp;&amp; xs_boolean(readonlyAttr)'>
-         <text>readonly </text>
-      </if>
+      <if test='(bool?)el.Attribute("readonly") == true'>readonly </if>
       <apply-templates value='el.Element(code + "type-reference")'/>
       <text> </text>
       <value-of value='el.Attribute("name")!.Value'/>
@@ -526,9 +521,7 @@
       </call-template>
       <call-template name='new-line-indented'/>
       <if test='el.Parent!.Name == code + "if-else"
-            &amp;&amp; preceding_sibling(el, code + "if").Any()'>
-         <text> else </text>
-      </if>
+         &amp;&amp; preceding_sibling(el, code + "if").Any()'> else </if>
       <text>if (</text>
       <apply-templates value='select(el, code).First()' mode='cs:source'/>
       <text>)</text>
@@ -541,8 +534,7 @@
       </call-template>
       <call-template name='new-line-indented'/>
       <text>using </text>
-      <if test='el.Attribute("static") is { } staticAttr
-         &amp;&amp; xs_boolean(staticAttr)'>static </if>
+      <if test='(bool?)el.Attribute("static") == true'>static </if>
       <if test='el.Attribute("alias") is { } aliasAttr'>
          <call-template name='cs:verbatim'>
             <with-param name='el' value='el'/>
@@ -555,12 +547,8 @@
             <value-of value='namespaceAttr.Value'/>
          </when>
          <otherwise>
-            <variable name='typeVerbatim' value='
-               (el.Attribute("type-verbatim") is { } typeVerbatimAttr) ?
-                  xs_boolean(typeVerbatimAttr)
-                  : default(bool?)'/>
             <apply-templates value='el.Element(code + "type-reference")'>
-               <with-param name='verbatim' value='typeVerbatim'/>
+               <with-param name='verbatim' value='(bool?)el.Attribute("type-verbatim")'/>
             </apply-templates>
          </otherwise>
       </choose>
@@ -652,8 +640,7 @@
          <with-param name='el' value='el'/>
       </call-template>
       <variable name='implementsInterface' value='el.Element(code + "implements-interface")'/>
-      <variable name='isExtension' value='el.Attribute("extension") is { } extAttr
-         &amp;&amp; xs_boolean(extAttr)'/>
+      <variable name='isExtension' value='(bool?)el.Attribute("extension") == true'/>
       <call-template name='new-line-indented'/>
       <if test='el.Attribute("visibility") is { } visibilityAttr
             &amp;&amp; visibilityAttr.Value != "#default"
@@ -667,18 +654,11 @@
          <if test='extensibilityAttr.Value == "sealed"'> override</if>
          <text> </text>
       </if>
-      <if test='el.Attribute("partial") is { } partialAttr
-            &amp;&amp; xs_boolean(partialAttr)'>
-         <text>partial </text>
-      </if>
+      <if test='(bool?)el.Attribute("partial") == true'>partial </if>
       <choose>
          <when test='el.Element(code + "type-reference") is { } typeRef'>
-            <variable name='returnTypeVerbatim' value='
-               (el.Attribute("return-type-verbatim") is { } rtvAttr) ?
-                  xs_boolean(rtvAttr)
-                  : default(bool?)'/>
             <apply-templates value='typeRef'>
-               <with-param name='verbatim' value='returnTypeVerbatim'/>
+               <with-param name='verbatim' value='(bool?)el.Attribute("return-type-verbatim")'/>
             </apply-templates>
          </when>
          <otherwise>void</otherwise>
@@ -893,10 +873,8 @@
       </if>
       <if test='isExtensionMethod
          &amp;&amp; !el.ElementsBeforeSelf(code + "parameter").Any()'>this </if>
-      <if test='el.Attribute("ref") is { } refAttr
-         &amp;&amp; xs_boolean(refAttr)'>ref </if>
-      <if test='el.Attribute("params") is { } paramsAttr
-         &amp;&amp; xs_boolean(paramsAttr)'>params </if>
+      <if test='(bool?)el.Attribute("ref") == true'>ref </if>
+      <if test='(bool?)el.Attribute("params") == true'>params </if>
       <if test='el.Element(code + "type-reference") is { } typeRef'>
          <apply-templates value='typeRef'/>
          <text> </text>
@@ -942,12 +920,8 @@
          <if test='extensibilityAttr.Value == "sealed"'> override</if>
          <text> </text>
       </if>
-      <variable name='returnTypeVerbatim' value='
-         (el.Attribute("return-type-verbatim") is { } rtvAttr) ?
-            xs_boolean(rtvAttr)
-            : default(bool?)'/>
       <apply-templates value='el.Element(code + "type-reference")'>
-         <with-param name='verbatim' value='returnTypeVerbatim'/>
+         <with-param name='verbatim' value='(bool?)el.Attribute("return-type-verbatim")'/>
       </apply-templates>
       <text> </text>
       <if test='implementsInterface != null'>
@@ -1047,26 +1021,10 @@
 
    <template match='XElement el &amp;&amp; el.Name == code + "string"' mode='cs:source'>
 
-      <variable name='verbatim' value='
-         (el.Attribute("verbatim") is { } verbatimAttr) ?
-            xs_boolean(verbatimAttr)
-            : false'/>
-
-      <variable name='interpolated' value='
-         (el.Attribute("interpolated") is { } interpolatedAttr) ?
-            xs_boolean(interpolatedAttr)
-            : false'/>
-
-      <variable name='raw' value='
-         (el.Attribute("raw") is { } rawAttr) ?
-            xs_boolean(rawAttr)
-            : false'/>
-
-      <variable name='literal' value='
-         (el.Attribute("literal") is { } literalAttr) ?
-            xs_boolean(literalAttr)
-            : raw'/>
-
+      <variable name='verbatim' value='(bool?)el.Attribute("verbatim") == true'/>
+      <variable name='interpolated' value='(bool?)el.Attribute("interpolated") == true'/>
+      <variable name='raw' value='(bool?)el.Attribute("raw") == true'/>
+      <variable name='literal' value='(bool?)el.Attribute("literal") ?? raw'/>
       <variable name='hasElements' value='el.HasElements'/>
 
       <if test='hasElements'>
@@ -1220,13 +1178,9 @@
          <value-of value='extensibilityAttr.Value'/>
          <text> </text>
       </if>
-      <if test='el.Attribute("partial") is { } partialAttr
-            &amp;&amp; xs_boolean(partialAttr)'>
-         <text>partial </text>
-      </if>
+      <if test='(bool?)el.Attribute("partial") == true'>partial </if>
       <choose>
-         <when test='el.Attribute("struct") is { } structAttr
-            &amp;&amp; xs_boolean(structAttr)'>struct </when>
+         <when test='(bool?)el.Attribute("struct") == true'>struct </when>
          <otherwise>class </otherwise>
       </choose>
       <call-template name='cs:verbatim'>
@@ -1255,7 +1209,7 @@
                <with-param name='omitNamespaceAlias' value='omitNamespaceAlias'/>
                <with-param name='verbatim' value='verbatim'/>
             </apply-templates>
-            <variable name='arrayDim' value='xs_integer(arrDimAttr)'/>
+            <variable name='arrayDim' value='(int)arrDimAttr'/>
             <text>[</text>
             <if test='arrayDim > 1'>{new string(',', arrayDim)}</if>
             <text>]</text>
@@ -1305,8 +1259,7 @@
          <when test='primitive != null'>
             <choose>
                <when test='src_type_reference_equal(el, src_object_type)
-                  &amp;&amp; el.Attribute("dynamic") is { } dynamicAttr
-                  &amp;&amp; xs_boolean(dynamicAttr)'>dynamic</when>
+                  &amp;&amp; (bool?)el.Attribute("dynamic") == true'>dynamic</when>
                <otherwise value='primitive.Parent!.Name.LocalName'/>
             </choose>
             <call-template name='cs:nullable'>
@@ -1455,16 +1408,14 @@
 
       <if test='verbatim.GetValueOrDefault()
           || (verbatim is null
-            &amp;&amp; el.Attribute("verbatim") is { } verbatimAttr
-            &amp;&amp; xs_boolean(verbatimAttr))'>@</if>
+            &amp;&amp; (bool?)el.Attribute("verbatim") == true)'>@</if>
    </template>
 
    <template name='cs:nullable'>
       <param name='el' as='XElement' required='yes'/>
 
       <if test='cs_nullable_annotate
-          &amp;&amp; el.Attribute("nullable") is { } nullableAttr
-          &amp;&amp; xs_boolean(nullableAttr)'>?</if>
+          &amp;&amp; (bool?)el.Attribute("nullable") == true'>?</if>
    </template>
 
    <template name='cs:open-brace'>
@@ -1506,8 +1457,7 @@
                   <call-template name='new-line-indented'/>
                </if>
             </when>
-            <when test='el.Attribute("line-hidden") is { } lineHiddenAttr
-                  &amp;&amp; xs_boolean(lineHiddenAttr)'>
+            <when test='(bool?)el.Attribute("line-hidden") == true'>
                <call-template name='new-line-indented'/>
                <text>#line hidden</text>
                <if test='appendLine'>

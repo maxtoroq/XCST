@@ -145,7 +145,7 @@
       <variable name='param' value='el.Name == xcst + "param"'/>
       <variable name='visibilityAttr' value='el.Attribute("visibility")!'/>
       <variable name='publicMember' value='visibilityAttr.Value != "private"'/>
-      <variable name='required' value='(param) ? xs_boolean(el.Attribute("required")!) : false'/>
+      <variable name='required' value='(param) ? (bool)el.Attribute("required")! : false'/>
       <variable name='typeRef' value='el.Element(code + "type-reference")!'/>
 
       <variable name='usedPkgField'>
@@ -190,8 +190,7 @@
                   </code:arguments>
                </code:attribute>
                <if test='param
-                     &amp;&amp; el.Attribute("required") is { } requiredAttr
-                     &amp;&amp; xs_boolean(requiredAttr)'>
+                     &amp;&amp; (bool?)el.Attribute("required") == true'>
                   <code:attribute>
                      <copy-of value='src_package_model_type("Required")'/>
                   </code:attribute>
@@ -277,7 +276,7 @@
 
    <template mode='src:lib-original' match='XElement el &amp;&amp; (el.Name == xcst + "param" || el.Name == xcst + "variable")'>
       <if test='el.Name == xcst + "variable"
-            || !xs_boolean(el.Attribute("required")!)'>
+            || !(bool)el.Attribute("required")!'>
          <code:method name='{src_original_member_name(el)}' visibility='internal'>
             <code:type-reference name='Func' namespace='System'>
                <code:type-arguments>
@@ -353,12 +352,11 @@
          .First(p => p.Attribute("declaration-id")?.Value == id)'/>
 
       <variable name='visibility' value='meta.Attribute("visibility")!.Value'/>
-      <variable name='required' value='(param) ? xs_boolean(meta.Attribute("required")!) : false'/>
+      <variable name='required' value='(param) ? (bool)meta.Attribute("required")! : false'/>
       <variable name='publicMember' value='visibility is "public" or "final" or "abstract"'/>
-      <variable name='verbatim' value='meta.Attribute("member-name-was-escaped") is { } escAttr
-         &amp;&amp; xs_boolean(escAttr)'/>
+      <variable name='verbatim' value='(bool?)meta.Attribute("member-name-was-escaped") == true'/>
 
-      <variable name='assign' value='(param) ? !required : xs_boolean(meta.Attribute("has-default-value")!)'/>
+      <variable name='assign' value='(param) ? !required : (bool)meta.Attribute("has-default-value")!'/>
       <variable name='useBackingField' value='visibility != "abstract"'/>
       <variable name='useInitField' value='required || assign'/>
 
@@ -443,7 +441,7 @@
                                  <variable name='originalRef' value='
                                     (originalMeta.Attribute("original-visibility")!.Value != "abstract"
                                        &amp;&amp; (originalMeta.Name == xcst + "variable"
-                                          || !xs_boolean(originalMeta.Attribute("required")!))) ?
+                                          || !(bool)originalMeta.Attribute("required")!)) ?
                                        src_original_member(originalMeta)
                                        : null'/>
                                  <code:variable name='{src_contextual_variable}'>
@@ -594,10 +592,9 @@
          <code:block>
             <for-each name='param' in='select(packageManifest, xcst + "param")
                   .Where(p => p.Attribute("visibility")!.Value != "hidden")'>
-               <variable name='required' value='xs_boolean(param.Attribute("required")!)'/>
+               <variable name='required' value='(bool)param.Attribute("required")!'/>
                <variable name='accepted' value='(bool?)param.Attribute("accepted") == true'/>
-               <variable name='verbatim' value='param.Attribute("member-name-was-escaped") is { } escAttr
-                  &amp;&amp; xs_boolean(escAttr)'/>
+               <variable name='verbatim' value='(bool?)param.Attribute("member-name-was-escaped") == true'/>
                <choose>
                   <when test='required'>
                      <code:if>
