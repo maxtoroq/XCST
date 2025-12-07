@@ -558,9 +558,9 @@
             <variable name='typeVerbatim' value='
                (el.Attribute("type-verbatim") is { } typeVerbatimAttr) ?
                   xs_boolean(typeVerbatimAttr)
-                  : false'/>
+                  : default(bool?)'/>
             <apply-templates value='el.Element(code + "type-reference")'>
-               <with-param name='verbatim' value='typeVerbatim' tunnel='yes'/>
+               <with-param name='verbatim' value='typeVerbatim'/>
             </apply-templates>
          </otherwise>
       </choose>
@@ -676,9 +676,9 @@
             <variable name='returnTypeVerbatim' value='
                (el.Attribute("return-type-verbatim") is { } rtvAttr) ?
                   xs_boolean(rtvAttr)
-                  : false'/>
+                  : default(bool?)'/>
             <apply-templates value='typeRef'>
-               <with-param name='verbatim' value='returnTypeVerbatim' tunnel='yes'/>
+               <with-param name='verbatim' value='returnTypeVerbatim'/>
             </apply-templates>
          </when>
          <otherwise>void</otherwise>
@@ -945,9 +945,9 @@
       <variable name='returnTypeVerbatim' value='
          (el.Attribute("return-type-verbatim") is { } rtvAttr) ?
             xs_boolean(rtvAttr)
-            : false'/>
+            : default(bool?)'/>
       <apply-templates value='el.Element(code + "type-reference")'>
-         <with-param name='verbatim' value='returnTypeVerbatim' tunnel='yes'/>
+         <with-param name='verbatim' value='returnTypeVerbatim'/>
       </apply-templates>
       <text> </text>
       <if test='implementsInterface != null'>
@@ -1247,12 +1247,13 @@
 
    <template match='XElement el &amp;&amp; el.Name == code + "type-reference"' mode='cs:source' expand-text='yes'>
       <param name='omitNamespaceAlias' as='bool'/>
-      <param name='verbatim' as='bool' tunnel='yes'/>
+      <param name='verbatim' as='bool?'/>
 
       <choose>
          <when test='el.Attribute("array-dimensions") is { } arrDimAttr'>
             <apply-templates value='select(el, code + "type-reference")'>
                <with-param name='omitNamespaceAlias' value='omitNamespaceAlias'/>
+               <with-param name='verbatim' value='verbatim'/>
             </apply-templates>
             <variable name='arrayDim' value='xs_integer(arrDimAttr)'/>
             <text>[</text>
@@ -1268,6 +1269,7 @@
                <when test='el.Element(code + "type-reference") is { } typeRef'>
                   <apply-templates value='typeRef'>
                      <with-param name='omitNamespaceAlias' value='omitNamespaceAlias'/>
+                     <with-param name='verbatim' value='verbatim'/>
                   </apply-templates>
                   <text>.</text>
                </when>
@@ -1281,6 +1283,7 @@
                <text>&lt;</text>
                <apply-templates value='typeArgs' separator=', '>
                   <with-param name='omitNamespaceAlias' value='omitNamespaceAlias'/>
+                  <with-param name='verbatim' value='verbatim'/>
                </apply-templates>
                <text>></text>
             </if>

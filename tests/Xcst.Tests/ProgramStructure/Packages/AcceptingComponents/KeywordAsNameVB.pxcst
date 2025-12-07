@@ -2,16 +2,13 @@
 <c:package name='KeywordAsNameVB' version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
    <c:param name='Integer' value='1' as='int'/>
+
    <c:variable name='String' value='"string"' as='string' visibility='public'/>
 
    <c:type name='Class' visibility='public'/>
 
-   <c:function name='Sub' as='Class' visibility='public'>
+   <c:function name='Sub' visibility='public'>
       <c:param name='ByVal'/>
-
-      <c:return value='new Class()'/>
    </c:function>
-
-   <c:template name='foo' as='Class[]' visibility='public'/>
 
 </c:package>

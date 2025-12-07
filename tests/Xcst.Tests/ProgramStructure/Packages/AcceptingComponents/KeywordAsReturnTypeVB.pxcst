@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:package name='KeywordAsReturnTypeVB' version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:param name='a' as='Class'/>
+
+   <c:variable name='b' as='Class' visibility='public'/>
+
+   <c:type name='Class' visibility='public'/>
+
+   <c:function name='c' as='Class' visibility='public'>
+      <c:return value='new Class()'/>
+   </c:function>
+
+   <c:template name='d' as='Class[]' visibility='public'/>
+
+</c:package>

@@ -1264,7 +1264,6 @@
 
    <template match='XElement el &amp;&amp; el.Name == code + "type-reference"' mode='vb:source' expand-text='yes'>
       <param name='omitNamespaceAlias' as='bool'/>
-      <param name='verbatim' as='bool' tunnel='yes'/>
 
       <choose>
          <when test='el.Attribute("array-dimensions") is { } arrDimAttr'>
