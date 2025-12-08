@@ -281,8 +281,7 @@ partial class MetadataManifestReader {
          WriteTypeReference(
             signature.ReturnType,
             nullableContext,
-            (returnParam != null ? NullableAttribute(returnParam.Value.GetCustomAttributes()) : null)
-         );
+            (returnParam != null ? NullableAttribute(returnParam.Value.GetCustomAttributes()) : null));
       }
 
       Debug.Assert(parameters.Length == signature.ParameterTypes.Length);
@@ -370,8 +369,7 @@ partial class MetadataManifestReader {
       WriteTypeReference(
          signature.ReturnType,
          NullableContextAttribute(propDef.GetCustomAttributes()) ?? nullableContext,
-         NullableAttribute(propDef.GetCustomAttributes())
-      );
+         NullableAttribute(propDef.GetCustomAttributes()));
 
       _writer.WriteEndElement();
    }
@@ -592,8 +590,7 @@ partial class MetadataManifestReader {
 
       var str = Convert.ToString(
          blobReader.ReadConstant(constant.TypeCode),
-         CultureInfo.InvariantCulture
-      )!;
+         CultureInfo.InvariantCulture)!;
 
       switch (constant.TypeCode) {
          case ConstantTypeCode.NullReference:

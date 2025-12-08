@@ -28,8 +28,7 @@ partial class VariableTests {
 
       var resultA = compilerA.Compile(
          new StringReader(ModuleResolver.GetPackageString("")),
-         baseUri: usingPackageUri
-      );
+         baseUri: usingPackageUri);
 
       var compilerB = TestsHelper.CreateCompiler();
       compilerB.PackageLocationResolver = compilerA.PackageLocationResolver;
@@ -37,8 +36,7 @@ partial class VariableTests {
 
       var resultB = compilerB.Compile(
          new StringReader(ModuleResolver.GetPackageString("localhost.PackageB")),
-         baseUri: compilerB.PackageLocationResolver("localhost.PackageB")
-      );
+         baseUri: compilerB.PackageLocationResolver("localhost.PackageB"));
 
       var compilationUnits = resultB.CompilationUnits
          .Concat(resultA.CompilationUnits)
@@ -48,8 +46,7 @@ partial class VariableTests {
          compilerA.TargetNamespace + "." + compilerA.TargetClass,
          usingPackageUri,
          compilationUnits,
-         resultA.Language
-      );
+         resultA.Language);
    }
 
    internal class Overridden_Non_Compiled_Resolver : XmlResolver {

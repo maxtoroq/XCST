@@ -24,8 +24,7 @@ partial class FunctionTests {
                <c:function name='MyFunc' as='string' visibility='public' partial='yes'/>
             </c:package>
             """),
-         usingPackageUri
-      );
+         usingPackageUri);
 
       var compilationUnits = result.CompilationUnits
          .Append($$"""
@@ -42,8 +41,7 @@ partial class FunctionTests {
          usingPackageUri,
          compilationUnits,
          result.Language,
-         languageVersion: 9
-      );
+         languageVersion: 9);
 
       var pkg = Activator.CreateInstance(pkgType)!;
       var method = pkgType.GetMethod("MyFunc");

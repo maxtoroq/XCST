@@ -28,8 +28,7 @@ public partial class AcceptingComponentsTests {
 
       var resultA = compilerA.Compile(
          new StringReader(ModuleResolver.GetPackageString("")),
-         baseUri: usingPackageUri
-      );
+         baseUri: usingPackageUri);
 
       var compilerB = TestsHelper.CreateCompiler();
       compilerB.PackageLocationResolver = compilerA.PackageLocationResolver;
@@ -37,8 +36,7 @@ public partial class AcceptingComponentsTests {
 
       var resultB = compilerB.Compile(
          new StringReader(ModuleResolver.GetPackageString("localhost.PackageB")),
-         baseUri: compilerB.PackageLocationResolver("localhost.PackageB")
-      );
+         baseUri: compilerB.PackageLocationResolver("localhost.PackageB"));
 
       var compilerC = TestsHelper.CreateCompiler();
       compilerC.PackageLocationResolver = compilerA.PackageLocationResolver;
@@ -46,8 +44,7 @@ public partial class AcceptingComponentsTests {
 
       var resultC = compilerC.Compile(
          new StringReader(ModuleResolver.GetPackageString("localhost.PackageC")),
-         baseUri: compilerC.PackageLocationResolver("localhost.PackageC")
-      );
+         baseUri: compilerC.PackageLocationResolver("localhost.PackageC"));
 
       var compilationUnits = resultC.CompilationUnits
          .Concat(resultB.CompilationUnits)
@@ -58,8 +55,7 @@ public partial class AcceptingComponentsTests {
          compilerA.TargetNamespace + "." + compilerA.TargetClass,
          usingPackageUri,
          compilationUnits,
-         resultA.Language
-      );
+         resultA.Language);
    }
 
    internal class Component_Using_Accepted_Type_Resolver : XmlResolver {

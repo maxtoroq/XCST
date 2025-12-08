@@ -37,8 +37,7 @@ class XDocumentNormalizer {
              }
 
              return n;
-          })
-      );
+          }));
    }
 
    static XNode
@@ -57,8 +56,7 @@ class XDocumentNormalizer {
 
       return new XElement(element.Name,
          NormalizeAttributes(element),
-         element.Nodes().Select(NormalizeNode)
-      );
+         element.Nodes().Select(NormalizeNode));
    }
 
    static IEnumerable<XAttribute>

@@ -5,6 +5,7 @@ using System.Xml;
 using NUnit.Framework;
 
 namespace Xcst.Tests.ProgramStructure.Packages.AcceptingComponents;
+
 using ModuleResolver = AcceptingComponentsTests.Keyword_As_Return_Type_Resolver;
 
 public partial class AcceptingComponentsTests {
@@ -24,8 +25,7 @@ public partial class AcceptingComponentsTests {
 
       var resultA = compilerA.Compile(
          new StringReader(ModuleResolver.GetPackageString("")),
-         baseUri: usingPackageUri
-      );
+         baseUri: usingPackageUri);
 
       var compilerB = TestsHelper.CreateCompiler();
       compilerB.PackageLocationResolver = compilerA.PackageLocationResolver;
@@ -33,8 +33,7 @@ public partial class AcceptingComponentsTests {
 
       var resultB = compilerB.Compile(
          new StringReader(ModuleResolver.GetPackageString("localhost.PackageB")),
-         baseUri: compilerB.PackageLocationResolver("localhost.PackageB")
-      );
+         baseUri: compilerB.PackageLocationResolver("localhost.PackageB"));
 
       var compilationUnits = resultB.CompilationUnits
          .Concat(resultA.CompilationUnits)
@@ -44,8 +43,7 @@ public partial class AcceptingComponentsTests {
          compilerA.TargetNamespace + "." + compilerA.TargetClass,
          usingPackageUri,
          compilationUnits,
-         resultA.Language
-      );
+         resultA.Language);
    }
 
    internal class Keyword_As_Return_Type_Resolver : XmlResolver {
@@ -65,6 +63,7 @@ public partial class AcceptingComponentsTests {
 <c:package name='localhost.PackageB' version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
    
    <c:param name='a' as='string'/>
+
    <c:variable name='b' as='string' visibility='public'/>
 
    <c:function name='c' as='string' visibility='public'>

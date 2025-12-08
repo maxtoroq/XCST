@@ -127,8 +127,7 @@ static class TestsHelper {
                languageVersion,
                disableWarning,
                warningAsError,
-               printCode
-            );
+               printCode);
 
             if (error) {
                // did not fail

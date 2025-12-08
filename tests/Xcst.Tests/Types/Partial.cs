@@ -24,8 +24,7 @@ partial class TypesTests {
                <c:type name='Foo' visibility='public'/>
             </c:package>
             """),
-         usingPackageUri
-      );
+         usingPackageUri);
 
       var compilationUnits = result.CompilationUnits
          .Append($$"""
@@ -45,8 +44,7 @@ partial class TypesTests {
          compiler.TargetNamespace + "." + compiler.TargetClass,
          usingPackageUri,
          compilationUnits,
-         result.Language
-      );
+         result.Language);
 
       var fooType = pkgType.GetNestedType("Foo");
 
