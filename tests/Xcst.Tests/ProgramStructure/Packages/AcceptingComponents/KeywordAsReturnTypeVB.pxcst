@@ -1,16 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <c:package name='KeywordAsReturnTypeVB' version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
-   <c:param name='a' as='Class'/>
+   <c:param name='a' as='Global'/>
 
-   <c:variable name='b' as='Class' visibility='public'/>
+   <c:variable name='b' as='Global' visibility='public'/>
 
-   <c:type name='Class' visibility='public'/>
+   <c:type name='Global' visibility='public'/>
 
-   <c:function name='c' as='Class' visibility='public'>
-      <c:return value='new Class()'/>
+   <c:function name='c' as='Global' visibility='public'>
+      <c:param name='c1' as='Global'/>
+
+      <c:return value='c1'/>
    </c:function>
 
-   <c:template name='d' as='Class[]' visibility='public'/>
+   <c:template name='d' as='Global[]' visibility='public'/>
 
 </c:package>

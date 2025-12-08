@@ -876,7 +876,9 @@
       <if test='(bool?)el.Attribute("ref") == true'>ref </if>
       <if test='(bool?)el.Attribute("params") == true'>params </if>
       <if test='el.Element(code + "type-reference") is { } typeRef'>
-         <apply-templates value='typeRef'/>
+         <apply-templates value='typeRef'>
+            <with-param name='verbatim' value='(bool?)el.Attribute("type-verbatim")'/>
+         </apply-templates>
          <text> </text>
       </if>
       <call-template name='cs:verbatim'>

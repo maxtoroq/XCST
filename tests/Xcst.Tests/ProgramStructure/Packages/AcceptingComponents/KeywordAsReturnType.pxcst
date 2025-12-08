@@ -8,7 +8,9 @@
    <c:type name='@class' visibility='public'/>
 
    <c:function name='c' as='@class' visibility='public'>
-      <c:return value='new @class()'/>
+      <c:param name='c1' as='@class'/>
+
+      <c:return value='c1'/>
    </c:function>
 
    <c:template name='d' as='@class[]' visibility='public'/>

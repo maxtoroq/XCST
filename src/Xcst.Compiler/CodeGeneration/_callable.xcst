@@ -425,6 +425,10 @@
          <code:parameters>
             <for-each name='param' in='el.Elements(xcst + "param")'>
                <code:parameter name='{param.Attribute("name")!.Value}' verbatim='true'>
+                  <if test='el.Element(code + "type-reference") is { } paramTypeRef
+                        &amp;&amp; src_qualified_type(paramTypeRef)'>
+                     <attribute name='type-verbatim'>true</attribute>
+                  </if>
                   <copy-of value='select(param, code)'/>
                </code:parameter>
             </for-each>
