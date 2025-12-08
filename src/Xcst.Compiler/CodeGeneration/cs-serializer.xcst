@@ -1250,6 +1250,7 @@
 
    <template match='XElement el &amp;&amp; el.Name == code + "type-reference"
          &amp;&amp; el.Attribute("namespace")?.Value == "System"' mode='cs:source'>
+      <param name='verbatim' as='bool?'/>
 
       <variable name='primitive' value='
          select(cs_primitives, XNamespace.None, code + "type-reference")
@@ -1267,7 +1268,9 @@
             </call-template>
          </when>
          <otherwise>
-            <next-match/>
+            <next-match>
+               <with-param name='verbatim' value='verbatim'/>
+            </next-match>
          </otherwise>
       </choose>
    </template>
