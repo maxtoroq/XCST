@@ -359,9 +359,15 @@
    </template>
 
    <template match='XElement el &amp;&amp; el.Name == code + "default"' mode='vb:source'>
-      <text>CType(Nothing, </text>
-      <apply-templates value='el.Nodes()'/>
-      <text>)</text>
+      <choose>
+         <when test='el.Parent?.Name == code + "parameter"'>Nothing</when>
+         <when test='select(el, code).Single() is { } child'>
+            <text>CType(Nothing, </text>
+            <apply-templates value='child'/>
+            <text>)</text>
+         </when>
+         <otherwise>Nothing</otherwise>
+      </choose>
    </template>
 
    <template match='XElement el &amp;&amp; el.Name == code + "disable-warning"' mode='vb:source vb:statement'>

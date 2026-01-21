@@ -347,9 +347,12 @@
    </template>
 
    <template match='XElement el &amp;&amp; el.Name == code + "default"' mode='cs:source'>
-      <text>default(</text>
-      <apply-templates value='el.Nodes()'/>
-      <text>)</text>
+      <text>default</text>
+      <if test='select(el, code).Single() is { } child'>
+         <text>(</text>
+         <apply-templates value='child'/>
+         <text>)</text>
+      </if>
    </template>
 
    <template match='XElement el &amp;&amp; el.Name == code + "disable-warning"' mode='cs:source cs:statement'>
