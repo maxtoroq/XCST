@@ -360,7 +360,6 @@
 
    <template match='XElement el &amp;&amp; el.Name == code + "default"' mode='vb:source'>
       <choose>
-         <when test='el.Parent?.Name == code + "parameter"'>Nothing</when>
          <when test='select(el, code).Single() is { } child'>
             <text>CType(Nothing, </text>
             <apply-templates value='child'/>
