@@ -130,6 +130,11 @@
       <text>></text>
    </template>
 
+   <template match='XElement el &amp;&amp; el.Name == code + "await"' mode='vb:source'>
+      <text>Await </text>
+      <apply-templates value='el.Nodes()'/>
+   </template>
+
    <template match='XElement el &amp;&amp; el.Name == code + "base-reference"' mode='vb:source'>
       <text>MyBase</text>
    </template>
@@ -697,6 +702,7 @@
       <call-template name='vb:member-extensibility'>
          <with-param name='el' value='el'/>
       </call-template>
+      <if test='(bool?)el.Attribute("async") == true'>Async </if>
       <variable name='typeRef' value='el.Element(code + "type-reference")'/>
       <choose>
          <when test='typeRef != null'>Function</when>

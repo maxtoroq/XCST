@@ -116,6 +116,13 @@
          </xs:sequence>
       </xs:complexType>
    </xs:element>
+   <xs:element name="await" substitutionGroup="code:_expression">
+      <xs:complexType>
+         <xs:sequence>
+            <xs:element ref="code:_expression"/>
+         </xs:sequence>
+      </xs:complexType>
+   </xs:element>
    <xs:element name="base-reference" substitutionGroup="code:_expression">
       <xs:complexType/>
    </xs:element>
@@ -485,6 +492,7 @@
          </xs:sequence>
          <xs:attribute name="name" use="required"/>
          <xs:attributeGroup ref="code:_member-attribs"/>
+         <xs:attribute name="async" type="code:_boolean"/>
          <xs:attribute name="extensibility" type="code:_extensibility"/>
          <xs:attribute name="extension" type="code:_boolean"/>
          <xs:attribute name="return-type-verbatim" type="code:_boolean"/>

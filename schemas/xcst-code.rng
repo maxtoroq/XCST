@@ -23,6 +23,7 @@
          <ref name="add"/>
          <ref name="and"/>
          <ref name="and-also"/>
+         <ref name="await"/>
          <ref name="base-reference"/>
          <ref name="cast"/>
          <ref name="chain"/>
@@ -213,6 +214,12 @@
          <zeroOrMore>
             <ref name="attribute"/>
          </zeroOrMore>
+      </element>
+   </define>
+
+   <define name="await">
+      <element name="await">
+         <ref name="_expression"/>
       </element>
    </define>
 
@@ -680,6 +687,9 @@
          <ref name="_member-attribs"/>
          <zeroOrMore>
             <choice>
+               <attribute name="async">
+                  <ref name="_boolean"/>
+               </attribute>
                <attribute name="extensibility">
                   <ref name="_extensibility"/>
                </attribute>
