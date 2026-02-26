@@ -664,6 +664,7 @@
       </if>
       <if test='(bool?)el.Attribute("async") == true'>async </if>
       <if test='(bool?)el.Attribute("partial") == true'>partial </if>
+      <if test='(bool?)el.Attribute("new") == true'>new </if>
       <choose>
          <when test='el.Element(code + "type-reference") is { } typeRef'>
             <apply-templates value='typeRef'>
@@ -931,6 +932,7 @@
          <if test='extensibilityAttr.Value == "sealed"'> override</if>
          <text> </text>
       </if>
+      <if test='(bool?)el.Attribute("new") == true'>new </if>
       <apply-templates value='el.Element(code + "type-reference")'>
          <with-param name='verbatim' value='(bool?)el.Attribute("return-type-verbatim")'/>
       </apply-templates>

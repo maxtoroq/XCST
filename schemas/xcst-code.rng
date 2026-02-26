@@ -696,6 +696,9 @@
                <attribute name="extension">
                   <ref name="_boolean"/>
                </attribute>
+               <attribute name="new">
+                  <ref name="_boolean"/>
+               </attribute>
                <attribute name="return-type-verbatim">
                   <ref name="_boolean"/>
                </attribute>
@@ -883,6 +886,9 @@
             <choice>
                <attribute name="extensibility">
                   <ref name="_extensibility"/>
+               </attribute>
+               <attribute name="new">
+                  <ref name="_boolean"/>
                </attribute>
                <attribute name="return-type-verbatim">
                   <ref name="_boolean"/>

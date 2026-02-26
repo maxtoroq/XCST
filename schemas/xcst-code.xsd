@@ -495,6 +495,7 @@
          <xs:attribute name="async" type="code:_boolean"/>
          <xs:attribute name="extensibility" type="code:_extensibility"/>
          <xs:attribute name="extension" type="code:_boolean"/>
+         <xs:attribute name="new" type="code:_boolean"/>
          <xs:attribute name="return-type-verbatim" type="code:_boolean"/>
       </xs:complexType>
    </xs:element>
@@ -631,6 +632,7 @@
          <xs:attribute name="name" use="required"/>
          <xs:attributeGroup ref="code:_member-attribs"/>
          <xs:attribute name="extensibility" type="code:_extensibility"/>
+         <xs:attribute name="new" type="code:_boolean"/>
          <xs:attribute name="return-type-verbatim" type="code:_boolean"/>
       </xs:complexType>
    </xs:element>
