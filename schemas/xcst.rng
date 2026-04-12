@@ -246,12 +246,18 @@
          <ann:documentation>The expression language for this module (usually "C#" or "VisualBasic").</ann:documentation>
          <ref name="language"/>
       </attribute>
-      <optional>
-         <attribute name="default-mode">
-            <ann:documentation>The default mode of template rules for the current module.</ann:documentation>
-            <ref name="eqname"/>
-         </attribute>
-      </optional>
+      <zeroOrMore>
+         <choice>
+            <attribute name="default-mode">
+               <ann:documentation>The default mode of template rules for the current module.</ann:documentation>
+               <ref name="eqname"/>
+            </attribute>
+            <attribute name="inherits">
+               <ann:documentation>A base type for the current package.</ann:documentation>
+               <ref name="type_name"/>
+            </attribute>
+         </choice>
+      </zeroOrMore>
       <ref name="standard-attributes"/>
       <zeroOrMore>
          <ref name="import-namespace"/>

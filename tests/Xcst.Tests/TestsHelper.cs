@@ -38,19 +38,15 @@ static class TestsHelper {
       var packageUri = new Uri(packageFile, UriKind.Absolute);
 
       CompileResult xcstResult;
-      string packageName;
 
       try {
-         var codegenResult = GenerateCode(packageUri, testName, testNamespace, extension);
+         xcstResult = GenerateCode(packageUri, testName, testNamespace, extension);
 
          if (!correct) {
             // did not fail, caller Assert.Throws will
-            PrintCode(codegenResult.result);
+            PrintCode(xcstResult);
             return;
          }
-
-         xcstResult = codegenResult.result;
-         packageName = codegenResult.packageName;
 
       } catch (RuntimeException ex) {
 
@@ -119,7 +115,7 @@ static class TestsHelper {
          try {
 
             packageType = CompileCode(
-               packageName,
+               xcstResult.PackageName,
                packageUri,
                xcstResult.CompilationUnits,
                xcstResult.Language,
@@ -216,7 +212,7 @@ static class TestsHelper {
       return compiler;
    }
 
-   static (CompileResult result, string packageName)
+   static CompileResult
    GenerateCode(Uri packageUri, string testName, string testNamespace, Type? extension) {
 
       var compiler = CreateCompiler(extension);
@@ -230,7 +226,7 @@ static class TestsHelper {
 
       var result = compiler.Compile(packageUri);
 
-      return (result, compiler.TargetNamespace + "." + compiler.TargetClass);
+      return result;
    }
 
    public static Type

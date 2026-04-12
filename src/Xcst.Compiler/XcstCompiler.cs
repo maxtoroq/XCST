@@ -163,8 +163,7 @@ public class XcstCompiler {
       return Compile(
          (settings, baseUri) => XmlReader.Create(source, settings, baseUri),
          file,
-         resolver
-      );
+         resolver);
    }
 
    public CompileResult
@@ -226,12 +225,16 @@ public class XcstCompiler {
             .Run();
       }
 
-      var docEl = resultDoc.Root!;
-
       var src = XNamespace.Get(XmlNamespaces.XcstCompiled);
       var xcst = XNamespace.Get(XmlNamespaces.XcstGrammar);
+      var code = XNamespace.Get(XmlNamespaces.XcstCode);
+
+      var docEl = resultDoc.Root!;
+      var manifest = docEl.Element(xcst + "package-manifest")!;
+      var typeRef = manifest.Element(code + "type-reference")!;
 
       var result = new CompileResult(
+         packageName: $"{typeRef.Attribute("namespace")!.Value}.{typeRef.Attribute("name")!.Value}",
          language: docEl.Attribute("language")!.Value,
          compilationUnits: (this.CompilationUnitHandler == null) ?
             docEl.Elements(src + "compilation-unit")
@@ -239,12 +242,10 @@ public class XcstCompiler {
                .ToArray()
             : Array.Empty<string>(),
          templates:
-            (from t in docEl.Element(xcst + "package-manifest")!
-               .Elements(xcst + "template")
+            (from t in manifest.Elements(xcst + "template")
              where t.Attribute("visibility")!.Value is "public" or "final" or "abstract"
              select DataType.QName(t.Attribute("name")!.Value))
-            .ToArray()
-      );
+            .ToArray());
 
       return result;
    }
@@ -388,6 +389,9 @@ public enum CodeVisibility {
 public class CompileResult {
 
    public string
+   PackageName { get; }
+
+   public string
    Language { get; }
 
    public IReadOnlyList<string>
@@ -398,10 +402,12 @@ public class CompileResult {
 
    internal
    CompileResult(
+         string packageName,
          string language,
          IReadOnlyList<string> compilationUnits,
          IReadOnlyList<XName> templates) {
 
+      this.PackageName = packageName;
       this.Language = language;
       this.CompilationUnits = compilationUnits;
       this.Templates = templates;

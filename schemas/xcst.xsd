@@ -171,6 +171,11 @@
             <xs:documentation>The default mode of template rules for the current module.</xs:documentation>
          </xs:annotation>
       </xs:attribute>
+      <xs:attribute name="inherits" type="c:type_name">
+         <xs:annotation>
+            <xs:documentation>A base type for the current package.</xs:documentation>
+         </xs:annotation>
+      </xs:attribute>
       <xs:attributeGroup ref="c:standard-attributes"/>
    </xs:complexType>
    <xs:element name="import-namespace">

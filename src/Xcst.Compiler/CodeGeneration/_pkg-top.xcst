@@ -44,7 +44,7 @@
             ((el.Name == c + "package") ?
                new[] { "name", "visibility" }
                : System.Array.Empty&lt;string>())
-               .Concat(new[] { "default-mode" })
+               .Concat(new[] { "default-mode", "inherits" })
                .ToArray()'/>
       </call-template>
 
@@ -210,9 +210,16 @@
          <if test='principalModule'>
             <code:base-types>
                <if test='ReferenceEquals(this, this)'>
-                  <call-template name='src:base-types'>
-                     <with-param name='el' value='el'/>
-                  </call-template>
+                  <choose>
+                     <when test='attributes(modules, "inherits").LastOrDefault() is { } inheritsAttr'>
+                        <code:type-reference name='{xcst_type(inheritsAttr)}'/>
+                     </when>
+                     <otherwise>
+                        <call-template name='src:base-types'>
+                           <with-param name='el' value='el'/>
+                        </call-template>
+                     </otherwise>
+                  </choose>
                   <on-empty>
                      <copy-of value='src_base_types'/>
                   </on-empty>

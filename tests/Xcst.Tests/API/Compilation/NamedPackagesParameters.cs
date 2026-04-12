@@ -14,14 +14,16 @@ partial class CompilationTests {
       var compiler = TestsHelper.CreateCompiler();
       compiler.CompilationUnitHandler = n => TextWriter.Null;
 
-      compiler.TargetNamespace = "localhost";
+      compiler.TargetNamespace = "system";
 
       var module = new StringReader(@"
 <c:package name='localhost.FooPackage' version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 </c:package>
 ");
 
-      compiler.Compile(module);
+      var result = compiler.Compile(module);
+
+      Assert.AreEqual("localhost.FooPackage", result.PackageName);
    }
 
    [Test]
@@ -32,14 +34,16 @@ partial class CompilationTests {
       var compiler = TestsHelper.CreateCompiler();
       compiler.CompilationUnitHandler = n => TextWriter.Null;
 
-      compiler.TargetClass = "FooPackage";
+      compiler.TargetClass = "BarPackage";
 
       var module = new StringReader(@"
 <c:package name='localhost.FooPackage' version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 </c:package>
 ");
 
-      compiler.Compile(module);
+      var result = compiler.Compile(module);
+
+      Assert.AreEqual("localhost.FooPackage", result.PackageName);
    }
 
    [Test]
@@ -50,7 +54,7 @@ partial class CompilationTests {
       var compiler = TestsHelper.CreateCompiler();
       compiler.CompilationUnitHandler = n => TextWriter.Null;
 
-      compiler.TargetClass = "FooPackage";
+      compiler.TargetClass = "BarPackage";
       compiler.TargetNamespace = typeof(CompilationTests).Namespace;
 
       var module = new StringReader(@"
@@ -58,6 +62,8 @@ partial class CompilationTests {
 </c:package>
 ");
 
-      compiler.Compile(module);
+      var result = compiler.Compile(module);
+
+      Assert.AreEqual($"{typeof(CompilationTests).Namespace}.FooPackage", result.PackageName);
    }
 }
