@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xcst-test language-version="7" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:template name='c:initial-template'>
+      <output>
+         <c:apply-templates value='5' mode='foo'/>
+      </output>
+   </c:template>
+
+   <c:template match='object o' mode='foo'>
+      <c:text>object </c:text>
+      <c:value-of value='o'/>
+   </c:template>
+
+   <c:template match='int' mode='foo'>
+      <c:call-template name='bar'/>
+   </c:template>
+
+   <c:template name='bar'>
+      <c:next-match/>
+   </c:template>
+
+   <c:template name='expected'>
+      <output>object 5</output>
+   </c:template>
+
+</c:module>

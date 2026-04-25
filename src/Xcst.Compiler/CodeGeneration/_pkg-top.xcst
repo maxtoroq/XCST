@@ -264,10 +264,12 @@
                   <call-template name='src:constructor'/>
                   <call-template name='src:prime-method'/>
                   <call-template name='src:get-template-method'/>
-                  <call-template name='src:get-mode-method'>
-                     <with-param name='allModes' value='true'/>
-                  </call-template>
                   <call-template name='src:get-mode-method'/>
+                  <if test='packageManifest.Elements(xcst + "mode").Any()'>
+                     <call-template name='src:get-mode-method'>
+                        <with-param name='allModes' value='true'/>
+                     </call-template>
+                  </if>
                   <call-template name='src:read-output-definition-method'/>
                   <apply-templates value='packageManifest
                      .Elements()

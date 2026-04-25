@@ -1074,10 +1074,13 @@
          <with-param name='el' value='el'/>
       </call-template>
 
+      <variable name='modes' value='packageManifest
+         .Elements(xcst + "mode")
+         .ToArray()'/>
+
       <variable name='meta' as='XElement?'>
          <if test='modeUQname != "#current"'>
-            <variable name='m' value='packageManifest
-               .Elements(xcst + "mode")
+            <variable name='m' value='modes
                .FirstOrDefault(p => p.Attribute("visibility")!.Value != "hidden"
                   &amp;&amp; p.Attribute("name")!.Value == modeUQname)'/>
             <if test='!(m != null)'>
@@ -1137,7 +1140,7 @@
                      </code:method-call>
                   </code:lambda>
                </when>
-               <otherwise>
+               <when test='!fn_empty(modes)'>
                   <code:method-call name='{src_all_modes_method_name}'>
                      <code:this-reference/>
                      <code:arguments>
@@ -1147,6 +1150,11 @@
                         <copy-of value='select(output, src + "reference", code)'/>
                      </code:arguments>
                   </code:method-call>
+               </when>
+               <otherwise>
+                  <message terminate='yes' error-code='XCST9107' error-data='src_error_object(el)' expand-text='yes' transform-text='trim'>
+                     There are no modes in the current package.
+                  </message>
                </otherwise>
             </choose>
             <if test='el.Attribute("separator") is { } separatorAttr'>
@@ -1189,11 +1197,13 @@
       </if>
 
       <variable name='thisRuleMode' value='src_this_rule_mode(el)'/>
+      <variable name='modes' value='packageManifest
+         .Elements(xcst + "mode")
+         .ToArray()'/>
 
       <choose>
          <when test='thisRuleMode != null'>
-            <variable name='meta' value='packageManifest
-               .Elements(xcst + "mode")
+            <variable name='meta' value='modes
                .First(p => p.Attribute("visibility")!.Value != "hidden"
                   &amp;&amp; p.Attribute("name")!.Value == thisRuleMode)'/>
             <code:method-call>
@@ -1209,7 +1219,7 @@
                </code:arguments>
             </code:method-call>
          </when>
-         <otherwise>
+         <when test='!fn_empty(modes)'>
             <code:method-call name='Invoke'>
                <code:method-call name='{src_all_modes_method_name}'>
                   <code:this-reference/>
@@ -1226,6 +1236,11 @@
                   </call-template>
                </code:arguments>
             </code:method-call>
+         </when>
+         <otherwise>
+            <message terminate='yes' error-code='XCST9107' error-data='src_error_object(el)' expand-text='yes' transform-text='trim'>
+               There are no modes in the current package.
+            </message>
          </otherwise>
       </choose>
    </template>

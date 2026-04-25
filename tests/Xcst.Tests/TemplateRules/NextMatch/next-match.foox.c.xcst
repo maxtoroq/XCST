@@ -1,7 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
-   <c:template name='foo'>
+   <c:template match='object'/>
+
+   <c:template match='int'>
       <c:next-match foo:foo='foo' xmlns:foo='urn:foo'/>
    </c:template>
 
