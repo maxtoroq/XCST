@@ -346,7 +346,7 @@
             <if test='param.Attribute("tunnel") is { } tunnelAttr
                   &amp;&amp; xcst_boolean(tunnelAttr)!.Value'>
                <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(param)' transform-text='trim'>
-                  For attribute ''tunnel'' within a c:function parameter, the only permitted values are: ''no'', ''false'', ''0''.
+                  For attribute 'tunnel' within a c:function parameter, the only permitted values are: 'no', 'false', '0'.
                </message>
             </if>
             <variable name='text' value='xcst_text(param)'/>

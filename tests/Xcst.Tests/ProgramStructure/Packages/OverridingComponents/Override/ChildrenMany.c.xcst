@@ -5,7 +5,7 @@
       <c:override>
          <c:attribute-set name='attributeSet'/>
          <c:function name='function'/>
-         <c:param name='param'/>
+         <c:param name='variable2'/>
          <c:template name='template'/>
          <c:variable name='variable'/>
       </c:override>

@@ -633,8 +633,7 @@ public class XcstOutputter {
          formatProviderFn: _formatProviderFn,
          staticBaseUri: _baseUri,
          baseOutputUri: _baseOutputUri,
-         messageListener: _messageListenerFn
-      );
+         messageListener: _messageListenerFn);
 
       _package.Context = execContext;
    }

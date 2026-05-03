@@ -204,6 +204,7 @@
          <xs:choice minOccurs="0" maxOccurs="unbounded">
             <xs:element ref="c:accept"/>
             <xs:element ref="c:override"/>
+            <xs:element ref="c:with-param"/>
          </xs:choice>
          <xs:attribute name="name" use="required" type="c:type_name">
             <xs:annotation>

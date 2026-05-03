@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:import href='_MergedImpPrecedence.xcst'/>
+
+   <c:use-package name='MergedImpPrecedence'>
+      <c:with-param name='a' value='1'/>
+      <c:with-param name='b' value='5'/>
+   </c:use-package>
+
+   <c:template name='c:initial-template'>
+      <output>
+         <c:call-template name='param-sum'/>
+      </output>
+   </c:template>
+
+   <c:template name='expected'>
+      <output>6</output>
+   </c:template>
+
+</c:module>

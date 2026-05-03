@@ -11,4 +11,6 @@
 
    <c:variable name='variable' visibility='public'/>
 
+   <c:variable name='variable2' visibility='public'/>
+
 </c:package>

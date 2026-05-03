@@ -102,7 +102,7 @@
             .FirstOrDefault(p => (mode != null) ?
                p.Name == xcst + "mode" &amp;&amp; (string?)p.Attribute("name") == mode
                : xcst_homonymous(p, el))'/>
-         <if test='!(meta != null)'>
+         <if test='!(meta != null &amp;&amp; (V1 || meta.Name.LocalName != "param"))'>
             <message terminate='yes' error-code='XTSE3058' error-data='src_error_object(el)' transform-text='trim'>
                Couldn't find a matching component in the used package.
             </message>
@@ -279,7 +279,7 @@
       <param name='usedPackages' as='XElement[]' required='yes'/>
       <param name='localComponents' as='XElement[]' required='yes'/>
 
-      <variable name='nonHidden' value='new()' as='List&lt;XElement>'/>
+      <variable name='nonHidden' value='new List&lt;XElement>()'/>
 
       <for-each name='component' in='select(usedPackages, xcst)
             .Where(p => p.Attribute("visibility")!.Value != "private")'>
@@ -297,7 +297,7 @@
          </if>
          <variable name='visibility' value='
             (overriding != null) ? "hidden"
-            : (component.Name == xcst + "param") ? "public"
+            : (V1 &amp;&amp; component.Name == xcst + "param") ? "public"
             : "private"'/>
          <variable name='localDuplicate' value='(visibility != "hidden") ?
             localComponents.FirstOrDefault(p => xcst_homonymous(p, component))

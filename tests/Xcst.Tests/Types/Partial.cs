@@ -41,7 +41,7 @@ partial class TypesTests {
          .ToArray();
 
       var pkgType = TestsHelper.CompileCode(
-         compiler.TargetNamespace + "." + compiler.TargetClass,
+         result.PackageName,
          usingPackageUri,
          compilationUnits,
          result.Language);

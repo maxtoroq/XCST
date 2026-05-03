@@ -299,6 +299,7 @@
             <choice>
                <ref name="accept"/>
                <ref name="override"/>
+               <ref name="with-param"/>
             </choice>
          </zeroOrMore>
       </element>

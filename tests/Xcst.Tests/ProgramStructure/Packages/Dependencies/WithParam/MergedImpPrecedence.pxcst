@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:package version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:param name='a' as='int'/>
+   <c:param name='b' as='int'/>
+
+   <c:template name='param-sum' visibility='final'>
+      <c:value-of value='a + b'/>
+   </c:template>
+
+</c:package>

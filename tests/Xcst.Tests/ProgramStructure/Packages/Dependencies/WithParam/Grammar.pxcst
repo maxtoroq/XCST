@@ -3,10 +3,6 @@
 
    <c:param name='a' as='int'/>
 
-   <c:param name='b' as='int'/>
-
-   <c:function name='foo' visibility='public'/>
-
-   <c:function name='bar' visibility='public'/>
+   <c:param name='b' as='string'/>
 
 </c:package>

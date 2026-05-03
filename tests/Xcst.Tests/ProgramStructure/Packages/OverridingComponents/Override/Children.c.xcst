@@ -10,7 +10,7 @@
          <c:function name='function'/>
       </c:override>
       <c:override>
-         <c:param name='param'/>
+         <c:param name='variable2'/>
       </c:override>
       <c:override>
          <c:template name='template'/>

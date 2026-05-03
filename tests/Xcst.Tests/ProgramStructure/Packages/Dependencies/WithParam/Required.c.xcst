@@ -1,16 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
-   <c:use-package name='Accepted'/>
+   <c:use-package name='Required'>
+      <c:with-param name='a' value='1'/>
+   </c:use-package>
 
    <c:template name='c:initial-template'>
-      <foo>
-         <c:value-of value='foo'/>
-      </foo>
+      <output>
+         <c:call-template name='param-a'/>
+      </output>
    </c:template>
 
    <c:template name='expected'>
-      <foo>foo</foo>
+      <output>1</output>
    </c:template>
 
 </c:module>

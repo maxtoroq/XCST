@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<c:package version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:param name='a' as='int' required='yes'/>
+
+   <c:template name='param-a' visibility='final'>
+      <c:value-of value='a'/>
+   </c:template>
+
+</c:package>

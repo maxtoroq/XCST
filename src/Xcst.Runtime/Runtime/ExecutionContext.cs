@@ -24,6 +24,9 @@ public class ExecutionContext {
    readonly Func<IFormatProvider>
    _formatProviderFn;
 
+   ExecutionContext?
+   _libContext;
+
    public IXcstPackage
    TopLevelPackage { get; }
 
@@ -41,6 +44,9 @@ public class ExecutionContext {
 
    internal Action<MessageArgs>?
    MessageListener { get; }
+
+   public ExecutionContext
+   LibraryContext => _libContext ??= new(this);
 
    internal
    ExecutionContext(
@@ -68,6 +74,22 @@ public class ExecutionContext {
       this.StaticBaseUri = staticBaseUri;
       this.BaseOutputUri = baseOutputUri;
       this.MessageListener = messageListener;
+   }
+
+   private
+   ExecutionContext(ExecutionContext topContext) {
+
+      _libContext = this;
+
+      this.TopLevelPackage = topContext.TopLevelPackage;
+      this.PrimingContext = PrimingContext.EmptyContext;
+
+      _formatProviderFn = topContext._formatProviderFn;
+      this.SimpleContent = topContext.SimpleContent;
+
+      this.StaticBaseUri = topContext.StaticBaseUri;
+      this.BaseOutputUri = topContext.BaseOutputUri;
+      this.MessageListener = topContext.MessageListener;
    }
 
    public Uri

@@ -52,7 +52,7 @@ public partial class AcceptingComponentsTests {
          .ToArray();
 
       TestsHelper.CompileCode(
-         compilerA.TargetNamespace + "." + compilerA.TargetClass,
+         resultA.PackageName,
          usingPackageUri,
          compilationUnits,
          resultA.Language);

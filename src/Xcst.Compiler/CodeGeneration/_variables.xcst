@@ -70,7 +70,7 @@
       <variable name='nameWasEscaped' value='nameExpr != name'/>
 
       <variable name='declaredVisibility' value='
-         (param) ? "public"
+         (param) ? (V1 ? "public" : "private")
          : (el.Attribute("visibility") is { } visibilityAttr) ? xcst_visibility(visibilityAttr)
          : "private"'/>
 
@@ -140,7 +140,7 @@
 
    <!-- ## Library Package -->
 
-   <template mode='src:member' match='XElement el &amp;&amp; (el.Name == xcst + "param" || el.Name == xcst + "variable")'>
+   <template mode='src:member' match='XElement el &amp;&amp; (el.Name == xcst + "param" || el.Name == xcst + "variable") &amp;&amp; V1'>
 
       <variable name='param' value='el.Name == xcst + "param"'/>
       <variable name='visibilityAttr' value='el.Attribute("visibility")!'/>
@@ -221,6 +221,62 @@
       </code:property>
    </template>
 
+   <template mode='src:member' match='XElement el &amp;&amp; el.Name == xcst + "variable" &amp;&amp; V2_OR_GREATER'>
+
+      <variable name='visibilityAttr' value='el.Attribute("visibility")!'/>
+      <variable name='publicMember' value='visibilityAttr.Value != "private"'/>
+      <variable name='typeRef' value='el.Element(code + "type-reference")!'/>
+
+      <variable name='usedPkgField'>
+         <code:field-reference name='{el.Attribute("member-name")!.Value}' verbatim='true'>
+            <code:field-reference name='{src_lib_field_name(el)}'>
+               <code:this-reference/>
+            </code:field-reference>
+         </code:field-reference>
+      </variable>
+
+      <variable name='initField'>
+         <code:field-reference name='{src_init_field(el)}'>
+            <code:this-reference/>
+         </code:field-reference>
+      </variable>
+
+      <code:property name='{el.Attribute("member-name")!.Value}'
+            visibility='{(publicMember ? "public" : "private")}'
+            extensibility='{(visibilityAttr.Value == "public" ? "virtual" : "#default")}'
+            verbatim='true'>
+         <if test='src_qualified_type(typeRef)'>
+            <attribute name='return-type-verbatim'>true</attribute>
+         </if>
+         <copy-of value='typeRef'/>
+         <code:attributes>
+            <if test='publicMember'>
+               <code:attribute>
+                  <copy-of value='src_component_attr_type'/>
+                  <code:arguments>
+                     <code:int value='4'/>
+                  </code:arguments>
+               </code:attribute>
+            </if>
+         </code:attributes>
+         <code:getter>
+            <code:block>
+               <code:return>
+                  <copy-of value='usedPkgField'/>
+               </code:return>
+            </code:block>
+         </code:getter>
+         <code:setter>
+            <code:block>
+               <code:assign>
+                  <copy-of value='usedPkgField'/>
+                  <code:setter-value/>
+               </code:assign>
+            </code:block>
+         </code:setter>
+      </code:property>
+   </template>
+
    <template mode='src:lib-overriding-type' match='XElement el &amp;&amp; (el.Name == xcst + "param" || el.Name == xcst + "variable")'>
       <code:type-reference name='Tuple' namespace='System'>
          <code:type-arguments>
@@ -276,7 +332,7 @@
 
    <template mode='src:lib-original' match='XElement el &amp;&amp; (el.Name == xcst + "param" || el.Name == xcst + "variable")'>
       <if test='el.Name == xcst + "variable"
-            || !(bool)el.Attribute("required")!'>
+            || (V1 &amp;&amp; !(bool)el.Attribute("required")!)'>
          <code:method name='{src_original_member_name(el)}' visibility='internal'>
             <code:type-reference name='Func' namespace='System'>
                <code:type-arguments>
@@ -351,7 +407,7 @@
       <variable name='meta' value='select(packageManifest, xcst)
          .First(p => p.Attribute("declaration-id")?.Value == id)'/>
 
-      <variable name='visibility' value='meta.Attribute("visibility")!.Value'/>
+      <variable name='visibility' value='(param &amp;&amp; V2_OR_GREATER) ? "final" : meta.Attribute("visibility")!.Value'/>
       <variable name='required' value='(param) ? (bool)meta.Attribute("required")! : false'/>
       <variable name='publicMember' value='visibility is "public" or "final" or "abstract"'/>
       <variable name='verbatim' value='(bool?)meta.Attribute("member-name-was-escaped") == true'/>
@@ -569,7 +625,10 @@
    </function>
 
    <template name='src:prime-method'>
+      <param name='el' as='XElement' required='yes'/>
+      <param name='modules' as='XElement[]' tunnel='yes' required='yes'/>
       <param name='packageManifest' as='XElement' tunnel='yes' required='yes'/>
+      <param name='usedPackages' as='XElement[]' tunnel='yes' required='yes'/>
 
       <variable name='context'>
          <src:context>
@@ -593,22 +652,19 @@
             <for-each name='param' in='select(packageManifest, xcst + "param")
                   .Where(p => p.Attribute("visibility")!.Value != "hidden")'>
                <variable name='required' value='(bool)param.Attribute("required")!'/>
-               <variable name='accepted' value='(bool?)param.Attribute("accepted") == true'/>
                <variable name='verbatim' value='(bool?)param.Attribute("member-name-was-escaped") == true'/>
                <choose>
                   <when test='required'>
                      <code:if>
                         <code:or-else>
-                           <if test='V2_OR_GREATER'>
-                              <code:method-call name='HasParam'>
-                                 <copy-of value='select(context, src + "reference", code)'/>
-                                 <code:arguments>
-                                    <code:string literal='true'>
-                                       <value-of value='param.Attribute("name")!.Value'/>
-                                    </code:string>
-                                 </code:arguments>
-                              </code:method-call>
-                           </if>
+                           <code:method-call name='HasParam'>
+                              <copy-of value='select(context, src + "reference", code)'/>
+                              <code:arguments>
+                                 <code:string literal='true'>
+                                    <value-of value='param.Attribute("name")!.Value'/>
+                                 </code:string>
+                              </code:arguments>
+                           </code:method-call>
                            <code:not>
                               <code:field-reference name='{src_init_field(param)}'>
                                  <code:this-reference/>
@@ -619,7 +675,7 @@
                            <code:assign>
                               <code:property-reference name='{param.Attribute("member-name")!.Value}'>
                                  <if test='verbatim'>
-                                    <attribute name='verbatim' value='fn_string(verbatim)'/>
+                                    <attribute name='verbatim'>true</attribute>
                                  </if>
                                  <code:this-reference/>
                               </code:property-reference>
@@ -641,8 +697,7 @@
                         </code:block>
                      </code:if>
                   </when>
-                  <when test='V2_OR_GREATER
-                        &amp;&amp; !accepted'>
+                  <otherwise>
                      <code:if>
                         <code:method-call name='HasParam'>
                            <copy-of value='select(context, src + "reference", code)'/>
@@ -661,12 +716,145 @@
                            </code:assign>
                         </code:block>
                      </code:if>
-                  </when>
+                  </otherwise>
                </choose>
+            </for-each>
+            <for-each name='module' in='modules
+                  .Where(p => !fn_empty(src_priming_lib_params(p, usedPackages)))'>
+               <code:method-call name='{src_primelib_method_name(module)}'>
+                  <code:this-reference/>
+               </code:method-call>
+            </for-each>
+            <variable name='emptyCtxRef'>
+               <code:property-reference name='EmptyContext'>
+                  <copy-of value='src_helper_type("PrimingContext")'/>
+               </code:property-reference>
+            </variable>
+            <for-each name='pkg' in='usedPackages'>
+               <code:method-call name='Prime'>
+                  <code:cast>
+                     <copy-of value='src_package_interface'/>
+                     <code:field-reference name='{src_lib_field_name(pkg)}'>
+                        <code:this-reference/>
+                     </code:field-reference>
+                  </code:cast>
+                  <code:arguments>
+                     <copy-of value='emptyCtxRef'/>
+                  </code:arguments>
+               </code:method-call>
             </for-each>
          </code:block>
       </code:method>
    </template>
+
+   <template name='src:prime-method-v1'>
+      <param name='packageManifest' as='XElement' tunnel='yes' required='yes'/>
+
+      <variable name='context'>
+         <src:context>
+            <copy-of value='src_helper_type("PrimingContext")'/>
+            <src:reference>
+               <code:variable-reference name='{src_aux_variable("context")}'/>
+            </src:reference>
+         </src:context>
+      </variable>
+
+      <code:method name='Prime' visibility='private'>
+         <code:implements-interface>
+            <copy-of value='src_package_interface'/>
+         </code:implements-interface>
+         <code:parameters>
+            <code:parameter name='{select(context, src + "reference", code).First().Attribute("name")!.Value}'>
+               <copy-of value='context.Element(code + "type-reference")'/>
+            </code:parameter>
+         </code:parameters>
+         <code:block>
+            <for-each name='param' in='select(packageManifest, xcst + "param")
+                  .Where(p => p.Attribute("visibility")!.Value != "hidden"
+                     &amp;&amp; (bool)p.Attribute("required")!)'>
+               <code:if>
+                  <code:not>
+                     <code:field-reference name='{src_init_field(param)}'>
+                        <code:this-reference/>
+                     </code:field-reference>
+                  </code:not>
+                  <code:block>
+                     <code:assign>
+                        <code:property-reference name='{param.Attribute("member-name")!.Value}'>
+                           <if test='(bool?)param.Attribute("member-name-was-escaped") == true'>
+                              <attribute name='verbatim'>true</attribute>
+                           </if>
+                           <code:this-reference/>
+                        </code:property-reference>
+                        <code:method-call name='Param'>
+                           <copy-of value='select(context, src + "reference", code)'/>
+                           <code:type-arguments>
+                              <copy-of value='param.Element(code + "type-reference")'/>
+                           </code:type-arguments>
+                           <code:arguments>
+                              <code:string literal='true'>
+                                 <value-of value='param.Attribute("name")!.Value'/>
+                              </code:string>
+                              <code:argument name='required'>
+                                 <code:bool value='true'/>
+                              </code:argument>
+                           </code:arguments>
+                        </code:method-call>
+                     </code:assign>
+                  </code:block>
+               </code:if>
+            </for-each>
+         </code:block>
+      </code:method>
+   </template>
+
+   <template name='src:primelib-method'>
+      <param name='el' as='XElement' required='yes'/>
+      <param name='usedPackages' as='XElement[]' tunnel='yes' required='yes'/>
+
+      <variable name='withParams' value='src_priming_lib_params(el, usedPackages)'/>
+
+      <if test='!(!fn_empty(withParams))'>
+         <return/>
+      </if>
+
+      <code:method name='{src_primelib_method_name(el)}' visibility='private'>
+         <code:attributes>
+            <call-template name='src:editor-browsable-never'/>
+         </code:attributes>
+         <code:block>
+            <for-each name='wp' in='withParams'>
+               <code:assign>
+                  <code:chain>
+                     <code:this-reference/>
+                     <code:field-reference name='{src_lib_field_name(wp.Parent!)}'>
+                        <code:chain-reference/>
+                     </code:field-reference>
+                     <code:property-reference name='{wp.Attribute("name")!.Value}' verbatim='true'>
+                        <code:chain-reference/>
+                     </code:property-reference>
+                  </code:chain>
+                  <copy-of value='select(wp, code).Single()'/>
+               </code:assign>
+            </for-each>
+         </code:block>
+      </code:method>
+   </template>
+
+   <function name='src_primelib_method_name' as='string'>
+      <param name='module' as='XElement'/>
+
+      <return value='src_aux_variable("primelib_" + fn_generate_id(module))'/>
+   </function>
+
+   <function name='src_priming_lib_params' as='XElement[]'>
+      <param name='module' as='XElement'/>
+      <param name='usedPackages' as='XElement[]'/>
+
+      <return value='select(usedPackages, src + "with-param")
+         .Where(p => p.Attribute("declaring-module-uri")!.Value == module.Document!.BaseUri)
+         .ToArray()'/>
+   </function>
 
 
    <!-- ## Instructions -->

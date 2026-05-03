@@ -15,15 +15,14 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Xcst.Runtime;
 
 /// <exclude/>
 public class PrimingContext {
 
-   static readonly PrimingContext
-   _emptyContext = new(0);
+   public static PrimingContext
+   EmptyContext { get; } = new(0);
 
    readonly Dictionary<string, object?>?
    _parameters;
@@ -32,7 +31,7 @@ public class PrimingContext {
    Create(int paramCount) {
 
       if (paramCount == 0) {
-         return _emptyContext;
+         return EmptyContext;
       }
 
       return new PrimingContext(paramCount);

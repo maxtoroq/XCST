@@ -96,7 +96,9 @@
 
       <call-template name='xcst:validate-children'>
          <with-param name='el' value='el'/>
-         <with-param name='allowed' value='new[] { "accept", "override" }'/>
+         <with-param name='allowed' value='new[] { "accept", "override", (V2_OR_GREATER ? "with-param" : null) }
+            .Where(p => p != null)
+            .ToArray()!'/>
       </call-template>
 
       <variable name='resolvedName' value='src_resolve_package_name(el, @namespace)'/>
@@ -107,7 +109,12 @@
             Duplicate c:use-package declaration.
          </message>
       </if>
-      <apply-templates value='el.Elements().Where(p => p.Name == c + "accept" || p.Name == c + "override")' mode='xcst:validate-use-package'/>
+
+      <call-template name='xcst:validate-with-param'>
+         <with-param name='el' value='el'/>
+      </call-template>
+
+      <apply-templates value='el.Elements().Where(p => p.Name.Namespace == c)' mode='xcst:validate-use-package'/>
    </template>
 
    <template match='XElement el &amp;&amp; el.Name == c + "accept"' mode='xcst:validate-use-package'>
@@ -135,6 +142,15 @@
          <with-param name='el' value='el'/>
          <with-param name='allowed' value='new[] { "template", "function", "attribute-set", "param", "variable" }'/>
       </call-template>
+   </template>
+
+   <template match='XElement el &amp;&amp; el.Name == c + "with-param"' mode='xcst:validate-use-package'>
+      <if test='el.Attribute("tunnel") is { } tunnelAttr
+            &amp;&amp; xcst_boolean(tunnelAttr)!.Value'>
+         <message terminate='yes' error-code='XTSE0020' error-data='src_error_object(el)' expand-text='yes' transform-text='trim'>
+            For attribute 'tunnel' of a c:{el.Name.LocalName} child of c:{el.Parent!.Name.LocalName}, the only permitted values are: 'no', 'false', '0'.
+         </message>
+      </if>
    </template>
 
 
@@ -262,7 +278,23 @@
                   <call-template name='src:execution-context'/>
                   <call-template name='src:qname-fields'/>
                   <call-template name='src:constructor'/>
-                  <call-template name='src:prime-method'/>
+                  <choose>
+                     <when test='V1'>
+                        <call-template name='src:prime-method-v1'/>
+                     </when>
+                     <otherwise>
+                        <call-template name='src:prime-method'>
+                           <with-param name='el' value='el'/>
+                        </call-template>
+                     </otherwise>
+                  </choose>
+               </if>
+               <if test='V2_OR_GREATER'>
+                  <call-template name='src:primelib-method'>
+                     <with-param name='el' value='el'/>
+                  </call-template>
+               </if>
+               <if test='principalModule'>
                   <call-template name='src:get-template-method'/>
                   <call-template name='src:get-mode-method'/>
                   <if test='packageManifest.Elements(xcst + "mode").Any()'>
@@ -367,7 +399,16 @@
                            </code:field-reference>
                         </code:cast>
                      </code:property-reference>
-                     <code:setter-value/>
+                     <choose>
+                        <when test='V2_OR_GREATER'>
+                           <code:property-reference name='LibraryContext'>
+                              <code:setter-value/>
+                           </code:property-reference>
+                        </when>
+                        <otherwise>
+                           <code:setter-value/>
+                        </otherwise>
+                     </choose>
                   </code:assign>
                </for-each>
                <code:assign>

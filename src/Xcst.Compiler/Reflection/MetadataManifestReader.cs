@@ -54,6 +54,9 @@ partial class MetadataManifestReader {
    readonly string
    _packageModelNs;
 
+   readonly bool
+   _v1rt;
+
    public static void
    ReadAssembly(Stream assemblySource, Func<string, XmlWriter> writerFn) {
 
@@ -108,6 +111,7 @@ partial class MetadataManifestReader {
       _reader = reader;
       _writer = writer;
       _packageModelNs = (v1rt) ? _v1PackageModelNs : _v2PackageModelNs;
+      _v1rt = v1rt;
    }
 
    void
@@ -361,7 +365,7 @@ partial class MetadataManifestReader {
          _writer.WriteAttributeString("required", XmlConvert.ToString(required));
       }
 
-      _writer.WriteAttributeString("visibility", ComponentVisibility(getterDef));
+      _writer.WriteAttributeString("visibility", (isParam && !_v1rt) ? "private" : ComponentVisibility(getterDef));
       _writer.WriteAttributeString("member-name", memberName);
 
       var signature = propDef.DecodeSignature(_signatureTypeProvider, null);

@@ -2,32 +2,28 @@
 using System.IO;
 using System.Linq;
 using System.Xml;
+using System.Xml.Linq;
 using NUnit.Framework;
-using Xcst.Compiler;
 
-namespace Xcst.Tests.ProgramStructure.Packages.OverridingComponents.Variable;
-using ModuleResolver = VariableTests.Overridden_Non_Compiled_Resolver;
+namespace Xcst.Tests.API.Evaluation;
 
-partial class VariableTests {
-
-   const string
-   TestCategory = nameof(ProgramStructure) + "." + nameof(Packages) + "." + nameof(OverridingComponents) + "." + nameof(Variable);
+partial class EvaluationTests {
 
    [Test]
    [Category(TestCategory)]
    public void
-   Overridden_Non_Compiled() {
+   Dont_Leak_Top_Package_Params() {
 
       var compilerA = TestsHelper.CreateCompiler();
       compilerA.TargetClass = "FooPackage";
-      compilerA.TargetNamespace = typeof(VariableTests).Namespace;
+      compilerA.TargetNamespace = typeof(EvaluationTests).Namespace;
       compilerA.PackageLocationResolver = name => new Uri("urn:x:" + name);
-      compilerA.ModuleResolver = new ModuleResolver();
+      compilerA.ModuleResolver = new DontLeakTopPkgParamsResolver();
 
       var usingPackageUri = new Uri(@"c:\foo.xcst");
 
       var resultA = compilerA.Compile(
-         new StringReader(ModuleResolver.GetPackageString("")),
+         new StringReader(DontLeakTopPkgParamsResolver.GetPackageString("")),
          baseUri: usingPackageUri);
 
       var compilerB = TestsHelper.CreateCompiler();
@@ -35,21 +31,35 @@ partial class VariableTests {
       compilerB.ModuleResolver = compilerA.ModuleResolver;
 
       var resultB = compilerB.Compile(
-         new StringReader(ModuleResolver.GetPackageString("localhost.PackageB")),
+         new StringReader(DontLeakTopPkgParamsResolver.GetPackageString("localhost.PackageB")),
          baseUri: compilerB.PackageLocationResolver("localhost.PackageB"));
 
       var compilationUnits = resultB.CompilationUnits
          .Concat(resultA.CompilationUnits)
          .ToArray();
 
-      TestsHelper.CompileCode(
+      var pkgType = TestsHelper.CompileCode(
          resultA.PackageName,
          usingPackageUri,
          compilationUnits,
          resultA.Language);
+
+      var resultDoc = new XDocument();
+      var resultWriter = resultDoc.CreateWriter();
+
+      XcstEvaluator.Using(Activator.CreateInstance(pkgType)!)
+         .WithParam("foo", "foo")
+         .WithParam("bar", "bar")
+         .CallInitialTemplate()
+         .OutputTo(resultWriter)
+         .Run();
+
+      resultWriter.Close();
+
+      Assert.AreEqual("foo", resultDoc.Root!.Value);
    }
 
-   internal class Overridden_Non_Compiled_Resolver : XmlResolver {
+   class DontLeakTopPkgParamsResolver : XmlResolver {
 
       public static string
       GetPackageString(string name) {
@@ -57,21 +67,27 @@ partial class VariableTests {
          switch (name) {
             case "":
                return @"
-<c:package version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
-   <c:use-package name='localhost.PackageB'>
-      <c:override>
-         <c:variable name='foo' value='""bar""' as='string'/>
-      </c:override>
-   </c:use-package>
-</c:package>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+   <c:use-package name='localhost.PackageB'/>
+   <c:param name='foo' as='string'/>
+   <c:template name='c:initial-template'>
+      <output>
+         <c:call-template name='my-tmpl'/>
+         <c:value-of value='foo'/>
+      </output>
+   </c:template>
+</c:module>
 ";
             case "localhost.PackageB":
                return @"
 <c:package name='localhost.PackageB' version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
-   <c:import-namespace ns='System'/>
-   <c:variable name='foo' value='""foo""' as='String' visibility='public'/>
+   <c:param name='bar' as='string'/>
+   <c:template name='my-tmpl' visibility='final'>
+      <c:return value='bar'/>
+   </c:template>
 </c:package>
 ";
+
             default:
                throw new ArgumentException("Invalid name.", nameof(name));
          }
