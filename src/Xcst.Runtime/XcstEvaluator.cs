@@ -23,6 +23,8 @@ using Xcst.Runtime;
 
 namespace Xcst;
 
+using PrimeDelegate = Action<Func<PrimingContext, ExecutionContext>>;
+
 public class XcstEvaluator {
 
    static readonly XName
@@ -156,8 +158,10 @@ public class XcstEvaluator {
       return new XcstTemplateEvaluator(_package, Prime, input, mode);
    }
 
-   private protected PrimingContext
-   Prime() {
+   private protected void
+   Prime(Func<PrimingContext, ExecutionContext> execContextFn) {
+
+      var shouldPrime = false;
 
       if (_primingContext is null) {
 
@@ -168,10 +172,14 @@ public class XcstEvaluator {
          }
 
          _parameters.Clear();
-         _package.Prime(_primingContext);
+         shouldPrime = true;
       }
 
-      return _primingContext;
+      _package.Context = execContextFn.Invoke(_primingContext);
+
+      if (shouldPrime) {
+         _package.Prime(_primingContext);
+      }
    }
 }
 
@@ -240,7 +248,7 @@ public class XcstTemplateEvaluator {
    readonly IXcstPackage
    _package;
 
-   readonly Func<PrimingContext>
+   readonly PrimeDelegate
    _primeFn;
 
    readonly XName?
@@ -259,7 +267,7 @@ public class XcstTemplateEvaluator {
    _tunnelParameters = new();
 
    internal
-   XcstTemplateEvaluator(IXcstPackage package, Func<PrimingContext> primeFn, XName name) {
+   XcstTemplateEvaluator(IXcstPackage package, PrimeDelegate primeFn, XName name) {
 
       _package = package ?? throw Argument.Null(package);
       _primeFn = primeFn ?? throw Argument.Null(primeFn);
@@ -267,7 +275,7 @@ public class XcstTemplateEvaluator {
    }
 
    internal
-   XcstTemplateEvaluator(IXcstPackage package, Func<PrimingContext> primeFn, object? input, XName? mode) {
+   XcstTemplateEvaluator(IXcstPackage package, PrimeDelegate primeFn, object? input, XName? mode) {
 
       _package = package ?? throw Argument.Null(package);
       _primeFn = primeFn ?? throw Argument.Null(primeFn);
@@ -528,7 +536,7 @@ public class XcstOutputter {
    readonly IXcstPackage
    _package;
 
-   readonly Func<PrimingContext>
+   readonly PrimeDelegate
    _primeFn;
 
    readonly Action<OutputParameters?, bool>
@@ -550,7 +558,7 @@ public class XcstOutputter {
    _messageListenerFn;
 
    internal
-   XcstOutputter(IXcstPackage package, Func<PrimingContext> primeFn, Action<OutputParameters?, bool> executionFn) {
+   XcstOutputter(IXcstPackage package, PrimeDelegate primeFn, Action<OutputParameters?, bool> executionFn) {
 
       _package = package ?? throw Argument.Null(package);
       _primeFn = primeFn ?? throw Argument.Null(primeFn);
@@ -625,17 +633,13 @@ public class XcstOutputter {
    private protected void
    InitPackage() {
 
-      var primingContext = _primeFn.Invoke();
-
-      var execContext = new ExecutionContext(
+      _primeFn.Invoke(primingContext => new ExecutionContext(
          topLevelPackage: _package,
          primingContext: primingContext,
          formatProviderFn: _formatProviderFn,
          staticBaseUri: _baseUri,
          baseOutputUri: _baseOutputUri,
-         messageListener: _messageListenerFn);
-
-      _package.Context = execContext;
+         messageListener: _messageListenerFn));
    }
 }
 
@@ -645,7 +649,7 @@ public class XcstOutputter<TResult> : XcstOutputter {
    _executionFn;
 
    internal
-   XcstOutputter(IXcstPackage package, Func<PrimingContext> primeFn, Func<TResult> executionFn)
+   XcstOutputter(IXcstPackage package, PrimeDelegate primeFn, Func<TResult> executionFn)
       : base(package, primeFn, (p, sf) => executionFn.Invoke()) {
 
       _executionFn = executionFn;
