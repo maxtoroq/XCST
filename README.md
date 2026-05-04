@@ -32,17 +32,18 @@ Tests now run on .NET Core and compatibility with this framework is the priority
 Breaking Changes
 ----------------
 ### Language
-- [Renamed c:metadata to c:meta and 'name' attribute to 'type'](https://github.com/maxtoroq/XCST/commit/1607566fd799b36bc5034e5097831810c9325e14)
-- [Removed 'html-version' since xhtml output is not supported](https://github.com/maxtoroq/XCST/commit/b36590e9a212dc405e5e25a91c744d8c8bd64ef6)
+- [Renamed `c:metadata` to `c:meta` and 'name' attribute to 'type'](https://github.com/maxtoroq/XCST/commit/1607566fd799b36bc5034e5097831810c9325e14)
 - [Renamed 'display-text-member' to 'text-member'](https://github.com/maxtoroq/XCST/commit/2eee63272488034c2536ba81b61087bb692e0356)
 - [Renamed 'null-display-text' to 'null-text'](https://github.com/maxtoroq/XCST/commit/df54dad48d4315c2adf67e4e2ccbafca7e08dc34)
+- [Removed 'html-version' since XHTML output is not supported](https://github.com/maxtoroq/XCST/commit/b36590e9a212dc405e5e25a91c744d8c8bd64ef6)
 - [Removed implicit unnamed mode](https://github.com/maxtoroq/XCST/commit/bb1269abf695410a112e5851194768cc6f7b9f88)
 - [Changed default built-in template rule to fail](https://github.com/maxtoroq/XCST/commit/bf8a3319cf120c1b19c3e257a1f643cc0522d994)
-- [Changed the default separator for sequence constructors of c:attribute and c:value-of to single space](https://github.com/maxtoroq/XCST/commit/f64f86a22444bfa736f58b4d5b587808b97d4d90)
+- [Changed the default separator for sequence constructors of `c:attribute` and `c:value-of` to single space](https://github.com/maxtoroq/XCST/commit/f64f86a22444bfa736f58b4d5b587808b97d4d90)
 - [Don't assign local variable without value](https://github.com/maxtoroq/XCST/commit/216d0e6fa5fa72e8e5ec3fdf01e6a747787319f9)
-- [Resolve 'validation-resource-type' from c:validation against package namespace, or treat as fully-qualified](https://github.com/maxtoroq/XCST/commit/8a42ce48473a62c94ba3f75248a621eacddbc070)
+- [Resolve 'validation-resource-type' from `c:validation` against package namespace, or treat as fully-qualified](https://github.com/maxtoroq/XCST/commit/8a42ce48473a62c94ba3f75248a621eacddbc070)
 - [Not using 'data-type' for validation](https://github.com/maxtoroq/XCST/commit/944fc8de7741c21e078a64708395032fa1deb1a3)
 - [Deprecated System.Delegate fallback on invoke-delegate as it hides programming errors](https://github.com/maxtoroq/XCST/commit/0e25b838ffcdc4aabf5a29de76c4848dadeec06d)
+- [Package parameters are not visible to using package (set with `c:use-package/c:with-param`)](https://github.com/maxtoroq/XCST/commit/4e188f71cbc104ce19089f81a2a4406474e15b33)
 
 ### Compiler
 - [Removed XcstCompilerFactory](https://github.com/maxtoroq/XCST/commit/493f489671bd364ac1dd412e5947aa693d75f185)
