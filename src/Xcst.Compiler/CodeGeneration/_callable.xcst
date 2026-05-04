@@ -49,7 +49,7 @@
 
       <variable name='declaredVisibility' value='
          (el.Attribute("visibility") is { } visibilityAttr) ? xcst_visibility(visibilityAttr)
-         : (el.Parent!.Name != c + "override" &amp;&amp; implicitPackage) ? "public"
+         : (el.Parent!.Name != c + "override" &amp;&amp; implicitPackage) ? "final"
          : "private"'/>
 
       <call-template name='xcst:validate-empty-component'>
