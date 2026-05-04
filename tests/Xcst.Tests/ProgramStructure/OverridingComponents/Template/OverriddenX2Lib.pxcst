@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<c:package name='Xcst.Tests.ProgramStructure.Packages.OverridingComponents.Template.OverriddenX2Lib' version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+<c:package name='Xcst.Tests.ProgramStructure.OverridingComponents.Template.OverriddenX2Lib' version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
 
    <c:template name='text' visibility='public'>foo</c:template>
 

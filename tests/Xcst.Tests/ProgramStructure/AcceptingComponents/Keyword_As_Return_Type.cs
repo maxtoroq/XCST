@@ -4,7 +4,7 @@ using System.Linq;
 using System.Xml;
 using NUnit.Framework;
 
-namespace Xcst.Tests.ProgramStructure.Packages.AcceptingComponents;
+namespace Xcst.Tests.ProgramStructure.AcceptingComponents;
 
 using ModuleResolver = AcceptingComponentsTests.Keyword_As_Return_Type_Resolver;
 

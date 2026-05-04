@@ -6,5 +6,5 @@ namespace Xcst.Tests.API.Evaluation;
 public partial class EvaluationTests {
 
    const string
-   TestCategory = nameof(API) + "." + nameof(Evaluation);
+   TestCategory = $"{nameof(API)}.{nameof(Evaluation)}";
 }

@@ -4,14 +4,14 @@ using System.Linq;
 using System.Xml;
 using NUnit.Framework;
 
-namespace Xcst.Tests.ProgramStructure.Packages.AcceptingComponents;
+namespace Xcst.Tests.ProgramStructure.AcceptingComponents;
 
 using ModuleResolver = AcceptingComponentsTests.Component_Using_Accepted_Type_Resolver;
 
 public partial class AcceptingComponentsTests {
 
    const string
-   TestCategory = nameof(ProgramStructure) + "." + nameof(Packages) + "." + nameof(AcceptingComponents);
+   TestCategory = $"{nameof(ProgramStructure)}.{nameof(AcceptingComponents)}";
 
    [Test]
    [Category(TestCategory)]

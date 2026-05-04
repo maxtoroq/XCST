@@ -2,6 +2,7 @@
 using NUnit.Framework;
 
 namespace Xcst.Tests.API.Evaluation;
+
 using TestPackage = ExplicitPkgInitDefaultMode;
 
 partial class EvaluationTests {

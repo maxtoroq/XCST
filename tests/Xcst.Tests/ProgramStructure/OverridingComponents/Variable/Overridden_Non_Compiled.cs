@@ -3,15 +3,15 @@ using System.IO;
 using System.Linq;
 using System.Xml;
 using NUnit.Framework;
-using Xcst.Compiler;
 
-namespace Xcst.Tests.ProgramStructure.Packages.OverridingComponents.Variable;
+namespace Xcst.Tests.ProgramStructure.OverridingComponents.Variable;
+
 using ModuleResolver = VariableTests.Overridden_Non_Compiled_Resolver;
 
 partial class VariableTests {
 
    const string
-   TestCategory = nameof(ProgramStructure) + "." + nameof(Packages) + "." + nameof(OverridingComponents) + "." + nameof(Variable);
+   TestCategory = $"{nameof(ProgramStructure)}.{nameof(OverridingComponents)}.{nameof(Variable)}";
 
    [Test]
    [Category(TestCategory)]

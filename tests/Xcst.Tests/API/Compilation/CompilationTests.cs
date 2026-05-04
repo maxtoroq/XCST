@@ -9,7 +9,7 @@ namespace Xcst.Tests.API.Compilation;
 public partial class CompilationTests {
 
    const string
-   TestCategory = nameof(API) + "." + nameof(Compilation);
+   TestCategory = $"{nameof(API)}.{nameof(Compilation)}";
 
    [Test]
    [Category(TestCategory)]

@@ -1,5 +1,5 @@
 ﻿
-namespace Xcst.Tests.ProgramStructure.Packages.AcceptingComponents.Function;
+namespace Xcst.Tests.ProgramStructure.AcceptingComponents.Function;
 
 partial class AcceptedPartial {
 
