@@ -409,7 +409,7 @@
 
       <variable name='visibility' value='(param &amp;&amp; V2_OR_GREATER) ? "final" : meta.Attribute("visibility")!.Value'/>
       <variable name='required' value='(param) ? (bool)meta.Attribute("required")! : false'/>
-      <variable name='publicMember' value='visibility is "public" or "final" or "abstract"'/>
+      <variable name='publicMember' value='src_member_is_public(visibility)'/>
       <variable name='verbatim' value='(bool?)meta.Attribute("member-name-was-escaped") == true'/>
 
       <variable name='assign' value='(param) ? !required : (bool)meta.Attribute("has-default-value")!'/>

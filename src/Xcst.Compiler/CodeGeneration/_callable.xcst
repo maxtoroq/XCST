@@ -102,7 +102,7 @@
          </for-each>
       </if>
 
-      <variable name='publicMember' value='effectiveVisibility is "public" or "final" or "abstract"'/>
+      <variable name='publicMember' value='src_member_is_public(effectiveVisibility)'/>
       <variable name='@as' value='
          (el.Attribute("as") is { } asAttr) ?
             xcst_type(asAttr) : null'/>
@@ -231,7 +231,7 @@
          </call-template>
       </variable>
 
-      <variable name='publicMember' value='effectiveVisibility is "public" or "final" or "abstract"'/>
+      <variable name='publicMember' value='src_member_is_public(effectiveVisibility)'/>
 
       <xcst:attribute-set name='{xcst_uri_qualified_name(qname)}'
             visibility='{effectiveVisibility}'
@@ -613,7 +613,7 @@
 
       <variable name='visibility' value='meta.Attribute("visibility")!.Value'/>
       <variable name='cardinality' value='(TypeCardinality)System.Enum.Parse(typeof(TypeCardinality), meta.Attribute("cardinality")!.Value)'/>
-      <variable name='publicMember' value='visibility is "public" or "final" or "abstract"'/>
+      <variable name='publicMember' value='src_member_is_public(visibility)'/>
 
       <if test='!(visibility == "hidden"
             &amp;&amp; meta.Attribute("declared-visibility")!.Value == "abstract")'>
@@ -886,7 +886,7 @@
          .First(p => p.Attribute("declaration-id")?.Value == id)'/>
 
       <variable name='visibility' value='meta.Attribute("visibility")!.Value'/>
-      <variable name='publicMember' value='visibility is "public" or "final" or "abstract"'/>
+      <variable name='publicMember' value='src_member_is_public(visibility)'/>
 
       <variable name='context' value='src_template_context(meta)'/>
       <variable name='output' value='src_template_output(meta)'/>
@@ -963,7 +963,7 @@
 
       <variable name='visibility' value='meta.Attribute("visibility")!.Value'/>
       <variable name='declaredVisibility' value='meta.Attribute("declared-visibility")!.Value'/>
-      <variable name='publicMember' value='visibility is "public" or "final" or "abstract"'/>
+      <variable name='publicMember' value='src_member_is_public(visibility)'/>
       <variable name='partial' value='(bool?)meta.Attribute("partial") == true'/>
 
       <if test='!(visibility == "hidden"

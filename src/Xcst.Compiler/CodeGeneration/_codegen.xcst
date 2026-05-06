@@ -211,6 +211,12 @@
       <return value='"__xcst_" + name'/>
    </function>
 
+   <function name='src_member_is_public' as='bool'>
+      <param name='visibility' as='string'/>
+
+      <return value='visibility is "public" or "final" or "abstract"'/>
+   </function>
+
    <template name='src:line-number'>
       <param name='el' as='XElement' required='yes'/>
       <param name='lineNumberOffset' as='int' tunnel='yes'/>

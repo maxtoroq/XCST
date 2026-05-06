@@ -632,7 +632,7 @@
       <variable name='context' value='src_template_context(null)'/>
       <variable name='output' value='src_template_output(auxMeta)'/>
       <variable name='visibility' value='el.Attribute("visibility")!.Value'/>
-      <variable name='publicMember' value='visibility is "public" or "final"'/>
+      <variable name='publicMember' value='src_member_is_public(visibility)'/>
 
       <variable name='offsetParam'>
          <code:variable-reference name='{src_aux_variable("match_offset")}'/>

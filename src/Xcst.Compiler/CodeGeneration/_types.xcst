@@ -125,7 +125,7 @@
          .First(p => p.Attribute("declaration-id")?.Value == id)'/>
 
       <variable name='visibility' value='meta.Attribute("visibility")!.Value'/>
-      <variable name='publicMember' value='visibility is "public" or "final"'/>
+      <variable name='publicMember' value='src_member_is_public(visibility)'/>
 
       <if test='visibility != "hidden"'>
 
