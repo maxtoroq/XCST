@@ -25,10 +25,13 @@
    <import-namespace ns='System.Xml.Linq'/>
 
    <use-package name='CSharpSerializer'>
+      <with-param name='cs_open_brace_on_new_line' value='cs_open_brace_on_new_line'/>
+      <with-param name='cs_nullable_annotate' value='cs_nullable_annotate'/>
+      <with-param name='cs_nullable_context' value='cs_nullable_context'/>
+      <with-param name='cs_new_line' value='src_new_line'/>
+      <with-param name='cs_indent' value='src_indent'/>
+      <with-param name='cs_use_line_directive' value='src_use_line_directive'/>
       <override>
-         <variable name='cs_new_line' value='src_new_line' as='string'/>
-         <variable name='cs_indent' value='src_indent' as='string'/>
-         <variable name='cs_use_line_directive' value='src_use_line_directive' as='bool'/>
          <template match='XElement el &amp;&amp; el.Name == code + "region"' mode='cs:source'>
             <if test='select(el, code).Any()'>
                <next-match/>
@@ -38,10 +41,10 @@
    </use-package>
 
    <use-package name='VisualBasicSerializer'>
+      <with-param name='vb_new_line' value='src_new_line'/>
+      <with-param name='vb_indent' value='src_indent'/>
+      <with-param name='vb_use_line_directive' value='src_use_line_directive'/>
       <override>
-         <variable name='vb_new_line' value='src_new_line' as='string'/>
-         <variable name='vb_indent' value='src_indent' as='string'/>
-         <variable name='vb_use_line_directive' value='src_use_line_directive' as='bool'/>
          <template match='XElement el &amp;&amp; el.Name == code + "region"' mode='vb:source'>
             <if test='select(el, code).Any()'>
                <next-match/>
@@ -52,6 +55,9 @@
 
    <param name='src_new_line' xml:space='preserve'>&#xA;</param>
    <param name='src_indent' xml:space='preserve'>    </param>
+   <param name='cs_open_brace_on_new_line' as='bool'/>
+   <param name='cs_nullable_annotate' as='bool'/>
+   <param name='cs_nullable_context' as='string?'/>
 
    <variable name='xcst_csharp_lang'>C#</variable>
    <variable name='xcst_vb_lang'>VisualBasic</variable>
