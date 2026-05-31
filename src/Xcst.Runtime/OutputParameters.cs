@@ -50,6 +50,9 @@ public class OutputParameters {
       }
    }
 
+   public bool
+   IsEmpty => _parameters.Count == 0;
+
    public bool?
    ByteOrderMark {
       get => (bool?)this[StandardParameters.ByteOrderMark];
