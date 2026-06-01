@@ -7,7 +7,7 @@
 
    <c:template name='c:initial-template'>
       <div>
-         <c:serialize format='foo:foo'>
+         <c:serialize use-format='foo:foo'>
             <foo>foo</foo>
          </c:serialize>
       </div>

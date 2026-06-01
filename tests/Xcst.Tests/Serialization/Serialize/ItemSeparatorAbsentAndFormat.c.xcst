@@ -5,7 +5,7 @@
 
    <c:template name='c:initial-template'>
       <div>
-         <c:serialize format='foo' item-separator='#absent'>
+         <c:serialize use-format='foo' item-separator='#absent'>
             <c:object value='new[] { "4", "5" }'/>
          </c:serialize>
       </div>

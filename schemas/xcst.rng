@@ -1833,7 +1833,7 @@
    <define name="output-avt-attributes">
       <zeroOrMore>
          <choice>
-            <attribute name="format">
+            <attribute name="use-format">
                <ann:documentation>The name of the output definition to get serialization parameters from.</ann:documentation>
                <choice>
                   <ref name="eqname"/>

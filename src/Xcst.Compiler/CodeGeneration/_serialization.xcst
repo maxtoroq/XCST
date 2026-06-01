@@ -465,7 +465,7 @@
       <call-template name='xcst:validate-attribs'>
          <with-param name='el' value='el'/>
          <with-param name='optional' value='
-            new[] { "href", "output", "format" }
+            new[] { "href", "output", "use-format" }
                .Concat(src_output_parameters.Keys.Where(p => p != "version"))
                .ToArray()'/>
       </call-template>
@@ -497,7 +497,7 @@
                               .Where(p => p.Name.Namespace == XNamespace.None
                                  &amp;&amp; p.Name != "version"
                                  &amp;&amp; src_output_parameters.ContainsKey(p.Name.LocalName))
-                              .Except(new[] { el.Attribute("format"), hrefAttr, outputAttr })'>
+                              .Except(new[] { el.Attribute("use-format"), hrefAttr, outputAttr })'>
                            <call-template name='src:output-parameter-initializer'>
                               <with-param name='attr' value='attr!'/>
                            </call-template>
@@ -696,7 +696,7 @@
          <call-template name='xcst:validate-attribs'>
             <with-param name='el' value='el'/>
             <with-param name='optional' value='
-               new[] { "format" }
+               new[] { "use-format" }
                   .Concat(src_output_parameters.Keys.Where(p => p != "version"))
                   .ToArray()'/>
          </call-template>
@@ -711,7 +711,7 @@
       <src:output-parameters>
          <for-each name='attr' in='attributes(el)
                .Where(p => p.Name.Namespace == XNamespace.None
-                  &amp;&amp; p.Name != "format"
+                  &amp;&amp; p.Name != "use-format"
                   &amp;&amp; p.Name != "version"
                   &amp;&amp; src_output_parameters.ContainsKey(p.Name.LocalName))'>
             <call-template name='src:output-parameter-initializer'>
@@ -735,7 +735,7 @@
       <param name='packageManifest' as='XElement' tunnel='yes' required='yes'/>
 
       <choose>
-         <when test='el.Attribute("format") is { } formatAttr'>
+         <when test='el.Attribute("use-format") is { } formatAttr'>
             <variable name='format' value='xcst_EQName(formatAttr, null, false, true)'/>
             <if test='!(format is null
                   || packageManifest

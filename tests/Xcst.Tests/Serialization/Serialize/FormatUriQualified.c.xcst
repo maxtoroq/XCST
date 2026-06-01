@@ -7,7 +7,7 @@
 
    <c:template name='c:initial-template'>
       <div>
-         <c:serialize format='Q{urn:foo}foo'>
+         <c:serialize use-format='Q{urn:foo}foo'>
             <foo>foo</foo>
          </c:serialize>
       </div>
