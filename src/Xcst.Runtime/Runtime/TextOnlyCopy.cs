@@ -33,56 +33,41 @@ public static class TextOnlyCopy {
          return;
       }
 
-      void currMode(TemplateContext c, ISequenceWriter<object?> o) =>
-         currentMode.Invoke(c, o, matchOffset);
+      var objOutput = SequenceWriter.AdjustWriterDynamically<TBase, object?>(output);
 
       switch (value) {
          case XAttribute attr:
-            ((dynamic)output).WriteString(attr.Value);
-            return;
+            objOutput.WriteString(attr.Value);
+            break;
 
          case XText txt:
-            ((dynamic)output).WriteString(txt.Value);
-            return;
+            objOutput.WriteString(txt.Value);
+            break;
 
          case XContainer node:
-            ApplyXContainerChildren(currMode, node, context, SequenceWriter.AdjustWriterDynamically<TBase, object?>(output));
-            return;
+            foreach (var item in node.Nodes()) {
+               currentMode.Invoke(
+                  TemplateContext.ForApplyTemplatesItem(context, context.Mode, item),
+                  objOutput,
+                  matchOffset);
+            }
+            break;
 
          case XProcessingInstruction or XComment:
-            return;
+            break;
 
          case Array arr:
-            ApplyArrayMembers(currMode, arr, context, SequenceWriter.AdjustWriterDynamically<TBase, object?>(output));
-            return;
+            foreach (var item in arr) {
+               currentMode.Invoke(
+                  TemplateContext.ForApplyTemplatesItem(context, context.Mode, item),
+                  objOutput,
+                  matchOffset);
+            }
+            break;
 
          default:
-            ((dynamic)output).WriteString(package.Context.SimpleContent.Join(String.Empty, value));
-            return;
-      }
-   }
-
-   static void
-   ApplyXContainerChildren(
-         Action<TemplateContext, ISequenceWriter<object?>> currentMode,
-         XContainer node,
-         TemplateContext context,
-         ISequenceWriter<object?> output) {
-
-      foreach (var child in node.Nodes()) {
-         currentMode.Invoke(TemplateContext.ForApplyTemplatesItem(context, context.Mode, child), output);
-      }
-   }
-
-   static void
-   ApplyArrayMembers(
-         Action<TemplateContext, ISequenceWriter<object?>> currentMode,
-         Array arr,
-         TemplateContext context,
-         ISequenceWriter<object?> output) {
-
-      foreach (var item in arr) {
-         currentMode.Invoke(TemplateContext.ForApplyTemplatesItem(context, context.Mode, item), output);
+            objOutput.WriteString(package.Context.SimpleContent.Join(String.Empty, value));
+            break;
       }
    }
 }

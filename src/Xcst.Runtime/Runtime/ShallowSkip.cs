@@ -18,63 +18,80 @@ using System.Xml.Linq;
 
 namespace Xcst.Runtime;
 
+using ModeDelegate = Action<TemplateContext, ISequenceWriter<object?>, int>;
+
 public static class ShallowSkip {
 
    public static void
    Skip<TBase>(
          IXcstPackage package,
-         Action<TemplateContext, ISequenceWriter<object?>, int> currentMode,
+         ModeDelegate currentMode,
          TemplateContext context,
          ISequenceWriter<TBase> output,
          int matchOffset) {
 
-      var value = context.Input;
+      switch (context.Input) {
+         case null:
+            break;
 
-      if (value is null) {
-         return;
-      }
-
-      void currMode(TemplateContext c, ISequenceWriter<object?> o) =>
-         currentMode.Invoke(c, o, matchOffset);
-
-      switch (value) {
          case XContainer node:
-            ApplyXContainerChildren(currMode, node, context, SequenceWriter.AdjustWriterDynamically<TBase, object?>(output));
-            return;
+            ApplyXContainerChildren(
+               currentMode,
+               node,
+               context,
+               SequenceWriter.AdjustWriterDynamically<TBase, object?>(output),
+               matchOffset);
+            break;
 
          case Array arr:
-            ApplyArrayMembers(currMode, arr, context, SequenceWriter.AdjustWriterDynamically<TBase, object?>(output));
-            return;
+            ApplyArrayMembers(
+               currentMode,
+               arr,
+               context,
+               SequenceWriter.AdjustWriterDynamically<TBase, object?>(output),
+               matchOffset);
+            break;
       }
    }
 
    static void
    ApplyXContainerChildren(
-         Action<TemplateContext, ISequenceWriter<object?>> currentMode,
+         ModeDelegate currentMode,
          XContainer node,
          TemplateContext context,
-         ISequenceWriter<object?> output) {
+         ISequenceWriter<object?> output,
+         int matchOffset) {
 
       if (node is XElement el) {
          foreach (var attr in el.Attributes().Where(p => !p.IsNamespaceDeclaration)) {
-            currentMode.Invoke(TemplateContext.ForApplyTemplatesItem(context, context.Mode, attr), output);
+            currentMode.Invoke(
+               TemplateContext.ForApplyTemplatesItem(context, context.Mode, attr),
+               output,
+               matchOffset);
          }
       }
 
-      foreach (var child in node.Nodes()) {
-         currentMode.Invoke(TemplateContext.ForApplyTemplatesItem(context, context.Mode, child), output);
+      foreach (var item in node.Nodes()) {
+         currentMode.Invoke(
+            TemplateContext.ForApplyTemplatesItem(context, context.Mode, item),
+               output,
+               matchOffset);
       }
    }
 
    static void
    ApplyArrayMembers(
-         Action<TemplateContext, ISequenceWriter<object?>> currentMode,
+         ModeDelegate currentMode,
          Array arr,
          TemplateContext context,
-         ISequenceWriter<object?> output) {
+         ISequenceWriter<object?> output,
+         int matchOffset) {
 
       foreach (var item in arr) {
-         currentMode.Invoke(TemplateContext.ForApplyTemplatesItem(context, context.Mode, item), output);
+         currentMode.Invoke(
+            TemplateContext.ForApplyTemplatesItem(context, context.Mode, item),
+            output,
+            matchOffset);
       }
    }
 }

@@ -27,115 +27,46 @@ public static class DeepCopy {
          TemplateContext context,
          ISequenceWriter<TBase> output) {
 
-      var value = context.Input;
+      switch (context.Input) {
+         case var n and null:
+            output.WriteObject((TBase)n!);
+            break;
 
-      if (value is null) {
-         ((dynamic)output).WriteObject(value);
-         return;
+         case TBase item:
+            output.CopyOf(item);
+            break;
+
+         case IEnumerable<TBase> seq:
+            output.CopyOf(seq);
+            break;
+
+         default:
+            throw new NotImplementedException();
       }
-
-      if (value is TBase item) {
-         output.CopyOf(item);
-         return;
-      }
-
-      if (value is IEnumerable<TBase> seq) {
-         output.CopyOf(seq);
-         return;
-      }
-
-      throw new NotImplementedException();
-   }
-}
-
-sealed class DeepCopyImpl {
-
-   static readonly dynamic
-   _dynamicInstance = new DeepCopyImpl();
-
-   public static TItem
-   CopyDynamically<TItem>(dynamic? value) {
-
-      if (value is null) {
-         return default!;
-      }
-
-      return (TItem)_dynamicInstance.Copy(value);
    }
 
-   public Boolean
-   Copy(Boolean value) => value;
+   internal static TItem
+   CopyDynamically<TItem>(TItem value) {
 
-   public Byte
-   Copy(Byte value) => value;
-
-   public DateTime
-   Copy(DateTime value) => value;
-
-   public DateTimeOffset
-   Copy(DateTimeOffset value) => value;
-
-   public Decimal
-   Copy(Decimal value) => value;
-
-   public Double
-   Copy(Double value) => value;
-
-   public Guid
-   Copy(Guid value) => value;
-
-   public Int16
-   Copy(Int16 value) => value;
-
-   public Int32
-   Copy(Int32 value) => value;
-
-   public Int64
-   Copy(Int64 value) => value;
-
-   public JToken
-   Copy(JToken value) => value.DeepClone();
-
-   public SByte
-   Copy(SByte value) => value;
-
-   public Single
-   Copy(Single value) => value;
-
-   public String
-   Copy(String value) => value;
-
-   public TimeSpan
-   Copy(TimeSpan value) => value;
-
-   public UInt16
-   Copy(UInt16 value) => value;
-
-   public UInt32
-   Copy(UInt32 value) => value;
-
-   public UInt64
-   Copy(UInt64 value) => value;
-
-   public Uri
-   Copy(Uri value) => value;
-
-   public XAttribute
-   Copy(XAttribute value) => new XAttribute(value);
-
-   public XDeclaration
-   Copy(XDeclaration value) => new XDeclaration(value);
-
-   public XNode
-   Copy(XNode value) =>
-      value switch {
-         XElement v => new XElement(v),
-         XDocument v => new XDocument(v),
-         XCData v => new XCData(v), // XCData is also XText
-         XText v => new XText(v),
-         XComment v => new XComment(v),
-         XProcessingInstruction v => new XProcessingInstruction(v),
-         XDocumentType v => new XDocumentType(v),
+      return value switch {
+         var v and null => v,
+         XNode node => castItem(node switch {
+            XElement v => new XElement(v),
+            XDocument v => new XDocument(v),
+            XCData v => new XCData(v), // XCData is also XText
+            XText v => new XText(v),
+            XComment v => new XComment(v),
+            XProcessingInstruction v => new XProcessingInstruction(v),
+            XDocumentType v => new XDocumentType(v),
+            _ => throw new NotImplementedException()
+         }),
+         XAttribute v => castItem(new XAttribute(v)),
+         XDeclaration v => castItem(new XDeclaration(v)),
+         JToken v => castItem(v.DeepClone()),
+         var v and (ValueType or String or Uri) => v,
          _ => throw new NotImplementedException()
       };
+
+      static TItem castItem(object item) => (TItem)item;
+   }
 }

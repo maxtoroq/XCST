@@ -22,10 +22,8 @@ public static class FailMode {
          TemplateContext context,
          ISequenceWriter<TBase> output) {
 
-      var value = context.Input;
-
-      if (value is null) {
-         ((dynamic)output).WriteObject(value);
+      if (context.Input is var n and null) {
+         output.WriteObject((TBase)n!);
          return;
       }
 

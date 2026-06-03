@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xcst-test language-version="7" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:mode name='foo' on-no-match='shallow-copy'/>
+
+   <c:template name='c:initial-template'>
+      <c:call-template name='obj'/>
+      <c:call-template name='int'/>
+      <c:call-template name='int-arr'/>
+   </c:template>
+
+   <c:template name='obj'>
+      <c:variable name='input' value='new object[] { new int[] { 5 }, 7 }'/>
+      <c:variable name='expected' value='new object[] { new int[] { 6 }, 8 }'/>
+      <c:variable name='actual' as='object[]'>
+         <c:apply-templates value='input' mode='foo'/>
+      </c:variable>
+      <c:void value='Assert.AreEqual(expected, actual)'/>
+   </c:template>
+
+   <c:template name='int'>
+      <c:variable name='input' value='new int[] { 5, 7 }'/>
+      <c:variable name='expected' value='new int[] { 6, 8 }'/>
+      <c:variable name='actual' as='int[]'>
+         <c:apply-templates value='input' mode='foo'/>
+      </c:variable>
+      <c:void value='Assert.AreEqual(expected, actual)'/>
+   </c:template>
+
+   <c:template name='int-arr'>
+      <c:variable name='input' value='new int[][] { new int[] { 5 } }'/>
+      <c:variable name='expected' value='new int[][] { new int[] { 6 } }'/>
+      <c:variable name='actual' as='int[][]'>
+         <c:apply-templates value='input' mode='foo'/>
+      </c:variable>
+      <c:void value='Assert.AreEqual(expected, actual)'/>
+   </c:template>
+
+   <c:template match='int i' mode='foo'>
+      <c:object value='i + 1'/>
+   </c:template>
+
+</c:module>

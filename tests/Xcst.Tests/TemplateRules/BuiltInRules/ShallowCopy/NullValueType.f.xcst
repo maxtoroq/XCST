@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xcst-test exception="System.NullReferenceException" ?>
+<c:module version='1.0' language='C#' xmlns:c='http://maxtoroq.github.io/XCST'>
+
+   <c:mode name='foo' on-no-match='shallow-copy'/>
+
+   <c:template name='c:initial-template'>
+      <c:variable name='n' as='int'>
+         <c:apply-templates value='null' mode='foo'/>
+      </c:variable>
+   </c:template>
+
+</c:module>

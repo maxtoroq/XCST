@@ -17,41 +17,46 @@ using System.Xml.Linq;
 
 namespace Xcst.Runtime;
 
+using ModeDelegate = Action<TemplateContext, ISequenceWriter<object?>, int>;
+
 public static class DeepSkip {
 
    public static void
    Skip<TBase>(
          IXcstPackage package,
-         Action<TemplateContext, ISequenceWriter<object?>, int> currentMode,
+         ModeDelegate currentMode,
          TemplateContext context,
          ISequenceWriter<TBase> output,
          int matchOffset) {
 
-      var value = context.Input;
+      switch (context.Input) {
+         case null:
+            break;
 
-      if (value is null) {
-         return;
-      }
-
-      void currMode(TemplateContext c, ISequenceWriter<object?> o) =>
-         currentMode.Invoke(c, o, matchOffset);
-
-      switch (value) {
          case XDocument doc:
-            ApplyXDocumentChildren(currMode, doc, context, SequenceWriter.AdjustWriterDynamically<TBase, object?>(output));
-            return;
+            ApplyXDocumentChildren(
+               currentMode,
+               doc,
+               context,
+               SequenceWriter.AdjustWriterDynamically<TBase, object?>(output),
+               matchOffset);
+            break;
       }
    }
 
    static void
    ApplyXDocumentChildren(
-         Action<TemplateContext, ISequenceWriter<object?>> currentMode,
+         ModeDelegate currentMode,
          XDocument doc,
          TemplateContext context,
-         ISequenceWriter<object?> output) {
+         ISequenceWriter<object?> output,
+         int matchOffset) {
 
-      foreach (var child in doc.Nodes()) {
-         currentMode.Invoke(TemplateContext.ForApplyTemplatesItem(context, context.Mode, child), output);
+      foreach (var item in doc.Nodes()) {
+         currentMode.Invoke(
+            TemplateContext.ForApplyTemplatesItem(context, context.Mode, item),
+            output,
+            matchOffset);
       }
    }
 }
