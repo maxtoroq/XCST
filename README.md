@@ -10,8 +10,8 @@ See the [project home][XCST] for more information.
 
 Package | Targets
 ------- | -------
-**[Xcst.Compiler]**<br/>Compilation API. Use this package to translate your XCST programs into C# or Visual Basic code. | .NET 4.6 / .NET Core 2.0
-**[Xcst.Runtime]**<br/>Runtime and evaluation API. | .NET 4.6 / .NET Core 2.0 / .NET Standard 2.0
+**[Xcst.Compiler]**<br/>Compilation API. Use this package to translate your XCST programs into C# or Visual Basic code. | .NET Framework 4.6 / .NET Core 2.0 / .NET Standard 2.0
+**[Xcst.Runtime]**<br/>Runtime and evaluation API. | .NET Framework 4.6 / .NET Core 2.0 / .NET Standard 2.0
 
 Documentation
 -------------
