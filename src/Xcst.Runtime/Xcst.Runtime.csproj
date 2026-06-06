@@ -1,5 +1,5 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
     <TargetFrameworks>net461;netcoreapp2.0;net7.0;netstandard2.0</TargetFrameworks>
     <RootNamespace>Xcst</RootNamespace>
@@ -10,10 +10,12 @@
       to Compiler's Runtime dependency -->
     <VersionPrefix>2.0.9999</VersionPrefix>
     <Description>XCST runtime and evaluation API.</Description>
+    <PackageIcon>icon.png</PackageIcon>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
   </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1">
       <PrivateAssets>all</PrivateAssets>
@@ -22,13 +24,22 @@
     <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="4.4.0" Condition="'$(TargetFramework)' == 'netstandard2.0'" />
   </ItemGroup>
+
   <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
     <Reference Include="System.ComponentModel.DataAnnotations" />
   </ItemGroup>
+
   <ItemGroup>
     <Compile Include="..\Argument.cs" Link="Argument.cs" />
     <Compile Include="..\CompilerServices.cs" Link="CompilerServices.cs" />
     <Compile Include="..\Diagnostics.cs" Link="Diagnostics.cs" />
     <Compile Include="..\XmlNamespaces.cs" Link="XmlNamespaces.cs" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\LICENSE.txt" Visible="false" Pack="true" PackagePath="" />
+    <None Include="..\..\build\temp\$(MSBuildProjectName)\NOTICE.xml" Visible="false" Pack="true" PackagePath="" />
+    <None Include="..\..\build\icon.png" Visible="false" Pack="true" PackagePath="" />
+  </ItemGroup>
+
 </Project>

@@ -7,6 +7,7 @@
     <NoWarn>NETSDK1138,NU1903</NoWarn>
     <VersionPrefix>2</VersionPrefix>
     <Description>XCST compilation API. Use this package to translate your XCST programs into C# or Visual Basic code.</Description>
+    <PackageIcon>icon.png</PackageIcon>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
@@ -32,8 +33,14 @@
     <Compile Include="..\CompilerServices.cs" Link="CompilerServices.cs" />
     <Compile Include="..\Diagnostics.cs" Link="Diagnostics.cs" />
     <Compile Include="..\XmlNamespaces.cs" Link="XmlNamespaces.cs" />
-    <Content Include="..\..\schemas\xcst.rng" Visible="false" PackagePath="schemas" />
-    <Content Include="..\..\schemas\xcst.xsd" Visible="false" PackagePath="schemas" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\LICENSE.txt" Visible="false" Pack="true" PackagePath="" />
+    <None Include="..\..\build\temp\$(MSBuildProjectName)\NOTICE.xml" Visible="false" Pack="true" PackagePath="" />
+    <None Include="..\..\build\icon.png" Visible="false" Pack="true" PackagePath="" />
+    <None Include="..\..\schemas\xcst.rng" Visible="false" Pack="true" PackagePath="schemas" />
+    <None Include="..\..\schemas\xcst.xsd" Visible="false" Pack="true" PackagePath="schemas" />
   </ItemGroup>
 
   <ItemGroup>
