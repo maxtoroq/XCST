@@ -47,7 +47,6 @@ function NuPack {
    $tempNotice = PackageNotice
 
    MSBuild $project.file /t:Pack /v:minimal `
-      /p:NoBuild=true `
       /p:Configuration=$configuration `
       /p:AssemblyVersion=$assemblyVersion `
       /p:FileVersion=$pkgVersion `
