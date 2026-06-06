@@ -21,13 +21,27 @@ About v2
 --------
 *v2* is the main branch for major version 2. See *v1* for version 1 (no longer maintained).
 
-The compiler was rewritten in XCST itself, ported from the v1 compiler written in XSLT 2. Consequently, compiler extensions such as extension instructions and extension attributes must now be implemented in XCST.
+The main focuses of v2 has been porting the compiler from XSLT to XCST and refining the language. While the runtime is not backwards compatible (programs compiled against v1 must be recompiled to run on v2), it is largely compatible because the implementation code is basically the same.
 
-The compiler can generate code for runtime v1 or v2 (the default). The runtime is not backwards compatible, programs compiled against v1 must be recompiled to run on v2.
+The compiler can generate code for runtime v1 or v2 (the default), but it supports only the latest language, and there are breaking changes. New language features that require special runtime support are not supported when targeting the v1 runtime.
 
-The XCST language is still version `1.0` and continues to be refined. Breaking changes are rare and have low impact (e.g. renaming an attribute or element). One of the big new features in v2 are `c:mode` declarations. New language features that require special runtime support are not supported when targeting the v1 runtime.
+Tests now run on .NET Core and compatibility with this framework is the priority.
 
-Tests now run on .NET Core and compatibility with this framework is the priority. Support for .NET Framework and .NET Standard remains for the time being.
+What's New
+----------
+- [`c:mode` declarations](https://github.com/maxtoroq/XCST/commit/815e91e954088fea4691701145b148fd0aca474b)
+- [Copy null for `on-no-match='fail'`](https://github.com/maxtoroq/XCST/commit/1e70551da04a14813726fcea56d340f5f73659b4)
+- [`c:apply-templates` and `c:next-match` 'with-params' attribute](https://github.com/maxtoroq/XCST/commit/a8b68b305b7b4e3abd3ca2acf98a58678cb01d13)
+- [`c:type` now include partial modifier](https://github.com/maxtoroq/XCST/commit/7ebeb0e21d3bddba3bb11f3eaafc6c52bd2f9a31)
+- [`c:member` 'serialize' attribute](https://github.com/maxtoroq/XCST/commit/fa62618c6850a21dfcdc51725dc320ccc6a23393)
+- [`c:function` 'partial' attribute](https://github.com/maxtoroq/XCST/commit/7804313092397482a5f2d450e15a6cf09912e84c)
+- [`c:if` 'value' attribute](https://github.com/maxtoroq/XCST/commit/448a8ade7d6657d97af89f4f5b05209d9dd60806)
+- [`c:module` and `c:package` 'inherits' attribute](https://github.com/maxtoroq/XCST/commit/01c56cc2d0962dca1ec6a3f7d66d4fcefa69a2d8)
+- [Allow text on `c:object`](https://github.com/maxtoroq/XCST/commit/85348f04e82e8249ddd00494c6fbf2b1604cb546)
+- [Implicit `c:on-empty` when sequence type is nullable](https://github.com/maxtoroq/XCST/commit/c68c5a8817bcf0dd335aad56020367597aefc92b)
+- [`c:message` listener](https://github.com/maxtoroq/XCST/commit/11fac889ce169ead34c903cd03d5103f98b83f41)
+- [`c:use-package/c:with-param`](https://github.com/maxtoroq/XCST/commit/4e188f71cbc104ce19089f81a2a4406474e15b33)
+- [Use package file extension to find library packages](https://github.com/maxtoroq/XCST/commit/db12fb2d11d94f320b918772a49eced6709a20c6)
 
 Breaking Changes
 ----------------
@@ -40,11 +54,11 @@ Breaking Changes
 - [Renamed `c:metadata` to `c:meta` and 'name' attribute to 'type'](https://github.com/maxtoroq/XCST/commit/1607566fd799b36bc5034e5097831810c9325e14)
 - [Renamed 'display-text-member' to 'text-member'](https://github.com/maxtoroq/XCST/commit/2eee63272488034c2536ba81b61087bb692e0356)
 - [Renamed 'null-display-text' to 'null-text'](https://github.com/maxtoroq/XCST/commit/df54dad48d4315c2adf67e4e2ccbafca7e08dc34)
-- [Removed 'html-version' since XHTML output is not supported](https://github.com/maxtoroq/XCST/commit/b36590e9a212dc405e5e25a91c744d8c8bd64ef6)
+- [Renamed 'format' to 'use-format' (serialization)](https://github.com/maxtoroq/XCST/commit/c97aa4ed7e3e2a905e1f30d9d126fa3b7ac85ab5)
 - [Don't assign local variable without value](https://github.com/maxtoroq/XCST/commit/216d0e6fa5fa72e8e5ec3fdf01e6a747787319f9)
 - [Resolve 'validation-resource-type' from `c:validation` against package namespace, or treat as fully-qualified](https://github.com/maxtoroq/XCST/commit/8a42ce48473a62c94ba3f75248a621eacddbc070)
 - [Not using 'data-type' for validation](https://github.com/maxtoroq/XCST/commit/944fc8de7741c21e078a64708395032fa1deb1a3)
-- [Deprecated System.Delegate fallback on invoke-delegate as it hides programming errors](https://github.com/maxtoroq/XCST/commit/0e25b838ffcdc4aabf5a29de76c4848dadeec06d)
+- [Deprecated System.Delegate fallback on `c:invoke-delegate` as it hides programming errors](https://github.com/maxtoroq/XCST/commit/0e25b838ffcdc4aabf5a29de76c4848dadeec06d)
 - [Package parameters are not visible to using package (set with `c:use-package/c:with-param`)](https://github.com/maxtoroq/XCST/commit/4e188f71cbc104ce19089f81a2a4406474e15b33)
 
 ### Compiler
