@@ -30,18 +30,20 @@ Tests now run on .NET Core and compatibility with this framework is the priority
 What's New
 ----------
 - [`c:mode` declarations](https://github.com/maxtoroq/XCST/commit/815e91e954088fea4691701145b148fd0aca474b)
-- [Copy null for `on-no-match='fail'`](https://github.com/maxtoroq/XCST/commit/1e70551da04a14813726fcea56d340f5f73659b4)
 - [`c:apply-templates` and `c:next-match` 'with-params' attribute](https://github.com/maxtoroq/XCST/commit/a8b68b305b7b4e3abd3ca2acf98a58678cb01d13)
 - [`c:type` now include partial modifier](https://github.com/maxtoroq/XCST/commit/7ebeb0e21d3bddba3bb11f3eaafc6c52bd2f9a31)
 - [`c:member` 'serialize' attribute](https://github.com/maxtoroq/XCST/commit/fa62618c6850a21dfcdc51725dc320ccc6a23393)
 - [`c:function` 'partial' attribute](https://github.com/maxtoroq/XCST/commit/7804313092397482a5f2d450e15a6cf09912e84c)
 - [`c:if` 'value' attribute](https://github.com/maxtoroq/XCST/commit/448a8ade7d6657d97af89f4f5b05209d9dd60806)
 - [`c:module` and `c:package` 'inherits' attribute](https://github.com/maxtoroq/XCST/commit/01c56cc2d0962dca1ec6a3f7d66d4fcefa69a2d8)
+- [`visibility='hidden'` for overriding components](https://github.com/maxtoroq/XCST/commit/b598042124c6e11526baa876090d98e92634a030)
 - [Allow text on `c:object`](https://github.com/maxtoroq/XCST/commit/85348f04e82e8249ddd00494c6fbf2b1604cb546)
+- [Removed simple content restrictions, can now use `c:return`, `c:break`...](https://github.com/maxtoroq/XCST/commit/6c4cf1bd8fea741884df57a06fa57ec5bf5c6225)
 - [Implicit `c:on-empty` when sequence type is nullable](https://github.com/maxtoroq/XCST/commit/c68c5a8817bcf0dd335aad56020367597aefc92b)
 - [`c:message` listener](https://github.com/maxtoroq/XCST/commit/11fac889ce169ead34c903cd03d5103f98b83f41)
 - [`c:use-package/c:with-param`](https://github.com/maxtoroq/XCST/commit/4e188f71cbc104ce19089f81a2a4406474e15b33)
 - [Use package file extension to find library packages](https://github.com/maxtoroq/XCST/commit/db12fb2d11d94f320b918772a49eced6709a20c6)
+
 
 Breaking Changes
 ----------------
@@ -51,6 +53,7 @@ Breaking Changes
 - [Fail compilation for `c:apply-templates` and `c:next-match` when there are no modes in the current package](https://github.com/maxtoroq/XCST/commit/8c5c87556e9ce44e82e5350a75f4397d0657f3af)
 - [Changed default visibility of `c:template` on implicit packages to final](https://github.com/maxtoroq/XCST/commit/3bd2f8abe3a86254e02af28b786d4a4ea2a3ba79)
 - [Changed the default separator for sequence constructors of `c:attribute` and `c:value-of` to single space](https://github.com/maxtoroq/XCST/commit/f64f86a22444bfa736f58b4d5b587808b97d4d90)
+- [Using atomized value of simple content instructions in simple content](https://github.com/maxtoroq/XCST/commit/733a3541d7aa63b10cfbd9b620bb1067b1128db6)
 - [Renamed `c:metadata` to `c:meta` and 'name' attribute to 'type'](https://github.com/maxtoroq/XCST/commit/1607566fd799b36bc5034e5097831810c9325e14)
 - [Renamed 'display-text-member' to 'text-member'](https://github.com/maxtoroq/XCST/commit/2eee63272488034c2536ba81b61087bb692e0356)
 - [Renamed 'null-display-text' to 'null-text'](https://github.com/maxtoroq/XCST/commit/df54dad48d4315c2adf67e4e2ccbafca7e08dc34)
@@ -71,7 +74,7 @@ Breaking Changes
 - [Moved IXcstPackage to root and merged PackageModel with Runtime](https://github.com/maxtoroq/XCST/commit/099b042aa9a20d68ee628ab5fe0da76f2c816e57)
 - [C# 10 is required when targeting .NET 7+ (interpolated string handlers)](https://github.com/maxtoroq/XCST/commit/258711852a2045335160aea0142e423c8f7b4a75)
 - [On .NET 7+, dynamic expressions are not allowed in value templates (interpolated string handler implementation limitation)](https://github.com/maxtoroq/XCST/commit/30e353aaff34f3b779aff087bdfd8ae14b9c64f8)
-- [New simple content writer outputs the atomized value of all simple content instructions](https://github.com/maxtoroq/XCST/commit/733a3541d7aa63b10cfbd9b620bb1067b1128db6)
+- [Specifying package parameters override direct set values](https://github.com/maxtoroq/XCST/commit/ec2031d302fa51e838d87b4f3797da3201101785)
 
 System Requirements
 -------------------
