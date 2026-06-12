@@ -6,7 +6,7 @@
    </c:template>
 
    <c:template name='c:initial-template'>
-      <c:invoke-package package='System.Activator.CreateInstance(GetType())'
+      <c:invoke-package package='System.Activator.CreateInstance(GetType())!'
          initial-template='Q{urn:foo}foo'/>
    </c:template>
 

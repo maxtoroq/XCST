@@ -6,7 +6,7 @@
    </c:template>
 
    <c:template name='foo' as='int'>
-      <c:invoke-package package='System.Activator.CreateInstance(GetType())' initial-template='bar'/>
+      <c:invoke-package package='System.Activator.CreateInstance(GetType())!' initial-template='bar'/>
    </c:template>
 
    <c:template name='bar' as='string'>

@@ -254,7 +254,7 @@ static class TestsHelper {
       // The location of the .NET assemblies
       var assemblyPath = Path.GetDirectoryName(typeof(object).Assembly.Location)!;
 
-      MetadataReference[] references = {
+      var references = new[] {
          // XCST dependencies
          MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "mscorlib.dll")),
          MetadataReference.CreateFromFile(Path.Combine(assemblyPath, "System.dll")),
@@ -291,26 +291,35 @@ static class TestsHelper {
          MetadataReference.CreateFromFile(Assembly.GetExecutingAssembly().Location)
       };
 
-      var specificDiagnosticOptions = ((disableWarning != null) ?
-         disableWarning.Split(' ').Select(p => new KeyValuePair<string, ReportDiagnostic>(p, ReportDiagnostic.Suppress)).ToArray()
-         : Array.Empty<KeyValuePair<string, ReportDiagnostic>>())
-         .Concat(((warningAsError != null) ?
-            warningAsError.Split(' ').Select(p => new KeyValuePair<string, ReportDiagnostic>(p, ReportDiagnostic.Error)).ToArray()
-            : Array.Empty<KeyValuePair<string, ReportDiagnostic>>()));
+      var specificDiagnosticOptions = Enumerable.Empty<KeyValuePair<string, ReportDiagnostic>>();
+
+      if (disableWarning != null) {
+         specificDiagnosticOptions = specificDiagnosticOptions.Concat(
+            disableWarning.Split(' ')
+               .Select(p => new KeyValuePair<string, ReportDiagnostic>(p, ReportDiagnostic.Suppress)));
+      }
+
+      if (warningAsError != null) {
+         specificDiagnosticOptions = specificDiagnosticOptions.Concat(
+            warningAsError.Split(' ')
+               .Select(p => new KeyValuePair<string, ReportDiagnostic>(p, ReportDiagnostic.Error)));
+      }
 
       var compilation = (isCSharp) ?
          (Compilation)CSharpCompilation.Create(
             Path.GetRandomFileName(),
             syntaxTrees: syntaxTrees,
             references: references,
-            options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary,
+            options: new CSharpCompilationOptions(
+               OutputKind.DynamicallyLinkedLibrary,
                specificDiagnosticOptions: specificDiagnosticOptions
-                  .Append(new KeyValuePair<string, ReportDiagnostic>("CS1701", ReportDiagnostic.Suppress))))
+                  .Append(new("CS1701", ReportDiagnostic.Suppress))))
          : VisualBasicCompilation.Create(
             Path.GetRandomFileName(),
             syntaxTrees: syntaxTrees,
             references: references,
-            options: new VisualBasicCompilationOptions(OutputKind.DynamicallyLinkedLibrary,
+            options: new VisualBasicCompilationOptions(
+               OutputKind.DynamicallyLinkedLibrary,
                specificDiagnosticOptions: specificDiagnosticOptions));
 
       using var assemblyStream = new MemoryStream();
@@ -318,12 +327,15 @@ static class TestsHelper {
 
       var codeResult = compilation.Emit(assemblyStream, pdbStream);
 
-      var failed = codeResult.Diagnostics.Any(d => d.Severity == DiagnosticSeverity.Error
-         || (d.Severity == DiagnosticSeverity.Warning && d.WarningLevel > 1));
+      var errorDiagnostics = codeResult.Diagnostics
+         .Where(d => d.WarningLevel <= 1 && d.Severity != DiagnosticSeverity.Hidden)
+         .ToArray();
+
+      var failed = errorDiagnostics.Length > 0;
 
       if (printCode || failed) {
 
-         foreach (var item in codeResult.Diagnostics.Where(d => d.Severity != DiagnosticSeverity.Hidden)) {
+         foreach (var item in errorDiagnostics) {
             var lineSpan = item.Location.GetLineSpan();
             Console.WriteLine($"// ({lineSpan.StartLinePosition.Line},{lineSpan.StartLinePosition.Character}) {item.Severity} {item.Id}: {item.GetMessage()}");
          }

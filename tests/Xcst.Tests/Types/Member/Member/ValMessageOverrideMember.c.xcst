@@ -11,7 +11,7 @@
    </c:type>
 
    <c:template name='c:initial-template'>
-      <c:variable name='value' value='new Foo().bar'/>
+      <c:variable name='value' value='new Foo().bar!'/>
       <c:variable name='context' value='new ValidationContext(value, null, null)'/>
       <c:variable name='results' value='new List&lt;ValidationResult>()'/>
       <c:void value='Validator.TryValidateObject(value, context, results, validateAllProperties: true)'/>

@@ -26,8 +26,8 @@
       <c:void value='Assert.AreEqual(2, obj.Count)'/>
       <c:void value='Assert.IsNotNull(obj.Property("a"))'/>
       <c:void value='Assert.IsNotNull(obj.Property("b"))'/>
-      <c:void value='Assert.AreEqual(1, obj.Property("a").Value)'/>
-      <c:void value='Assert.AreEqual(2, obj.Property("b").Value)'/>
+      <c:void value='Assert.AreEqual(1, obj.Property("a")!.Value)'/>
+      <c:void value='Assert.AreEqual(2, obj.Property("b")!.Value)'/>
    </c:template>
 
    <c:template name='case-2'>
@@ -45,7 +45,7 @@
       </c:variable>
       <c:void value='Assert.AreEqual(1, obj.Count)'/>
       <c:void value='Assert.IsNotNull(obj.Property("a"))'/>
-      <c:void value='Assert.AreEqual(1, obj.Property("a").Value)'/>
+      <c:void value='Assert.AreEqual(1, obj.Property("a")!.Value)'/>
    </c:template>
 
    <c:template name='case-3'>
@@ -66,8 +66,8 @@
       <c:void value='Assert.AreEqual(2, obj.Count)'/>
       <c:void value='Assert.IsNotNull(obj.Property("a"))'/>
       <c:void value='Assert.IsNotNull(obj.Property("b"))'/>
-      <c:void value='Assert.AreEqual(1, obj.Property("a").Value)'/>
-      <c:void value='Assert.AreEqual(2, obj.Property("b").Value)'/>
+      <c:void value='Assert.AreEqual(1, obj.Property("a")!.Value)'/>
+      <c:void value='Assert.AreEqual(2, obj.Property("b")!.Value)'/>
    </c:template>
 
 </c:module>

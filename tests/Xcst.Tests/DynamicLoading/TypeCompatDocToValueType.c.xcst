@@ -3,7 +3,7 @@
 
    <c:template name='c:initial-template'>
       <foo>
-         <c:invoke-package package='System.Activator.CreateInstance(GetType())' initial-template='foo'/>
+         <c:invoke-package package='System.Activator.CreateInstance(GetType())!' initial-template='foo'/>
       </foo>
    </c:template>
 

@@ -3,7 +3,7 @@
 
    <c:template name='c:initial-template'>
 
-      <c:variable name='a' as='object[]'>
+      <c:variable name='a' as='object?[]'>
          <c:object value='"hello"'/>
          <c:call-template name='world'/>
       </c:variable>

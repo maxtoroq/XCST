@@ -6,7 +6,7 @@
    </c:type>
 
    <c:template name='c:initial-template'>
-      <c:void value='Assert.IsTrue(typeof(Foo).GetProperty("bar").PropertyType == typeof(object))'/>
+      <c:void value='Assert.IsTrue(typeof(Foo).GetProperty("bar")!.PropertyType == typeof(object))'/>
    </c:template>
 
 </c:module>

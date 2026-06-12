@@ -9,9 +9,9 @@
             <foo bar='123'>baz</foo>
          </c:document>
       </c:variable>
-      <c:void value='Assert.AreEqual("foo", doc.Root.Name.LocalName)'/>
-      <c:void value='Assert.AreEqual("123", doc.Root.Attribute("bar").Value)'/>
-      <c:void value='Assert.AreEqual("baz", doc.Root.Value)'/>
+      <c:void value='Assert.AreEqual("foo", doc.Root!.Name.LocalName)'/>
+      <c:void value='Assert.AreEqual("123", doc.Root!.Attribute("bar")!.Value)'/>
+      <c:void value='Assert.AreEqual("baz", doc.Root!.Value)'/>
    </c:template>
 
 </c:module>

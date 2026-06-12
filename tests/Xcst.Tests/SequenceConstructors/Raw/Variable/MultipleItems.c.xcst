@@ -15,8 +15,8 @@
       <c:void value='Assert.AreEqual(5, a.Length)'/>
       <c:void value='Assert.AreEqual("1", a[0])'/>
       <c:void value='Assert.AreEqual("2", a[1])'/>
-      <c:void value='Assert.AreEqual("3", ((string[])a[2])[0])'/>
-      <c:void value='Assert.AreEqual("4", ((string[])a[2])[1])'/>
+      <c:void value='Assert.AreEqual("3", ((string[])a[2]!)[0])'/>
+      <c:void value='Assert.AreEqual("4", ((string[])a[2]!)[1])'/>
       <c:void value='Assert.AreEqual(5, a[3])'/>
       <c:void value='Assert.AreEqual(6, a[4])'/>
    </c:template>

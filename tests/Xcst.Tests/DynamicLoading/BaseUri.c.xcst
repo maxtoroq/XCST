@@ -12,7 +12,7 @@
       <c:variable name='context' value='((IXcstPackage)this).Context'/>
       <c:variable name='outputUri' value='context.ResolveUri($"{outputDir}{outputDir}{tempFile}")'/>
       <c:invoke-package
-         package='Activator.CreateInstance(GetType())'
+         package='Activator.CreateInstance(GetType())!'
          initial-template='foo'
          base-uri='{outputDir}'/>
       <c:void value='Assert.IsTrue(File.Exists(outputUri.LocalPath))'/>
@@ -21,7 +21,7 @@
 
    <c:template name='foo'>
       <c:invoke-package
-         package='Activator.CreateInstance(GetType())'
+         package='Activator.CreateInstance(GetType())!'
          initial-template='bar'
          base-output-uri='{outputDir}'/>
    </c:template>

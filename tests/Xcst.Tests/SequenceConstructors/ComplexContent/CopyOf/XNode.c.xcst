@@ -15,7 +15,7 @@
          <c:copy-of value='(object)doc'/>
          <!-- XElement -->
          <c:copy-of value='doc.Root'/>
-         <c:copy-of value='(object)doc.Root'/>
+         <c:copy-of value='(object)doc.Root!'/>
          <!-- XNode -->
          <c:copy-of value='(XNode)doc'/>
       </foo>

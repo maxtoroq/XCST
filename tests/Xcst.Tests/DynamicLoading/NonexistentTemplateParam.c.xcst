@@ -3,7 +3,7 @@
 
    <c:template name='c:initial-template'>
       <c:invoke-package
-         package='System.Activator.CreateInstance(GetType())'
+         package='System.Activator.CreateInstance(GetType())!'
          initial-template='foo'
          template-params='new { a = "a" }'
          tunnel-params='new { }'/>

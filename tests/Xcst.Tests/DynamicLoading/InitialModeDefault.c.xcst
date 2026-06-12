@@ -2,7 +2,7 @@
 <c:module version='1.0' language='C#' default-mode='foo' xmlns:c='http://maxtoroq.github.io/XCST'>
 
    <c:template name='c:initial-template'>
-      <c:invoke-package package='System.Activator.CreateInstance(GetType())'
+      <c:invoke-package package='System.Activator.CreateInstance(GetType())!'
          initial-match-selection='new object()'/>
    </c:template>
 

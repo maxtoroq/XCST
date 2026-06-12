@@ -11,9 +11,9 @@
       <c:variable name='context' value='((IXcstPackage)this).Context'/>
       <c:variable name='outputUri' value='context.ResolveOutputUri(tempFile)'/>
       <c:invoke-package
-         package='Activator.CreateInstance(GetType())'
+         package='Activator.CreateInstance(GetType())!'
          initial-template='foo'
-         base-output-uri='{context.BaseOutputUri.AbsoluteUri}'/>
+         base-output-uri='{context.BaseOutputUri!.AbsoluteUri}'/>
       <c:void value='Assert.IsTrue(File.Exists(outputUri.LocalPath))'/>
       <c:void value='File.Delete(outputUri.LocalPath)'/>
    </c:template>

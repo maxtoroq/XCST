@@ -8,7 +8,7 @@
    </c:type>
 
    <c:function name='IsValid' as='bool'>
-      <c:param name='value'/>
+      <c:param name='value' as='object'/>
 
       <c:variable name='context' value='new ValidationContext(value, null, null)'/>
       <c:return value='Validator.TryValidateObject(value, context, null, validateAllProperties: true)'/>

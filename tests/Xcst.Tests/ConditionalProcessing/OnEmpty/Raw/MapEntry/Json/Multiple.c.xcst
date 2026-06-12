@@ -18,7 +18,7 @@
             </c:map-entry>
          </c:map>
       </c:variable>
-      <c:void value='Assert.AreEqual(1, obj.Property("a").Value)'/>
+      <c:void value='Assert.AreEqual(1, obj.Property("a")!.Value)'/>
    </c:template>
 
 </c:module>

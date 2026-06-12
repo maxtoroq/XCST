@@ -11,7 +11,7 @@
          </c:element>
       </c:variable>
       <c:void value='Assert.AreEqual("foo", el.Name.LocalName)'/>
-      <c:void value='Assert.AreEqual("123", el.Attribute("bar").Value)'/>
+      <c:void value='Assert.AreEqual("123", el.Attribute("bar")!.Value)'/>
       <c:void value='Assert.AreEqual("baz", el.Value)'/>
       <c:void value='Assert.IsNull(el.Document)'/>
    </c:template>

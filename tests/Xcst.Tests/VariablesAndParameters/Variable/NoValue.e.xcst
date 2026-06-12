@@ -3,7 +3,7 @@
 
    <c:template name='foo'>
       <c:variable name='v'/>
-      <if test='v != null'/>
+      <c:if test='v != null'/>
    </c:template>
 
 </c:module>

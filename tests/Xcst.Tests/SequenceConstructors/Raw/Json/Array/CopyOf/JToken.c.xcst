@@ -8,7 +8,7 @@
          <c:array>
             <c:copy-of value='(JToken)new JArray("1", "2")'/>
             <c:copy-of value='(object)new JArray("3", "4")'/>
-            <c:copy-of value='(JToken)null'/>
+            <c:copy-of value='default(JToken)'/>
          </c:array>
       </c:variable>
       <c:void value='Assert.AreEqual(3, arr.Count)'/>
