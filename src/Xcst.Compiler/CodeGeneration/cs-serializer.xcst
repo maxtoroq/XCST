@@ -353,7 +353,7 @@
 
    <template match='XElement el &amp;&amp; el.Name == code + "default"' mode='cs:source'>
       <text>default</text>
-      <if test='select(el, code).Single() is { } child'>
+      <if test='select(el, code).SingleOrDefault() is { } child'>
          <text>(</text>
          <apply-templates value='child'/>
          <text>)</text>

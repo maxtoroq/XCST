@@ -365,7 +365,7 @@
 
    <template match='XElement el &amp;&amp; el.Name == code + "default"' mode='vb:source'>
       <choose>
-         <when test='select(el, code).Single() is { } child'>
+         <when test='select(el, code).SingleOrDefault() is { } child'>
             <text>CType(Nothing, </text>
             <apply-templates value='child'/>
             <text>)</text>
